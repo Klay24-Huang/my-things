@@ -3,7 +3,57 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1209
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{9769C278-31F4-47ED-8011-1F27E10847A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository.Interface", "Repository.Interface\Repository.Interface.csproj", "{478ED3DD-EC37-4EE4-9EF9-6CDA7A95CAA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reposotory.Implement", "Reposotory.Implement\Reposotory.Implement.csproj", "{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCommon", "WebCommon\WebCommon.csproj", "{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "iRentDBV2", "iRentDBV2\iRentDBV2.sqlproj", "{C4380751-9767-4DB8-99CE-282727CA8F84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherService", "OtherService\OtherService.csproj", "{C7B92EF2-F283-4135-8309-FD1A30B4ED38}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9769C278-31F4-47ED-8011-1F27E10847A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9769C278-31F4-47ED-8011-1F27E10847A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9769C278-31F4-47ED-8011-1F27E10847A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9769C278-31F4-47ED-8011-1F27E10847A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{478ED3DD-EC37-4EE4-9EF9-6CDA7A95CAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{478ED3DD-EC37-4EE4-9EF9-6CDA7A95CAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{478ED3DD-EC37-4EE4-9EF9-6CDA7A95CAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{478ED3DD-EC37-4EE4-9EF9-6CDA7A95CAA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4380751-9767-4DB8-99CE-282727CA8F84}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C7B92EF2-F283-4135-8309-FD1A30B4ED38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7B92EF2-F283-4135-8309-FD1A30B4ED38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7B92EF2-F283-4135-8309-FD1A30B4ED38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7B92EF2-F283-4135-8309-FD1A30B4ED38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

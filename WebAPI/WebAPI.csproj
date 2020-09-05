@@ -1,0 +1,234 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9769C278-31F4-47ED-8011-1F27E10847A6}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebAPI</RootNamespace>
+    <AssemblyName>WebAPI</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel.Channels" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AnyRentController.cs" />
+    <Compile Include="Controllers\AreaListController.cs" />
+    <Compile Include="Controllers\ChangePWDController.cs" />
+    <Compile Include="Controllers\CheckAccountExistController.cs" />
+    <Compile Include="Controllers\CityListController.cs" />
+    <Compile Include="Controllers\DoBindController.cs" />
+    <Compile Include="Controllers\ForgetPwdController.cs" />
+    <Compile Include="Controllers\GenerateEMailTestController.cs" />
+    <Compile Include="Controllers\GetCarTypeController.cs" />
+    <Compile Include="Controllers\GetFavoriteStationController.cs" />
+    <Compile Include="Controllers\GetMachiParkingDataController.cs" />
+    <Compile Include="Controllers\GetParkingDataController.cs" />
+    <Compile Include="Controllers\GetProjectController.cs" />
+    <Compile Include="Controllers\GetUPDListController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\LoveCodeListController.cs" />
+    <Compile Include="Controllers\MotorRentController.cs" />
+    <Compile Include="Controllers\NormalRentController.cs" />
+    <Compile Include="Controllers\ReceiveCarDataController.cs" />
+    <Compile Include="Controllers\RefrashTokenController.cs" />
+    <Compile Include="Controllers\RegisterMemberDataController.cs" />
+    <Compile Include="Controllers\Register_Step1Controller.cs" />
+    <Compile Include="Controllers\Register_Step2Controller.cs" />
+    <Compile Include="Controllers\ReSendEMailController.cs" />
+    <Compile Include="Controllers\SendSMSController.cs" />
+    <Compile Include="Controllers\SetFavoriteStationController.cs" />
+    <Compile Include="Controllers\SetPWDController.cs" />
+    <Compile Include="Controllers\UploadCredentialsController.cs" />
+    <Compile Include="Controllers\VerifyEMailController.cs" />
+    <Compile Include="Controllers\VerifySMSController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BaseFunc\CommonFunc.cs" />
+    <Compile Include="Models\Enum\ObjType.cs" />
+    <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_Base.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CarData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ChangePWD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CheckAccount.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_Login.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
+    <Compile Include="Models\Param\Input\IAPI_RegisterMemberData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
+    <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
+    <Compile Include="Models\Param\Input\IAPI_VerifyEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReSendEMail.cs" />
+    <Compile Include="Models\Param\Output\OAPI_AnyRent.cs" />
+    <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_Base.cs" />
+    <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCarType.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
+    <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
+    <Compile Include="Models\Param\Output\OAPI_Login.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\iRentV2-testApp-api - Web Deploy.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OtherService\OtherService.csproj">
+      <Project>{C7B92EF2-F283-4135-8309-FD1A30B4ED38}</Project>
+      <Name>OtherService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reposotory.Implement\Reposotory.Implement.csproj">
+      <Project>{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}</Project>
+      <Name>Reposotory.Implement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebCommon\WebCommon.csproj">
+      <Project>{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}</Project>
+      <Name>WebCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>2061</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:2061/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>此專案參考這部電腦上所缺少的 NuGet 套件。請啟用 NuGet 套件還原，以下載該套件。如需詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的檔案是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>iRentDBV2</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{c4380751-9767-4db8-99ce-282727ca8f84}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>iRentDBV2</RootNamespace>
+    <AssemblyName>iRentDBV2</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Views\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\TB_Token.sql" />
+    <Build Include="dbo\Tables\TB_SystemControl.sql" />
+    <Build Include="dbo\Tables\TB_MemberQueryRawData.sql" />
+    <Build Include="dbo\Tables\TB_MemberData.sql" />
+    <Build Include="dbo\Tables\TB_MemberBySocial.sql" />
+    <Build Include="dbo\Tables\TB_Language.sql" />
+    <Build Include="dbo\Tables\TB_ErrorMessageMutiLanguage.sql" />
+    <Build Include="dbo\Tables\TB_ErrorMessageList.sql" />
+    <Build Include="dbo\Tables\TB_ErrorLog.sql" />
+    <Build Include="dbo\Tables\TB_APILog.sql" />
+    <Build Include="dbo\Tables\TB_APIList.sql" />
+    <Build Include="dbo\Tables\MEMBER_NEW.sql" />
+    <Build Include="dbo\Stored Procedures\usp_MemberLogin.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsErrorLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GenerateToken.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsAPILog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckAccount.sql" />
+    <Build Include="dbo\Tables\TB_VerifyCode.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Register_step1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckVerifyCode.sql" />
+    <Build Include="dbo\Tables\TB_WebAPIList.sql" />
+    <Build Include="dbo\Tables\TB_WebAPILog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsWebAPILog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Register_ReSendSMS.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ForgetPWD.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ChangePWD.sql" />
+    <Build Include="dbo\Tables\TB_City.sql" />
+    <Build Include="dbo\Tables\TB_AreaZip.sql" />
+    <Build Include="dbo\Views\VW_GetZipCode.sql" />
+    <Build Include="dbo\Tables\TB_Credentials.sql" />
+    <Build Include="dbo\Tables\TB_tmpCrentialsPIC.sql" />
+    <Build Include="dbo\Tables\TB_CrentialsPIC.sql" />
+    <Build Include="dbo\Stored Procedures\usp_RegisterMemberData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Register_Step2.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UploadCredentials.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ReSendEmail.sql" />
+    <Build Include="dbo\Stored Procedures\usp_VerifyEMail.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetPWD.sql" />
+    <Build Include="dbo\Tables\TB_iRentStation.sql" />
+    <Build Include="dbo\Tables\TB_CarType.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckToken.sql" />
+    <Build Include="dbo\Stored Procedures\usp_RefrashToken.sql" />
+    <Build Include="dbo\Tables\TB_ManagerStation.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckTokenOnlyToken.sql" />
+    <Build Include="dbo\Tables\TB_UPDDataWatchTable.sql" />
+    <Build Include="dbo\Tables\TB_LoveCode.sql" />
+    <Build Include="dbo\Tables\TB_ParkingData.sql" />
+    <Build Include="dbo\Tables\TB_MochiPark.sql" />
+    <Build Include="dbo\Tables\TB_FavoriteStation.sql" />
+    <Build Include="dbo\Tables\TB_CarTypeGroup.sql" />
+    <Build Include="dbo\Tables\TB_Project.sql" />
+    <Build Include="dbo\Tables\TB_ProjectStation.sql" />
+    <Build Include="dbo\Tables\TB_Car.sql" />
+    <Build Include="dbo\Views\VW_GetParking.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsFavoriteStation.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckTokenReturnID.sql" />
+    <Build Include="dbo\Views\VW_GetFavoriteStation.sql" />
+    <Build Include="dbo\Tables\TB_ProjectDiscount.sql" />
+    <Build Include="dbo\Tables\TB_CarInfo.sql" />
+    <Build Include="dbo\Views\VW_FullProjectCollection.sql" />
+    <Build Include="dbo\Tables\TB_CarStatus.sql" />
+    <Build Include="dbo\Views\VW_GetAllAnyRentData.sql" />
+    <Build Include="dbo\Views\VW_GetAllMotorAnyRentData.sql" />
+    <Build Include="dbo\Tables\TB_OrderMain.sql" />
+    <Build Include="dbo\Tables\TB_OrderDetail.sql" />
+    <Build Include="dbo\Tables\TB_BookingStatusOfUser.sql" />
+    <Build Include="dbo\Tables\TB_BindCardSerial.sql" />
+    <Build Include="dbo\Tables\TB_CreditCardBindLog.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="iRentDBV2.refactorlog" />
+  </ItemGroup>
+</Project>
