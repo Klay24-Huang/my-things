@@ -29,8 +29,9 @@ CREATE INDEX [IX_TB_ProjectStation_Search] ON [dbo].[TB_ProjectStation] ([IOType
 GO
 CREATE NONCLUSTERED INDEX IX_SearchForVW_GetAllMotorAnyRentData
 ON [dbo].[TB_ProjectStation] ([IOType],[StationID])
-
 GO
+CREATE NONCLUSTERED INDEX IX_ProjectStation_SearchByStationID
+ON [dbo].[TB_ProjectStation] ([StationID])
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'專案可出還站',

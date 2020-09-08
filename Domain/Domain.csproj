@@ -83,9 +83,12 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\Taishin\CardData.cs" />
     <Compile Include="WebAPI\Input\Taishin\DirectCardAuthData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetCreditCardList.cs" />
+    <Compile Include="WebAPI\Input\Taishin\GetCreditCardListRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\RequestParamsData.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Base.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Bind.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\Taishin\BindOriRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\BindRequestParams.cs" />
@@ -95,8 +98,11 @@
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResultData.cs" />
+    <Compile Include="WebAPI\output\Taishin\GetCreditCardListResponseParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Base.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DirectCardAuth.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">

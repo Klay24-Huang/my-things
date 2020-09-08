@@ -189,4 +189,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RtnMessage" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e1806ef1-3897-4112-96bc-d06005388bbd" ChangeDateTime="09/08/2020 08:17:01">
+    <Property Name="ElementName" Value="[dbo].[TB_CarTypeGroupConsist].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_CarTypeGroupConsist]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ConsistID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f0f7095f-3624-4ad6-a01b-ad0f25be6daa" ChangeDateTime="09/08/2020 09:13:59">
+    <Property Name="ElementName" Value="[dbo].[TB_CarTypeImage].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_CarTypeImage]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CarTypeImageID" />
+  </Operation>
 </Operations>

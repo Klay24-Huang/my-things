@@ -75,3 +75,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CreditCardBindLog',
     @level2type = N'COLUMN',
     @level2name = N'ResultMessage'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'綁卡log',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CreditCardBindLog',
+    @level2type = NULL,
+    @level2name = NULL

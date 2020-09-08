@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.WebAPI.Input.Taishin;
+using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
 using OtherService;
 using System;
@@ -18,13 +19,15 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 綁卡
+    /// 取回綁定(信用卡、銀行帳號)列表
     /// </summary>
-    public class DoBindController : ApiController
+    
+    public class BindQueryController : ApiController
     {
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         [HttpPost]
-        public Dictionary<string, object> doBindCreditCard(Dictionary<string, object> value)
+        public Dictionary<string, object> DoGetBindList()
         {
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -32,7 +35,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "DoBindController";
+            string funName = "BindQueryController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CheckAccount apiInput = null;
@@ -42,29 +45,24 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
             string Contentjson = "";
+            string IDNO = "C121119150";
             #endregion
             TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-            WebAPIInput_Base wsInput = new WebAPIInput_Base()
+            PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
             {
-                ApiVer = "1.0.1",
+                ApiVer = "1.0.0",
                 ApposId = TaishinAPPOS,
-                RequestParams = new RequestParamsData()
+                RequestParams = new GetCreditCardListRequestParamasData()
                 {
-                    FailUrl = "",
-                    SuccessUrl = "",
-                    ResultUrl = HttpUtility.UrlEncode("http://irentv2-testapp-api.azurewebsites.net/api/bindResult"),
-                    MemberId = "C121119150",
-                    OrderNo = DateTime.Now.ToString("yyyyMMddHHmmssfff"),
-                     PaymentType="04"
-                 //   PaymentType = "04"
-                   
+                    MemberId = IDNO,
                 },
-                Random= baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                 TimeStamp= DateTimeOffset.Now.ToUnixTimeSeconds().ToString()
+                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                 TransNo=string.Format("{0}_{1}", IDNO,DateTime.Now.ToString("yyyyMMddhhmmss"))
 
-        };
-            WebAPIOutput_Base wsOutput = new WebAPIOutput_Base();
-            flag = WebAPI.DoBind(wsInput,  ref errCode, ref wsOutput);
+            };
+            WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+            flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {

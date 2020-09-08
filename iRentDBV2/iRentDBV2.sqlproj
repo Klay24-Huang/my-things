@@ -131,6 +131,8 @@
     <Build Include="dbo\Tables\TB_BookingStatusOfUser.sql" />
     <Build Include="dbo\Tables\TB_BindCardSerial.sql" />
     <Build Include="dbo\Tables\TB_CreditCardBindLog.sql" />
+    <Build Include="dbo\Tables\TB_CarTypeGroupConsist.sql" />
+    <Build Include="dbo\Tables\TB_CarTypeImage.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

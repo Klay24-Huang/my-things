@@ -11,5 +11,13 @@ namespace WebAPI.Models.Param.Input
         /// 據點代碼
         /// </summary>
         public string StationID { set; get; }
+        /// <summary>
+        /// 預計取車時間
+        /// </summary>
+        public string SDate { set; get; }
+        /// <summary>
+        /// 預計還車時間
+        /// </summary>
+        public string EDate { set; get; }
     }
 }
