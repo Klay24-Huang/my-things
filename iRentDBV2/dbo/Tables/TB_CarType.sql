@@ -3,13 +3,14 @@
 	[CarType] VARCHAR(20) NOT NULL DEFAULT '', 
     [CarBrend] [varchar](20) NOT NULL DEFAULT '',
 	[CarTypeName] [varchar](50) NOT NULL DEFAULT '',
+	[Operator] INT NOT NULL DEFAULT 1,
 	[isMoto] [tinyint] NOT NULL DEFAULT 0,
 	[use_flag] [tinyint] NOT NULL DEFAULT 2,
 	[MKTime] [datetime] NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
 	[UPDTime] [datetime] NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
     [A_USER_ID] VARCHAR(50) NOT NULL DEFAULT '', 
     [U_USER_ID] VARCHAR(50) NOT NULL DEFAULT '', 
-    CONSTRAINT [PK_TB_CarType] PRIMARY KEY ([CarType]),
+    CONSTRAINT [PK_TB_CarType] PRIMARY KEY ([CarType],[Operator]) 
 )
 
 GO
@@ -102,3 +103,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CarType',
     @level2type = NULL,
     @level2name = NULL
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'業者',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarType',
+    @level2type = N'COLUMN',
+    @level2name = N'Operator'
