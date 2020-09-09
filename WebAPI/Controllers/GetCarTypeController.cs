@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -51,8 +52,13 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
             Int16 APPKind = 2;
+            
+            Int16 QueryMode = 0; //查詢模式，0:未帶入起迄日;1:代入起迄日
+            DateTime SDate = DateTime.Now.AddHours(-1);
+            DateTime EDate=DateTime.Now;
             string Contentjson = "";
             bool isGuest = true;
+            
             #endregion
             #region 防呆
 
@@ -69,6 +75,43 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR900";
+                    }
+                    if(string.IsNullOrWhiteSpace(apiInput.SDate)==false && string.IsNullOrWhiteSpace(apiInput.EDate)==false)
+                    {
+                        flag = DateTime.TryParse(apiInput.SDate, out SDate);
+                        if (flag)
+                        {
+                            flag = DateTime.TryParse(apiInput.EDate, out EDate);
+                            if (flag)
+                            {
+                                if (SDate >= EDate)
+                                {
+                                    flag = false;
+                                    errCode = "ERR153";
+                                }
+                                else
+                                {
+                                    if (DateTime.Now > SDate)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR154";
+                                    }
+                                    else
+                                    {
+                                        QueryMode = 1;
+                                    }
+                                }
+                               
+                            }
+                            else
+                            {
+                                errCode = "ERR152";
+                            }
+                        }
+                        else
+                        {
+                            errCode = "ERR151";
+                        }
                     }
                 }
                
@@ -103,14 +146,59 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
+
                 _repository = new StationAndCarRepository(connetStr);
                 List<CarTypeData> iRentStations = new List<CarTypeData>();
-                iRentStations = _repository.GetStationCarType(apiInput.StationID);
-
-                GetCarTypeAPI = new OAPI_GetCarType()
+                if (QueryMode == 0)
                 {
-                    GetCarTypeObj = iRentStations
-                };
+                    iRentStations = _repository.GetStationCarType(apiInput.StationID);
+                }
+                else
+                {
+                    List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
+                    List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+                    lstData = _repository.GetStationCarType(apiInput.StationID, SDate, EDate);
+                    if (lstData != null)
+                    {
+                        int len = lstData.Count;
+                        if (len > 0)
+                        {
+                            for(int i = 0; i < len; i++)
+                            {
+                                CarTypeData obj = new CarTypeData()
+                                {
+                                    CarBrend = lstData[i].CarBrend,
+                                    CarType = lstData[i].CarType,
+                                    CarTypeName = lstData[i].CarTypeName,
+                                    CarTypePic = lstData[i].CarTypePic,
+                                    Operator = lstData[i].Operator,
+                                    OperatorScore = lstData[i].OperatorScore,
+                                    Seat = lstData[i].Seat,
+                                    Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday))
+                                };
+                                iRentStations.Add(obj);
+                            }
+                        }
+                    }
+                }
+
+                if (iRentStations != null)
+                {
+                    GetCarTypeAPI = new OAPI_GetCarType()
+                    {
+                        GetCarTypeObj = iRentStations.OrderBy(x => x.Price).ToList()
+                    };
+                  
+
+                }
+                else
+                {
+                    GetCarTypeAPI = new OAPI_GetCarType()
+                    {
+                        GetCarTypeObj = iRentStations
+                    };
+                }
+              
             }
             #endregion
 

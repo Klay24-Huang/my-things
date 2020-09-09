@@ -38,8 +38,8 @@ namespace WebAPI.Controllers
             string funName = "GetProjectController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_AnyRent apiInput = null;
-            OAPI_AnyRent OAnyRentAPI = null;
+            IAPI_GetProject apiInput = null;
+            OAPI_GetProject outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -47,32 +47,87 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            DateTime SDate = DateTime.Now.AddHours(-1);
+            DateTime EDate = DateTime.Now;
+            int QueryMode = 0;
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_AnyRent>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetProject>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                 if (flag)
                 {
-                    flag = apiInput.ShowALL.HasValue;
+                    flag = apiInput.Mode.HasValue;
                     if (false == flag)
                     {
                         errCode = "ERR900";
                     }
+                    else
+                    {
+                        
+                        QueryMode = (apiInput.Mode.Value>0)?1:0;
+                    }
                     if (flag)
                     {
-                        if (apiInput.ShowALL.Value == 0)
+                        if (QueryMode == 1)
                         {
                             if (!apiInput.Latitude.HasValue || !apiInput.Longitude.HasValue || !apiInput.Radius.HasValue)
                             {
                                 flag = false;
                                 errCode = "ERR900";
+                            }
+                           
+                        }
+                        else
+                        {
+                            if (string.IsNullOrWhiteSpace(apiInput.StationID))
+                            {
+                                flag = false;
+                                errCode = "ERR900";
+                            }
+                        }
+                    }
+                    //判斷日期
+                    if (flag)
+                    {
+                        if (string.IsNullOrWhiteSpace(apiInput.SDate) == false && string.IsNullOrWhiteSpace(apiInput.EDate) == false)
+                        {
+                            flag = DateTime.TryParse(apiInput.SDate, out SDate);
+                            if (flag)
+                            {
+                                flag = DateTime.TryParse(apiInput.EDate, out EDate);
+                                if (flag)
+                                {
+                                    if (SDate >= EDate)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR153";
+                                    }
+                                    else
+                                    {
+                                        if (DateTime.Now > SDate)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR154";
+                                        }
+                                       
+                                    }
+
+                                }
+                                else
+                                {
+                                    errCode = "ERR152";
+                                }
+                            }
+                            else
+                            {
+                                errCode = "ERR151";
                             }
                         }
                     }
@@ -99,20 +154,20 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-                List<AnyRentObj> AllCars = new List<AnyRentObj>();
-                if (apiInput.ShowALL == 1)
+                List<iRentStationData> iRentStations = new List<iRentStationData>();
+                if (apiInput.Mode == 1)
                 {
-                    AllCars = _repository.GetAllAnyRent();
+                    iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
                 }
                 else
                 {
-                    AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                   // AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
                 }
 
-                OAnyRentAPI = new OAPI_AnyRent()
-                {
-                    AnyRentObj = AllCars
-                };
+                //OAnyRentAPI = new OAPI_AnyRent()
+                //{
+                //    AnyRentObj = AllCars
+                //};
 
             }
             #endregion
@@ -124,7 +179,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, OAnyRentAPI, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
         }

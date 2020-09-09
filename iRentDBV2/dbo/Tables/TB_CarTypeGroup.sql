@@ -4,6 +4,8 @@
 	[CarTypeGroupCode] VARCHAR(10) NOT NULL DEFAULT '',
     [CarTypeName] NVARCHAR(100) NOT NULL DEFAULT N'', 
 	[CarTypeImg] NVARCHAR(100) NOT NULL DEFAULT N'',
+	[Seat] TINYINT NOT NULL DEFAULT 4,
+	[isMoto] TINYINT NOT NULL DEFAULT 0,
 	[use_flag] [tinyint] NOT NULL DEFAULT (1),
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
 	[UPDTime] [datetime] NULL, 
@@ -60,3 +62,21 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CarTypeGroup',
     @level2type = N'COLUMN',
     @level2name = N'CarTypeImg'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否為機車(0:否;1:是)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarTypeGroup',
+    @level2type = N'COLUMN',
+    @level2name = N'isMoto'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'座位數',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarTypeGroup',
+    @level2type = N'COLUMN',
+    @level2name = N'Seat'

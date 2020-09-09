@@ -306,7 +306,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<CarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarBrend],[CarType],[CarTypeName] FROM [dbo].[VW_FullProjectCollection] WITH(NOLOCK) ";
+            string SQL = " SELECT [CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,-1 AS Price FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup]  WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(StationID) == false && string.IsNullOrWhiteSpace(StationID) == false)
@@ -319,43 +319,69 @@ namespace Reposotory.Implement
             }
             if (term != "")
             {
-                SQL += " WHERE " + term + "  AND CarTypeName<>''";
+                SQL += " WHERE " + term + "  AND CarTypeName<>''  ";
             }
             else
             {
                 SQL += " WHERE  CarTypeName<>'' ";
             }
-            SQL += " GROUP BY  [CarBrend],[CarType],[CarTypeName]";
+            SQL += " GROUP BY  [CarBrend],[CarTypeGroupCode],[CarTypeName],[CarTypeImg],OperatorICon ,Score,Seat";
             lstStation = GetObjList<CarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
-        public List<CarTypeData> GetStationCarTypeWithOutCarType(string StationID)
+        /// <summary>
+        /// 以預約時間、據點取出據點內還有的車型
+        /// </summary>
+        /// <param name="StationID"></param>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public List<ProjectAndCarTypeData> GetStationCarType(string StationID,DateTime SDate,DateTime EDate)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<CarTypeData> lstStation = null;
+            List<ProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarBrend],[CarTypeName] FROM [dbo].[VW_FullProjectCollection] WITH(NOLOCK) ";
-            SqlParameter[] para = new SqlParameter[2];
-            string term = "";
+            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat FROM  VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            SQL += "INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND CarNo NOT IN ( ";
+            SQL += "SELECT  CarNo FROM [TB_OrderMain]  ";
+            SQL += "WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0) AND  CarNo in (SELECT [CarNo] ";
+            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID =@StationID AND CarType IN ( ";
+            SQL += "  SELECT CarType FROM VW_GetFullProjectCollectionOfCarTypeGroup WHERE StationID=@StationID ";
+            SQL += "  ) AND available<2 ) ";
+            SQL += "							  AND ( ";
+            SQL += "								   (start_time between @SD AND @ED)  ";
+            SQL += "								OR (stop_time between @SD AND @ED) ";
+            SQL += "								OR (@SD BETWEEN start_time AND stop_time) ";
+            SQL += "								OR (@ED BETWEEN start_time AND stop_time) ";
+            SQL += "								OR (DATEADD(MINUTE,-30,@SD) between start_time AND stop_time) ";
+            SQL += "								OR (DATEADD(MINUTE,30,@ED) between start_time AND stop_time) ";
+            SQL += "							  ) ";
+            SQL += "						 ) ";
+            SQL += "WHERE  VW.StationID=@StationID AND SPCLOCK='Z' ";
+            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat ";
+            SQL += "ORDER BY Price,PRICE_H ASC ";
+            SqlParameter[] para = new SqlParameter[4];
+            string term = " ";
             if (string.IsNullOrEmpty(StationID) == false && string.IsNullOrWhiteSpace(StationID) == false)
             {
-                term = " StationID=@StationID";
+               
                 para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 20);
                 para[nowCount].Value = StationID;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
+                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                para[nowCount].Value = EDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
             }
-            if (term != "")
-            {
-                SQL += " WHERE " + term + "  AND CarTypeName<>''";
-            }
-            else
-            {
-                SQL += " WHERE  CarTypeName<>'' ";
-            }
-            SQL += " GROUP BY  [CarBrend],[CarTypeName]";
-            lstStation = GetObjList<CarTypeData>(ref flag, ref lstError, SQL, para, term);
+           
+            
+            lstStation = GetObjList<ProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
         /// <summary>

@@ -17,13 +17,13 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 接收車機資料
+    /// 興聯車機定時回報
     /// </summary>
-    public class ReceiveCarDataController : ApiController
+    public class ResponseInfoController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-    
-        public Dictionary<string, object> doVerifyEMail(Dictionary<string, object> value)
+        [HttpPost]
+        public Dictionary<string, object> ResponseInfoInsert(Dictionary<string, object> value)
         {
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -31,12 +31,12 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "ReceiveCarDataController";
+            string funName = "ResponseInfoController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CarData VehicleInput = null;
             IAPI_MotorData MotorDataInput = null;
-            
+
             Int16 DataType = 0; //0:汽車;1:機車
             OAPI_Login CheckAccountAPI = null;
             Token token = null;
@@ -47,34 +47,23 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
             string ClientIP = baseVerify.GetClientIp(Request);
-         
-                flag = baseVerify.baseCheck(value, ref errCode, funName);
-                if (flag)
-                {
+
+            flag = baseVerify.baseCheck(value, ref errCode, funName);
+            if (flag)
+            {
                 //寫入API Log
 
                 flag = baseVerify.InsAPLog(value["para"].ToString(), ClientIP, funName, ref errCode, ref LogID);
-                if (value["para"].ToString().IndexOf("Vehicle") > -1) //汽車
-                    {
-                        VehicleInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CarData>(Contentjson);
-                    }
-                    else
-                    {
-                        MotorDataInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MotorData>(Contentjson);
-                    }
 
-                   
+            }
 
 
-                }
-          
-            
-           
+
             #endregion
             #region TB
             if (flag)
             {
-               
+
             }
             #endregion
             #region 寫入錯誤Log

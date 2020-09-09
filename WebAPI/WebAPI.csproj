@@ -97,6 +97,7 @@
     <Compile Include="Controllers\ChangePWDController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
+    <Compile Include="Controllers\EventInfoController.cs" />
     <Compile Include="Controllers\GetBindURLController.cs" />
     <Compile Include="Controllers\ForgetPwdController.cs" />
     <Compile Include="Controllers\GenerateEMailTestController.cs" />
@@ -115,12 +116,14 @@
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
     <Compile Include="Controllers\OrderUnFinishController.cs" />
+    <Compile Include="Controllers\ReadCardInfoController.cs" />
     <Compile Include="Controllers\ReceiveCarDataController.cs" />
     <Compile Include="Controllers\RefrashTokenController.cs" />
     <Compile Include="Controllers\RegisterMemberDataController.cs" />
     <Compile Include="Controllers\Register_Step1Controller.cs" />
     <Compile Include="Controllers\Register_Step2Controller.cs" />
     <Compile Include="Controllers\ReSendEMailController.cs" />
+    <Compile Include="Controllers\ResponseInfoController.cs" />
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
@@ -131,6 +134,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
+    <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_Base.cs" />
@@ -142,7 +146,9 @@
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
@@ -168,6 +174,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetServerTime.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />

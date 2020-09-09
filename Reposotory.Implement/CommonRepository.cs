@@ -275,6 +275,51 @@ namespace Reposotory.Implement
             lstLoveCode = GetObjList<LoveCodeListData>(ref flag, ref lstError, SQL, para, term);
             return lstLoveCode;
         }
+        /// <summary>
+        /// 取出日期區間內的所有假日
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <returns></returns>
+        public List<Holiday> GetHolidays(string SD, string ED)
+        {
+            bool flag = false;
+            List<Holiday> lstHoliday = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT HolidayDate FROM TB_Holiday  ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            flag = (false == string.IsNullOrEmpty(SD));
+            if (flag)
+            {
+                flag = (false == string.IsNullOrEmpty(ED));
+            }
+
+            if (flag)
+            {
+                para[0] = new SqlParameter("@SD", SqlDbType.VarChar, 8);
+                para[0].Value = SD;
+                para[0].Direction = ParameterDirection.Input;
+                para[1] = new SqlParameter("@ED", SqlDbType.VarChar, 8);
+                para[1].Value = ED;
+                para[1].Direction = ParameterDirection.Input;
+                term = " HolidayDate>=@SD AND HolidayDate<=@ED";
+                if ("" != term)
+                {
+                    SQL += " WHERE use_flag=1 AND " + term;
+                }
+                else
+                {
+                    SQL += " WHERE user_flag=1 ";
+                }
+                SQL += "  ORDER BY HolidayDate ASC";
+
+                lstHoliday = GetObjList<Holiday>(ref flag, ref lstError, SQL, para, term);
+            }
+
+            return lstHoliday;
+
+        }
     }
 }
 
