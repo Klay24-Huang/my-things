@@ -360,6 +360,100 @@ namespace WebAPI.Models.BaseFunc
             return flag;
         }
         /// <summary>
+        /// 基本判斷（含token）, 若無Token當訪客
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="Contentjson"></param>
+        /// <param name="errCode"></param>
+        /// <param name="funName"></param>
+        /// <param name="Access_token_string"></param>
+        /// <param name="AccessToken"></param>
+        /// <param name="isGuest">
+        ///     <para>True:訪客，不需驗證token</para>
+        ///     <para>False:會員，需驗證token</para>
+        /// </param>
+        /// <param name="needInput">是否有輸入參數
+        /// <para>true:是</para>
+        /// <para>false:否</para>
+        /// </param>
+        /// <returns></returns>
+        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken, ref bool isGuest,bool needInput)
+        {
+            bool flag = true;
+            Int16 IsSystem = 0;
+            string ExceptionMessage = "";
+            if (Access_token_string == "")
+            {
+                isGuest = true;
+            }
+            else
+            {
+                isGuest = false;
+                string[] Access_tokens = Access_token_string.Split(' ');
+                if (Access_tokens.Count() < 2)
+                {
+                    flag = false;
+                    errCode = "ERR001";
+                }
+                else
+                {
+                    if (Access_tokens[0].ToUpper() != "BEARER")
+                    {
+                        flag = false;
+                        errCode = "ERR001";
+                    }
+                    else if (string.IsNullOrEmpty(Access_tokens[1]))
+                    {
+                        flag = false;
+                        errCode = "ERR001";
+                    }
+                    else
+                    {
+                        AccessToken = Access_tokens[1];
+                    }
+                }
+            }
+            if (needInput)
+            {
+                if (null == value)
+                {
+                    flag = false;
+                    errCode = "ERR901";
+                }
+                if (flag)
+                {
+                    //判斷有沒有para這個參數
+                    try
+                    {
+                        if (value == null)
+                        {
+                            flag = false;
+                            errCode = "ERR902";
+                        }
+                        else
+                        {
+                            Contentjson = JsonConvert.SerializeObject(value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        flag = false;
+                        errCode = "ERR902";
+                        IsSystem = 1;
+                        ExceptionMessage = ex.Message;
+                    }
+                }
+                if (false == flag)
+                {
+                    flag = InsErrorLog(funName, errCode, 0, 0, IsSystem, 0, ExceptionMessage);
+                    flag = false;
+
+                }
+            }
+            
+            return flag;
+        }
+        /// <summary>
         /// 正規化比對
         /// </summary>
         /// <param name="sourceStr">原始文字</param>
