@@ -80,6 +80,7 @@
     <Compile Include="TB\MotorRentObj.cs" />
     <Compile Include="TB\ParkingData.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
+    <Compile Include="TB\StationAndProjectAndCarTypeData.cs" />
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />

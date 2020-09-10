@@ -2,6 +2,7 @@
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.TB;
+using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -40,6 +42,7 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_GetProject apiInput = null;
             OAPI_GetProject outputApi = null;
+            List<GetProjectObj> lstTmpData = new List<GetProjectObj>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -155,19 +158,148 @@ namespace WebAPI.Controllers
             {
                 _repository = new StationAndCarRepository(connetStr);
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
+                List<StationAndProjectAndCarTypeData> lstData = new List<StationAndProjectAndCarTypeData>();
+                List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 if (apiInput.Mode == 1)
                 {
                     iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    if (iRentStations != null)
+                    {
+                        
+                        int len = iRentStations.Count;
+                        if (len > 0)
+                        {
+                            string iRentStationStr = "'"+iRentStations[0].StationID+"'";
+                            if (len > 1)
+                            {
+                                for (int i = 1; i < len; i++)
+                                {
+                                    iRentStationStr += string.Format(",'{0}'", iRentStations[i].StationID);
+                                }
+                            }
+                            lstData = _repository.GetStationCarTypeOfMutiStation(iRentStationStr, SDate, EDate, (string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", "")));
+                        }
+                    }
                 }
                 else
                 {
-                   // AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+
+
+                    // AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    lstData = _repository.GetStationCarTypeOfMutiStation("'"+apiInput.StationID+"'", SDate, EDate, (string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", "")));
                 }
 
-                //OAnyRentAPI = new OAPI_AnyRent()
-                //{
-                //    AnyRentObj = AllCars
-                //};
+                if (flag)
+                {
+                    if (lstData != null)
+                    {
+                        int DataLen = lstData.Count;
+                        
+                        lstTmpData.Add(new GetProjectObj()
+                        {
+                            ADDR = lstData[0].ADDR,
+                            Content = lstData[0].Content,
+                            Latitude = lstData[0].Latitude,
+                            Longitude = lstData[0].Longitude,
+                            StationID = lstData[0].StationID,
+                            StationName = lstData[0].StationName,
+                            ProjectObj = new List<ProjectObj>()
+                        });
+                        lstTmpData[0].ProjectObj.Add(new ProjectObj()
+                        {
+                            CarBrend = lstData[0].CarBrend,
+                            CarType = lstData[0].CarType,
+                            CarTypeName = lstData[0].CarTypeName,
+                            CarTypePic = lstData[0].CarTypePic,
+                            Insurance = 1,
+                            InsurancePerHour = 20,
+                            IsMinimum = 1,
+                            Operator = lstData[0].Operator,
+                            OperatorScore = lstData[0].OperatorScore,
+                            ProjID = lstData[0].PROJID,
+                            ProjName = lstData[0].PRONAME,
+                            Seat = lstData[0].Seat,
+                            Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday))
+                        });
+                        lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
+                        if (DataLen > 1)
+                        {
+                            for (int i = 1; i < DataLen; i++)
+                            {
+                                int index=lstTmpData.FindIndex(delegate(GetProjectObj station)
+                                {
+                                    return station.StationID == lstData[i].StationID;
+                                });
+                                if (index < 0)
+                                {
+                                    int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    int isMin = 0;
+                                    ProjectObj tmpObj = new ProjectObj()
+                                    {
+                                        CarBrend = lstData[i].CarBrend,
+                                        CarType = lstData[i].CarType,
+                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypePic = lstData[i].CarTypePic,
+                                        Insurance = 1,
+                                        InsurancePerHour = 20,
+                                        IsMinimum = isMin,
+                                        Operator = lstData[i].Operator,
+                                        OperatorScore = lstData[i].OperatorScore,
+                                        ProjID = lstData[i].PROJID,
+                                        ProjName = lstData[i].PRONAME,
+                                        Seat = lstData[i].Seat,
+                                        Bill = tmpBill
+                                    };
+                                    GetProjectObj tmpGetProjectObj = new GetProjectObj()
+                                    {
+                                        ADDR = lstData[i].ADDR,
+                                        Content = lstData[i].Content,
+                                        Latitude = lstData[i].Latitude,
+                                        Longitude = lstData[i].Longitude,
+                                        StationID = lstData[i].StationID,
+                                        StationName = lstData[i].StationName,
+                                        ProjectObj = new List<ProjectObj>(),
+                                         Minimum=tmpBill
+                                    };
+                                    tmpGetProjectObj.ProjectObj.Add(tmpObj);
+                                    lstTmpData.Add(tmpGetProjectObj);
+
+                                }
+                                else
+                                {
+                                    int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    int isMin = 0;
+                                    if (tmpBill < lstTmpData[index].Minimum)
+                                    {
+                                        isMin = 1;
+                                        lstTmpData[index].Minimum = tmpBill;
+                                    }
+                                    lstTmpData[index].ProjectObj.Add(new ProjectObj()
+                                    {
+                                        CarBrend = lstData[i].CarBrend,
+                                        CarType = lstData[i].CarType,
+                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypePic = lstData[i].CarTypePic,
+                                        Insurance = 1,
+                                        InsurancePerHour = 20,
+                                        IsMinimum = isMin,
+                                        Operator = lstData[i].Operator,
+                                        OperatorScore = lstData[i].OperatorScore,
+                                        ProjID = lstData[i].PROJID,
+                                        ProjName = lstData[i].PRONAME,
+                                        Seat = lstData[i].Seat,
+                                        Bill = tmpBill
+                                    });
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                outputApi = new OAPI_GetProject()
+                {
+                    GetProjectObj = lstTmpData
+                };
 
             }
             #endregion

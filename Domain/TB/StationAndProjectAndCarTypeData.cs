@@ -4,22 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.WebAPI.output.rootAPI
+namespace Domain.TB
 {
-    /// <summary>
-    /// 取得專案與資費GetProjectObj內層物件 
-    /// </summary>
-    public class ProjectObj
+    public class StationAndProjectAndCarTypeData
     {
         /// <summary>
         /// 專案代碼
         /// </summary>
-        public string ProjID { set; get; }
+        public string PROJID { set; get; }
         /// <summary>
         /// 專案名稱
         /// </summary>
-        public string ProjName { set; get; }
-
+        public string PRONAME { set; get; }
+        /// <summary>
+        /// 專案平日價
+        /// </summary>
+        public int Price { set; get; }
+        /// <summary>
+        /// 專案假日價
+        /// </summary>
+        public int PRICE_H { set; get; }
         /// <summary>
         /// 車子品牌
         /// </summary>
@@ -37,10 +41,6 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public string CarTypePic { set; get; }
         /// <summary>
-        ///座位數
-        /// </summary>
-        public int Seat { set; get; }
-        /// <summary>
         /// 業者icon
         /// </summary>
         public string Operator { set; get; }
@@ -49,27 +49,27 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public Single OperatorScore { set; get; }
 
-
         /// <summary>
-        /// 是否可加購安心服務
-        /// <para>0:否</para>
-        /// <para>1:是</para>
+        ///座位數
         /// </summary>
-        public int Insurance { set; get; }
+        public int Seat { set; get; }
+        public string StationID { set; get; }
+        public string StationName { set; get; }
         /// <summary>
-        /// 加購安心服務每小時費用
-
+        /// 地址
         /// </summary>
-        public int InsurancePerHour { set; get; }
+        public string ADDR { set; get; }
         /// <summary>
-        /// 是否是最低價
-        /// <para>0:否</para>
-        /// <para>1:是</para>
+        /// 緯度
         /// </summary>
-        public int IsMinimum { set; get; } = 0;
+        public decimal Latitude { set; get; }
         /// <summary>
-        /// 預估費用
+        /// 經度
         /// </summary>
-        public int Bill { set; get; }
+        public decimal Longitude { set; get; }
+        /// <summary>
+        /// 其他說明
+        /// </summary>
+        public string Content { set; get; }
     }
 }

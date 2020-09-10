@@ -12,8 +12,8 @@
     [U_USER_ID] VARCHAR(50) NOT NULL DEFAULT '', 
     CONSTRAINT [PK_TB_CarType] PRIMARY KEY ([CarType],[Operator]) 
 )
-
 GO
+
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'車型代碼',
     @level0type = N'SCHEMA',
@@ -112,3 +112,6 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CarType',
     @level2type = N'COLUMN',
     @level2name = N'Operator'
+GO
+
+CREATE INDEX [IX_TB_CarType_SearchByCarType] ON [dbo].[TB_CarType] ([CarType])

@@ -385,6 +385,67 @@ namespace Reposotory.Implement
             return lstStation;
         }
         /// <summary>
+        /// 取得多據點專案
+        /// </summary>
+        /// <param name="StationID">據點代碼（1~多個）</param>
+        /// <param name="SDate">起日</param>
+        /// <param name="EDate">迄日</param>
+        /// <param name="CarType">車型群組代碼</param>
+        /// <returns></returns>
+        public List<StationAndProjectAndCarTypeData> GetStationCarTypeOfMutiStation(string StationID, DateTime SDate, DateTime EDate,string CarType)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<StationAndProjectAndCarTypeData> lstStation = null;
+            int nowCount = 0;
+            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content ";
+                SQL+=" FROM  VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            SQL += "INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND CarNo NOT IN ( ";
+            SQL += "SELECT  CarNo FROM [TB_OrderMain]  ";
+            SQL += "WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0) AND  CarNo in (SELECT [CarNo] ";
+            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID IN ("+StationID+") AND CarType IN ( ";
+            SQL += "  SELECT CarType FROM VW_GetFullProjectCollectionOfCarTypeGroup WHERE StationID IN (" + StationID + ") ";
+            SQL += "  ) AND available<2 )  AND ( ";
+            SQL += "   (start_time between @SD AND @ED)  ";
+            SQL += "	OR (stop_time between @SD AND @ED) ";
+            SQL += "	OR (@SD BETWEEN start_time AND stop_time) ";
+            SQL += "	OR (@ED BETWEEN start_time AND stop_time) ";
+            SQL += "	OR (DATEADD(MINUTE,-30,@SD) between start_time AND stop_time) ";
+            SQL += "	OR (DATEADD(MINUTE,30,@ED) between start_time AND stop_time) ";
+            SQL += "  ) ";
+            SQL += " ) ";
+            SQL += " LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID ";
+            SQL += "WHERE  VW.StationID IN (" + StationID + ") AND SPCLOCK='Z' ";
+          
+            SqlParameter[] para = new SqlParameter[5];
+            string term = " ";
+        
+
+
+                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                para[nowCount].Value = EDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            
+            if (CarType != "")
+            {
+                SQL += " AND VW.CarTypeGroupCode=@CarType ";
+                para[nowCount] = new SqlParameter("@CarType", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarType.ToUpper();
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content  ";
+            SQL += "ORDER BY Price,PRICE_H ASC ";
+
+            lstStation = GetObjList<StationAndProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>
         /// <param name="lat">目前緯度</param>
