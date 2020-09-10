@@ -37,7 +37,7 @@ namespace Reposotory.Implement
             if (false == string.IsNullOrWhiteSpace(ProjID))
             {
                 term += " ProjID=@ProjID";
-                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount] = new SqlParameter("@ProjID", SqlDbType.VarChar, 20);
                 para[nowCount].Value = ProjID;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
@@ -95,7 +95,7 @@ namespace Reposotory.Implement
                 {
                     term += " CarTypeGroupCode=@CarType";
                     para[nowCount] = new SqlParameter("@CarType", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = CarType;
+                    para[nowCount].Value = CarType.ToUpper();
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }

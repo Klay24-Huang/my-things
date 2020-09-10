@@ -102,6 +102,10 @@ namespace WebAPI.Models.BillFunc
                 SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting> sqlHelp = new SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting>(WebApiApplication.connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
                 new CommonFunc().checkSQLResult(ref flag,SPOutput.Error,SPOutput.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    MilageBase = SPOutput.MilageBase;
+                }
             }
             catch(Exception ex)
             {

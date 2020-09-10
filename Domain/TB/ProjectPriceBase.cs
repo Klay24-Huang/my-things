@@ -11,12 +11,12 @@ namespace Domain.TB
         /// <summary>
         /// 專案代碼
         /// </summary>
-        public string PROJID { set; get; }
+        public string ProjID { set; get; }
 
         /// <summary>
         /// 專案平日價
         /// </summary>
-        public int Price { set; get; }
+        public int PRICE { set; get; }
         /// <summary>
         /// 專案假日價
         /// </summary>

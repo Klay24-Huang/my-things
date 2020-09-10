@@ -28,6 +28,10 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int InsuranceBill { set; get; }
         /// <summary>
+        /// 轉乘優惠
+        /// </summary>
+        public int TransDiscount { set; get; }
+        /// <summary>
         /// 總計
         /// </summary>
         public int Bill { set; get; }

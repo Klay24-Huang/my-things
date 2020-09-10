@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -22,6 +23,7 @@ namespace WebAPI.Controllers
     public class GetEstimateController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
         [HttpPost]
         public Dictionary<string, object> DoGetProject(Dictionary<string, object> value)
         {
@@ -35,7 +37,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GetProjectController";
+            string funName = "GetEstimateController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_GetEstimate apiInput = null;
@@ -172,21 +174,35 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                if (QueryMode == 0)
+                projectRepository = new ProjectRepository(connetStr);
+                BillCommon billCommon = new BillCommon();
+                float MilUnit = billCommon.GetMilageBase(apiInput.ProjID, apiInput.CarType, SDate, EDate, LogID);
+              
+                List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+                if (QueryMode == 0 || (QueryMode==1 && ProjType==3))
                 {
+                    
+                    ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
+
+                    if (priceBase != null)
+                    {
+                        outputApi = new OAPI_GetEstimate()
+                        {
+                            CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday)),
+                            InsuranceBill = (apiInput.Insurance==1)?Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)):0,
+                            InsurancePerHour = 20,
+                            MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
+                            MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
+
+                        };
+                        outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
+                    }
 
                 }
                 else
                 {
                     //先不開啟汽車以分計費
-                    if(PayMode==1 && ProjType == 4)
-                    {
-
-                    }
-                    else
-                    {
-                         
-                    }
+                    
                 }
               
 
