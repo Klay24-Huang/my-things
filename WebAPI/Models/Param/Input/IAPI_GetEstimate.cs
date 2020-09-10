@@ -14,6 +14,13 @@ namespace WebAPI.Models.Param.Input
         /// 專案代碼
         /// </summary>
         public string ProjID { set; get; }
+        /// <summary>
+        /// 車號
+        /// </summary>
+        public string CarNo { set; get; }
+        /// <summary>
+        /// 車型
+        /// </summary>
         public string CarType { set; get; }
         /// <summary>
         /// 預計取車時間

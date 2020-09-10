@@ -45,6 +45,7 @@
     <Compile Include="CommonRepository.cs" />
     <Compile Include="MemberRepository.cs" />
     <Compile Include="ParkingRepository.cs" />
+    <Compile Include="ProjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StationAndCarRepository.cs" />
   </ItemGroup>

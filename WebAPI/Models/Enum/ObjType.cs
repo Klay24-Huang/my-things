@@ -97,6 +97,10 @@ namespace WebAPI.Models.Enum
             /// 設定常用站點
             /// </summary>
             SetFavoriteStation,
+            /// <summary>
+            /// 取里程設定
+            /// </summary>
+            GetMilageSetting,
 
         }
         /// <summary>
@@ -168,6 +172,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetFavoriteStation:
                     SPName = "usp_InsFavoriteStation";
+                    break;
+                case SPType.GetMilageSetting:
+                    SPName = "usp_GetMilageSetting";
                     break;
             }
             return SPName;

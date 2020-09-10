@@ -45,6 +45,7 @@
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
+    <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
@@ -80,6 +82,9 @@
     <Compile Include="TB\MotorRentObj.cs" />
     <Compile Include="TB\ParkingData.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
+    <Compile Include="TB\ProjectInfo.cs" />
+    <Compile Include="TB\ProjectPriceBase.cs" />
+    <Compile Include="TB\ProjectPriceOfMinuteBase.cs" />
     <Compile Include="TB\StationAndProjectAndCarTypeData.cs" />
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />

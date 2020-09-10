@@ -210,4 +210,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OperatorID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ba23e223-2ff0-4572-960f-8c42d1a5b77e" ChangeDateTime="09/10/2020 05:52:09">
+    <Property Name="ElementName" Value="[dbo].[TB_MilageSetting].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MilageSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProjID" />
+  </Operation>
 </Operations>

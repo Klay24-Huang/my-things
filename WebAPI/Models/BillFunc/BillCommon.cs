@@ -1,8 +1,13 @@
-﻿using Domain.TB;
+﻿using Domain.SP.Input.Bill;
+using Domain.SP.Output.Bill;
+using Domain.TB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Enum;
+using WebCommon;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -11,6 +16,103 @@ namespace WebAPI.Models.BillFunc
     /// </summary>
     public class BillCommon
     {
+        /// <summary>
+        /// 計算時間
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="Days">天數</param>
+        /// <param name="Hours">時數</param>
+        /// <param name="Minutes">分數</param>
+        public void CalDayHourMin(DateTime SD, DateTime ED,ref int Days,ref int Hours,ref int Minutes)
+        {
+            int dayNum = 0;
+            double diffHours = 0;
+            int diffMinutes = 0;
+            int SDMinutes = 0;
+            int EDMinutes = 0;
+            int SDHours = 0;
+            int EDHours = 0;
+            double totalPay = 0;
+
+            double totalHours = Math.Floor(ED.Subtract(SD).TotalHours);
+             Minutes = ED.Subtract(SD).Minutes;
+             Days = Convert.ToInt32(Math.Floor(totalHours / 24));
+             Hours = Convert.ToInt32(totalHours % 24);
+            //2017-01-24新增，避免尾差
+            if (Hours >= 10)
+            {
+                Days += 1;
+                Hours = 0;
+                Minutes = 0;
+            }
+        }
+        /// <summary>
+        /// 計算里程費
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="MilageBase">由db取出的每公里費用(-1代表未有設定）</param>
+        /// <param name="MilageDef">預設每公里費用</param>
+        /// <param name="baseMil">每小時幾公里</param>
+        /// <returns></returns>
+        public int CalMilagePay(DateTime SD, DateTime ED, float MilageBase, float MilageDef,float baseMil)
+        {
+            int Days = 0, Hours = 0, Minutes = 0;
+            int MilagePrice = 0;
+            CalDayHourMin(SD, ED, ref Days, ref Hours, ref Minutes);
+            if (MilageBase < 0)
+            {
+                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + Minutes) * baseMil) * MilageDef));
+            }
+            else
+            {
+                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + Minutes) * baseMil) * MilageBase));
+            }
+            return MilagePrice;
+        }
+        /// <summary>
+        /// 取出每公里n元
+        /// </summary>
+        /// <param name="ProjID">專案代碼</param>
+        /// <param name="CarType">車型</param>
+        /// <param name="SDate">起日</param>
+        /// <param name="EDate">迄日</param>
+        /// <param name="LogID">此筆呼叫的id</param>
+        /// <returns></returns>
+        public float GetMilageBase(string ProjID,string CarType,DateTime SDate,DateTime EDate,Int64 LogID)
+        {
+            bool flag = true;
+            float MilageBase = -1;
+            string errCode = "";
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SPInput_GetMilageSetting SPInput = new SPInput_GetMilageSetting()
+            {
+                ProjID = ProjID,
+                CarType = CarType,
+                EDate = EDate,
+                SDate = SDate,
+                LogID = LogID
+            };
+            SPOutput_GetMilageSetting SPOutput = new SPOutput_GetMilageSetting();
+
+            try
+            {
+                string SPName= new ObjType().GetSPName(ObjType.SPType.GetMilageSetting);
+                SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting> sqlHelp = new SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting>(WebApiApplication.connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                new CommonFunc().checkSQLResult(ref flag,SPOutput.Error,SPOutput.ErrorCode, ref lstError, ref errCode);
+            }
+            catch(Exception ex)
+            {
+                flag = false;
+            }
+            finally
+            {
+               
+            }
+            return MilageBase;
+        }
         /// <summary>
         /// 計算租金
         /// </summary>
