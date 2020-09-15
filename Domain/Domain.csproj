@@ -82,6 +82,7 @@
     <Compile Include="TB\MotorRentObj.cs" />
     <Compile Include="TB\ParkingData.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
+    <Compile Include="TB\ProjectAndCarTypeDataForMotor.cs" />
     <Compile Include="TB\ProjectInfo.cs" />
     <Compile Include="TB\ProjectPriceBase.cs" />
     <Compile Include="TB\ProjectPriceOfMinuteBase.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\rootAPI\GetProjectObj.cs" />
+    <Compile Include="WebAPI\output\rootAPI\MotorProjectObj.cs" />
     <Compile Include="WebAPI\output\rootAPI\ProjectObj.cs" />
     <Compile Include="WebAPI\output\Taishin\BindOriRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\BindRequestParams.cs" />

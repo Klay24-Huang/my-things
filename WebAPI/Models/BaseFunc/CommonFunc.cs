@@ -314,8 +314,7 @@ namespace WebAPI.Models.BaseFunc
                     }
                     else if (string.IsNullOrEmpty(Access_tokens[1]))
                     {
-                        flag = false;
-                        errCode = "ERR001";
+                        isGuest = true;
                     }
                     else
                     {
@@ -402,10 +401,11 @@ namespace WebAPI.Models.BaseFunc
                         flag = false;
                         errCode = "ERR001";
                     }
-                    else if (string.IsNullOrEmpty(Access_tokens[1]))
+                    else if (string.IsNullOrEmpty(Access_tokens[1]) || string.IsNullOrWhiteSpace(Access_tokens[1]))
                     {
-                        flag = false;
-                        errCode = "ERR001";
+                        //flag = false;
+                        //errCode = "ERR001";
+                        isGuest = true;
                     }
                     else
                     {

@@ -2,6 +2,7 @@
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.TB;
+using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,13 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 資費明細
+    /// 取得專案及資費(機車)
     /// </summary>
-    public class GetEstimateController : ApiController
+    public class GetMotorRentProjectController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
         [HttpPost]
-        public Dictionary<string, object> DoGetProject(Dictionary<string, object> value)
+        public Dictionary<string, object> DoGetMotorRentProject(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -37,42 +37,36 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GetEstimateController";
+            string funName = "GetMotorRentProjectController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_GetEstimate apiInput = null;
-            OAPI_GetEstimate outputApi = null;
+            IAPI_GetMotorProject apiInput = null;
+            OAPI_GetMotorProject outputApi = null;
+            List<MotorProjectObj> lstTmpData = new List<MotorProjectObj>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
-            ProjectRepository projectRepository;
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-            DateTime SDate = DateTime.Now.AddHours(-1);
-            DateTime EDate = DateTime.Now;
-            ProjectInfo obj;
+            DateTime SDate = DateTime.Now;
+            DateTime EDate = DateTime.Now.AddHours(1);
             int QueryMode = 0;
-            int PayMode = 0;
-            int ProjType = 0;
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetEstimate>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetMotorProject>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                 if (flag)
                 {
-                    string[] checkList = { apiInput.ProjID,apiInput.SDate,apiInput.EDate };
-                    string[] errList = { "ERR900", "ERR900", "ERR900" };
-                    //1.判斷必填
-                    flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                   
                     //判斷日期
                     if (flag)
                     {
@@ -110,47 +104,6 @@ namespace WebAPI.Controllers
                                 errCode = "ERR151";
                             }
                         }
-                        if (flag)
-                        {
-                            projectRepository = new ProjectRepository(connetStr);
-                            obj = projectRepository.GetProjectInfo(apiInput.ProjID);
-
-                            if (string.IsNullOrWhiteSpace(apiInput.CarType) && string.IsNullOrWhiteSpace(apiInput.CarNo))
-                            {
-                                errCode = "ERR900";
-                                flag = false;
-                            }
-                            else if (string.IsNullOrWhiteSpace(apiInput.CarType) && !string.IsNullOrWhiteSpace(apiInput.CarNo))
-                            {
-                                QueryMode = 1;
-                            }
-                            else if (!string.IsNullOrWhiteSpace(apiInput.CarType) && string.IsNullOrWhiteSpace(apiInput.CarNo))
-                            {
-                                QueryMode = 0;
-                            }
-                            else
-                            {
-                                if (obj != null)
-                                {
-                                    PayMode = obj.PayMode;
-                                    ProjType = obj.PROJTYPE;
-                                    if (ProjType == 0)
-                                    {
-                                        QueryMode = 0;
-                                    }
-                                    else
-                                    {
-                                        QueryMode = 1;
-                                    }
-                                }
-                                else
-                                {
-                                    flag = false;
-                                    errCode = "ERR155";
-                                }
-                            }
-                        }
-                       
                     }
                 }
             }
@@ -174,38 +127,88 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                projectRepository = new ProjectRepository(connetStr);
-                BillCommon billCommon = new BillCommon();
-                float MilUnit = billCommon.GetMilageBase(apiInput.ProjID, apiInput.CarType, SDate, EDate, LogID);
-              
+                _repository = new StationAndCarRepository(connetStr);
+
+                List<ProjectAndCarTypeDataForMotor> lstData = new List<ProjectAndCarTypeDataForMotor>();
+                lstData = _repository.GetProjectOfMotorRent(apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-                if (QueryMode == 0 || (QueryMode==1 && ProjType==3))
-                {
-                    
-                    ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
 
-                    if (priceBase != null)
+
+                if (flag)
+                {
+
+                    if (lstData != null)
                     {
-                        outputApi = new OAPI_GetEstimate()
+                        int DataLen = lstData.Count;
+                        if (DataLen > 0)
                         {
-                            CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday)),
-                            InsuranceBill = (apiInput.Insurance==1)?Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)):0,
-                            InsurancePerHour = 20,
-                            MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
-                            MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
+                           
+                            int isMin = 1;
 
-                        };
-                        outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
+                            lstTmpData.Add(new MotorProjectObj()
+                            {
+                                CarBrend = lstData[0].CarBrend,
+                                CarType = lstData[0].CarType,
+                                CarTypeName = lstData[0].CarTypeName,
+                                CarTypePic = lstData[0].CarTypePic,
+                                Insurance = 1,
+                                InsurancePerHour = 20,
+                                IsMinimum = isMin,
+                                Operator = lstData[0].Operator,
+                                OperatorScore = lstData[0].OperatorScore,
+                                ProjID = lstData[0].PROJID,
+                                ProjName = lstData[0].PRONAME,
+                                BaseMinutes=lstData[0].BaseMinutes,
+                                 BasePrice=lstData[0].BasePrice,
+                                  MaxPrice=lstData[0].MaxPrice,
+                                   PerMinutesPrice=lstData[0].PerMinutesPrice,
+                                   
+                            });
+                            if (DataLen > 1)
+                            {
+                                for (int i = 1; i < DataLen; i++)
+                                {
+                                   
+                                    isMin = 0;
+                                    int index = lstTmpData.FindIndex(delegate (MotorProjectObj proj)
+                                    {
+                                        return proj.MaxPrice > lstData[i].MaxPrice && proj.IsMinimum == 1;
+                                    });
+                                    if (index > -1)
+                                    {
+                                        lstTmpData[index].IsMinimum = 0;
+                                        isMin = 1;
+                                    }
+                                    lstTmpData.Add(new MotorProjectObj()
+                                    {
+                                        CarBrend = lstData[i].CarBrend,
+                                        CarType = lstData[i].CarType,
+                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypePic = lstData[i].CarTypePic,
+                                        Insurance = 1,
+                                        InsurancePerHour = 20,
+                                        IsMinimum = isMin,
+                                        Operator = lstData[i].Operator,
+                                        OperatorScore = lstData[i].OperatorScore,
+                                        ProjID = lstData[i].PROJID,
+                                        ProjName = lstData[i].PRONAME,
+                                        BaseMinutes = lstData[i].BaseMinutes,
+                                        BasePrice = lstData[i].BasePrice,
+                                        MaxPrice = lstData[i].MaxPrice,
+                                        PerMinutesPrice = lstData[i].PerMinutesPrice,
+                                    });
+                                }
+                            }
+                        }
+
+
+
                     }
-
                 }
-                else
+                outputApi = new OAPI_GetMotorProject()
                 {
-                    //先不開啟汽車以分計費
-
-                    
-                }
-              
+                    GetMotorProjectObj = lstTmpData
+                };
 
             }
             #endregion

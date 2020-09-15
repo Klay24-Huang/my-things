@@ -446,6 +446,91 @@ namespace Reposotory.Implement
             return lstStation;
         }
         /// <summary>
+        /// 路邊租還取得專案
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string CarNo, DateTime SDate, DateTime EDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ProjectAndCarTypeData> lstStation = null;
+            int nowCount = 0;
+            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ";
+            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+
+            SQL += "ORDER BY PROJID ASC ";
+            SqlParameter[] para = new SqlParameter[4];
+            string term = " ";
+            if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
+            {
+
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                //para[nowCount].Value = SDate;
+                //para[nowCount].Direction = ParameterDirection.Input;
+                //nowCount++;
+                //para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                //para[nowCount].Value = EDate;
+                //para[nowCount].Direction = ParameterDirection.Input;
+                //nowCount++;
+            }
+
+
+            lstStation = GetObjList<ProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        /// <summary>
+        /// 機車路邊租還取得專案
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public List<ProjectAndCarTypeDataForMotor> GetProjectOfMotorRent(string CarNo, DateTime SDate, DateTime EDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ProjectAndCarTypeDataForMotor> lstStation = null;
+            int nowCount = 0;
+            string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
+            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
+            SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+
+            SQL += "ORDER BY PROJID ASC ";
+            SqlParameter[] para = new SqlParameter[4];
+            string term = " ";
+            if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
+            {
+
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                //para[nowCount].Value = SDate;
+                //para[nowCount].Direction = ParameterDirection.Input;
+                //nowCount++;
+                //para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                //para[nowCount].Value = EDate;
+                //para[nowCount].Direction = ParameterDirection.Input;
+                //nowCount++;
+            }
+
+
+            lstStation = GetObjList<ProjectAndCarTypeDataForMotor>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>
         /// <param name="lat">目前緯度</param>

@@ -21,5 +21,6 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BookingController : ApiController
     {
+
     }
 }
