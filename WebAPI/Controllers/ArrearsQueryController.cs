@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BonusQueryController";
+            string funName = "ArrearsQueryController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_ArrearsQuery apiInput = null;

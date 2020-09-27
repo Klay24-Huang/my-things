@@ -192,6 +192,7 @@
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
+    <Compile Include="Controllers\UseInviteCodeController.cs" />
     <Compile Include="Controllers\VerifyEMailController.cs" />
     <Compile Include="Controllers\VerifySMSController.cs" />
     <Compile Include="Controllers\VER_USER_POWController.cs" />
