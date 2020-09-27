@@ -41,17 +41,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CarMachine\BLEInfo.cs" />
+    <Compile Include="CarMachine\CardList.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />
+    <Compile Include="SP\Input\Battle\SPInput_GetKey.cs" />
+    <Compile Include="SP\Input\Battle\SPInput_MaintainBase.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
+    <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_BindUUCard.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_Booking.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_BookingCancel.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_BookingStart.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_CarMachineCommon.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
+    <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
+    <Compile Include="SP\Input\OrderList\SPInput_GetOrderList.cs" />
+    <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCarStatus.cs" />
+    <Compile Include="SP\Input\OtherService\CENS\SPInput_UPDNFCStatus.cs" />
+    <Compile Include="SP\Input\OtherService\Common\SPInput_InsReadCard.cs" />
     <Compile Include="SP\Input\OtherService\Common\SPInut_WebAPILog.cs" />
+    <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatus.cs" />
+    <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
+    <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
+    <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
@@ -62,34 +85,73 @@
     <Compile Include="SP\Input\Register\SPInput_ReSendEMail.cs" />
     <Compile Include="SP\Input\Register\SPInput_UploadCredentials.cs" />
     <Compile Include="SP\Input\Register\SPInput_VerifyEMail.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
+    <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
+    <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_BeforeBookingStart.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_Booking.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_BookingStart.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_CarMachineCommon.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_CheckCarStatus.cs" />
+    <Compile Include="SP\Output\Booking\SPOutput_ReadCard.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
+    <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
+    <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
+    <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
+    <Compile Include="TB\CarCMDResponse.cs" />
+    <Compile Include="TB\CarData.cs" />
+    <Compile Include="TB\CarInfo.cs" />
     <Compile Include="TB\CarTypeData.cs" />
     <Compile Include="TB\CityData.cs" />
     <Compile Include="TB\ErrorMessageList.cs" />
+    <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
     <Compile Include="TB\iRentStationData.cs" />
     <Compile Include="TB\LoveCodeListData.cs" />
+    <Compile Include="TB\MotorPowerInfoBase.cs" />
+    <Compile Include="TB\MotorBillBase.cs" />
+    <Compile Include="TB\MotorInfo.cs" />
     <Compile Include="TB\MotorRentObj.cs" />
     <Compile Include="TB\ParkingData.cs" />
+    <Compile Include="TB\Polygon.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
     <Compile Include="TB\ProjectAndCarTypeDataForMotor.cs" />
     <Compile Include="TB\ProjectInfo.cs" />
     <Compile Include="TB\ProjectPriceBase.cs" />
     <Compile Include="TB\ProjectPriceOfMinuteBase.cs" />
+    <Compile Include="TB\ReadCardData.cs" />
     <Compile Include="TB\StationAndProjectAndCarTypeData.cs" />
+    <Compile Include="TB\iRentStationBaseInfo.cs" />
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_Base.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_NFCPower.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_SendCardNo.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_SendLock.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />
+    <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
+    <Compile Include="WebAPI\Input\Param\BLECode.cs" />
+    <Compile Include="WebAPI\Input\Param\ClientCardNoObj.cs" />
+    <Compile Include="WebAPI\Input\Param\Params.cs" />
+    <Compile Include="WebAPI\Input\Param\UnivCardNoObj.cs" />
     <Compile Include="WebAPI\Input\Taishin\CardData.cs" />
     <Compile Include="WebAPI\Input\Taishin\DirectCardAuthData.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetCreditCardList.cs" />
@@ -98,7 +160,17 @@
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Base.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Bind.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
+    <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
+    <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ArrearQuery.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR330QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Check.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370CheckData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370SaveData.cs" />
     <Compile Include="WebAPI\output\rootAPI\GetProjectObj.cs" />
     <Compile Include="WebAPI\output\rootAPI\MotorProjectObj.cs" />
     <Compile Include="WebAPI\output\rootAPI\ProjectObj.cs" />
@@ -122,6 +194,12 @@
       <Name>WebCommon</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SP\Input\PolygonGroup\" />
+    <Folder Include="SP\Output\PolygonGroup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

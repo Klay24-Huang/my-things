@@ -11,9 +11,11 @@
 	[return_place] [varchar](10) NOT NULL DEFAULT '',
 	[start_time] [datetime] NOT NULL,
 	[stop_time] [datetime] NOT NULL,
+	[stop_pick_time][datetime] NOT NULL,
 	[fine_Time] [datetime] NULL,
 	[init_price] [int] NOT NULL DEFAULT 0,
 	[Insurance] [int] NOT NULL DEFAULT 0,
+	[InsurancePurePrice] [INT] NOT NULL DEFAULT 0,
 	[car_mgt_status] [tinyint] NOT NULL DEFAULT 0,
 	[booking_status] [tinyint] NOT NULL DEFAULT 0,
 	[cancel_status] [tinyint] NOT NULL DEFAULT 0,
@@ -26,6 +28,9 @@
 	[spec_status] [int] NULL DEFAULT 0,
 	[invoiceCode] [varchar](100) NULL DEFAULT '',
 	[isDelete] [tinyint] NOT NULL DEFAULT 0, 
+	[ProjType] [tinyint] NOT NULL DEFAULT 5,
+	[PayMode] [tinyint] NOT NULL DEFAULT 0,
+    [init_TransDiscount] INT NOT NULL DEFAULT -1, 
     CONSTRAINT [PK_TB_OrderMain] PRIMARY KEY ([order_number]),
 )
 GO
@@ -168,3 +173,39 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OrderMain',
     @level2type = N'COLUMN',
     @level2name = N'spec_status'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'安心服務預估金額',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'InsurancePurePrice'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'專案類型：0:同站;3:路邊;4:機車',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'ProjType'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'計費模式：0:以時計費;1:以分計費',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'PayMode'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'預估轉乘優惠可折抵',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'init_TransDiscount'

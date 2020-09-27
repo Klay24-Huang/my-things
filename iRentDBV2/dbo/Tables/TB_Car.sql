@@ -5,6 +5,10 @@
 	[StationID] [varchar](10) NOT NULL DEFAULT '',
 	[nowStationID] [varchar](10) NOT NULL DEFAULT '',
 	[CarType] [VARCHAR](10) NOT NULL DEFAULT '',
+	[CarOfArea] [NVARCHAR](10) NOT NULL DEFAULT '',
+	[Operator]  [INT]   NOT NULL DEFAULT 1,
+    [NowOrderNo][BIGINT] NOT NULL DEFAULT 0,
+    [LastOrderNo][BIGINT] NOT NULL DEFAULT 0,
 	[available] [tinyint] NOT NULL DEFAULT 2,
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
 	[UPDTime] [datetime] NULL, 
@@ -44,3 +48,39 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_Car',
     @level2type = NULL,
     @level2name = NULL
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'營運商',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Car',
+    @level2type = N'COLUMN',
+    @level2name = N'Operator'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'路邊租還時要顯示的地區名稱',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Car',
+    @level2type = N'COLUMN',
+    @level2name = N'CarOfArea'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'目前使用中的訂單編號',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Car',
+    @level2type = N'COLUMN',
+    @level2name = N'NowOrderNo'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'前一個使用的訂單編號',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Car',
+    @level2type = N'COLUMN',
+    @level2name = N'LastOrderNo'

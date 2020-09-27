@@ -217,4 +217,130 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ProjID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d8b87701-9d32-4c43-b8f7-c1c0cbf4aaa6" ChangeDateTime="09/16/2020 01:50:32">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRule].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRule]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProjectRuleID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f3f91996-9886-4438-8880-d99baabc071c" ChangeDateTime="09/16/2020 01:53:50">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRule].[ProjectRuleGroup]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRule]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProjectRuleOfCarTypeGroup" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0842b6fc-2e98-419a-9404-b3d90e24fccd" ChangeDateTime="09/16/2020 01:56:17">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRule].[Countdown.]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRule]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Countdown" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b829254e-db66-4e20-a11b-f71f1da68e44" ChangeDateTime="09/16/2020 01:57:05">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRule].[Countdown]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRule]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DefaultCountdown" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="44dcdbb3-ea3a-4cc0-8d6e-2a86956196e4" ChangeDateTime="09/16/2020 02:02:38">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRuleOfCarTypeGroup].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRuleOfCarTypeGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProjectRuleOfCarTypeGroupID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5660e1e3-679c-4384-bbab-ed1631a72406" ChangeDateTime="09/16/2020 02:03:27">
+    <Property Name="ElementName" Value="[dbo].[TB_ProjectRuleOfCarTypeGroup].[CarType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ProjectRuleOfCarTypeGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProjectRuleOfCarTypeGroupName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22007847-a25b-47a2-8d7f-a8d15713c42f" ChangeDateTime="09/16/2020 02:12:00">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControlSetting].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControlSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BookingControlSettingID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7163b6f2-62ef-4224-b5a8-ec37f81e7e12" ChangeDateTime="09/16/2020 02:14:58">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControlSetting].[MinDays]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControlSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BookingMinDays" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2f1e8a1e-2af9-40ef-8695-59cd91a24f96" ChangeDateTime="09/16/2020 02:15:23">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControlSetting].[MaxDays]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControlSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BookingMaxDays" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5a4064f8-2ae0-4875-87cd-67472003b0d2" ChangeDateTime="09/16/2020 02:24:04">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControlSetting].[BookingMinDays]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControlSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UseMinHours" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="941c20fc-e562-421c-a32e-39c77bd18f66" ChangeDateTime="09/16/2020 02:24:15">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControlSetting].[BookingMaxDays]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControlSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UseMaxHours" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cd7a66be-770a-4f8a-b4af-07c082bbf2e3" ChangeDateTime="09/16/2020 22:14:41">
+    <Property Name="ElementName" Value="[dbo].[TB_SendFETCatCMD].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_SendFETCatCMD]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="requestId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="17e76c6a-0777-4520-a0a1-19b1a3e9b782" ChangeDateTime="09/17/2020 21:19:13">
+    <Property Name="ElementName" Value="[dbo].[TB_ReadCard].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ReadCard]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReadCardID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1bf49dd5-382c-4dc9-acf0-713d05b52b51" ChangeDateTime="09/17/2020 21:28:23">
+    <Property Name="ElementName" Value="[dbo].[TB_ReadCard].[MKTime]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ReadCard]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReadTime" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9a999493-f4d7-48cf-9169-6179551df125" ChangeDateTime="09/26/2020 08:24:53">
+    <Property Name="ElementName" Value="[dbo].[TB_iRentStationInfo].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_iRentStationInfo]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="iRentStationInfoID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="47153365-ac2a-4b9a-9b63-38cc4f8d1b70" ChangeDateTime="09/27/2020 21:08:15">
+    <Property Name="ElementName" Value="[dbo].[TB_Polygon].[PY]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_Polygon]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Latitude" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89791016-d88d-41a0-8393-0c2d8fe2f08e" ChangeDateTime="09/27/2020 21:08:51">
+    <Property Name="ElementName" Value="[dbo].[TB_Polygon].[PX]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_Polygon]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Longitude" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="03c34af6-fac5-432f-b58f-d8bdd3d4ff05" ChangeDateTime="09/27/2020 22:06:47">
+    <Property Name="ElementName" Value="[dbo].[TB_Polygon].[IX_TB_Polygon_Column]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_Polygon]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_TB_Polygon_Search]" />
+  </Operation>
 </Operations>

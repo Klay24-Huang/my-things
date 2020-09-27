@@ -114,14 +114,14 @@ SET @hasData=0;
 				IF @tmpDeviceID=@DeviceID
 				BEGIN
 					UPDATE TB_Token
-					SET Access_Token=@Access_Token,Refrash_Token=@Refrash_Token,Rxpires_in=@RxpiresDate,APP=@APPKind,APPVersion=@APPVersion
+					SET Access_Token=@Access_Token,Refrash_Token=@Refrash_Token,Rxpires_in=@RxpiresDate,Refrash_Rxpires_in=@RxpiresRefrashDate,APP=@APPKind,APPVersion=@APPVersion
 					WHERE MEMIDNO=@MEMIDNO;
 				END
 				ELSE
 				BEGIN
 					--後面有人登入，要後踢前，產生新的token
 					UPDATE TB_Token
-					SET Access_Token=@Access_Token,Refrash_Token=@Refrash_Token,Rxpires_in=@RxpiresDate,DeviceID=@DeviceID,APP=@APPKind,APPVersion=@APPVersion
+					SET Access_Token=@Access_Token,Refrash_Token=@Refrash_Token,Rxpires_in=@RxpiresDate,Refrash_Rxpires_in=@RxpiresRefrashDate,DeviceID=@DeviceID,APP=@APPKind,APPVersion=@APPVersion
 					WHERE MEMIDNO=@MEMIDNO;
 				END
 			END

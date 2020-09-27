@@ -243,8 +243,7 @@ namespace WebAPI.Models.BaseFunc
                 string[] Access_tokens = Access_token_string.Split(' ');
                 if (Access_tokens.Count() < 2)
                 {
-                    flag = false;
-                    errCode = "ERR001";
+                    isGuest = true;
                 }
                 else
                 {
@@ -255,8 +254,7 @@ namespace WebAPI.Models.BaseFunc
                     }
                     else if (string.IsNullOrEmpty(Access_tokens[1]))
                     {
-                        flag = false;
-                        errCode = "ERR001";
+                        isGuest = true;
                     }
                     else
                     {
@@ -300,10 +298,12 @@ namespace WebAPI.Models.BaseFunc
             {
                 isGuest = false;
                 string[] Access_tokens = Access_token_string.Split(' ');
+                //20200916，方便app的人偷懶，不照規範，先關閉判斷，若有發生問題，概不負責
                 if (Access_tokens.Count() < 2)
                 {
-                    flag = false;
-                    errCode = "ERR001";
+                    //flag = false;
+                    //errCode = "ERR001";
+                    isGuest = true;
                 }
                 else
                 {
@@ -358,6 +358,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+
         /// <summary>
         /// 基本判斷（含token）, 若無Token當訪客
         /// </summary>
@@ -391,8 +392,7 @@ namespace WebAPI.Models.BaseFunc
                 string[] Access_tokens = Access_token_string.Split(' ');
                 if (Access_tokens.Count() < 2)
                 {
-                    flag = false;
-                    errCode = "ERR001";
+                    isGuest = true;
                 }
                 else
                 {
@@ -451,6 +451,58 @@ namespace WebAPI.Models.BaseFunc
                 }
             }
             
+            return flag;
+        }
+        /// <summary>
+        /// 判斷日期
+        /// </summary>
+        /// <param name="ISDate">起始日期</param>
+        /// <param name="IEDate">結束日期</param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns>boolean</returns>
+        public bool CheckDate(string ISDate,string IEDate,ref string errCode,ref DateTime SDate,ref DateTime EDate)
+        {
+            bool flag = true; ;
+         
+
+                //判斷日期
+                if (flag)
+                {
+                    if (string.IsNullOrWhiteSpace(ISDate) == false && string.IsNullOrWhiteSpace(IEDate) == false)
+                    {
+                        flag = DateTime.TryParse(ISDate, out SDate);
+                        if (flag)
+                        {
+                            flag = DateTime.TryParse(IEDate, out EDate);
+                            if (flag)
+                            {
+                                if (SDate >= EDate)
+                                {
+                                    flag = false;
+                                    errCode = "ERR153";
+                                }
+                                else
+                                {
+                                    if (DateTime.Now > SDate)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR154";
+                                    }
+
+                                }
+
+                            }
+                            else
+                            {
+                                errCode = "ERR152";
+                            }
+                        }
+                        else
+                        {
+                            errCode = "ERR151";
+                        }
+                    }
+                }
             return flag;
         }
         /// <summary>
@@ -792,7 +844,18 @@ namespace WebAPI.Models.BaseFunc
             objOutput.Add("ErrorMessage", errMsg);
             if (token != null) { objOutput.Add("Token", token); }
             //  if (apiOutput != null) { objOutput.Add("Data", apiOutput); }
-            objOutput.Add("Data", apiOutput);
+            WebAPI.Models.Param.Output.PartOfParam.NullOutput obj = new Param.Output.PartOfParam.NullOutput(); //配合app的人調整
+            #region 配合app的人調整的部份
+            if (apiOutput == null)
+            {
+                objOutput.Add("Data", obj);
+            }
+            else
+            {
+                objOutput.Add("Data", apiOutput);
+            }
+            #endregion
+
 
         }
         /// <summary>

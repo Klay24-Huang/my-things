@@ -52,6 +52,7 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
+            
             int QueryMode = 0;
             #endregion
             #region 防呆

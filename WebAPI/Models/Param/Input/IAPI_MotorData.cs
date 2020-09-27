@@ -68,7 +68,10 @@ namespace WebAPI.Models.Param.Input
         public int deviceEMG_Break { get; set; }
         public int deviceSharp_Turn { get; set; }
         public int deviceBat_Cover { get; set; }
+        public int deviceLowVoltage { set; get; }
         public int extDeviceStatus1 { get; set; }
-        public string extDeviceDatat2 { get; set; }
+        public string extDeviceData2 { get; set; }
+        public string extDeviceData5 { set; get; }
+        public string extDeviceData6 { set; get; }
     }
 }

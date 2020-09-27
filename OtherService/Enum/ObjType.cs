@@ -13,7 +13,31 @@ namespace OtherService.Enum
             /// <summary>
             /// 寫入呼叫webapi的log資料
             /// </summary>
-             InsWebAPILog
+             InsWebAPILog,
+             /// <summary>
+             /// 寫入呼叫FET Cat資料
+             /// </summary>
+             InsSendCMD,
+             /// <summary>
+             /// 寫入呼叫FET Cat回傳結果
+             /// </summary>
+             InsReceiveCMD,
+             /// <summary>
+             /// 更新興聯讀卡機狀態
+             /// </summary>
+             UpdNFCStatus,
+             /// <summary>
+             /// 寫入讀卡資料
+             /// </summary>
+             InsReadCard,
+             /// <summary>
+             /// 寫入遠傳定時回報及GetInfo
+             /// </summary>
+             HandleCarStatus,
+             /// <summary>
+             /// 寫入遠傳定時回報及GetInfo(機車)
+             /// </summary>
+             HandleCarStatusByMotor,
         }
         /// <summary>
         /// 取出SPName
@@ -28,6 +52,27 @@ namespace OtherService.Enum
                 case SPType.InsWebAPILog:  //寫入API呼叫LOG進資料庫
                     SPName = "usp_InsWebAPILog";
                     break;
+                case SPType.InsSendCMD:
+                    SPName = "usp_InsSendCMD";
+                    break;
+                case SPType.InsReceiveCMD:
+                    SPName = "usp_InsReceiveCMD";
+                    break;
+                case SPType.UpdNFCStatus:
+                    SPName = "usp_UPDNFCStatus";
+                    break;
+                case SPType.InsReadCard:
+                    SPName = "usp_InsReadCardData";
+                    break;
+                case SPType.HandleCarStatus:
+                    SPName = "usp_HandleCarStatusByCar";
+                    break;
+                case SPType.HandleCarStatusByMotor:
+                    SPName = "usp_HandleCarStatusByMotor";
+                    break;
+
+
+
             }
             return SPName;
         }

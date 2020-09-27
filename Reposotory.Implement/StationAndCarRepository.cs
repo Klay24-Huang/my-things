@@ -92,6 +92,22 @@ namespace Reposotory.Implement
             return lstStation;
         }
         /// <summary>
+        /// 取出據點的名稱及代碼
+        /// </summary>
+        /// <returns></returns>
+        public List<iRentStationBaseInfo> GetAlliRentStationBaseData()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<iRentStationBaseInfo> lstStation = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [StationID],[Location] AS StationName   FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 ORDER BY StationID ASC;";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstStation = GetObjList<iRentStationBaseInfo>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        /// <summary>
         /// 取出方圓據點
         /// </summary>
         /// <param name="lat">緯度</param>
@@ -330,6 +346,44 @@ namespace Reposotory.Implement
             return lstStation;
         }
         /// <summary>
+        /// 用車號取出車型及目前所在據點
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <returns></returns>
+        public CarData GetCarData(string CarNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<CarData> lstCarData = null;
+            CarData obj = null;
+            int nowCount = 0;
+            string SQL = " SELECT CarType,nowStationID AS StationID FROM [dbo].[TB_Car]  WITH(NOLOCK) ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
+            {
+                term = " CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (term != "")
+            {
+                SQL += " WHERE " + term + "   ";
+            }
+        
+            lstCarData = GetObjList<CarData>(ref flag, ref lstError, SQL, para, term);
+            if (lstCarData != null)
+            {
+                if (lstCarData.Count > 0)
+                {
+                    obj = lstCarData[0];
+                }
+            }
+            return obj;
+        }
+        /// <summary>
         /// 以預約時間、據點取出據點內還有的車型
         /// </summary>
         /// <param name="StationID"></param>
@@ -530,6 +584,38 @@ namespace Reposotory.Implement
             lstStation = GetObjList<ProjectAndCarTypeDataForMotor>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
+        /// <summary>
+        /// 取得電子柵欄
+        /// </summary>
+        /// <param name="StationID">據點代碼</param>
+        /// <returns></returns>
+        public List<GetPolygonRawData> GetPolygonRaws(string StationID)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<GetPolygonRawData> lstPolygon = null;
+            int nowCount = 0;
+            string SQL = "SELECT PolygonMode,Longitude,Latitude";
+            SQL += " FROM TB_Polygon  ";
+
+            SQL += " WHERE StationID=@StationID  AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+
+            SQL += "ORDER BY PolygonMode ASC ";
+            SqlParameter[] para = new SqlParameter[4];
+            string term = " ";
+            if (string.IsNullOrEmpty(StationID) == false && string.IsNullOrWhiteSpace(StationID) == false)
+            {
+
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 20);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+
+            }
+            lstPolygon = GetObjList<GetPolygonRawData>(ref flag, ref lstError, SQL, para, term);
+            return lstPolygon;
+        }
+        
         /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>

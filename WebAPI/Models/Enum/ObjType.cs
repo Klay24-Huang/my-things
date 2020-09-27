@@ -101,6 +101,65 @@ namespace WebAPI.Models.Enum
             /// 取里程設定
             /// </summary>
             GetMilageSetting,
+            /// <summary>
+            /// 預約
+            /// </summary>
+            Booking,
+            /// <summary>
+            /// 取消預約
+            /// </summary>
+            BookingCancel,
+            /// <summary>
+            /// 讀卡
+            /// </summary>
+            ReadCard,
+            /// <summary>
+            /// 讀到卡號綁定
+            /// </summary>
+            BindUUCard,
+            /// <summary>
+            /// 取車
+            /// </summary>
+            BookingStart,
+            /// <summary>
+            /// 取車前判斷(用於執行usp_BookingStart與usp_BookingStartMotor前)
+            /// </summary>
+            BeforeBookingStart,
+            /// <summary>
+            /// 取車前判斷車況
+            /// </summary>
+            CheckCarStatus,
+            /// <summary>
+            /// 車機專用，用來取得CID、Token…等
+            /// </summary>
+            GetCarMachineInfoCommon,
+            /// <summary>
+            /// 延長用車前先取得原始用車時間
+            /// </summary>
+            GetBookingStartTime,
+            /// <summary>
+            /// 延長用車
+            /// </summary>
+            BookingExtend,
+            /// <summary>
+            /// 刪除訂單
+            /// </summary>
+            BookingDelete,
+            /// <summary>
+            /// 取得未完成的訂單列表
+            /// </summary>
+            GetOrderList,
+            /// <summary>
+            /// 取得已取消的訂單列表
+            /// </summary>
+            GetCancelOrder,
+            #region 拓連
+            /// <summary>
+            /// 更新交換站點資訊
+            /// </summary>
+            UPD_SW_DATA,
+            GetMaintainKey,
+            #endregion
 
         }
         /// <summary>
@@ -176,6 +235,56 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMilageSetting:
                     SPName = "usp_GetMilageSetting";
                     break;
+                case SPType.Booking: //預約
+                    SPName = "usp_Booking";
+                    break;
+                case SPType.BookingCancel: //取消訂單
+                    SPName = "usp_BookingCancel";
+                    break;
+                case SPType.ReadCard: //讀卡
+                    SPName = "usp_ReadCard";
+                    break;
+                case SPType.BindUUCard:
+                    SPName = "usp_BindUUCard";
+                    break;
+                case SPType.BookingStart:
+                    SPName = "usp_BookingStart";
+                    break;
+                case SPType.BeforeBookingStart:
+                    SPName = "usp_BeforeBookingStart";
+                    break;
+                case SPType.CheckCarStatus:
+                    SPName = "usp_CheckCarStatus";
+                    break;
+                case SPType.GetCarMachineInfoCommon:
+                    SPName = "usp_GetCarMachineInfoCommon";
+                    break;
+                case SPType.GetBookingStartTime:
+                    SPName = "usp_GetBookingStartTime";
+                    break;
+                case SPType.BookingExtend:
+                    SPName = "usp_BookingExtend";
+                    break;
+                case SPType.BookingDelete: //刪除訂單
+                    SPName = "usp_BookingDelete";
+                    break;
+                case SPType.GetOrderList:
+                    SPName = "usp_OrderListQuery";
+                    break;
+                case SPType.GetCancelOrder:
+                    SPName = "usp_GetCancelOrderList";
+                    break;
+                #region 拓連
+                /// <summary>
+                /// 更新交換站點資訊
+                /// </summary>
+                case SPType.UPD_SW_DATA:
+                    SPName = "usp_UPD_SW_DATA";
+                    break;
+                case SPType.GetMaintainKey:
+                    SPName = "usp_GetKey";
+                    break;
+                    #endregion
             }
             return SPName;
         }

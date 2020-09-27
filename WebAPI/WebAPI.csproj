@@ -1,5 +1,4 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -43,9 +42,58 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Azure.Core, Version=1.5.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Core.1.5.0\lib\net461\Azure.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Storage.Blobs, Version=12.6.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Storage.Blobs.12.6.0\lib\netstandard2.0\Azure.Storage.Blobs.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Storage.Common, Version=12.5.2.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Storage.Common.12.5.2\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=3.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.7.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel.Channels" />
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.7.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.7.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -55,6 +103,12 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -62,23 +116,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -90,24 +127,41 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AnyRentController.cs" />
     <Compile Include="Controllers\AreaListController.cs" />
+    <Compile Include="Controllers\ArrearsQueryController.cs" />
+    <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
+    <Compile Include="Controllers\BonusGivingController.cs" />
+    <Compile Include="Controllers\BonusQueryController.cs" />
     <Compile Include="Controllers\BookingCancelController.cs" />
     <Compile Include="Controllers\BookingController.cs" />
+    <Compile Include="Controllers\BookingDeleteController.cs" />
+    <Compile Include="Controllers\BookingExtendController.cs" />
+    <Compile Include="Controllers\BookingFinishController.cs" />
+    <Compile Include="Controllers\BookingFinishQueryController.cs" />
+    <Compile Include="Controllers\BookingQueryController.cs" />
+    <Compile Include="Controllers\BookingStartController.cs" />
+    <Compile Include="Controllers\BookingStartMotorController.cs" />
     <Compile Include="Controllers\ChangePWDController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
+    <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
+    <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
+    <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
+    <Compile Include="Controllers\GerPolygonController.cs" />
     <Compile Include="Controllers\GetAnyRentProjectController.cs" />
     <Compile Include="Controllers\GetBindURLController.cs" />
     <Compile Include="Controllers\ForgetPwdController.cs" />
     <Compile Include="Controllers\GenerateEMailTestController.cs" />
+    <Compile Include="Controllers\GetCancelOrderListController.cs" />
     <Compile Include="Controllers\GetCarTypeController.cs" />
     <Compile Include="Controllers\GetEstimateController.cs" />
     <Compile Include="Controllers\GetFavoriteStationController.cs" />
     <Compile Include="Controllers\GetMachiParkingDataController.cs" />
     <Compile Include="Controllers\GetMemberDataController.cs" />
     <Compile Include="Controllers\GetMotorRentProjectController.cs" />
+    <Compile Include="Controllers\GetOrderDetailController.cs" />
     <Compile Include="Controllers\GetOrderListController.cs" />
     <Compile Include="Controllers\GetParkingDataController.cs" />
     <Compile Include="Controllers\GetProjectController.cs" />
@@ -115,9 +169,11 @@
     <Compile Include="Controllers\GetUPDListController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
+    <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
     <Compile Include="Controllers\OrderUnFinishController.cs" />
+    <Compile Include="Controllers\ReadCardController.cs" />
     <Compile Include="Controllers\ReadCardInfoController.cs" />
     <Compile Include="Controllers\ReceiveCarDataController.cs" />
     <Compile Include="Controllers\RefrashTokenController.cs" />
@@ -126,42 +182,73 @@
     <Compile Include="Controllers\Register_Step2Controller.cs" />
     <Compile Include="Controllers\ReSendEMailController.cs" />
     <Compile Include="Controllers\ResponseInfoController.cs" />
+    <Compile Include="Controllers\ReturnCarController.cs" />
+    <Compile Include="Controllers\SearchCarController.cs" />
+    <Compile Include="Controllers\SearchMotorController.cs" />
+    <Compile Include="Controllers\SendCarCMDController.cs" />
+    <Compile Include="Controllers\SendLockController.cs" />
+    <Compile Include="Controllers\SendMotorCMDController.cs" />
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
     <Compile Include="Controllers\VerifyEMailController.cs" />
     <Compile Include="Controllers\VerifySMSController.cs" />
+    <Compile Include="Controllers\VER_USER_POWController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindResult.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_Booking.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingCancel.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingDelete.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingExtend.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingStart.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingStartMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_CarData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CENS_ReadCardInfo.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CENS_ResponseInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangePWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckAccount.cs" />
+    <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
+    <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
     <Compile Include="Models\Param\Input\IAPI_RegisterMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SearchCar.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SearchMotor.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SendCarCMD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SendLock.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SendMotorCMD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
@@ -169,19 +256,29 @@
     <Compile Include="Models\Param\Input\IAPI_VerifyEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReSendEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
+    <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BookingQuery.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BookingStart.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BookingStartMotor.cs" />
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetServerTime.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
@@ -189,6 +286,13 @@
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
+    <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
+    <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -247,11 +351,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>此專案參考這部電腦上所缺少的 NuGet 套件。請啟用 NuGet 套件還原，以下載該套件。如需詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的檔案是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

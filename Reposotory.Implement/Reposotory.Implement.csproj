@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseRepository.cs" />
+    <Compile Include="CarCardCommonRepository.cs" />
+    <Compile Include="CarCMDRepository.cs" />
+    <Compile Include="CarStatusCommon.cs" />
     <Compile Include="CommonRepository.cs" />
     <Compile Include="MemberRepository.cs" />
     <Compile Include="ParkingRepository.cs" />
@@ -62,6 +65,9 @@
       <Project>{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}</Project>
       <Name>WebCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

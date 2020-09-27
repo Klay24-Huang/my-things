@@ -27,8 +27,8 @@ namespace WebAPI.Models.Param.Input
         public int deviceGPRSStatus { get; set; }
         public int devicePowerONStatus { get; set; }
         public int devcieCentralLockStatus { get; set; }
-        public int deviceDoorStatus { get; set; }
-        public int deviceLockStatus { get; set; }
+        public string deviceDoorStatus { get; set; }
+        public string deviceLockStatus { get; set; }
         public int deviceIndoorLightStatus { get; set; }
         public int deviceSecurityStatus { get; set; }
         public int deviceSpeed { get; set; }
@@ -38,7 +38,12 @@ namespace WebAPI.Models.Param.Input
         public int deviceMillage { get; set; }
         public int extDeviceStatus1 { get; set; }
         public int extDeviceStatus2 { get; set; }
-        public string extDeviceDatat2 { get; set; }
+        public string extDeviceData2 { get; set; }
         public string extDeviceData3 { get; set; }
+        public string extDeviceData4 { get; set; }
+        /// <summary>
+        /// 讀卡
+        /// </summary>
+        public string extDeviceData7 { get; set; }
     }
 }

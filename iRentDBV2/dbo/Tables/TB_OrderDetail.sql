@@ -24,6 +24,8 @@
 	[end_mile] [float] NOT NULL DEFAULT 0,
 	[trade_status] [int] NOT NULL DEFAULT 0,
 	[parkingFee] [int] NOT NULL DEFAULT 0, 
+    [parkingSpace] NVARCHAR(128) NOT NULL DEFAULT N'', 
+    [TransDiscount] INT NOT NULL DEFAULT -1, 
     CONSTRAINT [PK_TB_OrderDetail] PRIMARY KEY ([order_number]),
 	
 )
@@ -143,3 +145,21 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OrderDetail',
     @level2type = N'COLUMN',
     @level2name = N'parkingFee'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'停車格',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderDetail',
+    @level2type = N'COLUMN',
+    @level2name = N'parkingSpace'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'轉乘優惠',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderDetail',
+    @level2type = N'COLUMN',
+    @level2name = N'TransDiscount'

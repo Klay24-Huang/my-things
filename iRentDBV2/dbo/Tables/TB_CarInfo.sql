@@ -14,6 +14,9 @@
 	[BodyNO] [VARCHAR](50) NOT NULL DEFAULT '',
 	[CCNum] [INT] NOT NULL DEFAULT 0,
 	[CID] [VARCHAR](10) NOT NULL DEFAULT '',
+	[deviceToken] [VARCHAR](256) NOT NULL DEFAULT '',
+	[IsCens] [TINYINT] NOT NULL DEFAULT 0,
+	[IsMotor] [TINYINT] NOT NULL DEFAULT 0,
 	[AreaID] [TINYINT] NOT NULL DEFAULT 0,
 	[OperationID] INT NOT NULL DEFAULT 0,
 	[HoildayPriceByMinutes] [FLOAT] NOT NULL DEFAULT 0.0,
@@ -108,3 +111,33 @@ CREATE NONCLUSTERED INDEX IX_ForSearchAnyData
 ON [dbo].[TB_CarInfo] ([CarType])
 
 GO
+
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'遠傳車機token',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarInfo',
+    @level2type = N'COLUMN',
+    @level2name = N'deviceToken'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否為興聯車機(0:否;1:是)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarInfo',
+    @level2type = N'COLUMN',
+    @level2name = N'IsCens'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否為機車（0:否;1:是)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarInfo',
+    @level2type = N'COLUMN',
+    @level2name = N'IsMotor'
+GO
+
+CREATE INDEX [IX_TB_CarInfo_SearchByMachine] ON [dbo].[TB_CarInfo] ([CarNo], [CID], [deviceToken], [IsCens], [IsMotor])

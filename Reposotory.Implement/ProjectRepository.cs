@@ -101,7 +101,7 @@ namespace Reposotory.Implement
                 }
                 else
                 {
-                    SQL += " INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND Car.nowStationID=VW.StationID ";
+                    SQL += " INNER JOIN TB_Car AS Car WITH(NOLOCK) ON Car.CarType=VW.CarType AND Car.nowStationID=VW.StationID ";
                     term += " CarNo=@CarNo";
                     para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
                     para[nowCount].Value = CarType;
@@ -112,7 +112,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WITH(NOLOCK) WHERE " + term;
+                SQL += "  WHERE " + term;
             }
             SQL += " ORDER BY PRICE DESC ";
             lstProjInfo = GetObjList<ProjectPriceBase>(ref flag, ref lstError, SQL, para, term);
@@ -125,6 +125,12 @@ namespace Reposotory.Implement
             }
             return obj;
         }
+        /// <summary>
+        /// 取出以分計費
+        /// </summary>
+        /// <param name="ProjID"></param>
+        /// <param name="CarNo"></param>
+        /// <returns></returns>
         public ProjectPriceOfMinuteBase GetProjectPriceBaseByMinute(string ProjID, string CarNo)
         {
 
@@ -134,7 +140,7 @@ namespace Reposotory.Implement
             ProjectPriceOfMinuteBase obj = null;
             int nowCount = 0;
             string SQL = "SELECT TOP 1 [ProjID],[BaseMinutes],[BaseMinutesPrice],[BaseMinutesPriceH] ,[Price],[PriceH],[MaxPrice],[MaxPriceH]  FROM [dbo].[TB_PriceByMinutes] AS PriceByMinute ";
-            SQL += "  INNER JOIN [dbo].[TB_Car] AS Car ON Car.CarType=PriceByMinute.CarType  ";
+            SQL += "  INNER JOIN [dbo].[TB_Car] AS Car  WITH(NOLOCK) ON Car.CarType=PriceByMinute.CarType  ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (false == string.IsNullOrWhiteSpace(ProjID))
@@ -162,7 +168,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WITH(NOLOCK) WHERE " + term;
+                SQL += " WHERE " + term;
             }
             SQL += " ORDER BY PRICE DESC ";
             lstProjInfo = GetObjList<ProjectPriceOfMinuteBase>(ref flag, ref lstError, SQL, para, term);
