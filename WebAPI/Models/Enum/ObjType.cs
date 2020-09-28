@@ -146,6 +146,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BookingDelete,
             /// <summary>
+            /// 還車前檢查
+            /// </summary>
+            ReturnCar,
+            /// <summary>
             /// 取得未完成的訂單列表
             /// </summary>
             GetOrderList,
@@ -273,6 +277,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
+                    break;
+                case SPType.ReturnCar:
+                    SPName = "usp_ReturnCar";
                     break;
                 #region 拓連
                 /// <summary>

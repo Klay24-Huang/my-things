@@ -149,7 +149,7 @@
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
-    <Compile Include="Controllers\GerPolygonController.cs" />
+    <Compile Include="Controllers\GetPolygonController.cs" />
     <Compile Include="Controllers\GetAnyRentProjectController.cs" />
     <Compile Include="Controllers\GetBindURLController.cs" />
     <Compile Include="Controllers\ForgetPwdController.cs" />
@@ -164,6 +164,7 @@
     <Compile Include="Controllers\GetOrderDetailController.cs" />
     <Compile Include="Controllers\GetOrderListController.cs" />
     <Compile Include="Controllers\GetParkingDataController.cs" />
+    <Compile Include="Controllers\GetPolygonForWebController.cs" />
     <Compile Include="Controllers\GetProjectController.cs" />
     <Compile Include="Controllers\GetServerTimeController.cs" />
     <Compile Include="Controllers\GetUPDListController.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Models\Param\Input\IAPI_RegisterMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_SendCarCMD.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPolygon.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetPolygonForWeb.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetServerTime.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
@@ -294,6 +297,8 @@
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
+    <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

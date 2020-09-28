@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CarMachine\BLEInfo.cs" />
     <Compile Include="CarMachine\CardList.cs" />
+    <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_ReturnCar.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />

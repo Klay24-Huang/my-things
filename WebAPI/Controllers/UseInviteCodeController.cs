@@ -7,6 +7,9 @@ using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
+    /// <summary>
+    /// /
+    /// </summary>
     public class UseInviteCodeController : ApiController
     {
     }

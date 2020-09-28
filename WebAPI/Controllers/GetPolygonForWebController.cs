@@ -4,9 +4,6 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -17,9 +14,9 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 取得電子柵欄資料
+    /// 後台使用api，取得電子柵欄
     /// </summary>
-    public class GerPolygonController : ApiController
+    public class GetPolygonForWebController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
@@ -35,12 +32,12 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GerPolygonController";
+            string funName = "GetPolygonForWebController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_GetPolygon apiInput = null;
-            OAPI_GetPolygon outputApi = null;
-            List<Polygon> lstTmpData = new List<Polygon>();
+            OAPI_GetPolygonForWeb outputApi = null;
+            List<Domain.TB.Polygon> lstTmpData = new List<Domain.TB.Polygon>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -67,7 +64,7 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR900";
-                          
+
                         }
                     }
                 }
@@ -87,33 +84,45 @@ namespace WebAPI.Controllers
                 }
                 if (DataLen > 0)
                 {
-                    outputApi = new OAPI_GetPolygon();
-                    outputApi.PolygonObj = new List<Models.Param.Output.PartOfParam.PolygonData>();
+                    outputApi = new OAPI_GetPolygonForWeb();
+                    outputApi.PolygonObj = new List<Models.Param.Output.PartOfParam.PolygonDataForWeb>();
                 }
-                for(int i = 0; i < DataLen; i++)
+                for (int i = 0; i < DataLen; i++)
                 {
-                    Models.Param.Output.PartOfParam.PolygonData obj = new Models.Param.Output.PartOfParam.PolygonData()
+                    Models.Param.Output.PartOfParam.PolygonDataForWeb obj = new Models.Param.Output.PartOfParam.PolygonDataForWeb()
                     {
                         PolygonType = lstData[i].PolygonMode
                     };
-                    string[] tmpLon = lstData[i].Longitude.Split(',');
-                    string[] tmpLat = lstData[i].Latitude.Split(',');
-                    int LonLen = tmpLon.Length;
-
-                    string tmpData = "";
-                    
-                    for(int j = 0; j < LonLen; j++)
+                    string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
+                    string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
+                    int tmpLonGroupLen = tmpLonGroup.Length;
+                   
+                    obj.PolygonObj = new string[tmpLonGroupLen];
+                    for (int j = 0; j < tmpLonGroupLen; j++)
                     {
-                        if (j == 0)
+                        string tmpData = "";
+                        string[] tmpLon = tmpLonGroup[j].Split(',');
+                        string[] tmpLat = tmpLatGroup[j].Split(',');
+                        int LonLen = tmpLon.Length;
+
+
+
+                        for (int k = 0; k < LonLen; k++)
                         {
-                            tmpData = string.Format("{0},{1}", tmpLon[j], (tmpLat[j] == null) ? "0" : tmpLat[j]);
+                            if (k == 0)
+                            {
+                                tmpData += string.Format("{0},{1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
+                            }
+                            else
+                            {
+                                tmpData += string.Format(" {0},{1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
+                            }
                         }
-                        else
-                        {
-                            tmpData += string.Format(" {0},{1}", tmpLon[j], (tmpLat[j] == null) ? "0" : tmpLat[j]);
-                        }
+                         obj.PolygonObj[j]= tmpData;
+                      
                     }
-                    obj.PolygonObj = tmpData;
+
+                  
                     outputApi.PolygonObj.Add(obj);
                 }
             }
