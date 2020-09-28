@@ -136,7 +136,8 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
-
+            //Other rule
+            //這邊也可以先做取車機，做完判斷再做訂單的判斷
             //開始做還車前檢查
             if (flag)
             {
