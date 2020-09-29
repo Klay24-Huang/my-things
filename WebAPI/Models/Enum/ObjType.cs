@@ -157,6 +157,10 @@ namespace WebAPI.Models.Enum
             /// 取得已取消的訂單列表
             /// </summary>
             GetCancelOrder,
+            /// <summary>
+            /// 設定發票（會員及訂單）
+            /// </summary>
+            SettingInvoice,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -280,6 +284,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.ReturnCar:
                     SPName = "usp_ReturnCar";
+                    break;
+                case SPType.SettingInvoice:
+                    SPName = "usp_SettingInvoice";
                     break;
                 #region 拓連
                 /// <summary>

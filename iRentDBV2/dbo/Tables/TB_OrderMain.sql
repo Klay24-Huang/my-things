@@ -31,6 +31,8 @@
 	[ProjType] [tinyint] NOT NULL DEFAULT 5,
 	[PayMode] [tinyint] NOT NULL DEFAULT 0,
     [init_TransDiscount] INT NOT NULL DEFAULT -1, 
+    [CARRIERID]      VARCHAR (20)   DEFAULT ('') NOT NULL,
+    [NPOBAN]         VARCHAR (20)   DEFAULT ('') NOT NULL,
     CONSTRAINT [PK_TB_OrderMain] PRIMARY KEY ([order_number]),
 )
 GO
@@ -76,7 +78,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'訂單修改狀態：0 = 無(訂單未刪除，正常預約狀態)、1 = 修改指派車輛(此訂單因其他預約單強迫延長而更改過訂單 or 後台重新配車過 or 取車時無車，重新配車)、2 = 此訂單被人工介入過(後台協助取還車 or 後台修改訂單資料)、3 = 訂單已取消(會員主動取消 or 逾時15分鐘未取車)、4 = 訂單已取消(因車輛仍在使用中又無法預約到其他車輛而取消)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderMain', @level2type=N'COLUMN',@level2name=N'cancel_status'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'帳單寄送方式：0 = 捐贈家扶、1 = email二聯發票、2 = 郵寄二聯發票、3 = 郵寄三聯' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderMain', @level2type=N'COLUMN',@level2name=N'bill_option'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'發票寄送方式：1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderMain', @level2type=N'COLUMN',@level2name=N'bill_option'
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'愛心碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderMain', @level2type = N'COLUMN', @level2name = N'NPOBAN';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'手機條碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderMain', @level2type = N'COLUMN', @level2name = N'CARRIERID';
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'發票抬頭' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderMain', @level2type=N'COLUMN',@level2name=N'title'
