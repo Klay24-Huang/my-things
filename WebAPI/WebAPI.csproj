@@ -147,6 +147,7 @@
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
+    <Compile Include="Controllers\DeleteCreditCardBindController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
     <Compile Include="Controllers\GetPayDetailController.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
@@ -279,6 +281,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCardBindList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
@@ -299,6 +302,7 @@
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />

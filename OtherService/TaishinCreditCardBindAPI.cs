@@ -22,7 +22,7 @@ namespace OtherService
     public class TaishinCreditCardBindAPI
     {
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
-        private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                            //台新base網址
+        private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string GetCardPage = ConfigurationManager.AppSettings["GetCardPage"].ToString();                    //取得綁卡網址
         private string GetCreditCardStatus = ConfigurationManager.AppSettings["GetCreditCardStatus"].ToString();    //取得綁卡狀態
         private string DeleteCreditCardAuth = ConfigurationManager.AppSettings["DeleteCreditCardAuth"].ToString();  //刪除綁卡

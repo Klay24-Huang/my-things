@@ -12,14 +12,9 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
-
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 取回綁定(信用卡、銀行帳號)列表
-    /// </summary>
-
-    public class BindQueryController : ApiController
+    public class DeleteCreditCardBindController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
@@ -36,7 +31,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BindQueryController";
+            string funName = "DeleteCreditCardBindController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BindListQuery apiInput = null;
@@ -81,7 +76,7 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag && isGuest == false)
             {
-               flag= baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
 
             }
             #endregion
@@ -112,23 +107,20 @@ namespace WebAPI.Controllers
                         HasBind = (Len == 0) ? 0 : 1,
                         BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
                     };
-                   for(int i = 0; i < Len; i++)
+                    for (int i = 0; i < Len; i++)
                     {
                         Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
                         {
                             AvailableAmount = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].AvailableAmount),
                             BankNo = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].BankNo),
                             CardName = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardName),
-                            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber),
-              
-                             CardToken = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardToken)
-
+                            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber)
                         };
                         apiOutput.BindListObj.Add(obj);
                     }
                 }
             }
-            
+
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
