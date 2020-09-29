@@ -783,6 +783,17 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+        public int cc(int n)
+        {
+            if (n > 9)
+            {
+                var s = n.ToString() + "";
+                int n1 = Convert.ToInt32(s.Substring(0, 1)) * 1;
+                int n2 = Convert.ToInt32(s.Substring(1, 1)) * 1;
+                n = n1 + n2;
+            }
+            return n;
+        }
         /// <summary>
         /// 取出正規化表示法
         /// </summary>

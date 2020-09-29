@@ -200,6 +200,16 @@ namespace WebAPI.Controllers
             }
             #endregion
             #endregion
+            #region 寫入錯誤Log
+            if (false == flag && false == isWriteError)
+            {
+                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+            }
+            #endregion
+            #region 輸出
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            return objOutput;
+            #endregion
         }
     }
 }
