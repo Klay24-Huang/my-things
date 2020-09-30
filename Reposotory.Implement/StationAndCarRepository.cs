@@ -228,6 +228,7 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude]";
             SQL += " ,device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[OperatorICon],[Score]";  // 2020.09.30 育誠 增加業者、業者評分
             SQL += " FROM  [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())  AND device2TBA>=30 ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
