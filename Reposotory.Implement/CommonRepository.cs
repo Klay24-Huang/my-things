@@ -276,6 +276,30 @@ namespace Reposotory.Implement
             return lstLoveCode;
         }
         /// <summary>
+        /// 取得愛心捐贈碼,指定筆數
+        /// </summary>
+        /// <param name="TakeCount">指定筆數</param>
+        /// <returns></returns>
+        public List<LoveCodeListData> GetLoveCode(int TakeCount)
+        {
+            bool flag = false;
+
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<LoveCodeListData> lstLoveCode = null;
+            string SQL = "SELECT TOP {0} [LoveName],[LoveCode],[LoveShortName],[UNICode] FROM TB_LoveCode ORDER BY Id ASC";
+
+            string repWorld = "";
+            if (TakeCount > 0) 
+                repWorld = TakeCount.ToString();
+            SQL = String.Format(SQL, repWorld);
+
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+
+            lstLoveCode = GetObjList<LoveCodeListData>(ref flag, ref lstError, SQL, para, term);
+            return lstLoveCode;
+        }
+        /// <summary>
         /// 取出日期區間內的所有假日
         /// </summary>
         /// <param name="SD">起日</param>

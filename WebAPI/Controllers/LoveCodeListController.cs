@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.TB;
+using Newtonsoft.Json;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 
@@ -22,7 +24,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private CommonRepository _repository;
         [HttpGet]
-        public Dictionary<string, object> DoGetLoveCodeListt()
+        public Dictionary<string, object> DoGetLoveCodeListt([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -33,23 +35,26 @@ namespace WebAPI.Controllers
             string funName = "LoveCodeListController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-
+            string Contentjson = "";
             OAPI_LoveCodeList LoveCodeListAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
+            IAPI_LoveCodeList apiInput = null;
             List<LoveCodeListData> lstOut = null;
             _repository = new CommonRepository(connetStr);
             #endregion
             #region 防呆
 
+            string ClientIP = baseVerify.GetClientIp(Request);
+            flag = baseVerify.baseCheck(value, ref errCode, funName);
+
             if (flag)
             {
-
                 //寫入API Log
-                string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog("No Input", ClientIP, funName, ref errCode, ref LogID);
-
+                Contentjson = value["para"].ToString();
+                apiInput = JsonConvert.DeserializeObject<IAPI_LoveCodeList>(Contentjson);
             }
             #endregion
 
@@ -59,7 +64,7 @@ namespace WebAPI.Controllers
                 // lstOut = new List<CityData>();
                 try
                 {
-                    lstOut = _repository.GetLoveCode();
+                    lstOut = _repository.GetLoveCode(apiInput.limit);
                     if (lstOut.Count > 0)
                     {
                         LoveCodeListAPI = new OAPI_LoveCodeList()
