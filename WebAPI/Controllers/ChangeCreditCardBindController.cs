@@ -172,6 +172,7 @@ namespace WebAPI.Controllers
             #region 刪除成功，重新取得綁定卡號網址
             if (flag)
             {
+                Thread.Sleep(1000); //避免重覆訂單編號
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
                 WebAPIInput_Base wsInput = new WebAPIInput_Base()
                 {
