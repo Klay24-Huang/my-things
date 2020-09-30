@@ -66,6 +66,7 @@
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderList.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCarStatus.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />
     <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EinvBiz.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ArrearQuery.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_EinvBiz.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />

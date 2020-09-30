@@ -50,7 +50,11 @@ namespace WebAPI.Models.BaseFunc
             City,
             ZipCode,
             MoroCMD,
-            latlng
+            latlng,
+            /// <summary>
+            /// 統編
+            /// </summary>
+            UniCode
         }
         /// <summary>
         /// 基本防呆
@@ -726,6 +730,69 @@ namespace WebAPI.Models.BaseFunc
 
             }
             return flag;
+        }
+        /// <summary>
+        /// 統一編號驗證公式
+        /// </summary>
+        /// <param name="UniNum"></param>
+        /// <returns>
+        /// bool
+        /// <para>true:合法</para>
+        /// <para>false:不合法</para>
+        /// </returns>
+        public bool checkUniNum(string UniNum)
+        {
+            bool flag = false;
+            if (UniNum.Length == 8)
+            {
+                if (UniNum == "00000000")
+                {
+                    return flag;
+                }
+
+                var cx = new[] { 1, 2, 1, 2, 1, 2, 4, 1 };
+                var sum = 0;
+
+                var cnum = UniNum.ToCharArray();
+                for (int i = 0; i < cnum.Length; i++)
+                {
+                    int temp;
+                    if (!int.TryParse(cnum[i].ToString(), out temp))
+                    {
+                        return flag;
+                    }
+
+                    sum += cc(temp * cx[i]);
+
+
+                }
+                if (sum % 10 == 0)
+                {
+                    flag = true;
+                }
+                else if (cnum[6].ToString() == "7" && (sum + 1) % 10 == 0)
+                {
+                    flag = true;
+                }
+                else
+                {
+                    flag = false;
+                }
+
+
+            }
+            return flag;
+        }
+        public int cc(int n)
+        {
+            if (n > 9)
+            {
+                var s = n.ToString() + "";
+                int n1 = Convert.ToInt32(s.Substring(0, 1)) * 1;
+                int n2 = Convert.ToInt32(s.Substring(1, 1)) * 1;
+                n = n1 + n2;
+            }
+            return n;
         }
         /// <summary>
         /// 取出正規化表示法

@@ -70,7 +70,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'手機條�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'發票寄送方式：1:捐贈;2:email;3:二聯;4:三聯', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMSENDCD';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'發票寄送方式：1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMSENDCD';
 
 
 GO

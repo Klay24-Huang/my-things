@@ -343,4 +343,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IX_TB_Polygon_Search]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="52a67b67-4a97-4477-9f51-12c39005f043" ChangeDateTime="09/29/2020 00:20:45">
+    <Property Name="ElementName" Value="[dbo].[TB_MemberInvoice].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MemberInvoice]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IDNO" />
+  </Operation>
 </Operations>

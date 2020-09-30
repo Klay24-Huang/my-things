@@ -30,6 +30,7 @@ namespace OtherService
         protected string NPR370SaveURL;  //進行轉贈
         protected string NPR330QueryURL; //欠費查詢
         protected string ETAG010QueryURL; //ETAG查詢
+        protected string EinvBizURL;     //手機條碼檢核
         protected string connetStr;
         bool disposed = false;
         /// <summary>
@@ -47,6 +48,7 @@ namespace OtherService
             NPR370SaveURL = (ConfigurationManager.AppSettings.Get("NPR370SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370SaveURL").ToString();
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
             ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
+            EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -450,7 +452,106 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 手機條碼檢核
+        /// <summary>
+        /// 確認手機條碼
+        /// </summary>
+        /// <param name="carrierid"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool CheckEinvBiz(string carrierid, ref string errCode)
+        {
+            bool flag = false;
+            WebAPIInput_EinvBiz input = new WebAPIInput_EinvBiz()
+            {
+                CARRIERID = carrierid,
+                sig = GenerateSig(),
+                user_id = userid
+            };
+            WebAPIOutput_EinvBiz output = DoCheckEinvBiz(input).Result;
+            if (output.isExist == "N")
+            {
+                flag = false;
+                errCode = "ERR194";
+                //手機條碼或自然人憑證載具有誤，請至會員中心修改
+                //系統例行維護中
+            }
+            else if (output.isExist == "Y")
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 確認手機條碼
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_EinvBiz> DoCheckEinvBiz(WebAPIInput_EinvBiz input)
+        {
+            WebAPIOutput_EinvBiz output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(EinvBizURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
 
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_EinvBiz>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_EinvBiz()
+                {
+                    isExist = "N",
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "EinvBiz",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = EinvBizURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
+        #endregion
         #region 欠費查詢
         /// <summary>
         /// 點數查詢
