@@ -55,11 +55,11 @@ namespace Domain.TB
         /// <summary>
         /// 業者icon
         /// </summary>
-        public string OperatorICon { get; set; }
+        public string Operator { get; set; }
 
         /// <summary>
         /// 業者評分
         /// </summary>
-        public float Score { get; set; }
+        public float OperatorScore { get; set; }
     }
 }

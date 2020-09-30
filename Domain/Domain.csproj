@@ -158,12 +158,15 @@
     <Compile Include="WebAPI\Input\Param\Params.cs" />
     <Compile Include="WebAPI\Input\Param\UnivCardNoObj.cs" />
     <Compile Include="WebAPI\Input\Taishin\CardData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\DeleteCreditCardAuthRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\DirectCardAuthData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfDeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetCreditCardList.cs" />
     <Compile Include="WebAPI\Input\Taishin\GetCreditCardListRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\RequestParamsData.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Base.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Bind.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_DeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
@@ -189,8 +192,11 @@
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\GetCreditCardListResponseParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\DeleteCreditCardAuthResponseParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\DeleteCreditCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Base.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DirectCardAuth.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
   </ItemGroup>

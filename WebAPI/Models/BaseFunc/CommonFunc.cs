@@ -16,6 +16,8 @@ using Domain.Common;
 using static WebAPI.Models.BaseFunc.CommonFunc;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Domain.SP.Input.Common;
+using Domain.SP.Output.Common;
 
 namespace WebAPI.Models.BaseFunc
 {
@@ -877,6 +879,44 @@ namespace WebAPI.Models.BaseFunc
             int maxLen = max.ToString().Length;
             return rnd.Next(min, max).ToString().PadLeft(maxLen, '0');
 
+        }
+        /// <summary>
+        /// 判斷如果null就回傳空字串，否則就回傳值
+        /// </summary>
+        /// <param name="Source"></param>
+        /// <returns></returns>
+        public string BaseCheckString(string Source)
+        {
+            return (string.IsNullOrWhiteSpace(Source) ? "" : Source);
+        }
+        /// <summary>
+        /// 由token取出idno
+        /// </summary>
+        /// <param name="Access_Token"></param>
+        /// <param name="LogID"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="lstError"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool GetIDNOFromToken(string Access_Token,Int64 LogID,ref string IDNO,ref List<ErrorInfo> lstError,ref string errCode )
+        {
+            bool flag = true;
+            string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+            SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            {
+
+                LogID = LogID,
+                Token = Access_Token
+            };
+            SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+            SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                IDNO = spOut.IDNO;
+            }
+            return flag;
         }
         /// <summary>
         /// 產生輸出結果
