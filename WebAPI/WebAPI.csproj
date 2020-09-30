@@ -245,6 +245,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_InvoiceSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
+    <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />

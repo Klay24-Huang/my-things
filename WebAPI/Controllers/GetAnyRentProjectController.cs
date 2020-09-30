@@ -160,8 +160,11 @@ namespace WebAPI.Controllers
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
                                 Seat = lstData[0].Seat,
-                                Bill = tmpBill
+                                Bill = tmpBill,
+                                WorkdayPerHour = lstData[0].Price,
+                                HolidayPerHour = lstData[0].PRICE_H
                             });
+
                             if (DataLen > 1)
                             {
                                 for (int i = 1; i < DataLen; i++)
@@ -191,14 +194,13 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill
+                                        Bill = tmpBill,
+                                        WorkdayPerHour = lstData[0].Price,
+                                        HolidayPerHour = lstData[0].PRICE_H
                                     });
                                 }
                             }
                         }
-              
-                          
-
                     }
                 }
                 outputApi = new OAPI_GetAnyRentProject()

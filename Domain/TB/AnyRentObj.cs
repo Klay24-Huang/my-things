@@ -43,5 +43,21 @@ namespace Domain.TB
         /// 經度
         /// </summary>
         public decimal Longitude { set; get; }
+        /// <summary>
+        /// 供應商
+        /// </summary>
+        public string OperatorICon { get; set; }
+        /// <summary>
+        /// 幾顆星評價
+        /// </summary>
+        public float Score { set; get; }
+        /// <summary>
+        /// 車輛圖示
+        /// </summary>
+        public string CarTypeImg { get; set; }
+        /// <summary>
+        /// 座位數
+        /// </summary>
+        public int Seat { get; set; }
     }
 }

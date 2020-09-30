@@ -51,5 +51,15 @@ namespace Domain.TB
         /// 經度
         /// </summary>
         public decimal Longitude { set; get; }
+        
+        /// <summary>
+        /// 業者icon
+        /// </summary>
+        public string OperatorICon { get; set; }
+
+        /// <summary>
+        /// 業者評分
+        /// </summary>
+        public float Score { get; set; }
     }
 }
