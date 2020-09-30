@@ -46,15 +46,15 @@ namespace Domain.TB
         /// <summary>
         /// 供應商
         /// </summary>
-        public string OperatorICon { get; set; }
+        public string Operator { get; set; }
         /// <summary>
         /// 幾顆星評價
         /// </summary>
-        public float Score { set; get; }
+        public float OperatorScore { set; get; }
         /// <summary>
         /// 車輛圖示
         /// </summary>
-        public string CarTypeImg { get; set; }
+        public string CarTypePic { get; set; }
         /// <summary>
         /// 座位數
         /// </summary>
