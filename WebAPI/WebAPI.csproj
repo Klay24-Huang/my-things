@@ -142,6 +142,7 @@
     <Compile Include="Controllers\BookingQueryController.cs" />
     <Compile Include="Controllers\BookingStartController.cs" />
     <Compile Include="Controllers\BookingStartMotorController.cs" />
+    <Compile Include="Controllers\ChangeCreditCardBindController.cs" />
     <Compile Include="Controllers\ChangePWDController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
@@ -276,6 +278,7 @@
     <Compile Include="Models\Param\Output\OAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStart.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStartMotor.cs" />
+    <Compile Include="Models\Param\Output\OAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
