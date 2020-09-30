@@ -22,7 +22,7 @@ namespace OtherService
     public class TaishinCreditCardBindAPI
     {
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
-        private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                            //台新base網址
+        private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string GetCardPage = ConfigurationManager.AppSettings["GetCardPage"].ToString();                    //取得綁卡網址
         private string GetCreditCardStatus = ConfigurationManager.AppSettings["GetCreditCardStatus"].ToString();    //取得綁卡狀態
         private string DeleteCreditCardAuth = ConfigurationManager.AppSettings["DeleteCreditCardAuth"].ToString();  //刪除綁卡
@@ -235,6 +235,117 @@ namespace OtherService
                     UPDTime = RTime,
                     WebAPIInput = JsonConvert.SerializeObject(input),
                     WebAPIName = "GetCreditCardList",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + GetCreditCardList
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
+        #endregion
+        #region 取消綁定
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wsInput"></param>
+        /// <param name="errCode"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool DoDeleteCreditCardAuth(PartOfDeleteCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_DeleteCreditCardAuth output)
+        {
+            bool flag = true;
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string checksum = GenerateSign(ori);
+
+            WebAPIInput_DeleteCreditCardAuth Input = new WebAPIInput_DeleteCreditCardAuth()
+            {
+                ApiVer = wsInput.ApiVer,
+                ApposId = wsInput.ApposId,
+                Random = wsInput.Random,
+                RequestParams = wsInput.RequestParams,
+                CheckSum = checksum,
+                TimeStamp = wsInput.TimeStamp,
+                TransNo = wsInput.TransNo
+            };
+
+
+            output = DoDeleteCreditCardAuthSend(Input).Result;
+            if (output.RtnCode == "1000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<WebAPIOutput_DeleteCreditCardAuth> DoDeleteCreditCardAuthSend(WebAPIInput_DeleteCreditCardAuth input)
+        {
+            string Site = BaseURL + DeleteCreditCardAuth;
+            WebAPIOutput_DeleteCreditCardAuth output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_DeleteCreditCardAuth>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_DeleteCreditCardAuth()
+                {
+                    RtnCode = "0",
+                    RtnMessage = ex.Message.Substring(0, 200)
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "DeleteCreditCardAuth",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + GetCreditCardList
                 };
