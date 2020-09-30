@@ -248,7 +248,9 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill
+                                        Bill = tmpBill,
+                                        WorkdayPerHour = lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PRICE_H
                                     };
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
@@ -259,11 +261,10 @@ namespace WebAPI.Controllers
                                         StationID = lstData[i].StationID,
                                         StationName = lstData[i].StationName,
                                         ProjectObj = new List<ProjectObj>(),
-                                         Minimum=tmpBill
+                                        Minimum = tmpBill
                                     };
                                     tmpGetProjectObj.ProjectObj.Add(tmpObj);
                                     lstTmpData.Add(tmpGetProjectObj);
-
                                 }
                                 else
                                 {
@@ -288,7 +289,9 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill
+                                        Bill = tmpBill,
+                                        WorkdayPerHour = lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PRICE_H
                                     });
                                 }
                             }

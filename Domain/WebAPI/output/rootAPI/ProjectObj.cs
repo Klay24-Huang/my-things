@@ -71,5 +71,15 @@ namespace Domain.WebAPI.output.rootAPI
         /// 預估費用
         /// </summary>
         public int Bill { set; get; }
+
+        /// <summary>
+        /// 平日每小時金額
+        /// </summary>
+        public int WorkdayPerHour { get; set; }
+
+        /// <summary>
+        /// 假日每小時金額
+        /// </summary>
+        public int HolidayPerHour { set; get; }
     }
 }
