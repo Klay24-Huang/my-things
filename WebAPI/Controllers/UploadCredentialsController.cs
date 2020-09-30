@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
-            Int16 Mode, CredentialType;
+            Int16 CredentialType;
             DateTime Birth = DateTime.Now;
             string Contentjson = "";
             #endregion
@@ -73,23 +73,7 @@ namespace WebAPI.Controllers
                     //2.1判斷模式
                     if (flag)
                     {
-                        flag = apiInput.Mode.HasValue;
-                        if (false == flag)
-                        {
-                            errCode = "ERR109";
-                        }
-                        else
-                        {
-                            flag = Int16.TryParse(apiInput.Mode.Value.ToString(), out Mode);
-                            if (flag)
-                            {
-                                if(Mode<0 || Mode > 2)
-                                {
-                                    flag = false;
-                                    errCode = "ERR110";
-                                }
-                            }
-                        }
+
                     }
                     //2.2判斷類型
                     if (flag)
@@ -148,10 +132,9 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID,
                     IDNO = apiInput.IDNO,
-                     CrentialsFile=apiInput.CredentialFile,
-                      CrentialsType=apiInput.CredentialType.Value,
-                       DeviceID=apiInput.DeviceID,
-                        Mode=apiInput.Mode.Value
+                    CrentialsFile = apiInput.CredentialFile,
+                    CrentialsType = apiInput.CredentialType.Value,
+                    DeviceID = apiInput.DeviceID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_UploadCredentials, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadCredentials, SPOutput_Base>(connetStr);
