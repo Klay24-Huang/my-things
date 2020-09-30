@@ -227,6 +227,7 @@
     <Compile Include="Models\Param\Input\IAPI_CENS_ResponseInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangePWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckAccount.cs" />
+    <Compile Include="Models\Param\Input\IAPI_DeleteCreditCardAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />

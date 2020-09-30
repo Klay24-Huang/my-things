@@ -2,15 +2,18 @@
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
+using Domain.WebAPI.output.Taishin.ResultData;
 using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 namespace WebAPI.Controllers
 {
@@ -34,8 +37,8 @@ namespace WebAPI.Controllers
             string funName = "DeleteCreditCardBindController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BindListQuery apiInput = null;
-            OAPI_GetCardBindList apiOutput = null;
+            IAPI_DeleteCreditCardAuth apiInput = null;
+            NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -43,16 +46,28 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            bool hasFind = false;
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
 
+
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_DeleteCreditCardAuth>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Access_Token, ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+                if (flag)
+                {
+                    string[] checkList = { apiInput.CardToken };
+                    string[] errList = { "ERR900" };
+                    //1.判斷必填
+                    flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                }
             }
             //不開放訪客
             if (flag)
@@ -102,22 +117,47 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     int Len = wsOutput.ResponseParams.ResultData.Count;
-                    apiOutput = new OAPI_GetCardBindList()
+                    if (Len > 0)
                     {
-                        HasBind = (Len == 0) ? 0 : 1,
-                        BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
-                    };
-                    for (int i = 0; i < Len; i++)
-                    {
-                        Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
+                        int index = wsOutput.ResponseParams.ResultData.FindIndex(delegate (GetCreditCardResultData obj)
                         {
-                            AvailableAmount = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].AvailableAmount),
-                            BankNo = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].BankNo),
-                            CardName = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardName),
-                            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber)
-                        };
-                        apiOutput.BindListObj.Add(obj);
+                            return obj.CardToken == apiInput.CardToken;
+                        });
+                        if (index > -1)
+                        {
+                            hasFind = true;
+                        }
                     }
+                    if (hasFind)//有找到，可以做刪除
+                    {
+                        Thread.Sleep(1000);
+                        PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
+                        {
+                            ApiVer = "1.0.0",
+                            ApposId = TaishinAPPOS,
+                            RequestParams = new DeleteCreditCardAuthRequestParamasData()
+                            {
+                                MemberId = IDNO,
+                                CardToken = apiInput.CardToken
+                            },
+                            Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                            TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+                        };
+
+                        WebAPIOutput_DeleteCreditCardAuth WSDeleteOutput = new WebAPIOutput_DeleteCreditCardAuth();
+                        flag = WebAPI.DoDeleteCreditCardAuth(WSDeleteInput, ref errCode, ref WSDeleteOutput);
+                        if (WSDeleteOutput.ResponseParams.ResultData.IsSuccess==false) {
+                            flag = false;
+                            errCode = "ERR196";
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR195";
+                    }
+              
                 }
             }
 
