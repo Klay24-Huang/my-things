@@ -94,31 +94,48 @@ namespace WebAPI.Controllers
                         PolygonType = lstData[i].PolygonMode
                     };
                     string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
-                    string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
+                    string[] tmpLatGroup = lstData[i].Latitude.Split('⊙');
                     int tmpLonGroupLen = tmpLonGroup.Length;
-                    string tmpData = "";
+                    
+
+                    obj.PolygonObj = new string[tmpLonGroupLen];
                     for (int j = 0; j < tmpLonGroupLen; j++)
                     {
+                        string tmpData = "";
+
                         string[] tmpLon = tmpLonGroup[j].Split(',');
                         string[] tmpLat = tmpLatGroup[j].Split(',');
                         int LonLen = tmpLon.Length;
 
-                   
+                        //20200930 ADD BY ADAM REASON.增加POLYGON字串
+                        tmpData += "POLYGON((";
 
                         for (int k = 0; k < LonLen; k++)
                         {
-                            if (j == 0)
+                            //if (j == 0)
+                            if (k == 0)
                             {
-                                tmpData += string.Format("{0},{1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
+                                tmpData += string.Format("{0} {1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
                             }
                             else
                             {
-                                tmpData += string.Format(" {0},{1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
+                                tmpData += string.Format(",{0} {1}", tmpLon[k], (tmpLat[k] == null) ? "0" : tmpLat[k]);
                             }
                         }
+                        //判斷最後一點是否回來
+                        if (tmpLon[0].ToString() != tmpLon[LonLen-1].ToString())
+                        {
+                            tmpData += string.Format(",{0} {1}", tmpLon[0], (tmpLat[0] == null) ? "0" : tmpLat[0]);
+                        }
+                            
+
+                        //20200930 ADD BY ADAM REASON.增加POLYGON字串
+                            tmpData += "))";
+
+                        obj.PolygonObj[j] = tmpData;
                     }
                    
-                    obj.PolygonObj = tmpData;
+                    //obj.PolygonObj = tmpData;
                     outputApi.PolygonObj.Add(obj);
                 }
             }
