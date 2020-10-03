@@ -29,6 +29,7 @@ namespace WebAPI.Controllers
         private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
+        private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoCnangeCreditCardBind(Dictionary<string, object> value)
         {
@@ -57,7 +58,7 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
 
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
+         
 
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -108,7 +109,7 @@ namespace WebAPI.Controllers
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
                 PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
                 {
-                    ApiVer = ApiVer,
+                    ApiVer = ApiVerOther,
                     ApposId = TaishinAPPOS,
                     RequestParams = new GetCreditCardListRequestParamasData()
                     {
@@ -140,7 +141,7 @@ namespace WebAPI.Controllers
                         Thread.Sleep(1000);
                         PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
                         {
-                            ApiVer = ApiVer,
+                            ApiVer = ApiVerOther,
                             ApposId = TaishinAPPOS,
                             RequestParams = new DeleteCreditCardAuthRequestParamasData()
                             {
@@ -176,7 +177,7 @@ namespace WebAPI.Controllers
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
                 WebAPIInput_Base wsInput = new WebAPIInput_Base()
                 {
-                    ApiVer = "1.0.1",
+                    ApiVer = ApiVer,
                     ApposId = TaishinAPPOS,
                     RequestParams = new RequestParamsData()
                     {

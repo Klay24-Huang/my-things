@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
-        private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
+        private string ApiVer = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoDeleteCreditCardBind(Dictionary<string, object> value)
         {
