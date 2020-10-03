@@ -146,7 +146,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, null);
             return objOutput;
             #endregion
         }
