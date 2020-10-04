@@ -350,4 +350,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="IDNO" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="778ec6be-5795-434d-933c-e38b7afcd47a" ChangeDateTime="10/03/2020 06:22:05">
+    <Property Name="ElementName" Value="[dbo].[TB_UserWallet].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_UserWallet]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IDNO" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fae4d98b-3e40-4043-9432-ec234e7d18d1" ChangeDateTime="10/03/2020 06:50:40">
+    <Property Name="ElementName" Value="[dbo].[TB_UserWallet].[LastTr]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_UserWallet]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LastTransDate" />
+  </Operation>
 </Operations>

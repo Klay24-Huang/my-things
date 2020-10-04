@@ -55,6 +55,7 @@
     <Compile Include="HiEasyRentAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaishinCreditCardBindAPI.cs" />
+    <Compile Include="TaishinWallet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

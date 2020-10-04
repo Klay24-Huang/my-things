@@ -66,7 +66,6 @@
     <Build Include="dbo\Tables\TB_Token.sql" />
     <Build Include="dbo\Tables\TB_SystemControl.sql" />
     <Build Include="dbo\Tables\TB_MemberQueryRawData.sql" />
-    <Build Include="dbo\Tables\TB_MemberData.sql" />
     <Build Include="dbo\Tables\TB_MemberBySocial.sql" />
     <Build Include="dbo\Tables\TB_Language.sql" />
     <Build Include="dbo\Tables\TB_ErrorMessageMutiLanguage.sql" />
@@ -187,6 +186,11 @@
     <Build Include="dbo\Tables\TB_Polygon.sql" />
     <Build Include="dbo\Tables\usp_ReturnCar.sql" />
     <Build Include="dbo\Stored Procedures\usp_SettingInvoice.sql" />
+    <Build Include="dbo\Tables\TB_UserWallet.sql" />
+    <Build Include="dbo\Tables\TB_WalletHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HandleWallet.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetWalletInfo.sql" />
+    <Build Include="dbo\Tables\TB_MemberData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

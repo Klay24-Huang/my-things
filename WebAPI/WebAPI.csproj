@@ -201,6 +201,10 @@
     <Compile Include="Controllers\VerifyEMailController.cs" />
     <Compile Include="Controllers\VerifySMSController.cs" />
     <Compile Include="Controllers\VER_USER_POWController.cs" />
+    <Compile Include="Controllers\WalletHistoryController.cs" />
+    <Compile Include="Controllers\WalletPayTransactionController.cs" />
+    <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -270,6 +274,8 @@
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReSendEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VER_USER_POW.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WallHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
@@ -305,9 +311,11 @@
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\DetailData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />

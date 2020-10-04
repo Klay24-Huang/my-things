@@ -889,6 +889,7 @@ namespace WebAPI.Models.BaseFunc
         {
             return (string.IsNullOrWhiteSpace(Source) ? "" : Source);
         }
+
         /// <summary>
         /// 由token取出idno
         /// </summary>
@@ -917,6 +918,57 @@ namespace WebAPI.Models.BaseFunc
                 IDNO = spOut.IDNO;
             }
             return flag;
+        }
+        /// <summary>
+        /// 取出對應的交易類別文字
+        /// </summary>
+        /// <param name="TransType">交易類別
+        ///      ///<para>T001 = 交易扣款</para>
+        ///<para>T002=交易退款</para>
+        ///<para>T003 = 兩階段儲值待確認</para>
+        ///<para>T004=兩階段儲值已確認</para>
+        ///<para>T005 = 取消儲值</para>
+        ///<para>T006=直接儲值</para>
+        ///<para>T007 = 儲值退款</para>
+        ///<para>T008=會員轉贈</para>
+        ///<para>T011 = 批次儲值</para>
+        /// </param>
+        /// <returns></returns>
+        public string GetTransTypeName(string TransType)
+        {
+       
+            string TransTypeName = "";
+            switch (TransType)
+            {
+                case "T001":
+                    TransTypeName = "交易扣款";
+                    break;
+                case "T002":
+                    TransTypeName = "交易退款";
+                    break;
+                case "T003":
+                    TransTypeName = "兩階段儲值待確認";
+                    break;
+                case "T004":
+                    TransTypeName = "兩階段儲值已確認";
+                    break;
+                case "T005":
+                    TransTypeName = "取消儲值";
+                    break;
+                case "T006":
+                    TransTypeName = "直接儲值";
+                    break;
+                case "T007":
+                    TransTypeName = "儲值退款";
+                    break;
+                case "T008":
+                    TransTypeName = "會員轉贈";
+                    break;
+                case "T011":
+                    TransTypeName = "批次儲值";
+                    break;
+            }
+            return TransTypeName;
         }
         /// <summary>
         /// 產生輸出結果

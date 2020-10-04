@@ -1,40 +1,44 @@
 ﻿CREATE TABLE [dbo].[TB_MemberData] (
-    [A_PRGID]        INT            NULL,
-    [A_USERID]       VARCHAR (10)   NULL,
-    [A_SYSDT]        DATETIME       DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
-    [U_PRGID]        INT            NULL,
-    [U_USERID]       VARCHAR (10)   NULL,
-    [U_SYSDT]        DATETIME       DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
-    [MEMIDNO]        VARCHAR (10)   DEFAULT ('') NOT NULL,
-	[MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
-    [MEMPWD]         VARCHAR (50)   DEFAULT ('') NOT NULL,
-    [MEMTEL]         VARCHAR (20)   DEFAULT ('') NOT NULL,
-    [MEMBIRTH]       DATETIME       NULL,
-    [MEMCOUNTRY]     INT            DEFAULT ((0)) NOT NULL,
-    [MEMCITY]        INT            DEFAULT ((0)) NOT NULL,
-    [MEMADDR]        NVARCHAR (500) DEFAULT (N'') NOT NULL,
-    [MEMEMAIL]       VARCHAR (200)  DEFAULT (N'') NOT NULL,
-    [CARDNO]         VARCHAR (20)   DEFAULT ('') NOT NULL,
-    [UNIMNO]         VARCHAR (10)   DEFAULT ('') NOT NULL,
-    [MEMSENDCD]      TINYINT        DEFAULT ((2)) NOT NULL,
-    [CARRIERID]      VARCHAR (20)   DEFAULT ('') NOT NULL,
-    [NPOBAN]         VARCHAR (20)   DEFAULT ('') NOT NULL,
-	[HasVaildEMail]  TINYINT        DEFAULT ((0)) NOT NULL,
-    [HasCheckMobile] TINYINT        DEFAULT ((0)) NOT NULL,
-    [NeedChangePWD]  TINYINT        DEFAULT ((0)) NOT NULL,
-    [HasBindSocial]  TINYINT        DEFAULT ((0)) NOT NULL,
-	[Audit]          INT            DEFAULT ((0)) NOT NULL,
-	[AuditMessage]   NVARCHAR(1024) DEFAULT (N'') NOT NULL,
-    [IrFlag]         INT            DEFAULT ((-1)) NOT NULL,
-    [PayMode]        TINYINT        DEFAULT ((0)) NOT NULL,
-    [RentType] TINYINT NOT NULL DEFAULT 0, 
+    [A_PRGID]        INT             NULL,
+    [A_USERID]       VARCHAR (10)    NULL,
+    [A_SYSDT]        DATETIME        DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
+    [U_PRGID]        INT             NULL,
+    [U_USERID]       VARCHAR (10)    NULL,
+    [U_SYSDT]        DATETIME        DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
+    [MEMIDNO]        VARCHAR (10)    DEFAULT ('') NOT NULL,
+    [MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
+    [MEMPWD]         VARCHAR (50)    DEFAULT ('') NOT NULL,
+    [MEMTEL]         VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [MEMBIRTH]       DATETIME        NULL,
+    [MEMCOUNTRY]     INT             DEFAULT ((0)) NOT NULL,
+    [MEMCITY]        INT             DEFAULT ((0)) NOT NULL,
+    [MEMADDR]        NVARCHAR (500)  DEFAULT (N'') NOT NULL,
+    [MEMEMAIL]       VARCHAR (200)   DEFAULT (N'') NOT NULL,
+    [CARDNO]         VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [UNIMNO]         VARCHAR (10)    DEFAULT ('') NOT NULL,
+    [MEMSENDCD]      TINYINT         DEFAULT ((2)) NOT NULL,
+    [CARRIERID]      VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [NPOBAN]         VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [HasVaildEMail]  TINYINT         DEFAULT ((0)) NOT NULL,
+    [HasCheckMobile] TINYINT         DEFAULT ((0)) NOT NULL,
+    [NeedChangePWD]  TINYINT         DEFAULT ((0)) NOT NULL,
+    [HasBindSocial]  TINYINT         DEFAULT ((0)) NOT NULL,
+    [Audit]          INT             DEFAULT ((0)) NOT NULL,
+    [AuditMessage]   NVARCHAR (1024) DEFAULT (N'') NOT NULL,
+    [IrFlag]         INT             DEFAULT ((-1)) NOT NULL,
+    [PayMode]        TINYINT         DEFAULT ((0)) NOT NULL,
+    [RentType]       TINYINT         DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_TB_MemberData] PRIMARY KEY CLUSTERED ([MEMIDNO] ASC)
 );
 
 
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_TB_MemberData_CheckMobile]
-    ON [dbo].[TB_MemberData]([HasCheckMobile], [HasVaildEMail], [MEMIDNO]);
+    ON [dbo].[TB_MemberData]([HasCheckMobile] ASC, [HasVaildEMail] ASC, [MEMIDNO] ASC);
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'可租車類別：0:無法;1:汽車;2:機車;3:全部', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'RentType';
 
 
 GO
@@ -43,6 +47,14 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'付費方�
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'目前註冊進行至哪個步驟', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'IrFlag';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'審核不通過原因', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'AuditMessage';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否通過審核(0:未審;1:已審;2:審核不通過)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'Audit';
 
 
 GO
@@ -58,7 +70,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否通�
 
 
 GO
-
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否有驗證email;0:否;1:是', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'HasVaildEMail';
 
 
 GO
@@ -110,6 +122,10 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'密碼', @l
 
 
 GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'姓名', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMCNAME';
+
+
+GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'帳號(身份證)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMIDNO';
 
 
@@ -140,49 +156,3 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'由哪個�
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'會員資料表', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData';
 
-
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'是否有驗證email;0:否;1:是',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_MemberData',
-    @level2type = N'COLUMN',
-    @level2name = N'HasVaildEMail'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'姓名',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_MemberData',
-    @level2type = N'COLUMN',
-    @level2name = N'MEMCNAME'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'是否通過審核(0:未審;1:已審;2:審核不通過)',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_MemberData',
-    @level2type = N'COLUMN',
-    @level2name = N'Audit'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'可租車類別：0:無法;1:汽車;2:機車;3:全部',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_MemberData',
-    @level2type = N'COLUMN',
-    @level2name = N'RentType'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'審核不通過原因',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_MemberData',
-    @level2type = N'COLUMN',
-    @level2name = N'AuditMessage'

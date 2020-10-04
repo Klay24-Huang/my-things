@@ -168,6 +168,16 @@ namespace WebAPI.Models.Enum
             UPD_SW_DATA,
             GetMaintainKey,
             #endregion
+            #region 台新錢包
+            /// <summary>
+            /// 取得錢包基本資訊（開戶）
+            /// </summary>
+            GetWalletInfo,
+            /// <summary>
+            /// 開戶+儲值
+            /// </summary>
+            HandleWallet
+            #endregion
 
         }
         /// <summary>
@@ -297,6 +307,14 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMaintainKey:
                     SPName = "usp_GetKey";
+                    break;
+                #endregion
+                #region 台新錢包
+                case SPType.GetWalletInfo:
+                    SPName = "usp_GetWalletInfo";
+                    break;
+                case SPType.HandleWallet:
+                    SPName = "usp_HandleWallet";
                     break;
                     #endregion
             }
