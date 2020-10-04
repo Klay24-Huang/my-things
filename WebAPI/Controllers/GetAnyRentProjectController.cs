@@ -161,8 +161,8 @@ namespace WebAPI.Controllers
                                 ProjName = lstData[0].PRONAME,
                                 Seat = lstData[0].Seat,
                                 Bill = tmpBill,
-                                WorkdayPerHour = lstData[0].Price,
-                                HolidayPerHour = lstData[0].PRICE_H
+                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price/10 : lstData[0].Price,
+                                HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H/10 : lstData[0].PRICE_H
                             });
 
                             if (DataLen > 1)
@@ -195,8 +195,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[0].Price,
-                                        HolidayPerHour = lstData[0].PRICE_H
+                                        WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
+                                        HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H
                                     });
                                 }
                             }

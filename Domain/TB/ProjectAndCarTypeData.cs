@@ -56,5 +56,10 @@ namespace Domain.TB
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+
+        /// <summary>
+        /// 計費模式
+        /// </summary>
+        public Int16 PayMode { set; get; }
     }
 }
