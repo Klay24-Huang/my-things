@@ -277,6 +277,11 @@ namespace WebAPI.Controllers
                         flag = sqlHelpH.ExecuteSPNonQuery(SPName, SPInputH, ref SPoutputH, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPoutputH, ref lstError, ref errCode);
                     }
+                    else
+                    {
+                        errCode = "ERR";
+                        errMsg = output.Message;
+                    }
                     #endregion
                 }
                 #endregion

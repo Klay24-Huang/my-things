@@ -224,6 +224,97 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 轉贈及開戶
+        public bool DoTransferStoreValueCreateAccount(WebAPI_TransferStoredValueCreateAccount wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WebAPIOutput_TransferStoreValueCreateAccount output)
+        {
+            bool flag = true;
+
+            output = DoTransferStoreValueCreateAccountSend(wsInput, ClientId, utcTimeStamp, SignCode).Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                
+                flag = false;
+            }
+            return flag;
+        }
+        private async Task<WebAPIOutput_TransferStoreValueCreateAccount> DoTransferStoreValueCreateAccountSend(WebAPI_TransferStoredValueCreateAccount input, string ClientId, string utcTimeStamp, string SignCode)
+        {
+            bool flag = false;
+            string URL = BaseURL + TransferStoredValueCreateAccount;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+            request.Headers.Add("Authorization", string.Format("Bearer {0}", APIToken));
+            request.Headers.Add("ClientId", ClientId);
+            request.Headers.Add("UtcTimeStamp", utcTimeStamp);
+            request.Headers.Add("SignCode", SignCode);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            WebAPIOutput_TransferStoreValueCreateAccount output = null;
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_TransferStoreValueCreateAccount>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_TransferStoreValueCreateAccount()
+                {
+                    ReturnCode = "9999",
+                    Message = (ex.Message.Length > 200) ? ex.Message.Substring(0, 200) : ex.Message
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "TransferStoredValueCreateAccount",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + TransferStoredValueCreateAccount
+                };
+                flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+        }
+        #endregion
         #region 查詢帳號狀態
         public bool DoGetAccountStatus(WebAPI_GetAccountStatus wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WebAPIOutput_GetAccountStatus output)
         {

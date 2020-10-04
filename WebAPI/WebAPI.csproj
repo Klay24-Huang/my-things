@@ -283,6 +283,7 @@
     <Compile Include="Models\Param\Input\IAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Input\IAPI_WallHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />

@@ -185,6 +185,7 @@ namespace WebAPI.Models.Enum
             /// 取得錢包基本資訊（開戶）
             /// </summary>
             GetWalletInfo,
+            GetWalletInfoByTrans,
             /// <summary>
             /// 開戶+儲值
             /// </summary>
@@ -334,9 +335,13 @@ namespace WebAPI.Models.Enum
                 case SPType.GetWalletInfo:
                     SPName = "usp_GetWalletInfo";
                     break;
+                case SPType.GetWalletInfoByTrans:
+                    SPName = "usp_GetWalletInfoByTrans";
+                    break;
                 case SPType.HandleWallet:
                     SPName = "usp_HandleWallet";
                     break;
+                
                     #endregion
             }
             return SPName;
