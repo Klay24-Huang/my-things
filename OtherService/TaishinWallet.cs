@@ -31,6 +31,7 @@ namespace OtherService
         private string StoreValueCreateAccount = ConfigurationManager.AppSettings["StoreValueCreateAccount"].ToString(); //直接儲值+開戶
         private string StoredMoney = ConfigurationManager.AppSettings["StoredMoney"].ToString(); //直接儲值
         private string TransferStoredValueCreateAccount = ConfigurationManager.AppSettings["TransferStoredValueCreateAccount"].ToString(); //轉贈加開戶
+        private string PayTransaction= ConfigurationManager.AppSettings["PayTransaction"].ToString(); //交易扣款
         private string GetAccountValue = ConfigurationManager.AppSettings["GetAccountValue"].ToString(); //查詢帳號明細
         private string GetAccountStatus= ConfigurationManager.AppSettings["GetAccountStatus"].ToString(); //查詢帳號狀態
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -126,6 +127,96 @@ namespace OtherService
                     WebAPIURL = BaseURL + StoreValueCreateAccount
                 };
                  flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+        }
+        #endregion
+        #region 扣款
+        public bool DoPayTransaction(WebAPI_PayTransaction wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WebAPIOutput_PayTransaction output)
+        {
+            bool flag = true;
+
+            output = DoPayTransactionSend(wsInput, ClientId, utcTimeStamp, SignCode).Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        private async Task<WebAPIOutput_PayTransaction> DoPayTransactionSend(WebAPI_PayTransaction input, string ClientId, string utcTimeStamp, string SignCode)
+        {
+            bool flag = false;
+            string URL = BaseURL + PayTransaction;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+            request.Headers.Add("Authorization", string.Format("Bearer {0}", APIToken));
+            request.Headers.Add("ClientId", ClientId);
+            request.Headers.Add("UtcTimeStamp", utcTimeStamp);
+            request.Headers.Add("SignCode", SignCode);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            WebAPIOutput_PayTransaction output = null;
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_PayTransaction>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_PayTransaction()
+                {
+                    ReturnCode = "9999",
+                    Message = (ex.Message.Length > 200) ? ex.Message.Substring(0, 200) : ex.Message
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "PayTransaction",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + PayTransaction
+                };
+                flag = true;
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);

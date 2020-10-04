@@ -98,6 +98,6 @@ namespace Domain.WebAPI.Input.Taishin.Wallet
         ///<para>1=成功交易</para>
         ///<para>2=失敗交易</para>
         /// </summary>
-        public string TransStatus { get; set; } = "";
+        public string TransStatus { get; set; } = "1";
     }
 }

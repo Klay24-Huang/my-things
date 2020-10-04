@@ -177,6 +177,7 @@
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_CreateAccountAndStoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetAccountStatus.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetAccountValue.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_PayTransaction.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_StoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Auth.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Base.cs" />
@@ -214,9 +215,11 @@
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountStatusResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountValueResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountValueResultDetail.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\PayTransactionResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\StoreValueCreateAccountParam.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetAccountStatus.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetAccountValue.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_PayTransaction.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_StoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Base.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DeleteCreditCardAuth.cs" />

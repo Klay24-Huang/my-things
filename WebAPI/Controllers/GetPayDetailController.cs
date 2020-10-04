@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
+using WebAPI.Models.Param.Output;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -34,7 +35,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_GetPayDetail apiInput = null;
-            NullOutput outputApi = new NullOutput();
+            OAPI_GetPayDetail outputApi = new OAPI_GetPayDetail();
             Int64 tmpOrder = -1;
             Token token = null;
            CommonFunc baseVerify = new CommonFunc();
