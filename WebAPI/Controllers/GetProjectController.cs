@@ -249,8 +249,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PRICE_H
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price/10 : lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H/10 : lstData[i].PRICE_H
                                     };
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
@@ -290,8 +290,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PRICE_H
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H
                                     });
                                 }
                             }

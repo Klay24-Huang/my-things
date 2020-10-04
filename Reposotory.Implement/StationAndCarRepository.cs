@@ -454,7 +454,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<StationAndProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content ";
+            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content,PayMode ";
                 SQL+=" FROM  VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
             SQL += "INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND CarNo NOT IN ( ";
             SQL += "SELECT  CarNo FROM [TB_OrderMain]  ";

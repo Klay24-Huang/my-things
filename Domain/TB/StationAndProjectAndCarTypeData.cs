@@ -71,5 +71,9 @@ namespace Domain.TB
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
+        /// <summary>
+        /// 計費模式
+        /// </summary>
+        public Int16 PayMode { set; get; }
     }
 }
