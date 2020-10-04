@@ -184,7 +184,6 @@
     <Build Include="dbo\Tables\TB_iRentStationInfo.sql" />
     <Build Include="dbo\Stored Procedures\usp_OrderListQuery.sql" />
     <Build Include="dbo\Tables\TB_Polygon.sql" />
-    <Build Include="dbo\Tables\usp_ReturnCar.sql" />
     <Build Include="dbo\Stored Procedures\usp_SettingInvoice.sql" />
     <Build Include="dbo\Tables\TB_UserWallet.sql" />
     <Build Include="dbo\Tables\TB_WalletHistory.sql" />
@@ -195,6 +194,8 @@
     <Build Include="dbo\Tables\TB_CarImageTemp.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsTmpCarImage.sql" />
     <Build Include="dbo\Stored Procedures\usp_HandleCarImage.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckCarStatusByReturn.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ReturnCar.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

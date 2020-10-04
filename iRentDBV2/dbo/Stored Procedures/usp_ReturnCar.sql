@@ -48,11 +48,7 @@ CREATE PROCEDURE [dbo].[usp_ReturnCar]
 	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
-	@CID                    VARCHAR(10)     OUTPUT,
-	@StationID              VARCHAR(10)     OUTPUT,
-	@IsCens                 INT             OUTPUT,
-	@IsMotor                INT             OUTPUT,
-	@deviceToken            VARCHAR(256)    OUTPUT,    
+
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -82,7 +78,7 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【還車前檢查並記錄還車時間】';
+SET @Descript=N'使用者操作【記錄還車時間】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -92,11 +88,7 @@ SET @ProjType=5;
 SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
-SET @CID      ='';
-SET @StationID='';	
-SET @deviceToken='';
-SET @IsCens =-1;
-SET @IsMotor=-1;
+
 	BEGIN TRY
 	
 		 
@@ -136,12 +128,7 @@ SET @IsMotor=-1;
 				SET @Error=1;
 				SET @ErrorCode='ERR185';
 			END
-			ELSE
-			BEGIN
-				SELECT @CID=CID,@StationID=OrderMain.return_place,@IsCens=IsCens,@IsMotor=IsMotor,@deviceToken=deviceToken FROM TB_CarInfo AS CarInfo WITH(NOLOCK)
-				INNER JOIN TB_OrderMain AS OrderMain WITH(NOLOCK) ON OrderMain.CarNo=CarInfo.CarNo AND OrderMain.order_number=@OrderNo;
-				COMMIT TRAN;
-			END
+		
 			IF @Error=0
 			BEGIN
 				SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderDetail WHERE  order_number=@OrderNo;

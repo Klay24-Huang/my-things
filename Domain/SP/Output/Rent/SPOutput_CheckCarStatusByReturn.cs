@@ -9,7 +9,7 @@ namespace Domain.SP.Output.Rent
     /// <summary>
     /// 還車
     /// </summary>
-    public class SPOutput_ReturnCar : SPOutput_Base
+    public class SPOutput_CheckCarStatusByReturn : SPOutput_Base
     {
         public string CID { set; get; }
         public string StationID { set; get; }

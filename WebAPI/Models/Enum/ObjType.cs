@@ -146,7 +146,11 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BookingDelete,
             /// <summary>
-            /// 還車前檢查
+            /// 還車前檢查車況
+            /// </summary>
+            CheckCarStatusByReturn,
+            /// <summary>
+            /// 通過檢查，寫入還車時間
             /// </summary>
             ReturnCar,
             /// <summary>
@@ -295,6 +299,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
+                    break;
+                case SPType.CheckCarStatusByReturn:
+                    SPName = "usp_CheckCarStatusByReturn";
                     break;
                 case SPType.ReturnCar:
                     SPName = "usp_ReturnCar";

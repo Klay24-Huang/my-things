@@ -141,16 +141,16 @@ namespace WebAPI.Controllers
             //開始做還車前檢查
             if (flag)
             {
-                SPInput_ReturnCar spInput = new SPInput_ReturnCar()
+                SPInput_CheckCarByReturn spInput = new SPInput_CheckCarByReturn()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.ReturnCar);
-                SPOutput_ReturnCar spOut = new SPOutput_ReturnCar();
-                SQLHelper<SPInput_ReturnCar, SPOutput_ReturnCar> sqlHelp = new SQLHelper<SPInput_ReturnCar, SPOutput_ReturnCar>(connetStr);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarStatusByReturn);
+                SPOutput_CheckCarStatusByReturn spOut = new SPOutput_CheckCarStatusByReturn();
+                SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn> sqlHelp = new SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
@@ -362,6 +362,23 @@ namespace WebAPI.Controllers
                     #endregion
                 }
 
+            }
+            //通過檢查，更新狀態
+            if (flag)
+            {
+                SPInput_ReturnCar spInput = new SPInput_ReturnCar()
+                {
+                    OrderNo = tmpOrder,
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    Token = Access_Token
+                };
+                string SPName = new ObjType().GetSPName(ObjType.SPType.ReturnCar);
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_ReturnCar, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReturnCar, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+           
             }
             #endregion
             #region 寫入錯誤Log
