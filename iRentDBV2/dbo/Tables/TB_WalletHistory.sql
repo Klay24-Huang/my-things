@@ -9,6 +9,7 @@
     [StoreTransId] VARCHAR(50) NOT NULL DEFAULT '', 
     [TransId] VARCHAR(50) NOT NULL DEFAULT '', 
     [Amount] INT NOT NULL DEFAULT 0, 
+    [OrderNo] BIGINT NOT NULL DEFAULT 0,
     CONSTRAINT [PK_TB_WalletHistory] PRIMARY KEY ([HistoryID]), 
 )
 
@@ -33,3 +34,17 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
 GO
 
 CREATE INDEX [IX_TB_WalletHistory_Search] ON [dbo].[TB_WalletHistory] ([IDNO], [WalletMemberID], [WalletAccountID])
+
+GO
+
+CREATE INDEX [IX_TB_WalletHistory_Search_Order] ON [dbo].[TB_WalletHistory] ([OrderNo])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'訂單編號，當為付款及還車時才有值',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_WalletHistory',
+    @level2type = N'COLUMN',
+    @level2name = N'OrderNo'

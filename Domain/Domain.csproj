@@ -91,6 +91,7 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
+    <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_ReturnCar.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />

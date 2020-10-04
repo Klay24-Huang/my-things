@@ -161,6 +161,10 @@ namespace WebAPI.Models.Enum
             /// 設定發票（會員及訂單）
             /// </summary>
             SettingInvoice,
+            /// <summary>
+            /// 上傳出還車照
+            /// </summary>
+            UploadCarImage,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -297,6 +301,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SettingInvoice:
                     SPName = "usp_SettingInvoice";
+                    break;
+                case SPType.UploadCarImage:
+                    SPName = "usp_InsTmpCarImage";
                     break;
                 #region 拓連
                 /// <summary>

@@ -197,6 +197,7 @@
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
+    <Compile Include="Controllers\UploadCarImageController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
     <Compile Include="Controllers\UseInviteCodeController.cs" />
     <Compile Include="Controllers\VerifyEMailController.cs" />
@@ -271,6 +272,7 @@
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifyEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
@@ -313,6 +315,7 @@
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
+    <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />

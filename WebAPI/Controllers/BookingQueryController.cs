@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            //開始做取消預約
+            //開始做取得訂單
             if (flag)
             {
                 SPInput_GetOrderList spInput = new SPInput_GetOrderList()

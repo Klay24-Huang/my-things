@@ -364,4 +364,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="LastTransDate" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="178382ac-89fa-46c7-89d7-9ba7b3b41277" ChangeDateTime="10/04/2020 01:37:43">
+    <Property Name="ElementName" Value="[dbo].[TB_CarImage].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_CarImage]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OrderNo" />
+  </Operation>
 </Operations>
