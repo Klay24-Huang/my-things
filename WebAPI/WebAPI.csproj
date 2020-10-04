@@ -217,6 +217,7 @@
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
@@ -322,12 +323,16 @@
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\DetailData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
     <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
