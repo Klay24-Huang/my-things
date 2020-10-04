@@ -148,6 +148,7 @@
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
+    <Compile Include="Controllers\CreditAndWalletQueryController.cs" />
     <Compile Include="Controllers\DeleteCreditCardBindController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
@@ -233,6 +234,7 @@
     <Compile Include="Models\Param\Input\IAPI_CENS_ResponseInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangePWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckAccount.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CreditAndWalletQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_DeleteCreditCardAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Models\Param\Output\OAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
+    <Compile Include="Models\Param\Output\OAPI_CreditAndWalletQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
