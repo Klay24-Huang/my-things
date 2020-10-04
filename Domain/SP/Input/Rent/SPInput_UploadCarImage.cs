@@ -9,7 +9,7 @@ namespace Domain.SP.Input.Rent
     public class SPInput_UploadCarImage:SPInput_Base
     {
        public string  IDNO { set; get; }
-       public string  OrderNo { set; get; }
+       public Int64  OrderNo { set; get; }
         public string  Token { set; get; }
         public Int16  Mode { set; get; }
         public Int16  CarImageType { set; get; }

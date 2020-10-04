@@ -92,6 +92,7 @@
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_SetingParkingSpaceByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />

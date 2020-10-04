@@ -57,7 +57,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2name = N'ImageType'
 GO
 
-CREATE INDEX [IX_TB_CarImage_Search] ON [dbo].[TB_CarImageTemp] ([HasUpload], [OrderNo], [Mode])
+CREATE INDEX [IX_TB_CarImageTemp_Search] ON [dbo].[TB_CarImageTemp] ([HasUpload], [OrderNo], [Mode])
 
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',

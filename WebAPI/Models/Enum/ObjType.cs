@@ -169,6 +169,10 @@ namespace WebAPI.Models.Enum
             /// 上傳出還車照
             /// </summary>
             UploadCarImage,
+            /// <summary>
+            /// 上傳及設定停車格位置
+            /// </summary>
+            SettingParkingSpce,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -311,6 +315,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UploadCarImage:
                     SPName = "usp_InsTmpCarImage";
+                    break;
+                case SPType.SettingParkingSpce:
+                    SPName = "usp_InsParkingSpace";
                     break;
                 #region 拓連
                 /// <summary>
