@@ -136,8 +136,7 @@ namespace WebAPI.Controllers
                         StoreId = "",
                         StoreName = "",
                         StoreTransId = "",
-                        TransId = "",
-                        TransStatus = ""
+                        TransId = ""
 
                     };
                     var body = JsonConvert.SerializeObject(wallet);
