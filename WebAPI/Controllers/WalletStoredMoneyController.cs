@@ -152,61 +152,63 @@ namespace WebAPI.Controllers
                             CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
                             hasFind = true;
                         }
-                        if (hasFind)//有找到，可以做刪除
-                        {
-                            Thread.Sleep(1000);
-                            AuthItem item = new AuthItem()
-                            {
-                                Amount = apiInput.Amount.ToString() + "00",
-                                Name = "錢包儲值",
-                                NonPoint = "N",
-                                NonRedeem = "N",
-                                Price = apiInput.Amount.ToString() + "00",
-                                Quantity = "1"
-                            };
-                            PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
-                            {
-                                ApiVer = "1.0.2",
-                                ApposId = TaishinAPPOS,
-                                RequestParams = new AuthRequestParams()
-                                {
-                                    CardToken = CardToken,
-                                    InstallPeriod = "0",
-                                    InvoiceMark = "N",
-                                    Item = new List<AuthItem>(),
-                                    MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
-                                    MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                    MerchantTradeNo = string.Format("{0}WalletSave{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    NonRedeemAmt = apiInput.Amount.ToString() + "00",
-                                    NonRedeemdescCode = "",
-                                    Remark1 = "",
-                                    Remark2 = "",
-                                    Remark3 = "",
-                                    ResultUrl = BindResultURL,
-                                    TradeAmount = apiInput.Amount.ToString() + "00",
-                                    TradeType = "1",
-                                    UseRedeem = "N"
+                        #region 直接授權,先關閉，待2020/10/05詢問台新
+                        //if (hasFind)//有找到，可以做儲值
+                        //{
+                        //    Thread.Sleep(1000);
+                        //    AuthItem item = new AuthItem()
+                        //    {
+                        //        Amount = apiInput.Amount.ToString() + "00",
+                        //        Name = "錢包儲值",
+                        //        NonPoint = "N",
+                        //        NonRedeem = "N",
+                        //        Price = apiInput.Amount.ToString() + "00",
+                        //        Quantity = "1"
+                        //    };
+                        //    PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
+                        //    {
+                        //        ApiVer = "1.0.2",
+                        //        ApposId = TaishinAPPOS,
+                        //        RequestParams = new AuthRequestParams()
+                        //        {
+                        //            CardToken = CardToken,
+                        //            InstallPeriod = "0",
+                        //            InvoiceMark = "N",
+                        //            Item = new List<AuthItem>(),
+                        //            MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                        //            MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                        //            MerchantTradeNo = string.Format("{0}WalletSave{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        //            NonRedeemAmt = apiInput.Amount.ToString() + "00",
+                        //            NonRedeemdescCode = "",
+                        //            Remark1 = "",
+                        //            Remark2 = "",
+                        //            Remark3 = "",
+                        //            ResultUrl = BindResultURL,
+                        //            TradeAmount = apiInput.Amount.ToString() + "00",
+                        //            TradeType = "1",
+                        //            UseRedeem = "N"
 
-                                },
-                                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                        //        },
+                        //        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                        //        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
 
-                            };
-                            WSAuthInput.RequestParams.Item.Add(item);
+                        //    };
+                        //    WSAuthInput.RequestParams.Item.Add(item);
 
-                            WebAPIOutput_DeleteCreditCardAuth WSDeleteOutput = new WebAPIOutput_DeleteCreditCardAuth();
-                            flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSDeleteOutput);
-                            if (WSDeleteOutput.ResponseParams.ResultData.IsSuccess == false)
-                            {
-                                flag = false;
-                                errCode = "ERR196";
-                            }
-                        }
-                        else
-                        {
-                            flag = false;
-                            errCode = "ERR195";
-                        }
+                        //    WebAPIOutput_DeleteCreditCardAuth WSDeleteOutput = new WebAPIOutput_DeleteCreditCardAuth();
+                        //    flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSDeleteOutput);
+                        //    if (WSDeleteOutput.ResponseParams.ResultData.IsSuccess == false)
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR196";
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    flag = false;
+                        //    errCode = "ERR195";
+                        //}
+                        #endregion
 
                     }
                 }
