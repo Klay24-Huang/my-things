@@ -44,7 +44,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_RefrashToken apiInput = null;
-            OAPI_Base loginAPI = null;
+            OAPI_RefrashToken apiOutput = null;
+
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -131,6 +132,10 @@ namespace WebAPI.Controllers
                         Refrash_Rxpires_in = Refrash_Rxpires_in
                     };
 
+                    apiOutput = new OAPI_RefrashToken()
+                    {
+                        Token = token
+                    };
                 }
             }
             #endregion
@@ -141,7 +146,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, loginAPI, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, null);
             return objOutput;
             #endregion
         }

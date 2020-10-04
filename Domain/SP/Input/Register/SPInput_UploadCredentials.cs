@@ -17,12 +17,6 @@ namespace Domain.SP.Input.Register
         /// </summary>
         public string DeviceID { set; get; }
         /// <summary>
-        /// 模式
-        /// <para>0:新增</para>
-        /// <para>1:修改</para>
-        /// </summary>
-        public Int16 Mode { set; get; }
-        /// <summary>
         /// 證件照類型
         /// <para>1:身份證正面</para>
         /// <para>2:身份證反面</para>

@@ -40,8 +40,8 @@
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/9/27 下午 05:30:36    |  Eric|          First Release
-**			 |			  |
+** 2020/9/27 下午 05:30:36 |	Eric	|          First Release
+** 2020/10/3 下午 13:39:00 |	Adam	|  修改汽車的平日每小時價跟假日每小時價
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_OrderListQuery]
 	@IDNO                   VARCHAR(10)           ,
@@ -121,7 +121,9 @@ SET @Token    =ISNULL (@Token    ,'');
 			      ,OperatorName,OperatorICon,Score										   --營運商相關
 				  ,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace             --車子相關
 				  ,device3TBA,RemainingMilage											   --機車電力相關
-				  ,ProjType,PRONAME,PRICE,PRICE_H										   --專案基本資料
+				  ,ProjType,PRONAME--,PRICE,PRICE_H										   --專案基本資料
+				  ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE								--平日每小時價 20201003 ADD BY ADAM
+				  ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H							--假日每小時價 20201003 ADD BY ADAM
 				  ,BaseMinutes,BaseMinutesPrice,MinuteOfPrice,MaxPrice					   --當ProjType=4才有值
 				  ,order_number,start_time,final_start_time,stop_pick_time,stop_time
 				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status

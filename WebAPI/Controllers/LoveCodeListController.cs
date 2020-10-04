@@ -23,8 +23,8 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private CommonRepository _repository;
-        [HttpGet]
-        public Dictionary<string, object> DoGetLoveCodeListt([FromBody] Dictionary<string, object> value)
+        [HttpPost]
+        public Dictionary<string, object> DoGetLoveCodeListt(Dictionary<string, object> value)
         {
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -47,13 +47,12 @@ namespace WebAPI.Controllers
             #region 防呆
 
             string ClientIP = baseVerify.GetClientIp(Request);
-            flag = baseVerify.baseCheck(value, ref errCode, funName);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
 
             if (flag)
             {
                 //寫入API Log
-                flag = baseVerify.InsAPLog("No Input", ClientIP, funName, ref errCode, ref LogID);
-                Contentjson = value["para"].ToString();
+                flag = baseVerify.InsAPLog("No Input", ClientIP, funName, ref errCode, ref LogID);             
                 apiInput = JsonConvert.DeserializeObject<IAPI_LoveCodeList>(Contentjson);
             }
             #endregion

@@ -42,6 +42,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_ForgetPWD apiInput = null;
+            OPAI_ForgetPwd apiOuptut = null;
             OAPI_Login CheckAccountAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -120,6 +121,14 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
+                if (spOut != null && !string.IsNullOrWhiteSpace(spOut.Mobile))
+                {
+                    apiOuptut = new OPAI_ForgetPwd()
+                    {
+                        Mobile = spOut.Mobile
+                    };
+                }
+
             }
             #endregion
             #region 發送簡訊
@@ -140,7 +149,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOuptut, token);
             return objOutput;
             #endregion
         }

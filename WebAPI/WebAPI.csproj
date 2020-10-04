@@ -322,6 +322,8 @@
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
+    <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
+    <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />

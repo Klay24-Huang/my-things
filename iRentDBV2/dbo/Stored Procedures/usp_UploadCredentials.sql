@@ -46,7 +46,6 @@
 CREATE PROCEDURE [dbo].[usp_UploadCredentials]
 	@IDNO                   VARCHAR(10)           ,
 	@DeviceID               VARCHAR(128)          ,
-	@Mode                   TINYINT               , --模式：0:新增;1:修改
 	@CrentialsType         TINYINT               , --證件照類型: 1:身份證正面;2:身份證反面;3:汽車駕照正面;4:汽車駕照反面;5:機車駕證正面;6:機車駕證反面;7:自拍照;8:法定代理人;9:其他（如台大專案）;10:企業用戶
 	@CrentialsFile	        VARCHAR(8000)         , --證件照
 	@LogID                  BIGINT                , 
@@ -76,11 +75,10 @@ SET @hasData=0;
 SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @CrentialsFile=ISNULL(@CrentialsFile,'')
-SET @Mode=ISNULL(@Mode,2)
 SET @CrentialsType=ISNULL(@CrentialsType,0)
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		BEGIN TRY
-		 IF @DeviceID='' OR @IDNO='' OR @CrentialsFile='' OR (@CrentialsType<1 OR @CrentialsType>10) OR (@Mode>1) 
+		 IF @DeviceID='' OR @IDNO='' OR @CrentialsFile='' OR (@CrentialsType<1 OR @CrentialsType>10)
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'

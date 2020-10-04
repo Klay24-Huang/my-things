@@ -209,7 +209,7 @@ namespace WebAPI.Controllers
                         {
                             CarBrend = lstData[0].CarBrend,
                             CarType = lstData[0].CarType,
-                            CarTypeName = lstData[0].CarTypeName,
+                            CarTypeName = lstData[0].CarBrend + lstData[0].CarTypeName,
                             CarTypePic = lstData[0].CarTypePic,
                             Insurance = 1,
                             InsurancePerHour = 20,
@@ -238,7 +238,7 @@ namespace WebAPI.Controllers
                                     {
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
-                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypeName = lstData[i].CarBrend + lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
                                         Insurance = 1,
                                         InsurancePerHour = 20,
@@ -249,8 +249,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PRICE_H
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price/10 : lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H/10 : lstData[i].PRICE_H
                                     };
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
@@ -279,7 +279,7 @@ namespace WebAPI.Controllers
                                     {
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
-                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypeName = lstData[i].CarBrend + lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
                                         Insurance = 1,
                                         InsurancePerHour = 20,
@@ -290,8 +290,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PRICE_H
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H
                                     });
                                 }
                             }
@@ -299,6 +299,12 @@ namespace WebAPI.Controllers
                         
                     }
                 }
+
+                if(lstTmpData != null && lstTmpData.Count>0)
+                {
+                    lstTmpData.ForEach(x => x.StationPic = x.StationPic ?? new string[0]);
+                }
+
                 outputApi = new OAPI_GetProject()
                 {
                     GetProjectObj = lstTmpData
