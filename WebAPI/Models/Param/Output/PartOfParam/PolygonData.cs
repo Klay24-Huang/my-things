@@ -15,6 +15,6 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <para>3:優惠區域</para>
         /// </summary>
         public int PolygonType { set; get; }
-        public string PolygonObj { set; get; }
+        public string[] PolygonObj { set; get; }
     }
 }

@@ -94,7 +94,7 @@ namespace WebAPI.Controllers
                         PolygonType = lstData[i].PolygonMode
                     };
                     string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
-                    string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
+                    string[] tmpLatGroup = lstData[i].Latitude.Split('⊙');
                     int tmpLonGroupLen = tmpLonGroup.Length;
                    
                     obj.PolygonObj = new string[tmpLonGroupLen];

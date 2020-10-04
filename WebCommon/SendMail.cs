@@ -51,7 +51,8 @@ namespace WebCommon
 
             try
             {
-                var response = await client.SendEmailAsync(msg);
+                //var response = await client.SendEmailAsync(msg)
+                var response = await client.SendEmailAsync(msg).ConfigureAwait(false);  //20201003 ADD BY ADAM REASON 解決會卡住問題
                 
 
             }
