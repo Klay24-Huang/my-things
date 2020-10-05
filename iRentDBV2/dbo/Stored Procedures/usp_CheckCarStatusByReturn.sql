@@ -49,6 +49,7 @@ CREATE PROCEDURE [dbo].[usp_CheckCarStatusByReturn]
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
 	@CID                    VARCHAR(10)     OUTPUT, --車機編號
+	@StationID              VARCHAR(10)     OUTPUT,
 	@IsCens                 INT             OUTPUT, --是否為興聯車機
 	@IsMotor                INT             OUTPUT, --是否為機車車機
 	@deviceToken            VARCHAR(256)    OUTPUT, --遠傳車機token
@@ -124,11 +125,11 @@ SET @Token    =ISNULL (@Token    ,'');
 		 BEGIN
 		   BEGIN TRAN
 				SET @hasData=0
-				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status>4 AND car_mgt_status<16 AND cancel_status=0 );
+				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status>=4 AND car_mgt_status<16 AND cancel_status=0 );
 				IF @hasData>0
 				BEGIN
 					--寫入記錄
-				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType,@StationID=lend_place
 							FROM TB_OrderMain
 							WHERE order_number=@OrderNo;
 					

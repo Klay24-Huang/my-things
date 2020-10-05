@@ -32,6 +32,7 @@ namespace WebAPI.Controllers
     public class ReturnCarController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string ClosePolygonOpen = (ConfigurationManager.AppSettings["ClosePolygonOpen"] == null) ? "1" : ConfigurationManager.AppSettings["ClosePolygonOpen"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoBookingCancel(Dictionary<string, object> value)
         {
@@ -221,6 +222,16 @@ namespace WebAPI.Controllers
                                 Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
                             };
                             flag = CheckInPolygon(Nowlatlng, StationID);
+                            #region 快樂模式
+                            if (ClosePolygonOpen == "0")
+                            {
+                                flag = true;
+                            }
+                            #endregion
+                            if (false == flag)
+                            {
+                                errCode = "ERR188";
+                            }
                         }
                         #endregion
                         #endregion
@@ -284,6 +295,16 @@ namespace WebAPI.Controllers
                                         Longitude = info.Longitude
                                     };
                                     flag = CheckInPolygon(Nowlatlng,StationID);
+                                    #region 快樂模式
+                                    if (ClosePolygonOpen == "0")
+                                    {
+                                        flag = true;
+                                    }
+                                    #endregion
+                                    if (false == flag)
+                                    {
+                                        errCode = "ERR188";
+                                    }
                                 }
                                 #endregion
                             }
@@ -351,10 +372,17 @@ namespace WebAPI.Controllers
                                     Longitude = info.Longitude
                                 };
                                 flag = CheckInPolygon(Nowlatlng, StationID);
+                                #region 快樂模式
+                                if (ClosePolygonOpen == "0")
+                                {
+                                    flag = true;
+                                }
+                                #endregion
                                 if (false == flag)
                                 {
                                     errCode = "ERR188";
                                 }
+                              
                             }
                             #endregion
                         }
