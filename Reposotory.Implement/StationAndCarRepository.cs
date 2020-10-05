@@ -455,11 +455,11 @@ namespace Reposotory.Implement
             List<StationAndProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
             string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content,PayMode ";
-                SQL+=" FROM  VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
             SQL += "INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND CarNo NOT IN ( ";
             SQL += "SELECT  CarNo FROM [TB_OrderMain]  ";
             SQL += "WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0) AND  CarNo in (SELECT [CarNo] ";
-            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID IN ("+StationID+") AND CarType IN ( ";
+            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID IN (" + StationID + ") AND CarType IN ( ";
             SQL += "  SELECT CarType FROM VW_GetFullProjectCollectionOfCarTypeGroup WHERE StationID IN (" + StationID + ") ";
             SQL += "  ) AND available<2 )  AND ( ";
             SQL += "   (start_time between @SD AND @ED)  ";
@@ -472,21 +472,19 @@ namespace Reposotory.Implement
             SQL += " ) ";
             SQL += " LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID ";
             SQL += "WHERE  VW.StationID IN (" + StationID + ") AND SPCLOCK='Z' ";
-          
+
             SqlParameter[] para = new SqlParameter[5];
             string term = " ";
-        
 
+            para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+            para[nowCount].Value = SDate;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+            para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+            para[nowCount].Value = EDate;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
 
-                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
-                para[nowCount].Value = SDate;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
-                para[nowCount].Value = EDate;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            
             if (CarType != "")
             {
                 SQL += " AND VW.CarTypeGroupCode=@CarType ";
@@ -495,7 +493,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content  ";
+            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode ";
             SQL += "ORDER BY Price,PRICE_H ASC ";
 
             lstStation = GetObjList<StationAndProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
