@@ -48,6 +48,76 @@ namespace WebAPI.Models.BillFunc
             }
         }
         /// <summary>
+        /// 將折抵時數換算成天、時、分
+        /// </summary>
+        /// <param name="point">總點數</param>
+        /// <param name="Days"></param>
+        /// <param name="Hours"></param>
+        /// <param name="Minutes"></param>
+        public void CalPointerToDayHourMin(int point,ref int Days,ref int Hours,ref int Minutes)
+        {
+            Days= Convert.ToInt32(Math.Floor(Convert.ToDouble(point / 600)));
+            Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((point%600) / 60))));
+            Minutes = point - (Days * 600) - (Hours * 60);
+
+        }
+        /// <summary>
+        /// 由總分鐘數換算天數、時數、分鐘數
+        /// </summary>
+        /// <param name="TotalMinutes"></param>
+        /// <param name="Days"></param>
+        /// <param name="Hours"></param>
+        /// <param name="Minutes"></param>
+        public void CalMinuteToDayHourMin(int TotalMinutes, ref int Days, ref int Hours, ref int Minutes)
+        {
+            Days = Convert.ToInt32(Math.Floor(Convert.ToDouble(TotalMinutes / 600)));
+            Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((TotalMinutes % 600) / 60))));
+            Minutes = TotalMinutes - (Days * 600) - (Hours * 60);
+
+        }
+        /// <summary>
+        /// 計算以分計費金額(不分平假日)
+        /// </summary>
+        /// <param name="days">幾天</param>
+        /// <param name="hours">幾小時</param>
+        /// <param name="minutes">幾分</param>
+        /// <param name="baseMinutes">基本時數</param>
+        /// <param name="BasePrice">基本費</param>
+        /// <param name="price">平日每分鐘</param>
+        /// <param name="priceH">假日每分鐘</param>
+        /// <param name="MaxPrice">當日最高價</param>
+        public void CalFinalPriceByMinutes(int days,int hours,int minutes,int baseMinutes,int BasePrice,float price,float priceH,int MaxPrice,ref int TotalPrice)
+        {
+
+        }
+        /// <summary>
+        ///  計算以分計費金額(不分平假日)
+        /// </summary>
+        /// <param name="TotalMinutes"></param>
+        /// <param name="BaseMinutes"></param>
+        /// <param name="BasePrice"></param>
+        /// <param name="Price"></param>
+        /// <param name="PriceH"></param>
+        /// <param name="MaxPrice"></param>
+        /// <param name="TotalPrice"></param>
+        public void CalFinalPriceByMinutes(int TotalMinutes, int BaseMinutes, int BasePrice, float Price, float PriceH, int MaxPrice, ref int TotalPrice)
+        {
+            if(TotalMinutes>0 && TotalMinutes <= BaseMinutes)   //如果時間大於0且小於基本時數，則以基本費計算
+            {
+                TotalPrice = BasePrice;
+            }
+            else if(TotalMinutes>0)
+            {
+                int days = 0,hours=0,mins=0;
+                CalMinuteToDayHourMin(TotalMinutes-BaseMinutes, ref days, ref hours, ref mins); //取出天、時、分
+                TotalPrice=Convert.ToInt32(Math.Floor((MaxPrice*days)+(((Price*60*hours)<MaxPrice)? (Price * 60 * hours) : MaxPrice)+(mins*Price)))+BaseMinutes;
+            }
+            else
+            {
+                TotalPrice = 0; //時數是0
+            }
+        }
+        /// <summary>
         /// 計算里程費
         /// </summary>
         /// <param name="SD">起日</param>

@@ -647,7 +647,102 @@ namespace OtherService
             return output;
         }
         #endregion
-        #region ETAG查詢
+        #region ETAG010查詢費用(合約)
+        public bool ETAG010Send(string IRENTORDNO, string RNTDATETIME, ref WebAPIOutput_ETAG010 output)
+        {
+            bool flag = true;
+            WebAPIInput_ETAG010 input = new WebAPIInput_ETAG010()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                 IRENTORDNO = IRENTORDNO,
+                RNTDATETIME = RNTDATETIME
+            };
+            output = DoETAG010Send(input).Result;
+            if (output.Result)
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+
+        /// <summary>
+        /// 發送簡訊執行端
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<WebAPIOutput_ETAG010> DoETAG010Send(WebAPIInput_ETAG010 input)
+        {
+            WebAPIOutput_ETAG010 output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + ETAG010QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_ETAG010>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_ETAG010()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "ETAG010Query",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + ETAG010QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
         #endregion
     }
 }

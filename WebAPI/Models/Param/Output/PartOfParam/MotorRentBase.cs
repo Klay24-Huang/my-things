@@ -18,6 +18,6 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 每分鐘多少費用
         /// </summary>
-        public int MinuteOfPrice { set; get; }
+        public float MinuteOfPrice { set; get; }
     }
 }

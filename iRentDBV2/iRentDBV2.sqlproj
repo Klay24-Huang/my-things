@@ -200,6 +200,7 @@
     <Build Include="dbo\Tables\TB_ParkingSpaceTmp.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsParkingSpace.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetWalletInfoByTrans.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetOrderStatusByOrderNo.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
