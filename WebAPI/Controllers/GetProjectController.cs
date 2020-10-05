@@ -219,7 +219,9 @@ namespace WebAPI.Controllers
                             ProjID = lstData[0].PROJID,
                             ProjName = lstData[0].PRONAME,
                             Seat = lstData[0].Seat,
-                            Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday))
+                            Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
+                            WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
+                            HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H
                         });
                         lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                         if (DataLen > 1)
