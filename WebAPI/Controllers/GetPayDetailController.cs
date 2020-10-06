@@ -85,8 +85,10 @@ namespace WebAPI.Controllers
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int RemainRentalTime = 0;
-
+            MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
+            List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
+            bool UseMonthMode = false;  //false:無月租;true:有月租
             #endregion
 
             #region 防呆
@@ -389,6 +391,63 @@ namespace WebAPI.Controllers
                             HoildayPrice = OrderDataLists[0].PRICE_H * 10
                         };
                     }
+                }
+                #endregion
+                #region 月租
+                if (flag)
+                {
+                  
+                    int RateType = (ProjType == 4) ? 1 : 0;
+                    if (hasFine)
+                    {
+                        monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(IDNO, SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                    }
+                    else
+                    {
+                        monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(IDNO, SD.ToString("yyyy-MM-dd HH:mm:ss"), FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                    }
+                    int MonthlyLen = monthlyRentDatas.Count;
+                    if (MonthlyLen > 0) {
+                        UseMonthMode = true;
+                        //1.0 先還原這個單號使用的
+                        flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
+                        if (flag)
+                        {
+                            if (ProjType == 4)
+                            {
+                                //機車沒有分平假日，直接送即可
+                                for(int i = 0; i < MonthlyLen; i++)
+                                {
+                                    int MotoTotalHours = Convert.ToInt32(60 * monthlyRentDatas[i].MotoTotalHours);
+                                    if (MotoTotalHours >= TotalRentMinutes) //全部扣光
+                                    {
+                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄
+                                        TotalRentMinutes = 0;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        if(TotalRentMinutes- MotoTotalHours >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
+                                        {
+                                            TotalRentMinutes -= MotoTotalHours;
+                                            flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        }
+                                        else
+                                        {
+                                            MotoTotalHours+=TotalRentMinutes - MotoTotalHours - OrderDataLists[0].BaseMinutes;
+                                            TotalRentMinutes -= MotoTotalHours;
+                                            flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                   
                 }
                 #endregion
                 #region 開始計價
