@@ -53,6 +53,10 @@ namespace Domain.SP.Output.OrderList
         #endregion
         #region 車型相關
         /// <summary>
+        /// 車號
+        /// </summary>
+        public string CarNo { set; get; }
+        /// <summary>
         /// 廠牌
         /// </summary>
         public string CarBrend { set; get; }
@@ -76,6 +80,12 @@ namespace Domain.SP.Output.OrderList
         /// 停車格位置
         /// </summary>
         public string parkingSpace { set; get; }
+        /// <summary>
+        /// 是否為機車
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMotor { set; get; }
         #endregion
         #region 機車相關電力相關
         /// <summary>
@@ -125,6 +135,10 @@ namespace Domain.SP.Output.OrderList
         /// 每日上限
         /// </summary>
         public int MaxPrice            { set; get; }
+        /// <summary>
+        /// 假日上限
+        /// </summary>
+        public int MaxPriceH { set; get; }
         #endregion
         #endregion
         #region 訂單相關

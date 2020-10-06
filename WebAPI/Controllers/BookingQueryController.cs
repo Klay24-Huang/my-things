@@ -136,12 +136,13 @@ namespace WebAPI.Controllers
                         {
                             ActiveOrderData obj = new ActiveOrderData()
                             {
-
+                                CarNo = OrderDataLists[i].CarNo,
                                 CarBrend = OrderDataLists[i].CarBrend,
                                 CarOfArea = OrderDataLists[i].CarOfArea,
                                 CarRentBill = OrderDataLists[i].init_price,
                                 CarTypeName = OrderDataLists[i].CarTypeName,
                                 CarTypePic = OrderDataLists[i].CarTypeImg,
+                                Seat = OrderDataLists[i].Seat,                            
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
                                 InsurancePerHour = OrderDataLists[i].Insurance,
@@ -149,6 +150,7 @@ namespace WebAPI.Controllers
                                 OperatorScore = OrderDataLists[i].Score,
                                 OrderNo = string.Format("H{0}", OrderDataLists[i].order_number.ToString().PadLeft(7, '0')),
                                 ParkingSection = OrderDataLists[i].parkingSpace,
+                                IsMotor = OrderDataLists[i].IsMotor,
                                 PickTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].final_start_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].final_start_time).ToString("yyyy-MM-dd HH:mm:ss"),
                                 StartTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].start_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].start_time).ToString("yyyy-MM-dd HH:mm:ss") ,
                                 StopTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].stop_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].stop_time).ToString("yyyy-MM-dd HH:mm:ss") ,
@@ -157,6 +159,8 @@ namespace WebAPI.Controllers
                                 WorkdayPerHour = OrderDataLists[i].PRICE,
                                 TransDiscount = (OrderDataLists[i].init_TransDiscount < 0) ? 0 : OrderDataLists[i].init_TransDiscount,
                                 ProjType = OrderDataLists[i].ProjType,
+                                MaxPrice = OrderDataLists[i].MaxPrice,
+                                MaxPriceH = OrderDataLists[i].MaxPriceH,
                                 StationInfo = new Domain.TB.iRentStationData()
                                 {
                                     ADDR = OrderDataLists[i].ADDR,

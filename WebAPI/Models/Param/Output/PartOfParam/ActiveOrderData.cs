@@ -44,16 +44,29 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 車輛圖片
         /// </summary>
         public string CarTypePic { set; get; }
-
+        /// <summary>
+        /// 車號
+        /// </summary>
+        public string CarNo { set; get; }
         public string CarBrend { set; get; }
         /// <summary>
         /// 車型名稱
         /// </summary>
         public string CarTypeName { set; get; }
         /// <summary>
+        /// 座椅數
+        /// </summary>
+        public int Seat { set; get; }
+        /// <summary>
         /// 停車格位置
         /// </summary>
         public string ParkingSection { set; get; }
+        /// <summary>
+        /// 是否為機車
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMotor { set; get; }
         /// <summary>
         /// 車輛圖顯示地區
         /// </summary>
@@ -84,6 +97,14 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 假日每小時
         /// </summary>
         public int HolidayPerHour { set; get; }
+        /// <summary>
+        /// 每日上限
+        /// </summary>
+        public int MaxPrice { set; get; }
+        /// <summary>
+        /// 假日上限
+        /// </summary>
+        public int MaxPriceH { set; get; }
         /// <summary>
         /// 機車費用，當ProjType=4時才有值
         /// </summary>

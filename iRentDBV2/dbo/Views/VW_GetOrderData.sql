@@ -42,6 +42,7 @@ SELECT OrderMain.[order_number]
 	  ,Car.CarOfArea
 	  ,Car.LastOrderNo
 	  ,Car.available AS IsReturnCar
+	  ,CarInfo.IsMotor --20201006 - eason
 	  ,Operator.OperatorID
 	  ,Operator.OperatorName
 	  ,Operator.OperatorICon
@@ -58,6 +59,7 @@ SELECT OrderMain.[order_number]
 	  ,ISNULL(PriceByMinutes.BaseMinutesPrice,0) AS BaseMinutesPrice
 	  ,ISNULL(PriceByMinutes.Price			 ,0.0) AS MinuteOfPrice
 	  ,ISNULL(PriceByMinutes.MaxPrice		 ,0) AS MaxPrice
+	  ,ISNULL(PriceByMinutes.MaxPriceH		 ,0) AS MaxPriceH --20201006 - eason
 	  ,ISNULL(CarStatus.device3TBA,0) AS device3TBA
 	  ,ISNULL(CarStatus.deviceRDistance,'') AS RemainingMilage
 	  ,Station.Content AS [Content]
@@ -69,6 +71,7 @@ SELECT OrderMain.[order_number]
   FROM [dbo].[TB_OrderMain] AS OrderMain  WITH(NOLOCK)
   LEFT JOIN [dbo].[TB_OrderDetail] AS OrderDetil WITH(NOLOCK) ON OrderDetil.order_number=OrderMain.order_number 
   LEFT JOIN [dbo].[TB_Car] AS Car WITH(NOLOCK) ON Car.CarNo=OrderMain.CarNo
+  LEFT JOIN [dbo].[TB_CarInfo] CarInfo WITH(NOLOCK) ON CarInfo.CarNo = OrderMain.CarNo --20201006 - eason  
   LEFT JOIN [dbo].[TB_OperatorBase] AS Operator  WITH(NOLOCK)  ON Operator.OperatorID=Car.Operator
   LEFT JOIN [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW  WITH(NOLOCK) ON VW.CARTYPE=Car.CarType AND VW.StationID=OrderMain.lend_place AND VW.PROJID=OrderMain.ProjID AND VW.IOType='O'
   LEFT JOIN [dbo].[TB_PriceByMinutes] AS PriceByMinutes WITH(NOLOCK) ON PriceByMinutes.CarType=Car.CarType AND PriceByMinutes.ProjID=VW.PROJID
