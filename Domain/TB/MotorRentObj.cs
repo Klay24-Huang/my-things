@@ -16,6 +16,10 @@ namespace Domain.TB
         /// </summary>
         public string CarNo { set; get; }
         /// <summary>
+        /// 車型代碼 20201006 ADD BY ADAM
+        /// </summary>
+        public string CarType { set; get; }
+        /// <summary>
         /// 車型
         /// </summary>
         public string CarTypeName { set; get; }
