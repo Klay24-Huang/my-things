@@ -201,6 +201,10 @@
     <Build Include="dbo\Stored Procedures\usp_InsParkingSpace.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetWalletInfoByTrans.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderStatusByOrderNo.sql" />
+    <Build Include="dbo\Tables\TB_MonthlyRent.sql" />
+    <Build Include="dbo\Tables\TB_MonthlyRentHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsMonthlyHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ClearMonthlyTmpHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

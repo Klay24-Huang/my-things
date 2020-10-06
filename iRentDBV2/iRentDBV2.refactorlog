@@ -378,4 +378,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OrderNo" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d064b717-a5cf-413c-8646-a17e32f29900" ChangeDateTime="10/06/2020 02:51:07">
+    <Property Name="ElementName" Value="[dbo].[TB_MonthlyRentHistory].[SubScriptionID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MonthlyRentHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MonthlyRentId" />
+  </Operation>
 </Operations>
