@@ -227,7 +227,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            string SQL = "SELECT [CarNo],[CarTypeName] as CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";  
@@ -256,7 +256,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            string SQL = "SELECT [CarNo],[CarTypeName] AS CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] "; 

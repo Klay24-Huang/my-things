@@ -41,7 +41,7 @@
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
 ** 2020/9/25 上午 10:17:48    |  Eric|          First Release
-**			 |			  |
+**2020/10/06 |	ADAM	  | 排除已刪除的清單
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetCancelOrderList]
 	@IDNO                   VARCHAR(10)           ,
@@ -152,6 +152,7 @@ SET @maxPage=0;
 								LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
 								LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=OrderMain.ProjID AND (OrderMain.start_time BETWEEN Setting.SDate AND Setting.EDate)
 							     WHERE IDNO=@IDNO AND cancel_status>0
+								 AND isDelete=0		--20201006 ADD BY ADAM REASON.排除已刪除的清單
 				    ),
 				T2 AS (
 				    SELECT COUNT(1) TotalCount FROM T
