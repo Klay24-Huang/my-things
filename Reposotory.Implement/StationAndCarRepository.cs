@@ -191,7 +191,7 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
-            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] ";
+            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID ";
             SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
 
             SqlParameter[] para = new SqlParameter[2];
