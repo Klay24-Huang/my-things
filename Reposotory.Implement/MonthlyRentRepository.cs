@@ -1,4 +1,7 @@
-﻿using Domain.TB;
+﻿using Domain.SP.Input.MonthlyRent;
+using Domain.SP.Output;
+using Domain.TB;
+using Reposotory.Implement.Enum;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -89,15 +92,86 @@ namespace Reposotory.Implement
         /// </summary>
         /// <param name="OrderNo">訂單編號</param>
         /// <param name="errCode">錯誤代碼</param>
+        /// <param name="IDNO">身份證號</param>
+        /// <param name="LogID">執行api的logid</param>
         /// <returns>
         /// <para>true:成功</para>
         /// <para>false:失敗</para>
         /// </returns>
-        public bool RestoreHistory(Int64 OrderNo,ref string errCode)
+        public bool RestoreHistory(string IDNO,Int64 OrderNo,Int64 LogID,ref string errCode)
         {
             bool flag = false;
-
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SPName=new ObjType().GetSPName(ObjType.SPType.ClearMonthTmpHistory);
+            SPInput_ClearMonthlyTmpHistory SPInput = new SPInput_ClearMonthlyTmpHistory()
+            {
+                IDNO = IDNO,
+                LogID = LogID,
+                OrderNo = OrderNo
+            };
+            SPOutput_Base SPOutput = new SPOutput_Base();
+            SQLHelper<SPInput_ClearMonthlyTmpHistory, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ClearMonthlyTmpHistory, SPOutput_Base>(ConnectionString);
+            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+            checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
+        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo,Int64 MonthlyRentId, float UseWorkDayHours,float UseHolidayHours, float UseMotoTotalHours, Int64 LogID, ref string errCode)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.InsMonthHistory);
+            SPInput_InsMonthlyHistory SPInput = new SPInput_InsMonthlyHistory()
+            {
+                IDNO = IDNO,
+                LogID = LogID,
+                OrderNo = OrderNo,
+                MonthlyRentId = MonthlyRentId,
+                UseHolidayHours = UseHolidayHours,
+                UseMotoTotalHours = UseMotoTotalHours,
+                UseWorkDayHours = UseWorkDayHours
+            };
+            SPOutput_Base SPOutput = new SPOutput_Base();
+            SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base>(ConnectionString);
+            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+            checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+            return flag;
+        }
+        /// <summary>
+        /// 驗證SP回傳值
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="Error"></param>
+        /// <param name="ErrorCode"></param>
+        /// <param name="lstError"></param>
+        /// <param name="errCode"></param>
+        private void checkSQLResult(ref bool flag, int Error, string ErrorCode, ref List<ErrorInfo> lstError, ref string errCode)
+        {
+            if (flag)
+            {
+                if (Error == 1)
+                {
+                    lstError.Add(new ErrorInfo() { ErrorCode = ErrorCode });
+                    errCode = ErrorCode;
+                    flag = false;
+                }
+                else
+                {
+                    if (ErrorCode != "0000")
+                    {
+                        lstError.Add(new ErrorInfo() { ErrorCode = ErrorCode });
+                        errCode = ErrorCode;
+                        flag = false;
+                    }
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+        }
+#endregion
     }
 }
