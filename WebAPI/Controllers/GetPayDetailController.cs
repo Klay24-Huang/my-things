@@ -15,6 +15,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -82,7 +83,12 @@ namespace WebAPI.Controllers
             int days = 0; int hours = 0; int mins = 0; //以分計費總時數
             int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
+            int ActualRedeemableTimePoint = 0; //實際可抵折點數
+            int RemainRentalTime = 0;
+            MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
+            List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
+            bool UseMonthMode = false;  //false:無月租;true:有月租
             #endregion
 
             #region 防呆
@@ -236,6 +242,14 @@ namespace WebAPI.Controllers
              
                    
                 }
+                if (flag)
+                {
+                    if (NowTime.Subtract(FED).TotalMinutes >= 30)
+                    {
+                        flag = false;
+                        errCode = "ERR208";
+                    }
+                }
                 //與短租查時數
                 #region 與短租查時數
                 if (flag)
@@ -344,8 +358,9 @@ namespace WebAPI.Controllers
                        RedeemingTimeCarInterval=CarPoint.ToString(),
                        RedeemingTimeMotorInterval=MotorPoint.ToString(),
                         RedeemingTimeInterval=(ProjType==4)?(CarPoint+MotorPoint).ToString():CarPoint.ToString(),
-                         RentalDate=FED.ToString(),
+                         RentalDate=FED.ToString("yyyy-MM-dd HH:mm:ss"),
                           RentalTimeInterval=(TotalRentMinutes+TotalFineRentMinutes).ToString(),
+                          
                            
 
 
@@ -354,6 +369,7 @@ namespace WebAPI.Controllers
 
                     if (ProjType == 4)
                     {
+                        TotalPoint = (CarPoint + MotorPoint);
                         outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase()
                         {
                             BaseMinutePrice = OrderDataLists[0].BaseMinutesPrice,
@@ -364,6 +380,7 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
+                        TotalPoint = CarPoint;
                         outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase()
                         {
                             HoildayOfHourPrice = OrderDataLists[0].PRICE_H,
@@ -376,37 +393,144 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
+                #region 月租
+                if (flag)
+                {
+                  
+                    int RateType = (ProjType == 4) ? 1 : 0;
+                    if (hasFine)
+                    {
+                        monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(IDNO, SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                    }
+                    else
+                    {
+                        monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(IDNO, SD.ToString("yyyy-MM-dd HH:mm:ss"), FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                    }
+                    int MonthlyLen = monthlyRentDatas.Count;
+                    if (MonthlyLen > 0) {
+                        UseMonthMode = true;
+                        //1.0 先還原這個單號使用的
+                        flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
+                        if (flag)
+                        {
+                            if (ProjType == 4)
+                            {
+                                //機車沒有分平假日，直接送即可
+                                for(int i = 0; i < MonthlyLen; i++)
+                                {
+                                    int MotoTotalHours = Convert.ToInt32(60 * monthlyRentDatas[i].MotoTotalHours);
+                                    if (MotoTotalHours >= TotalRentMinutes) //全部扣光
+                                    {
+                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄
+                                        TotalRentMinutes = 0;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        if(TotalRentMinutes- MotoTotalHours >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
+                                        {
+                                            TotalRentMinutes -= MotoTotalHours;
+                                            flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        }
+                                        else
+                                        {
+                                            MotoTotalHours+=TotalRentMinutes - MotoTotalHours - OrderDataLists[0].BaseMinutes;
+                                            TotalRentMinutes -= MotoTotalHours;
+                                            flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                   
+                }
+                #endregion
                 #region 開始計價
 
                 if (flag) {
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (ProjType == 4)
                     {
-                        if (Discount >= TotalRentMinutes)
+                        if (TotalPoint >= TotalRentMinutes)
                         {
-                            Discount = TotalRentMinutes;
+                            ActualRedeemableTimePoint = TotalRentMinutes;
+                        }
+                        else
+                        {
+                            if((TotalPoint-TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            {
+                                ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                            }
+                        }
+                        if (Discount >= TotalRentMinutes)               
+                        {
+                            Discount = (days*600)+(hours*60)+(mins);        //自動縮減
                             
                         }
                         else
                         {
-                            if ((Discount - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            int tmp = TotalRentMinutes - Discount;
+                            if (tmp< OrderDataLists[0].BaseMinutes)
                             {
-                                Discount = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
                             }
+                     
                         }
                         TotalRentMinutes -= Discount;
                         int CarRentPrice = 0;
-                        billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                        if (UseMonthMode)
+                        {
+                            billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, monthlyRentDatas[0].WorkDayRateForMoto, monthlyRentDatas[0].HoildayRateForMoto, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                            outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForMoto;
+                            outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForMoto;
+                        }
+                        else
+                        {
+                            billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                        }
+                        
                         outputApi.Rent.CarRental = CarRentPrice;
-                    
+                        outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
+
+
+
 
                     }
                     else
                     {
 
                     }
-                    outputApi.Rent.ActualRedeemableTimeInterval = Discount.ToString();
 
+                    outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
+                    outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes).ToString();
+                    outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
+                    outputApi.Rent.TotalRental = (outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice < 0)?0: outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice;
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
+                    SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
+                    {
+                        Etag = outputApi.Rent.ETAGRental,
+                        final_price = outputApi.Rent.TotalRental,
+                        fine_price = outputApi.Rent.OvertimeRental,
+                        gift_point = Discount,
+                        IDNO = IDNO,
+                        Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
+                        LogID = LogID,
+                        mileage_price = outputApi.Rent.MileageRent,
+                        OrderNo = tmpOrder,
+                        parkingFee = outputApi.Rent.ParkingFee,
+                        pure_price = outputApi.Rent.CarRental,
+                        Token = Access_Token,
+                        TransDiscount = outputApi.Rent.TransferPrice
+                    };
+                    SPOutput_Base SPOutput = new SPOutput_Base();
+                    SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);
+                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                 }
                 #endregion
 

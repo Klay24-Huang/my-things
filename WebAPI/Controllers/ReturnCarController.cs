@@ -60,7 +60,8 @@ namespace WebAPI.Controllers
             string deviceToken = "";
             string StationID = "";
             string CID = "";
-            
+            double mil = 0;
+
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
@@ -196,6 +197,7 @@ namespace WebAPI.Controllers
                         #region 判斷是否熄火
                         if (flag)
                         {
+                            mil = wsOutInfo.data.Milage;
                             if (wsOutInfo.data.PowOn == 1)
                             {
                                 flag = false;
@@ -269,6 +271,7 @@ namespace WebAPI.Controllers
                                 #region 判斷是否熄火
                                 if (flag)
                                 {
+                                    mil = info.Millage;
                                     if (info.PowerONStatus == 1)
                                     {
                                         flag = false;
@@ -346,6 +349,7 @@ namespace WebAPI.Controllers
                             #region 判斷是否熄火
                             if (flag)
                             {
+                                mil = info.Millage;
                                 if (info.ACCStatus == 1)
                                 {
                                     flag = false;
@@ -399,7 +403,8 @@ namespace WebAPI.Controllers
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                     NowMileage= Convert.ToSingle(mil)
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.ReturnCar);
                 SPOutput_Base spOut = new SPOutput_Base();

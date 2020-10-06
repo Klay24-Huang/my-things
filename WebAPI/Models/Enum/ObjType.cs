@@ -177,6 +177,14 @@ namespace WebAPI.Models.Enum
             /// 使用訂單編號取出該訂單基本資訊
             /// </summary>
             GetOrderStatusByOrderNo,
+            /// <summary>
+            /// 計算及寫入最終租金
+            /// </summary>
+            CalFinalPrice,
+            /// <summary>
+            /// 完成付款
+            /// </summary>
+            DonePayRentBill,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -326,6 +334,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetOrderStatusByOrderNo:
                     SPName = "usp_GetOrderStatusByOrderNo";
+                    break;
+                case SPType.CalFinalPrice:
+                    SPName = "usp_CalFinalPrice";
+                    break;
+                case SPType.DonePayRentBill:
+                    SPName = "usp_DonePayRentBill";
                     break;
                 #region 拓連
                 /// <summary>

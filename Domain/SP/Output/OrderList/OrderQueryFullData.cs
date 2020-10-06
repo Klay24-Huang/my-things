@@ -207,6 +207,10 @@ namespace Domain.SP.Output.OrderList
         /// 車號
         /// </summary>
         public string CarNo { set; get; }
+        /// <summary>
+        /// 計算後的租金
+        /// </summary>
+        public int final_price { set; get; }
 
         #endregion
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Rent
 {
-    public class SPInput_ReturnCar:SPInput_Base
+    public class SPInput_DonePayRent : SPInput_Base
     {
         /// <summary>
         /// 身份證
@@ -16,7 +16,10 @@ namespace Domain.SP.Input.Rent
         /// 訂單編號
         /// </summary>
         public Int64 OrderNo { set; get; }
-        public Single NowMileage { set; get; }
+        /// <summary>
+        /// 金流交易序號
+        /// </summary>
+        public string transaction_no { set; get; }
         /// <summary>
         /// auth token
         /// </summary>
