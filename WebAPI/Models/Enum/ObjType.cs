@@ -173,6 +173,10 @@ namespace WebAPI.Models.Enum
             /// 上傳及設定停車格位置
             /// </summary>
             SettingParkingSpce,
+            /// <summary>
+            /// 使用訂單編號取出該訂單基本資訊
+            /// </summary>
+            GetOrderStatusByOrderNo,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -319,6 +323,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SettingParkingSpce:
                     SPName = "usp_InsParkingSpace";
+                    break;
+                case SPType.GetOrderStatusByOrderNo:
+                    SPName = "usp_GetOrderStatusByOrderNo";
                     break;
                 #region 拓連
                 /// <summary>

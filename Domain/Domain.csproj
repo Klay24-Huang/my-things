@@ -91,6 +91,7 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
     <Compile Include="SP\Input\Rent\SPInput_SetingParkingSpaceByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
+    <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EinvBiz.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ETAG010.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
@@ -190,6 +193,8 @@
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ArrearQuery.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_EinvBiz.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />

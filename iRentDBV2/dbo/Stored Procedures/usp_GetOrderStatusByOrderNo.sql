@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_CheckCarStatusByReturn]
+** Name: [dbo].[usp_GetOrderStatusByOrderNo]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,30 +29,25 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_CheckCarStatusByReturn]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_GetOrderStatusByOrderNo]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/10/4 下午 01:19:03 
+** Date:2020/10/5 下午 01:29:01 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/4 下午 01:19:03    |  Eric|          First Release
+** 2020/10/5 下午 01:29:01    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_CheckCarStatusByReturn]
+CREATE PROCEDURE [dbo].[usp_GetOrderStatusByOrderNo]
 	@IDNO                   VARCHAR(10)           ,
-	@OrderNo				BIGINT                ,
+	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
-	@CID                    VARCHAR(10)     OUTPUT, --車機編號
-	@StationID              VARCHAR(10)     OUTPUT,
-	@IsCens                 INT             OUTPUT, --是否為興聯車機
-	@IsMotor                INT             OUTPUT, --是否為機車車機
-	@deviceToken            VARCHAR(256)    OUTPUT, --遠傳車機token
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -66,7 +61,7 @@ DECLARE @hasData TINYINT;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
-DECLARE @Descript NVARCHAR(200);
+
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
@@ -77,12 +72,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_CheckCarStatusByReturn';
+SET @FunName='usp_GetOrderStatusByOrderNo';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【還車前判斷車況】';
+
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -94,6 +89,8 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
 
 		BEGIN TRY
+
+		 
 		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
 		 BEGIN
 		   SET @Error=1;
@@ -120,29 +117,24 @@ SET @Token    =ISNULL (@Token    ,'');
 				END
 			END
 		 END
-
 		 IF @Error=0
 		 BEGIN
-		   BEGIN TRAN
-				SET @hasData=0
-				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status>=4 AND car_mgt_status<16 AND cancel_status=0 );
-				IF @hasData>0
-				BEGIN
-					--寫入記錄
-				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType,@StationID=lend_place
-							FROM TB_OrderMain
-							WHERE order_number=@OrderNo;
-					
-					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-					COMMIT TRAN;
-					SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID,@IsCens=IsCens,@IsMotor=IsMotor FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo; 
-				END
-				ELSE
-				BEGIN
-					ROLLBACK TRAN;
-					SET @Error=1;
-					SET @ErrorCode='ERR185';
-				END
+		 SELECT order_number AS OrderNo,lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content --據點相關
+			      ,OperatorName,OperatorICon,Score										   --營運商相關
+				  ,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace             --車子相關
+				  ,device3TBA,RemainingMilage											   --機車電力相關
+				  ,ProjType,PRONAME--,PRICE,PRICE_H										   --專案基本資料
+				  ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE								--平日每小時價 20201003 ADD BY ADAM
+				  ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H							--假日每小時價 20201003 ADD BY ADAM
+				  ,BaseMinutes,BaseMinutesPrice,MinuteOfPrice,MaxPrice					   --當ProjType=4才有值
+				  ,order_number,start_time,final_start_time,stop_pick_time,stop_time,final_stop_time,ISNULL(fine_Time,'') AS fine_Time
+				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
+				  ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
+				  ,already_lend_car,IsReturnCar,CarNo
+			FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
+			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+		     WHERE IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0
+			ORDER BY start_time ASC 
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
@@ -169,20 +161,20 @@ SET @Token    =ISNULL (@Token    ,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'還車檢查前判斷車況', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'使用訂單編號取得此訂單資訊', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';

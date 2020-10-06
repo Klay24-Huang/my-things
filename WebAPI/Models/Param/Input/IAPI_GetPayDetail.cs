@@ -17,6 +17,6 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 使用的點數
         /// </summary>
-        public int? Discount { set; get; }
+        public int Discount { set; get; }
     }
 }
