@@ -81,5 +81,17 @@ namespace Domain.TB
         /// 專案代碼
         /// </summary>
         public string ProjID { get; set; }
+        /// <summary>
+        /// 基本分鐘數
+        /// </summary>
+        public int BaseMinutes { set; get; }
+        /// <summary>
+        /// 基本費
+        /// </summary>
+        public int BasePrice { set; get; }
+        /// <summary>
+        /// 每分鐘N元
+        /// </summary>
+        public Single PerMinutesPrice { set; get; }
     }
 }
