@@ -509,8 +509,28 @@ namespace WebAPI.Controllers
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
                     outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes).ToString();
                     outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
-                    outputApi.Rent.TotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice;
-
+                    outputApi.Rent.TotalRental = (outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice < 0)?0: outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice;
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
+                    SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
+                    {
+                        Etag = outputApi.Rent.ETAGRental,
+                        final_price = outputApi.Rent.TotalRental,
+                        fine_price = outputApi.Rent.OvertimeRental,
+                        gift_point = Discount,
+                        IDNO = IDNO,
+                        Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
+                        LogID = LogID,
+                        mileage_price = outputApi.Rent.MileageRent,
+                        OrderNo = tmpOrder,
+                        parkingFee = outputApi.Rent.ParkingFee,
+                        pure_price = outputApi.Rent.CarRental,
+                        Token = Access_Token,
+                        TransDiscount = outputApi.Rent.TransferPrice
+                    };
+                    SPOutput_Base SPOutput = new SPOutput_Base();
+                    SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);
+                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                 }
                 #endregion
 

@@ -91,7 +91,9 @@
     <Compile Include="SP\Input\Register\SPInput_VerifyEMail.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />

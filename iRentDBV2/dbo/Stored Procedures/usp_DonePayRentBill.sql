@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_ReturnCar]
+** Name: [dbo].[usp_DonePayRentBill]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,27 +29,26 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_ReturnCar]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_DonePayRentBill]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/9/28 上午 09:38:48 
+** Date:2020/10/6 下午 05:07:23 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/9/28 上午 09:38:48    |  Eric|          First Release
+** 2020/10/6 下午 05:07:23    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_ReturnCar]
+CREATE PROCEDURE [dbo].[usp_DonePayRentBill]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
-	@NowMileage             FLOAT                 ,
+	@transaction_no         NVARCHAR(100)         , --金流交易序號，免付費使用Free
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
-
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -67,6 +66,7 @@ DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
+DECLARE @ParkingSpace NVARCHAR(256);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -74,12 +74,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_ReturnCar';
+SET @FunName='usp_DonePayRentBill';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【記錄還車時間】';
+SET @Descript=N'使用者操作【完成付款金流】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -89,9 +89,10 @@ SET @ProjType=5;
 SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
+SET @ParkingSpace='';
 
-	BEGIN TRY
-	
+		BEGIN TRY
+		
 		 
 		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
 		 BEGIN
@@ -121,46 +122,59 @@ SET @Token    =ISNULL (@Token    ,'');
 		 END
 		 IF @Error=0
 		 BEGIN
-			BEGIN TRAN;
-		    SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
-			IF @hasData=0
-			BEGIN
-			    	ROLLBACK TRAN;
-				SET @Error=1;
-				SET @ErrorCode='ERR185';
-			END
-		
-			IF @Error=0
-			BEGIN
-				SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderDetail WHERE  order_number=@OrderNo;
-				IF @hasData=0
-				BEGIN
-					ROLLBACK TRAN;
-					SET @Error=1;
-					SET @ErrorCode='ERR185';
-				END
-				ELSE
-				BEGIN
-				
-				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+		            SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
 					FROM TB_OrderMain
 					WHERE order_number=@OrderNo;
-				
-				--如果取不到里程，從tb取出
-					IF @NowMileage=0
+
+					SELECT @hasData=COUNT(1) FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+					IF @hasData>0
 					BEGIN
-						SELECT @NowMileage=Millage FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
+					   INSERT INTO [dbo].[TB_ParkingSpace]([OrderNo],[ParkingImage],[ParkingSpace])
+					   SELECT [OrderNo],[ParkingImage],[ParkingSpace] FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+
+					   DELETE FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+					   SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WHERE OrderNo=@OrderNo;
 					END
 
-					UPDATE TB_OrderDetail SET final_stop_time=@NowTime,end_mile=@NowMileage WHERE order_number=@OrderNo;
-					UPDATE TB_OrderMain SET car_mgt_status=11  WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
-
+					IF @ProjType=4
+					BEGIN
 					--寫入歷程
 					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+							--更新訂單主檔
+							UPDATE TB_OrderMain
+							SET booking_status=5,car_mgt_status=16
+					        WHERE order_number=@OrderNo;
+							--更新訂單明細
+							UPDATE TB_OrderDetail
+							SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
+							WHERE order_number=@OrderNo;
+							--更新個人訂單控制
+							UPDATE [TB_BookingStatusOfUser]
+							SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
+							WHERE IDNO=@IDNO;
+							--更新車輛
+							UPDATE TB_Car
+							SET [NowOrderNo]=0,[LastOrderNo]=@OrderNo,available=1
+							WHERE CarNo=@CarNo;
+							--寫入歷程
+							SET @Descript=N'完成還車';
+					        INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 
-					COMMIT TRAN;
-				END
-			END
+					END
+					ELSE
+					BEGIN
+						--更新訂單主檔
+							UPDATE TB_OrderMain
+							SET car_mgt_status=15
+					        WHERE order_number=@OrderNo;
+							--更新訂單明細
+							UPDATE TB_OrderDetail
+							SET transaction_no=@transaction_no,trade_status=1,[already_payment]=1
+							WHERE order_number=@OrderNo;
+							--寫入歷程
+					       INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+					END
+
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
@@ -187,20 +201,20 @@ SET @Token    =ISNULL (@Token    ,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DonePayRentBill';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DonePayRentBill';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'使用者操作【還車前檢查並記錄還車時間】', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'付款完成', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DonePayRentBill';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DonePayRentBill';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DonePayRentBill';

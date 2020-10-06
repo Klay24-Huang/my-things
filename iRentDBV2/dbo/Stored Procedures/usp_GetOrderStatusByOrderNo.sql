@@ -119,7 +119,7 @@ SET @Token    =ISNULL (@Token    ,'');
 		 END
 		 IF @Error=0
 		 BEGIN
-		 SELECT order_number AS OrderNo,lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content --據點相關
+	 SELECT order_number AS OrderNo,lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content --據點相關
 			      ,OperatorName,OperatorICon,Score										   --營運商相關
 				  ,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace             --車子相關
 				  ,device3TBA,RemainingMilage											   --機車電力相關
@@ -127,10 +127,10 @@ SET @Token    =ISNULL (@Token    ,'');
 				  ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE								--平日每小時價 20201003 ADD BY ADAM
 				  ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H							--假日每小時價 20201003 ADD BY ADAM
 				  ,BaseMinutes,BaseMinutesPrice,MinuteOfPrice,MaxPrice					   --當ProjType=4才有值
-				  ,order_number,start_time,final_start_time,stop_pick_time,stop_time,final_stop_time,ISNULL(fine_Time,'') AS fine_Time
+				  ,start_time,final_start_time,stop_pick_time,stop_time,final_stop_time,ISNULL(fine_Time,'') AS fine_Time
 				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
 				  ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
-				  ,already_lend_car,IsReturnCar,CarNo
+				  ,already_lend_car,IsReturnCar,CarNo,final_price
 			FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		     WHERE IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0

@@ -86,7 +86,7 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【取消訂單】';
+SET @Descript=N'使用者操作【計算租金】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -126,6 +126,21 @@ SET @Token    =ISNULL (@Token    ,'');
 				END
 			END
 		 END
+		 --1.0更新資料
+		 IF @Error=0
+		 BEGIN
+		   SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+					FROM TB_OrderMain
+					WHERE order_number=@OrderNo;
+
+			UPDATE TB_OrderDetail
+			SET final_price    =@final_price,pure_price=@pure_price ,mileage_price  =@mileage_price,Insurance_price=@Insurance_price
+				,fine_price=@fine_price,gift_point=@gift_point,Etag =@Etag,parkingFee =@parkingFee,TransDiscount  =@TransDiscount  
+			WHERE Order_number=@OrderNo;
+
+			--寫入歷程
+			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+		 END
 		--寫入錯誤訊息
 		    IF @Error=1
 			BEGIN
@@ -151,20 +166,20 @@ SET @Token    =ISNULL (@Token    ,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'計算租金', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';

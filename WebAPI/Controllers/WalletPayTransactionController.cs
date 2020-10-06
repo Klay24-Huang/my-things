@@ -1,5 +1,8 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Rent;
 using Domain.SP.Input.Wallet;
+using Domain.SP.Output;
+using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Wallet;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin.Wallet;
@@ -8,6 +11,7 @@ using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -55,6 +59,9 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             Int64 tmpOrder = 0;
+            int Amount = 0;
+            bool HasETAG = false;
+            List<OrderQueryFullData> OrderDataLists = null;
             #endregion
             #region 防呆
 
@@ -131,6 +138,60 @@ namespace WebAPI.Controllers
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                 #region 這邊要再加上查訂單狀態
+                if (apiInput.PayType == 0)
+                {
+                    #region 取出訂單資訊
+                    if (flag)
+                    {
+                        SPInput_GetOrderStatusByOrderNo spInput = new SPInput_GetOrderStatusByOrderNo()
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder,
+                            LogID = LogID,
+                            Token = Access_Token
+                        };
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderStatusByOrderNo);
+                        SPOutput_Base spOutBase = new SPOutput_Base();
+                        SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
+                        OrderDataLists = new List<OrderQueryFullData>();
+                        DataSet ds = new DataSet();
+                        flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+                        //判斷訂單狀態
+                        if (flag)
+                        {
+                            if (OrderDataLists.Count == 0)
+                            {
+                                flag = false;
+                                errCode = "ERR203";
+                            }
+                        }
+
+                    }
+                    if (flag)
+                    {
+                        if (OrderDataLists[0].car_mgt_status >= 15)
+                        {
+                            flag = false;
+                            errCode = "ERR209";
+                        }else if (OrderDataLists[0].car_mgt_status < 11)
+                        {
+                            flag = false;
+                            errCode = "ERR210";
+                        }
+                        else
+                        {
+                            Amount = OrderDataLists[0].final_price;
+                        }
+                    }
+                    #endregion
+                    #region 檢查車機狀態
+                    if (flag)
+                    {
+                        flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                    }
+                    #endregion
+                }
                 #endregion
             }
             #endregion
@@ -153,35 +214,82 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    DateTime NowTime = DateTime.Now;
-                    string guid = Guid.NewGuid().ToString().Replace("-", "");
-                    int nowCount = 1;
-                    WebAPI_PayTransaction wallet = new WebAPI_PayTransaction()
+                    SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
                     {
-                        AccountId = SPOutput.WalletAccountID,
-                        ApiVersion = "0.1.01",
-                        GUID = guid,
-                        MerchantId = MerchantId,
-                        POSId = "",
-                        SourceFrom = "9",
-                        StoreId = "",
-                        StoreName = "",
-                        StoreTransId = string.Format("{0}F{1}",tmpOrder,NowTime.ToString("yyMMddHHmmss")),
-                         Amount=1000,
-                          BarCode="",
-                           StoreTransDate=NowTime.ToString("yyyyMMddHHmmss")
-                           
-                    
-
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        OrderNo = tmpOrder,
+                        Token = Access_Token,
+                        transaction_no = ""
                     };
-                    var body = JsonConvert.SerializeObject(wallet);
-                    TaishinWallet WalletAPI = new TaishinWallet();
-                    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                    string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                    WebAPIOutput_PayTransaction output = null;
-                    flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-                    #region 這邊要再加上更新訂單狀態
-                    #endregion
+                    if (Amount > 0)
+                    {
+                        DateTime NowTime = DateTime.Now;
+                        string guid = Guid.NewGuid().ToString().Replace("-", "");
+                        int nowCount = 1;
+                        WebAPI_PayTransaction wallet = new WebAPI_PayTransaction()
+                        {
+                            AccountId = SPOutput.WalletAccountID,
+                            ApiVersion = "0.1.01",
+                            GUID = guid,
+                            MerchantId = MerchantId,
+                            POSId = "",
+                            SourceFrom = "9",
+                            StoreId = "",
+                            StoreName = "",
+                            StoreTransId = string.Format("{0}F{1}", tmpOrder, NowTime.ToString("yyMMddHHmmss")),
+                            Amount = Amount,
+                            BarCode = "",
+                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")
+
+                        };
+                        var body = JsonConvert.SerializeObject(wallet);
+                        TaishinWallet WalletAPI = new TaishinWallet();
+                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                        WebAPIOutput_PayTransaction output = null;
+                        flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+                        
+                        if (flag)
+                        {
+                            if (apiInput.PayType == 0)
+                            {
+                                if (OrderDataLists[0].ProjType == 4)
+                                {
+                                    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                    if (Motorflag == false)
+                                    {
+                                        //寫入車機錯誤
+                                    }
+                                }
+                                #region 這邊要再加上更新訂單狀態
+                                SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                                PayInput.transaction_no = wallet.StoreTransId;
+                                SPOutput_Base PayOutput = new SPOutput_Base();
+                                SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                                flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                                #endregion
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (apiInput.PayType == 0) //直接更新租約狀態
+                        {
+                            #region 這邊要再加上更新訂單狀態
+                            PayInput.transaction_no = "Free";
+                            SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                            SPOutput_Base PayOutput = new SPOutput_Base();
+                            SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                            #endregion
+                        }
+                    }
+
+                   
+
 
                 }
                 #endregion

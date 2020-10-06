@@ -115,7 +115,7 @@ namespace WebAPI.Controllers
                     /// <para>1:查詢萬用卡號</para>
                     /// <para>2:設定萬用卡號</para>
                     /// <para>3:中控解鎖，防盜關閉</para>
-                    /// <para>4:中控上鎖，防解啟動</para>
+                    /// <para>4:中控上鎖，防盜啟動</para>
                     /// <para>5:汽車設為有租約狀態</para>
                     /// <para>6:設定無租約狀態</para>
                     /// <para>7:中控解鎖</para>

@@ -105,9 +105,9 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 		  --0.暫存
 		 IF @Error=0
 		 BEGIN
-		 SET @UseWorkDayHours=@UseWorkDayHours/60.0;
-		 SET @UseHolidayHours=@UseHolidayHours/60.0;
-		 SET @UseMotoTotalHours=@UseMotoTotalHours/60.0;
+		 SET @UseWorkDayHours=CAST(@UseWorkDayHours AS FLOAT)/60.0;
+		 SET @UseHolidayHours=CAST(@UseHolidayHours AS FLOAT)/60.0;
+		 SET @UseMotoTotalHours=CAST(@UseMotoTotalHours AS FLOAT)/60.0;
 		    SELECT @StartDate=StartDate,@EndDate=EndDate FROM TB_MonthlyRent WHERE MonthlyRentId=@MonthlyRentId;
 		 	INSERT INTO TB_MonthlyRentHistory([OrderNo],[IDNO],[StartDate],[EndDate],[UseWorkDayHours],[UseHolidayHours],[UseMotoTotalHours],[MonthlyRentId])VALUES(@OrderNo,@IDNO,@StartDate,@EndDate,@UseWorkDayHours,@UseHolidayHours,@UseMotoTotalHours,@MonthlyRentId);
 			UPDATE TB_MonthlyRent
