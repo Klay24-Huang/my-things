@@ -15,6 +15,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -82,6 +83,9 @@ namespace WebAPI.Controllers
             int days = 0; int hours = 0; int mins = 0; //以分計費總時數
             int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
+            int ActualRedeemableTimePoint = 0; //實際可抵折點數
+            int RemainRentalTime = 0;
+
             BillCommon billCommon = new BillCommon();
             #endregion
 
@@ -236,6 +240,14 @@ namespace WebAPI.Controllers
              
                    
                 }
+                if (flag)
+                {
+                    if (NowTime.Subtract(FED).TotalMinutes >= 30)
+                    {
+                        flag = false;
+                        errCode = "ERR208";
+                    }
+                }
                 //與短租查時數
                 #region 與短租查時數
                 if (flag)
@@ -344,8 +356,9 @@ namespace WebAPI.Controllers
                        RedeemingTimeCarInterval=CarPoint.ToString(),
                        RedeemingTimeMotorInterval=MotorPoint.ToString(),
                         RedeemingTimeInterval=(ProjType==4)?(CarPoint+MotorPoint).ToString():CarPoint.ToString(),
-                         RentalDate=FED.ToString(),
+                         RentalDate=FED.ToString("yyyy-MM-dd HH:mm:ss"),
                           RentalTimeInterval=(TotalRentMinutes+TotalFineRentMinutes).ToString(),
+                          
                            
 
 
@@ -354,6 +367,7 @@ namespace WebAPI.Controllers
 
                     if (ProjType == 4)
                     {
+                        TotalPoint = (CarPoint + MotorPoint);
                         outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase()
                         {
                             BaseMinutePrice = OrderDataLists[0].BaseMinutesPrice,
@@ -364,6 +378,7 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
+                        TotalPoint = CarPoint;
                         outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase()
                         {
                             HoildayOfHourPrice = OrderDataLists[0].PRICE_H,
@@ -382,30 +397,48 @@ namespace WebAPI.Controllers
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (ProjType == 4)
                     {
-                        if (Discount >= TotalRentMinutes)
+                        if (TotalPoint >= TotalRentMinutes)
                         {
-                            Discount = TotalRentMinutes;
+                            ActualRedeemableTimePoint = TotalRentMinutes;
+                        }
+                        else
+                        {
+                            if((TotalPoint-TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            {
+                                ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                            }
+                        }
+                        if (Discount >= TotalRentMinutes)               
+                        {
+                            Discount = (days*600)+(hours*60)+(mins);        //自動縮減
                             
                         }
                         else
                         {
-                            if ((Discount - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            int tmp = TotalRentMinutes - Discount;
+                            if (tmp< OrderDataLists[0].BaseMinutes)
                             {
-                                Discount = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
                             }
+                     
                         }
                         TotalRentMinutes -= Discount;
                         int CarRentPrice = 0;
                         billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
                         outputApi.Rent.CarRental = CarRentPrice;
-                    
+                        outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
+
+
+
 
                     }
                     else
                     {
 
                     }
-                    outputApi.Rent.ActualRedeemableTimeInterval = Discount.ToString();
+
+                    outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
+                    outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes).ToString();
 
                 }
                 #endregion
