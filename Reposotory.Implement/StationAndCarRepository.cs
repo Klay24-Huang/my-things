@@ -162,8 +162,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat";
-                   SQL +=" FROM  [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] ";
+            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstCar = GetObjList<AnyRentObj>(ref flag, ref lstError, SQL, para, term);
@@ -178,7 +180,6 @@ namespace Reposotory.Implement
         /// <returns></returns>
         public List<AnyRentObj> GetAllAnyRent(double lat, double lng, double radius)
         {
-
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
             if (lng > 0 && lat > 0 && radius > 0)
@@ -188,8 +189,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat";
-            SQL += " FROM  [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] ";
+            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -202,8 +205,6 @@ namespace Reposotory.Implement
                 }
             }
             string term = "";
-
-
 
             if (hasRange)
             {
@@ -226,9 +227,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude]";
-            SQL += " ,device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
-            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore";  // 2020.09.30 育誠 增加業者、業者評分
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
+            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] ";  
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -254,9 +256,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude]";
-            SQL += " ,device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
-            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore"; // 2020.09.30 育誠 增加業者、業者評分
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
+            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] "; 
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
 
             SqlParameter[] para = new SqlParameter[2];
@@ -270,8 +273,6 @@ namespace Reposotory.Implement
                 }
             }
             string term = "";
-
-
 
             if (hasRange)
             {
