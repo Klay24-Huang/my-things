@@ -483,7 +483,17 @@ namespace WebAPI.Controllers
                         }
                         TotalRentMinutes -= Discount;
                         int CarRentPrice = 0;
-                        billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                        if (UseMonthMode)
+                        {
+                            billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, monthlyRentDatas[0].WorkDayRateForMoto, monthlyRentDatas[0].HoildayRateForMoto, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                            outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForMoto;
+                            outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForMoto;
+                        }
+                        else
+                        {
+                            billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                        }
+                        
                         outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
 
@@ -498,6 +508,8 @@ namespace WebAPI.Controllers
 
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
                     outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes).ToString();
+                    outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
+                    outputApi.Rent.TotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice;
 
                 }
                 #endregion

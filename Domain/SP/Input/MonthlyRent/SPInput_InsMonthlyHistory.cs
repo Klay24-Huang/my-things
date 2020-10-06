@@ -14,14 +14,14 @@ namespace Domain.SP.Input.MonthlyRent
         /// <summary>
         /// 使用的汽車平日時數
         /// </summary>
-        public float UseWorkDayHours { set; get; }
+        public int UseWorkDayHours { set; get; }
         /// <summary>
         /// 使用的汽車假日時數
         /// </summary>
-        public float UseHolidayHours { set; get; }
+        public int UseHolidayHours { set; get; }
         /// <summary>
         /// 使用的機車時數
         /// </summary>
-        public float UseMotoTotalHours { set; get; }
+        public int UseMotoTotalHours { set; get; }
     }
 }
