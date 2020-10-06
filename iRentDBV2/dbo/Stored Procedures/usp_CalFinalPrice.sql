@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_ReturnCar]
+** Name: [dbo].[usp_CalFinalPrice]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,27 +29,34 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_ReturnCar]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_CalFinalPrice]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/9/28 上午 09:38:48 
+** Date:2020/10/6 下午 02:39:23 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/9/28 上午 09:38:48    |  Eric|          First Release
+** 2020/10/6 下午 02:39:23    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_ReturnCar]
+CREATE PROCEDURE [dbo].[usp_CalFinalPrice]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
-	@NowMileage             FLOAT                 ,
+	@final_price            INT                   , --總價
+	@pure_price             INT                   , --車輛租金
+	@mileage_price          INT                   , --里程費
+	@Insurance_price        INT                   , --安心服務費
+	@fine_price             INT                   , --罰金
+	@gift_point             INT                   , --使用的時數
+    @Etag                   INT                   , --ETAG費用
+	@parkingFee             INT                   , --特約停車場停車費
+	@TransDiscount          INT                   , --轉乘優惠
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
-
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -74,12 +81,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_ReturnCar';
+SET @FunName='usp_CalFinalPrice';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【記錄還車時間】';
+SET @Descript=N'使用者操作【取消訂單】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -90,7 +97,7 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
 
-	BEGIN TRY
+		BEGIN TRY
 	
 		 
 		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
@@ -119,34 +126,6 @@ SET @Token    =ISNULL (@Token    ,'');
 				END
 			END
 		 END
-		 IF @Error=0
-		 BEGIN
-			BEGIN TRAN;
-		    SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
-			IF @hasData=0
-			BEGIN
-			    	ROLLBACK TRAN;
-				SET @Error=1;
-				SET @ErrorCode='ERR185';
-			END
-		
-			IF @Error=0
-			BEGIN
-				SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderDetail WHERE  order_number=@OrderNo;
-				IF @hasData=0
-				BEGIN
-					ROLLBACK TRAN;
-					SET @Error=1;
-					SET @ErrorCode='ERR185';
-				END
-				ELSE
-				BEGIN
-					UPDATE TB_OrderDetail SET final_stop_time=@NowTime,end_mile=@NowMileage WHERE order_number=@OrderNo;
-					UPDATE TB_OrderMain SET car_mgt_status=11  WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
-					COMMIT TRAN;
-				END
-			END
-		 END
 		--寫入錯誤訊息
 		    IF @Error=1
 			BEGIN
@@ -172,20 +151,20 @@ SET @Token    =ISNULL (@Token    ,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'使用者操作【還車前檢查並記錄還車時間】', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'[dbo].[usp_CalFinalPrice]';

@@ -16,6 +16,7 @@ namespace Domain.SP.Input.Rent
         /// 訂單編號
         /// </summary>
         public Int64 OrderNo { set; get; }
+        public Single NowMileage { set; get; }
         /// <summary>
         /// auth token
         /// </summary>
