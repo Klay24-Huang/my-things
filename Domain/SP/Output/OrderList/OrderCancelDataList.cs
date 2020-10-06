@@ -72,5 +72,13 @@ namespace Domain.SP.Output.OrderList
         /// 每公里多少錢
         /// </summary>
         public float MilageUnit { set; get; }
+        /// <summary>
+        /// 站別類型
+        /// </summary>
+        public string CarOfArea { get; set; }
+        /// <summary>
+        /// 站別名稱
+        /// </summary>
+        public string StationName { get; set; }
     }
 }

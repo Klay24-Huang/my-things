@@ -143,17 +143,20 @@ SET @maxPage=0;
 		 BEGIN
 				;WITH T
 				AS (
-				   SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo
-								,OrderMain.order_number,OrderMain.CarNo,OrderMain.init_price,OrderMain.ProjID,OrderMain.ProjType,OrderMain.start_time,OrderMain.stop_time
-								,VWFullData.Seat,VWFullData.CarBrend,VWFullData.Score,VWFullData.OperatorICon,VWFullData.CarTypeImg,VWFullData.CarTypeName,VWFullData.PRONAME
-								,ISNULL(Setting.MilageBase,IIF(OrderMain.ProjType=4,0,-1)) AS MilageUnit
-								FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
-								LEFT JOIN TB_CarInfo As Car WITH(NOLOCK)  ON Car.CarNo=OrderMain.CarNo
-								LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
-								LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=OrderMain.ProjID AND (OrderMain.start_time BETWEEN Setting.SDate AND Setting.EDate)
-							     WHERE IDNO=@IDNO AND cancel_status>0
-								 AND isDelete=0		--20201006 ADD BY ADAM REASON.排除已刪除的清單
-				    ),
+					SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo
+						,OrderMain.order_number,OrderMain.CarNo,OrderMain.init_price,OrderMain.ProjID,OrderMain.ProjType,OrderMain.start_time,OrderMain.stop_time
+						,VWFullData.Seat,VWFullData.CarBrend,VWFullData.Score,VWFullData.OperatorICon,VWFullData.CarTypeImg,VWFullData.CarTypeName,VWFullData.PRONAME
+						,ISNULL(Setting.MilageBase,IIF(OrderMain.ProjType=4,0,-1)) AS MilageUnit
+						,Case WHEN OrderMain.ProjType=0 THEN '同站' WHEN OrderMain.ProjType=3 Then REPLACE(VWFullData.PRONAME,'路邊汽車推廣專案','') WHEN OrderMain.ProjType=4 THEN REPLACE(VWFullData.PRONAME,'10載便利','') End As CarOfArea
+						,Case WHEN OrderMain.ProjType=0 THEN iRentStation.Location ELSE '' END As StationName 
+					FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
+					LEFT JOIN TB_CarInfo As Car WITH(NOLOCK)  ON Car.CarNo=OrderMain.CarNo
+					LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
+					LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=OrderMain.ProjID AND (OrderMain.start_time BETWEEN Setting.SDate AND Setting.EDate)
+					LEFT JOIN TB_iRentStation As iRentStation WITH(NOLOCK) ON iRentStation.StationID=OrderMain.lend_place
+					WHERE IDNO=@IDNO AND cancel_status>0
+					AND isDelete=0		--20201006 ADD BY ADAM REASON.排除已刪除的清單
+				),
 				T2 AS (
 				    SELECT COUNT(1) TotalCount FROM T
 				)

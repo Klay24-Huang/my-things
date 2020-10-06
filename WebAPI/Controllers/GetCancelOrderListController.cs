@@ -180,8 +180,9 @@ namespace WebAPI.Controllers
                                 PRONAME = orderCancelDataLists[i].PRONAME,
                                 Score = orderCancelDataLists[i].Score,
                                 SD = orderCancelDataLists[i].start_time,
-                                Seat = orderCancelDataLists[i].Seat
-
+                                Seat = orderCancelDataLists[i].Seat,
+                                CarOfArea = orderCancelDataLists[i].CarOfArea,
+                                StationName = orderCancelDataLists[i].StationName
                             };
                             outputApi.CancelObj.Add(obj);
                         }

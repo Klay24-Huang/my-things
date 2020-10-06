@@ -71,5 +71,13 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 預估里程費
         /// </summary>
         public int Milage { set; get; }
+        /// <summary>
+        /// 站別類型
+        /// </summary>
+        public string CarOfArea { get; set; }
+        /// <summary>
+        /// 站別名稱
+        /// </summary>
+        public string StationName { get; set; }
     }
 }
