@@ -67,6 +67,8 @@
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
+    <Compile Include="SP\Input\MonthlyRent\SPInput_ClearMonthlyTmpHistory.cs" />
+    <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderList.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCarStatus.cs" />

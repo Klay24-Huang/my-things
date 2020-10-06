@@ -84,5 +84,20 @@ namespace Reposotory.Implement
             lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
             return lstMonthlyRent;
         }
+        /// <summary>
+        /// 還原月租記錄
+        /// </summary>
+        /// <param name="OrderNo">訂單編號</param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns>
+        /// <para>true:成功</para>
+        /// <para>false:失敗</para>
+        /// </returns>
+        public bool RestoreHistory(Int64 OrderNo,ref string errCode)
+        {
+            bool flag = false;
+
+            return flag;
+        }
     }
 }
