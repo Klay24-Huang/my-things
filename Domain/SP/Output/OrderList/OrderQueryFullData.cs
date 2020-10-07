@@ -211,6 +211,14 @@ namespace Domain.SP.Output.OrderList
         /// 計算後的租金
         /// </summary>
         public int final_price { set; get; }
+        /// <summary>
+        /// 起始里程
+        /// </summary>
+        public float start_mile { set; get; }
+        /// <summary>
+        /// 結束里程
+        /// </summary>
+        public float end_mile { set; get; }
 
         #endregion
     }

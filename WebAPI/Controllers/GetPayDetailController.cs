@@ -33,6 +33,7 @@ namespace WebAPI.Controllers
     public class GetPayDetailController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
         [HttpPost]
         public Dictionary<string, object> DoGetPayDetail(Dictionary<string, object> value)
         {
@@ -503,7 +504,85 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
+                        int BaseMinutes = 60;
+                        int tmpTotalRentMinutes = TotalRentMinutes;
+                        if (TotalRentMinutes < BaseMinutes)
+                        {
+                            TotalRentMinutes = BaseMinutes;
+                        }
+                        if (TotalPoint >= TotalRentMinutes)
+                        {
+                            ActualRedeemableTimePoint = TotalRentMinutes;
+                        }
+                        else
+                        {
+                            if ((TotalPoint - TotalRentMinutes) < 30)
+                            {
+                                ActualRedeemableTimePoint = TotalRentMinutes - 30;
+                            }
+                        }
+                        if (Discount > TotalRentMinutes)
+                        {
+                            Discount = (days * 600) + (hours * 60) ;        //自動縮減
+                            if(mins>15 && mins < 45)
+                            {
+                                Discount += 30;
+                            }
+                            else if(mins>45)
+                            {
+                                Discount += 60;
+                            }
 
+                        }
+                        else
+                        {
+                            int tmp = TotalRentMinutes - Discount;
+                            if (tmp>0 && tmp < 30 )
+                            {
+                                Discount += TotalRentMinutes - Discount - 30;
+                            }
+
+                        }
+                        TotalRentMinutes -= Discount;
+                        int CarRentPrice = 0;
+                   
+                        if (UseMonthMode)
+                        {
+                            if (hasFine)
+                            {
+                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(monthlyRentDatas[0].WorkDayRateForCar), Convert.ToInt32(monthlyRentDatas[0].HoildayRateForCar), lstHoliday));
+                                outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
+                                outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForCar;
+                            }
+                            else
+                            {
+                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(monthlyRentDatas[0].WorkDayRateForCar), Convert.ToInt32(monthlyRentDatas[0].HoildayRateForCar), lstHoliday));
+                                outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
+                                outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForCar;
+                            }
+                          
+                        }
+                        else
+                        {
+                            if (hasFine)
+                            {
+                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                            }
+                            else
+                            {
+                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                            }
+                           
+                        }
+                        if (Discount > 0)
+                        {
+                            int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
+                            CarRentPrice -= DiscountPrice;
+                        }
+                        outputApi.Rent.CarRental = CarRentPrice;
+                        outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
+                        outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit<=0)? Mildef : OrderDataLists[0].MilageUnit;
+                        outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                     }
 
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();

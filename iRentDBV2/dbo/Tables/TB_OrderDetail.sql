@@ -9,7 +9,7 @@
 	[final_stop_time] [datetime] NULL,
 	[start_door_time] [datetime] NULL,
 	[end_door_time] [datetime] NULL,
-	[transaction_no] [nvarchar](100) NOT NULL DEFAULT N'',
+	[transaction_no] [nvarchar](500) NOT NULL DEFAULT N'',
 	[final_price] [int] NOT NULL DEFAULT 0,
 	[pure_price] [int] NOT NULL DEFAULT 0,
 	[mileage_price] [int] NOT NULL DEFAULT 0,
@@ -48,7 +48,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'第一次關門時間' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderDetail', @level2type=N'COLUMN',@level2name=N'end_door_time'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'金流交易序號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderDetail', @level2type=N'COLUMN',@level2name=N'transaction_no'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'金流交易序號，以;分割' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderDetail', @level2type=N'COLUMN',@level2name=N'transaction_no'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'實際租金(租金小計+出車里程油資+延遲還車費用)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_OrderDetail', @level2type=N'COLUMN',@level2name=N'final_price'
