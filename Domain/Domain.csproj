@@ -214,6 +214,10 @@
     <Compile Include="WebAPI\output\rootAPI\MotorProjectObj.cs" />
     <Compile Include="WebAPI\output\rootAPI\ProjectObj.cs" />
     <Compile Include="WebAPI\Input\Taishin\AuthItem.cs" />
+    <Compile Include="WebAPI\output\Taishin\AuthItem.cs" />
+    <Compile Include="WebAPI\output\Taishin\AuthOriRequestParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\AuthRequestParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\AuthResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\BindOriRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\BindRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\BindResponseParams.cs" />
@@ -224,6 +228,10 @@
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\GetCreditCardListResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DeleteCreditCardAuthResponseParams.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\AuthCarrierN.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\AuthInstall.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\AuthRedeem.cs" />
+    <Compile Include="WebAPI\output\Taishin\ResultData\AuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\DeleteCreditCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountStatusResult.cs" />
@@ -238,6 +246,7 @@
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_PayTransaction.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_StoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_TransferStoreValueCreateAccount.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Auth.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Base.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DirectCardAuth.cs" />

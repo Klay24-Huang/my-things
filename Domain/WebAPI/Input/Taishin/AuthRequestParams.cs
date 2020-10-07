@@ -48,16 +48,7 @@ namespace Domain.WebAPI.Input.Taishin
         /// 不可折抵說明代碼
         /// </summary>
         public string NonRedeemdescCode { get; set; }
-        /// <summary>
-        /// 交易金額，包含兩位小數，如100代表1.00
-        /// </summary>
-        public string TradeAmount { get; set; }
-  
-        /// <summary>
-        /// 交易類別
-        /// <para>1:授權</para>
-        /// </summary>
-        public string TradeType { get; set; }
+    
         /// <summary>
         /// 備註一
         /// </summary>
@@ -70,6 +61,20 @@ namespace Domain.WebAPI.Input.Taishin
         /// 備註三
         /// </summary>
         public string Remark3 { get; set; }
+        /// <summary>
+        /// 非同步通知Api位址
+        /// </summary>
+        public string ResultUrl { get; set; }
+        /// <summary>
+        /// 交易金額，包含兩位小數，如100代表1.00
+        /// </summary>
+        public string TradeAmount { get; set; }
+
+        /// <summary>
+        /// 交易類別
+        /// <para>1:授權</para>
+        /// </summary>
+        public string TradeType { get; set; }
 
         /// <summary>
         /// 使用紅利折抵，預設N
@@ -77,9 +82,6 @@ namespace Domain.WebAPI.Input.Taishin
         public string UseRedeem { get; set; } = "N";
  
     
-        /// <summary>
-        /// 非同步通知Api位址
-        /// </summary>
-        public string ResultUrl { get; set; }
+    
     }
 }

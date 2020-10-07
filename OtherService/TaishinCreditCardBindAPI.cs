@@ -362,7 +362,7 @@ namespace OtherService
         }
         #endregion
         #region 授權
-        public bool DoCreditCardAuth(PartOfCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_DeleteCreditCardAuth output)
+        public bool DoCreditCardAuth(PartOfCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_Auth output)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
@@ -399,10 +399,10 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task<WebAPIOutput_DeleteCreditCardAuth> DoCreditCardAuthSend(WebAPIInput_Auth input)
+        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSend(WebAPIInput_Auth input)
         {
             string Site = ECBaseURL + Auth;
-            WebAPIOutput_DeleteCreditCardAuth output = null;
+            WebAPIOutput_Auth output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
@@ -430,7 +430,7 @@ namespace OtherService
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
-                        output = JsonConvert.DeserializeObject<WebAPIOutput_DeleteCreditCardAuth>(responseStr);
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
                     }
 
                 }
@@ -438,7 +438,7 @@ namespace OtherService
             catch (Exception ex)
             {
                 RTime = DateTime.Now;
-                output = new WebAPIOutput_DeleteCreditCardAuth()
+                output = new WebAPIOutput_Auth()
                 {
                     RtnCode = "0",
                     RtnMessage = ex.Message.Substring(0, 200)
