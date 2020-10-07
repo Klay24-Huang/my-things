@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Output.PolygonList
 {
-    public class SPOutput_PolygonListQuery: SPOutput_Base
+    public class SPOutput_PolygonListQuery
     {
         /// <summary>
         /// 電子柵欄類型
