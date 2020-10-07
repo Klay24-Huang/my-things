@@ -153,6 +153,7 @@ namespace WebAPI.Controllers
                     if (DataLen > 0)
                     {
                         outputApi.TotalPage = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(orderFinishDataLists[0].TotalCount / pageSize))) + ((orderFinishDataLists[0].TotalCount % pageSize > 0) ? 1 : 0);
+                        outputApi.RentYear = string.Format("{0}年", orderFinishDataLists[0].RentYear);
                         for (int i = 0; i < DataLen; i++)
                         {
                             OrderFinishObj obj = new OrderFinishObj()
