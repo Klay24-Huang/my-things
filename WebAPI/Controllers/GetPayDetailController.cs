@@ -86,6 +86,7 @@ namespace WebAPI.Controllers
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int RemainRentalTime = 0;
+            int CarRentPrice = 0; //車輛租金
             MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
             List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
@@ -225,6 +226,7 @@ namespace WebAPI.Controllers
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                     FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                     FED = FED.AddSeconds(FED.Second * -1); //去秒數
+                    lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (FED.Subtract(ED).Ticks > 0)
                     {
                         FineDate = ED;
@@ -233,6 +235,7 @@ namespace WebAPI.Controllers
                         TotalRentMinutes= ((days * 10) + hours) * 60 + mins; //未逾時的總時數
                         billCommon.CalDayHourMin(ED, FED, ref FineDays, ref FineHours, ref FineMins);
                         TotalFineRentMinutes = ((FineDays * 10) + FineHours) * 60 + FineMins; //逾時的總時數
+                    
 
                     }
                     else
@@ -444,7 +447,29 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-
+                                List<MonthlyRentData> UseMonthlyRent = new List<MonthlyRentData>();
+                                if (hasFine)
+                                {
+                                    CarRentPrice = billCommon.CalBillBySubScription(SD, ED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
+                                }
+                                else
+                                {
+                                    CarRentPrice = billCommon.CalBillBySubScription(SD, FED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
+                                }
+                                if (UseMonthlyRent.Count > 0)
+                                {
+                                    UseMonthMode = true;
+                                    int UseLen = UseMonthlyRent.Count;
+                                    for(int i = 0; i < UseLen; i++)
+                                    {
+                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours*60),  Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, LogID, ref errCode); //寫入記錄
+                                    }
+                                }
+                                else
+                                {
+                                    UseMonthMode = false;
+                                }
+                                
                             }
                         }
                     }
@@ -483,7 +508,7 @@ namespace WebAPI.Controllers
                      
                         }
                         TotalRentMinutes -= Discount;
-                        int CarRentPrice = 0;
+                     
                         if (UseMonthMode)
                         {
                             billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, monthlyRentDatas[0].WorkDayRateForMoto, monthlyRentDatas[0].HoildayRateForMoto, OrderDataLists[0].MaxPrice, ref CarRentPrice);
@@ -544,22 +569,14 @@ namespace WebAPI.Controllers
 
                         }
                         TotalRentMinutes -= Discount;
-                        int CarRentPrice = 0;
+                     
                    
                         if (UseMonthMode)
                         {
-                            if (hasFine)
-                            {
-                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(monthlyRentDatas[0].WorkDayRateForCar), Convert.ToInt32(monthlyRentDatas[0].HoildayRateForCar), lstHoliday));
-                                outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
+                            outputApi.Rent.CarRental = CarRentPrice;
+                            outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
                                 outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForCar;
-                            }
-                            else
-                            {
-                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(monthlyRentDatas[0].WorkDayRateForCar), Convert.ToInt32(monthlyRentDatas[0].HoildayRateForCar), lstHoliday));
-                                outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
-                                outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForCar;
-                            }
+                            
                           
                         }
                         else
