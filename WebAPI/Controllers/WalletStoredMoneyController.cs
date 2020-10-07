@@ -6,7 +6,6 @@ using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin;
-using Domain.WebAPI.output.Taishin.ResultData;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
 using OtherService;
@@ -152,7 +151,7 @@ namespace WebAPI.Controllers
                             CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
                             hasFind = true;
                         }
-                        #region 直接授權,先關閉，待2020/10/05詢問台新
+                        #region 直接授權
                         if (hasFind)//有找到，可以做儲值
                         {
                             Thread.Sleep(1000);
