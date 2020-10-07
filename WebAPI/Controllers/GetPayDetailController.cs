@@ -400,7 +400,8 @@ namespace WebAPI.Controllers
                 #region 月租
                 if (flag)
                 {
-                  
+                    //1.0 先還原這個單號使用的
+                    flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
                     int RateType = (ProjType == 4) ? 1 : 0;
                     if (hasFine)
                     {
@@ -413,8 +414,7 @@ namespace WebAPI.Controllers
                     int MonthlyLen = monthlyRentDatas.Count;
                     if (MonthlyLen > 0) {
                         UseMonthMode = true;
-                        //1.0 先還原這個單號使用的
-                        flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
+                      
                         if (flag)
                         {
                             if (ProjType == 4)
@@ -531,9 +531,18 @@ namespace WebAPI.Controllers
                     {
                         int BaseMinutes = 60;
                         int tmpTotalRentMinutes = TotalRentMinutes;
+
                         if (TotalRentMinutes < BaseMinutes)
                         {
                             TotalRentMinutes = BaseMinutes;
+                        }
+                        if (UseMonthMode)
+                        {
+                            TotalRentMinutes -= Convert.ToInt32((billCommon._scriptHolidayHour + billCommon._scriptWorkHour) * 60);
+                            if (TotalRentMinutes < 0)
+                            {
+                                TotalRentMinutes = 0;
+                            }
                         }
                         if (TotalPoint >= TotalRentMinutes)
                         {
@@ -568,7 +577,16 @@ namespace WebAPI.Controllers
                             }
 
                         }
-                        TotalRentMinutes -= Discount;
+                    
+                        if (TotalRentMinutes > 0)
+                        {
+                            TotalRentMinutes -= Discount;
+                        }
+                        else
+                        {
+                            TotalRentMinutes=0;
+                        }
+                      
                      
                    
                         if (UseMonthMode)
@@ -593,7 +611,26 @@ namespace WebAPI.Controllers
                         }
                         if (Discount > 0)
                         {
+
                             int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
+                            if (UseMonthMode)
+                            {
+                                if (billCommon._scriptHolidayHour > 0)
+                                {
+                                    DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * monthlyRentDatas[0].HoildayRateForCar)));
+                                }
+                                else
+                                {
+                                    DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * monthlyRentDatas[0].WorkDayRateForCar)));
+                                }
+                            }
+                            else
+                            {
+                                if (billCommon._holidayHour > 0)
+                                {
+                                    DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE_H)));
+                                }
+                            }
                             CarRentPrice -= DiscountPrice;
                         }
                         outputApi.Rent.CarRental = CarRentPrice;

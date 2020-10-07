@@ -381,6 +381,7 @@ namespace WebAPI.Models.BillFunc
                         HolidayHours = Convert.ToSingle(tmpHours),
                         WorkDayHours = 0
                     });
+                    _scriptHolidayHour += Convert.ToSingle(tmpHours);
                 }
                 else
                 {
@@ -394,6 +395,7 @@ namespace WebAPI.Models.BillFunc
                         HolidayHours = Convert.ToSingle(tmpHours),
                         WorkDayHours = 0
                     });
+                    _scriptHolidayHour += Convert.ToSingle(tmpHours);
                 }
             }
             else
@@ -410,6 +412,7 @@ namespace WebAPI.Models.BillFunc
                         HolidayHours = 0,
                         WorkDayHours = Convert.ToSingle(tmpHours)
                     });
+                    _scriptWorkHour += Convert.ToSingle(tmpHours);
                 }
                 else
                 {
@@ -423,6 +426,7 @@ namespace WebAPI.Models.BillFunc
                         HolidayHours = 0,
                         WorkDayHours = Convert.ToSingle(tmpHours)
                     });
+                    _scriptWorkHour += Convert.ToSingle(tmpHours);
                 }
             }
 
