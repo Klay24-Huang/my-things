@@ -207,6 +207,7 @@
     <Build Include="dbo\Stored Procedures\usp_ClearMonthlyTmpHistory.sql" />
     <Build Include="dbo\Stored Procedures\usp_CalFinalPrice.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayRentBill.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetFinishOrderList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
