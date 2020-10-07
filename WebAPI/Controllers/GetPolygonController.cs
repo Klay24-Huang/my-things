@@ -63,14 +63,6 @@ namespace WebAPI.Controllers
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-                if (flag)
-                {
-                    if (string.IsNullOrWhiteSpace(apiInput.StationID))
-                    {
-                        flag = false;
-                        errCode = "ERR900";                          
-                    }                    
-                }
             }
 
             #endregion
