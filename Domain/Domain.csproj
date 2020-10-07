@@ -79,6 +79,7 @@
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
+    <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
+    <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />

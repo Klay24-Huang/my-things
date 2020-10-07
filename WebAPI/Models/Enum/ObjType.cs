@@ -185,6 +185,10 @@ namespace WebAPI.Models.Enum
             /// 完成付款
             /// </summary>
             DonePayRentBill,
+            /// <summary>
+            /// 電子柵欄查詢
+            /// </summary>
+            PolygonListQuery,
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -340,6 +344,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
+                    break;
+                case SPType.PolygonListQuery:
+                    SPName = "usp_PolygonListQuery";
                     break;
                 #region 拓連
                 /// <summary>
