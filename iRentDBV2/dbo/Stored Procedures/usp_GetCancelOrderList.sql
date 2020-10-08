@@ -149,6 +149,7 @@ SET @maxPage=0;
 						,ISNULL(Setting.MilageBase,IIF(OrderMain.ProjType=4,0,-1)) AS MilageUnit
 						,Case WHEN OrderMain.ProjType=0 THEN '同站' WHEN OrderMain.ProjType=3 Then REPLACE(VWFullData.PRONAME,'路邊汽車推廣專案','') WHEN OrderMain.ProjType=4 THEN REPLACE(VWFullData.PRONAME,'10載便利','') End As CarOfArea
 						,Case WHEN OrderMain.ProjType=0 THEN iRentStation.Location ELSE '' END As StationName 
+						,Car.IsMotor ,Car.WeekdayPrice ,Car.HoildayPrice ,Car.WeekdayPriceByMinutes ,Car.HoildayPriceByMinutes --20201008 Eason
 					FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
 					LEFT JOIN TB_CarInfo As Car WITH(NOLOCK)  ON Car.CarNo=OrderMain.CarNo
 					LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
