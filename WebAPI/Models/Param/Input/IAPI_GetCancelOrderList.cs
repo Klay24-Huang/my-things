@@ -11,5 +11,6 @@ namespace WebAPI.Models.Param.Input
         /// 目前頁數
         /// </summary>
         public int? NowPage { set; get; }
+       
     }
 }

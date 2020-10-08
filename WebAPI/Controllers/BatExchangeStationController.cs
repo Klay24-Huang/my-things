@@ -42,12 +42,12 @@ namespace WebAPI.Controllers
             string funName = "BatExchangeStationController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_ArrearsQuery apiInput = null;
-            OAPI_ArrearsQuery outputApi = null;
+            IAPI_BatExchangeStation apiInput = null;
+            OAPI_BatExchangeStation outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
+            StationAndCarRepository _repository = null;
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
@@ -61,24 +61,28 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_ArrearsQuery>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BatExchangeStation>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                if (string.IsNullOrWhiteSpace(apiInput.IDNO))
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-
                 if (flag)
                 {
-                    //2.判斷格式
-                    flag = baseVerify.checkIDNO(apiInput.IDNO);
+                    flag = apiInput.ShowALL.HasValue;
                     if (false == flag)
                     {
-                        errCode = "ERR103";
+                        errCode = "ERR900";
+                    }
+                    if (flag)
+                    {
+                        if (apiInput.ShowALL.Value == 0)
+                        {
+                            if (!apiInput.Latitude.HasValue || !apiInput.Longitude.HasValue || !apiInput.Radius.HasValue)
+                            {
+                                flag = false;
+                                errCode = "ERR900";
+                            }
+                        }
                     }
                 }
 
@@ -113,17 +117,28 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
-            if (flag)
-            {
-                if (IDNO != apiInput.IDNO)
-                {
-                    flag = false;
-                    errCode = "ERR101";
-                }
-            }
+         
 
             #region 取出交換站資料
+            if (flag)
+            {
+                _repository = new StationAndCarRepository(connetStr);
+                List<BatExchangeStationData> AllBats = new List<BatExchangeStationData>();
+                if (apiInput.ShowALL == 1)
+                {
+                    AllBats = _repository.GetAllBatStation();
+                }
+                else
+                {
+                    AllBats = _repository.GetAllBatStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                }
 
+                outputApi = new OAPI_BatExchangeStation()
+                {
+                     BatExchangeStationObj = AllBats
+                };
+
+            }
             #endregion
 
 

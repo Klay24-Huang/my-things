@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_GetOrderStatusByOrderNo]
+** Name: [dbo].[usp_GetFinishOrderList]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,24 +29,26 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_GetOrderStatusByOrderNo]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_GetFinishOrderList]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/10/5 下午 01:29:01 
+** Date:2020/10/7 下午 02:09:16 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/5 下午 01:29:01    |  Eric|          First Release
+** 2020/10/7 下午 02:09:16    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_GetOrderStatusByOrderNo]
+CREATE PROCEDURE [dbo].[usp_GetFinishOrderList]
 	@IDNO                   VARCHAR(10)           ,
-	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
+	@ShowYear               INT                   , --0:不顯示整年;20XX表顯示該年
+	@pageSize				INT					  ,	--每頁幾筆
+	@pageNo					INT					  ,	--第幾頁
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -61,7 +63,7 @@ DECLARE @hasData TINYINT;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
-
+DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
@@ -72,12 +74,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_GetOrderStatusByOrderNo';
+SET @FunName='usp_GetFinishOrderList';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-
+SET @Descript=N'使用者操作【查詢已完成的訂單】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -85,13 +87,13 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
 SET @IDNO    =ISNULL (@IDNO    ,'');
-SET @OrderNo=ISNULL (@OrderNo,0);
+
 SET @Token    =ISNULL (@Token    ,'');
 
 		BEGIN TRY
-
+		
 		 
-		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
+		 IF @Token='' OR @IDNO=''  
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
@@ -119,22 +121,33 @@ SET @Token    =ISNULL (@Token    ,'');
 		 END
 		 IF @Error=0
 		 BEGIN
-	 SELECT order_number AS OrderNo,lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content --據點相關
-			      ,OperatorName,OperatorICon,Score										   --營運商相關
-				  ,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace             --車子相關
-				  ,device3TBA,RemainingMilage											   --機車電力相關
-				  ,ProjType,PRONAME--,PRICE,PRICE_H										   --專案基本資料
-				  ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE								--平日每小時價 20201003 ADD BY ADAM
-				  ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H							--假日每小時價 20201003 ADD BY ADAM
-				  ,BaseMinutes,BaseMinutesPrice,MinuteOfPrice,MaxPrice					   --當ProjType=4才有值
-				  ,start_time,final_start_time,stop_pick_time,stop_time,final_stop_time,ISNULL(fine_Time,'') AS fine_Time
-				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
-				  ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
-				  ,already_lend_car,IsReturnCar,CarNo,final_price,start_mile,end_mile
-			FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
-			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
-		     WHERE IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0
-			ORDER BY start_time ASC 
+		      IF @ShowYear=0
+			  BEGIN
+			     SET @ShowYear=YEAR(@NowTime);
+			  END
+
+				;WITH T
+				AS (
+				   SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo
+								,OrderMain.order_number AS OrderNo,OrderMain.CarNo,OrderMain.ProjType,OrderMain.unified_business_no AS UniCode,OrderDetail.final_start_time,OrderDetail.final_stop_time,OrderDetail.final_price
+								,Car.CarOfArea,Station.[Location] AS StationName
+								,VWFullData.CarTypeImg
+								,YEAR(OrderDetail.final_start_time) AS RentYear
+								FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
+								LEFT JOIN TB_Car AS Car ON Car.CarNo=OrderMain.CarNo
+								LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
+								LEFT JOIN TB_iRentStation AS Station ON Station.StationID=OrderMain.lend_place
+								INNER JOIN TB_OrderDetail AS OrderDetail WITH(NOLOCK) ON OrderDetail.order_number=OrderMain.order_number
+							     WHERE IDNO=@IDNO AND isDelete=0 AND car_mgt_status=16 AND booking_status=5 AND YEAR(OrderDetail.final_start_time)=@ShowYear
+				    ),
+				T2 AS (
+				    SELECT COUNT(1) TotalCount FROM T
+				)
+				SELECT *
+					FROM T2, T
+					WHERE RowNo BETWEEN (@pageNo - 1) * @pageSize  + 1 AND @pageNo * @pageSize;
+
+			
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
@@ -161,20 +174,20 @@ SET @Token    =ISNULL (@Token    ,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'使用訂單編號取得此訂單資訊', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'取得已完成的訂單列表', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';

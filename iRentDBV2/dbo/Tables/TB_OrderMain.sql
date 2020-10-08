@@ -33,6 +33,8 @@
     [init_TransDiscount] INT NOT NULL DEFAULT -1, 
     [CARRIERID]      VARCHAR (20)   DEFAULT ('') NOT NULL,
     [NPOBAN]         VARCHAR (20)   DEFAULT ('') NOT NULL,
+    [invoice_price] VARCHAR(10) NOT NULL DEFAULT '', 
+    [invoice_date] VARCHAR(20) NOT NULL DEFAULT '', 
     CONSTRAINT [PK_TB_OrderMain] PRIMARY KEY ([order_number]),
 )
 GO
@@ -217,3 +219,21 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OrderMain',
     @level2type = N'COLUMN',
     @level2name = N'init_TransDiscount'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'發票金額',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'invoice_price'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'發票金額',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderMain',
+    @level2type = N'COLUMN',
+    @level2name = N'invoice_date'

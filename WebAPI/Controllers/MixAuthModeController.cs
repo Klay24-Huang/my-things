@@ -8,10 +8,9 @@ using System.Web.Http;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 查詢訂單明細
+    /// 混合付款
     /// </summary>
-    public class GetOrderDetailController : ApiController
+    public class MixAuthModeController : ApiController
     {
-
     }
 }

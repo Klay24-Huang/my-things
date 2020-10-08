@@ -176,9 +176,11 @@
     <Compile Include="Controllers\InvoiceSettingController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
+    <Compile Include="Controllers\MixAuthModeController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
+    <Compile Include="Controllers\OrderDetailController.cs" />
     <Compile Include="Controllers\OrderUnFinishController.cs" />
     <Compile Include="Controllers\ReadCardController.cs" />
     <Compile Include="Controllers\ReadCardInfoController.cs" />
@@ -217,9 +219,11 @@
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
@@ -291,8 +295,10 @@
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BookingFinishQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStart.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStartMotor.cs" />
@@ -321,6 +327,7 @@
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
+    <Compile Include="Models\Param\Output\OAPI_OrderDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
@@ -336,6 +343,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\OrderFinishObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />

@@ -512,6 +512,21 @@ namespace WebAPI.Models.BaseFunc
             return flag;
         }
         /// <summary>
+        /// 顯示天
+        /// </summary>
+        /// <param name="DateTime1">結束日</param>
+        /// <param name="DateTime2">起始日</param>
+        /// <returns></returns>
+        public string DateDiff(DateTime DateTime1, DateTime DateTime2)
+        {
+            string dateDiff = null;
+            TimeSpan ts1 = new TimeSpan(DateTime1.Ticks);
+            TimeSpan ts2 = new TimeSpan(DateTime2.Ticks);
+            TimeSpan ts = ts1.Subtract(ts2).Duration();
+            dateDiff = ts.Days.ToString() + "天" + ts.Hours.ToString() + "小時" + ts.Minutes.ToString() + "分鐘";// + ts.Seconds.ToString() + "秒";
+            return dateDiff;
+        }
+        /// <summary>
         /// 正規化比對
         /// </summary>
         /// <param name="sourceStr">原始文字</param>
