@@ -13,6 +13,9 @@
     [OverPriceH]          FLOAT (53)    DEFAULT ((0.0)) NOT NULL,
     [MaxPrice]            INT           DEFAULT ((0)) NOT NULL,
     [MaxPriceH]           INT           DEFAULT ((0)) NOT NULL,
+    [OverMaxPrice]        INT           DEFAULT (0) NOT NULL,
+    [OverMaxPriceH]        INT           DEFAULT (0) NOT NULL,
+  
     [MileagePrice]        FLOAT (53)    DEFAULT ((0.0)) NOT NULL,
     [AllowDiscount]       TINYINT       DEFAULT ((1)) NOT NULL,
     [PointerOfMinutes]    FLOAT (53)    DEFAULT ((1)) NOT NULL,
@@ -110,3 +113,22 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'租金（�
 GO
 
 CREATE INDEX [IX_TB_PriceByMinutes_Search] ON [dbo].[TB_PriceByMinutes] ([ProjID], [CarType])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'逾時平日上限',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_PriceByMinutes',
+    @level2type = N'COLUMN',
+    @level2name = N'OverMaxPrice'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'逾時假日上限',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_PriceByMinutes',
+    @level2type = N'COLUMN',
+    @level2name = N'OverMaxPriceH'
