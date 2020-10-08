@@ -215,6 +215,58 @@ namespace Reposotory.Implement
             return lstCar;
         }
         #endregion
+        #region 取出電池站
+        public List<BatExchangeStationData> GetAllBatStation()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BatExchangeStationData> lstBat = null;
+            int nowCount = 0;
+            string SQL = "SELECT [Name],Station,Addr,lon AS Longitude,lat AS  Latitude,TotalCnt,EmptyCnt,FullCnt,UPDTime AS UpdateTime   FROM [TB_BAT_Station] WITH(NOLOCK)  WHERE use_flag = 1 ";
+    
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstBat = GetObjList<BatExchangeStationData>(ref flag, ref lstError, SQL, para, term);
+            return lstBat;
+        }
+        public List<BatExchangeStationData> GetAllBatStation(double lat, double lng, double radius)
+        {
+
+            bool flag = false, hasRange = true;
+            double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
+            if (lng > 0 && lat > 0 && radius > 0)
+            {
+                latlngLimit = GetAround(lat, lng, radius);
+            }
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BatExchangeStationData> lstBat = null;
+            int nowCount = 0;
+            string SQL = "SELECT [Name],Station,Addr,lon AS Longitude,lat AS  Latitude,TotalCnt,EmptyCnt,FullCnt,UPDTime AS UpdateTime   FROM [TB_BAT_Station] WITH(NOLOCK)  WHERE use_flag = 1 ";
+
+            SqlParameter[] para = new SqlParameter[2];
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (latlngLimit[j] == 0)
+                {
+                    hasRange = false;
+                    break;
+                }
+            }
+            string term = "";
+
+
+
+            if (hasRange)
+            {
+                //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
+                SQL += string.Format(" AND (Latitude>={0} AND Latitude<={1}) AND (Longitude>={2} AND Longitude<={3})", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3]);
+            }
+
+            lstBat = GetObjList<BatExchangeStationData>(ref flag, ref lstError, SQL, para, term);
+            return lstBat;
+        }
+        #endregion
         #region GetMotorRent
         /// <summary>
         /// 取得所有車輛

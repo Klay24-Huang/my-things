@@ -176,6 +176,7 @@
     <Compile Include="Controllers\InvoiceSettingController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
+    <Compile Include="Controllers\MixAuthModeController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
@@ -293,6 +295,7 @@
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingFinishQuery.cs" />
