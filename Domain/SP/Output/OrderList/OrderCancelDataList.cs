@@ -80,5 +80,22 @@ namespace Domain.SP.Output.OrderList
         /// 站別名稱
         /// </summary>
         public string StationName { get; set; }
+        /// <summary>
+        /// 是否為機車
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMotor { set; get; }
+        /// <summary>
+        /// 平日價
+        /// </summary>
+        public float WeekdayPrice { get; set; }
+        /// <summary>
+        /// 假日售價
+        /// </summary>
+        public float HoildayPrice { get; set; }
+        public float WeekdayPriceByMinutes { get; set; }
+        public float HoildayPriceByMinutes { get; set; }
+
     }
 }

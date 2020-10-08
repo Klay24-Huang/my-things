@@ -182,7 +182,12 @@ namespace WebAPI.Controllers
                                 SD = orderCancelDataLists[i].start_time,
                                 Seat = orderCancelDataLists[i].Seat,
                                 CarOfArea = orderCancelDataLists[i].CarOfArea,
-                                StationName = orderCancelDataLists[i].StationName
+                                StationName = orderCancelDataLists[i].StationName,
+                                IsMotor = orderCancelDataLists[i].IsMotor,
+                                WeekdayPrice = orderCancelDataLists[i].WeekdayPrice,
+                                HoildayPrice = orderCancelDataLists[i].HoildayPrice,
+                                WeekdayPriceByMinutes = orderCancelDataLists[i].WeekdayPriceByMinutes,
+                                HoildayPriceByMinutes = orderCancelDataLists[i].HoildayPriceByMinutes
                             };
                             outputApi.CancelObj.Add(obj);
                         }
