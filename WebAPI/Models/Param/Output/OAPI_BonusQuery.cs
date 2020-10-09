@@ -2,38 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Domain.TB;
 
 namespace WebAPI.Models.Param.Output
 {
     public class OAPI_BonusQuery
     {
         /// <summary>
-        /// 點數類型
-        /// <para>0:汽車</para>
-        /// <para>1:機車</para>
+        /// 20201009 ADD BY ADAM REASON.增加總點數跟總剩餘
+        /// 折抵時數資料
         /// </summary>
-        public int PointType { set; get; }
+        public List<BonusData> BonusObj { set; get; }
         /// <summary>
-        /// 點數名稱
+        /// 汽車折抵點數加總
         /// </summary>
-        public string GIFTNAME { set; get; }
+        public int TotalCarGIFTPOINT { set; get; }
         /// <summary>
-        /// 點數
+        /// 機車折抵點數加總
         /// </summary>
-        public string GIFTPOINT { set; get; }
+        public int TotalMotorGIFTPOINT { set; get; }
         /// <summary>
-        /// 結束日
+        /// 折抵點數加總
         /// </summary>
-        public string EDATE { set; get; }
+        public int TotalGIFTPOINT { set; get; }
         /// <summary>
-        /// 剩餘點數
+        /// 汽車剩餘點數加總
         /// </summary>
-        public string LASTPOINT { set; get; }
+        public int TotalCarLASTPOINT { set; get; }
         /// <summary>
-        /// 是否能贈送
-        /// <para>0:否</para>
-        /// <para>1:是</para>
+        /// 機車剩餘點數加總
         /// </summary>
-        public int AllowSend { set; get; }
+        public int TotalMotorLASTPOINT { set; get; }
+        /// <summary>
+        /// 剩餘點數加總
+        /// </summary>
+        public int TotalLASTPOINT { set; get; }
     }
 }
