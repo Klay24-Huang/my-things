@@ -392,4 +392,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PayMoneyId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cab9155e-e8d1-48f0-ac16-08bb8f81b6f5" ChangeDateTime="10/09/2020 01:45:41">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncList].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncList]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FuncID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="32807ecc-e1f4-42fb-b557-78c8bb401702" ChangeDateTime="10/09/2020 01:46:56">
+    <Property Name="ElementName" Value="[dbo].[TB_MenuRoot].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MenuRoot]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MenuId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="689fb281-fb5b-4b82-858c-19f01b918943" ChangeDateTime="10/09/2020 01:52:15">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncList].[OperationGroup]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncList]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OperationPowerGroup" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e0544531-5a8c-489b-a909-5e4d2b10fa9d" ChangeDateTime="10/09/2020 02:49:23">
+    <Property Name="ElementName" Value="[dbo].[TB_OperationPower].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_OperationPower]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OperationPowerID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="33fbeb16-9f1f-4fa2-987d-ad3b9ce91908" ChangeDateTime="10/09/2020 02:53:14">
+    <Property Name="ElementName" Value="[dbo].[TB_OperationPowerGroup].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_OperationPowerGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OperationPowerGroupId" />
+  </Operation>
 </Operations>

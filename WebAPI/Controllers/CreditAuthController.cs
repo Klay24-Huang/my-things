@@ -58,7 +58,7 @@ namespace WebAPI.Controllers
             string funName = "CreditAuthController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_WalletPayTransaction apiInput = null;
+            IAPI_CreditAuth apiInput = null;
             NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 //寫入API Log
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletPayTransaction>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CreditAuth>(Contentjson);
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
                 if (apiInput.PayType < 0 || apiInput.PayType > 1)
