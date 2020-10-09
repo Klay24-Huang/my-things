@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.TB;
+using Domain.TB.Mochi;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -139,6 +140,18 @@ namespace Reposotory.Implement
             //SQL += "ORDER BY StationID ASC;";
             lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
+        }
+        public List<SyncMachiParkId> GetMachiParkId()
+        {
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<SyncMachiParkId> lstStation = null;
+            bool flag = false;
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            string SQL = "SELECT Id,Name,0 as use_flag FROM [TB_MochiPark] WHERE use_flag=1 "; //已修改TB指向
+           lstStation = GetObjList<SyncMachiParkId>(ref flag, ref lstError, SQL, para, term);
+
+            return lstStation;
         }
     }
 }

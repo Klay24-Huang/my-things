@@ -1,0 +1,134 @@
+#app {
+  color: #000 !important;
+}
+
+main {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.bg-gray-400 {
+  background: #ced4da;
+}
+
+.bg-gray-500 {
+  background: #adb5bd;
+}
+
+header {
+  height: 80px;
+}
+
+.navbar {
+  border-radius: 0.5rem;
+}
+
+.card .list-group-item {
+  padding: 0.5rem 0;
+}
+
+.datePicker.form-control[readonly],
+.dateTimePicker.form-control[readonly] {
+  background: #eee;
+}
+
+.form-check {
+  position: relative;
+}
+
+.form-check input {
+  position: absolute;
+  margin: 0;
+  left: 0;
+  top: calc((1.5em + 0.75rem + 2px)*0.5 - 8px);
+}
+
+.custom-datepicker {
+  position: relative;
+}
+
+.custom-datepicker input {
+  padding-left: 35px;
+}
+
+.custom-datepicker svg {
+  position: absolute;
+  left: 0.5rem;
+  top: calc(50% - 10px);
+}
+
+.jfilestyle {
+  margin-bottom: 0;
+}
+
+div.jfilestyle input {
+  border-radius: 0.25rem;
+  width: calc(100% - 100px);
+}
+
+div.jfilestyle.jfilestyle-corner input:last-child, div.jfilestyle.jfilestyle-corner label:last-child {
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+}
+
+div.jfilestyle.jfilestyle-theme-blue label {
+  background: #1DA6D0;
+}
+
+span.focus-jfilestyle {
+  margin-left: 10px;
+}
+
+.focus-jfilestyle span {
+  line-height: calc(1.5em + 0.75rem + 2px);
+}
+
+.custom-select,
+.form-control,
+.custom-file-label {
+  background-color: #eee;
+}
+
+.list-group-item {
+  line-height: calc(1.5em + 0.75rem + 2px);
+}
+
+.form-control:disabled, .form-control[readonly],
+.custom-file-input[disabled] ~ .custom-file-label, .custom-file-input:disabled ~ .custom-file-label {
+  background-color: #9FA4AC;
+}
+
+.custom-control-label:before, .custom-control-label:after {
+  top: calc(50% - .5rem);
+}
+
+.table-primary, .table-primary > th, .table-primary > td {
+  background-color: #1DA6D0;
+  color: #fff;
+}
+
+.table-hover .table-primary:hover,
+.table-hover .table-primary:hover > td, .table-hover .table-primary:hover > th {
+  background-color: #1DA6D0 !important;
+}
+
+.table_narrow .table th, .table_narrow .table td {
+  padding: 0.5rem !important;
+}
+
+.btn {
+  line-height: calc(1.5em + 0.75rem - 2px);
+  height: calc(1.5em + 0.75rem);
+  padding: 0 0.75rem;
+}
+
+.list-group-item {
+  padding: 0.5rem 1.25rem;
+}
+
+#map {
+  width: 100%;
+  height: 80vh;
+}
+/*# sourceMappingURL=style.css.map */

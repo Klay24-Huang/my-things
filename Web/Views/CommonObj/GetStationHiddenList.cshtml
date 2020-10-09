@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Domain.TB.iRentStationBaseInfo>
+@{
+    Layout = null;
+    string stationList = "";
+}
+@foreach (var station in Model)
+{
+    if (station.StationName != "")
+    {
+        stationList += station.StationName + "(" + station.StationID + ");";
+    }
+
+}
+@Html.Hidden("hidStation", stationList, new { id = "hidStation", name = "hidStation" })

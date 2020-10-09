@@ -201,6 +201,7 @@
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
+    <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\UploadCarImageController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
     <Compile Include="Controllers\UseInviteCodeController.cs" />

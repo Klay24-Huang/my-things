@@ -207,6 +207,24 @@ namespace WebAPI.Models.Enum
             /// </summary>
             HandleWallet
             #endregion
+            #region 車麻吉
+                /// <summary>
+                /// 取得車麻吉token
+                /// </summary>
+                GetMochiToken,
+                /// <summary>
+                /// 新增或修改車麻吉token
+                /// </summary>
+                MaintainMachiToken,
+                /// <summary>
+                /// 同步車麻吉停車場
+                /// </summary>
+                MochiParkHandle,
+                /// <summary>
+                /// 停用車麻吉停車場
+                /// </summary>
+                DisabledMachiPark
+            #endregion
 
         }
         /// <summary>
@@ -369,7 +387,22 @@ namespace WebAPI.Models.Enum
                 case SPType.HandleWallet:
                     SPName = "usp_HandleWallet";
                     break;
-                
+
+                #endregion
+                #region 車麻吉
+
+                case SPType.GetMochiToken:
+                    SPName = "usp_GetMachiToken";
+                break;
+                case SPType.MaintainMachiToken:
+                    SPName = "usp_MaintainMachiToken";
+                    break;
+                case SPType.MochiParkHandle:
+                    SPName = "usp_MochiParkHandle";
+                    break;
+                case SPType.DisabledMachiPark:
+                    SPName = "usp_disabledMachiPark";
+                    break;
                     #endregion
             }
             return SPName;
