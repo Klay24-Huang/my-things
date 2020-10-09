@@ -152,6 +152,7 @@ namespace WebAPI.Controllers
                 if (QueryMode == 0)
                 {
                     iRentStations = _repository.GetStationCarType(apiInput.StationID);
+                    iRentStations.ForEach(x => x.CarTypeName = x.CarBrend + x.CarTypeName);
                 }
                 else
                 {
