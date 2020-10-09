@@ -152,7 +152,7 @@ namespace WebAPI.Controllers
                 if (QueryMode == 0)
                 {
                     iRentStations = _repository.GetStationCarType(apiInput.StationID);
-                    iRentStations.ForEach(x => x.CarTypeName = x.CarBrend + x.CarTypeName);
+                    iRentStations.ForEach(x => x.CarTypeName = x.CarBrend + " " + x.CarTypeName);
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace WebAPI.Controllers
                                 {
                                     CarBrend = lstData[i].CarBrend,
                                     CarType = lstData[i].CarType,
-                                    CarTypeName = lstData[i].CarBrend + lstData[i].CarTypeName ,
+                                    CarTypeName = lstData[i].CarBrend + " " + lstData[i].CarTypeName ,
                                     CarTypePic = lstData[i].CarTypePic,
                                     Operator = lstData[i].Operator,
                                     OperatorScore = lstData[i].OperatorScore,
