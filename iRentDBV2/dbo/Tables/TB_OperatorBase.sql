@@ -1,8 +1,11 @@
 ﻿CREATE TABLE [dbo].[TB_OperatorBase]
 (
 	[OperatorID] INT NOT NULL IDENTITY, 
+    [OperatorAccount] VARCHAR(10) NOT NULL DEFAULT '',
 	[OperatorICon] NVARCHAR(300) NOT NULL DEFAULT N'',
     [OperatorName] NVARCHAR(100) NOT NULL DEFAULT N'', 
+    [StartDate] DateTime NULL,
+    [EndDate] DateTime NULL,
 	[Score] FLOAT NOT NULL DEFAULT 5.0,
 	[use_flag] [tinyint] NOT NULL DEFAULT (1),
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
@@ -58,3 +61,30 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OperatorBase',
     @level2type = N'COLUMN',
     @level2name = N'OperatorICon'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'加盟業者編號(ID)對應後台台',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OperatorBase',
+    @level2type = N'COLUMN',
+    @level2name = N'OperatorAccount'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'有效日（起）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OperatorBase',
+    @level2type = N'COLUMN',
+    @level2name = N'StartDate'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'有效日（迄）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OperatorBase',
+    @level2type = N'COLUMN',
+    @level2name = N'EndDate'

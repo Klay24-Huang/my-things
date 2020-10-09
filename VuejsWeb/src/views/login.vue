@@ -1,0 +1,111 @@
+<template>
+    <div class="d-flex customBackground">
+        <b-container>
+            <b-row>
+                <b-col md="12" lg="4" offset-lg="4">
+                    <b-card
+                        header="iRent無人化租車租車共享系統 後台登入"
+                        header-text-variant="white"
+                        header-bg-variant="dark"
+                        class="text-left"
+                    >
+
+                    <svg class="login_logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295.216 99.532">
+                        <g transform="translate(-426.563 -359.796)">
+                            <path d="M634.989,450.688q-3.756,7.122-14.783,7.135-14.5-1.141-13.436-13.4h23.422v-.018H647l5.232-28.512c-4.821-5.592-13.052-8.466-24.751-8.6q-32.035,1.141-39.451,32.922-2.824,21.892,15.724,27.953h31.47a32.4,32.4,0,0,0,8.177-4.046l2.444-13.437Zm-8.624-30.766q13.713,1.152,12.733,13.017H608.463Q611.9,420.693,626.365,419.922Z" transform="translate(-29.989 -8.843)" fill="#cb000b"/>
+                            <path d="M684.679,436.009q2.848-13.4,14.934-14.17,11.993-.374,9.08,13.406l-6.028,32.925h15.778l9.6-52.362c-2.628-5.808-8.549-8.672-17.82-8.513q-12.879.774-22.245,10.715l1.685-9.179h-19.5L659.3,468.169h19.489Z" transform="translate(-43.325 -8.841)" fill="#cb000b"/>
+                            <path d="M470.217,374.326c-1.473,8.044-9.437,14.556-17.782,14.556s-13.909-6.512-12.444-14.556c1.466-8.025,9.43-14.53,17.775-14.53S471.69,366.3,470.217,374.326Z" transform="translate(-2.456)" fill="#cb000b"/>
+                            <path d="M509.109,375.177l-15.945,87.014H513.9l6.066-33.141H520l4.95-27.073,4.913-26.8Z" transform="translate(-12.398 -2.863)" fill="#cb000b"/>
+                            <path d="M587.586,401.5q3.439-25.444-29.747-26.327H538.752l13.307,12.472,15.277,14.328-20.523,14.317L528.53,429.05h10.045l15.8,33.141h26.049l-20.065-34.335Q583.965,423.471,587.586,401.5Z" transform="translate(-18.982 -2.863)" fill="#cb000b"/>
+                            <path d="M769.931,387.732h-19.1l-3.22,17.458-2.534,13.78-5.322,29.092q-2.5,12.211,5.086,16.466H769.1l2.308-12.619-.054-.4a13.116,13.116,0,0,1-5.854,1.528q-7.631.383-5.808-9.565l4.479-24.5h13.271l2.528-13.78H766.7Z" transform="translate(-58.188 -5.201)" fill="#cb000b"/>
+                            <path d="M460.2,402.485H438.438l-11.875,64.79h21.761Z" transform="translate(0 -7.947)" fill="#cb000b"/>
+                        </g>
+                    </svg>
+
+                    <b-container class="mb-4" fluid>
+                        <b-row no-gutters>
+                            <b-col cols="1">
+                                <font-awesome-icon icon="user" class="login_icon"></font-awesome-icon>
+                            </b-col>
+                            <b-col cols="11">
+                                <b-form-group
+                                    id="account"
+                                    label-for="account"
+                                >
+                                    <b-form-input id="account mb-2" v-model="name" :state="state" trim placeholder="帳號"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row no-gutters>
+                            <b-col cols="1">
+                                <font-awesome-icon icon="key" class="login_icon"></font-awesome-icon>
+                            </b-col>
+                            <b-col cols="11">
+                                <b-form-group
+                                    id="password"
+                                    label-for="password"
+                                >
+                                    <b-form-input type="password" id="password" v-model="password" :state="state" trim placeholder="密碼"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                    </b-container> 
+                    <div class="d-flex justify-content-center mb-4">
+                        <b-button class="w-80" variant="danger" block pill to="/navAccount_franchise">登入</b-button>
+                    </div>
+                    </b-card>
+                </b-col>
+            </b-row>
+        </b-container>
+    </div>
+</template>
+
+<script>
+// @ is an alias to /src
+import mainNav from '@/components/mainNav.vue'
+
+export default {
+    name: 'Home',
+    components: {
+        mainNav
+    },
+    data() {
+        return {
+            name: '',
+            password:'',
+            state:''
+        }
+    },
+    computed: {
+        getCompanyName() {
+            return this.$store.state.companyId
+        }
+    },
+    methods: {
+        increment() {
+            this.$store.commit('increment')
+            console.log(this.$store.state.count)
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.customBackground{
+    align-items: center;
+    min-height: 100vh;
+    background: #999;
+}
+.card-body{
+    text-align: center;
+}
+.login_logo{
+    width: 80%;
+    margin: 30px auto 50px auto;
+}
+.login_icon{
+    color: #9FA4AC;
+    margin: 10px 40px 0 0;
+}
+.cls-1{fill:#1a1311;}.cls-2{fill:#dc000c;}
+</style>

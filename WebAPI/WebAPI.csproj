@@ -244,6 +244,7 @@
     <Compile Include="Models\Param\Input\IAPI_ChangePWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckAccount.cs" />
     <Compile Include="Models\Param\Input\IAPI_CreditAndWalletQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_DeleteCreditCardAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
@@ -262,6 +263,7 @@
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
