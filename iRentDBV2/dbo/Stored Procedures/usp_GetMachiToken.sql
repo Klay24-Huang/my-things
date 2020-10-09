@@ -64,6 +64,8 @@ DECLARE @Descript NVARCHAR(200);
 
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
+DECLARE @Now DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -76,11 +78,11 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-
+SET @Now=DATEADD(HOUR,8,GETDATE());
 SET @Token    =ISNULL (@Token    ,'');
 
 		BEGIN TRY
-		 SELECT @Token=ISNULL(token,'') FROM TB_MochiToken WHERE StartDate<=@NowTime AND EndDate>@NowTime;
+		 SELECT @Token=ISNULL(token,'') FROM TB_MochiToken WHERE StartDate<=@Now AND EndDate>@Now;
 		--寫入錯誤訊息
 		    IF @Error=1
 			BEGIN

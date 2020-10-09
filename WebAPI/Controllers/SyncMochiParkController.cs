@@ -95,7 +95,8 @@ namespace WebAPI.Controllers
                         {
                             Token = wsOutLogin.data.access_token,
                             StartDate = NowDate,
-                            EndDate = TokenEnd
+                            EndDate = TokenEnd,
+                             LogID=LogID
                         };
                         SPOutput_Base spMainOut = new SPOutput_Base();
                         SQLHelper<SPInput_MaintainMachiToken, SPOutput_Base> sqlMainHelp = new SQLHelper<SPInput_MaintainMachiToken, SPOutput_Base>(connetStr);
@@ -166,11 +167,12 @@ namespace WebAPI.Controllers
                                             lat = Convert.ToDecimal(wsoutPark.data.Parkinglots[i].lat),
                                             lng = Convert.ToDecimal(wsoutPark.data.Parkinglots[i].lng),
                                             charge_mode = wsoutPark.data.Parkinglots[i].current_price.charge_mode,
-                                            price = Convert.ToInt32(wsoutPark.data.Parkinglots[i].current_price.price),
+                                            price = Convert.ToInt32((wsoutPark.data.Parkinglots[i].current_price.price.HasValue)? wsoutPark.data.Parkinglots[i].current_price.price:0),
                                             cooperation_state = wsoutPark.data.Parkinglots[i].cooperation_state,
                                             t_Operator = "",
                                             Name = wsoutPark.data.Parkinglots[i].name,
-                                            Id = wsoutPark.data.Parkinglots[i].id
+                                            Id = wsoutPark.data.Parkinglots[i].id,
+                                             LogID=LogID
                                         };
                                         SPOutput_Base spOut = new SPOutput_Base();
                                         spName = new ObjType().GetSPName(ObjType.SPType.MochiParkHandle);
@@ -210,7 +212,8 @@ namespace WebAPI.Controllers
                                         //usp_disabledMachiPark_202004
                                         SPInput_DisabledMochiPark spInputDisabled = new SPInput_DisabledMochiPark()
                                         {
-                                            Id = lstParkId[k].Id
+                                            Id = lstParkId[k].Id,
+                                             LogID=LogID
                                         };
                                         SPOutput_Base spOutDisabled = new SPOutput_Base();
 

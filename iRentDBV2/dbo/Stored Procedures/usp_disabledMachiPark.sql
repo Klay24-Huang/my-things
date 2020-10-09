@@ -88,7 +88,7 @@ SET @Id    =ISNULL (@Id    ,'');
 		 
 		 IF @Error=0
 		 BEGIN
-		   UPDATE TB_MochiPark SET use_flag=0,CloseTime=GETDATE(),UpdateUser='SYSTEM',UpdateTime=GETDATE() WHERE Id=@Id;
+		   UPDATE TB_MochiPark SET use_flag=0,CloseTime=@NowTime,UpdateUser='SYSTEM',UpdateTime=@NowTime WHERE Id=@Id;
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

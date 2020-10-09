@@ -205,7 +205,7 @@ namespace WebAPI.Models.Enum
             /// <summary>
             /// 開戶+儲值
             /// </summary>
-            HandleWallet
+            HandleWallet,
             #endregion
             #region 車麻吉
                 /// <summary>

@@ -14,7 +14,7 @@ namespace OtherService
 {
     public class MochiParkAPI
     {
-        private bool isTest = string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("Mochi_is_Test")) ? ((ConfigurationManager.AppSettings.Get("Mochi_is_Test").ToString() == "1") ? true : false) : false;
+        private static bool isTest = (string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("Mochi_is_Test")) ==false)? ((ConfigurationManager.AppSettings.Get("Mochi_is_Test").ToString() == "1") ? true : false) : false;
         string BasePath_T = ConfigurationManager.AppSettings.Get("T_MochiParkBasePath");
         string BasePath_P = ConfigurationManager.AppSettings.Get("MochiParkBasePath");
         string T_user = ConfigurationManager.AppSettings.Get("Mochi_TUser");

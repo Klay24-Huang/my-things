@@ -28,7 +28,7 @@ namespace Domain.WebAPI.output.Mochi
 
     public partial class CurrentPrice
     {
-        public double price { get; set; }
+        public double? price { get; set; }
         public string charge_mode { get; set; }
     }
 
