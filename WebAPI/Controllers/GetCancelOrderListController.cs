@@ -159,6 +159,7 @@ namespace WebAPI.Controllers
                             {
                                 CarBrend = orderCancelDataLists[i].CarBrend,
                                 CarNo = orderCancelDataLists[i].CarNo.Replace(" ",""),
+                                CarRentBill = orderCancelDataLists[i].init_price,
                                 CarTypeImg = orderCancelDataLists[i].CarTypeImg,
                                 CarTypeName = orderCancelDataLists[i].CarTypeName,
                                 ED = orderCancelDataLists[i].stop_time,
@@ -179,8 +180,12 @@ namespace WebAPI.Controllers
                                 WeekdayPrice = orderCancelDataLists[i].WeekdayPrice,
                                 HoildayPrice = orderCancelDataLists[i].HoildayPrice,
                                 WeekdayPriceByMinutes = orderCancelDataLists[i].WeekdayPriceByMinutes,
-                                HoildayPriceByMinutes = orderCancelDataLists[i].HoildayPriceByMinutes
+                                HoildayPriceByMinutes = orderCancelDataLists[i].HoildayPriceByMinutes,
+                                InsuranceBill = orderCancelDataLists[i].InsurancePurePrice,
+                                TransDiscount = (orderCancelDataLists[i].init_TransDiscount < 0) ? 0 : orderCancelDataLists[i].init_TransDiscount,
+                                MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(orderCancelDataLists[i].start_time), Convert.ToDateTime(orderCancelDataLists[i].stop_time), orderCancelDataLists[i].MilageUnit, Mildef, 20),
                             };
+                            obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;
                             outputApi.CancelObj.Add(obj);
                         }
                     }

@@ -95,6 +95,25 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         public float HoildayPrice { get; set; }
         public float WeekdayPriceByMinutes { get; set; }
         public float HoildayPriceByMinutes { get; set; }
-
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public int CarRentBill { set; get; }
+        /// <summary>
+        /// 預估安心保險費用
+        /// </summary>
+        public int InsuranceBill { set; get; }
+        /// <summary>
+        /// 轉乘優惠
+        /// </summary>
+        public int TransDiscount { set; get; }
+        /// <summary>
+        /// 預估里程費
+        /// </summary>
+        public int MileageBill { set; get; }
+        /// <summary>
+        /// 預估總金額
+        /// </summary>
+        public int Bill { set; get; }
     }
 }

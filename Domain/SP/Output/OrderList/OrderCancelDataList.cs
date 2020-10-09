@@ -96,6 +96,13 @@ namespace Domain.SP.Output.OrderList
         public float HoildayPrice { get; set; }
         public float WeekdayPriceByMinutes { get; set; }
         public float HoildayPriceByMinutes { get; set; }
-
+        /// <summary>
+        /// 預估安心保險費用
+        /// </summary>
+        public int InsurancePurePrice { set; get; }
+        /// <summary>
+        /// 轉乘優惠
+        /// </summary>
+        public int init_TransDiscount { set; get; }
     }
 }
