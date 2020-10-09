@@ -362,7 +362,7 @@ namespace OtherService
         }
         #endregion
         #region 點數轉贈
-        public bool NPR370Save(string IDNO, string TargetId, int Pointer, ref WebAPIOutput_NPR370Save output)
+        public bool NPR370Save(string IDNO, string TargetId, int Pointer, string GiftType,  ref WebAPIOutput_NPR370Save output)
         {
             bool flag = true;
             WebAPIInput_NPR370Save input = new WebAPIInput_NPR370Save()
@@ -371,7 +371,8 @@ namespace OtherService
                 user_id = userid,
                 SourceId = IDNO,
                 TargetId = TargetId,
-                TransMins = Pointer
+                TransMins = Pointer,
+                GiftType = GiftType
             };
             output = DoNPR370Save(input).Result;
             if (output.Result)
