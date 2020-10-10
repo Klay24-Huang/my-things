@@ -565,12 +565,34 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat, PayMode ";
-            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
-
-            SQL += "ORDER BY PROJID ASC ";
+            #region 改前SQL保留 
+            //string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat, PayMode ";
+            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            //SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            //SQL += "ORDER BY PROJID ASC ";
+            #endregion
+            string SQL =
+                @"SELECT VW.PROJID,
+                       VW.PRONAME,
+                       VW.Price,
+                       VW.PRICE_H,
+                       VW.CarBrend,
+                       VW.CarTypeGroupCode AS CarType,
+                       VW.CarTypeName,
+                       VW.CarTypeImg AS CarTypePic,
+                       VW.OperatorICon AS OPERATOR,
+                       VW.Score AS OperatorScore,
+                       VW.Seat,
+                       VW.PayMode,
+                       Car.CarOfArea
+                FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
+                INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+                AND VW.StationID=Car.nowStationID
+                WHERE Car.CarNo = @CarNo
+                  AND SPCLOCK='Z'
+                  AND use_flag=1
+                ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
