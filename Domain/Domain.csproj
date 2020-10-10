@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CarMachine\BLEInfo.cs" />
     <Compile Include="CarMachine\CardList.cs" />
+    <Compile Include="Common\BackEnd\OperatorItem.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="MemberData\RegisterData.cs" />

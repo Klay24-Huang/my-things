@@ -2,6 +2,9 @@
 using System.Configuration;
 using System.Web.Mvc;
 using Domain.TB;
+using System.Collections.Generic;
+using Domain.Common.BackEnd;
+using Microsoft.Ajax.Utilities;
 
 namespace Web.Controllers
 {
@@ -24,6 +27,29 @@ namespace Web.Controllers
             bool showAll = false;
             var station = this._repository.GetPartOfStation(showAll);
             return View(station);
+        }
+        /// <summary>
+        /// 產出共用的處理項目下拉式
+        /// </summary>
+        /// <returns></returns>
+        [ChildActionOnly]
+        public ActionResult GetHandleList()
+        {
+            string[] itemValue = { "","新增","修改"};
+            string[] itemText = { "","Add","Edit"};
+            List<OperatorItem> list = new List<OperatorItem>();
+            int Len = itemValue.Length;
+            for(int i = 0; i < Len; i++)
+            {
+                OperatorItem item = new OperatorItem()
+                {
+                    OptText = itemText[i],
+                    OptValue = itemValue[i]
+                };
+                list.Add(item);
+            }
+           
+            return View(list);
         }
 
     }
