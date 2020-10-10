@@ -196,8 +196,8 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
-                                        WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
-                                        HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea
                                     });
                                 }
