@@ -80,5 +80,9 @@ namespace Domain.WebAPI.output.rootAPI
         /// 每日上限
         /// </summary>
         public int MaxPrice { set; get; }
+        /// <summary>
+        /// 站別類型
+        /// </summary>
+        public string CarOfArea { get; set; }
     }
 }

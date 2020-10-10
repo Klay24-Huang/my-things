@@ -629,13 +629,40 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeDataForMotor> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
-            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
-            SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            #region 原SQL保留
+            //string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
+            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            //SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
+            //SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            //SQL += "ORDER BY PROJID ASC ";
+            #endregion
+            string SQL = @"
+            SELECT DISTINCT 
+                   VW.PROJID,
+		           VW.PRONAME,
+		           VW.CarBrend,
+		           VW.CarTypeGroupCode AS CarType,
+		           VW.CarTypeName,
+		           VW.CarTypeImg AS CarTypePic,
+		           VW.OperatorICon AS OPERATOR,
+		           VW.Score AS OperatorScore,
+		           VW.Seat,
+		           PriceByMinutes.[BaseMinutes],
+		           PriceByMinutes.[BaseMinutesPrice] AS BasePrice,
+		           PriceByMinutes.[Price] AS PerMinutesPrice,
+		           PriceByMinutes.[MaxPrice],
+		           Car.CarOfArea
+            FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
+            INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+            AND VW.StationID=Car.nowStationID
+            INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID
+            AND PriceByMinutes.use_flag=1
+            WHERE Car.CarNo=@CarNo
+              AND SPCLOCK='Z'
+              AND VW.use_flag=1
+            ORDER BY PROJID ASC";
 
-            SQL += "ORDER BY PROJID ASC ";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
@@ -654,7 +681,6 @@ namespace Reposotory.Implement
                 //para[nowCount].Direction = ParameterDirection.Input;
                 //nowCount++;
             }
-
 
             lstStation = GetObjList<ProjectAndCarTypeDataForMotor>(ref flag, ref lstError, SQL, para, term);
             return lstStation;

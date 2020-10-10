@@ -159,10 +159,10 @@ namespace WebAPI.Controllers
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
                                 BaseMinutes=lstData[0].BaseMinutes,
-                                 BasePrice=lstData[0].BasePrice,
-                                  MaxPrice=lstData[0].MaxPrice,
-                                   PerMinutesPrice=lstData[0].PerMinutesPrice,
-                                   
+                                BasePrice=lstData[0].BasePrice,
+                                MaxPrice=lstData[0].MaxPrice,
+                                PerMinutesPrice=lstData[0].PerMinutesPrice,
+                                CarOfArea = lstData[0].CarOfArea
                             });
                             if (DataLen > 1)
                             {
@@ -196,6 +196,7 @@ namespace WebAPI.Controllers
                                         BasePrice = lstData[i].BasePrice,
                                         MaxPrice = lstData[i].MaxPrice,
                                         PerMinutesPrice = lstData[i].PerMinutesPrice,
+                                        CarOfArea = lstData[i].CarOfArea
                                     });
                                 }
                             }
