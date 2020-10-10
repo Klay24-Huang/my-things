@@ -1,0 +1,92 @@
+﻿@{
+    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            會員審核-查詢條件
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            服務據點
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+                            @Html.Action("GetStationHiddenList", "CommonObj")
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            篩選功能
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="NotMuch">
+                                <label class="form-check-label" for="NotMuch">
+                                    車位數與上線數不相符
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table bg-white">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">名稱</th>
+                <th scope="col">地址</th>
+                <th scope="col">緯度</th>
+                <th scope="col">經度</th>
+                <th scope="col">地圖</th>
+                <th scope="col">車位數</th>
+                <th scope="col">實際上線</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <th scope="col">名稱</th>
+                <th scope="col">地址</th>
+                <th scope="col">緯度</th>
+                <th scope="col">經度</th>
+                <th scope="col">
+                    <a onclick="detailMap(data.value)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
+                            <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
+                            <g transform="translate(6.135)">
+                                <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
+                                <g transform="translate(0.004)">
+                                    <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
+                                    <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
+                                </g>
+                            </g>
+                        </svg>
+                    </a>
+
+                </th>
+                <th scope="col">車位數</th>
+                <th scope="col">實際上線</th>
+            </tr>
+        </tbody>
+     </table>
+</div>
+    <!--輸出表格結束-->
