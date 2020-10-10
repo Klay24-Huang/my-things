@@ -117,7 +117,7 @@ SET @addUser=ISNULL(@addUser,N'');
 		 
 		 IF @Error=0
 		 BEGIN
-		   SELECT @hasData=COUNT(1) FROM TB_MochiPark_201911 WITH(NOLOCK) WHERE Id=@Id;
+		   SELECT @hasData=COUNT(1) FROM TB_MochiPark WITH(NOLOCK) WHERE Id=@Id;
 		   IF @hasData=0
 		   BEGIN
 		       INSERT INTO TB_MochiPark([Id],[Operator],[Name],[cooperation_state],[price]
