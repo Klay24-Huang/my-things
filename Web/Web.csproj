@@ -152,6 +152,7 @@
     <Content Include="Content\css\bootstrap.css.map" />
     <Content Include="Content\css\docs.css.map" />
     <Content Include="Content\css\style.css.map" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\ChargeParkingSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting.js" />
     <Content Include="Scripts\js\bootstrap.bundle.js" />
