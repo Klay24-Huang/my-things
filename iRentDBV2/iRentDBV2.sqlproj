@@ -220,6 +220,8 @@
     <Build Include="dbo\Stored Procedures\usp_MochiParkHandle.sql" />
     <Build Include="dbo\Stored Procedures\usp_disabledMachiPark.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetDefPayMode.sql" />
+    <Build Include="dbo\Tables\TB_PersonNotification.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetNotificationList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

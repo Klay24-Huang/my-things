@@ -179,9 +179,11 @@
     <Compile Include="Controllers\MixAuthModeController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
     <Compile Include="Controllers\OrderDetailController.cs" />
     <Compile Include="Controllers\OrderUnFinishController.cs" />
+    <Compile Include="Controllers\PersonNoticeController.cs" />
     <Compile Include="Controllers\ReadCardController.cs" />
     <Compile Include="Controllers\ReadCardInfoController.cs" />
     <Compile Include="Controllers\ReceiveCarDataController.cs" />
@@ -270,6 +272,7 @@
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
@@ -334,6 +337,7 @@
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
     <Compile Include="Models\Param\Output\OAPI_OrderDetail.cs" />
+    <Compile Include="Models\Param\Output\OAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
@@ -345,6 +349,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\DetailData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\GetNotification.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />

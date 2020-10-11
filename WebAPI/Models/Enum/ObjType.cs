@@ -195,6 +195,12 @@ namespace WebAPI.Models.Enum
             /// 完成付款
             /// </summary>
             DonePayRentBill,
+            #region 渣渣
+            /// <summary>
+            /// 個人訊息
+            /// </summary>
+            PersonNotice,
+            #endregion
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -377,6 +383,11 @@ namespace WebAPI.Models.Enum
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
                     break;
+                #region 渣渣
+                case SPType.PersonNotice:
+                    SPName = "usp_GetNotificationList";
+                    break;
+                #endregion
                 #region 拓連
                 /// <summary>
                 /// 更新交換站點資訊
