@@ -200,6 +200,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             PolygonListQuery,
             /// <summary>
+            /// 判斷是否可以申請一次性開門
+            /// </summary>
+            CheckCanOpenDoor,
+            /// <summary>
             /// 寫入一次性開門的驗證碼
             /// </summary>
             InsOpenDoorCode,
