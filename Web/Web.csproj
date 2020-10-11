@@ -179,6 +179,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportMotorData.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\MasterCardSetting.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\SentCardSetting.js" />
+    <Content Include="Scripts\js\ActionJS\CardDataInfo\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactBooking.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactExtend.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
@@ -386,6 +387,7 @@
     <Content Include="Views\Report\MonthlyDetailQuery.cshtml" />
     <Content Include="Views\Report\ParkingCheckInQuery.cshtml" />
     <Content Include="Views\Report\ChargeParkingDetailQuery.cshtml" />
+    <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

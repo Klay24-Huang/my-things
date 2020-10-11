@@ -1,1 +1,64 @@
 ﻿
+@{
+    string UserID = (ViewData["UserID"] == null) ? "" : ViewData["UserID"].ToString();
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            萬用卡查詢
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            專員ID
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="UserID" id="UserID" value="@UserID" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">查詢</button>
+                         
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col"></th>
+                <th scope="col">萬用卡卡號</th>
+                <th scope="col"></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">1234567890</td>
+                <td scope="col">編輯</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--輸出表格結束-->

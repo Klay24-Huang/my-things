@@ -1,1 +1,78 @@
-﻿
+﻿<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            會員卡號發送設定
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            卡別
+                        </div>
+                        <div class="col-md-3">
+
+                            <select class="form-control" id="CarType" name="CarType">
+                                <option value="-1">1</option>
+                                <option value="C">一般卡</option>
+                                <option value="M">萬用卡</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            車號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            卡號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CardNo" id="CardNo" value="" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            合約編號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">發送至車輛</button>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->

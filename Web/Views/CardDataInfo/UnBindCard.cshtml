@@ -1,29 +1,35 @@
-﻿
-@{
-
-}
-<!--查詢介面-->
+﻿<!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            匯入車機資料(含SIM)
+            會員卡號解除
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
+
 
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            匯入車機資料(含SIM)
+                            訂單編號
                         </div>
-
-                        <div class="col-md-6">
-                            <input type="file" class="jfilestyle" data-theme="blue" data-inputSize="" data-text="上傳檔案">
-                            <button type="submit" class="btn btn-primary">範例檔案下載</button>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
                         </div>
-
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            身分證字號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="IDNO" id="IDNO" value="" />
+                        </div>
                     </div>
                 </div>
             </li>
@@ -32,6 +38,7 @@
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
                             <button type="submit" class="btn btn-primary">確認送出</button>
+
                         </div>
                     </div>
                 </div>

@@ -1,1 +1,110 @@
 ﻿
+@{
+    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            保有車輛設定
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            車輛查詢
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
+                            @Html.Action("GetStationHiddenList", "CommonObj")
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            服務據點
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+                            @Html.Action("GetStationHiddenList", "CommonObj")
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            顯示方式
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1">
+                                <label class="form-check-label" for="ShowUnRent">
+                                    可出租
+                                </label>
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0">
+                                <label class="form-check-label" for="ShowRent">
+                                    出租中
+                                </label>
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2">
+                                <label class="form-check-label" for="ShowWait">
+                                    待上線
+                                </label>
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3">
+                                <label class="form-check-label" for="ShowAll">
+                                    不限
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">查詢</button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">ID</th>
+                <th scope="col">車號</th>
+                <th scope="col">據點</th>
+                <th scope="col">編輯</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">車號</td>
+                <td scope="col">據點</td>
+
+                <td scope="col">編輯</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--輸出表格結束-->
