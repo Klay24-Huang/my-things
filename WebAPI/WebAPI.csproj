@@ -198,6 +198,7 @@
     <Compile Include="Controllers\SendLockController.cs" />
     <Compile Include="Controllers\SendMotorCMDController.cs" />
     <Compile Include="Controllers\SendSMSController.cs" />
+    <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
@@ -265,6 +266,7 @@
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
@@ -281,6 +283,7 @@
     <Compile Include="Models\Param\Input\IAPI_SendLock.cs" />
     <Compile Include="Models\Param\Input\IAPI_SendMotorCMD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetDefPayMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />

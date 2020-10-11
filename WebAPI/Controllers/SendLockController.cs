@@ -10,6 +10,7 @@ using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Domain.WebAPI.Output.CENS;
 using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -52,7 +53,7 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            MotorInfo info = new MotorInfo();
+            CarInfo info = new CarInfo();
 
             Int16 APPKind = 2;
             string Contentjson = "";
@@ -222,29 +223,13 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            //取最新狀況, 先送getlast之後從tb捉最近一筆
                             FETCatAPI FetAPI = new FETCatAPI();
                             string requestId = "";
                             string CommandType = "";
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
-                            if (spOut.IsMotor == 0)
-                            {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
-                            }
-                            else
-                            {
-                                if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
-                                {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
-                                }
-                                else
-                                {
-                                    //晚上不要吵人
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
-                                }
-                            }
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                             WSInput_Base<Params> input = new WSInput_Base<Params>()
                             {
                                 command = true,
@@ -256,7 +241,70 @@ namespace WebAPI.Controllers
                             requestId = input.requestId;
                             string method = CommandType;
                             flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                   
+                            if (flag)
+                            {
+                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            }
+                            if (flag)
+                            {
+                                info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                                if (info == null)
+                                {
+                                    flag = false;
+                                    errCode = "ERR216";
+                                }
+                            }
+                            if (flag)
+                            {
+                                switch (apiInput.Lock)
+                                {
+                                    case 0: //解鎖
+                                        if (info.CentralLockStatus == 0)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR427"; //已經是解鎖狀態
+                                        }
+                                        else
+                                        {
+                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Unlock);
+                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.Unlock;
+                                        }
+                                        break;
+                                    case 1: //上鎖
+                                        if (info.CentralLockStatus == 1)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR428"; //已經是上鎖狀態
+                                          
+                                        }
+                                        else
+                                        {
+                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock);
+                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock;
+                                        }
+                                        break;
+                                }
+                                if (flag)
+                                {
+                                    WSInput_Base<Params> Input = new WSInput_Base<Params>()
+                                    {
+                                        command = true,
+                                        method = CommandType,
+                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                        _params = new Params()
+
+                                    };
+
+                                    requestId = Input.requestId;
+                                    method = CommandType;
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, Input, LogID);
+                                    if (flag)
+                                    {
+                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }

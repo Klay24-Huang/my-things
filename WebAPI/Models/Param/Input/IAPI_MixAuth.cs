@@ -22,13 +22,6 @@ namespace WebAPI.Models.Param.Input
         /// 罰金或補繳代碼
         /// </summary>
         public string CNTRNO { set; get; }
-        /// <summary>
-        /// 使用信用卡支付多少錢
-        /// </summary>
-        public int CreditAmount { set; get; }
-        /// <summary>
-        /// 使用錢包支付多少錢
-        /// </summary>
-        public int WalletAmount { set; get; }
+
     }
 }
