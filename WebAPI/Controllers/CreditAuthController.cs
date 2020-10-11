@@ -304,13 +304,18 @@ namespace WebAPI.Controllers
                                 }
                                 if (flag)
                                 {
-                                    if (OrderDataLists[0].ProjType == 4)
+                                    //if (OrderDataLists[0].ProjType == 4)
+                                    //{
+                                    //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                    //    if (Motorflag == false)
+                                    //    {
+                                    //        //寫入車機錯誤
+                                    //    }
+                                    //}
+                                    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                    if (CarFlag == false)
                                     {
-                                        bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                        if (Motorflag == false)
-                                        {
-                                            //寫入車機錯誤
-                                        }
+                                        //寫入車機錯誤
                                     }
                                     string  SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
                                     SPOutput_Base PayOutput = new SPOutput_Base();

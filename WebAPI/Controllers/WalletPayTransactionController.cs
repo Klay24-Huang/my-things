@@ -254,14 +254,22 @@ namespace WebAPI.Controllers
                         {
                             if (apiInput.PayType == 0)
                             {
-                                if (OrderDataLists[0].ProjType == 4)
+                                //if (OrderDataLists[0].ProjType == 4)
+                                //{
+                                //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                //    if (Motorflag == false)
+                                //    {
+                                //        //寫入車機錯誤
+                                //    }
+                                //}
+
+                                bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                if (CarFlag == false)
                                 {
-                                    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                    if (Motorflag == false)
-                                    {
-                                        //寫入車機錯誤
-                                    }
+                                    //寫入車機錯誤
                                 }
+
+
                                 #region 這邊要再加上更新訂單狀態
                                 SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
                                 PayInput.transaction_no = wallet.StoreTransId;
@@ -279,14 +287,20 @@ namespace WebAPI.Controllers
                         {
                             #region 這邊要再加上更新訂單狀態
                             PayInput.transaction_no = "Free";
-                            if (OrderDataLists[0].ProjType == 4)
+                            //if (OrderDataLists[0].ProjType == 4)
+                            //{
+                            //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                            //    if (Motorflag == false)
+                            //    {
+                            //        //寫入車機錯誤
+                            //    }
+                            //}
+                            bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                            if (CarFlag == false)
                             {
-                                bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                if (Motorflag == false)
-                                {
-                                    //寫入車機錯誤
-                                }
+                                //寫入車機錯誤
                             }
+
                             SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
                             SPOutput_Base PayOutput = new SPOutput_Base();
                             SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
