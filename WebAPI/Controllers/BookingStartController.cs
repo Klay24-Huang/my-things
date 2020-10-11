@@ -441,8 +441,7 @@ namespace WebAPI.Controllers
                                         _params = new Params()
 
                                     };
-                                    requestId = input.requestId;
-                                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                                   
                                     requestId = SetRentInput.requestId;
                                     method = CommandType;
                                     flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
@@ -467,8 +466,7 @@ namespace WebAPI.Controllers
                                         _params = new Params()
 
                                     };
-                                    requestId = SetAlertOffInput.requestId;
-                                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetAlertOffInput, LogID);
+                                
                                     requestId = SetAlertOffInput.requestId;
                                     method = CommandType;
                                     flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);

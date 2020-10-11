@@ -266,6 +266,7 @@
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
