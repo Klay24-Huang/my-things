@@ -299,7 +299,7 @@ namespace WebAPI.Controllers
                     //判斷輸入的點數有沒有超過總點數
                     if (ProjType == 4)
                     {
-                        if (Discount < OrderDataLists[0].BaseMinutes)
+                        if (Discount >0 && Discount < OrderDataLists[0].BaseMinutes)
                         {
                             flag = false;
                             errCode = "ERR205";

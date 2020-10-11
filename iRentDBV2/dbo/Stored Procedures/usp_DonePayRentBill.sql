@@ -136,44 +136,48 @@ SET @ParkingSpace='';
 					   SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WHERE OrderNo=@OrderNo;
 					END
 
-					IF @ProjType=4
-					BEGIN
 					--寫入歷程
 					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-							--更新訂單主檔
-							UPDATE TB_OrderMain
-							SET booking_status=5,car_mgt_status=16
-					        WHERE order_number=@OrderNo;
-							--更新訂單明細
-							UPDATE TB_OrderDetail
-							SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
-							WHERE order_number=@OrderNo;
-							--更新個人訂單控制
-							UPDATE [TB_BookingStatusOfUser]
-							SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
-							WHERE IDNO=@IDNO;
-							--更新車輛
-							UPDATE TB_Car
-							SET [NowOrderNo]=0,[LastOrderNo]=@OrderNo,available=1
-							WHERE CarNo=@CarNo;
-							--寫入歷程
-							SET @Descript=N'完成還車';
-					        INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+					
+					--更新訂單主檔
+					UPDATE TB_OrderMain
+					SET booking_status=5,car_mgt_status=16
+					WHERE order_number=@OrderNo;
+					
+					--更新訂單明細
+					UPDATE TB_OrderDetail
+					SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
+					WHERE order_number=@OrderNo;
 
+					--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
+					--更新個人訂單控制
+					IF @ProjType=4
+					BEGIN
+						UPDATE [TB_BookingStatusOfUser]
+						SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
+						WHERE IDNO=@IDNO;
+					END
+					ELSE IF @ProjType=0
+					BEGIN
+						UPDATE [TB_BookingStatusOfUser]
+						SET [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[NormalRentBookingFinishCount]=[NormalRentBookingFinishCount]+1
+						WHERE IDNO=@IDNO;
 					END
 					ELSE
 					BEGIN
-						--更新訂單主檔
-							UPDATE TB_OrderMain
-							SET car_mgt_status=15
-					        WHERE order_number=@OrderNo;
-							--更新訂單明細
-							UPDATE TB_OrderDetail
-							SET transaction_no=@transaction_no,trade_status=1,[already_payment]=1
-							WHERE order_number=@OrderNo;
-							--寫入歷程
-					       INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+						UPDATE [TB_BookingStatusOfUser]
+						SET [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[AnyRentBookingFinishCount]=[AnyRentBookingFinishCount]+1
+						WHERE IDNO=@IDNO;
 					END
+
+					--更新車輛
+					UPDATE TB_Car
+					SET [NowOrderNo]=0,[LastOrderNo]=@OrderNo,available=1
+					WHERE CarNo=@CarNo;
+					--寫入歷程
+					SET @Descript=N'完成還車';
+					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
 
 		 END
 		--寫入錯誤訊息
