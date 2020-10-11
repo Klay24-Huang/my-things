@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> DoBookingStart(Dictionary<string, object> value)
+        public Dictionary<string, object> DoOpenDoor(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;

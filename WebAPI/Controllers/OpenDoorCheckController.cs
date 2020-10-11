@@ -27,11 +27,10 @@ namespace WebAPI.Controllers
     /// </summary>
     public class OpenDoorCheckController : ApiController
     {
-        public class OpenDoorController : ApiController
-        {
+
             private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
             [HttpPost]
-            public Dictionary<string, object> DoBookingStart(Dictionary<string, object> value)
+            public Dictionary<string, object> DoOpenDoorCheck(Dictionary<string, object> value)
             {
                 #region 初始宣告
                 HttpContext httpContext = HttpContext.Current;
@@ -43,7 +42,7 @@ namespace WebAPI.Controllers
                 bool isWriteError = false;
                 string errMsg = "Success"; //預設成功
                 string errCode = "000000"; //預設成功
-                string funName = "BookingStartController";
+                string funName = "OpenDoorCheckController";
                 Int64 LogID = 0;
                 Int16 ErrType = 0;
                 IAPI_OpenDoorCheck apiInput = null;
@@ -233,5 +232,5 @@ namespace WebAPI.Controllers
                 #endregion
             }
         }
-    }
+    
 }
