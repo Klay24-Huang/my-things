@@ -465,15 +465,20 @@ namespace WebAPI.Controllers
 
                                     if (flag)
                                     {
-                                        if (OrderDataLists[0].ProjType == 4)
+                                        //if (OrderDataLists[0].ProjType == 4)
+                                        //{
+                                        //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                        //    if (Motorflag == false)
+                                        //    {
+                                        //        //寫入車機錯誤
+                                        //    }
+                                        //}
+                                        bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                        if (CarFlag == false)
                                         {
-                                            bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                            if (Motorflag == false)
-                                            {
-                                                //寫入車機錯誤
-                                            }
+                                            //寫入車機錯誤
                                         }
-                                         SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                                        SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
                                         SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
                                         flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);

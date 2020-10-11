@@ -178,6 +178,10 @@ SET @ParkingSpace='';
 					SET @Descript=N'完成還車';
 					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 
+					--寫入一次性開門的deadline
+					INSERT INTO TB_OpenDoor(OrderNo,DeadLine)VALUES(@OrderNo,DATEADD(MINUTE,15,@NowTime));
+
+					
 
 		 END
 		--寫入錯誤訊息

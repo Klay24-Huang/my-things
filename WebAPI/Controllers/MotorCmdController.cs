@@ -257,6 +257,7 @@ namespace WebAPI.Controllers
                                     _params = new Params()
 
                                 };
+                                method = CommandType;
                                 requestId = input.requestId;
                                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                                 if (flag)

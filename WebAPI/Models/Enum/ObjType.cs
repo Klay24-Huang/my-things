@@ -199,6 +199,32 @@ namespace WebAPI.Models.Enum
             /// 電子柵欄查詢
             /// </summary>
             PolygonListQuery,
+            /// <summary>
+            /// 寫入一次性開門的驗證碼
+            /// </summary>
+            InsOpenDoorCode,
+            /// <summary>
+            /// 判斷一次性開門驗證碼
+            /// </summary>
+            CheckOpenDoorCode,
+            /// <summary>
+            /// 完成一次性開門前檢查車況
+            /// </summary>
+            GetCarStatusBeforeOpenDoorFinish,
+            /// <summary>
+            /// 完成一次性開門
+            /// </summary>
+            FinishOpenDoor,
+            #region 渣渣
+            /// <summary>
+            /// 個人訊息
+            /// </summary>
+            PersonNotice,
+            /// <summary>
+            /// 活動訊息
+            /// </summary>
+            News,
+            #endregion
             #region 拓連
             /// <summary>
             /// 更新交換站點資訊
@@ -384,6 +410,31 @@ namespace WebAPI.Models.Enum
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";
                     break;
+                case SPType.CheckCanOpenDoor:
+                    SPName = "usp_CheckCanOpenDoor";
+                    break;
+
+                case SPType.InsOpenDoorCode:
+                    SPName = "usp_InsOpenDoorCode";
+                    break;
+                case SPType.CheckOpenDoorCode:
+                    SPName = "usp_CheckOpenDoorCode";
+                    break;
+                case SPType.GetCarStatusBeforeOpenDoorFinish:
+                    SPName = "usp_GetCarStatusBeforeOpenDoorFinish";
+                    break;
+                case SPType.FinishOpenDoor:
+                    SPName = "usp_FinishOpenDoor";
+                    break;
+                    
+                #region 渣渣
+                case SPType.PersonNotice:
+                    SPName = "usp_GetNotificationList";
+                    break;
+                case SPType.News:
+                    SPName = "usp_GetNews";
+                    break;
+                #endregion
                 #region 拓連
                 /// <summary>
                 /// 更新交換站點資訊

@@ -87,6 +87,8 @@
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
+    <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
+    <Compile Include="SP\Input\Other\SPInput_GetNotificationList.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
@@ -100,10 +102,15 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CheckOpenDoorCode.cs" />
     <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_GetCarStatusBeforeOpenDoorFinish.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_InsOpenDoorCode.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_OpenDoorFinish.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
     <Compile Include="SP\Input\Rent\SPInput_SetingParkingSpaceByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
@@ -132,9 +139,12 @@
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CheckOpenDoorCode.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_GetCarStatusBeforeOpenDoorFinish.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
@@ -180,6 +190,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ETAG010.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\Mochi\WebAPIInput_MochiLogin.cs" />
@@ -218,6 +229,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR320Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR330QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Check.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370CheckData.cs" />

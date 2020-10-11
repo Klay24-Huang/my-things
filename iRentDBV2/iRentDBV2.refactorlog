@@ -427,4 +427,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OperationPowerGroupId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d4897997-c682-43f5-ad9c-d7f24f5eb102" ChangeDateTime="10/11/2020 07:31:29">
+    <Property Name="ElementName" Value="[dbo].[TB_OpenDoor].[UTime]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_OpenDoor]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UPDTime" />
+  </Operation>
 </Operations>

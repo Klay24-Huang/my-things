@@ -31,6 +31,7 @@ namespace OtherService
         protected string NPR330QueryURL; //欠費查詢
         protected string ETAG010QueryURL; //ETAG查詢
         protected string EinvBizURL;     //手機條碼檢核
+        protected string NPR320QueryURL; //點數兌換
         protected string connetStr;
         bool disposed = false;
         /// <summary>
@@ -49,6 +50,7 @@ namespace OtherService
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
             ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
+            NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -637,6 +639,108 @@ namespace OtherService
                     WebAPIName = "NPR330Query",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + NPR330QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
+        #endregion
+        #region 點數兌換
+        /// <summary>
+        /// NPR320
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="COUPONNO"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool NPR320Query(string IDNO, string COUPONNO, ref WebAPIOutput_NPR320Query output)
+        {
+            bool flag = true;
+            WebAPIInput_NPR320Query input = new WebAPIInput_NPR320Query()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                MEMIDNO = IDNO,
+                COUPONNO = COUPONNO
+            };
+            output = DoNPR320Query(input).Result;
+            if (output.Result)
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 兌換點數
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<WebAPIOutput_NPR320Query> DoNPR320Query(WebAPIInput_NPR320Query input)
+        {
+            WebAPIOutput_NPR320Query output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(NPR320QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR320Query>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR320Query()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR320Query",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = NPR320QueryURL
                 };
                 bool flag = true;
                 string errCode = "";
