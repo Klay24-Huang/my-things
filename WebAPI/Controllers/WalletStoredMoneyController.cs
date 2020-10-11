@@ -29,15 +29,10 @@ namespace WebAPI.Controllers
     public class WalletStoredMoneyController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
-        private string BaseURL = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
-        private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
-        private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
-        private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoWalletStoredMoney(Dictionary<string, object> value)

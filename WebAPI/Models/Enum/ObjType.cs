@@ -29,6 +29,7 @@ namespace WebAPI.Models.Enum
             /// 會員登入
             /// </summary>
             MemberLogin,
+            #region 會員註冊、會員中心相關
             /// <summary>
             /// 判斷身份證/居留證是否已存在
             /// </summary>
@@ -77,6 +78,11 @@ namespace WebAPI.Models.Enum
             /// 重設密碼後，設定密碼
             /// </summary>
             SetPWD,
+            /// <summary>
+            /// 設定預設支付方式
+            /// </summary>
+            SetDefPayMode,
+            #endregion
             /// <summary>
             /// Token Check
             /// </summary>
@@ -246,6 +252,7 @@ namespace WebAPI.Models.Enum
                 case SPType.MemberLogin://會員登入
                     SPName = "usp_MemberLogin";
                     break;
+                #region 會員註冊、會員中心相關
                 case SPType.CheckAccount://判斷身份證/居留證是否已存在
                     SPName = "usp_CheckAccount";
                     break;
@@ -282,6 +289,10 @@ namespace WebAPI.Models.Enum
                 case SPType.SetPWD: //重置密碼後，設定密碼
                     SPName = "usp_SetPWD";
                     break;
+                case SPType.SetDefPayMode:
+                    SPName = "usp_SetDefPayMode";
+                    break;
+                #endregion
                 case SPType.CheckToken: //Check Token
                     SPName = "usp_CheckToken";
                     break;

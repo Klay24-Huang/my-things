@@ -66,6 +66,7 @@
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\Mochi\SPInput_DisabledMochiPark.cs" />
