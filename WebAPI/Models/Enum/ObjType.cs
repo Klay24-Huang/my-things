@@ -172,6 +172,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetFinishOrder,
             /// <summary>
+            /// 已完成的訂單明細
+            /// </summary>
+            OrderDetail,
+            /// <summary>
             /// 設定發票（會員及訂單）
             /// </summary>
             SettingInvoice,
@@ -382,6 +386,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetFinishOrder:
                     SPName = "usp_GetFinishOrderList";
+                    break;
+                case SPType.OrderDetail:
+                    SPName = "usp_GetOrderDetail";
                     break;
                 case SPType.CheckCarStatusByReturn:
                     SPName = "usp_CheckCarStatusByReturn";

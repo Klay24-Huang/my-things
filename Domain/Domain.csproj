@@ -77,6 +77,7 @@
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetFinishOrder.cs" />
+    <Compile Include="SP\Input\OrderList\SPInput_GetOrderDetail.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderList.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCarStatus.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_UPDNFCStatus.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="TB\MotorBillBase.cs" />
     <Compile Include="TB\MotorInfo.cs" />
     <Compile Include="TB\MotorRentObj.cs" />
+    <Compile Include="TB\OrderDetailData.cs" />
     <Compile Include="TB\ParkingData.cs" />
     <Compile Include="TB\Polygon.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />

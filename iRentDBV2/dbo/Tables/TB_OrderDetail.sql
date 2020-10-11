@@ -18,6 +18,8 @@
 	[fine_interval] [int] NOT NULL DEFAULT 0,
 	[fine_rate] [int] NOT NULL DEFAULT 0,
 	[gift_point] [int] NOT NULL DEFAULT 0,
+    [monthly_workday] [float] not null DEFAULT 0.0,
+    [monthly_holiday] [float] not null DEFAULT 0.0,
 	[Etag] [int] NOT NULL DEFAULT 0,
 	[already_payment] [int] NOT NULL DEFAULT 0,
 	[start_mile] [float] NOT NULL DEFAULT 0,
@@ -163,3 +165,21 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OrderDetail',
     @level2type = N'COLUMN',
     @level2name = N'TransDiscount'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'使用的月租平日時數（含機車）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderDetail',
+    @level2type = N'COLUMN',
+    @level2name = N'monthly_workday'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'使用的月租假日時數',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderDetail',
+    @level2type = N'COLUMN',
+    @level2name = N'monthly_holiday'
