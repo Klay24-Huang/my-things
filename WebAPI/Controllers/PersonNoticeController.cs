@@ -1,21 +1,12 @@
-﻿using Domain.CarMachine;
-using Domain.Common;
-using Domain.SP.Input.Booking;
+﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Other;
 using Domain.SP.Output;
-using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
-using Domain.TB;
-using Domain.WebAPI.Input.FET;
-using Domain.WebAPI.Input.Param;
-using OtherService;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -55,20 +46,11 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            MotorInfo info = new MotorInfo();
-
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-            string CID = "";
-            string deviceToken = "";
-            int IsMotor = 0;
-            int IsCens = 0;
-            double mil = 0;
-            DateTime StopTime;
-            List<CardList> lstCardList = new List<CardList>();
+
             Int16 tmpType = 0;
             #endregion
             #region 防呆
@@ -82,7 +64,7 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                //4.類型判斷
+                //類型判斷
                 if (flag)
                 {
                     if (null == apiInput.type)

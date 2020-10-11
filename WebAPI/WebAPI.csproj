@@ -259,6 +259,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPayDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPolygon.cs" />
@@ -352,6 +354,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\GetNotification.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\NewsObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderFinishObj.cs" />

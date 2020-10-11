@@ -200,6 +200,10 @@ namespace WebAPI.Models.Enum
             /// 個人訊息
             /// </summary>
             PersonNotice,
+            /// <summary>
+            /// 活動訊息
+            /// </summary>
+            News,
             #endregion
             #region 拓連
             /// <summary>
@@ -386,6 +390,9 @@ namespace WebAPI.Models.Enum
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
+                    break;
+                case SPType.News:
+                    SPName = "usp_GetNews";
                     break;
                 #endregion
                 #region 拓連
