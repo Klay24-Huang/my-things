@@ -208,6 +208,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             CheckOpenDoorCode,
             /// <summary>
+            /// 完成一次性開門前檢查車況
+            /// </summary>
+            GetCarStatusBeforeOpenDoorFinish,
+            /// <summary>
             /// 完成一次性開門
             /// </summary>
             FinishOpenDoor,
@@ -413,9 +417,13 @@ namespace WebAPI.Models.Enum
                 case SPType.CheckOpenDoorCode:
                     SPName = "usp_CheckOpenDoorCode";
                     break;
+                case SPType.GetCarStatusBeforeOpenDoorFinish:
+                    SPName = "usp_GetCarStatusBeforeOpenDoorFinish";
+                    break;
                 case SPType.FinishOpenDoor:
                     SPName = "usp_FinishOpenDoor";
                     break;
+                    
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";

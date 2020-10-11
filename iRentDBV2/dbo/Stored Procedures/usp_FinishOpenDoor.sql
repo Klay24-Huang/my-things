@@ -72,12 +72,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='[dbo].[usp_FinishOpenDoor]';
+SET @FunName='usp_FinishOpenDoor';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【取消訂單】';
+SET @Descript=N'使用者操作【完成一次性開門結束】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -89,11 +89,7 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
 
 		BEGIN TRY
-		 IF @DeviceID='' OR @IDNO='' 
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
+
 		 
 		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
 		 BEGIN
@@ -119,6 +115,27 @@ SET @Token    =ISNULL (@Token    ,'');
 				   SET @Error=1;
 				   SET @ErrorCode='ERR101';
 				END
+			END
+		 END
+		 IF @Error=0
+		 BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_OpenDoor WHERE OrderNo=@OrderNo  AND IsVerify=1 AND nowStatus=1 ;
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR222';
+			END
+			ELSE
+			BEGIN
+
+			    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+				FROM TB_OrderMain
+				WHERE order_number=@OrderNo;
+				INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
+				UPDATE TB_OpenDoor SET nowStatus=2 WHERE OrderNo=@OrderNo  AND IsVerify=1 AND nowStatus=1 ;
+
 			END
 		 END
 		--寫入錯誤訊息

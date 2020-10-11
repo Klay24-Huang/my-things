@@ -230,6 +230,7 @@
     <Build Include="dbo\Stored Procedures\usp_InsOpenDoorCode.sql" />
     <Build Include="dbo\Stored Procedures\usp_CheckOpenDoorCode.sql" />
     <Build Include="dbo\Stored Procedures\usp_FinishOpenDoor.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetCarStatusBeforeOpenDoorFinish.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

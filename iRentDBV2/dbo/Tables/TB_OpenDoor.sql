@@ -27,7 +27,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'更新時�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'目前狀態（0:開門;1:關門)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OpenDoor', @level2type = N'COLUMN', @level2name = N'nowStatus';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'目前狀態（0:未執行;1:已執行;2:已結束)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OpenDoor', @level2type = N'COLUMN', @level2name = N'nowStatus';
 
 
 GO

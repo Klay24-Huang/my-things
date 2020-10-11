@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_CheckOpenDoorCode]
+** Name: [dbo].[usp_GetCarStatusBeforeOpenDoorFinish]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,25 +29,24 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_CheckOpenDoorCode]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_GetCarStatusBeforeOpenDoorFinish]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/10/11 下午 03:10:18 
+** Date:2020/10/11 下午 04:07:04 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/11 下午 03:10:18    |  Eric|          First Release
+** 2020/10/11 下午 04:07:04    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_CheckOpenDoorCode]
+CREATE PROCEDURE [dbo].[usp_GetCarStatusBeforeOpenDoorFinish]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
-	@VerifyCode             VARCHAR(8)            ,
 	@LogID                  BIGINT                ,
 	@CID                    VARCHAR(10)     OUTPUT, --車機編號
 	@StationID              VARCHAR(10)     OUTPUT,
@@ -78,12 +77,12 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_CheckOpenDoorCode';
+SET @FunName='usp_GetCarStatusBeforeOpenDoorFinish';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【驗證一次性開門驗證碼】';
+SET @Descript=N'使用者操作【一次性開門結束前車況確認】';
 SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
@@ -93,11 +92,11 @@ SET @ProjType=5;
 SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token    =ISNULL (@Token    ,'');
-SET @VerifyCode=ISNULL(@VerifyCode,'');
+
 		BEGIN TRY
-	
+
 		 
-		 IF @Token='' OR @IDNO=''  OR @OrderNo=0 OR @VerifyCode=''
+		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
@@ -123,10 +122,10 @@ SET @VerifyCode=ISNULL(@VerifyCode,'');
 				END
 			END
 		 END
-		IF @Error=0
+		 IF @Error=0
 		 BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_OpenDoor WHERE OrderNo=@OrderNo AND DeadLine>@NowTime AND IsVerify=0 AND VerifyCode=@VerifyCode;
+			SELECT @hasData=COUNT(1) FROM TB_OpenDoor WHERE OrderNo=@OrderNo AND DeadLine>@NowTime AND IsVerify=1 AND nowStatus=1 ;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -134,7 +133,6 @@ SET @VerifyCode=ISNULL(@VerifyCode,'');
 			END
 			ELSE
 			BEGIN
-			 
 
 			    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType,@StationID=lend_place
 				FROM TB_OrderMain
@@ -143,18 +141,6 @@ SET @VerifyCode=ISNULL(@VerifyCode,'');
 		
 				SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID,@IsCens=IsCens,@IsMotor=IsMotor FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo;
 
-				IF @ProjType<4
-				BEGIN
-				   UPDATE TB_OpenDoor
-				   SET IsVerify=1,UPDTime=@NowTime,nowStatus=2
-				   WHERE OrderNo=@OrderNo AND DeadLine>@NowTime AND IsVerify=0 AND VerifyCode=@VerifyCode;
-				END
-				ELSE
-				BEGIN
-				  UPDATE TB_OpenDoor
-				   SET IsVerify=1,UPDTime=@NowTime,nowStatus=1
-				   WHERE OrderNo=@OrderNo AND DeadLine>@NowTime AND IsVerify=0 AND VerifyCode=@VerifyCode;
-				END
 			END
 		 END
 		--寫入錯誤訊息
@@ -182,20 +168,20 @@ SET @VerifyCode=ISNULL(@VerifyCode,'');
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckOpenDoorCode';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCarStatusBeforeOpenDoorFinish';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckOpenDoorCode';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCarStatusBeforeOpenDoorFinish';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'檢查驗證碼是否正確', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckOpenDoorCode';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'一次性開門結束前確認', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCarStatusBeforeOpenDoorFinish';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckOpenDoorCode';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCarStatusBeforeOpenDoorFinish';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckOpenDoorCode';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCarStatusBeforeOpenDoorFinish';
