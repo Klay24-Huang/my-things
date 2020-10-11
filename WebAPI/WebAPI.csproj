@@ -181,6 +181,9 @@
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NormalRentController.cs" />
+    <Compile Include="Controllers\OpenDoorCheckController.cs" />
+    <Compile Include="Controllers\OpenDoorController.cs" />
+    <Compile Include="Controllers\OpenDoorFinishController.cs" />
     <Compile Include="Controllers\OrderDetailController.cs" />
     <Compile Include="Controllers\OrderUnFinishController.cs" />
     <Compile Include="Controllers\PersonNoticeController.cs" />
@@ -273,6 +276,9 @@
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_OpenDoor.cs" />
+    <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
+    <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
@@ -339,6 +345,7 @@
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
+    <Compile Include="Models\Param\Output\OAPI_OpenDoor.cs" />
     <Compile Include="Models\Param\Output\OAPI_OrderDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />

@@ -101,10 +101,14 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CheckOpenDoorCode.cs" />
     <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_InsOpenDoorCode.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_OpenDoorFinish.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
     <Compile Include="SP\Input\Rent\SPInput_SetingParkingSpaceByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
@@ -132,8 +136,10 @@
     <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CheckOpenDoorCode.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />

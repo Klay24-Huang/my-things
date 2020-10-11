@@ -195,6 +195,22 @@ namespace WebAPI.Models.Enum
             /// 完成付款
             /// </summary>
             DonePayRentBill,
+            /// <summary>
+            /// 判斷是否可以申請一次性開門
+            /// </summary>
+            CheckCanOpenDoor,
+            /// <summary>
+            /// 寫入一次性開門的驗證碼
+            /// </summary>
+            InsOpenDoorCode,
+            /// <summary>
+            /// 判斷一次性開門驗證碼
+            /// </summary>
+            CheckOpenDoorCode,
+            /// <summary>
+            /// 完成一次性開門
+            /// </summary>
+            FinishOpenDoor,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -386,6 +402,19 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
+                    break;
+                case SPType.CheckCanOpenDoor:
+                    SPName = "usp_CheckCanOpenDoor";
+                    break;
+
+                case SPType.InsOpenDoorCode:
+                    SPName = "usp_InsOpenDoorCode";
+                    break;
+                case SPType.CheckOpenDoorCode:
+                    SPName = "usp_CheckOpenDoorCode";
+                    break;
+                case SPType.FinishOpenDoor:
+                    SPName = "usp_FinishOpenDoor";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
