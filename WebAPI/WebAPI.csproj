@@ -293,6 +293,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
+    <Compile Include="Models\Param\Input\IAPI_UseInviteCode.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifyEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReSendEMail.cs" />
@@ -342,6 +343,7 @@
     <Compile Include="Models\Param\Output\OAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
+    <Compile Include="Models\Param\Output\OAPI_UseInviteCode.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
