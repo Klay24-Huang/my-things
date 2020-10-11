@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BookingController";
+            string funName = "OrderDetailController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAP_OrderDetail apiInput = null;
