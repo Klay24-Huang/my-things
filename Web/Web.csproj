@@ -196,6 +196,7 @@
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\Home\ChangePWD.js" />
     <Content Include="Scripts\js\ActionJS\Login.js" />
+    <Content Include="Scripts\js\ActionJS\Manage\ArrearQuery.js" />
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildMaintain.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
@@ -406,6 +407,7 @@
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
     <Content Include="Views\Home\ChangePWD.cshtml" />
     <Content Include="Views\CommonObj\GetCarHiddenList.cshtml" />
+    <Content Include="Views\Manage\ArrearQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
