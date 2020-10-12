@@ -20,6 +20,12 @@
             ControllerStrName = "據點管理";
             ActionStrName = "停車便利付停車場設定";
             break;
+        #endregion
+        #region 共用
+        case "ChangePWD":
+            ControllerStrName = "帳號設定";
+            ActionStrName = "修改密碼";
+            break;
             #endregion
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
@@ -44,6 +50,7 @@
     <link rel="stylesheet" href="~/Content/css/bs_autocomplete_fix.css">
     <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
+    <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
     @switch (actionName)
     {
         case "CarTimeLineQuery":
@@ -58,7 +65,7 @@
             <p class="mb-0">iRent無人化租車租車共享系統</p>
             <div>
 
-                <a class="btn btn-default text-white" href="#" role="button">
+                <a class="btn btn-default text-white" href="../Home/Logout" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14.142" height="14.999" viewBox="0 0 14.142 14.999">
                         <g id="power" transform="translate(0)">
                             <path id="Path_9" data-name="Path 9" d="M515.538,687.48h0a.815.815,0,0,0,.262,1.028,5.421,5.421,0,1,1-6.244,0,.816.816,0,0,0,.261-1.033h0a.832.832,0,0,0-1.228-.3,7.009,7.009,0,0,0-2.973,6.1,7.072,7.072,0,0,0,14.133-.361,7.011,7.011,0,0,0-3.006-5.753A.824.824,0,0,0,515.538,687.48Z" transform="translate(-505.606 -684.946)" fill="#fff" />
@@ -68,7 +75,7 @@
                     登出
                 </a>
                 |
-                <a class="btn btn-default text-white" href="#" role="button">
+                <a class="btn btn-default text-white" href="../Home/ChangePWD" role="button">
                     修改密碼
                 </a>
 
@@ -178,10 +185,10 @@
                                 地圖監控
                             </a>
                             @*<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">地圖監控</a>
-                                <a class="dropdown-item" href="#">地圖監控</a>
-                                <a class="dropdown-item" href="#">地圖監控</a>
-                            </div>*@
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                </div>*@
                         </li>
                         <!-- 合約管理 -->
                         <li class="nav-item dropdown">
@@ -207,7 +214,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">強制刷卡取還</a>
                                 <a class="dropdown-item" href="#">平假日維護</a>
-                               
+
                                 <a class="dropdown-item" href="#">信用卡解綁</a>
                                 <a class="dropdown-item" href="#">短租補傳</a>
                             </div>
@@ -278,7 +285,9 @@
     <script src="~/Scripts/js/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/js/jquery-filestyle.js"></script>
     <script src="~/Scripts/js/flatpickr.js"></script>
+    <script src="~/Scripts/js/jquery.validate.js"></script>
     <script src="~/Scripts/js/footable/footable.all.min.js"></script>
+    <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
     @{
         switch (actionName)
         {

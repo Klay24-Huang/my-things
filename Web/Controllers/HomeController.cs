@@ -86,6 +86,18 @@ namespace Web.Controllers
 
             return View();
         }
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            Session.Clear();
+            ViewData.Clear();
+            Response.Redirect("../Home/Login");
+            return View();
+        }
+        public ActionResult ChangePWD()
+        {
+            return View();
+        }
         public string GetIp()
         {
             string ip = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];

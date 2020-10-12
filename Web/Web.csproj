@@ -193,6 +193,7 @@
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactSetting.js" />
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
+    <Content Include="Scripts\js\ActionJS\Home\ChangePWD.js" />
     <Content Include="Scripts\js\ActionJS\Login.js" />
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildMaintain.js" />
@@ -224,6 +225,7 @@
     <Content Include="Scripts\js\jquery-filestyle.js" />
     <Content Include="Scripts\js\jquery-ui.js" />
     <Content Include="Scripts\js\jquery.autocomplete.js" />
+    <Content Include="Scripts\js\jquery.validate.js" />
     <Content Include="Scripts\js\map backup.js" />
     <Content Include="Scripts\js\map.js" />
     <Content Include="Scripts\js\moment-with-locales.min.js" />
@@ -400,6 +402,7 @@
     <Content Include="Views\Report\ChargeParkingDetailQuery.cshtml" />
     <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
+    <Content Include="Views\Home\ChangePWD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

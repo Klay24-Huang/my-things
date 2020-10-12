@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_Login_BE]
+** Name: [dbo].[usp_BE_ChangePWD]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,26 +29,25 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_Login_BE]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_BE_ChangePWD]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/10/12 上午 11:40:59 
+** Date:2020/10/12 下午 02:25:31 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/12 上午 11:40:59    |  Eric|          First Release
+** 2020/10/12 下午 02:25:31    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_Login_BE]
+CREATE PROCEDURE [dbo].[usp_BE_ChangePWD]
 	@Account                VARCHAR(50)           ,
 	@UserPwd                VARCHAR(50)           ,
-	@ClientIP               VARCHAR(64)           ,
-	@UserName               NVARCHAR(50)    OUTPUT,
-	@UserGroup              VARCHAR(20)     OUTPUT,
+	@NewPwd                 VARCHAR(50)           ,
+	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -73,50 +72,53 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_Login_BE';
+SET @FunName='usp_BE_ChangePWD';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-
+SET @Descript=N'使用者操作【取消訂單】';
+SET @car_mgt_status=0;
+SET @cancel_status =0;
+SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-
-SET @Account    =ISNULL (@Account    ,'');
-SET @UserPwd=ISNULL (@UserPwd,'');
-SET @ClientIP    =ISNULL (@ClientIP    ,'');
+SET @CarNo='';
+SET @ProjType=5;
+SET @Account  =ISNULL (@Account ,'');
+SET @UserPwd  =ISNULL (@UserPwd ,'');
+SET @NewPwd   =ISNULL (@NewPwd   ,'');
 
 		BEGIN TRY
-	
+
 		 
-		 IF @Account='' OR @UserPwd=''  OR @ClientIP=''
+		 IF @Account='' OR @UserPwd=''  OR @NewPwd=''
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
  		 END
 		 
-		 
+		
 		 IF @Error=0
 		 BEGIN
 		 	SELECT @hasData=COUNT(1) FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd);
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
-				SET @ErrorCode='ERR101';
+				SET @ErrorCode='ERR701';
 			END
 			ELSE
 			BEGIN
 			   UPDATE TB_Manager
-			   SET UPDTime=@NowTime,ClientIP=@ClientIP
+			   SET UPDTime=@NowTime,UserPwd=HASHBYTES('sha1',@NewPwd)
 			   WHERE  Account=@Account;
 
-			   SELECT @UserName=UserName,@UserGroup=UserGroup FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd);
 			END
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
 			BEGIN
 			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
+				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 			END
 		END TRY
 		BEGIN CATCH
@@ -133,24 +135,24 @@ SET @ClientIP    =ISNULL (@ClientIP    ,'');
 			 SET @IsSystem=1;
 			 SET @ErrorType=4;
 			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
+				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Login_BE';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ChangePWD';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Login_BE';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ChangePWD';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'後台登入', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Login_BE';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'管理平台更改密碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ChangePWD';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Login_BE';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ChangePWD';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Login_BE';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ChangePWD';
