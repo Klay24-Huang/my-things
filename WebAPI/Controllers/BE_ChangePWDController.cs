@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Account = apiInput.Account,
                     NewPwd = apiInput.NewPWD.Replace(" ",""),
-                    OldPwd = apiInput.OldPWD.Replace(" ",""),
+                    UserPwd = apiInput.OldPWD.Replace(" ",""),
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
