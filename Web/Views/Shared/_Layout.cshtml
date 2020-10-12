@@ -23,6 +23,10 @@
             #endregion
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    if (Session["User"] == null)
+    {
+        Response.Redirect("~/Home/Login");
+    }
  }
 <!DOCTYPE html>
 <html lang="zh-tw">
@@ -40,6 +44,12 @@
     <link rel="stylesheet" href="~/Content/css/bs_autocomplete_fix.css">
     <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
+    @switch (actionName)
+    {
+        case "CarTimeLineQuery":
+            <link href="~/Content/css/vis.css" rel="stylesheet">
+            break;
+    }
 </head>
 <body>
     <!-- header -->
@@ -121,9 +131,9 @@
                                 據點管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">據點資訊設定</a>
-                                <a class="dropdown-item" href="#">調度停車場資訊設定</a>
-                                <a class="dropdown-item" href="#">停車便利付停車設定</a>
+                                <a class="dropdown-item" href="~/StationAndParking/StationInfoSetting">據點資訊設定</a>
+                                <a class="dropdown-item" href="~/StationAndParking/TransParkingSetting">調度停車場資訊設定</a>
+                                <a class="dropdown-item" href="~/StationAndParking/ChargeParkingSetting">停車便利付停車設定</a>
                             </div>
                         </li>
                         <!-- 車輛管理 -->
@@ -132,13 +142,13 @@
                                 車輛管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">車輛中控台</a>
-                                <a class="dropdown-item" href="#">保有車輛設定</a>
-                                <a class="dropdown-item" href="#">車輛車機綁定</a>
-                                <a class="dropdown-item" href="#">車輛資料管理</a>
-                                <a class="dropdown-item" href="#">匯入機車車輛檔</a>
-                                <a class="dropdown-item" href="#">匯入汽車車輛檔</a>
-                                <a class="dropdown-item" href="#">匯入車機資料(含SIM)</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/CarDashBoard">車輛中控台</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/CarSetting">保有車輛設定</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/CarBind">車輛車機綁定</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/CarDataSetting">車輛資料管理</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/ImportMotorData">匯入機車車輛檔</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/ImportCarData">匯入汽車車輛檔</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/ImportCarMachineData">匯入車機資料(含SIM)</a>
                             </div>
                         </li>
                         <!-- 卡片管理 -->
@@ -147,8 +157,9 @@
                                 車輛管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">萬用卡設定</a>
-                                <a class="dropdown-item" href="#">卡號發送設定</a>
+                                <a class="dropdown-item" href="~/CardDataInfo/MasterCardSetting">萬用卡設定</a>
+                                <a class="dropdown-item" href="~/CardDataInfo/SentCardSetting">卡號發送設定</a>
+                                <a class="dropdown-item" href="~/CardDataInfo/UnBindCard">卡號解除</a>
                             </div>
                         </li>
                         <!-- 系統管理 -->
@@ -157,20 +168,20 @@
                                 系統管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">訊息記錄查詢</a>
-                                <a class="dropdown-item" href="#">車輛管理時間查詢</a>
+                                <a class="dropdown-item" href="~/SystemManage/MessageQuery">訊息記錄查詢</a>
+                                <a class="dropdown-item" href="~/SystemManage/CarTimelineQuery">車輛管理時間查詢</a>
                             </div>
                         </li>
                         <!-- 地圖監控 -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-white" href="~/Monitor/Index" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 地圖監控
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            @*<div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">地圖監控</a>
                                 <a class="dropdown-item" href="#">地圖監控</a>
                                 <a class="dropdown-item" href="#">地圖監控</a>
-                            </div>
+                            </div>*@
                         </li>
                         <!-- 合約管理 -->
                         <li class="nav-item dropdown">
@@ -196,7 +207,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">強制刷卡取還</a>
                                 <a class="dropdown-item" href="#">平假日維護</a>
-                                <a class="dropdown-item" href="#">卡號解除</a>
+                               
                                 <a class="dropdown-item" href="#">信用卡解綁</a>
                                 <a class="dropdown-item" href="#">短租補傳</a>
                             </div>
@@ -268,7 +279,15 @@
     <script src="~/Scripts/js/jquery-filestyle.js"></script>
     <script src="~/Scripts/js/flatpickr.js"></script>
     <script src="~/Scripts/js/footable/footable.all.min.js"></script>
-
+    @{
+        switch (actionName)
+        {
+            case "CarTimelineQuery":
+                <script src="~/Scripts/js/moment-with-locales.min.js"></script>
+                <script src="~/Scripts/js/vis.js"></script>
+                break;
+        }
+    }
     <script>
         $(".datePicker").flatpickr();
         $('.dateTimePicker').flatpickr(

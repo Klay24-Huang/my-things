@@ -233,6 +233,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetCarStatusBeforeOpenDoorFinish.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderDetail.sql" />
     <Build Include="dbo\Tables\TB_FeedBack.sql" />
+    <Build Include="dbo\Tables\TB_Manager.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Login_BE.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

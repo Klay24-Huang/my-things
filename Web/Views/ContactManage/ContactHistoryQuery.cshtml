@@ -1,1 +1,73 @@
 ﻿
+
+
+@{
+    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            訂單記錄歷程資料查詢
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            訂單編號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+
+
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">查詢</button>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="ShowSetCardPanel">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">預約編號</th>
+                <th scope="col">敘述</th>
+                <th scope="col">時間</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">1234567890</td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--輸出表格結束-->
