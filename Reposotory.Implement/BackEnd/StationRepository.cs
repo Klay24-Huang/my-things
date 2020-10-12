@@ -1,4 +1,5 @@
 ﻿using Domain.TB;
+using Domain.TB.BackEnd;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,6 +35,17 @@ namespace Reposotory.Implement.BackEnd
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentStationBaseInfo>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        public IEnumerable<iRentCarBase> GetPartOfCar(bool showAll)
+        {
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<iRentCarBase> lstStation = null;
+            bool flag = false;
+            string SQL = "SELECT   [CarNo]  FROM [TB_Car] "; //已修改TB指向
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstStation = GetObjList<iRentCarBase>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
     }

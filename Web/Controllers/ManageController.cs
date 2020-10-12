@@ -23,7 +23,7 @@ namespace Web.Controllers
         /// 平假日維護
         /// </summary>
         /// <returns></returns>
-        public ActionResult HoildMaintain()
+        public ActionResult HoildayMaintain()
         {
             return View();
         }

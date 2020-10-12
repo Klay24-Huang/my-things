@@ -4,7 +4,7 @@
     string hostPath = System.Configuration.ConfigurationManager.AppSettings["jsHost"];
     string ControllerStrName = "";
     string ActionStrName = "";
- 
+
 
     switch (actionName)
     {
@@ -32,7 +32,7 @@
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
     if (Session["User"] == null)
     {
-        Response.Redirect("~/Home/Login");
+        //Response.Redirect("~/Home/Login");
     }
  }
 <!DOCTYPE html>
@@ -40,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>irent2.0-component</title>
+    <title>iRent無人化租車共享系統 後台登入</title>
     <!-- import css -->
     <link rel="stylesheet" href="~/Content/css/bootstrap.css">
     <link rel="stylesheet" href="~/Content/css/flatpickr.min.css">
@@ -186,10 +186,10 @@
                                 地圖監控
                             </a>
                             @*<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                </div>*@
+                <a class="dropdown-item" href="#">地圖監控</a>
+                <a class="dropdown-item" href="#">地圖監控</a>
+                <a class="dropdown-item" href="#">地圖監控</a>
+            </div>*@
                         </li>
                         <!-- 合約管理 -->
                         <li class="nav-item dropdown">
@@ -197,14 +197,14 @@
                                 合約管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">預約(合約)資料查詢</a>
-                                <a class="dropdown-item" href="#">訂單記錄歷程查詢</a>
-                                <a class="dropdown-item" href="#">機車合約修改</a>
-                                <a class="dropdown-item" href="#">汽車合約修改</a>
-                                <a class="dropdown-item" href="#">時數折抵</a>
-                                <a class="dropdown-item" href="#">強制延長用車</a>
-                                <a class="dropdown-item" href="#">人工新增預約</a>
-                                <a class="dropdown-item" href="#">強制取還車(作廢)</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactQuery">預約(合約)資料查詢</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactHistoryQuery">訂單記錄歷程查詢</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactMaintainOfMotor">機車合約修改</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactMaintainOfCar">汽車合約修改</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactMaintainByDiscount">時數折抵</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactExtend">強制延長用車</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactBooking">人工新增預約</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactSetting">強制取還車(作廢)</a>
                             </div>
                         </li>
                         <!-- 後臺管理 -->
@@ -213,11 +213,10 @@
                                 後臺管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">強制刷卡取還</a>
-                                <a class="dropdown-item" href="#">平假日維護</a>
-
-                                <a class="dropdown-item" href="#">信用卡解綁</a>
-                                <a class="dropdown-item" href="#">短租補傳</a>
+                                <a class="dropdown-item" href="~/Manage/AuthAndPay">強制刷卡取還</a>
+                                <a class="dropdown-item" href="~/Manage/HoildayMaintain">平假日維護</a>
+                                <a class="dropdown-item" href="~/Manage/UnBindCard">信用卡解綁</a>
+                                <a class="dropdown-item" href="~/Manage/ResendToHieasyrent">短租補傳</a>
                             </div>
                         </li>
                         <!-- 報表專區 -->
@@ -226,31 +225,31 @@
                                 報表專區
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">整備人員報表查詢</a>
-                                <a class="dropdown-item" href="#">車況回饋查詢</a>
-                                <a class="dropdown-item" href="#">綠界交易紀錄查詢</a>
-                                <a class="dropdown-item" href="#">月租總表查詢</a>
-                                <a class="dropdown-item" href="#">月租報表</a>
-                                <a class="dropdown-item" href="#">進出停車場明細</a>
-                                <a class="dropdown-item" href="#">代收停車費明細</a>
+                                <a class="dropdown-item" href="~/Report/MaintainLogReport">整備人員報表查詢</a>
+                                <a class="dropdown-item" href="~/Report/CarFeeBackQuery">車況回饋查詢</a>
+                                @*<a class="dropdown-item" href="~/Report/">綠界交易紀錄查詢</a>*@
+                                <a class="dropdown-item" href="~/Report/MonthMainQuery">月租總表查詢</a>
+                                <a class="dropdown-item" href="~/Report/MonthlyDetailQuery">月租報表</a>
+                                <a class="dropdown-item" href="~/Report/ParkingCheckInQuery">進出停車場明細</a>
+                                <a class="dropdown-item" href="~/Report/ChargeParkingDetailQuery">代收停車費明細</a>
                             </div>
                         </li>
                         <!-- 推播管理 -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                推播管理
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">APP優惠訊息推播</a>
-                            </div>
-                        </li>
+                        @*<li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                推播管理
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">APP優惠訊息推播</a>
+            </div>
+        </li>*@
                         <!-- 會員管理 -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 會員管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">會員審核查詢</a>
+                                <a class="dropdown-item" href="~/MemberManage/Audit">會員審核查詢</a>
                             </div>
                         </li>
                         <!-- 帳號管理 -->
@@ -259,11 +258,21 @@
                                 帳號管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">加盟業者維護</a>
-                                <a class="dropdown-item" href="#">功能群組維護</a>
-                                <a class="dropdown-item" href="#">功能程式維護</a>
-                                <a class="dropdown-item" href="#">使用者群組維護</a>
-                                <a class="dropdown-item" href="#">使用者維護</a>
+                                <a class="dropdown-item" href="~/AccountManage/FranchiseesMaintain">加盟業者維護</a>
+                                <a class="dropdown-item" href="~/AccountManage/FuncGroupMaintain">功能群組維護</a>
+                                <a class="dropdown-item" href="~/AccountManage/FuncMaintain">功能程式維護</a>
+                                <a class="dropdown-item" href="~/AccountManage/UserGroupMaintain">使用者群組維護</a>
+                                <a class="dropdown-item" href="~/AccountManage/UserMaintain">使用者維護</a>
+                            </div>
+                        </li>
+                        <!-- 帳號管理 -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                客服專區
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="~/BusinessManage/DashBoard">合約/中控台</a>
+                          
                             </div>
                         </li>
                     </ul>
@@ -289,6 +298,7 @@
     <script src="~/Scripts/js/jquery.validate.js"></script>
     <script src="~/Scripts/js/footable/footable.all.min.js"></script>
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
+    <script src="~/Scripts/js/CommonFunc.js"></script>
     @{
         switch (actionName)
         {

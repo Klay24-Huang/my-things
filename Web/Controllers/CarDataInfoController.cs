@@ -19,6 +19,15 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult CarDashBoard(FormCollection collection)
+        {
+            if (collection["queryData"] != null)
+            {
+
+            }
+            return View();
+        }
         /// <summary>
         /// 保有車輛設定
         /// </summary>

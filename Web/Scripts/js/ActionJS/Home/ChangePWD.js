@@ -63,7 +63,6 @@
                         swal({
                             title: 'SUCCESS',
                             text: data.ErrorMessage,
-                            type: 'success'
                             icon: 'success'
                         }).then(function (value) {
                             window.location.reload();
