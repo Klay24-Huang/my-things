@@ -131,6 +131,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <Content Include="Content\css\bootstrap-reboot.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bs_autocomplete_fix.css" />
+    <Content Include="Content\css\cabinet.css" />
     <Content Include="Content\css\docs.css" />
     <Content Include="Content\css\flatpickr.min.css" />
     <Content Include="Content\css\footable\fonts\footable.svg" />
@@ -152,9 +154,11 @@
     <Content Include="Content\css\jquery-filestyle.min.css" />
     <Content Include="Content\css\jquery-ui.css" />
     <Content Include="Content\css\jquery.autocomplete.css" />
+    <Content Include="Content\css\RealTimeMonitor.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\sweetalert.css" />
     <Content Include="Content\css\sweetalert2.css" />
+    <Content Include="Content\css\vis.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="assets\helpers\_variables.scss" />
@@ -179,6 +183,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportMotorData.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\MasterCardSetting.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\SentCardSetting.js" />
+    <Content Include="Scripts\js\ActionJS\CardDataInfo\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactBooking.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactExtend.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
@@ -188,6 +193,8 @@
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactSetting.js" />
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
+    <Content Include="Scripts\js\ActionJS\Home\ChangePWD.js" />
+    <Content Include="Scripts\js\ActionJS\Login.js" />
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildMaintain.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
@@ -218,8 +225,10 @@
     <Content Include="Scripts\js\jquery-filestyle.js" />
     <Content Include="Scripts\js\jquery-ui.js" />
     <Content Include="Scripts\js\jquery.autocomplete.js" />
+    <Content Include="Scripts\js\jquery.validate.js" />
     <Content Include="Scripts\js\map backup.js" />
     <Content Include="Scripts\js\map.js" />
+    <Content Include="Scripts\js\moment-with-locales.min.js" />
     <Content Include="Scripts\js\popper.js" />
     <Content Include="Scripts\js\popper\createPopper.js" />
     <Content Include="Scripts\js\popper\createPopper.test.js" />
@@ -301,6 +310,12 @@
     <Content Include="Scripts\js\popper\utils\validateModifiers.js" />
     <Content Include="Scripts\js\popper\utils\within.js" />
     <Content Include="Scripts\js\sweetalert2.min.js" />
+    <Content Include="Scripts\js\vis.js" />
+    <Content Include="Scripts\plugin\busy-load-master\app.css" />
+    <Content Include="Scripts\plugin\busy-load-master\app.js" />
+    <Content Include="Scripts\plugin\busy-load-master\app.min.css" />
+    <Content Include="Scripts\plugin\busy-load-master\app.min.js" />
+    <Content Include="Scripts\plugin\sweetalert\dist\sweetalert.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -322,7 +337,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\footable\fonts\footable.eot" />
@@ -386,6 +400,9 @@
     <Content Include="Views\Report\MonthlyDetailQuery.cshtml" />
     <Content Include="Views\Report\ParkingCheckInQuery.cshtml" />
     <Content Include="Views\Report\ChargeParkingDetailQuery.cshtml" />
+    <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
+    <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
+    <Content Include="Views\Home\ChangePWD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
@@ -398,6 +415,14 @@
     <ProjectReference Include="..\Reposotory.Implement\Reposotory.Implement.csproj">
       <Project>{ec8cf1d8-b569-4b3f-9c8e-4ab95622961c}</Project>
       <Name>Reposotory.Implement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebAPI\WebAPI.csproj">
+      <Project>{9769C278-31F4-47ED-8011-1F27E10847A6}</Project>
+      <Name>WebAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebCommon\WebCommon.csproj">
+      <Project>{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}</Project>
+      <Name>WebCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

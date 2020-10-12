@@ -1,1 +1,126 @@
 ﻿
+@{
+    string CID = (ViewData["CID"] == null) ? "" : ViewData["CID"].ToString();
+    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            保有車輛設定
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            車機號碼
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CID" id="CID" value="@CID" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            車號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
+                            @Html.Action("GetStationHiddenList", "CommonObj")
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            使用狀態
+                        </div>
+                        <div class="col-md-3">
+
+                            <select class="form-control" id="UseStatus" name="UseStatus">
+                                <option value="-1">1</option>
+                                <option value="0">已綁定</option>
+                                <option value="1">未綁定</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            篩選功能
+                        </div>
+
+                        <div class="col-md-3">
+                            <input type="file" class="jfilestyle" data-theme="blue" data-inputSize="" data-text="上傳檔案">
+
+                        </div>
+                        <div class="col-md-2">
+                            限定.CSV檔
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">範例檔案下載</button>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">查詢</button>
+                            <button type="submit" class="btn btn-primary">匯出</button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">ID</th>
+                <th scope="col">車機號碼</th>
+                <th scope="col">使用狀態</th>
+                <th scope="col">車號</th>
+                <th scope="col">iButton</th>
+                <th scope="col">門號(SIM卡)</th>
+                <th scope="col">編輯</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">車機號碼</td>
+                <td scope="col">使用狀態</td>
+                <td scope="col">車號</td>
+                <td scope="col">iButton</td>
+                <td scope="col">門號(SIM卡)</td>
+                <td scope="col">編輯</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--輸出表格結束-->

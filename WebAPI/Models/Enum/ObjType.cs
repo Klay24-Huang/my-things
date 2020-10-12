@@ -172,6 +172,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetFinishOrder,
             /// <summary>
+            /// 已完成的訂單明細
+            /// </summary>
+            OrderDetail,
+            /// <summary>
             /// 設定發票（會員及訂單）
             /// </summary>
             SettingInvoice,
@@ -263,7 +267,10 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 停用車麻吉停車場
                 /// </summary>
-                DisabledMachiPark
+                DisabledMachiPark,
+            #endregion,
+            #region BackEnd
+                BE_ChangePWD
             #endregion
 
         }
@@ -387,6 +394,9 @@ namespace WebAPI.Models.Enum
                 case SPType.GetFinishOrder:
                     SPName = "usp_GetFinishOrderList";
                     break;
+                case SPType.OrderDetail:
+                    SPName = "usp_GetOrderDetail";
+                    break;
                 case SPType.CheckCarStatusByReturn:
                     SPName = "usp_CheckCarStatusByReturn";
                     break;
@@ -476,7 +486,12 @@ namespace WebAPI.Models.Enum
                 case SPType.DisabledMachiPark:
                     SPName = "usp_disabledMachiPark";
                     break;
-                    #endregion
+                #endregion
+                #region BackEnd
+                case SPType.BE_ChangePWD:
+                    SPName = "usp_BE_ChangePWD";
+                    break;
+            #endregion
             }
             return SPName;
         }

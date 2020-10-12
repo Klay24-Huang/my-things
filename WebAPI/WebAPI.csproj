@@ -129,6 +129,7 @@
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
+    <Compile Include="Controllers\BE_ChangePWDController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
@@ -225,6 +226,7 @@
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangePWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Input\IAPI_WallHistory.cs" />
+    <Compile Include="Models\Param\Input\IAP_OrderDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_AnyRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_AreaList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
@@ -385,6 +388,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\Param\BackEnd\Output\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

@@ -1,0 +1,64 @@
+﻿<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            修改密碼
+        </div>
+        @using (Html.BeginForm("ChangePWD", "Home", FormMethod.Post, new { id = "frmChangePWD", @class = "form-horizontal" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                舊密碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OldPwd" id="OldPwd" value="" required title="舊密碼為必填" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                新密碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="NewPwd" id="NewPwd" value="" required title="新密碼為必填" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                確認新密碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="ConfirmPwd" id="ConfirmPwd" value="" required title="請輸入確認新密碼，且需與新密碼相同" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" id="btnSend" class="btn btn-primary">確認更改</button>
+                                <button type="button" id="btnClean" class="btn">清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
+    <!--end card-->
+</div>

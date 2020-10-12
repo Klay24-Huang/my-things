@@ -1,99 +1,100 @@
-﻿
-@{
+﻿@{ 
     Layout = null;
 }
-
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>iRent無人化租車租車共享系統 後台登入</title>
-    <link href='~/assets/bootstrap.min.css' rel='stylesheet' >
-
-    <style lang="scss" scoped>
-        .customBackground {
-            align-items: center;
-            min-height: 100vh;
-            background: #999;
-        }
-
-        .card-body {
-            text-align: center;
-        }
-
-        .login_logo {
-            width: 80%;
-            margin: 30px auto 50px auto;
-        }
-
-        .login_icon {
-            color: #9FA4AC;
-            margin: 10px 40px 0 0;
-        }
-
-        .cls-1 {
-            fill: #1a1311;
-        }
-
-        .cls-2 {
-            fill: #dc000c;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>irent2.0-component</title>
+    <!-- import css -->
+    <link rel="stylesheet" href="~/Content/css/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/css/flatpickr.min.css">
+    <link rel="stylesheet" href="~/Content/css/jquery-filestyle.min.css">
+    <link rel="stylesheet" href="~/Content/css/style.css">
+    <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
+    <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
 </head>
 <body>
-    <div class="d-flex customBackground">
-        <b-container>
-            <b-row>
-                <b-col md="12" lg="4" offset-lg="4">
-                    <b-card header="iRent無人化租車租車共享系統 後台登入"
-                            header-text-variant="white"
-                            header-bg-variant="dark"
-                            class="text-left">
-
-                        <svg class="login_logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295.216 99.532">
-                            <g transform="translate(-426.563 -359.796)">
-                                <path d="M634.989,450.688q-3.756,7.122-14.783,7.135-14.5-1.141-13.436-13.4h23.422v-.018H647l5.232-28.512c-4.821-5.592-13.052-8.466-24.751-8.6q-32.035,1.141-39.451,32.922-2.824,21.892,15.724,27.953h31.47a32.4,32.4,0,0,0,8.177-4.046l2.444-13.437Zm-8.624-30.766q13.713,1.152,12.733,13.017H608.463Q611.9,420.693,626.365,419.922Z" transform="translate(-29.989 -8.843)" fill="#cb000b" />
-                                <path d="M684.679,436.009q2.848-13.4,14.934-14.17,11.993-.374,9.08,13.406l-6.028,32.925h15.778l9.6-52.362c-2.628-5.808-8.549-8.672-17.82-8.513q-12.879.774-22.245,10.715l1.685-9.179h-19.5L659.3,468.169h19.489Z" transform="translate(-43.325 -8.841)" fill="#cb000b" />
-                                <path d="M470.217,374.326c-1.473,8.044-9.437,14.556-17.782,14.556s-13.909-6.512-12.444-14.556c1.466-8.025,9.43-14.53,17.775-14.53S471.69,366.3,470.217,374.326Z" transform="translate(-2.456)" fill="#cb000b" />
-                                <path d="M509.109,375.177l-15.945,87.014H513.9l6.066-33.141H520l4.95-27.073,4.913-26.8Z" transform="translate(-12.398 -2.863)" fill="#cb000b" />
-                                <path d="M587.586,401.5q3.439-25.444-29.747-26.327H538.752l13.307,12.472,15.277,14.328-20.523,14.317L528.53,429.05h10.045l15.8,33.141h26.049l-20.065-34.335Q583.965,423.471,587.586,401.5Z" transform="translate(-18.982 -2.863)" fill="#cb000b" />
-                                <path d="M769.931,387.732h-19.1l-3.22,17.458-2.534,13.78-5.322,29.092q-2.5,12.211,5.086,16.466H769.1l2.308-12.619-.054-.4a13.116,13.116,0,0,1-5.854,1.528q-7.631.383-5.808-9.565l4.479-24.5h13.271l2.528-13.78H766.7Z" transform="translate(-58.188 -5.201)" fill="#cb000b" />
-                                <path d="M460.2,402.485H438.438l-11.875,64.79h21.761Z" transform="translate(0 -7.947)" fill="#cb000b" />
-                            </g>
-                        </svg>
-
-                        <b-container class="mb-4" fluid>
-                            <b-row no-gutters>
-                                <b-col cols="1">
-                                    <font-awesome-icon icon="user" class="login_icon"></font-awesome-icon>
-                                </b-col>
-                                <b-col cols="11">
-                                    <b-form-group id="account"
-                                                  label-for="account">
-                                        <b-form-input id="account mb-2" v-model="name" :state="state" trim placeholder="帳號"></b-form-input>
-                                    </b-form-group>
-                                </b-col>
-                            </b-row>
-                            <b-row no-gutters>
-                                <b-col cols="1">
-                                    <font-awesome-icon icon="key" class="login_icon"></font-awesome-icon>
-                                </b-col>
-                                <b-col cols="11">
-                                    <b-form-group id="password"
-                                                  label-for="password">
-                                        <b-form-input type="password" id="password" v-model="password" :state="state" trim placeholder="密碼"></b-form-input>
-                                    </b-form-group>
-                                </b-col>
-                            </b-row>
-                        </b-container>
-                        <div class="d-flex justify-content-center mb-4">
-                            <b-button class="w-80" variant="danger" block pill to="/navAccount_franchise">登入</b-button>
+    <!-- main -->
+    <main class="bg-gray-500 login_warp">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-4 offset-lg-4 offset-md-3">
+                    <!-- card -->
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            iRent無人化租車共享系統 後台登入
                         </div>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </b-container>
-    </div>
+                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { id = "frmLogin", @class = "form-horizontal" }))
+                        {
+                            <div class="card-body text-center">
+                                <svg class="login_logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295.216 99.532">
+                                    <g transform="translate(-426.563 -359.796)">
+                                        <path d="M634.989,450.688q-3.756,7.122-14.783,7.135-14.5-1.141-13.436-13.4h23.422v-.018H647l5.232-28.512c-4.821-5.592-13.052-8.466-24.751-8.6q-32.035,1.141-39.451,32.922-2.824,21.892,15.724,27.953h31.47a32.4,32.4,0,0,0,8.177-4.046l2.444-13.437Zm-8.624-30.766q13.713,1.152,12.733,13.017H608.463Q611.9,420.693,626.365,419.922Z" transform="translate(-29.989 -8.843)" fill="#D7000F" />
+                                        <path d="M684.679,436.009q2.848-13.4,14.934-14.17,11.993-.374,9.08,13.406l-6.028,32.925h15.778l9.6-52.362c-2.628-5.808-8.549-8.672-17.82-8.513q-12.879.774-22.245,10.715l1.685-9.179h-19.5L659.3,468.169h19.489Z" transform="translate(-43.325 -8.841)" fill="#D7000F" />
+                                        <path d="M470.217,374.326c-1.473,8.044-9.437,14.556-17.782,14.556s-13.909-6.512-12.444-14.556c1.466-8.025,9.43-14.53,17.775-14.53S471.69,366.3,470.217,374.326Z" transform="translate(-2.456)" fill="#D7000F" />
+                                        <path d="M509.109,375.177l-15.945,87.014H513.9l6.066-33.141H520l4.95-27.073,4.913-26.8Z" transform="translate(-12.398 -2.863)" fill="#D7000F" />
+                                        <path d="M587.586,401.5q3.439-25.444-29.747-26.327H538.752l13.307,12.472,15.277,14.328-20.523,14.317L528.53,429.05h10.045l15.8,33.141h26.049l-20.065-34.335Q583.965,423.471,587.586,401.5Z" transform="translate(-18.982 -2.863)" fill="#D7000F" />
+                                        <path d="M769.931,387.732h-19.1l-3.22,17.458-2.534,13.78-5.322,29.092q-2.5,12.211,5.086,16.466H769.1l2.308-12.619-.054-.4a13.116,13.116,0,0,1-5.854,1.528q-7.631.383-5.808-9.565l4.479-24.5h13.271l2.528-13.78H766.7Z" transform="translate(-58.188 -5.201)" fill="#D7000F" />
+                                        <path d="M460.2,402.485H438.438l-11.875,64.79h21.761Z" transform="translate(0 -7.947)" fill="#D7000F" />
+                                    </g>
+                                </svg>
+                                <div class="container-fluid my-2">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-2 text-left text-sm-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="35" viewBox="0 0 34.533 39.502">
+                                                <g transform="translate(-515.505 -399.643)">
+                                                    <path d="M532.674,444.4q-5.763,0-11.528,0c-4.566,0-5.664-1.173-5.64-6.009.034-6.707,3.6-11.2,9.529-11.815a8.98,8.98,0,0,1,3.608.464,11.122,11.122,0,0,0,8.066,0c4.578-1.98,11.814,1.272,13.018,7.955a25.364,25.364,0,0,1,.3,4.9c-.052,2.951-1.527,4.454-4.387,4.487C541.32,444.439,537,444.4,532.674,444.4Z" transform="translate(0 -5.27)" fill="#9fa4ac" />
+                                                    <path d="M543.535,409.842c.027,5.578-4.349,10.285-9.545,10.267s-9.566-4.738-9.509-10.306c.057-5.532,4.291-10.087,9.445-10.16S543.508,404.256,543.535,409.842Z" transform="translate(-1.227)" fill="#9fa4ac" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input class="form-control" type="text" id="UserId" name="UserId" placeholder="帳號" required title="請輸入帳號" onkeypress='validate(event)' onkeydown="validate(event)" onpaste="validate(event)" maxlength="10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid mb-2">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-2 text-left text-sm-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 40 39.943">
+                                                <path id="Path_78" data-name="Path 78" d="M531.6,430.135c-.309,4.869.626,4.933-4.85,5.139-.073.161-.235.344-.227.519.244,4.974-.948,4.4-4.624,4.4-1.6,0-3.2.008-4.8,0-2.633-.015-3.056-.425-3.078-2.977a19.63,19.63,0,0,1,.049-3.743,6.692,6.692,0,0,1,1.352-3.261q4.93-5.235,10.165-10.182a3.8,3.8,0,0,0,1.3-3.943,13.619,13.619,0,0,1,26.519-6,13.743,13.743,0,0,1-14.2,17.518c-.643-.042-1.642-.058-1.9.314A5.328,5.328,0,0,1,531.6,430.135Zm12.448-16.207A3.767,3.767,0,1,0,540.3,410.2,3.895,3.895,0,0,0,544.05,413.929Z" transform="translate(-513.955 -400.267)" fill="#9fa4ac" />
+                                            </svg>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input class="form-control" type="password" id="UserPwd" name="UserPwd" placeholder="密碼" required title="請輸入密碼">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid my-4">
+                                    <div class="row no-gutters">
+                                        <div class="col-12">
+                                            <button type="submit" id="btnLogin" class="btn btn-danger btn-block logon_btn">登入</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <!---->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="IsSuccess" name="IsSuccess" value="@((ViewData["IsLogin"] != null)?ViewData["IsLogin"].ToString() :"-1")" />
+        <input type="hidden" id="LoginMessage" name="LoginMessage" value="@((ViewData["LoginMessage"] != null)?ViewData["LoginMessage"].ToString() :"")" />
+    </main>
+
+    <!-- import js -->
+    <script src="~/Scripts/js/jquery-3.5.1.min.js"></script>
+    <script src="~/Scripts/js/popper.js"></script>
+    <script src="~/Scripts/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/js/jquery-filestyle.js"></script>
+    <script src="~/Scripts/js/flatpickr.js"></script>
+    <script src="~/Scripts/plugin/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
+    <script src="~/Scripts/js/ActionJS/Login.js">
+
+    </script>
 </body>
 </html>

@@ -27,5 +27,13 @@ namespace Web.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// 會員卡號解除
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UnBindCard()
+        {
+            return View();
+        }
     }
 }

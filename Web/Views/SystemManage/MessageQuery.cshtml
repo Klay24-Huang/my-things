@@ -1,1 +1,187 @@
 ﻿
+
+@{
+    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            萬用卡查詢
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            合約編號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            車號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
+                            @Html.Action("GetStationHiddenList", "CommonObj")
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            發送日期
+                        </div>
+                        <div class="col-md-3">
+                            <!-- datepicker -->
+                            <div class="custom-datepicker">
+                                <input class="datePicker form-control" type="text" id="SendDate" name="SendDate" readonly="false">
+                                <svg width="22" height="22" viewBox="0 0 22 22">
+                                    <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                        <rect width="22" height="19" rx="3" stroke="none" />
+                                        <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                    </g>
+                                    <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                        <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                        <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                    </g>
+                                    <g transform="translate(3.633 -0.005)">
+                                        <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                        <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            顯示方式
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowSetCard" value="1" checked>
+                                <label class="form-check-label" for="ShowUnRent">
+                                    卡號設定記錄(to 車機)
+                                </label>
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowReadCard" value="0">
+                                <label class="form-check-label" for="ShowRent">
+                                    刷卡記錄(from 車用讀卡機)
+                                </label>
+                                <input class="form-check-input" type="radio" name="ShowType" id="ShowEvent" value="2">
+                                <label class="form-check-label" for="ShowWait">
+                                    車輛事件狀態
+                                </label>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">查詢</button>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="ShowSetCardPanel">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">序號</th>
+                <th scope="col">日期</th>
+                <th scope="col">發送狀態</th>
+                <th scope="col">車號</th>
+                <th scope="col">卡號</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">1234567890</td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container mt-4" id="ShowReadCardPanel">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">序號</th>
+                <th scope="col">日期</th>
+                <th scope="col">車號</th>
+                <th scope="col">卡號</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">1234567890</td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container mt-4" id="ShowEventPanel">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">序號</th>
+                <th scope="col">車號</th>
+                <th scope="col">車輛事件狀態</th>
+                <th scope="col">車門狀態</th>
+                <th scope="col">日期</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td scope="row">1</td>
+                <td scope="col">1234567890</td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+                <td scope="col"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--輸出表格結束-->

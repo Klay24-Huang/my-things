@@ -33,7 +33,7 @@
     [init_TransDiscount] INT NOT NULL DEFAULT -1, 
     [CARRIERID]      VARCHAR (20)   DEFAULT ('') NOT NULL,
     [NPOBAN]         VARCHAR (20)   DEFAULT ('') NOT NULL,
-    [invoice_price] VARCHAR(10) NOT NULL DEFAULT '', 
+    [invoice_price] INT NOT NULL DEFAULT 0, 
     [invoice_date] VARCHAR(20) NOT NULL DEFAULT '', 
     CONSTRAINT [PK_TB_OrderMain] PRIMARY KEY ([order_number]),
 )

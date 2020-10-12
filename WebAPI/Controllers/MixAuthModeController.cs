@@ -145,7 +145,7 @@ namespace WebAPI.Controllers
             {
                 DateTime NowTime = DateTime.UtcNow;
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-                #region 這邊要再加上查訂單狀態
+             
                 if (apiInput.PayType == 0)
                 {
                     #region 取出訂單資訊
