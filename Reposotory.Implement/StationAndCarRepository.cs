@@ -377,7 +377,20 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<CarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = " SELECT [CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,-1 AS Price FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup]  WITH(NOLOCK) ";
+            //string SQL = " SELECT [CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,-1 AS Price FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup]  WITH(NOLOCK) ";
+            string SQL = @"
+            SELECT v.CarBrend,
+                   v.CarTypeGroupCode AS CarType,
+                   v.CarTypeName,
+                   v.CarTypeImg AS CarTypePic,
+                   v.OperatorICon AS OPERATOR,
+                   v.Score AS OperatorScore,
+                   v.Seat,
+                   v.Price,
+                   v.PRICE_H
+            FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] v WITH(NOLOCK)
+            ";
+
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(StationID) == false && string.IsNullOrWhiteSpace(StationID) == false)

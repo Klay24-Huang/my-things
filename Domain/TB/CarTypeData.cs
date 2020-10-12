@@ -34,7 +34,7 @@ namespace Domain.TB
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        public int PRICE_H { set; get; }
 
-   
     }
 }
