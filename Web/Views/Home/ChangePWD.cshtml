@@ -51,6 +51,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
                                 <button type="submit" id="btnSend" class="btn btn-primary">確認更改</button>
                                 <button type="button" id="btnClean" class="btn">清除</button>
                             </div>

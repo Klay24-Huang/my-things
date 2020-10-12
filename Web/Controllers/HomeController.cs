@@ -65,6 +65,7 @@ namespace Web.Controllers
                 if (flag)
                 {
                     Session["User"] = SPOutput.UserName;
+                    Session["Account"] = UserId;
                     Session["UserGroup"] = SPOutput.UserGroup;
                     ViewData["IsLogin"] = 1;
                     ViewData["LoginMessage"] = string.Format("{0}您好", SPOutput.UserName);
