@@ -100,21 +100,21 @@ namespace WebAPI.Controllers
                                     {
                                         QueryMode = 1;
                                     }
-                                }
-                               
+                                }                               
                             }
                             else
                             {
+                                flag = false;
                                 errCode = "ERR152";
                             }
                         }
                         else
                         {
+                            flag = false;
                             errCode = "ERR151";
                         }
                     }
-                }
-               
+                }               
             }
 
             #endregion
@@ -146,18 +146,20 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-
+                List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 _repository = new StationAndCarRepository(connetStr);
                 List<CarTypeData> iRentStations = new List<CarTypeData>();
                 if (QueryMode == 0)
                 {
                     iRentStations = _repository.GetStationCarType(apiInput.StationID);
-                    iRentStations.ForEach(x => x.CarTypeName = x.CarBrend + " " + x.CarTypeName);
+                    iRentStations.ForEach(x => { 
+                        x.CarTypeName = x.CarBrend + " " + x.CarTypeName;
+                        x.Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, x.Price, x.PRICE_H, lstHoliday));
+                    });
                 }
                 else
                 {
                     List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
-                    List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                     lstData = _repository.GetStationCarType(apiInput.StationID, SDate, EDate);
                     if (lstData != null)
                     {
@@ -188,9 +190,7 @@ namespace WebAPI.Controllers
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
                         GetCarTypeObj = iRentStations.OrderBy(x => x.Price).ToList()
-                    };
-                  
-
+                    };                
                 }
                 else
                 {
@@ -198,8 +198,7 @@ namespace WebAPI.Controllers
                     {
                         GetCarTypeObj = iRentStations
                     };
-                }
-              
+                }              
             }
             #endregion
 
