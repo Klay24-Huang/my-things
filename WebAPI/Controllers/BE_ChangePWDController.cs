@@ -52,13 +52,13 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string IDNO = "";
-
+            bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
             #endregion
             #region 防呆
 
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token,ref isGuest);
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_ChangePWD>(Contentjson);
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Account = apiInput.Account,
                     NewPwd = apiInput.NewPWD.Replace(" ",""),
-                    OldPwd = apiInput.OldPWD.Replace(" ",""),
+                    UserPwd = apiInput.OldPWD.Replace(" ",""),
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

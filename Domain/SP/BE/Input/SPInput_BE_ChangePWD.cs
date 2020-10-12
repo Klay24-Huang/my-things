@@ -20,7 +20,7 @@ namespace Domain.SP.BE.Input
         ///// <summary>
         /// 舊密碼
         /// </summary>
-        public string OldPwd { set; get; }
+        public string UserPwd { set; get; }
         /// <summary>
         /// 新密碼
         /// </summary>
