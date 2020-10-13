@@ -1,36 +1,54 @@
 ﻿$(function () {
-    var StationList = $("#hidStation").val();
+    //var StationList = localStorage.getItem("StationList");
+    //var CarList = localStorage.getItem("CarList");
+    //if (typeof StationList !== 'undefined' && StationList !== null) {
+    //    StationList = JSON.parse(StationList)
+    //}
+    //if (typeof CarList !== 'undefined' && CarList !== null) {
+    //    CarList = JSON.parse(CarList)
+    //}
+    ////var StationList = $("#hidStation").val();
 
-    if (StationList !== "") {
-        var Station = StationList.split(";");
-
-        $("#StationID").autocomplete({
-            source: Station,
-            minLength: 1,
-            matchCase: true,
-              select: function (event, ui) {
-                var data = ui.item.value.split("(");
-                var contactData = data[1].split(")");
-                  $("#StationID").val(contactData[0]);
+    //if (StationList.length > 0) {
+       
+    //    var Station = new Array();
+    //    var StationLen = StationList.length;
+    //    for (var i = 0; i < StationLen; i++) {
+    //        Station.push(StationList[i].StationName + "(" + StationList[i].StationID + ")");
+    //    }
+    //    $("#StationID").autocomplete({
+    //        source: Station,
+    //        minLength: 1,
+    //        matchCase: true,
+    //          select: function (event, ui) {
+    //            var data = ui.item.value.split("(");
+    //            var contactData = data[1].split(")");
+    //              $("#StationID").val(contactData[0]);
             
-                  $("#StationName").html(data[0]);
-                return false;
-            }
-        });
+    //              $("#StationName").html(data[0]);
+    //            return false;
+    //        }
+    //    });
 
-    }
-    var CarList = $("#hidCar").val();
+    //}
 
-    if (CarList !== "") {
-        var Car = CarList.split(";");
 
-        $("#CarNo").autocomplete({
-            source: Car,
-            minLength: 1,
-            matchCase: true
-        });
+    //if (CarList.length > 0) {
+    //    var Car = new Array();
+    //    var CarLen = CarList.length;
+    //    for (var i = 0; i < CarLen; i++) {
+    //        Car.push(CarList[i].CarNo);
+    //    }
 
-    }
+    //    $("#CarNo").autocomplete({
+    //        source: Car,
+    //        minLength: 1,
+    //        matchCase: true
+    //    });
+
+    //}
+    SetStation($("#StationID"), $("#StationName"));
+    SetCar($("#CarNo"))
 
     $("#btnSearch").on("click", function () {
         ShowLoading("資料處理中...");

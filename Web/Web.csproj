@@ -346,6 +346,7 @@
     <Content Include="Content\css\footable\fonts\footable.ttf" />
     <Content Include="Content\css\footable\fonts\footable.woff" />
     <Content Include="Content\css\footable\fonts\footabled41d.eot" />
+    <Content Include="Content\example\ParkingExample.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />

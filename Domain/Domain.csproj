@@ -152,6 +152,7 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
+    <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BatExchangeStationData.cs" />
     <Compile Include="TB\CarCMDResponse.cs" />
     <Compile Include="TB\CarData.cs" />

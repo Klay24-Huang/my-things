@@ -32,7 +32,7 @@
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
     if (Session["User"] == null)
     {
-        //Response.Redirect("~/Home/Login");
+        Response.Redirect("~/Home/Login");
     }
  }
 <!DOCTYPE html>

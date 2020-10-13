@@ -33,11 +33,17 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult TransParkingSetting(FormCollection collection)
+        {
+
+            return View();
+        }
         /// <summary>
         /// 停車便利付停車場設定
         /// </summary>
         /// <returns></returns>
- 
+
         public ActionResult ChargeParkingSetting()
         {
             return View();
