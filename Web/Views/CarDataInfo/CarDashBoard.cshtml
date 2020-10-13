@@ -5,134 +5,147 @@
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            車輛中控台
-        </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            車輛查詢
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            服務據點
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            顯示方式
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="2">
-                                <label class="form-check-label" for="ShowAll">
-                                    全部
-                                </label>
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowTrue" value="1">
-                                <label class="form-check-label" for="ShowTrue">
-                                    僅顯示有回應
-                                </label>
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowFalse" value="0">
-                                <label class="form-check-label" for="ShowFalse">
-                                    僅顯示無回應
-                                </label>
+    @using (Html.BeginForm("CarDashBoard", "CarDataInfo", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                車輛中控台
+            </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車輛查詢
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
+                            
                             </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            篩選條件
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="LowBat3" value="0">
-                                <label class="form-check-label" for="LowBat3">
-                                    低電量機車(3TBA)
-                                </label>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                服務據點
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="LowBat2" value="1">
-                                <label class="form-check-label" for="LowBat2">
-                                    低電量機車(2TBA)
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="PowON" value="2">
-                                <label class="form-check-label" for="PowON">
-                                    發動
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="BatConvert" value="3">
-                                <label class="form-check-label" for="BatConvert">
-                                    電池蓋開啟
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="NoResponseOneHour" value="4">
-                                <label class="form-check-label" for="NoResponseOneHour">
-                                    一小時無回應
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="terms" id="NoResponse" value="5">
-                                <label class="form-check-label" for="NoResponse">
-                                    無回應
-                                </label>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+                                <span class="form-inline" id="StationName" name="StationName"></span>
+                             
                             </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                顯示方式
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="2">
+                                    <label class="form-check-label" for="ShowAll">
+                                        全部
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowTrue" value="1">
+                                    <label class="form-check-label" for="ShowTrue">
+                                        僅顯示有回應
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowFalse" value="0">
+                                    <label class="form-check-label" for="ShowFalse">
+                                        僅顯示無回應
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                篩選條件
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="LowBat3" value="0">
+                                    <label class="form-check-label" for="LowBat3">
+                                        低電量機車(3TBA)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="LowBat2" value="1">
+                                    <label class="form-check-label" for="LowBat2">
+                                        低電量機車(2TBA)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="PowON" value="2">
+                                    <label class="form-check-label" for="PowON">
+                                        發動
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="BatConvert" value="3">
+                                    <label class="form-check-label" for="BatConvert">
+                                        電池蓋開啟
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="NoResponseOneHour" value="4">
+                                    <label class="form-check-label" for="NoResponseOneHour">
+                                        一小時無回應
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="NoResponse" value="5">
+                                    <label class="form-check-label" for="NoResponse">
+                                        無回應
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" id="btnSearch" name="btnSearch" class="btn btn-primary">查詢</button>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+            <input type="hidden" id="queryData" name="queryData" value="" />
+        </div>
+        <!--end card-->
+    }
     </div>
-    <!--end card-->
-</div>
 <!--查詢介面結束-->
 <!--輸出表格-->
+
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-5">
-            <span class="text-white bg-primary">共有：<br>機車目前租約中</span>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col text-white bg-primary">
+                共有<br />機車目前租約中：0000;一小時無回應:0000輛;完全無回應:0;低電量(3TBA)：000;低電量(2TBA)：00
+            </div>
+
         </div>
-      
     </div>
-    <table class="table bg-white">
+    <table class="table table-striped bg-white mt-4">
         <thead class="text-white bg-primary">
             <tr>
                 <th scope="col">ID</th>
@@ -161,4 +174,4 @@
         </tbody>
     </table>
 </div>
-<!--輸出表格結束-->
+    <!--輸出表格結束-->

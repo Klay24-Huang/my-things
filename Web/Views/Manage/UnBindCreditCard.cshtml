@@ -1,1 +1,41 @@
 ﻿
+
+@{
+    string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            信用卡解綁
+        </div>
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            會員帳號
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-3 offset-md-2">
+                            <button type="submit" class="btn btn-primary">確認送出</button>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--end card-->
+</div>

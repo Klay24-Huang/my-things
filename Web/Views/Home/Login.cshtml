@@ -1,5 +1,6 @@
 ﻿@{ 
     Layout = null;
+    string hostPath = System.Configuration.ConfigurationManager.AppSettings["jsHost"];
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -83,16 +84,22 @@
         </div>
         <input type="hidden" id="IsSuccess" name="IsSuccess" value="@((ViewData["IsLogin"] != null)?ViewData["IsLogin"].ToString() :"-1")" />
         <input type="hidden" id="LoginMessage" name="LoginMessage" value="@((ViewData["LoginMessage"] != null)?ViewData["LoginMessage"].ToString() :"")" />
+        <input type="hidden" id="UserID" name="UserID" value="@((ViewData["Account"] == null)?"": ViewData["Account"].ToString())" />
     </main>
 
     <!-- import js -->
+    <script>
+           var jsHost = "@hostPath";
+    </script>
     <script src="~/Scripts/js/jquery-3.5.1.min.js"></script>
     <script src="~/Scripts/js/popper.js"></script>
     <script src="~/Scripts/js/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/js/jquery-filestyle.js"></script>
     <script src="~/Scripts/js/flatpickr.js"></script>
+    <script src="~/Scripts/js/CommonFunc.js"></script>
     <script src="~/Scripts/plugin/sweetalert/dist/sweetalert.min.js"></script>
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
+
     <script src="~/Scripts/js/ActionJS/Login.js">
 
     </script>

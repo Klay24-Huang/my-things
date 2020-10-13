@@ -132,6 +132,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
+    <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +196,7 @@
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\Home\ChangePWD.js" />
     <Content Include="Scripts\js\ActionJS\Login.js" />
+    <Content Include="Scripts\js\ActionJS\Manage\ArrearQuery.js" />
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildMaintain.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
@@ -219,6 +221,7 @@
     <Content Include="Scripts\js\bootstrap.bundle.min.js" />
     <Content Include="Scripts\js\bootstrap.js" />
     <Content Include="Scripts\js\bootstrap.min.js" />
+    <Content Include="Scripts\js\CommonFunc.js" />
     <Content Include="Scripts\js\flatpickr.js" />
     <Content Include="Scripts\js\footable\footable.all.min.js" />
     <Content Include="Scripts\js\jquery-3.5.1.min.js" />
@@ -343,6 +346,7 @@
     <Content Include="Content\css\footable\fonts\footable.ttf" />
     <Content Include="Content\css\footable\fonts\footable.woff" />
     <Content Include="Content\css\footable\fonts\footabled41d.eot" />
+    <Content Include="Content\example\ParkingExample.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -389,7 +393,7 @@
     <Content Include="Views\ContactManage\ContactBooking.cshtml" />
     <Content Include="Views\ContactManage\ContactSetting.cshtml" />
     <Content Include="Views\Manage\AuthAndPay.cshtml" />
-    <Content Include="Views\Manage\HoildMaintain.cshtml" />
+    <Content Include="Views\Manage\HoildayMaintain.cshtml" />
     <Content Include="Views\Manage\UnBindCard.cshtml" />
     <Content Include="Views\Manage\UnBindCreditCard.cshtml" />
     <Content Include="Views\Manage\ResendToHieasyrent.cshtml" />
@@ -403,6 +407,8 @@
     <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
     <Content Include="Views\Home\ChangePWD.cshtml" />
+    <Content Include="Views\CommonObj\GetCarHiddenList.cshtml" />
+    <Content Include="Views\Manage\ArrearQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

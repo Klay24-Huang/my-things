@@ -20,10 +20,18 @@ namespace Web.Controllers
             return View();
         }
         /// <summary>
+        /// 欠費查詢
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ArrearQuery()
+        {
+            return View();
+        }
+        /// <summary>
         /// 平假日維護
         /// </summary>
         /// <returns></returns>
-        public ActionResult HoildMaintain()
+        public ActionResult HoildayMaintain()
         {
             return View();
         }

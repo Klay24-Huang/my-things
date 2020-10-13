@@ -66,6 +66,7 @@ namespace Web.Controllers
                 {
                     Session["User"] = SPOutput.UserName;
                     Session["Account"] = UserId;
+                    ViewData["Account"] = UserId; 
                     Session["UserGroup"] = SPOutput.UserGroup;
                     ViewData["IsLogin"] = 1;
                     ViewData["LoginMessage"] = string.Format("{0}您好", SPOutput.UserName);
@@ -73,6 +74,7 @@ namespace Web.Controllers
                 }
                 else
                 {
+                    ViewData["Account"] = "";
                     ViewData["IsLogin"] = 0;
                     ViewData["LoginMessage"] = "帳號或密碼錯誤";
                 }
@@ -80,6 +82,7 @@ namespace Web.Controllers
             else
             {
                 flag = false;
+                ViewData["Account"] = "";
                 ViewData["IsLogin"] = 0;
                 ViewData["LoginMessage"] = "帳號或密碼未輸入";
             }

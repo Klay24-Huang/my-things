@@ -1,0 +1,16 @@
+﻿@model IEnumerable < Domain.TB.BackEnd.iRentCarBase>
+
+@{
+    Layout = null;
+    string CarList = "";
+}
+@foreach (var Car in Model)
+{
+    if (Car.CarNo.Replace(" ","") != "")
+    {
+        CarList += Car.CarNo.Replace(" ", "") + ";";
+    }
+
+}
+@Html.Hidden("hidCar", CarList, new { id = "hidCar", name = "hidCar" })
+

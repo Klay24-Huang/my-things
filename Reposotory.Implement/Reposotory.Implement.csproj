@@ -48,6 +48,7 @@
     <Compile Include="CarStatusCommon.cs" />
     <Compile Include="CommonRepository.cs" />
     <Compile Include="Enum\ObjType.cs" />
+    <Compile Include="ManagerRepository.cs" />
     <Compile Include="MemberRepository.cs" />
     <Compile Include="MonthlyRentRepository.cs" />
     <Compile Include="ParkingRepository.cs" />

@@ -1,81 +1,85 @@
 ﻿
 @{
-    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+    string ParkingName = (ViewData["ParkingName"] == null) ? "" : ViewData["ParkingName"].ToString();
 }
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-           調度停車場資訊設定
+            調度停車場資訊設定
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            處理項目
-                        </div>
-                        <div class="col-md-3">
-                            @Html.Action("GetHandleList", "CommonObj")
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            停車場名稱
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
+        @using (Html.BeginForm("TransParkingSetting", "StationAndParking", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理項目
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Action("GetHandleList", "CommonObj")
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                停車場名稱
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="ParkingName" id="ParkingName" value="@ParkingName" />
 
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            篩選功能
-                        </div>
-
-                        <div class="col-md-3">
-                            <input type="file" class="jfilestyle" data-theme="blue" data-inputSize="" data-text="上傳檔案">
-
-                        </div>
-                        <div class="col-md-2">
-                            限定.CSV檔
-                        </div>
-
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary">範例檔案下載</button>
-
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確定</button>
-                            <button type="button" class="btn btn-secondary">取消</button>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入清單
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="file" class="jfilestyle" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+
+                            </div>
+                            <div class="col-md-2">
+                                限定.XLS/XLSX檔
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <Button type="button" id="btnSend" name="btnSend"  class="btn btn-primary">確定</Button>
+                                <Button type="button" id="btnReset" name="btnReset"  class="btn btn-outline-secondary">取消</Button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
+     
     <!--end card-->
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
-<div class="container mt-4">
+<div class="container mt-4" id="panelResult" name="panelResult">
     <table class="table bg-white footable" data-filter="#filter" id="list">
         <thead class="text-white bg-primary">
             <tr>

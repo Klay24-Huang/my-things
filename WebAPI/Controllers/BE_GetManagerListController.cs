@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Domain.TB.BackEnd;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,15 +11,15 @@ using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
+using WebAPI.Models.Param.BackEnd.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 後台修改密碼
+    /// 【後台】取得帳號列表
     /// </summary>
-    public class BE_ChangePWDController : ApiController
+    public class BE_GetManagerListController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
@@ -26,7 +28,7 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> doChangePWD(Dictionary<string, object> value)
+        public Dictionary<string, object> doGetManagerList(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -38,11 +40,11 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_ChangePWDController";
+            string funName = "BE_GetManagerListController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_ChangePWD apiInput = null;
-            NullOutput apiOutput = null;
+            IAPI_BE_Base apiInput = null;
+            OAPI_BE_GetManagerList apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -53,27 +55,23 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
 
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token,ref isGuest);
+  
+
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_ChangePWD>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_Base>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = {apiInput.Account, apiInput.OldPWD, apiInput.NewPWD };
-                string[] errList = { "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID };
+                string[] errList = { "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
 
-                if (flag)
-                {
-                    if(apiInput.OldPWD.Replace(" ","")==apiInput.NewPWD.Replace(" ", ""))
-                    {
-                        flag = false;
-                        errCode = "ERR701";
-                    }
-                }
+
             }
             #endregion
 
@@ -82,21 +80,15 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_ChangePWD);
-                SPInput_BE_ChangePWD spInput = new SPInput_BE_ChangePWD()
-                {
-                    LogID = LogID,
-                    Account = apiInput.Account,
-                    NewPwd = apiInput.NewPWD.Replace(" ",""),
-                    UserPwd = apiInput.OldPWD.Replace(" ",""),
-
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_BE_ChangePWD, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_ChangePWD, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                ManagerRepository _repository = new ManagerRepository(connetStr);
+                List<iRentManager> ManagerList = new List<iRentManager>();
+                ManagerList = _repository.GetManagerList();
+                apiOutput = new OAPI_BE_GetManagerList();
+                apiOutput.ManagerList = new List<iRentManager>();
+                apiOutput.ManagerList = ManagerList;
 
             }
+       
             #endregion
 
             #region 寫入錯誤Log

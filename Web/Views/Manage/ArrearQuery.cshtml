@@ -1,4 +1,5 @@
 ﻿
+
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
 
@@ -8,7 +9,7 @@
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            強制刷卡取款
+           欠費查詢
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
@@ -45,7 +46,7 @@
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false">
-                    <input type="checkbox" id="chkAll" name="chkAll" />
+                   
                 </th>
                 <th scope="col">iRent合約編號</th>
                 <th scope="col">合約編號</th>
@@ -58,8 +59,8 @@
         </thead>
         <tbody>
             <tr>
-               <td data-sort="false">
-                    <input type="checkbox" id="chkAll" name="chkAll" />
+                <td data-sort="false">
+                   
                 </td>
                 <td scope="col">iRent合約編號</td>
                 <td scope="col">合約編號</td>
@@ -69,15 +70,7 @@
                 <td scope="col">0</td>
             </tr>
         </tbody>
-        <tfoot>
-            <tr>
-                <td scope="col" colspan="5" class="text-center">此次刷卡金額100元</td>
-                <td scope="col" colspan="2">
-                    <button type="submit" class="btn btn-primary">刷卡授權</button>
-                    <button type="submit" class="btn btn-secondary">退出</button>
-                </td>
-            </tr>
-        </tfoot>
+
     </table>
 </div>
 <!--輸出表格結束-->

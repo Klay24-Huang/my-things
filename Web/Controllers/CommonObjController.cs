@@ -28,6 +28,14 @@ namespace Web.Controllers
             var station = this._repository.GetPartOfStation(showAll);
             return View(station);
         }
+        [ChildActionOnly]
+        public ActionResult GetCarHiddenList()
+        {
+            _repository = new StationRepository(connetStr);
+            bool showAll = false;
+            var car = this._repository.GetPartOfCar(showAll);
+            return View(car);
+        }
         /// <summary>
         /// 產出共用的處理項目下拉式
         /// </summary>
