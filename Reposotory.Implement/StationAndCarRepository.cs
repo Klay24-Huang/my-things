@@ -383,7 +383,7 @@ namespace Reposotory.Implement
                    v.CarTypeGroupCode AS CarType,
                    v.CarTypeName,
                    v.CarTypeImg AS CarTypePic,
-                   v.OperatorICon AS OPERATOR,
+                   v.OperatorICon AS Operator,
                    v.Score AS OperatorScore,
                    v.Seat,
                    v.Price,
