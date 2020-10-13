@@ -4,6 +4,7 @@ using Domain.SP.Input.Station;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.TB;
+using Newtonsoft.Json;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -149,13 +151,19 @@ namespace WebAPI.Controllers
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 _repository = new StationAndCarRepository(connetStr);
                 List<CarTypeData> iRentStations = new List<CarTypeData>();
+                List<OAPI_GetCarTypeParam> OAPI_Params = new List<OAPI_GetCarTypeParam>();
                 if (QueryMode == 0)
                 {
                     iRentStations = _repository.GetStationCarType(apiInput.StationID);
-                    iRentStations.ForEach(x => { 
-                        x.CarTypeName = x.CarBrend + " " + x.CarTypeName;
-                        x.Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, x.Price, x.PRICE_H, lstHoliday));
-                    });
+                    
+                    if(iRentStations != null && iRentStations.Count()>0)
+                    {
+                        iRentStations.ForEach(x => {
+                            x.CarTypeName = x.CarBrend + " " + x.CarTypeName;
+                            x.Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, x.Price, x.PRICE_H, lstHoliday));
+                        });
+                        OAPI_Params = JsonConvert.DeserializeObject<List<OAPI_GetCarTypeParam>>(JsonConvert.SerializeObject(iRentStations));
+                    }
                 }
                 else
                 {
@@ -182,21 +190,23 @@ namespace WebAPI.Controllers
                                 iRentStations.Add(obj);
                             }
                         }
+
+                        OAPI_Params = JsonConvert.DeserializeObject<List<OAPI_GetCarTypeParam>>(JsonConvert.SerializeObject(iRentStations));
                     }
                 }
 
-                if (iRentStations != null)
+                if (OAPI_Params != null)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
-                        GetCarTypeObj = iRentStations.OrderBy(x => x.Price).ToList()
+                        GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };                
                 }
                 else
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
-                        GetCarTypeObj = iRentStations
+                        GetCarTypeObj = OAPI_Params
                     };
                 }              
             }

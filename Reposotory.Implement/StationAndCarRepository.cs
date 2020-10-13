@@ -409,7 +409,7 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE  CarTypeName<>'' ";
             }
-            SQL += " GROUP BY  [CarBrend],[CarTypeGroupCode],[CarTypeName],[CarTypeImg],OperatorICon ,Score,Seat";
+            SQL += " GROUP BY  [CarBrend],[CarTypeGroupCode],[CarTypeName],[CarTypeImg],OperatorICon,Score,Seat,Price,PRICE_H";
             lstStation = GetObjList<CarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
