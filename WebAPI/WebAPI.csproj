@@ -384,6 +384,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\irentV2-testapi-adam - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-testApp-api - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

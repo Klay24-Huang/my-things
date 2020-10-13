@@ -76,12 +76,12 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                     }
-                    if(string.IsNullOrWhiteSpace(apiInput.SDate)==false && string.IsNullOrWhiteSpace(apiInput.EDate)==false)
+                    if(string.IsNullOrWhiteSpace(apiInput.SD)==false && string.IsNullOrWhiteSpace(apiInput.ED)==false)
                     {
-                        flag = DateTime.TryParse(apiInput.SDate, out SDate);
+                        flag = DateTime.TryParse(apiInput.SD, out SDate);
                         if (flag)
                         {
-                            flag = DateTime.TryParse(apiInput.EDate, out EDate);
+                            flag = DateTime.TryParse(apiInput.ED, out EDate);
                             if (flag)
                             {
                                 if (SDate >= EDate)

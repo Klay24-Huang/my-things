@@ -201,7 +201,7 @@ namespace WebAPI.Controllers
                     baseVerify.checkSQLResult(ref flag, ref FinishOutput, ref lstError, ref errCode);
                 }                
             }
-            
+            #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {
