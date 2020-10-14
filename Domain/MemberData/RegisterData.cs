@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.MemberData
 {
@@ -103,5 +99,30 @@ namespace Domain.MemberData
         /// <para>2:汽機車</para>
         /// </summary>
         public Int16 RentType { set; get; }
+
+        /// <summary>
+        /// 身份證
+        /// </summary>
+        public int ID_pic { get; set; }
+
+        /// <summary>
+        /// 汽車駕照
+        /// </summary>
+        public int DD_pic { get; set; }
+
+        /// <summary>
+        /// 機車駕照
+        /// </summary>
+        public int MOTOR_pic { get; set; }
+
+        /// <summary>
+        /// 自拍照
+        /// </summary>
+        public int AA_pic { get; set; }
+
+        /// <summary>
+        /// 法定代理人
+        /// </summary>
+        public int F01_pic { get; set; }
     }
 }

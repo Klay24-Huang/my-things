@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -26,7 +24,6 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         private string android = ConfigurationManager.AppSettings.Get("android");
-
         private string ios = ConfigurationManager.AppSettings.Get("ios");
         private int Rxpires_in = (ConfigurationManager.AppSettings.Get("Rxpires_in")==null)?1800:Convert.ToInt32(ConfigurationManager.AppSettings.Get("Rxpires_in").ToString());
         private int Refrash_Rxpires_in = (ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in") == null) ? 1800 : Convert.ToInt32(ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in").ToString());
@@ -56,7 +53,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -118,7 +114,7 @@ namespace WebAPI.Controllers
                     MEMIDNO = apiInput.IDNO,
                     PWD = apiInput.PWD,
                     Rxpires_in = Rxpires_in,
-                     Refrash_Rxpires_in= Refrash_Rxpires_in
+                    Refrash_Rxpires_in = Refrash_Rxpires_in
                 };
                 SPOutput_MemberLogin SPOutputMemberLogin = new SPOutput_MemberLogin();
                 SQLHelper<SPInput_MemberLogin, SPOutput_MemberLogin> sqlHelp = new SQLHelper<SPInput_MemberLogin, SPOutput_MemberLogin>(connetStr);
@@ -133,15 +129,13 @@ namespace WebAPI.Controllers
                         Access_token = SPOutputMemberLogin.Access_Token,
                         Refrash_token = SPOutputMemberLogin.Refrash_Token,
                         Rxpires_in = Rxpires_in,
-                          Refrash_Rxpires_in= Refrash_Rxpires_in
+                        Refrash_Rxpires_in = Refrash_Rxpires_in
                     };
                     loginAPI = new OAPI_Login()
                     {
                         Token = token,
                         UserData = (lstOut == null) ? null : (lstOut.Count == 0) ? null : lstOut[0]
                     };
-                
-                  
                 }
             }
             #endregion
