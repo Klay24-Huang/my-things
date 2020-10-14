@@ -16,6 +16,20 @@ function ShowLoading(message) {
         spinner: "cube-grid"
     });
 }
+function ShowSuccessMessage(message) {
+    swal({
+        title: 'SUCCESS',
+        text: message,
+        icon: 'success'
+    });
+}
+function ShowFailMessage(message) {
+    swal({
+        title: 'Fail',
+        text: message,
+        icon: 'error'
+    });
+}
 function ShowMessageAndReload(message,message2,site) {
     swal({
         title: 'SUCCESS',

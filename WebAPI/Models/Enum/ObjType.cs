@@ -274,7 +274,14 @@ namespace WebAPI.Models.Enum
                 DisabledMachiPark,
             #endregion,
             #region BackEnd
-                BE_ChangePWD
+                /// <summary>
+                /// 更改密碼
+                /// </summary>
+                BE_ChangePWD,
+                /// <summary>
+                /// 特約停車場處理
+                /// </summary>
+                BE_HandleTransParking
             #endregion
 
         }
@@ -497,6 +504,9 @@ namespace WebAPI.Models.Enum
                 #region BackEnd
                 case SPType.BE_ChangePWD:
                     SPName = "usp_BE_ChangePWD";
+                    break;
+                case SPType.BE_HandleTransParking:
+                    SPName = "usp_BE_HandleTransParking";
                     break;
             #endregion
             }
