@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.TB;
+using Domain.TB.BackEnd;
 using Domain.TB.Mochi;
 using System;
 using System.Collections.Generic;
@@ -152,6 +153,37 @@ namespace Reposotory.Implement
            lstStation = GetObjList<SyncMachiParkId>(ref flag, ref lstError, SQL, para, term);
 
             return lstStation;
+        }
+        /// <summary>
+        /// 取得調度停車場
+        /// </summary>
+        /// <param name="ParkingName"></param>
+        /// <returns></returns>
+        public List<BE_ParkingData> GetTransParking(string ParkingName)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ParkingData> lstParking = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [ParkingID],[ParkingName],[ParkingAddress],[ParkingLng] AS Longitude ,[ParkingLat] AS Latitude,[OpenTime],[CloseTime] FROM [dbo].[TB_ParkingData] ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            if (string.IsNullOrEmpty(ParkingName) == false && string.IsNullOrWhiteSpace(ParkingName) == false)
+            {
+              //  SQL += string.Format(" WITH(NOLOCK) WHERE ParkingName like '%{0}%' ", ParkingName);
+                term = " ParkingName like @ParkingName";
+                para[nowCount] = new SqlParameter("@ParkingName", SqlDbType.NVarChar, 100);
+                para[nowCount].Value = "%"+ParkingName+"%";
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (term != "")
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+            SQL += " ORDER BY ParkingID ASC ";
+            lstParking = GetObjList<BE_ParkingData>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
         }
     }
 }
