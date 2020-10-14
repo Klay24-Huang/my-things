@@ -133,11 +133,9 @@ namespace WebAPI.Controllers
                 List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
                 lstData = _repository.GetProjectOfAnyRent(apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-           
 
                 if (flag)
                 {
-                    
                     if (lstData != null)
                     {
                         int DataLen = lstData.Count;
@@ -163,7 +161,8 @@ namespace WebAPI.Controllers
                                 Bill = tmpBill,
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price/10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H/10 : lstData[0].PRICE_H,
-                                CarOfArea = lstData[0].CarOfArea
+                                CarOfArea = lstData[0].CarOfArea,
+                                Content = lstData[0].Content
                             });
 
                             if (DataLen > 1)
@@ -198,7 +197,8 @@ namespace WebAPI.Controllers
                                         Bill = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
-                                        CarOfArea = lstData[i].CarOfArea
+                                        CarOfArea = lstData[i].CarOfArea,
+                                        Content = lstData[i].Content
                                     });
                                 }
                             }
@@ -209,7 +209,6 @@ namespace WebAPI.Controllers
                 {
                     GetAnyRentProjectObj = lstTmpData
                 };
-
             }
             #endregion
 

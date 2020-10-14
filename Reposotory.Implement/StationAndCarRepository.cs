@@ -594,17 +594,19 @@ namespace Reposotory.Implement
                        VW.CarTypeGroupCode AS CarType,
                        VW.CarTypeName,
                        VW.CarTypeImg AS CarTypePic,
-                       VW.OperatorICon AS OPERATOR,
+                       VW.OperatorICon AS Operator,
                        VW.Score AS OperatorScore,
                        VW.Seat,
                        VW.PayMode,
+                       irs.Content,
                        Car.CarOfArea
                 FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
                 INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+                INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
                 AND VW.StationID=Car.nowStationID
                 WHERE Car.CarNo = @CarNo
                   AND SPCLOCK='Z'
-                  AND use_flag=1
+                  AND VW.use_flag=1
                 ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -624,7 +626,6 @@ namespace Reposotory.Implement
                 //para[nowCount].Direction = ParameterDirection.Input;
                 //nowCount++;
             }
-
 
             lstStation = GetObjList<ProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
