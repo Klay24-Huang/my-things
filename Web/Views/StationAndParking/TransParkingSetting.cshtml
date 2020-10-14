@@ -1,6 +1,17 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_ParkingData>
 @{
+    List <Domain.TB.BackEnd.BE_ParkingData> lstData = null;
     string ParkingName = (ViewData["ParkingName"] == null) ? "" : ViewData["ParkingName"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
+    int ResultLen = -1;
+    if (Mode == "Edit")
+    {
+        if (Model != null)
+        {
+            lstData = Model.ToList();
+            ResultLen = lstData.Count;
+        }
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -9,8 +20,8 @@
         <div class="card-header bg-secondary text-white">
             調度停車場資訊設定
         </div>
-        @using (Html.BeginForm("TransParkingSetting", "StationAndParking", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
-        {
+
+        <form method="post" id="frmTransParkingSetting" action="@Url.Action("TransParkingSetting")" enctype="multipart/form-data">
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
                 <li class="list-group-item">
@@ -47,7 +58,7 @@
                             </div>
 
                             <div class="col-md-3">
-                                <input type="file" class="jfilestyle" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+                                <input type="file" class="jfilestyle" accept=".xlsx" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
 
                             </div>
                             <div class="col-md-2">
@@ -65,16 +76,16 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <Button type="button" id="btnSend" name="btnSend"  class="btn btn-primary">確定</Button>
-                                <Button type="button" id="btnReset" name="btnReset"  class="btn btn-outline-secondary">取消</Button>
+                                <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確定</Button>
+                                <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
                             </div>
                         </div>
                     </div>
                 </li>
             </ul>
-        }
-        </div>
-     
+        </form>
+    </div>
+
     <!--end card-->
 </div>
 <!--查詢介面結束-->
@@ -87,42 +98,83 @@
                 <th scope="col">ID</th>
                 <th scope="col">名稱</th>
                 <th scope="col">地址</th>
-                <th  data-hide="all" scope="col">緯度</th>
-                <th  data-hide="all" scope="col">經度</th>
+                <th data-hide="all" scope="col">緯度</th>
+                <th data-hide="all" scope="col">經度</th>
                 <th scope="col">地圖</th>
                 <th scope="col">修改</th>
-                <th  data-hide="all" scope="col">開放時間(起)</th>
-                <th  data-hide="all" scope="col">開放時間(迄)</th>
+                <th data-hide="all" scope="col">開放時間(起)</th>
+                <th data-hide="all" scope="col">開放時間(迄)</th>
             </tr>
         </thead>
+    
         <tbody>
-            <tr>
-                <td></td>
-                <td scope="row">1</td>
-                <td scope="col">名稱</td>
-                <td scope="col">地址</td>
-                <td scope="col">緯度</td>
-                <td scope="col">經度</td>
-                <td scope="col">
-                    <a onclick="detailMap(data.value)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
-                            <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
-                            <g transform="translate(6.135)">
-                                <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
-                                <g transform="translate(0.004)">
-                                    <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
-                                    <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
-                                </g>
-                            </g>
-                        </svg>
-                    </a>
+            @{
+                if (ResultLen == 0)
+                {
+                    <tr>
+                        <td colspan="10">查無結果</td>
+                    </tr>
+                }
+                else
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].ParkingID)" id="PK_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingID)" /></td>
+                            <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)"  class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].ParkingAddress<input type="text" name="ParkingAddress_@(lstData[i].ParkingID)" id="ParkingAddress_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].Latitude<input type="text" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].Longitude<input type="text" name="Longitude_@(lstData[i].ParkingID)" id="Longitude_@(lstData[i].ParkingID)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
+                            <td scope="col">
+                                <a onclick="detailMap(@lstData[i].Latitude,@lstData[i].Longitude)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
+                                        <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
+                                        <g transform="translate(6.135)">
+                                            <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
+                                            <g transform="translate(0.004)">
+                                                <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
+                                                <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </a>
 
-                </td>
-                <td scope="col">修改</td>
-                <td  scope="col">開放時間(起)</td>
-                <td  scope="col">開放時間(迄)</td>
-            </tr>
+                            </td>
+                            <td scope="col">
+                                <Button type="button" id="btnEdit_@(lstData[i].ParkingID)" name="btnEdit_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].ParkingID)');>修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].ParkingID)" name="btnSave_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].ParkingID)');>儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].ParkingID)" name="btnReset_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].ParkingID)');>取消</Button>
+                            </td>
+                            <td scope="col">
+                                @lstData[i].OpenTime.ToString("yyyy-MM-dd")
+                               
+                                    <div class="custom-datepicker">
+                                        <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkingID)" name="OpenTime_@(lstData[i].ParkingID)" value="@lstData[i].OpenTime.ToString("yyyy-MM-dd HH:mm")" readonly="false"  style="display:none">
+                                     
+                                    </div>
+                               
+                            </td>
+                            <td scope="col">
+                                @lstData[i].CloseTime.ToString("yyyy-MM-dd")
+                                                        <div class="custom-datepicker">
+                                                            <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkingID)" name="CloseTime_@(lstData[i].ParkingID)" value="@lstData[i].CloseTime.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                                        </div>
+                                                    </td>
+                        </tr>
+                    }
+                }
+            }
         </tbody>
     </table>
 </div>
 <!--輸出表格結束-->
+<!--javascript 初始-->
+<script>
+    var ParkingName = '@ParkingName';
+    var Mode = '@Mode';
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var IsShowMessage = '@((ViewData["IsShowMessage"]==null)?"": ViewData["IsShowMessage"].ToString())';
+    var ResultDataLen = '@(ResultLen)';
+</script>
