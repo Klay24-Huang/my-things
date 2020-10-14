@@ -122,6 +122,7 @@
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="SP\Output\Rent\SPOutput_GetCarStatusBeforeOpenDoorFinish.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />

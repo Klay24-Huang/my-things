@@ -228,6 +228,7 @@
     <Compile Include="Controllers\WalletHistoryController.cs" />
     <Compile Include="Controllers\WalletPayTransactionController.cs" />
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -322,6 +323,7 @@
     <Compile Include="Models\Param\Input\IAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Input\IAPI_WallHistory.cs" />
     <Compile Include="Models\Param\Input\IAP_OrderDetail.cs" />
@@ -371,6 +373,7 @@
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
