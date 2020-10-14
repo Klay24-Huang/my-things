@@ -221,7 +221,8 @@ namespace WebAPI.Controllers
                             Seat = lstData[0].Seat,
                             Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                             WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
-                            HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H
+                            HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
+                            CarOfArea = lstData[0].CarOfArea
                         });
                         lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                         if (DataLen > 1)
@@ -252,7 +253,8 @@ namespace WebAPI.Controllers
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price/10 : lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H/10 : lstData[i].PRICE_H
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H/10 : lstData[i].PRICE_H,
+                                        CarOfArea = lstData[i].CarOfArea
                                     };
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
@@ -293,7 +295,8 @@ namespace WebAPI.Controllers
                                         Seat = lstData[i].Seat,
                                         Bill = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
-                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H
+                                        HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
+                                        CarOfArea = lstData[i].CarOfArea
                                     });
                                 }
                             }
