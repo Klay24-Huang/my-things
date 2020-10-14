@@ -51,6 +51,7 @@
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangePWD.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
     <Compile Include="SP\BE\Output\SPOutput_Login.cs" />
     <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />

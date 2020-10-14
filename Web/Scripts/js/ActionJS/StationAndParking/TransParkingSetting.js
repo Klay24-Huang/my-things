@@ -41,6 +41,7 @@ $(document).ready(function () {
         init();
     });
     $("#btnSend").on("click", function () {
+        ShowLoading("資料匯入中"); 
         $("#frmTransParkingSetting").submit();
     });
     $("#btnReset").on("click", function () {
@@ -55,7 +56,15 @@ $(document).ready(function () {
         $("#panelResult").show();
         $('table').footable();
     }
-   
+    if (Mode == "Add") {
+        if (errorLine == "ok") {
+            ShowSuccessMessage("匯入成功");
+        } else {
+            if (errorMsg != "") {
+                ShowFailMessage(errMsg);
+            }
+        }
+    }
 
 });
 function DoReset(Id) {

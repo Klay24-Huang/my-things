@@ -18,14 +18,21 @@ namespace Web.Models.Enum
             /// 登入
             /// </summary>
             Login,
+            /// <summary>
+            /// 匯入調度停車場
+            /// </summary>
+            InsTransParking,
         }
         public string GetSPName(ObjType.SPType type)
         {
             string SPName = "";
             switch (type)
             {
-                case SPType.Login:  //寫入API呼叫LOG進資料庫
+                case SPType.Login: 
                     SPName = "usp_Login_BE";
+                    break;
+                case SPType.InsTransParking:  
+                    SPName = "usp_BE_InsTransParking";
                     break;
             }
             return SPName;

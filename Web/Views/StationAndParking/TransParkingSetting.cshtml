@@ -58,7 +58,7 @@
                             </div>
 
                             <div class="col-md-3">
-                                <input type="file" class="jfilestyle" accept=".xlsx" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
 
                             </div>
                             <div class="col-md-2">
@@ -176,6 +176,6 @@
     var ParkingName = '@ParkingName';
     var Mode = '@Mode';
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-    var IsShowMessage = '@((ViewData["IsShowMessage"]==null)?"": ViewData["IsShowMessage"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
     var ResultDataLen = '@(ResultLen)';
 </script>
