@@ -128,23 +128,17 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-
                 List<ProjectAndCarTypeDataForMotor> lstData = new List<ProjectAndCarTypeDataForMotor>();
                 lstData = _repository.GetProjectOfMotorRent(apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-
-
                 if (flag)
                 {
-
                     if (lstData != null)
                     {
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
-                        {
-                           
+                        {                           
                             int isMin = 1;
-
                             lstTmpData.Add(new MotorProjectObj()
                             {
                                 CarBrend = lstData[0].CarBrend,
@@ -162,13 +156,13 @@ namespace WebAPI.Controllers
                                 BasePrice=lstData[0].BasePrice,
                                 MaxPrice=lstData[0].MaxPrice,
                                 PerMinutesPrice=lstData[0].PerMinutesPrice,
-                                CarOfArea = lstData[0].CarOfArea
+                                CarOfArea = lstData[0].CarOfArea,
+                                Content = lstData[0].Content
                             });
                             if (DataLen > 1)
                             {
                                 for (int i = 1; i < DataLen; i++)
-                                {
-                                   
+                                {                                   
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (MotorProjectObj proj)
                                     {
@@ -196,21 +190,18 @@ namespace WebAPI.Controllers
                                         BasePrice = lstData[i].BasePrice,
                                         MaxPrice = lstData[i].MaxPrice,
                                         PerMinutesPrice = lstData[i].PerMinutesPrice,
-                                        CarOfArea = lstData[i].CarOfArea
+                                        CarOfArea = lstData[i].CarOfArea,
+                                        Content = lstData[i].Content
                                     });
                                 }
                             }
                         }
-
-
-
                     }
                 }
                 outputApi = new OAPI_GetMotorProject()
                 {
                     GetMotorProjectObj = lstTmpData
                 };
-
             }
             #endregion
 

@@ -63,5 +63,9 @@ namespace Domain.TB
         /// 站別類型
         /// </summary>
         public string CarOfArea { get; set; }
+        /// <summary>
+        /// 其他備註
+        /// </summary>
+        public string Content { get; set; }
     }
 }

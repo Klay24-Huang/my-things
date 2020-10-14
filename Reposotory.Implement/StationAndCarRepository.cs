@@ -659,17 +659,19 @@ namespace Reposotory.Implement
 		           VW.CarTypeGroupCode AS CarType,
 		           VW.CarTypeName,
 		           VW.CarTypeImg AS CarTypePic,
-		           VW.OperatorICon AS OPERATOR,
+		           VW.OperatorICon AS Operator,
 		           VW.Score AS OperatorScore,
 		           VW.Seat,
 		           PriceByMinutes.[BaseMinutes],
 		           PriceByMinutes.[BaseMinutesPrice] AS BasePrice,
 		           PriceByMinutes.[Price] AS PerMinutesPrice,
 		           PriceByMinutes.[MaxPrice],
-		           Car.CarOfArea
+		           Car.CarOfArea,
+                   irs.Content
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             AND VW.StationID=Car.nowStationID
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
             INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID
             AND PriceByMinutes.use_flag=1
             WHERE Car.CarNo=@CarNo
