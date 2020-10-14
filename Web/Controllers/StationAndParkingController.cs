@@ -1,5 +1,7 @@
 ﻿using Domain.TB.BackEnd;
 using Microsoft.SqlServer.Server;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using Reposotory.Implement;
 using Reposotory.Implement.BackEnd;
 using System;
@@ -45,6 +47,7 @@ namespace Web.Controllers
         public ActionResult TransParkingSetting(string ddlObj,string ParkingName, HttpPostedFileBase fileImport)
         {
             string Mode = ddlObj;
+            string errorLine = "";
             List<BE_ParkingData> lstPark = null;
             ViewData["Mode"] = Mode;
             ViewData["ParkingName"] = ParkingName;
@@ -57,9 +60,27 @@ namespace Web.Controllers
             }
             else
             {
-                if (fileImport != null)
+                if (fileImport.ContentLength > 0)
                 {
-
+                    string fileName = string.Concat(new string[]{
+                    "TransParkingImport_",
+                    ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                    "_",
+                    DateTime.Now.ToString("yyyyMMddHHmmss"),
+                    ".xlsx"
+                    });
+                    DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/TransParkingImport"));
+                    if (!di.Exists)
+                    {
+                        di.Create();
+                    }
+                    string path = Path.Combine(Server.MapPath("~/Content/upload/TransParkingImport"), fileName);
+                    fileImport.SaveAs(path);
+                    IWorkbook workBook = new XSSFWorkbook(path);
+                    ISheet sheet = workBook.GetSheetAt(0);
+                    int sheetLen = sheet.LastRowNum;
+                    string[] field = { "停車場名稱","地址","經度","緯度","開放時間(起)","開放時間(迄)"};
+                    int fieldLen = field.Length;
                 }
             }
 
