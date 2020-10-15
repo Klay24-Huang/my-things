@@ -49,7 +49,16 @@
     //}
     SetStation($("#StationID"), $("#StationName"));
     SetCar($("#CarNo"))
-
+  
+    var hasData = parseInt($("#len").val());
+    if (hasData > 0) {
+        $('.table').footable({
+            "paging": {
+                "limit": 3,
+                "size": 20
+            }
+        });
+    }
     $("#btnSearch").on("click", function () {
         ShowLoading("資料處理中...");
         var flag = true;
@@ -82,4 +91,109 @@
         }
         return false;
     })
+
+
 });
+function SendMotoCmd(CID, deviceToken, Action) {
+    ShowLoading("發送命令…"); 
+    var Account = $("#Account").val();
+    var obj = new Object();
+    obj.UserId = Account;
+    obj.CmdType = Action;
+    obj.deviceToken = deviceToken;
+    obj.CID = CID;
+
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + "SendMotorCMD";
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    window.location.reload();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "發送機車命令發生錯誤",
+                icon: 'error'
+            });
+        }
+
+    });
+}
+function SendCarCmd(CID, deviceToken, Action, IsCens) {
+    ShowLoading("發送命令…"); 
+    var Account = $("#Account").val();
+    var obj = new Object();
+    obj.UserId = Account;
+    obj.CmdType = Action;
+    obj.deviceToken = deviceToken;
+    obj.CID = CID;
+    obj.IsCens = IsCens;
+
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + "SendCarCMD";
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    window.location.reload();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "發送汽車命令發生錯誤",
+                icon: 'error'
+            });
+        }
+
+    });
+}

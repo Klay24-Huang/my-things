@@ -50,6 +50,10 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string CID { set; get; }
         /// <summary>
+        /// 遠傳車機編號
+        /// </summary>
+        public string deviceToken { set; get; }
+        /// <summary>
         /// 是否為興聯車機
         /// <para>0:否</para>
         /// <para>1:是</para>

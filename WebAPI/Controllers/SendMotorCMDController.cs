@@ -38,14 +38,14 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "SendCarCMDController";
+            string funName = "SendMotorCMDController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            string CID = "B7EB";
-            string CENSCID = "90001";
+         
             CommonFunc baseVerify = new CommonFunc();
             Token token = null;
-            string deviceToken = "a6iucnGUcjtwUCxxJ32s";
+            string CID = "";
+            string deviceToken = "";
             IAPI_SendMotorCMD apiInput = null;
             OAPI_Base outputApi = null;
             int CarMachineType = 0;
@@ -72,6 +72,23 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR900";
                 }
+                else
+                {
+                    CID = apiInput.CID;
+                }
+                if (flag)
+                {
+                    if (string.IsNullOrWhiteSpace(apiInput.deviceToken))
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
+                    else
+                    {
+                        deviceToken = apiInput.deviceToken;
+                    }
+                }
+               
                 if (flag)
                 {
                     if(apiInput.CmdType==0 && string.IsNullOrWhiteSpace(apiInput.BLE_Code))
