@@ -67,5 +67,13 @@ namespace Domain.TB
         /// 其他備註
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 剩餘電量
+        /// </summary>
+        public float Power { set; get; }
+        /// <summary>
+        /// 剩餘里程
+        /// </summary>
+        public float RemainingMileage { set; get; }
     }
 }

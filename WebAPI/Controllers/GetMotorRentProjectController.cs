@@ -157,7 +157,9 @@ namespace WebAPI.Controllers
                                 MaxPrice=lstData[0].MaxPrice,
                                 PerMinutesPrice=lstData[0].PerMinutesPrice,
                                 CarOfArea = lstData[0].CarOfArea,
-                                Content = lstData[0].Content
+                                Content = lstData[0].Content,
+                                Power = lstData[0].Power,
+                                RemainingMileage = lstData[0].RemainingMileage
                             });
                             if (DataLen > 1)
                             {
@@ -191,7 +193,9 @@ namespace WebAPI.Controllers
                                         MaxPrice = lstData[i].MaxPrice,
                                         PerMinutesPrice = lstData[i].PerMinutesPrice,
                                         CarOfArea = lstData[i].CarOfArea,
-                                        Content = lstData[i].Content
+                                        Content = lstData[i].Content,
+                                        Power = lstData[i].Power,
+                                        RemainingMileage = lstData[i].RemainingMileage
                                     });
                                 }
                             }

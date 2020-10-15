@@ -667,10 +667,13 @@ namespace Reposotory.Implement
 		           PriceByMinutes.[Price] AS PerMinutesPrice,
 		           PriceByMinutes.[MaxPrice],
 		           Car.CarOfArea,
-                   irs.Content
+                   irs.Content,
+				   cs.device3TBA AS Power,
+				   ISNULL(cs.deviceRDistance,'') AS RemainingMileage
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             AND VW.StationID=Car.nowStationID
+            INNER JOIN TB_CarStatus AS cs ON cs.CarNo = Car.CarNo
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
             INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID
             AND PriceByMinutes.use_flag=1
