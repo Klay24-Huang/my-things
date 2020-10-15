@@ -585,29 +585,28 @@ namespace Reposotory.Implement
             //SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
             //SQL += "ORDER BY PROJID ASC ";
             #endregion
-            string SQL =
-                @"SELECT VW.PROJID,
-                       VW.PRONAME,
-                       VW.Price,
-                       VW.PRICE_H,
-                       VW.CarBrend,
-                       VW.CarTypeGroupCode AS CarType,
-                       VW.CarTypeName,
-                       VW.CarTypeImg AS CarTypePic,
-                       VW.OperatorICon AS Operator,
-                       VW.Score AS OperatorScore,
-                       VW.Seat,
-                       VW.PayMode,
-                       irs.Content,
-                       Car.CarOfArea
-                FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
-                INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
-                INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
-                AND VW.StationID=Car.nowStationID
-                WHERE Car.CarNo = @CarNo
-                  AND SPCLOCK='Z'
-                  AND VW.use_flag=1
-                ORDER BY PROJID ASC";
+            string SQL = @"
+            SELECT VW.PROJID,
+                   VW.PRONAME,
+                   VW.Price,
+                   VW.PRICE_H,
+                   VW.CarBrend,
+                   VW.CarTypeGroupCode AS CarType,
+                   VW.CarTypeName,
+                   VW.CarTypeImg AS CarTypePic,
+                   VW.OperatorICon AS Operator,
+                   VW.Score AS OperatorScore,
+                   VW.Seat,
+                   VW.PayMode,
+                   irs.Content,
+                   REPLACE([PRONAME],'路邊汽車推廣專案','') As CarOfArea
+            FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
+            INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
+            WHERE Car.CarNo = @CarNo
+              AND SPCLOCK='Z'
+              AND VW.use_flag=1
+            ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
@@ -670,13 +669,15 @@ namespace Reposotory.Implement
                    irs.Content,
 				   cs.device3TBA AS Power,
 				   ISNULL(cs.deviceRDistance,'') AS RemainingMileage
+		           REPLACE([PRONAME],'10載便利','') AS CarOfArea,
+                   irs.Content
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             AND VW.StationID=Car.nowStationID
             INNER JOIN TB_CarStatus AS cs ON cs.CarNo = Car.CarNo
+            INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
-            INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID
-            AND PriceByMinutes.use_flag=1
+            INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1
             WHERE Car.CarNo=@CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1

@@ -27,14 +27,25 @@
             ControllerStrName = "帳號設定";
             ActionStrName = "修改密碼";
             break;
+        #endregion
+        #region 車輛管理
+        case "CarDashBoard":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛中控台";
+            break;
+        case "CarSetting":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "保有車輛設定";
+            break;
             #endregion
+
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
     if (Session["User"] == null)
     {
         Response.Redirect("~/Home/Login");
     }
- }
+    }
 <!DOCTYPE html>
 <html lang="zh-tw">
 <head>
@@ -45,12 +56,14 @@
     <link rel="stylesheet" href="~/Content/css/bootstrap.css">
     <link rel="stylesheet" href="~/Content/css/flatpickr.min.css">
     <link rel="stylesheet" href="~/Content/css/jquery-filestyle.min.css">
+    <link rel="stylesheet" href="~/Content/css/web-font.css">
     <link rel="stylesheet" href="~/Content/css/style.css">
     <link rel="stylesheet" href="~/Content/css/jquery-ui.css">
     @*<link rel="stylesheet" href="~/Content/css/jquery.autocomplete.css">*@
     <link rel="stylesheet" href="~/Content/css/bs_autocomplete_fix.css">
     <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
+    <link rel="stylesheet" href="~/Scripts/plugin/footable-bootstrap/css/footable.bootstrap.css" />
     <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
     @switch (actionName)
     {
@@ -297,7 +310,9 @@
     <script src="~/Scripts/js/jquery-filestyle.js"></script>
     <script src="~/Scripts/js/flatpickr.js"></script>
     <script src="~/Scripts/js/jquery.validate.js"></script>
-    <script src="~/Scripts/js/footable/footable.all.min.js"></script>
+    <script src="~/Scripts/js/moment-with-locales.min.js"></script>
+    @*<script src="~/Scripts/js/footable/footable.all.min.js"></script>*@
+    <script src="~/Scripts/plugin/footable-bootstrap/js/footable.min.js"></script>
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
     <script src="~/Scripts/js/CommonFunc.js"></script>
     @{

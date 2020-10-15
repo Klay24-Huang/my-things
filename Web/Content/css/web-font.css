@@ -1,0 +1,97 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon.eot?dqgcig');
+  src:  url('../fonts/icomoon.eot?dqgcig#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?dqgcig') format('truetype'),
+    url('../fonts/icomoon.woff?dqgcig') format('woff'),
+    url('../fonts/icomoon.svg?dqgcig#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1.4;
+  color: #9fa4ac;
+  font-size: 1.5rem;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-1:before {
+  content: "\e900";
+  color: inherit;
+}
+.icon-2:before {
+  content: "\e901";
+  color: inherit;
+}
+.icon-3:before {
+  content: "\e902";
+  color: inherit;
+}
+.icon-4:before {
+  content: "\e903";
+  color: inherit;
+}
+.icon-5:before {
+  content: "\e904";
+  color: inherit;
+}
+.icon-6:before {
+  content: "\e905";
+  color: inherit;
+}
+.icon-7:before {
+  content: "\e906";
+  color: inherit;
+}
+.icon-8:before {
+  content: "\e907";
+  color: inherit;
+}
+.icon-9:before {
+  content: "\e908";
+  color: inherit;
+}
+.icon-10:before {
+  content: "\e909";
+  color: inherit;
+}
+.icon-11:before {
+  content: "\e90a";
+  color: inherit;
+}
+.icon-12:before {
+  content: "\e90b";
+  color: inherit;
+}
+.icon-13:before {
+  content: "\e90c";
+  color: inherit;
+}
+.icon-14:before {
+  content: "\e90d";
+  color: inherit;
+}
+.icon-15:before {
+  content: "\e90e";
+  color: inherit;
+}
+.icon-16:before {
+  content: "\e90f";
+  color: inherit;
+}
+.icon-17:before {
+  content: "\e910";
+  color: inherit;
+}

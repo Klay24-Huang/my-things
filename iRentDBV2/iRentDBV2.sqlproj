@@ -241,6 +241,7 @@
     <Build Include="dbo\Stored Procedures\usp_GetStationCarTypeOfMutiStation.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleTransParking.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsTransParking.sql" />
+    <Build Include="dbo\Views\VW_BE_GetCarDashBoardData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

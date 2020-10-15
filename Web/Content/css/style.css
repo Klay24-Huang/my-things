@@ -15,6 +15,14 @@ main {
   background: #adb5bd;
 }
 
+.bg-cyan {
+  background: cyan;
+}
+
+.text-cyan {
+  color: cyan;
+}
+
 header {
   height: 80px;
 }
@@ -130,5 +138,47 @@ span.focus-jfilestyle {
 #map {
   width: 100%;
   height: 80vh;
+}
+
+.login_warp {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.login_logo {
+  width: 80%;
+  margin: 30px auto 50px auto;
+}
+
+.logon_btn {
+  border-radius: calc(1.5em + 0.75rem - 2px);
+}
+
+.holiday .form-check {
+  width: 31%;
+  text-align: center;
+  padding-left: 0;
+  border: 1px solid #aaa;
+  padding-bottom: 10px;
+}
+
+.holiday .form-check input {
+  position: static;
+  margin: 0 auto;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .holiday {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .holiday .form-check {
+    width: 20%;
+  }
 }
 /*# sourceMappingURL=style.css.map */

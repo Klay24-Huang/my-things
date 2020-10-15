@@ -21,7 +21,7 @@ namespace Web.Models.Params.Search.Input
         /// <para>1:僅顯示有回應</para>
         /// <para>0:僅顯示無回應</para>
         /// </summary>
-        public string ShowType { get; set; }
+        public int ShowType { get; set; }
         /// <summary>
         /// 篩選條件
         /// <para>0:低電量機車(3TBA)</para>

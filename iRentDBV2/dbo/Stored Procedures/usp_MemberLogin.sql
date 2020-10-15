@@ -112,7 +112,7 @@ SET @DeviceID   =ISNULL(@DeviceID,'');
 				,Case When [ID_1]=1 And [ID_2] =1 Then 1 Else 0 End ID_pic
 				,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then 1 Else 0 End DD_pic
 				,Case When [MotorDriver_1]=1 And [MotorDriver_1]=1 Then 1 Else 0 End MOTOR_pic
-				,[Self_1] As AA_pic, [Law_Agent] As F01_pic
+				,ISNULL([Self_1],0) As AA_pic, ISNULL([Law_Agent],0) As F01_pic
 			FROM TB_MemberData
 			Left Join [TB_Credentials] on [TB_Credentials].IDNO=TB_MemberData.MEMIDNO
 			WHERE MEMIDNO=@MEMIDNO AND MEMPWD=@PWD;

@@ -30,7 +30,7 @@ namespace Reposotory.Implement
             SQL += " ,Case When [ID_1]=1 And [ID_2] =1 Then 1 Else 0 End ID_pic ";
             SQL += " ,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then 1 Else 0 End DD_pic ";
             SQL += " ,Case When [MotorDriver_1]=1 And [MotorDriver_1]=1 Then 1 Else 0 End MOTOR_pic ";
-            SQL += " ,[Self_1] As AA_pic ,[Law_Agent] As F01_pic";
+            SQL += " ,ISNULL([Self_1],0) As AA_pic ,ISNULL([Law_Agent],0) As F01_pic";
             SQL += " FROM TB_MemberData WITH(NOLOCK) ";
             SQL += " Left Join [TB_Credentials] on [TB_Credentials].IDNO=TB_MemberData.MEMIDNO ";
             SqlParameter[] para = new SqlParameter[2];

@@ -94,7 +94,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 		 IF @Error=0
 		 BEGIN
 		 	SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_ParkingData WHERE ParkingLat=@Longitude AND ParkingLng=@Latitude;
+			SELECT @hasData=COUNT(1) FROM TB_ParkingData WHERE ParkingLat=@Latitude AND ParkingLng=@Longitude;
 			IF @hasData=1
 			BEGIN
 				SET @Error=1;
