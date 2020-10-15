@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
             string CENSCID = "90001";
             CommonFunc baseVerify = new CommonFunc();
             Token token = null;
-            string deviceToken = "pVYy1g9bxZoI2PHD1AgC";
+            string deviceToken = "";
            IAPI_SendCarCMD apiInput = null;
             OAPI_Base outputApi = null;
             int CarMachineType = 0;
@@ -77,9 +77,11 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
+                    CID = apiInput.CID;
                     if (apiInput.CID.Length == 5)
                     {
                         CarMachineType = 1;
+                        CENSCID = CID;
                     }
                 }
                 if (flag)
@@ -88,6 +90,22 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR900";
+                    }
+                }
+                if (flag)
+                {
+                    if (CarMachineType == 0)
+                    {
+
+                        if (string.IsNullOrWhiteSpace(apiInput.deviceToken))
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                        }
+                        else
+                        {
+                            deviceToken = apiInput.deviceToken;
+                        }
                     }
                 }
 

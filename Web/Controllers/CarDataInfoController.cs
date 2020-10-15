@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Domain.TB.BackEnd;
+using Reposotory.Implement;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Web.Models.Params.Search.Input;
 
 namespace Web.Controllers
 {
@@ -11,10 +15,11 @@ namespace Web.Controllers
     /// </summary>
     public class CarDataInfoController : Controller
     {
-       /// <summary>
-       /// 車輛中控台
-       /// </summary>
-       /// <returns></returns>
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        /// <summary>
+        /// 車輛中控台
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CarDashBoard()
         {
             return View();
@@ -22,11 +27,20 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarDashBoard(FormCollection collection)
         {
+            Input_CarDashBoard QueryData = null;
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarDashBoardData> lstData = new List<BE_CarDashBoardData>();
             if (collection["queryData"] != null)
             {
+                ViewData["QueryData"] = collection["queryData"];
+                QueryData = Newtonsoft.Json.JsonConvert.DeserializeObject<Input_CarDashBoard>(collection["queryData"].ToString());
+                if (QueryData != null)
+                {
+                    lstData = carStatusCommon.GetDashBoard(QueryData.CarNo, QueryData.StationID, QueryData.ShowType, QueryData.Terms);
+                }
 
             }
-            return View();
+            return View(lstData);
         }
         /// <summary>
         /// 保有車輛設定

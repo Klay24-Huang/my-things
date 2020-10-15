@@ -28,6 +28,10 @@ namespace WebAPI.Models.Param.Input
         /// 車機編號
         /// </summary>
         public string CID { set; get; }
+        /// <summary>
+        /// 遠傳車機編號
+        /// </summary>
+        public string deviceToken { set; get; }
         public string BLE_Code { set; get; }
         /// <summary>
         /// 操作者

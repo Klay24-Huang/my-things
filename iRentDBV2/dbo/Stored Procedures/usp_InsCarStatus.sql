@@ -93,7 +93,7 @@ SET @IsSystem=0;
 SET @hasData=0;
 SET @CarNo='';
 SET @MachineNo    =ISNULL (@MachineNo    ,'');
-
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		BEGIN TRY
 		  IF @MachineNo='' 
 		  BEGIN
@@ -112,10 +112,12 @@ SET @MachineNo    =ISNULL (@MachineNo    ,'');
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
 										,[LockStatus],[IndoorLightStatus],[SecurityStatus],[Speed],[Volt]
 										,[Latitude],[Longitude],[Millage],[extDeviceStatus2],[extDeviceData3],[extDeviceStatus1]
-								)VALUES(@CarNo,@MachineNo,1,@AccON,@GPSStatus,@GPSTime
+										,UPDTime
+								)VALUES(@CarNo,@MachineNo,0,@AccON,@GPSStatus,@GPSTime
 										,@OBDStatus,@GPRSStatus,@PowON,@CentralLock,@DoorStatus
 										,@LockStatus,@LightStatus,@SecurityStatus,@SPEED,@Volt
 										,@Lat,@Lng,@Milage,@iButton,@iButtonKey,@OrderStatus
+										,@NowTime
 								)
 			END
 			ELSE
@@ -133,7 +135,7 @@ SET @MachineNo    =ISNULL (@MachineNo    ,'');
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
 										,[LockStatus],[IndoorLightStatus],[SecurityStatus],[Speed],[Volt]
 										,[Latitude],[Longitude],[Millage],[extDeviceStatus2],[extDeviceData3],[extDeviceStatus1]
-								)VALUES(@MachineNo,1,@AccON,@GPSStatus,@GPSTime
+								)VALUES(@MachineNo,0,@AccON,@GPSStatus,@GPSTime
 										,@OBDStatus,@GPRSStatus,@PowON,@CentralLock,@DoorStatus
 										,@LockStatus,@LightStatus,@SecurityStatus,@SPEED,@Volt
 										,@Lat,@Lng,@Milage,@iButton,@iButtonKey,@OrderStatus
