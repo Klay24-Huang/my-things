@@ -273,7 +273,11 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 特約停車場處理
                 /// </summary>
-                BE_HandleTransParking
+                BE_HandleTransParking,
+                /// <summary>
+                /// 保有車輛處理
+                /// </summary>
+                BE_HandleCarSetting,
             #endregion
 
         }
@@ -493,6 +497,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleTransParking:
                     SPName = "usp_BE_HandleTransParking";
+                    break;
+                case SPType.BE_HandleCarSetting:
+                    SPName = "usp_BE_Handle_CarSetting";
                     break;
             #endregion
             }

@@ -55,6 +55,7 @@ namespace Web.Controllers
         {
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            ViewData["ShowType"] = ShowType;
             List<BE_CarSettingData> lstData = new List<BE_CarSettingData>();
             lstData = carStatusCommon.GetCarSettingData(CarNo, StationID, ShowType);
             return View(lstData);
