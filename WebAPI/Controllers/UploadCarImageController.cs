@@ -29,7 +29,8 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
+        //public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
+        public Dictionary<string, object> DoUploadCarImage(IAPI_UploadCarImage2 apiInput)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -44,13 +45,17 @@ namespace WebAPI.Controllers
             string funName = "UploadCarImageController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_UploadCarImage apiInput = null;
+            //IAPI_UploadCarImage apiInput = null;
+            //20201015 UPD BY JERRY 假資料供檢核使用
+            Dictionary<string, object> value = new Dictionary<string, object>() {
+                {"Key1", "AAAA"}
+            };
             OAPI_UploadCarImage outputApi = new OAPI_UploadCarImage();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-      
+
 
             Int16 APPKind = 2;
             string Contentjson = "";
@@ -66,14 +71,22 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_UploadCarImage>(Contentjson);
+                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_UploadCarImage>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                string restoreCarImg = apiInput.CarImage;
-                string tmpCarImg = apiInput.CarImage.Length.ToString();
+                //string restoreCarImg = apiInput.CarImage;
+                //string tmpCarImg = apiInput.CarImage.Length.ToString();
+                List<CarImages> restoreCarImg = apiInput.CarImages;
+                List<CarImages> tmpCarImg = new List<CarImages> {
+                    new CarImages() {
+                    CarType=0,
+                    CarImage=apiInput.CarImages.ToArray().Length.ToString()
+                } };
+                //20201015 暫存不需要存完整圖檔
+                apiInput.CarImages = tmpCarImg;
 
                 flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
-                apiInput.CarImage = restoreCarImg;
+                apiInput.CarImages = restoreCarImg;
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
                     flag = false;
@@ -104,28 +117,29 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-              if(apiInput.Mode<0 || apiInput.Mode > 1)
+                if (apiInput.Mode < 0 || apiInput.Mode > 1)
                 {
                     flag = false;
                     errCode = "ERR900";
                 }
             }
-            if (flag)
-            {
-                if (apiInput.CarType < 1 || apiInput.CarType > 8)
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
-            if (flag)
-            {
-                if (string.IsNullOrEmpty(apiInput.CarImage))
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
+            //20201015 多筆改在迴圈內檢核
+            //if (flag)
+            //{
+            //    if (apiInput.CarType < 1 || apiInput.CarType > 8)
+            //    {
+            //        flag = false;
+            //        errCode = "ERR900";
+            //    }
+            //}
+            //if (flag)
+            //{
+            //    if (string.IsNullOrEmpty(apiInput.CarImage))
+            //    {
+            //        flag = false;
+            //        errCode = "ERR900";
+            //    }
+            //}
             //不開放訪客
             if (flag)
             {
@@ -147,7 +161,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-               SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -158,27 +172,50 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                SPInput_UploadCarImage spInput = new SPInput_UploadCarImage()
-                {
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    Token = Access_Token,
-                     CarImage=apiInput.CarImage,
-                      CarImageType=Convert.ToInt16(apiInput.CarType),
-                       Mode= Convert.ToInt16(apiInput.Mode),
-                        OrderNo=tmpOrder
-                };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.UploadCarImage);
+                CarImages[] carImages = apiInput.CarImages.ToArray();
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_UploadCarImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadCarImage, SPOutput_Base>(connetStr);
                 List<CarImageData> CarImgDataLists = new List<CarImageData>();
                 DataSet ds = new DataSet();
-                flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                for (int i = 0; i < carImages.Length; i++)
+                {
+
+                    if (carImages[i].CarType < 1 || carImages[i].CarType > 8)
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                        break;
+                    }
+                    if (string.IsNullOrEmpty(carImages[i].CarImage))
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                        break;
+                    }
+                    SPInput_UploadCarImage spInput = new SPInput_UploadCarImage()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        Token = Access_Token,
+                        //CarImage=apiInput.CarImage,
+                        //CarImageType=Convert.ToInt16(apiInput.CarType),
+                        CarImage = carImages[i].CarImage,
+                        CarImageType = Convert.ToInt16(carImages[i].CarType),
+                        Mode = Convert.ToInt16(apiInput.Mode),
+                        OrderNo = tmpOrder
+                    };
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadCarImage);
+                    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    if (flag == false)
+                    {
+                        break;
+                    }
+                }
                 if (flag)
                 {
                     outputApi.CarImageObj = new List<CarImageData>();
-                    for(int i = 1; i < 9; i++)
+                    for (int i = 1; i < 9; i++)
                     {
                         CarImageData obj = new CarImageData()
                         {
@@ -186,9 +223,9 @@ namespace WebAPI.Controllers
                             HasUpload = 0
                         };
                         int Index = CarImgDataLists.FindIndex(delegate (CarImageData cardata)
-                          {
-                              return cardata.CarImageType == i;
-                          });
+                        {
+                            return cardata.CarImageType == i;
+                        });
                         if (Index > -1)
                         {
                             obj.HasUpload = 1;
@@ -198,7 +235,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            
+
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {
