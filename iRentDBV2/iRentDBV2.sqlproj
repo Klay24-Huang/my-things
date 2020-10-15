@@ -240,6 +240,8 @@
     <Build Include="dbo\Stored Procedures\usp_BE_InsTransParking.sql" />
     <Build Include="dbo\Views\VW_BE_GetCarDashBoardData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_Handle_CarSetting.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleCarDataSettingMemo.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_CarDataSettingSetOnline.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

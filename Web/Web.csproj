@@ -440,6 +440,7 @@
     <Content Include="Views\Home\ChangePWD.cshtml" />
     <Content Include="Views\CommonObj\GetCarHiddenList.cshtml" />
     <Content Include="Views\Manage\ArrearQuery.cshtml" />
+    <Content Include="Views\CarDataInfo\ViewCarDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

@@ -76,6 +76,18 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult CarDataSetting(string CarNo, string StationID, int ShowType = 3)
+        {
+            //BE_CarSettingData
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            ViewData["ShowType"] = ShowType;
+            return View();
+        }
+        public ActionResult ViewCarDetail(string CarNo)
+        {
+            return View();
+        }
         /// <summary>
         /// 匯入機車車輛檔
         /// </summary>

@@ -18,77 +18,80 @@
         <div class="card-header bg-secondary text-white">
             車輛資料管理
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            車輛查詢
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
-                         
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            服務據點
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
-                       
-                        </div>
-                    </div>
-                </div>
-            </li>
+        @using (Html.BeginForm("CarDataSetting", "CarDataInfo", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車輛查詢
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
 
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            顯示方式
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1">
-                                <label class="form-check-label" for="ShowUnRent">
-                                    可出租
-                                </label>
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0">
-                                <label class="form-check-label" for="ShowRent">
-                                    出租中
-                                </label>
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2">
-                                <label class="form-check-label" for="ShowWait">
-                                    待上線
-                                </label>
-                                <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3">
-                                <label class="form-check-label" for="ShowAll">
-                                    不限
-                                </label>
                             </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-                            <input type="hidden" id="len" name="len" value="@ResultLen" />
-                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                服務據點
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                顯示方式
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1">
+                                    <label class="form-check-label" for="ShowUnRent">
+                                        可出租
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0">
+                                    <label class="form-check-label" for="ShowRent">
+                                        出租中
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2">
+                                    <label class="form-check-label" for="ShowWait">
+                                        待上線
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3">
+                                    <label class="form-check-label" for="ShowAll">
+                                        不限
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" class="btn btn-primary">查詢</button>
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
