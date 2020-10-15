@@ -1,6 +1,15 @@
-﻿@{
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarSettingData>
+@{
     string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+    List<Domain.TB.BackEnd.BE_CarSettingData> lstData = new List<Domain.TB.BackEnd.BE_CarSettingData>();
+    int ResultLen = 0;
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+
+        ResultLen = lstData.Count();
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -19,7 +28,7 @@
                         </div>
                         <div class="col-md-3">
                             <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
+                         
                         </div>
                     </div>
                 </div>
@@ -32,7 +41,7 @@
                         </div>
                         <div class="col-md-3">
                             <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
+                       
                         </div>
                     </div>
                 </div>
@@ -72,6 +81,8 @@
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
                             <button type="submit" class="btn btn-primary">查詢</button>
+                            <input type="hidden" id="len" name="len" value="@ResultLen" />
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
                         </div>
                     </div>
                 </div>
@@ -100,18 +111,37 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td scope="row">1</td>
-                <td scope="col">車號</td>
-                <td scope="col">車型</td>
-                <td scope="col">營運狀態</td>
-                <td scope="col">CID</td>
-                <td scope="col">目前庫位</td>
-                <td scope="col">所屬庫位</td>
-                <td scope="col">備註</td>
-                <td scope="col">資訊</td>
-            </tr>
+            @if (ResultLen > 0)
+            {
+                <tr>
+                    <td></td>
+                    <td scope="row">1</td>
+                    <td scope="col">車號</td>
+                    <td scope="col">車型</td>
+                    <td scope="col">營運狀態</td>
+                    <td scope="col">CID</td>
+                    <td scope="col">目前庫位</td>
+                    <td scope="col">所屬庫位</td>
+                    <td scope="col">備註</td>
+                    <td scope="col">資訊</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                    <td scope="row">1</td>
+                    <td scope="col">車號</td>
+                    <td scope="col">車型</td>
+                    <td scope="col">營運狀態</td>
+                    <td scope="col">CID</td>
+                    <td scope="col">目前庫位</td>
+                    <td scope="col">所屬庫位</td>
+                    <td scope="col">備註</td>
+                    <td scope="col">資訊</td>
+                </tr>
+            }
+
         </tbody>
     </table>
 </div>

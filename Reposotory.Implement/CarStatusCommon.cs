@@ -116,7 +116,7 @@ namespace Reposotory.Implement
             return obj;
         }
         /// <summary>
-        /// 
+        ///後台使用
         /// </summary>
         /// <param name="CarNo"></param>
         /// <param name="StationID"></param>
@@ -267,6 +267,55 @@ namespace Reposotory.Implement
             lstDashBoard = GetObjList<BE_CarDashBoardData>(ref flag, ref lstError, SQL, para, term);
       
             return lstDashBoard;
+        }
+
+        public List<BE_CarSettingData> GetCarSettingData(string CarNo, string StationID, int ShowType)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarSettingData> lstCarSettingData = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT StationID,StationName,CarNo FROM VW_BE_GetCarDashBoardData ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(StationID))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " StationID=@StationID";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (ShowType < 3)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " NowStatus=@NowStatus";
+                para[nowCount] = new SqlParameter("@NowStatus", SqlDbType.Int);
+                para[nowCount].Value = ShowType;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+
+            lstCarSettingData = GetObjList<BE_CarSettingData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarSettingData;
+
         }
 
     }

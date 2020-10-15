@@ -50,6 +50,15 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult CarSetting(string CarNo,string StationID,int ShowType=3)
+        {
+            //BE_CarSettingData
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarSettingData> lstData = new List<BE_CarSettingData>();
+            lstData = carStatusCommon.GetCarSettingData(CarNo, StationID, ShowType);
+            return View(lstData);
+        }
         /// <summary>
         /// 車輛車機綁定
         /// </summary>
