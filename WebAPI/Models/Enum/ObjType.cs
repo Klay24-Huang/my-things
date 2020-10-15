@@ -227,6 +227,10 @@ namespace WebAPI.Models.Enum
             /// 取得會員資訊
             /// </summary>
             GetMemberInfo,
+            /// <summary>
+            /// 取得多據點專案
+            /// </summary>
+            GetStationCarTypeOfMutiStation,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -447,7 +451,9 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMemberInfo:
                     SPName = "usp_GetMemberInfo";
                     break;
-
+                case SPType.GetStationCarTypeOfMutiStation:
+                    SPName = "usp_GetStationCarTypeOfMutiStation";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";

@@ -93,6 +93,7 @@
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNotificationList.cs" />
+    <Compile Include="SP\Input\Project\SPInput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
+    <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />

@@ -160,7 +160,6 @@ namespace WebAPI.Controllers
                     {
                         iRentStations.ForEach(x => {
                             x.CarTypeName = x.CarBrend + " " + x.CarTypeName;
-                            x.Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, x.Price, x.PRICE_H, lstHoliday));
                         });
                         OAPI_Params = JsonConvert.DeserializeObject<List<OAPI_GetCarTypeParam>>(JsonConvert.SerializeObject(iRentStations));
                     }

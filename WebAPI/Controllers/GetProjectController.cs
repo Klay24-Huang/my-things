@@ -1,12 +1,17 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Project;
 using Domain.SP.Output;
+using Domain.SP.Output.Project;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
+using Newtonsoft.Json;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -24,6 +29,7 @@ namespace WebAPI.Controllers
     public class GetProjectController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private CommonFunc baseVerify { get; set; }
         [HttpPost]
         public Dictionary<string, object> DoGetProject(Dictionary<string, object> value)
         {
@@ -44,7 +50,7 @@ namespace WebAPI.Controllers
             OAPI_GetProject outputApi = null;
             List<GetProjectObj> lstTmpData = new List<GetProjectObj>();
             Token token = null;
-            CommonFunc baseVerify = new CommonFunc();
+            baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
             Int16 APPKind = 2;
@@ -160,34 +166,31 @@ namespace WebAPI.Controllers
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
                 List<StationAndProjectAndCarTypeData> lstData = new List<StationAndProjectAndCarTypeData>();
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
+                SPInput_GetStationCarTypeOfMutiStation spInput = new SPInput_GetStationCarTypeOfMutiStation()
+                {
+                    StationIDs = apiInput.StationID,
+                    SD = SDate,
+                    ED = EDate,
+                    CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
+                    LogID = LogID
+                };
+                List<SPOutput_GetStationCarTypeOfMutiStation> spList = new List<SPOutput_GetStationCarTypeOfMutiStation>();
+
                 if (apiInput.Mode == 1)
                 {
                     iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                    if (iRentStations != null)
+                    if(iRentStations != null && iRentStations.Count > 0)
                     {
-                        
-                        int len = iRentStations.Count;
-                        if (len > 0)
-                        {
-                            string iRentStationStr = "'"+iRentStations[0].StationID+"'";
-                            if (len > 1)
-                            {
-                                for (int i = 1; i < len; i++)
-                                {
-                                    iRentStationStr += string.Format(",'{0}'", iRentStations[i].StationID);
-                                }
-                            }
-                            lstData = _repository.GetStationCarTypeOfMutiStation(iRentStationStr, SDate, EDate, (string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", "")));
-                        }
+                        List<string> StationIDs = iRentStations.Select(x => x.StationID).ToList();
+                        spInput.StationIDs = String.Join(",", StationIDs);
                     }
                 }
-                else
-                {
 
-
-                    // AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                    lstData = _repository.GetStationCarTypeOfMutiStation("'"+apiInput.StationID+"'", SDate, EDate, (string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", "")));
-                }
+                spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
+                if (spList != null && spList.Count > 0)
+                    lstData = JsonConvert.DeserializeObject<List<StationAndProjectAndCarTypeData>>(JsonConvert.SerializeObject(spList));
 
                 if (flag)
                 {
@@ -328,6 +331,26 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
+        }
+
+        /// <summary>
+        /// GetStationCarTypeOfMutiStation
+        /// </summary>
+        /// <param name="spInput">spInput</param>
+        /// <param name="flag">flag</param>
+        /// <param name="lstError">lstError</param>
+        /// <param name="errCode">errCode</param>
+        /// <returns></returns>
+        private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput,ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
+        {
+            List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref re, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            return re;
         }
     }
 }

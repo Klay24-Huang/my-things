@@ -92,7 +92,7 @@ SET @hasData=0;
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC					
 						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE IF @IsMotor = 1 --機車
@@ -105,7 +105,7 @@ SET @hasData=0;
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC	
 						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE
