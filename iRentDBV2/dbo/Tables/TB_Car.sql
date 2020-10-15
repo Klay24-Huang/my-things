@@ -10,6 +10,7 @@
     [NowOrderNo][BIGINT] NOT NULL DEFAULT 0,
     [LastOrderNo][BIGINT] NOT NULL DEFAULT 0,
 	[available] [tinyint] NOT NULL DEFAULT 2,
+    [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT 'SYS',
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
 	[UPDTime] [datetime] NULL, 
     CONSTRAINT [PK_TB_Car] PRIMARY KEY ([CarNo]),

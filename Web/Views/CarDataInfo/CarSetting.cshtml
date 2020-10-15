@@ -4,6 +4,10 @@
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
     List<Domain.TB.BackEnd.BE_CarSettingData> lstData = new List<Domain.TB.BackEnd.BE_CarSettingData>();
     int ResultLen = 0;
+
+    int NowShowType = ((ViewData["ShowType"] == null) ? 3 : Convert.ToInt32(ViewData["ShowType"].ToString()));
+    string[] ShowType = { "", "", "", "" };
+    ShowType[NowShowType] = " checked";
     if (Model != null)
     {
         lstData = Model.ToList();
@@ -57,25 +61,25 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1" @ShowType[1]>
                                     <label class="form-check-label" for="ShowUnRent">
                                         可出租
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0" @ShowType[0]>
                                     <label class="form-check-label" for="ShowRent">
                                         出租中
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2" @ShowType[2]>
                                     <label class="form-check-label" for="ShowWait">
                                         待上線
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3" checked>
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3" @ShowType[3]>
                                     <label class="form-check-label" for="ShowAll">
                                         不限
                                     </label>
@@ -88,7 +92,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <button type="submit" class="btn btn-primary">查詢</button>
+                                <button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
                             </div>
@@ -125,7 +129,7 @@
                         <td scope="col">@(lstData[i].CarNo)</td>
                         <td scope="col">
                             @(string.Format("{0}({1})",lstData[i].StationName,lstData[i].StationID))
-                            <input type="text" name="Station_@(lstData[i].CarNo)" id="Station_@(lstData[i].CarNo)" value="@(string.Format("{0}({1})",lstData[i].StationName,lstData[i].StationID))" class="form-control" style="display:none" />
+                            <input type="text" name="Station_@(lstData[i].CarNo)" id="Station_@(lstData[i].CarNo)" value="@lstData[i].StationID" class="form-control" style="display:none" />
                         </td>
 
                         <td scope="col">

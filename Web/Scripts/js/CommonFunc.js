@@ -94,6 +94,35 @@ function SetStation(obj,showNameObj) {
     }
 
 }
+function SetStationNoShowName(obj) {
+    var StationList = localStorage.getItem("StationList");
+    if (CheckStorageIsNull(StationList)) {
+        StationList = JSON.parse(StationList)
+    }
+    if (StationList.length > 0) {
+
+        var Station = new Array();
+        var StationLen = StationList.length;
+        for (var i = 0; i < StationLen; i++) {
+            Station.push(StationList[i].StationName + "(" + StationList[i].StationID + ")");
+        }
+        obj.autocomplete({
+            source: Station,
+            minLength: 1,
+            matchCase: true,
+            select: function (event, ui) {
+                var data = ui.item.value.split("(");
+                var contactData = data[1].split(")");
+                obj.val(contactData[0]);
+
+           
+                return false;
+            }
+        });
+
+    }
+
+}
 /**
  * 車號autocomplete
  * @param {any} obj 觸發物件

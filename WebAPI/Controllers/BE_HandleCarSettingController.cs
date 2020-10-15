@@ -12,9 +12,13 @@ using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
+
 namespace WebAPI.Controllers
 {
-    public class BE_HandleTransParkingController : ApiController
+    /// <summary>
+    /// 更新保有車輛所屬據點
+    /// </summary>
+    public class BE_HandleCarSettingController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
@@ -35,10 +39,10 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_HandleTransParkingController";
+            string funName = "BE_HandleCarSettingController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_HandleTransParking apiInput = null;
+            IAPI_BE_HandleCarSetting apiInput = null;
             NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -47,43 +51,23 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
-            DateTime SD=DateTime.Now, ED=DateTime.Now;
+            DateTime SD = DateTime.Now, ED = DateTime.Now;
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleTransParking>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleCarSetting>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID,apiInput.ParkingAddress,apiInput.ParkingName,apiInput.OpenTime,apiInput.CloseTime,apiInput.UserID };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.StationId, apiInput.CarNo };
+                string[] errList = { "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
-                if(apiInput.Latitude<=0 || apiInput.Longitude <= 0)
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-                if (flag)
-                {
-                    flag = DateTime.TryParse(apiInput.OpenTime, out SD);
-                    if (flag == false)
-                    {
-                        errCode = "ERR900";
-                    }
-                    else
-                    {
-                        flag = DateTime.TryParse(apiInput.CloseTime, out ED);
-                        if (flag == false)
-                        {
-                            errCode = "ERR900";
-                        }
-                    }
-                }
+
 
             }
             #endregion
@@ -93,23 +77,18 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleTransParking);
-                SPInput_BE_HandleTransParking spInput = new SPInput_BE_HandleTransParking()
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleCarSetting);
+                SPInput_BE_HandleCarSetting spInput = new SPInput_BE_HandleCarSetting()
                 {
                     LogID = LogID,
-                     CloseTime=ED,
-                     OpenTime=SD,
-                      Latitude=apiInput.Latitude,
-                       Longitude=apiInput.Longitude,
-                        ParkingAddress=apiInput.ParkingAddress,
-                         ParkingID=apiInput.ParkingID,
-                          ParkingName=apiInput.ParkingName,
-                           UserID=apiInput.UserID
+                   CarNo=apiInput.CarNo.Replace(" ",""),
+                    StationID=apiInput.StationId.Replace(" ",""),
+                    UserID = apiInput.UserID
 
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_BE_HandleTransParking, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleTransParking, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_BE_HandleCarSetting, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleCarSetting, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
@@ -129,4 +108,3 @@ namespace WebAPI.Controllers
         }
     }
 }
-
