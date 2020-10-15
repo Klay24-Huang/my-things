@@ -16,6 +16,30 @@ function ShowLoading(message) {
         spinner: "cube-grid"
     });
 }
+function ShowSuccessMessage(message) {
+    swal({
+        title: 'SUCCESS',
+        text: message,
+        icon: 'success'
+    });
+}
+function ShowFailMessage(message) {
+    swal({
+        title: 'Fail',
+        text: message,
+        icon: 'error'
+    });
+}
+function ShowMessageAndReload(message,message2,site) {
+    swal({
+        title: 'SUCCESS',
+        text: message,
+        icon: 'success'
+    }).then(function (value) {
+        ShowLoading(message2)
+        window.location.href=site;
+    });
+}
 /**
  * 隱藏loading 
  */
@@ -120,3 +144,7 @@ function resetFileInput(file) {
     file.remove();
    // file.val("");
 }  
+
+function detailMap(lat, lng) {
+    window.open("http://maps.google.com.tw/maps?q=" + lng + "," + lat);
+}

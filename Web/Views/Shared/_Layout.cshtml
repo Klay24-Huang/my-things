@@ -309,16 +309,17 @@
                 break;
         }
     }
-    <script>
+<script>
         var jsHost = "@hostPath";
+
         $(".datePicker").flatpickr();
         $('.dateTimePicker').flatpickr(
             {
-                enableTime: true,
+        enableTime: true,
                 dateFormat: "Y-m-d H:i",
             }
         );
-    </script>
+</script>
     <script src="@Html.Raw(PageScriptName)"></script>
 </body>
 </html>

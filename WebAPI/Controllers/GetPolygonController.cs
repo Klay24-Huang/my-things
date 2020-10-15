@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
                     if (DataLen > 0)
                     {
                         outputApi = new OAPI_GetPolygon();
-                        outputApi.PolygonObj = new List<Models.Param.Output.PartOfParam.PolygonData>();
+                        //outputApi.PolygonObj = new List<Models.Param.Output.PartOfParam.PolygonData>();
                     }
                     for (int i = 0; i < DataLen; i++)
                     {
@@ -115,6 +115,7 @@ namespace WebAPI.Controllers
 
 
                         obj.PolygonObj = new string[tmpLonGroupLen];
+                        outputApi.PolygonObj = new string[tmpLonGroupLen];
                         for (int j = 0; j < tmpLonGroupLen; j++)
                         {
                             string tmpData = "";
@@ -149,10 +150,12 @@ namespace WebAPI.Controllers
                             tmpData += "))";
 
                             obj.PolygonObj[j] = tmpData;
+                            outputApi.PolygonObj[j] = tmpData;
                         }
 
                         //obj.PolygonObj = tmpData;
-                        outputApi.PolygonObj.Add(obj);
+                        //outputApi.PolygonObj.Add(obj);
+                        
                     }
                 }
             }

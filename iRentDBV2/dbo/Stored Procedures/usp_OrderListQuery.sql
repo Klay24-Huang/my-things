@@ -132,6 +132,7 @@ SET @Token    =ISNULL (@Token    ,'');
 			FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		 WHERE IDNO=@IDNO AND cancel_status=0
+		 AND car_mgt_status<16	--排除已還車的
 			ORDER BY start_time ASC 
 		 END
 		--寫入錯誤訊息

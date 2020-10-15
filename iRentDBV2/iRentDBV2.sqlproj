@@ -239,6 +239,8 @@
     <Build Include="dbo\Stored Procedures\usp_BE_ChangePWD.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMemberInfo.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetStationCarTypeOfMutiStation.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleTransParking.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsTransParking.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
