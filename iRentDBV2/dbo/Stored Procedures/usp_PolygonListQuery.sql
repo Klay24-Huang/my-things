@@ -92,7 +92,7 @@ SET @hasData=0;
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC					
 						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE IF @IsMotor = 1 --機車
@@ -105,7 +105,7 @@ SET @hasData=0;
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC	
 						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE
@@ -147,3 +147,18 @@ SET @hasData=0;
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_PolygonListQuery';
+
+GO
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eason', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_PolygonListQuery';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_PolygonListQuery';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_PolygonListQuery';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_PolygonListQuery';

@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.TB
+namespace Domain.SP.Output.Project
 {
-    /// <summary>
-    /// 取出專案、車型及金額
-    /// </summary>
-    public class ProjectAndCarTypeData
+    public class SPOutput_GetStationCarTypeOfMutiStation
     {
         /// <summary>
         /// 專案代碼
@@ -51,12 +48,29 @@ namespace Domain.TB
         /// 業者評分
         /// </summary>
         public Single OperatorScore { set; get; }
-     
+
         /// <summary>
         ///座位數
         /// </summary>
         public int Seat { set; get; }
-
+        public string StationID { set; get; }
+        /// <summary>
+        /// 地址
+        /// </summary>
+        public string ADDR { set; get; }
+        public string StationName { set; get; }
+        /// <summary>
+        /// 緯度
+        /// </summary>
+        public decimal Latitude { set; get; }
+        /// <summary>
+        /// 經度
+        /// </summary>
+        public decimal Longitude { set; get; }
+        /// <summary>
+        /// 其他說明
+        /// </summary>
+        public string Content { set; get; }
         /// <summary>
         /// 計費模式
         /// </summary>
@@ -65,9 +79,5 @@ namespace Domain.TB
         /// 站別類型
         /// </summary>
         public string CarOfArea { get; set; }
-        /// <summary>
-        /// 其他備註
-        /// </summary>
-        public string Content { get; set; }
     }
 }

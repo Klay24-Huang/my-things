@@ -160,7 +160,7 @@ SET @Token    =ISNULL (@Token    ,'');
 		 END
 		 IF @Error=0
 		 BEGIN
-			SELECT ImageType AS CarImageType, 1 AS CarImage FROM TB_CarImageTemp WHERE OrderNo=@OrderNo AND Mode=@Mode ORDER BY ImageType ASC;
+			SELECT ImageType AS CarImageType, 1 AS CarImage, HasUpload FROM TB_CarImageTemp WHERE OrderNo=@OrderNo AND Mode=@Mode ORDER BY ImageType ASC;
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

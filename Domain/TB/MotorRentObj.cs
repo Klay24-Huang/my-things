@@ -11,11 +11,33 @@ namespace Domain.TB
     /// </summary>
     public class MotorRentObj
     {
+        /// <summary>
+        /// 車號
+        /// </summary>
         public string CarNo { set; get; }
+        /// <summary>
+        /// 車型代碼 20201006 ADD BY ADAM
+        /// </summary>
+        public string CarType { set; get; }
+        /// <summary>
+        /// 車型
+        /// </summary>
         public string CarTypeName { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public string CarOfArea { set; get; }
+        /// <summary>
+        /// 專案名稱
+        /// </summary>
         public string ProjectName { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Rental { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Mileage { set; get; }
         /// <summary>
         /// 是否有安心服務
@@ -51,15 +73,29 @@ namespace Domain.TB
         /// 經度
         /// </summary>
         public decimal Longitude { set; get; }
-        
         /// <summary>
         /// 業者icon
         /// </summary>
         public string Operator { get; set; }
-
         /// <summary>
         /// 業者評分
         /// </summary>
         public float OperatorScore { get; set; }
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjID { get; set; }
+        /// <summary>
+        /// 基本分鐘數
+        /// </summary>
+        public int BaseMinutes { set; get; }
+        /// <summary>
+        /// 基本費
+        /// </summary>
+        public int BasePrice { set; get; }
+        /// <summary>
+        /// 每分鐘N元
+        /// </summary>
+        public Single PerMinutesPrice { set; get; }
     }
 }

@@ -14,10 +14,10 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 預計取車時間
         /// </summary>
-        public string SDate { set; get; }
+        public string SD { set; get; }
         /// <summary>
         /// 預計還車時間
         /// </summary>
-        public string EDate { set; get; }
+        public string ED { set; get; }
     }
 }

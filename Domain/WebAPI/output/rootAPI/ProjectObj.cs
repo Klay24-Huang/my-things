@@ -81,5 +81,14 @@ namespace Domain.WebAPI.output.rootAPI
         /// 假日每小時金額
         /// </summary>
         public int HolidayPerHour { set; get; }
+
+        /// <summary>
+        /// 站別類型
+        /// </summary>
+        public string CarOfArea { get; set; }
+        /// <summary>
+        /// 其他備註
+        /// </summary>
+        public string Content { get; set; }
     }
 }

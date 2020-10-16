@@ -1,11 +1,7 @@
 ﻿using Domain.MemberData;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -27,11 +23,16 @@ namespace Reposotory.Implement
             List<RegisterData> lstMember = null;
             RegisterData obj = null;
             int nowCount = 0;
-            string SQL = "  SELECT [MEMIDNO],[MEMPWD],[MEMCNAME],[MEMTEL],ISNULL([MEMBIRTH],'') AS [MEMBIRTH] ";
-            SQL += ",[MEMCITY] AS MEMAREAID,[MEMADDR],[MEMEMAIL],[CARDNO],[UNIMNO] ";
-            SQL += ",[MEMSENDCD],[CARRIERID],[NPOBAN],[HasCheckMobile],[NeedChangePWD] ";
-            SQL += ",[HasBindSocial],[IrFlag],[PayMode],[HasVaildEMail],[Audit],[RentType] ";
-                 SQL += " FROM TB_MemberData ";
+            string SQL = "SELECT [MEMIDNO],[MEMPWD],[MEMCNAME],[MEMTEL],ISNULL([MEMBIRTH],'') AS [MEMBIRTH] ";
+            SQL += " ,[MEMCITY] AS MEMAREAID,[MEMADDR],[MEMEMAIL],[CARDNO],[UNIMNO] ";
+            SQL += " ,[MEMSENDCD],[CARRIERID],[NPOBAN],[HasCheckMobile],[NeedChangePWD] ";
+            SQL += " ,[HasBindSocial],[IrFlag],[PayMode],[HasVaildEMail],[Audit],[RentType] ";
+            SQL += " ,Case When [ID_1]=1 And [ID_2] =1 Then 1 Else 0 End ID_pic ";
+            SQL += " ,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then 1 Else 0 End DD_pic ";
+            SQL += " ,Case When [MotorDriver_1]=1 And [MotorDriver_1]=1 Then 1 Else 0 End MOTOR_pic ";
+            SQL += " ,ISNULL([Self_1],0) As AA_pic ,ISNULL([Law_Agent],0) As F01_pic";
+            SQL += " FROM TB_MemberData WITH(NOLOCK) ";
+            SQL += " Left Join [TB_Credentials] on [TB_Credentials].IDNO=TB_MemberData.MEMIDNO ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (false==string.IsNullOrWhiteSpace(IDNO))
@@ -44,7 +45,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WITH(NOLOCK) WHERE " + term;
+                SQL += " WHERE " + term;
             }
      
             lstMember = GetObjList<RegisterData>(ref flag, ref lstError, SQL, para, term);

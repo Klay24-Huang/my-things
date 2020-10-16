@@ -182,6 +182,7 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+                    #endregion
                 }
                 if (flag)
                 {
@@ -198,8 +199,7 @@ namespace WebAPI.Controllers
                     SQLHelper<SPInput_OpenDoorFinish, SPOutput_Base> FinishHelp = new SQLHelper<SPInput_OpenDoorFinish, SPOutput_Base>(connetStr);
                     flag = FinishHelp.ExecuteSPNonQuery(spName, FinishInput, ref FinishOutput, ref lstError);
                     baseVerify.checkSQLResult(ref flag, ref FinishOutput, ref lstError, ref errCode);
-                }
-                #endregion
+                }                
             }
             #endregion
             #region 寫入錯誤Log

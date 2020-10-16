@@ -11,11 +11,33 @@ namespace Domain.TB
     /// </summary>
     public class AnyRentObj
     {
+        /// <summary>
+        /// 車號
+        /// </summary>
         public string CarNo { set; get; }
+        /// <summary>
+        /// 車型代碼 20201006 ADD BY ADAM
+        /// </summary>
+        public string CarType { set; get; }
+        /// <summary>
+        /// 車型
+        /// </summary>
         public string CarTypeName { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public string CarOfArea { set; get; }
+        /// <summary>
+        /// 專案名稱
+        /// </summary>
         public string ProjectName { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Rental { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Mileage { set; get; }
         /// <summary>
         /// 是否有安心服務
@@ -59,5 +81,9 @@ namespace Domain.TB
         /// 座位數
         /// </summary>
         public int Seat { get; set; }
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjID { get; set; }
     }
 }

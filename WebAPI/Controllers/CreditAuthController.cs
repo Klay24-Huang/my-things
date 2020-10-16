@@ -317,7 +317,7 @@ namespace WebAPI.Controllers
                                     {
                                         //寫入車機錯誤
                                     }
-                                    string  SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                                    string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
                                     SPOutput_Base PayOutput = new SPOutput_Base();
                                     SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
                                     flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);

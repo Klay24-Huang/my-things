@@ -454,6 +454,7 @@ namespace WebAPI.Controllers
                                                 }
                                             }
                                             #endregion
+                                            #endregion
                                         }
 
                                     }
@@ -498,8 +499,7 @@ namespace WebAPI.Controllers
                     }
 
                     #endregion
-                }
-                #endregion
+                }                
             }
             #endregion
 

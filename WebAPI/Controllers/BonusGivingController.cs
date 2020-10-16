@@ -134,7 +134,7 @@ namespace WebAPI.Controllers
             {
                 HiEasyRentAPI api = new HiEasyRentAPI();
                 WebAPIOutput_NPR370Save WebAPIOutput = null;
-                flag = api.NPR370Save(IDNO, apiInput.TargetID, apiInput.TransMins, ref WebAPIOutput);
+                flag = api.NPR370Save(IDNO, apiInput.TargetID, apiInput.TransMins, apiInput.GiftType, ref WebAPIOutput);
                 if (flag)
                 {
                     if (WebAPIOutput.Result)
