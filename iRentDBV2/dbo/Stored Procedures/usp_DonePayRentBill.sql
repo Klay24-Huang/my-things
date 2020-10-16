@@ -136,7 +136,6 @@ SET @ParkingSpace='';
 					   SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WHERE OrderNo=@OrderNo;
 					END
 
-					
 					--寫入歷程
 					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 					
@@ -150,6 +149,7 @@ SET @ParkingSpace='';
 					SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
 					WHERE order_number=@OrderNo;
 
+					--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
 					--更新個人訂單控制
 					IF @ProjType=4
 					BEGIN

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebAPI.Models.Param.Input
+namespace Domain.SP.Input.PolygonList
 {
-    public class IAPI_GetPolygon
+    public class SPInput_PolygonListQuery: SPInput_Base
     {
         /// <summary>
         /// 據點代碼
@@ -17,6 +18,5 @@ namespace WebAPI.Models.Param.Input
         /// <para>1:是</para>
         /// </summary>
         public int IsMotor { set; get; }
-
     }
 }

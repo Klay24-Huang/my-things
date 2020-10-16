@@ -1,9 +1,7 @@
 ﻿using Domain.Common;
 using Domain.MemberData;
 using Domain.SP.Input.Common;
-using Domain.SP.Output;
 using Domain.SP.Output.Common;
-using Domain.TB;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -12,7 +10,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 
@@ -53,17 +50,13 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
             if (flag)
             {
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog("not need input", ClientIP, funName, ref errCode, ref LogID);
-
-
             }
-
             #endregion
             #region 不支援訪客
             if (flag)
@@ -82,7 +75,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -107,7 +99,6 @@ namespace WebAPI.Controllers
                 };
             }
             #endregion
-
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {

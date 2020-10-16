@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
-namespace Domain.TB
+namespace WebAPI.Models.Param.Output.PartOfParam
 {
-    public class CarTypeData
+    public class OAPI_GetCarTypeParam
     {
         /// <summary>
         /// 車子品牌
@@ -33,8 +32,7 @@ namespace Domain.TB
         /// <summary>
         ///座位數
         /// </summary>
-        public int Seat { set; get; }
-        public int PRICE_H { set; get; }
+        public int Seat { set; get; }     
 
     }
 }

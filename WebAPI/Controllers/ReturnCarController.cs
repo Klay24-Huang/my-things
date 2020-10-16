@@ -439,7 +439,7 @@ namespace WebAPI.Controllers
             {
              
                 string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
-                string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
+                string[] tmpLatGroup = lstData[i].Latitude.Split('⊙');
                 int tmpLonGroupLen = tmpLonGroup.Length;
 
 

@@ -162,8 +162,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat";
-                   SQL +=" FROM  [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID ";
+            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstCar = GetObjList<AnyRentObj>(ref flag, ref lstError, SQL, para, term);
@@ -178,7 +180,6 @@ namespace Reposotory.Implement
         /// <returns></returns>
         public List<AnyRentObj> GetAllAnyRent(double lat, double lng, double radius)
         {
-
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
             if (lng > 0 && lat > 0 && radius > 0)
@@ -188,8 +189,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat";
-            SQL += " FROM  [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
+            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'路邊汽車推廣專案','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID ";
+            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -202,8 +205,6 @@ namespace Reposotory.Implement
                 }
             }
             string term = "";
-
-
 
             if (hasRange)
             {
@@ -278,9 +279,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude]";
-            SQL += " ,device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
-            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore";  // 2020.09.30 育誠 增加業者、業者評分
+            string SQL = "SELECT [CarNo],[CarTypeName] as CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
+            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";  
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -306,9 +308,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MotorRentObj> lstCar = null;
             int nowCount = 0;
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea,[PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo,[Latitude] ,[Longitude]";
-            SQL += " ,device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
-            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore"; // 2020.09.30 育誠 增加業者、業者評分
+            string SQL = "SELECT [CarNo],[CarTypeName] AS CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,REPLACE([PRONAME],'10載便利','') AS CarOfArea, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
+            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] "; 
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
 
             SqlParameter[] para = new SqlParameter[2];
@@ -322,8 +325,6 @@ namespace Reposotory.Implement
                 }
             }
             string term = "";
-
-
 
             if (hasRange)
             {
@@ -376,7 +377,20 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<CarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = " SELECT [CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,-1 AS Price FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup]  WITH(NOLOCK) ";
+            //string SQL = " SELECT [CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,-1 AS Price FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup]  WITH(NOLOCK) ";
+            string SQL = @"
+            SELECT v.CarBrend,
+                   v.CarTypeGroupCode AS CarType,
+                   v.CarTypeName,
+                   v.CarTypeImg AS CarTypePic,
+                   v.OperatorICon AS Operator,
+                   v.Score AS OperatorScore,
+                   v.Seat,
+                   v.Price,
+                   v.PRICE_H
+            FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] v WITH(NOLOCK)
+            ";
+
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(StationID) == false && string.IsNullOrWhiteSpace(StationID) == false)
@@ -395,7 +409,7 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE  CarTypeName<>'' ";
             }
-            SQL += " GROUP BY  [CarBrend],[CarTypeGroupCode],[CarTypeName],[CarTypeImg],OperatorICon ,Score,Seat";
+            SQL += " GROUP BY  [CarBrend],[CarTypeGroupCode],[CarTypeName],[CarTypeImg],OperatorICon,Score,Seat,Price,PRICE_H";
             lstStation = GetObjList<CarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
@@ -506,12 +520,12 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<StationAndProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content,PayMode ";
-                SQL+=" FROM  VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location AS StationName,iRentStation.Longitude,iRentStation.Latitude,iRentStation.Content,PayMode,Car.CarOfArea ";
+            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
             SQL += "INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND CarNo NOT IN ( ";
             SQL += "SELECT  CarNo FROM [TB_OrderMain]  ";
             SQL += "WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0) AND  CarNo in (SELECT [CarNo] ";
-            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID IN ("+StationID+") AND CarType IN ( ";
+            SQL += "  FROM [dbo].[TB_Car] WHERE nowStationID IN (" + StationID + ") AND CarType IN ( ";
             SQL += "  SELECT CarType FROM VW_GetFullProjectCollectionOfCarTypeGroup WHERE StationID IN (" + StationID + ") ";
             SQL += "  ) AND available<2 )  AND ( ";
             SQL += "   (start_time between @SD AND @ED)  ";
@@ -524,21 +538,19 @@ namespace Reposotory.Implement
             SQL += " ) ";
             SQL += " LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID ";
             SQL += "WHERE  VW.StationID IN (" + StationID + ") AND SPCLOCK='Z' ";
-          
+
             SqlParameter[] para = new SqlParameter[5];
             string term = " ";
-        
 
+            para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+            para[nowCount].Value = SDate;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+            para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+            para[nowCount].Value = EDate;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
 
-                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
-                para[nowCount].Value = SDate;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
-                para[nowCount].Value = EDate;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            
             if (CarType != "")
             {
                 SQL += " AND VW.CarTypeGroupCode=@CarType ";
@@ -547,7 +559,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content  ";
+            SQL += "GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode,CarOfArea ";
             SQL += "ORDER BY Price,PRICE_H ASC ";
 
             lstStation = GetObjList<StationAndProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
@@ -566,12 +578,35 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat, PayMode ";
-            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
-
-            SQL += "ORDER BY PROJID ASC ";
+            #region 改前SQL保留 
+            //string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat, PayMode ";
+            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            //SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            //SQL += "ORDER BY PROJID ASC ";
+            #endregion
+            string SQL = @"
+            SELECT VW.PROJID,
+                   VW.PRONAME,
+                   VW.Price,
+                   VW.PRICE_H,
+                   VW.CarBrend,
+                   VW.CarTypeGroupCode AS CarType,
+                   VW.CarTypeName,
+                   VW.CarTypeImg AS CarTypePic,
+                   VW.OperatorICon AS Operator,
+                   VW.Score AS OperatorScore,
+                   VW.Seat,
+                   VW.PayMode,
+                   irs.Content,
+                   REPLACE([PRONAME],'路邊汽車推廣專案','') As CarOfArea
+            FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
+            INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
+            WHERE Car.CarNo = @CarNo
+              AND SPCLOCK='Z'
+              AND VW.use_flag=1
+            ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
@@ -590,7 +625,6 @@ namespace Reposotory.Implement
                 //para[nowCount].Direction = ParameterDirection.Input;
                 //nowCount++;
             }
-
 
             lstStation = GetObjList<ProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
@@ -608,13 +642,43 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeDataForMotor> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
-            SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
-            SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            #region 原SQL保留
+            //string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
+            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
+            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
+            //SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
+            //SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
+            //SQL += "ORDER BY PROJID ASC ";
+            #endregion
+            string SQL = @"
+            SELECT DISTINCT 
+                   VW.PROJID,
+		           VW.PRONAME,
+		           VW.CarBrend,
+		           VW.CarTypeGroupCode AS CarType,
+		           VW.CarTypeName,
+		           VW.CarTypeImg AS CarTypePic,
+		           VW.OperatorICon AS Operator,
+		           VW.Score AS OperatorScore,
+		           VW.Seat,
+		           PriceByMinutes.[BaseMinutes],
+		           PriceByMinutes.[BaseMinutesPrice] AS BasePrice,
+		           PriceByMinutes.[Price] AS PerMinutesPrice,
+		           PriceByMinutes.[MaxPrice],		       
+                   irs.Content,
+				   cs.device3TBA AS Power,
+				   ISNULL(cs.deviceRDistance,'') AS RemainingMileage,
+		           REPLACE([PRONAME],'10載便利','') AS CarOfArea                   
+            FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
+            INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID           
+            INNER JOIN TB_CarStatus AS cs ON cs.CarNo = Car.CarNo            
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
+            INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1
+            WHERE Car.CarNo=@CarNo
+              AND SPCLOCK='Z'
+              AND VW.use_flag=1
+            ORDER BY PROJID ASC";
 
-            SQL += "ORDER BY PROJID ASC ";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
@@ -633,7 +697,6 @@ namespace Reposotory.Implement
                 //para[nowCount].Direction = ParameterDirection.Input;
                 //nowCount++;
             }
-
 
             lstStation = GetObjList<ProjectAndCarTypeDataForMotor>(ref flag, ref lstError, SQL, para, term);
             return lstStation;

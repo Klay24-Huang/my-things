@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Output.Common;
+using Domain.TB;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
@@ -39,7 +40,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BonusQuery apiInput = null;
-            List<OAPI_BonusQuery> outputApi = new List<OAPI_BonusQuery>();
+            //List<OAPI_BonusQuery> outputApi = new List<OAPI_BonusQuery>();
+            OAPI_BonusQuery outputApi = new OAPI_BonusQuery();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -132,7 +134,15 @@ namespace WebAPI.Controllers
 
                     if (giftLen > 0)
                     {
-                    
+                        //OAPI_BonusQuery objBonus = new OAPI_BonusQuery();
+                        //objBonus.BonusObj = new List<BonusData>();
+                        outputApi.BonusObj = new List<BonusData>();
+                        int TotalGiftPoint = 0;
+                        int TotalLastPoint = 0;
+                        int TotalGiftPointCar = 0;
+                        int TotalGiftPointMotor = 0;
+                        int TotalLastPointCar = 0;
+                        int TotalLastPointMotor = 0;
 
                         for (int i = 0; i < giftLen; i++)
                         {
@@ -143,14 +153,15 @@ namespace WebAPI.Controllers
                             if (DateFlag && (tmpDate >= DateTime.Now) && PointFlag)
                             {
                                 //  totalPoint += tmpPoint;
-                                OAPI_BonusQuery objPoint = new OAPI_BonusQuery()
+
+                                BonusData objPoint = new BonusData()
                                 {
-                                    PointType = (wsOutput.Data[i].GIFTTYPE == "01") ? 0 : 1, 
+                                    PointType = (wsOutput.Data[i].GIFTTYPE == "01") ? 0 : 1,
                                     EDATE = (wsOutput.Data[i].EDATE == "") ? "" : (wsOutput.Data[i].EDATE.Split(' ')[0]).Replace("/", "-"),
                                     GIFTNAME = wsOutput.Data[i].GIFTNAME,
-                                    GIFTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].GIFTPOINT) ? "0" : wsOutput.Data[i].GIFTPOINT, 
+                                    GIFTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].GIFTPOINT) ? "0" : wsOutput.Data[i].GIFTPOINT,
                                     LASTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? "0" : wsOutput.Data[i].LASTPOINT,
-                                    AllowSend = string.IsNullOrEmpty(wsOutput.Data[i].RCVFLG) ? 0 : ((wsOutput.Data[i].RCVFLG == "Y") ? 1 : 0)  
+                                    AllowSend = string.IsNullOrEmpty(wsOutput.Data[i].RCVFLG) ? 0 : ((wsOutput.Data[i].RCVFLG == "Y") ? 1 : 0)
 
                                 };
                                 if (objPoint.PointType == 0)
@@ -159,6 +170,8 @@ namespace WebAPI.Controllers
                                     {
                                         objPoint.GIFTNAME = "【汽車】\n" + objPoint.GIFTNAME;
                                     }
+                                    TotalGiftPointCar += int.Parse(objPoint.GIFTPOINT);
+                                    TotalLastPointCar += int.Parse(objPoint.LASTPOINT);
                                 }
                                 else if (objPoint.PointType == 1)
                                 {
@@ -166,12 +179,28 @@ namespace WebAPI.Controllers
                                     {
                                         objPoint.GIFTNAME = "【機車】\n" + objPoint.GIFTNAME;
                                     }
+                                    TotalGiftPointMotor += int.Parse(objPoint.GIFTPOINT);
+                                    TotalLastPointMotor += int.Parse(objPoint.LASTPOINT);
                                 }
-                                outputApi.Add(objPoint);
+                                //objBonus.BonusObj.Add(objPoint);
+                                outputApi.BonusObj.Add(objPoint);
+
+                                //點數加總
+                                TotalGiftPoint += int.Parse(objPoint.GIFTPOINT);
+                                TotalLastPoint += int.Parse(objPoint.LASTPOINT);
+
 
                             }
 
                         }
+                        outputApi.TotalGIFTPOINT = TotalGiftPoint;
+                        outputApi.TotalLASTPOINT = TotalLastPoint;
+                        outputApi.TotalCarGIFTPOINT = TotalGiftPointCar;
+                        outputApi.TotalCarLASTPOINT = TotalLastPointCar;
+                        outputApi.TotalMotorGIFTPOINT = TotalGiftPointMotor;
+                        outputApi.TotalMotorLASTPOINT = TotalLastPointMotor;
+                        //outputApi.Add(objBonus);
+                        //outputApi.BonusObj.Add(objBonus.BonusObj[]);
                     }
                 }
                 else

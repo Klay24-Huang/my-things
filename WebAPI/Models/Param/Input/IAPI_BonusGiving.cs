@@ -19,5 +19,9 @@ namespace WebAPI.Models.Param.Input
         /// 贈送分鐘數
         /// </summary>
         public int TransMins { set; get; }
+        /// <summary>
+        /// 01(汽車)/02(機車)
+        /// </summary>
+        public string GiftType { get; set; }
     }
 }

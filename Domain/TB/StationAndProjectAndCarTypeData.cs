@@ -75,5 +75,9 @@ namespace Domain.TB
         /// 計費模式
         /// </summary>
         public Int16 PayMode { set; get; }
+        /// <summary>
+        /// 站別類型
+        /// </summary>
+        public string CarOfArea { get; set; }
     }
 }

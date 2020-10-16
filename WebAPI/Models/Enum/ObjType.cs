@@ -200,6 +200,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             DonePayRentBill,
             /// <summary>
+            /// 電子柵欄查詢
+            /// </summary>
+            PolygonListQuery,
+            /// <summary>
             /// 判斷是否可以申請一次性開門
             /// </summary>
             CheckCanOpenDoor,
@@ -219,6 +223,14 @@ namespace WebAPI.Models.Enum
             /// 完成一次性開門
             /// </summary>
             FinishOpenDoor,
+            /// <summary>
+            /// 取得會員資訊
+            /// </summary>
+            GetMemberInfo,
+            /// <summary>
+            /// 取得多據點專案
+            /// </summary>
+            GetStationCarTypeOfMutiStation,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -440,6 +452,9 @@ namespace WebAPI.Models.Enum
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
                     break;
+                case SPType.PolygonListQuery:
+                    SPName = "usp_PolygonListQuery";
+                    break;
                 case SPType.CheckCanOpenDoor:
                     SPName = "usp_CheckCanOpenDoor";
                     break;
@@ -456,7 +471,12 @@ namespace WebAPI.Models.Enum
                 case SPType.FinishOpenDoor:
                     SPName = "usp_FinishOpenDoor";
                     break;
-                    
+                case SPType.GetMemberInfo:
+                    SPName = "usp_GetMemberInfo";
+                    break;
+                case SPType.GetStationCarTypeOfMutiStation:
+                    SPName = "usp_GetStationCarTypeOfMutiStation";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
