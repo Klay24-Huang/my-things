@@ -21,6 +21,8 @@
 	[OperationID] INT NOT NULL DEFAULT 0,
 	[HoildayPriceByMinutes] [FLOAT] NOT NULL DEFAULT 0.0,
 	[WeekdayPriceByMinutes] [FLOAT] NOT NULL DEFAULT 0.0, 
+    [HasIButton]  TINYINT       DEFAULT ((1)) NOT NULL,
+    [iButtonKey]  VARCHAR (100) NOT NULL DEFAULT(''),
     [Memo] [NVARCHAR](100) NOT NULL DEFAULT '',
     [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT 'SYS',
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
@@ -153,3 +155,24 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CarInfo',
     @level2type = N'COLUMN',
     @level2name = N'Memo'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否有iButton;0:否1:有',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarInfo',
+    @level2type = N'COLUMN',
+    @level2name = N'HasIButton'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'iButtonKey',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarInfo',
+    @level2type = N'COLUMN',
+    @level2name = 'iButtonKey'
+GO
+
+CREATE INDEX [IX_TB_CarInfo_SearchiButton] ON [dbo].[TB_CarInfo] ([iButtonKey], [CarNo], [CID], [HasIButton])

@@ -50,9 +50,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangePWD.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleCarOnline.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
     <Compile Include="SP\BE\Output\SPOutput_Login.cs" />
     <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />
@@ -156,6 +158,8 @@
     <Compile Include="TB\AnyRentObj.cs" />
     <Compile Include="TB\BackEnd\BE_CarDashBoardData.cs" />
     <Compile Include="TB\BackEnd\BE_CarSettingData.cs" />
+    <Compile Include="TB\BackEnd\BE_GetCarDetail.cs" />
+    <Compile Include="TB\BackEnd\BE_GetPartOfCarDataSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_ParkingData.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
     <Compile Include="TB\BackEnd\iRentManager.cs" />

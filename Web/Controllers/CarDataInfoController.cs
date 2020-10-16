@@ -82,11 +82,19 @@ namespace Web.Controllers
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             ViewData["ShowType"] = ShowType;
-            return View();
+            List<BE_GetPartOfCarDataSettingData> lstData = new List<BE_GetPartOfCarDataSettingData>();
+            lstData = carStatusCommon.GetCarDataSettingData(CarNo, StationID, ShowType);
+            return View(lstData);
         }
-        public ActionResult ViewCarDetail(string CarNo)
+        [HttpPost]
+        public ActionResult ViewCarDetail(string ShowCarNo)
         {
-            return View();
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+
+            BE_GetCarDetail obj  = null;
+            obj = carStatusCommon.GetCarDataSettingDetail(ShowCarNo);
+            return View(obj);
+           
         }
         /// <summary>
         /// 匯入機車車輛檔

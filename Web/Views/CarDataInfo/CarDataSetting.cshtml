@@ -1,9 +1,13 @@
-﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarSettingData>
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetPartOfCarDataSettingData>
 @{
     string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
-    List<Domain.TB.BackEnd.BE_CarSettingData> lstData = new List<Domain.TB.BackEnd.BE_CarSettingData>();
+    List<Domain.TB.BackEnd.BE_GetPartOfCarDataSettingData> lstData = new List<Domain.TB.BackEnd.BE_GetPartOfCarDataSettingData>();
     int ResultLen = 0;
+
+    int NowShowType = ((ViewData["ShowType"] == null) ? 3 : Convert.ToInt32(ViewData["ShowType"].ToString()));
+    string[] ShowType = { "", "", "", "" };
+    ShowType[NowShowType] = " checked";
     if (Model != null)
     {
         lstData = Model.ToList();
@@ -57,19 +61,25 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowUnRent" value="1" @ShowType[1]>
                                     <label class="form-check-label" for="ShowUnRent">
                                         可出租
                                     </label>
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0">
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowRent" value="0" @ShowType[0]>
                                     <label class="form-check-label" for="ShowRent">
                                         出租中
                                     </label>
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2">
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowWait" value="2" @ShowType[2]>
                                     <label class="form-check-label" for="ShowWait">
                                         待上線
                                     </label>
-                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3">
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="3" @ShowType[3]>
                                     <label class="form-check-label" for="ShowAll">
                                         不限
                                     </label>
@@ -82,7 +92,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <button type="submit" class="btn btn-primary">查詢</button>
+                                <button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
@@ -91,61 +101,93 @@
                 </li>
             </ul>
         }
-        </div>
+    </div>
     <!--end card-->
 </div>
-<!--查詢介面結束-->
-<!--輸出表格-->
-<div class="container mt-4">
-    <table class="table bg-white footable" data-filter="#filter" id="list">
-        <thead class="text-white bg-primary">
-            <tr>
-                <th data-sort="false"></th>
-                <th scope="col">ID</th>
-                <th scope="col">車號</th>
-                <th scope="col">車型</th>
-                <th scope="col">營運狀態</th>
-                <th scope="col">CID</th>
-                <th scope="col">目前庫位</th>
-                <th scope="col">所屬庫位</th>
-                <th scope="col">備註</th>
-                <th scope="col">資訊</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            @if (ResultLen > 0)
-            {
+@using (Html.BeginForm("ViewCarDetail", "CarDataInfo", FormMethod.Post, new { id = "frmCarDetail", @class = "form-horizontal" }))
+{
+    <input type="hidden" name="ShowCarNo" id="ShowCarNo" value="" />
+}
+    <!--查詢介面結束-->
+    <!--輸出表格-->
+    <div class="container mt-4">
+        <table class="table bg-white footable" data-filter="#filter" id="list">
+            <thead class="text-white bg-primary">
                 <tr>
-                    <td></td>
-                    <td scope="row">1</td>
-                    <td scope="col">車號</td>
-                    <td scope="col">車型</td>
-                    <td scope="col">營運狀態</td>
-                    <td scope="col">CID</td>
-                    <td scope="col">目前庫位</td>
-                    <td scope="col">所屬庫位</td>
-                    <td scope="col">備註</td>
-                    <td scope="col">資訊</td>
-                </tr>
-            }
-            else
-            {
-                <tr>
-                    <td></td>
-                    <td scope="row">1</td>
-                    <td scope="col">車號</td>
-                    <td scope="col">車型</td>
-                    <td scope="col">營運狀態</td>
-                    <td scope="col">CID</td>
-                    <td scope="col">目前庫位</td>
-                    <td scope="col">所屬庫位</td>
-                    <td scope="col">備註</td>
-                    <td scope="col">資訊</td>
-                </tr>
-            }
+                    <th data-sort="false"></th>
+                    <th scope="col">ID</th>
+                    <th scope="col">車號</th>
+                    <th scope="col">車型</th>
+                    <th scope="col">營運狀態</th>
+                    <th scope="col">CID</th>
+                    <th scope="col">目前庫位</th>
+                    <th scope="col">所屬庫位</th>
+                    <th scope="col">備註</th>
+                    <th scope="col">資訊</th>
 
-        </tbody>
-    </table>
-</div>
-<!--輸出表格結束-->
+                </tr>
+            </thead>
+            <tbody>
+                @if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        lstData[i].CarNo = lstData[i].CarNo.Replace(" ", "");
+                        string NowStr = "出租中";
+                        string SettingOnline = "";
+                        string HasDisabled = " disabled ";
+                        int Cmd = 0;
+                        if (lstData[i].NowStatus == 1)
+                        {
+                            NowStr = "可出租";
+                            SettingOnline = "下線";
+                            Cmd = 2;
+                            HasDisabled = "";
+                        }
+                        else
+                        {
+                            NowStr = "待上線";
+                            SettingOnline = "上線";
+                            Cmd = 1;
+                            HasDisabled = "";
+                        }
+                        <tr>
+                            <td></td>
+                            <td scope="row">@(i+1)</td>
+                            <td scope="col">@(lstData[i].CarNo)</td>
+                            <td scope="col">@(lstData[i].CarTypeName)</td>
+                            <td scope="col">
+                                @(NowStr)
+                            </td>
+                            <td scope="col">@(lstData[i].CID)</td>
+                            <td scope="col">@(lstData[i].NowStationName)</td>
+                            <td scope="col">@(lstData[i].StationName)</td>
+                            <td scope="col">
+                                @(lstData[i].Memo)
+                                <input type="text" name="Memo_@(lstData[i].CarNo)" id="Memo_@(lstData[i].CarNo)" value="@lstData[i].Memo" class="form-control" style="display:none" />
+                            </td>
+                            <td scope="col">
+                                <Button type="button" id="btnShow_@(lstData[i].CarNo)" name="btnShow_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick=ShowDetail('@(lstData[i].CarNo)');>基本資料</Button>
+                                <Button type="button" id="btnSettingOnline_@(lstData[i].CarNo)" name="btnSettingOnline_@(lstData[i].CarNo)" class="btn btn-outline-secondary" @(HasDisabled) onclick=SetOnline('@(lstData[i].CarNo)',@(Cmd));>@(SettingOnline)</Button>
+                                <!--設定備註用-->
+                                <Button type="button" id="btnEdit_@(lstData[i].CarNo)" name="btnEdit_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].CarNo)');>設定備註</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].CarNo)" name="btnSave_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].CarNo)');>儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].CarNo)" name="btnReset_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].CarNo)');>取消</Button>
+                                <!--設定備註用結束-->
+                            </td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="10">查無資料</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <!--輸出表格結束-->
