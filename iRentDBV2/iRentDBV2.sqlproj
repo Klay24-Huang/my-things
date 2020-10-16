@@ -247,6 +247,10 @@
     <Build Include="dbo\Views\VW_GetCarDetail.sql" />
     <Build Include="dbo\Views\VW_BE_GetChargeParking.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleChargeParkingData.sql" />
+    <Build Include="dbo\Views\VW_GetCarBindData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportCarMachineData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportCarData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportMotoData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

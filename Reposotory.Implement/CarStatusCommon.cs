@@ -419,6 +419,63 @@ namespace Reposotory.Implement
             return obj;
 
         }
+        /// <summary>
+        /// 取得車機綁定車輛資料
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="CID"></param>
+        /// <param name="BindStatus"></param>
+        /// <returns></returns>
+        public List<BE_GetCarBindData> GetCarBindData(string CarNo, string CID, int BindStatus)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetCarBindData> lstCarDataSettingData = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT * FROM VW_GetCarBindData ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " CarNo like @CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", CarNo);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(CID))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " (CID like @CID ) ";
+                para[nowCount] = new SqlParameter("@CID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", CID);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (BindStatus >= 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " BindStatus=@BindStatus";
+                para[nowCount] = new SqlParameter("@BindStatus", SqlDbType.Int);
+                para[nowCount].Value = BindStatus;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+             
+           
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+
+            lstCarDataSettingData = GetObjList<BE_GetCarBindData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarDataSettingData;
+
+        }
 
     }
 }

@@ -119,7 +119,7 @@ function DoSave(Id) {
                 $.busyLoadFull("hide");
                 swal({
                     title: 'Fail',
-                    text: "修改停車場發生錯誤",
+                    text: "修改車輛資料時發生錯誤",
                     icon: 'error'
                 });
             }
