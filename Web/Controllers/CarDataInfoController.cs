@@ -338,7 +338,7 @@ namespace Web.Controllers
                                 EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
                                 BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
                                 CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
-                                IsMotor = 1,
+                                IsMotor = 0,
                                 UserID = UserId,
                                 LogID = 0
                             };
