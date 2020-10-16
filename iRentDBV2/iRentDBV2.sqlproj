@@ -245,6 +245,8 @@
     <Build Include="dbo\Views\VW_BE_GetPartOfCarDataSetting.sql" />
     <Build Include="dbo\Tables\TB_Mobile.sql" />
     <Build Include="dbo\Views\VW_GetCarDetail.sql" />
+    <Build Include="dbo\Views\VW_BE_GetChargeParking.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleChargeParkingData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

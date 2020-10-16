@@ -142,6 +142,7 @@
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_HandleCarOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleCarSettingController.cs" />
+    <Compile Include="Controllers\BE_HandleChargeParkingController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
     <Compile Include="Controllers\BE_SetCarMemoController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangePWD.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarSetting.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SetCarMemo.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />

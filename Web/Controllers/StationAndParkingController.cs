@@ -221,6 +221,15 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult ChargeParkingSetting(string ParkingName)
+        {
+            ViewData["ParkingName"] = ParkingName;
+            List<BE_ChargeParkingData> lstData = null;
+            ParkingRepository repository = new ParkingRepository(connetStr);
+            lstData = repository.GetChargeParking(ParkingName);
+            return View(lstData);
+        }
 
         #region 共用元件類型
         #endregion
