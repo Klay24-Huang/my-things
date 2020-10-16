@@ -388,7 +388,7 @@ namespace Reposotory.Implement
 
 
             int nowCount = 0;
-            string SQL = " SELECT * FROM VW_BE_GetPartOfCarDataSetting ";
+            string SQL = " SELECT * FROM VW_GetCarDetail ";
 
             SqlParameter[] para = new SqlParameter[10];
             string term = "";

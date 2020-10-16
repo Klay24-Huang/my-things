@@ -37,7 +37,16 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "保有車輛設定";
             break;
+        case "CarDataSetting":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛資料設定";
+            break;
+        case "ViewCarDetail":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛資料設定";
+            break;
             #endregion
+
 
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
@@ -130,6 +139,10 @@
                 </g>
             </svg>
             @ActionStrName
+            @if (actionName == "ViewCarDetail")
+            {
+                @("/ 車輛基本資料")
+            }
         </p>
 
     </div>

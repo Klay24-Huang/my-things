@@ -1,6 +1,6 @@
 ﻿CREATE VIEW [dbo].[VW_GetCarDetail]
 	AS 
-	SELECT TOP (1000) CarInfo.[CarNo]
+	SELECT  CarInfo.[CarNo]
 
       ,[RentCount]
       ,[UncleanCount]
