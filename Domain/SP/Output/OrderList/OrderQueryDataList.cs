@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Output.OrderList
 {
-   public  class OrderQueryDataList
+    public class OrderQueryDataList
     {
         /// <summary>
         /// 據點代碼
@@ -41,11 +37,11 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 營運商名稱
         /// </summary>
-        public string OperatorName {set;get;}
+        public string OperatorName { set; get; }
         /// <summary>
         /// 營運商icon
         /// </summary>
-        public string OperatorICon {set;get;}
+        public string OperatorICon { set; get; }
         /// <summary>
         /// 評分
         /// </summary>
@@ -117,24 +113,24 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
-        
+
         #region 機車費用，當ProjType=4時才有值
         /// <summary>
         /// 基本分鐘數
         /// </summary>
-        public int BaseMinutes         {set;get;}
+        public int BaseMinutes { set; get; }
         /// <summary>
         /// 低消
         /// </summary>
-        public int BaseMinutesPrice    {set;get;}
+        public int BaseMinutesPrice { set; get; }
         /// <summary>
         /// 每分鐘多少
         /// </summary>
-        public float MinuteOfPrice       {set;get;}
+        public float MinuteOfPrice { set; get; }
         /// <summary>
         /// 每日上限
         /// </summary>
-        public int MaxPrice            { set; get; }
+        public int MaxPrice { set; get; }
         /// <summary>
         /// 假日上限
         /// </summary>
@@ -154,6 +150,10 @@ namespace Domain.SP.Output.OrderList
         /// 實際取車時間
         /// </summary>
         public string final_start_time { set; get; }
+        /// <summary>
+        /// 實際還車時間
+        /// </summary>
+        public string final_stop_time { get; set; }
         /// <summary>
         /// 取車截止時間
         /// </summary>
@@ -206,7 +206,6 @@ namespace Domain.SP.Output.OrderList
         /// 前車是否已還車
         /// </summary>
         public int IsReturnCar { set; get; }
-
         #endregion
     }
 }

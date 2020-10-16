@@ -125,7 +125,7 @@ SET @Token    =ISNULL (@Token    ,'');
 				  ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE								--平日每小時價 20201003 ADD BY ADAM
 				  ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H							--假日每小時價 20201003 ADD BY ADAM
 				  ,BaseMinutes,BaseMinutesPrice,MinuteOfPrice,MaxPrice, MaxPriceH		   --當ProjType=4才有值, 20201006 eason ADD MaxPriceH
-				  ,order_number,start_time,final_start_time,stop_pick_time,stop_time
+				  ,order_number,start_time,final_start_time,final_stop_time,stop_pick_time,stop_time
 				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
 				  ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
 				  ,already_lend_car,IsReturnCar

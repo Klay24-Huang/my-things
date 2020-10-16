@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.OrderList;
 using Domain.SP.Output;
@@ -54,12 +53,9 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
 
             if (flag)
@@ -86,6 +82,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -93,7 +90,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -142,7 +138,7 @@ namespace WebAPI.Controllers
                                 CarRentBill = OrderDataLists[i].init_price,
                                 CarTypeName = OrderDataLists[i].CarTypeName,
                                 CarTypePic = OrderDataLists[i].CarTypeImg,
-                                Seat = OrderDataLists[i].Seat,                            
+                                Seat = OrderDataLists[i].Seat,
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
                                 InsurancePerHour = OrderDataLists[i].Insurance,
@@ -152,9 +148,10 @@ namespace WebAPI.Controllers
                                 ParkingSection = OrderDataLists[i].parkingSpace,
                                 IsMotor = OrderDataLists[i].IsMotor,
                                 PickTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].final_start_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].final_start_time).ToString("yyyy-MM-dd HH:mm:ss"),
-                                StartTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].start_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].start_time).ToString("yyyy-MM-dd HH:mm:ss") ,
-                                StopTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].stop_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].stop_time).ToString("yyyy-MM-dd HH:mm:ss") ,
-                                StopPickTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].stop_pick_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].stop_pick_time).ToString("yyyy-MM-dd HH:mm:ss") ,
+                                ReturnTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].final_stop_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].final_stop_time).ToString("yyyy-MM-dd HH:mm:ss"),
+                                StartTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].start_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].start_time).ToString("yyyy-MM-dd HH:mm:ss"),
+                                StopTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].stop_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].stop_time).ToString("yyyy-MM-dd HH:mm:ss"),
+                                StopPickTime = (string.IsNullOrWhiteSpace(OrderDataLists[i].stop_pick_time)) ? "" : Convert.ToDateTime(OrderDataLists[i].stop_pick_time).ToString("yyyy-MM-dd HH:mm:ss"),
                                 ProjName = OrderDataLists[i].PRONAME,
                                 WorkdayPerHour = OrderDataLists[i].PRICE,
                                 TransDiscount = (OrderDataLists[i].init_TransDiscount < 0) ? 0 : OrderDataLists[i].init_TransDiscount,
@@ -172,9 +169,8 @@ namespace WebAPI.Controllers
                                     Tel = OrderDataLists[i].Tel
                                 },
                                 MileagePerKM = (OrderDataLists[i].ProjType < 4) ? ((OrderDataLists[i].MilageUnit == 0) ? Mildef : OrderDataLists[i].MilageUnit) : 0,
-                               
-
-
+                                DailyMaxHour = 10,
+                                CAR_MGT_STATUS = OrderDataLists[i].car_mgt_status
                             };
                             obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
 
@@ -202,7 +198,6 @@ namespace WebAPI.Controllers
                 }
 
             }
-
             #endregion
 
             #region 寫入錯誤Log

@@ -1,8 +1,4 @@
 ﻿using Domain.TB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Output.PartOfParam
 {
@@ -48,6 +44,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 車號
         /// </summary>
         public string CarNo { set; get; }
+        /// <summary>
+        /// 廠牌
+        /// </summary>
         public string CarBrend { set; get; }
         /// <summary>
         /// 車型名稱
@@ -75,7 +74,6 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 機車電力資訊，當ProjType=4時才有值
         /// </summary>
         public MotorPowerInfoBase MotorPowerBaseObj { set; get; }
-
         #endregion
         #region 專案相關
         /// <summary>
@@ -135,6 +133,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string PickTime { set; get; }
         /// <summary>
+        /// 實際還車時間
+        /// </summary>
+        public string ReturnTime { get; set; }
+        /// <summary>
         /// 取車截止時間
         /// </summary>
         public string StopPickTime { set; get; }
@@ -170,6 +172,25 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 預估總金額
         /// </summary>
         public int Bill { set; get; }
+        /// <summary>
+        /// 單日計費上限時數
+        /// </summary>
+        public int DailyMaxHour { get; set; }
+        /// <summary>
+        /// 取還車狀態
+        /// 0 = 尚未取車
+        /// 1 = 已經上傳出車照片
+        /// 2 = 已經簽名出車單
+        /// 3 = 已經信用卡認證
+        /// 4 = 已經取車(記錄起始時間)
+        /// 11 = 已經紀錄還車時間
+        /// 12 = 已經上傳還車角度照片
+        /// 13 = 已經上傳還車車損照片
+        /// 14 = 已經簽名還車單
+        /// 15 = 已經信用卡付款
+        /// 16 = 已經檢查車輛完成並已經解除卡號
+        /// </summary>
+        public int CAR_MGT_STATUS { get; set; }
         #endregion
     }
 }
