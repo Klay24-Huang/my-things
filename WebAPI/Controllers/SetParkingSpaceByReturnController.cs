@@ -154,6 +154,9 @@ namespace WebAPI.Controllers
                 SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
                 {
                     IDNO = IDNO,
+                    OrderNo = tmpOrder,
+                    ParkingSpace = apiInput.ParkingSpace,
+                    ParkingSpaceImage = apiInput.ParkingSpaceImage,
                     LogID = LogID,
                     Token = Access_Token
                 };
