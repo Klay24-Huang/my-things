@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Domain.TB.BackEnd;
+using Reposotory.Implement;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +11,7 @@ namespace Web.Controllers
 {
     public class ContactManageController : Controller
     {
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 預約（合約）查詢
         /// </summary>
@@ -22,7 +26,19 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactHistoryQuery(string OrderNo)
         {
-            return View();
+            ViewData["OrderNo"] = OrderNo;
+            if (string.IsNullOrWhiteSpace(OrderNo) == false)
+            {
+                ContactRepository repository = new ContactRepository(connetStr);
+                List<BE_OrderHistoryData> lstData = new List<BE_OrderHistoryData>();
+                lstData = repository.GetOrderHistory(Convert.ToInt64(OrderNo.Replace("H","")));
+                return View(lstData);
+            }
+            else
+            {
+                return View();
+            }
+          
         }
         /// <summary>
         /// 機車合約修改
