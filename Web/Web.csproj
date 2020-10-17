@@ -143,6 +143,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StationAndParkingController.cs" />
     <Compile Include="Controllers\SystemManageController.cs" />
+    <Compile Include="Controllers\SystemSettingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -238,10 +239,14 @@
     <Content Include="Scripts\js\ActionJS\Report\ParkingCheckInQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\TradeQuery.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\ChargeParkingSetting.js" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\PolygonMaintain.js" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoAdd.js" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoMaintain.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\CarTimelineQuery.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\MessageQuery.js" />
+    <Content Include="Scripts\js\ActionJS\SystemSetting\FeedBackKindSetting.js" />
     <Content Include="Scripts\js\bootstrap.bundle.js" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js" />
     <Content Include="Scripts\js\bootstrap.js" />
@@ -446,6 +451,10 @@
     <Content Include="Views\CommonObj\GetCarHiddenList.cshtml" />
     <Content Include="Views\Manage\ArrearQuery.cshtml" />
     <Content Include="Views\CarDataInfo\ViewCarDetail.cshtml" />
+    <Content Include="Views\StationAndParking\PolygonMaintain.cshtml" />
+    <Content Include="Views\StationAndParking\StationInfoMaintain.cshtml" />
+    <Content Include="Views\StationAndParking\StationInfoAdd.cshtml" />
+    <Content Include="Views\SystemSetting\FeedBackKindSetting.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

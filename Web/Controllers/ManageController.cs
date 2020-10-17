@@ -35,14 +35,14 @@ namespace Web.Controllers
         {
             return View();
         }
-        /// <summary>
-        /// 卡號解除
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult UnBindCard()
-        {
-            return View();
-        }
+        ///// <summary>
+        ///// 卡號解除
+        ///// </summary>
+        ///// <returns></returns>
+        //public ActionResult UnBindCard()
+        //{
+        //    return View();
+        //}
         /// <summary>
         /// 信用卡解綁
         /// </summary>

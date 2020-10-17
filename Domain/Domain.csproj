@@ -169,6 +169,7 @@
     <Compile Include="TB\BackEnd\BE_CarDashBoardData.cs" />
     <Compile Include="TB\BackEnd\BE_CarSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_ChargeParkingData.cs" />
+    <Compile Include="TB\BackEnd\BE_FeedBackKindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarBindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetPartOfCarDataSettingData.cs" />

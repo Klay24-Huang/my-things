@@ -441,4 +441,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="iButtonKey" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cd84c706-dc56-4558-9149-05f1685fbfa5" ChangeDateTime="10/16/2020 20:30:07">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingControl].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingControl]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PROCD" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="899be853-e320-49f4-a0a2-89d13a4fb06e" ChangeDateTime="10/16/2020 20:57:42">
+    <Property Name="ElementName" Value="[dbo].[TB_NPR340PaymentDetail].[IRENTORDNO]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_NPR340PaymentDetail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CNTRNO" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4ef2242b-4804-4d8f-87c0-d8eeada50180" ChangeDateTime="10/16/2020 20:59:02">
+    <Property Name="ElementName" Value="[dbo].[TB_NPR340PaymentDetail].[PAYTYPE]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_NPR340PaymentDetail]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PAYCD" />
+  </Operation>
 </Operations>

@@ -1,9 +1,6 @@
 ﻿
-
-
 @{
-    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
-    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+    string OrderNo = (ViewData["OrderNo"] == null) ? "" : ViewData["OrderNo"].ToString();
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -21,7 +18,7 @@
                             訂單編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="@OrderNo" />
                         </div>
                     </div>
                 </div>

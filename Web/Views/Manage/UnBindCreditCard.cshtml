@@ -1,6 +1,4 @@
-﻿
-
-@{
+﻿@{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
 
 }
@@ -29,8 +27,8 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確認送出</button>
-
+                            <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確認送出</button>
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
                         </div>
                     </div>
                 </div>

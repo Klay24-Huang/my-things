@@ -20,7 +20,7 @@ namespace Web.Controllers
         /// 訂單記錄歷程查詢
         /// </summary>
         /// <returns></returns>
-        public ActionResult ContactHistoryQuery()
+        public ActionResult ContactHistoryQuery(string OrderNo)
         {
             return View();
         }

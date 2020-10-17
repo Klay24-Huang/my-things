@@ -194,6 +194,11 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR216";
                             }
+                            else
+                            {
+                                CID = spOut.CID;
+                                deviceToken = spOut.deviceToken;
+                            }
                         }
                         #endregion
                         if (flag)

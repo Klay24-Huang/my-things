@@ -1,0 +1,174 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_FeedBackKindData>
+@{
+    List<Domain.TB.BackEnd.BE_FeedBackKindData> lstData = null;
+    string descript = (ViewData["descript"] == null) ? "" : ViewData["descript"].ToString();
+    string star = (ViewData["star"] == null) ? "" : ViewData["star"].ToString();
+    int ResultLen = -1;
+    int NowShowType = ((ViewData["ShowType"] == null) ? 2 : Convert.ToInt32(ViewData["ShowType"].ToString()));
+    string[] ShowType = { "", "", "", "" };
+    ShowType[NowShowType] = " checked";
+
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            回饋類別項目設定
+        </div>
+
+        <form method="post" id="frmFeedBackKindSetting" action="@Url.Action("FeedBackKindSetting")" enctype="multipart/form-data">
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                星星數
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="star" id="star" value="@star" TextMode="Number" min="1" max="5" step="1" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                描述文字
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="descript" id="descript" value="@descript" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                顯示方式
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowAll" value="2" @ShowType[2]>
+                                    <label class="form-check-label" for="ShowAll">
+                                        全部
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowTrue" value="1" @ShowType[1]>
+                                    <label class="form-check-label" for="ShowTrue">
+                                        啟用
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ShowType" id="ShowFalse" value="0" @ShowType[0]>
+                                    <label class="form-check-label" for="ShowFalse">
+                                        停用
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+                                <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</Button>
+                                <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </form>
+    </div>
+
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="panelResult" name="panelResult">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">ID</th>
+                <th scope="col">星星數</th>
+                <th scope="col">描述</th>
+                <th scope="col">狀態</th>
+                <th scope="col">修改</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                if (ResultLen == 0)
+                {
+                    <tr>
+                        <td colspan="6">查無結果</td>
+                    </tr>
+                }
+                else
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        string Online = (lstData[i].use_flag == 0) ? "停用" : "啟用";
+                        string SettingOnline = "";
+                        int Cmd = 0;
+                        if (lstData[i].use_flag == 1)
+                        {
+                            Online = "啟用";
+                            SettingOnline = "停用";
+                            Cmd = 0;
+                       
+                        }
+                        else
+                        {
+                            Online = "停用";
+                            SettingOnline = "啟用";
+                            Cmd = 1;
+                       
+                        }
+                        <tr>
+                            <td></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].FeedBackKindId)" id="PK_@(lstData[i].FeedBackKindId)" value="@(lstData[i].FeedBackKindId)" /></td>
+                            <td scope="col">@lstData[i].Star <input type="text" name="Star_@(lstData[i].FeedBackKindId)" id="ParkingName_@(lstData[i].FeedBackKindId)" TextMode="Number" step="1" min="1" max="5" value="@(lstData[i].Star)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].Descript<input type="text" name="Descript_@(lstData[i].FeedBackKindId)" id="ParkingAddress_@(lstData[i].FeedBackKindId)" value="@(lstData[i].Descript)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@Online</td>
+                          
+                            <td scope="col">
+                                <Button type="button" id="btnSettingOnline_@(lstData[i].FeedBackKindId)" name="btnSettingOnline_@(lstData[i].FeedBackKindId)" class="btn btn-outline-secondary"  onclick=SetOnline('@(lstData[i].FeedBackKindId)',@(Cmd));>@(SettingOnline)</Button>
+                                <Button type="button" id="btnEdit_@(lstData[i].FeedBackKindId)" name="btnEdit_@(lstData[i].FeedBackKindId)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].FeedBackKindId)');>修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].FeedBackKindId)" name="btnSave_@(lstData[i].FeedBackKindId)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].FeedBackKindId)');>儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].FeedBackKindId)" name="btnReset_@(lstData[i].FeedBackKindId)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].FeedBackKindId)');>取消</Button>
+                            </td>
+                         
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<!--輸出表格結束-->
+<!--javascript 初始-->
+<script>
+
+    var ResultDataLen = '@(ResultLen)';
+</script>
