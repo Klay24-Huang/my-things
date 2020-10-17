@@ -36,6 +36,30 @@ namespace Web.Controllers
             return View();
         }
         /// <summary>
+        /// 據點資訊新增
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult StationInfoAdd()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 據點資訊修改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult StationInfoMaintain()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 電子柵欄
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PolygonMaintain()
+        {
+            return View();
+        }
+        /// <summary>
         /// 調度停車場資訊設定
         /// </summary>
         /// <returns></returns>

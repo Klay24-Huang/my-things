@@ -188,11 +188,16 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
-                            info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
+                            info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);
                             if (info == null)
                             {
                                 flag = false;
                                 errCode = "ERR216";
+                            }
+                            else
+                            {
+                                CID = spOut.CID;
+                                deviceToken = spOut.deviceToken;
                             }
                         }
                         #endregion

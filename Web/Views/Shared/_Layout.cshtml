@@ -62,6 +62,18 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "匯入車機資料(含SIM)";
             break;
+        #endregion
+        #region 後臺管理
+        case "UnBindCreditCard":
+            ControllerStrName = "後臺管理";
+            ActionStrName = "信用卡解綁";
+            break;
+        #endregion
+        #region 合約管理
+        case "ContactHistoryQuery":
+            ControllerStrName = "合約管理";
+            ActionStrName = "訂單記錄歷程查詢";
+            break;
             #endregion
 
 
@@ -259,7 +271,7 @@
                                 <a class="dropdown-item" href="~/Manage/AuthAndPay">強制刷卡取款</a>
                                 <a class="dropdown-item" href="~/Manage/ArrearQuery">欠費查詢</a>
                                 <a class="dropdown-item" href="~/Manage/HoildayMaintain">平假日維護</a>
-                                <a class="dropdown-item" href="~/Manage/UnBindCard">信用卡解綁</a>
+                                <a class="dropdown-item" href="~/Manage/UnBindCreditCard">信用卡解綁</a>
                                 <a class="dropdown-item" href="~/Manage/ResendToHieasyrent">短租補傳</a>
                             </div>
                         </li>
@@ -279,14 +291,14 @@
                             </div>
                         </li>
                         <!-- 推播管理 -->
-                        @*<li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                推播管理
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">APP優惠訊息推播</a>
-            </div>
-        </li>*@
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                優惠管理
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">APP優惠訊息推播</a>
+                            </div>
+                        </li>
                         <!-- 會員管理 -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -309,6 +321,15 @@
                                 <a class="dropdown-item" href="~/AccountManage/UserMaintain">使用者維護</a>
                             </div>
                         </li>
+                        @*<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                系統參數設定
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="~/SystemSetting/FeedBackKindSetting">回饋類別設定</a>
+
+                            </div>
+                        </li>*@
                         <!-- 帳號管理 -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -316,7 +337,16 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="~/BusinessManage/DashBoard">合約/中控台</a>
-                          
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                營管中心(儀表板)
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="~/BusinessManage/DashBoard">儀表板</a>
+
                             </div>
                         </li>
                     </ul>

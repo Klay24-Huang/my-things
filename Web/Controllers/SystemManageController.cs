@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace Web.Controllers
 {
+   
     /// <summary>
     /// 系統管理
     /// </summary>
     public class SystemManageController : Controller
     {
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 訊息記錄查詢
         /// </summary>

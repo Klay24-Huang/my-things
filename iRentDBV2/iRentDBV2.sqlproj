@@ -255,6 +255,13 @@
     <Build Include="dbo\Stored Procedures\usp_BE_ImportCarMachineData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ImportCarData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ImportMotoData.sql" />
+    <Build Include="dbo\Tables\TB_BookingControl.sql" />
+    <Build Include="dbo\Tables\TB_lendCarControl.sql" />
+    <Build Include="dbo\Tables\TB_ReturnCarControl.sql" />
+    <Build Include="dbo\Tables\TB_ReturnControlPaymentDetail.sql" />
+    <Build Include="dbo\Tables\TB_NPR340PaymentDetail.sql" />
+    <Build Include="dbo\Tables\TB_NPR340Save.sql" />
+    <Build Include="dbo\Tables\TB_FeedBackKind.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

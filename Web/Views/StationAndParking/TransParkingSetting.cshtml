@@ -126,7 +126,7 @@
                             <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)"  class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].ParkingAddress<input type="text" name="ParkingAddress_@(lstData[i].ParkingID)" id="ParkingAddress_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
-                            <td scope="col">@lstData[i].Longitude<input type="text" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkingID)" id="Longitude_@(lstData[i].ParkingID)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].Longitude<input type="text" TextMode="Number" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkingID)" id="Longitude_@(lstData[i].ParkingID)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
                             <td scope="col">
                                 <a onclick="detailMap(@lstData[i].Latitude,@lstData[i].Longitude)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">

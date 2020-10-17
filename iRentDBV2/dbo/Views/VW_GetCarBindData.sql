@@ -9,7 +9,7 @@ SELECT CarInfo.[CarNo]
       ,CarInfo.[iButtonKey]
 	  ,Car.available  AS NowStatus
 	  ,ISNULL(Mobile.MobileNum,'未設定門號') AS MobileNum
-	  ,IIF(ISNULL(CarMachine.MachineNo,'')='',0,1) AS BindStatus
+	  ,IIF(ISNULL(CarInfo.[CID],'')='',0,1) AS BindStatus
   FROM [dbo].[TB_CarInfo] AS CarInfo
   LEFT JOIN TB_Car AS Car ON Car.CarNo=CarInfo.CarNo
   LEFT JOIN TB_CarMachine AS CarMachine ON CarMachine.MachineNo=CarInfo.CID
