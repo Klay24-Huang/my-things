@@ -317,6 +317,165 @@ namespace Reposotory.Implement
             return lstCarSettingData;
 
         }
+        /// <summary>
+        /// 車輛資料管理
+        /// </summary>
+        /// <param name="CarNo">車號</param>
+        /// <param name="StationID">據點</param>
+        /// <param name="ShowType">
+        /// 
+        /// </param>
+        /// <returns></returns>
+        public List<BE_GetPartOfCarDataSettingData> GetCarDataSettingData(string CarNo, string StationID, int ShowType)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetPartOfCarDataSettingData> lstCarDataSettingData = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT * FROM VW_BE_GetPartOfCarDataSetting ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " CarNo like @CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%",CarNo);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(StationID))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " (StationID like @StationID OR nowStationID like @StationID) ";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", StationID);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (ShowType < 3)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " NowStatus=@NowStatus";
+                para[nowCount] = new SqlParameter("@NowStatus", SqlDbType.Int);
+                para[nowCount].Value = ShowType;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+
+            lstCarDataSettingData = GetObjList<BE_GetPartOfCarDataSettingData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarDataSettingData;
+
+        }
+        /// <summary>
+        /// 查詢車輛明細
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <returns></returns>
+        public BE_GetCarDetail GetCarDataSettingDetail(string CarNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetCarDetail> lstCarDataSettingData = null;
+            BE_GetCarDetail obj = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT * FROM VW_GetCarDetail ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " CarNo like @CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", CarNo);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+          
+        
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+
+            lstCarDataSettingData = GetObjList<BE_GetCarDetail>(ref flag, ref lstError, SQL, para, term);
+            if (lstCarDataSettingData != null)
+            {
+                if (lstCarDataSettingData.Count > 0)
+                {
+                    obj = new BE_GetCarDetail();
+                    obj = lstCarDataSettingData[0];
+                }
+            }
+            return obj;
+
+        }
+        /// <summary>
+        /// 取得車機綁定車輛資料
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="CID"></param>
+        /// <param name="BindStatus"></param>
+        /// <returns></returns>
+        public List<BE_GetCarBindData> GetCarBindData(string CarNo, string CID, int BindStatus)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetCarBindData> lstCarDataSettingData = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT * FROM VW_GetCarBindData ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " CarNo like @CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", CarNo);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(CID))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " (CID like @CID ) ";
+                para[nowCount] = new SqlParameter("@CID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = string.Format("%{0}%", CID);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (BindStatus >= 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " BindStatus=@BindStatus";
+                para[nowCount] = new SqlParameter("@BindStatus", SqlDbType.Int);
+                para[nowCount].Value = BindStatus;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+             
+           
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+
+            lstCarDataSettingData = GetObjList<BE_GetCarBindData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarDataSettingData;
+
+        }
 
     }
 }

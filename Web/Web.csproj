@@ -206,6 +206,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarMachineData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportMotorData.js" />
+    <Content Include="Scripts\js\ActionJS\CarDataInfo\ViewCarDetail.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\MasterCardSetting.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\SentCardSetting.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\UnBindCard.js" />
@@ -378,6 +379,10 @@
     <Content Include="Content\fonts\icomoon.eot" />
     <Content Include="Content\fonts\icomoon.ttf" />
     <Content Include="Content\fonts\icomoon.woff" />
+    <Content Include="Content\example\CarBindExample.xlsx" />
+    <Content Include="Content\example\CarMachineAndCardBindExample.xlsx" />
+    <Content Include="Content\example\ImportCarExample.xlsx" />
+    <Content Include="Content\example\ImportMotorExample.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />

@@ -294,6 +294,18 @@ namespace WebAPI.Models.Enum
                 /// 保有車輛處理
                 /// </summary>
                 BE_HandleCarSetting,
+                /// <summary>
+                /// 車輛設定上下線
+                /// </summary>
+                BE_CarDataSettingSetOnline,
+                /// <summary>
+                /// 車輛設定備註
+                /// </summary>
+                BE_HandleCarDataSettingMemo,
+                /// <summary>
+                /// 停車便利付修改
+                /// </summary>
+                BE_HandleChargeParkingData,
             #endregion
 
         }
@@ -527,6 +539,15 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleCarSetting:
                     SPName = "usp_BE_Handle_CarSetting";
+                    break;
+                case SPType.BE_CarDataSettingSetOnline:
+                    SPName = "usp_BE_CarDataSettingSetOnline";
+                    break;
+                case SPType.BE_HandleCarDataSettingMemo:
+                    SPName = "usp_BE_HandleCarDataSettingMemo";
+                    break;
+                case SPType.BE_HandleChargeParkingData:
+                    SPName = "usp_BE_HandleTransParking";
                     break;
             #endregion
             }

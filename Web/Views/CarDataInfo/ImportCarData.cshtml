@@ -8,35 +8,42 @@
         <div class="card-header bg-secondary text-white">
             匯入汽車車輛檔
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
+        <form method="post" id="frmImportCarData" action="@Url.Action("ImportCarData")" enctype="multipart/form-data">
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
 
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            匯入汽車車輛檔
-                        </div>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入汽車車輛檔
+                            </div>
 
-                        <div class="col-md-6">
-                            <input type="file" class="jfilestyle" data-theme="blue" data-inputSize="" data-text="上傳檔案">
-                            <button type="submit" class="btn btn-primary">範例檔案下載</button>
-                        </div>
+                            <div class="col-md-6">
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+                            </div>
 
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確認送出</button>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確認送出</Button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </form>
     </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
+<!--查詢介面結束-->
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>

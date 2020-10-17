@@ -6,6 +6,9 @@
     [UUID]         VARCHAR (30)   DEFAULT ('') NULL,
     [NFCIsOpen]    INT            DEFAULT ((0)) NOT NULL, 
     [deviceToken] VARCHAR(1024) NOT NULL DEFAULT '', 
+      [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT 'SYS',
+	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
+	[UPDTime] [datetime] NULL, 
     CONSTRAINT [PK_TB_CarMachine] PRIMARY KEY ([CarMachineID]),
 )
 

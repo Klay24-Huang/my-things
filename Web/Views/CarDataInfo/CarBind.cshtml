@@ -1,7 +1,15 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetCarBindData>
 @{
+    List<Domain.TB.BackEnd.BE_GetCarBindData> lstData = null;
     string CID = (ViewData["CID"] == null) ? "" : ViewData["CID"].ToString();
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+    int ResultLen = -1;
+
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -19,7 +27,7 @@
                             車機號碼
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="CID" id="CID" value="@CID" />
+                            <input class="form-control" type="text" name="CID" id="CID" value="@CID" maxlength="5" />
                         </div>
                     </div>
                 </div>
@@ -32,7 +40,7 @@
                         </div>
                         <div class="col-md-3">
                             <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
-                            @Html.Action("GetStationHiddenList", "CommonObj")
+
                         </div>
                     </div>
                 </div>
@@ -46,8 +54,8 @@
                         </div>
                         <div class="col-md-3">
 
-                            <select class="form-control" id="UseStatus" name="UseStatus">
-                                <option value="-1">1</option>
+                            <select class="form-control" id="BindStatus" name="BindStatus">
+                                <option value="-1"></option>
                                 <option value="0">已綁定</option>
                                 <option value="1">未綁定</option>
                             </select>
@@ -60,21 +68,21 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            篩選功能
+                            匯入資料
                         </div>
 
-                        <div class="col-md-3">
-                            <input type="file" class="jfilestyle" data-theme="blue" data-inputSize="" data-text="上傳檔案">
-
+                        <div class="col-md-3">                    
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
                         </div>
                         <div class="col-md-2">
-                            限定.CSV檔
+                            限定.XLS/XLSX檔
                         </div>
 
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary">範例檔案下載</button>
-
+                            <button type="button" id="btnUpload" name="btnUpload" class="btn btn-primary">匯入</button>
+                            <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
                         </div>
+
                     </div>
                 </div>
             </li>
@@ -82,8 +90,11 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-                            <button type="submit" class="btn btn-primary">匯出</button>
+                            <input type="hidden" name="Mode" id="Mode" value="0" />
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+                            <input type="hidden" id="len" name="len" value="@ResultLen" />
+                            <button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
+                            <button type="submit" id="btnExplode" name="btnExplode" class="btn btn-primary">匯出</button>
                         </div>
                     </div>
                 </div>
@@ -103,6 +114,7 @@
                 <th scope="col">車機號碼</th>
                 <th scope="col">使用狀態</th>
                 <th scope="col">車號</th>
+                <th scope="col">遠傳Cat平台token</th>
                 <th scope="col">iButton</th>
                 <th scope="col">門號(SIM卡)</th>
                 <th scope="col">編輯</th>
@@ -110,16 +122,39 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td scope="row">1</td>
-                <td scope="col">車機號碼</td>
-                <td scope="col">使用狀態</td>
-                <td scope="col">車號</td>
-                <td scope="col">iButton</td>
-                <td scope="col">門號(SIM卡)</td>
-                <td scope="col">編輯</td>
-            </tr>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="9">查無結果</td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    string BindStatus = (lstData[i].BindStatus == 1) ? "已綁定" : "未綁定";
+                    <tr>
+
+                        <td></td>
+                        <td scope="row">@(i+1)</td>
+                        <td scope="col">
+                                    @(lstData[i].CID)
+
+                        </td>
+                        <td scope="col">@(BindStatus)</td>
+                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <th scope="col">@(lstData[i].deviceToken)</th>
+                        <td scope="col">@(lstData[i].iButtonKey)</td>
+                        <td scope="col">@(lstData[i].MobileNum)</td>
+                        <td scope="col">
+                            <Button type="button" id="btnEdit_@(i+1)" name="btnEdit_@(i+1)" class="btn btn-outline-secondary" onclick=DoEdit('@(i+1)');>編輯</Button>
+                            <Button type="button" id="btnSave_@(i+1)" name="btnSave_@(i+1)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(i+1)');>儲存</Button>
+                            <Button type="button" id="btnReset_@(i+1)" name="btnReset_@(i+1)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(i+1)');>取消</Button>
+                        </td>
+                    </tr>
+                }
+            }
+
         </tbody>
     </table>
 </div>

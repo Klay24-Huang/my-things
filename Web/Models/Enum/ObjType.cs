@@ -22,6 +22,18 @@ namespace Web.Models.Enum
             /// 匯入調度停車場
             /// </summary>
             InsTransParking,
+            /// <summary>
+            /// 匯入車機資料
+            /// </summary>
+            ImportCarMachineData,
+            /// <summary>
+            /// 匯入汽車資料
+            /// </summary>
+            ImportCarData,
+            /// <summary>
+            /// 匯入機車資料
+            /// </summary>
+            ImportMotoData,
         }
         public string GetSPName(ObjType.SPType type)
         {
@@ -33,6 +45,15 @@ namespace Web.Models.Enum
                     break;
                 case SPType.InsTransParking:  
                     SPName = "usp_BE_InsTransParking";
+                    break;
+                case SPType.ImportCarMachineData:
+                    SPName = "usp_BE_ImportCarMachineData";
+                    break;
+                case SPType.ImportCarData:
+                    SPName = "usp_BE_ImportCarData";
+                    break;
+                case SPType.ImportMotoData:
+                    SPName = "usp_BE_ImportMotoData";
                     break;
             }
             return SPName;

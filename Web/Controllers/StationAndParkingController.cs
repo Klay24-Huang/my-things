@@ -72,129 +72,143 @@ namespace Web.Controllers
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
                 CommonFunc baseVerify = new CommonFunc();
-                if (fileImport.ContentLength > 0)
+                if (fileImport != null)
                 {
-                    string fileName = string.Concat(new string[]{
+                    if (fileImport.ContentLength > 0)
+                    {
+                        string fileName = string.Concat(new string[]{
                     "TransParkingImport_",
                     ((Session["Account"]==null)?"":Session["Account"].ToString()),
                     "_",
                     DateTime.Now.ToString("yyyyMMddHHmmss"),
                     ".xlsx"
                     });
-                    DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/TransParkingImport"));
-                    if (!di.Exists)
-                    {
-                        di.Create();
-                    }
-                    string path = Path.Combine(Server.MapPath("~/Content/upload/TransParkingImport"), fileName);
-                    fileImport.SaveAs(path);
-                    IWorkbook workBook = new XSSFWorkbook(path);
-                    ISheet sheet = workBook.GetSheetAt(0);
-                    int sheetLen = sheet.LastRowNum;
-                    string[] field = { "停車場名稱","地址","經度","緯度","開放時間(起)","開放時間(迄)"};
-                    int fieldLen = field.Length;
-                    //第一關，判斷位置是否相等
-                    for (int i = 0; i < fieldLen; i++)
-                    {
-                        ICell headCell = sheet.GetRow(0).GetCell(i);
-                        if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/TransParkingImport"));
+                        if (!di.Exists)
                         {
-                            errorLine = "欄位";
-                            flag = false;
-                            break;
+                            di.Create();
                         }
-                    }
-                    //通過第一關 
-                    if (flag)
-                    {
-                        string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
-                        string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
-                        for (int i = 1; i <= sheetLen; i++)
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/TransParkingImport"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
                         {
-                            decimal Longitude = 0, Latitude = 0;
-                            DateTime SD = DateTime.Now, ED = DateTime.Now;
-                            SPInput_BE_InsTransParking data = new SPInput_BE_InsTransParking()
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
                             {
-                                 ParkingName=sheet.GetRow(i).GetCell(0).ToString().Replace(" ",""),
-                                  ParkingAddress = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                   UserID= UserId
-                            };
-                            flag = Decimal.TryParse(sheet.GetRow(i).GetCell(2).ToString(), out Longitude);
-                            if (flag == false)
-                            {
-                                errorMsg = string.Format("第{0}行的經度{1}不是正確的值", i.ToString(), sheet.GetRow(i).GetCell(2).ToString());
+                                errorLine = "標題列不相符";
+                                flag = false;
                                 break;
                             }
-                            else
+                        }
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                            for (int i = 1; i <= sheetLen; i++)
                             {
-                                data.Longitude = Longitude;
-                            }
-                            if (flag)
-                            {
-                                flag = Decimal.TryParse(sheet.GetRow(i).GetCell(3).ToString(), out Latitude);
+                                decimal Longitude = 0, Latitude = 0;
+                                DateTime SD = DateTime.Now, ED = DateTime.Now;
+                                SPInput_BE_InsTransParking data = new SPInput_BE_InsTransParking()
+                                {
+                                    ParkingName = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    ParkingAddress = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                    UserID = UserId
+                                };
+                                flag = Decimal.TryParse(sheet.GetRow(i).GetCell(2).ToString(), out Longitude);
                                 if (flag == false)
                                 {
-                                    errorMsg = string.Format("第{0}行的緯度{1}不是正確的值", i.ToString(), sheet.GetRow(i).GetCell(3).ToString());
+                                    errorMsg = string.Format("第{0}行的經度{1}不是正確的值", i.ToString(), sheet.GetRow(i).GetCell(2).ToString());
                                     break;
                                 }
                                 else
                                 {
-                                    data.Latitude = Latitude;
+                                    data.Longitude = Longitude;
                                 }
-                            }
-                            if (flag)
-                            {
-                                flag = DateTime.TryParse(sheet.GetRow(i).GetCell(4).ToString(), out SD);
-                                if (flag == false)
+                                if (flag)
                                 {
-                                    errorMsg = string.Format("第{0}行的開放時間(起)：{1}不是正確的日期格式", i.ToString(), sheet.GetRow(i).GetCell(4).ToString());
-                                    break;
+                                    flag = Decimal.TryParse(sheet.GetRow(i).GetCell(3).ToString(), out Latitude);
+                                    if (flag == false)
+                                    {
+                                        errorMsg = string.Format("第{0}行的緯度{1}不是正確的值", i.ToString(), sheet.GetRow(i).GetCell(3).ToString());
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        data.Latitude = Latitude;
+                                    }
                                 }
-                                else
+                                if (flag)
                                 {
-                                    data.OpenTime = SD;
+                                    flag = DateTime.TryParse(sheet.GetRow(i).GetCell(4).ToString(), out SD);
+                                    if (flag == false)
+                                    {
+                                        errorMsg = string.Format("第{0}行的開放時間(起)：{1}不是正確的日期格式", i.ToString(), sheet.GetRow(i).GetCell(4).ToString());
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        data.OpenTime = SD;
+                                    }
                                 }
-                            }
-                            if (flag)
-                            {
-                                flag = DateTime.TryParse(sheet.GetRow(i).GetCell(5).ToString(), out ED);
-                                if (flag == false)
+                                if (flag)
                                 {
-                                    errorMsg = string.Format("第{0}行的開放時間(迄)：{1}不是正確的日期格式", i.ToString(), sheet.GetRow(i).GetCell(5).ToString());
-                                    break;
+                                    flag = DateTime.TryParse(sheet.GetRow(i).GetCell(5).ToString(), out ED);
+                                    if (flag == false)
+                                    {
+                                        errorMsg = string.Format("第{0}行的開放時間(迄)：{1}不是正確的日期格式", i.ToString(), sheet.GetRow(i).GetCell(5).ToString());
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        data.CloseTime = ED;
+                                    }
                                 }
-                                else
+
+                                if (flag)
                                 {
-                                    data.CloseTime = ED;
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SPInput_BE_InsTransParking, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
                                 }
+
                             }
 
-                            if (flag)
-                            {
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SPInput_BE_InsTransParking, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
-                                {
-                                    errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
-                                }
-                            }
-                         
                         }
 
-                    }
                     
-                    if (flag)
-                    {
-                        ViewData["errorLine"] = "ok";
+
                     }
                     else
                     {
-                        ViewData["errorMsg"] = errorMsg;
-                        ViewData["errorLine"] = errorLine.ToString();
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
                     }
-
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorMsg"] = errorMsg;
+                    ViewData["errorLine"] = errorLine.ToString();
                 }
             }
 
@@ -220,6 +234,15 @@ namespace Web.Controllers
         public ActionResult ChargeParkingSetting()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult ChargeParkingSetting(string ParkingName)
+        {
+            ViewData["ParkingName"] = ParkingName;
+            List<BE_ChargeParkingData> lstData = null;
+            ParkingRepository repository = new ParkingRepository(connetStr);
+            lstData = repository.GetChargeParking(ParkingName);
+            return View(lstData);
         }
 
         #region 共用元件類型

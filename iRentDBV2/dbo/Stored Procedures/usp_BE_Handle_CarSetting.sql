@@ -111,7 +111,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 		 IF @Error=0
 		 BEGIN
 			UPDATE  TB_Car
-			SET nowStationId=@StationID
+			SET nowStationId=@StationID,last_Opt=@UserID,UPDTime=@NowTime
 			WHERE CarNo=@CarNo;
 		 END
 		--寫入錯誤訊息

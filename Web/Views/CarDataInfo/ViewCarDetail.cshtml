@@ -1,4 +1,18 @@
-﻿<div class="container mt-4">
+﻿@model Domain.TB.BackEnd.BE_GetCarDetail
+@{
+    Domain.TB.BackEnd.BE_GetCarDetail obj=null;
+    int ResultLen = 0;
+
+    int NowShowType = ((ViewData["ShowType"] == null) ? 3 : Convert.ToInt32(ViewData["ShowType"].ToString()));
+    string[] ShowType = { "", "", "", "" };
+    ShowType[NowShowType] = " checked";
+    if (Model != null)
+    {
+        obj = Model;
+
+    }
+}
+<div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
@@ -18,7 +32,7 @@
                             車機編號
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.CID)
                         </div>
 
                     </div>
@@ -31,7 +45,7 @@
                             門號
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.MobileNo)
                         </div>
 
                     </div>
@@ -44,7 +58,7 @@
                             iButton
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.iButtonKey)
                         </div>
 
                     </div>
@@ -62,7 +76,7 @@
                             車牌號碼
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.CarNo)
                         </div>
 
                     </div>
@@ -75,7 +89,7 @@
                             車款
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.CarTypeName)
                         </div>
 
                     </div>
@@ -88,7 +102,7 @@
                             車身顏色
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.CarColor)
                         </div>
 
                     </div>
@@ -101,7 +115,7 @@
                             車體編號
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.BodyNO)
                         </div>
 
                     </div>
@@ -114,7 +128,7 @@
                             引擎編號
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.EngineNO)
                         </div>
 
                     </div>
@@ -127,7 +141,7 @@
                             出廠日期
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.FactoryYear)
                         </div>
 
                     </div>
@@ -140,7 +154,7 @@
                             CC數
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.CCNum)
                         </div>
 
                     </div>
@@ -153,7 +167,7 @@
                             目前庫位
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.NowStationName)
                         </div>
 
                     </div>
@@ -166,7 +180,7 @@
                             所屬庫位
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.StationName)
                         </div>
 
                     </div>
@@ -184,7 +198,7 @@
                             平日定價
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.WeekdayPrice)
                         </div>
 
                     </div>
@@ -197,7 +211,7 @@
                             假日定價
                         </div>
                         <div class="col-md-3">
-
+                            @(obj.HoildayPrice)
                         </div>
 
                     </div>
@@ -207,11 +221,11 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="button" class="btn btn-primary"  onclick="javascript: history.back();">返回</button>
+                            <button type="button" class="btn btn-primary" onclick="javascript: history.back();">返回</button>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
-        </div>
     </div>
+</div>

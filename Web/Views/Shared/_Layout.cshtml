@@ -37,7 +37,33 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "保有車輛設定";
             break;
+        case "CarBind":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛車機綁定設定";
+            break;
+        case "CarDataSetting":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛資料設定";
+            break;
+        case "ViewCarDetail":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "車輛資料設定";
+            break;
+
+        case "ImportMotorData":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "匯入機車車輛檔";
+            break;
+        case "ImportCarData":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "匯入汽車車輛檔";
+            break;
+        case "ImportCarMachineData":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "匯入車機資料(含SIM)";
+            break;
             #endregion
+
 
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
@@ -130,6 +156,10 @@
                 </g>
             </svg>
             @ActionStrName
+            @if (actionName == "ViewCarDetail")
+            {
+                @("/ 車輛基本資料")
+            }
         </p>
 
     </div>

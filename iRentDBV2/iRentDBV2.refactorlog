@@ -434,4 +434,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="UPDTime" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e5e3a62c-6a98-4203-ae4f-f3ce93f0e8d3" ChangeDateTime="10/15/2020 08:32:08">
+    <Property Name="ElementName" Value="[dbo].[TB_CarInfo].[IButtonKey]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_CarInfo]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="iButtonKey" />
+  </Operation>
 </Operations>

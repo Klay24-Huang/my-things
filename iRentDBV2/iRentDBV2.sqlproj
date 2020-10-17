@@ -246,6 +246,15 @@
     <Build Include="dbo\Stored Procedures\usp_BE_HandleCarDataSettingMemo.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CarDataSettingSetOnline.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMemberStatus.sql" />
+    <Build Include="dbo\Views\VW_BE_GetPartOfCarDataSetting.sql" />
+    <Build Include="dbo\Tables\TB_Mobile.sql" />
+    <Build Include="dbo\Views\VW_GetCarDetail.sql" />
+    <Build Include="dbo\Views\VW_BE_GetChargeParking.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleChargeParkingData.sql" />
+    <Build Include="dbo\Views\VW_GetCarBindData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportCarMachineData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportCarData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportMotoData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
