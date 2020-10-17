@@ -188,7 +188,7 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
-                            info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
+                            info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);
                             if (info == null)
                             {
                                 flag = false;
