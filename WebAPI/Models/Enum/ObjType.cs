@@ -231,6 +231,10 @@ namespace WebAPI.Models.Enum
             /// 取得多據點專案
             /// </summary>
             GetStationCarTypeOfMutiStation,
+            /// <summary>
+            /// 取得會員登入後狀態 20201016 ADD BY ADAM 
+            /// </summary>
+            GetMemberStatus,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -464,6 +468,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";
+                    break;
+                case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
+                    SPName = "usp_GetMemberStatus";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

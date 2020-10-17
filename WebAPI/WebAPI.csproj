@@ -166,6 +166,7 @@
     <Compile Include="Controllers\DeleteCreditCardBindController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
+    <Compile Include="Controllers\GetMemberStatusController.cs" />
     <Compile Include="Controllers\GetPayDetailController.cs" />
     <Compile Include="Controllers\GetPolygonController.cs" />
     <Compile Include="Controllers\GetAnyRentProjectController.cs" />
@@ -355,6 +356,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />

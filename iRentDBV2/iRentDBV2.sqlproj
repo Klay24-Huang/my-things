@@ -245,6 +245,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_Handle_CarSetting.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleCarDataSettingMemo.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CarDataSettingSetOnline.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMemberStatus.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
