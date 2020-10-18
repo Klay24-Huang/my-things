@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         /// <summary>
         /// 上傳取車回饋
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="apiInput"></param>
         /// <returns></returns>
         [HttpPost]
         //public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
