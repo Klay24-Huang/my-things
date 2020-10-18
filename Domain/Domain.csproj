@@ -123,6 +123,7 @@
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetCarStatusBeforeOpenDoorFinish.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_InsFeedBack.cs" />
     <Compile Include="SP\Input\Rent\SPInput_InsOpenDoorCode.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OpenDoorFinish.cs" />
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />

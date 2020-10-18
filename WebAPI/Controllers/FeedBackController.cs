@@ -7,27 +7,32 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    public class UploadFeedBackImageController : ApiController
+    /// <summary>
+    /// 取還車回饋
+    /// </summary>
+    public class FeedBackController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
-        /// 上傳取車回饋
+        /// 取還車回饋
         /// </summary>
         /// <param name="apiInput"></param>
         /// <returns></returns>
         [HttpPost]
         //public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
-        public Dictionary<string, object> DoUploadFeedBackImage(IAPI_UploadFeedBackImage apiInput)
+        public Dictionary<string, object> DoFeedBack(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -39,87 +44,108 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "UploadFeedBackImageController";
+            string funName = "FeedBackController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-
-            OAPI_UploadFeedBackImage outputApi = new OAPI_UploadFeedBackImage();
+            IAPI_FeedBack apiInput = null;
+            NullOutput outputApi = new NullOutput();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
-
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-            bool CheckFlag = true;
             string IDNO = "";
-
+            string FeedBackKindStr = "";
 
             #endregion
             #region 防呆
-            Dictionary<string, object> value = new Dictionary<string, object>();
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
+
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
             {
-                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_UploadCarImage>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_FeedBack>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                IAPI_UploadFeedBackImage tmpAPI = apiInput;
-                int len = tmpAPI.FeedBack.Count;
-                for(int i = 0; i < len; i++)
-                {
-                    tmpAPI.FeedBack[i].FeedBackFile = tmpAPI.FeedBack[i].FeedBackFile.Length.ToString();
-                    if(tmpAPI.FeedBack[i].SEQNO<1 || tmpAPI.FeedBack[i].SEQNO > 4)
-                    {
-                        CheckFlag = false;
-                        break;
-                    }
-                }
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                flag = baseVerify.InsAPLog(tmpAPI.ToString(), ClientIP, funName, ref errCode, ref LogID);
-                if (false == CheckFlag)
+                if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
                     flag = false;
                     errCode = "ERR900";
                 }
-                if (flag)
+                else
                 {
-                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
+                    if (apiInput.OrderNo.IndexOf("H") < 0)
                     {
                         flag = false;
                         errCode = "ERR900";
                     }
-                    else
+                    if (flag)
                     {
-                        if (apiInput.OrderNo.IndexOf("H") < 0)
-                        {
-                            flag = false;
-                            errCode = "ERR900";
-                        }
+                        flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
                         if (flag)
                         {
-                            flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
-                            if (flag)
+                            if (tmpOrder <= 0)
                             {
-                                if (tmpOrder <= 0)
-                                {
-                                    flag = false;
-                                    errCode = "ERR900";
-                                }
-
+                                flag = false;
+                                errCode = "ERR900";
                             }
+
                         }
                     }
                 }
-              
-               
 
             }
-        
-         
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(apiInput.Descript))
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
+            }
+            if (flag)
+            {
+                if(apiInput.Mode<0 || apiInput.Mode > 1)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
+                else
+                {
+                    if (apiInput.Mode == 1)
+                    {
+                        if (apiInput.FeedBackKind != null)
+                        {
+                            int FeedBackKindLen = apiInput.FeedBackKind.Count();
+                            if (FeedBackKindLen > 0)
+                            {
+                                FeedBackKindStr = apiInput.FeedBackKind[0].ToString();
+                                
+                                for (int i = 0; i < FeedBackKindLen; i++)
+                                {
+                                    FeedBackKindStr += string.Format(",{0}", apiInput.FeedBackKind[i]);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        apiInput.Star = 0;
+                    }
+                }
+            }
+            if (flag)
+            {
+                if (apiInput.Star < -1 || apiInput.Star > 5)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
+            }
             //不開放訪客
             if (flag)
             {
@@ -152,55 +178,29 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                FeedBackImage[] carImages = apiInput.FeedBack.ToArray();
+               
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base>(connetStr);
-                List<FeedBackImageData> CarImgDataLists = new List<FeedBackImageData>();
-                DataSet ds = new DataSet();
-                for (int i = 0; i < carImages.Length; i++)
-                {
+                SQLHelper<SPInput_InsFeedBack, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsFeedBack, SPOutput_Base>(connetStr);
 
-                    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
+
+                    SPInput_InsFeedBack spInput = new SPInput_InsFeedBack()
                     {
                         IDNO = IDNO,
                         LogID = LogID,
                         Token = Access_Token,
-                        FeedBackFile = carImages[i].FeedBackFile,
-                        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
+                         Descript=apiInput.Descript,
+                          FeedBackKind= FeedBackKindStr,
+                           Mode=apiInput.Mode,
+                            Star=apiInput.Star,
                         OrderNo = tmpOrder
                     };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
-                    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.InsFeedBack);
+                    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut,ref lstError);
                     baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag == false)
-                    {
-                        break;
-                    }
-                }
-                if (flag)
-                {
-                    outputApi.FeedBackImageObj = new List<FeedBackImageData>();
-                    for (int i = 1; i < 5; i++)
-                    {
-                        FeedBackImageData obj = new FeedBackImageData()
-                        {
-                            SEQNO = i,
-                            HasUpload = 0
-                        };
-                        int Index = CarImgDataLists.FindIndex(delegate (FeedBackImageData cardata)
-                        {
-                            return cardata.SEQNO == i;
-                        });
-                        if (Index > -1)
-                        {
-                            obj.HasUpload = 1;
-                        }
-                        outputApi.FeedBackImageObj.Add(obj);
-                    }
-                }
+
+
             }
             #endregion
-
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {

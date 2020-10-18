@@ -187,6 +187,7 @@ namespace WebAPI.Models.Enum
             /// 上傳取車回饋照
             /// </summary>
             UploadFeedBackImage,
+            InsFeedBack,
             /// <summary>
             /// 上傳及設定停車格位置
             /// </summary>
@@ -447,6 +448,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UploadFeedBackImage:
                     SPName = "usp_INSTmpFeedBackPIC";
+                    break;
+                case SPType.InsFeedBack:
+                    SPName = "usp_InsFeedBack";
                     break;
                 case SPType.SettingParkingSpce:
                     SPName = "usp_InsParkingSpace";
