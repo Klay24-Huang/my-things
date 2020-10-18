@@ -128,6 +128,7 @@
     <Compile Include="SP\Input\Rent\SPInput_ReturnCar.cs" />
     <Compile Include="SP\Input\Rent\SPInput_SetingParkingSpaceByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UploadCarImage.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_UploadFeedBackImage.cs" />
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />

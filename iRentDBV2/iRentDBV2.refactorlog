@@ -462,4 +462,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PAYCD" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="883598fd-b363-468f-a20e-bbfee5a3fa92" ChangeDateTime="10/17/2020 21:35:20">
+    <Property Name="ElementName" Value="[dbo].[TB_tmpFeedBackPIC].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_tmpFeedBackPIC]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="tmpFeedBackPICID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="66fb6e7c-f4fe-4eeb-8557-85c12f4fc0b2" ChangeDateTime="10/17/2020 21:37:28">
+    <Property Name="ElementName" Value="[dbo].[TB_tmpFeedBackPIC].[CrentialsFile]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_tmpFeedBackPIC]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FeedBackFile" />
+  </Operation>
 </Operations>

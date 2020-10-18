@@ -230,6 +230,7 @@
     <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\UploadCarImageController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
+    <Compile Include="Controllers\UploadFeedBackImageController.cs" />
     <Compile Include="Controllers\UseInviteCodeController.cs" />
     <Compile Include="Controllers\VerifyEMailController.cs" />
     <Compile Include="Controllers\VerifySMSController.cs" />
@@ -332,6 +333,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
+    <Compile Include="Models\Param\Input\IAPI_UploadFeedBackImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UseInviteCode.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifyEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
@@ -386,6 +388,7 @@
     <Compile Include="Models\Param\Output\OAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
+    <Compile Include="Models\Param\Output\OAPI_UploadFeedBackImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_UseInviteCode.cs" />
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
