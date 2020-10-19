@@ -1,7 +1,9 @@
 ﻿CREATE TABLE [dbo].[TB_FeedBackKind]
 (
-	[FeedBackKindId] INT NOT NULL, 
+	[FeedBackKindId] INT NOT NULL IDENTITY, 
+    [IsMotor] TINYINT NOT NULL DEFAULT 0,
     [Star] INT NOT NULL DEFAULT 1, 
+    [StarU] INT NOT NULL DEFAULT 1,
     [Descript] NVARCHAR(50) NOT NULL DEFAULT N'' ,
     [use_flag] [tinyint] NOT NULL DEFAULT (1),
     [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT 'SYS',
@@ -47,4 +49,23 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2name = N'last_Opt'
 GO
 
-CREATE INDEX [IX_TB_FeedBackKind_Search] ON [dbo].[TB_FeedBackKind] ([Star], [use_flag])
+CREATE INDEX [IX_TB_FeedBackKind_Search] ON [dbo].[TB_FeedBackKind] ([Star], [use_flag], [StarU])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否是機車，(0:否;1:是)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_FeedBackKind',
+    @level2type = N'COLUMN',
+    @level2name = N'IsMotor'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'星星數範圍上限',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_FeedBackKind',
+    @level2type = N'COLUMN',
+    @level2name = N'StarU'

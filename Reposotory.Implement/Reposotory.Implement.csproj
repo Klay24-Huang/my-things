@@ -47,10 +47,12 @@
     <Compile Include="CarCMDRepository.cs" />
     <Compile Include="CarStatusCommon.cs" />
     <Compile Include="CommonRepository.cs" />
+    <Compile Include="ContactRepository.cs" />
     <Compile Include="Enum\ObjType.cs" />
     <Compile Include="ManagerRepository.cs" />
     <Compile Include="MemberRepository.cs" />
     <Compile Include="MonthlyRentRepository.cs" />
+    <Compile Include="OtherRepository.cs" />
     <Compile Include="ParkingRepository.cs" />
     <Compile Include="ProjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

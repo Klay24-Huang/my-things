@@ -1,6 +1,13 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_OrderHistoryData>
 @{
+    List<Domain.TB.BackEnd.BE_OrderHistoryData> lstData = null;
     string OrderNo = (ViewData["OrderNo"] == null) ? "" : ViewData["OrderNo"].ToString();
+    int ResultLen = -1;
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -9,44 +16,48 @@
         <div class="card-header bg-secondary text-white">
             訂單記錄歷程資料查詢
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            訂單編號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="@OrderNo" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-
-
-
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-
+        @using (Html.BeginForm("ContactHistoryQuery", "ContactManage", FormMethod.Post, new { id = "formContactHistoryQuery", name = "formContactHistoryQuery" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="([0-9]{1,})|((H)[0-9]{1,})" required value="@OrderNo" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+
+
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" class="btn btn-primary">查詢</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
     </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
-<div class="container mt-4" id="ShowSetCardPanel">
+<div class="container mt-4" id="panelResult">
     <table class="table bg-white footable" data-filter="#filter" id="list">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
+                <td scope="row"></td>
                 <th scope="col">預約編號</th>
                 <th scope="col">敘述</th>
                 <th scope="col">時間</th>
@@ -54,17 +65,38 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td scope="row">1</td>
-                <td scope="col">1234567890</td>
-                <td scope="col"></td>
-                <td scope="col"></td>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="5">查無資料</td>
 
 
-            </tr>
+
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td></td>
+                        <td scope="row">@(i+1)</td>
+                        <td scope="col">@(string.Format("H{0}",lstData[i].OrderNum.ToString().PadLeft(7,'0')))</td>
+                        <td scope="col">@(lstData[i].Descript)</td>
+                        <td scope="col">@(lstData[i].MKTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+
+
+                    </tr>
+                }
+
+            }
+
         </tbody>
     </table>
 </div>
 
 <!--輸出表格結束-->
+<!--javascript 初始-->
+<script>
+    var ResultDataLen = '@(ResultLen)';
+</script>

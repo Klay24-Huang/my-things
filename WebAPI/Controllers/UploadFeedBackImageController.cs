@@ -17,20 +17,17 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 上傳出還車照
-    /// </summary>
-    public class UploadCarImageController : ApiController
+    public class UploadFeedBackImageController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
-        /// 上傳出還車照
+        /// 上傳取車回饋
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="apiInput"></param>
         /// <returns></returns>
         [HttpPost]
         //public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
-        public Dictionary<string, object> DoUploadCarImage(IAPI_UploadCarImage2 apiInput)
+        public Dictionary<string, object> DoUploadFeedBackImage(IAPI_UploadFeedBackImage apiInput)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -42,15 +39,11 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "UploadCarImageController";
+            string funName = "UploadFeedBackImageController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            //IAPI_UploadCarImage apiInput = null;
-            //20201015 UPD BY JERRY 假資料供檢核使用
-            Dictionary<string, object> value = new Dictionary<string, object>() {
-                {"Key1", "AAAA"}
-            };
-            OAPI_UploadCarImage outputApi = new OAPI_UploadCarImage();
+
+            OAPI_UploadFeedBackImage outputApi = new OAPI_UploadFeedBackImage();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -60,86 +53,73 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
+            bool CheckFlag = true;
             string IDNO = "";
 
 
             #endregion
             #region 防呆
-
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            Dictionary<string, object> value = new Dictionary<string, object>();
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
 
             if (flag)
             {
                 //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_UploadCarImage>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                //string restoreCarImg = apiInput.CarImage;
-                //string tmpCarImg = apiInput.CarImage.Length.ToString();
-                List<CarImages> restoreCarImg = apiInput.CarImages;
-                List<CarImages> tmpCarImg = new List<CarImages> {
-                    new CarImages() {
-                    CarType=0,
-                    CarImage=apiInput.CarImages.ToArray().Length.ToString()
-                } };
-                //20201015 暫存不需要存完整圖檔
-                apiInput.CarImages = tmpCarImg;
+                IAPI_UploadFeedBackImage tmpAPI = apiInput;
+                int len = tmpAPI.FeedBack.Count;
+                for(int i = 0; i < len; i++)
+                {
+                    tmpAPI.FeedBack[i].FeedBackFile = tmpAPI.FeedBack[i].FeedBackFile.Length.ToString();
+                    if(tmpAPI.FeedBack[i].SEQNO<1 || tmpAPI.FeedBack[i].SEQNO > 4)
+                    {
+                        CheckFlag = false;
+                        break;
+                    }
+                }
 
-                flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
-                apiInput.CarImages = restoreCarImg;
-                if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
+                flag = baseVerify.InsAPLog(tmpAPI.ToString(), ClientIP, funName, ref errCode, ref LogID);
+                if (false == CheckFlag)
                 {
                     flag = false;
                     errCode = "ERR900";
                 }
-                else
+                if (flag)
                 {
-                    if (apiInput.OrderNo.IndexOf("H") < 0)
+                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                     {
                         flag = false;
                         errCode = "ERR900";
                     }
-                    if (flag)
+                    else
                     {
-                        flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                        if (apiInput.OrderNo.IndexOf("H") < 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                        }
                         if (flag)
                         {
-                            if (tmpOrder <= 0)
+                            flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                            if (flag)
                             {
-                                flag = false;
-                                errCode = "ERR900";
-                            }
+                                if (tmpOrder <= 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR900";
+                                }
 
+                            }
                         }
                     }
                 }
+              
+               
 
             }
-            if (flag)
-            {
-                if (apiInput.Mode < 0 || apiInput.Mode > 1)
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
-            //20201015 多筆改在迴圈內檢核
-            //if (flag)
-            //{
-            //    if (apiInput.CarType < 1 || apiInput.CarType > 8)
-            //    {
-            //        flag = false;
-            //        errCode = "ERR900";
-            //    }
-            //}
-            //if (flag)
-            //{
-            //    if (string.IsNullOrEmpty(apiInput.CarImage))
-            //    {
-            //        flag = false;
-            //        errCode = "ERR900";
-            //    }
-            //}
+        
+         
             //不開放訪客
             if (flag)
             {
@@ -172,41 +152,24 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                CarImages[] carImages = apiInput.CarImages.ToArray();
+                FeedBackImage[] carImages = apiInput.FeedBack.ToArray();
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_UploadCarImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadCarImage, SPOutput_Base>(connetStr);
-                List<CarImageData> CarImgDataLists = new List<CarImageData>();
+                SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base>(connetStr);
+                List<FeedBackImageData> CarImgDataLists = new List<FeedBackImageData>();
                 DataSet ds = new DataSet();
-                //20201018 修改 by eric，以效能的方面來看，carImages.Length會變成每一次迴圈都會去取lenth，建議改為int len=carImages.Length
-                int CarImagesLen = carImages.Length;
-                for (int i = 0; i < CarImagesLen; i++)
+                for (int i = 0; i < carImages.Length; i++)
                 {
 
-                    if (carImages[i].CarType < 1 || carImages[i].CarType > 8)
-                    {
-                        flag = false;
-                        errCode = "ERR900";
-                        break;
-                    }
-                    if (string.IsNullOrEmpty(carImages[i].CarImage))
-                    {
-                        flag = false;
-                        errCode = "ERR900";
-                        break;
-                    }
-                    SPInput_UploadCarImage spInput = new SPInput_UploadCarImage()
+                    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
                     {
                         IDNO = IDNO,
                         LogID = LogID,
                         Token = Access_Token,
-                        //CarImage=apiInput.CarImage,
-                        //CarImageType=Convert.ToInt16(apiInput.CarType),
-                        CarImage = carImages[i].CarImage,
-                        CarImageType = Convert.ToInt16(carImages[i].CarType),
-                        Mode = Convert.ToInt16(apiInput.Mode),
+                        FeedBackFile = carImages[i].FeedBackFile,
+                        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
                         OrderNo = tmpOrder
                     };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadCarImage);
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
                     flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
                     baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                     if (flag == false)
@@ -216,23 +179,23 @@ namespace WebAPI.Controllers
                 }
                 if (flag)
                 {
-                    outputApi.CarImageObj = new List<CarImageData>();
-                    for (int i = 1; i < 9; i++)
+                    outputApi.FeedBackImageObj = new List<FeedBackImageData>();
+                    for (int i = 1; i < 5; i++)
                     {
-                        CarImageData obj = new CarImageData()
+                        FeedBackImageData obj = new FeedBackImageData()
                         {
-                            CarImageType = i,
+                            SEQNO = i,
                             HasUpload = 0
                         };
-                        int Index = CarImgDataLists.FindIndex(delegate (CarImageData cardata)
+                        int Index = CarImgDataLists.FindIndex(delegate (FeedBackImageData cardata)
                         {
-                            return cardata.CarImageType == i;
+                            return cardata.SEQNO == i;
                         });
                         if (Index > -1)
                         {
                             obj.HasUpload = 1;
                         }
-                        outputApi.CarImageObj.Add(obj);
+                        outputApi.FeedBackImageObj.Add(obj);
                     }
                 }
             }

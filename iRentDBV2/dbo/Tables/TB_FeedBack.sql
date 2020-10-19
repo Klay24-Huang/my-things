@@ -4,6 +4,7 @@
     [IDNO]           VARCHAR (20)    DEFAULT ('') NOT NULL,
     [OrderNo]   BIGINT          DEFAULT ((0)) NOT NULL,
     [mode]           TINYINT         DEFAULT ((0)) NOT NULL,
+    [FeedBackKind]   VARCHAR(1024)   DEFAULT ('') NOT NULL,
     [descript]       NVARCHAR (500)  DEFAULT (N'') NOT NULL,
     [star]           TINYINT         DEFAULT ((0)) NOT NULL,
     [PIC1]           VARCHAR (100)   DEFAULT ('') NOT NULL,
@@ -52,3 +53,12 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'訂單編�
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'回饋主檔', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_FeedBack';
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'回饋類別',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_FeedBack',
+    @level2type = N'COLUMN',
+    @level2name = N'FeedBackKind'
