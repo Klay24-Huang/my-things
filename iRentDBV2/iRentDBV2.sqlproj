@@ -264,6 +264,8 @@
     <Build Include="dbo\Tables\TB_tmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_INSTmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsFeedBack.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ImportCarBindData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleCarBindData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

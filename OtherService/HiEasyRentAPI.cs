@@ -24,7 +24,11 @@ namespace OtherService
         protected string userid;
         protected string apikey;
         protected string BaseURL;
-        protected string NPR260SendURL; //簡訊發奠
+        protected string NPR060SaveURL; //060
+        protected string NPR125SaveURL; //
+        protected string NPR130SaveURL; //
+        protected string NPR136SaveURL; //
+        protected string NPR260SendURL; //簡訊發送
         protected string NPR270QueryURL; //點數查詢
         protected string NPR370CheckURL; //點數轉贈前檢查
         protected string NPR370SaveURL;  //進行轉贈
@@ -32,6 +36,8 @@ namespace OtherService
         protected string ETAG010QueryURL; //ETAG查詢
         protected string EinvBizURL;     //手機條碼檢核
         protected string NPR320QueryURL; //點數兌換
+        protected string NPR350CheckURL;
+        protected string MonthlyRentURL; //月租訂閱
         protected string connetStr;
         bool disposed = false;
         /// <summary>
@@ -43,6 +49,10 @@ namespace OtherService
             connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
             userid = ConfigurationManager.AppSettings.Get("userid");
             BaseURL = (ConfigurationManager.AppSettings.Get("BaseURL") == null) ? "" : ConfigurationManager.AppSettings.Get("BaseURL").ToString();
+            NPR060SaveURL = (ConfigurationManager.AppSettings.Get("NPR060SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR060SaveURL").ToString();
+            NPR125SaveURL = (ConfigurationManager.AppSettings.Get("NPR125SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR125SaveURL").ToString();
+            NPR130SaveURL = (ConfigurationManager.AppSettings.Get("NPR130SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR130SaveURL").ToString();
+            NPR136SaveURL = (ConfigurationManager.AppSettings.Get("NPR136SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136SaveURL").ToString();
             NPR260SendURL = (ConfigurationManager.AppSettings.Get("NPR260SendURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR260SendURL").ToString();
             NPR270QueryURL = (ConfigurationManager.AppSettings.Get("NPR270QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR270QueryURL").ToString();
             NPR370CheckURL = (ConfigurationManager.AppSettings.Get("NPR370CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370CheckURL").ToString();
@@ -51,6 +61,7 @@ namespace OtherService
             ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
             NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
+            MonthlyRentURL = (ConfigurationManager.AppSettings.Get("MonthlyRentURL") == null) ? "" : ConfigurationManager.AppSettings.Get("MonthlyRentURL").ToString();
         }
         /// <summary>
         /// 產生簽章

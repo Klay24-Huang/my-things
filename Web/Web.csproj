@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
+    <Compile Include="Models\WebCommonFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <Content Include="Content\css\cabinet.css" />
     <Content Include="Content\css\docs.css" />
     <Content Include="Content\css\flatpickr.min.css" />
+    <Content Include="Content\css\footable.bootstrap.min.css" />
     <Content Include="Content\css\footable\fonts\footable.svg" />
     <Content Include="Content\css\footable\footable.core.css" />
     <Content Include="Content\css\images\marker-icon-2x.png" />
@@ -455,6 +457,7 @@
     <Content Include="Views\StationAndParking\StationInfoMaintain.cshtml" />
     <Content Include="Views\StationAndParking\StationInfoAdd.cshtml" />
     <Content Include="Views\SystemSetting\FeedBackKindSetting.cshtml" />
+    <Content Include="Views\CommonObj\GetCarMachineUnBindList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

@@ -476,6 +476,25 @@ namespace Reposotory.Implement
             return lstCarDataSettingData;
 
         }
+        public List<BE_CarMachineData> GetCarMachineUnBind()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarMachineData> lstUnBindMachine = null;
+
+
+            int nowCount = 0;
+            string SQL = " SELECT MachineNo AS CID FROM TB_CarMachine WHERE MachineNo NOT IN (SELECT CID FROM TB_CarInfo) ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+
+            lstUnBindMachine = GetObjList<BE_CarMachineData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstUnBindMachine;
+
+        }
 
     }
 }

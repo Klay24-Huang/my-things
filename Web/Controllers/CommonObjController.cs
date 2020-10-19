@@ -5,6 +5,7 @@ using Domain.TB;
 using System.Collections.Generic;
 using Domain.Common.BackEnd;
 using Microsoft.Ajax.Utilities;
+using Reposotory.Implement;
 
 namespace Web.Controllers
 {
@@ -58,6 +59,15 @@ namespace Web.Controllers
             }
            
             return View(list);
+        }
+        [ChildActionOnly]
+        public ActionResult GetCarMachineUnBindList(int SEQNO)
+        {
+            CarStatusCommon CarRepository = new CarStatusCommon(connetStr);
+            bool showAll = false;
+            var MachineNoList = CarRepository.GetCarMachineUnBind();
+            ViewData["CarMachineNo"] = SEQNO;
+            return View(MachineNoList);
         }
 
     }

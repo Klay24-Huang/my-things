@@ -140,12 +140,14 @@
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
+    <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
     <Compile Include="Controllers\BE_HandleCarOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleCarSettingController.cs" />
     <Compile Include="Controllers\BE_HandleChargeParkingController.cs" />
     <Compile Include="Controllers\BE_HandleFeedBackKindController.cs" />
     <Compile Include="Controllers\BE_HandleFeedBackOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
+    <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_SetCarMemoController.cs" />
     <Compile Include="Controllers\BE_UnBindCreditCardController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
@@ -250,6 +252,7 @@
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangePWD.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleChargeParking.cs" />
