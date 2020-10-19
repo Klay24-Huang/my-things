@@ -1,9 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[usp_GetMemberStatus]    Script Date: 2020/10/15 下午 11:48:18 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-/****************************************************************
+﻿/****************************************************************
 ** Name: [dbo].[usp_GetMemberStatus]
 ** Desc: 
 **

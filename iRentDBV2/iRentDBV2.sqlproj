@@ -265,6 +265,7 @@
     <Build Include="dbo\Tables\TB_tmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_INSTmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsFeedBack.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

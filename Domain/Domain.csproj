@@ -81,6 +81,7 @@
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\Mochi\SPInput_DisabledMochiPark.cs" />

@@ -82,6 +82,10 @@ namespace WebAPI.Models.Enum
             /// 設定預設支付方式
             /// </summary>
             SetDefPayMode,
+            /// <summary>
+            /// 修改會員資料
+            /// </summary>
+            SetMemberData,
             #endregion
             /// <summary>
             /// Token Check
@@ -372,6 +376,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetDefPayMode:
                     SPName = "usp_SetDefPayMode";
+                    break;
+                case SPType.SetMemberData:  //修改會員資料
+                    SPName = "usp_SetMemberData";
                     break;
                 #endregion
                 case SPType.CheckToken: //Check Token
