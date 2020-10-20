@@ -38,6 +38,10 @@ namespace Web.Models.Enum
             /// 匯入機車資料
             /// </summary>
             ImportMotoData,
+            /// <summary>
+            /// 匯入萬用卡
+            /// </summary>
+            ImportMasterCardData,
         }
         public string GetSPName(ObjType.SPType type)
         {
@@ -61,6 +65,9 @@ namespace Web.Models.Enum
                     break;
                 case SPType.ImportMotoData:
                     SPName = "usp_BE_ImportMotoData";
+                    break;
+                case SPType.ImportMasterCardData:
+                    SPName = "usp_BE_ImportMasterCardData";
                     break;
             }
             return SPName;

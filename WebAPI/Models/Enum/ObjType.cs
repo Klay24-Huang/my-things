@@ -312,6 +312,10 @@ namespace WebAPI.Models.Enum
                 /// 修改車機綁定
                 /// </summary>
                 BE_HandleCarMachineData,
+                /// <summary>
+                /// 修改萬用卡
+                /// </summary>
+                BE_HandleMasterCardData,
             #endregion
 
         }
@@ -560,6 +564,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleCarMachineData:
                     SPName = "usp_BE_HandleCarBindData";
+                    break;
+                case SPType.BE_HandleMasterCardData:
+                    SPName = "usp_BE_HandleMasterCard";
                     break;
                     #endregion
             }

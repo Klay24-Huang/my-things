@@ -1,7 +1,16 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_MasterCardData>
 @{
+    List<Domain.TB.BackEnd.BE_MasterCardData> lstData = null;
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     string UserID = (ViewData["UserID"] == null) ? "" : ViewData["UserID"].ToString();
+    string CardNo = (ViewData["CardNo"] == null) ? "" : ViewData["CardNo"].ToString();
+    int ResultLen = -1;
 
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -10,55 +19,151 @@
         <div class="card-header bg-secondary text-white">
             萬用卡查詢
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            專員ID
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="UserID" id="UserID" value="@UserID" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-                         
+        @using (Html.BeginForm("MasterCardSetting", "CardDataInfo", FormMethod.Post, new { id = "frmMasterSetting", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                專員ID
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="UserID" id="UserID" value="@UserID" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                萬用卡號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CardNo" id="CardNo" value="@CardNo" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入清單
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳">
+                            </div>
+                            <div class="col-md-2">
+                                限定.XLS/XLSX檔
+                            </div>
+
+                            <div class="col-md-3">
+                              
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" name="Mode" id="Mode" value="@(Mode)" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
+                                <button type="button" id="btnUpload" name="btnUpload" class="btn btn-primary">匯入</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4">
-    <table class="table bg-white footable" data-filter="#filter" id="list">
+    <table class="table bg-white footable" data-filter="#filter" id="list" data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
-                <th scope="col"></th>
+                <th scope="col">員工編號</th>
                 <th scope="col">萬用卡卡號</th>
+                <th scope="col" data-hide="all"></th>
                 <th scope="col"></th>
-
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td scope="row">1</td>
-                <td scope="col">1234567890</td>
-                <td scope="col">編輯</td>
-            </tr>
+            @if (ResultLen > 0)
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    int CarLen = ((lstData[i].CarData == null) ? 0 : lstData[i].CarData.Count);
+                    <tr>
+                        <td></td>
+                        
+                        <td scope="col">@(lstData[i].ManagerId)</td>
+                        <td scope="col">@(lstData[i].CardNo)</td>
+                        <td scope="col">
+                     
+
+                            @for (int j = 0; j < CarLen; j++)
+                            {
+                                <div class="card-header">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                綁定車號
+                                            </div>
+                                            <div class="col-md-6">
+                                               @(lstData[i].CarData[j].CarNo)
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button"  class="btn btn-primary" onclick="DeleteOne('@(lstData[i].ManagerId)',' @(lstData[i].CarData[j].CarNo)','@(lstData[i].CardNo)')">刪除</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+
+
+
+
+
+
+                        </td>
+                        <td scope="col"><button type="button" class="btn btn-primary" onclick="DeleteAll('@(lstData[i].ManagerId)',' @(lstData[i].CarData[0].CarNo)','@(lstData[i].CardNo)')">刪除</button></td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">查無結果</td>
+                </tr>
+            }
+
         </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!--輸出表格結束-->
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>

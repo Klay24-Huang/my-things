@@ -591,7 +591,7 @@ namespace WebAPI.Models.BaseFunc
                             {
 
                                 int CardLen = lstCardList.Count;
-                                //清空萬用卡
+                                //清空顧客卡
                                 if (flag)
                                 {
                                     CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
@@ -604,7 +604,7 @@ namespace WebAPI.Models.BaseFunc
                                         _params = new Params()
 
                                     };
-                                    requestId = input.requestId;
+                                    requestId = ClearInput.requestId;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                                     if (flag)
                                     {
@@ -668,7 +668,7 @@ namespace WebAPI.Models.BaseFunc
                                         _params = new Params()
 
                                     };
-                                    requestId = input.requestId;
+                                    requestId = SetNoRentInput.requestId;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -688,7 +688,7 @@ namespace WebAPI.Models.BaseFunc
                                         _params = new Params()
 
                                     };
-                                    requestId = input.requestId;
+                                    requestId = SetNoRentInput.requestId;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -879,6 +879,231 @@ namespace WebAPI.Models.BaseFunc
 
             }
             flag = polygonFlag;
+            return flag;
+        }
+        /// <summary>
+        /// 遠傳萬用卡處理
+        /// </summary>
+        /// <param name="CID"></param>
+        /// <param name="deviceToken"></param>
+        /// <param name="CardStr"></param>
+        /// <param name="Mode">
+        /// <para>0:清除</para>
+        /// <para>1:寫入</para>
+        ///</param>
+        /// <param name="LogID"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        private bool DoSetFETMasterCard(string CID,string deviceToken, string[] CardStr, int Mode,Int64 LogID, ref string errCode)
+        {
+            bool flag = true;
+            FETCatAPI FetAPI = new FETCatAPI();
+            string requestId = "";
+            string CommandType = "";
+    
+            string method = CommandType;
+            OtherService.Enum.MachineCommandType.CommandType CmdType;
+            if (Mode == 1)
+            {
+                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo);
+                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo;
+                WSInput_Base<UnivCardNoObj> SetCardInput = new WSInput_Base<UnivCardNoObj>()
+                {
+                    command = true,
+                    method = CommandType,
+                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    _params = new UnivCardNoObj()
+                    {
+                        UnivCardNo = CardStr
+                    }
+
+                };
+                requestId = SetCardInput.requestId;
+                method = CommandType;
+                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetCardInput, LogID);
+                if (flag)
+                {
+                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                }
+            }
+            else
+            {
+                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
+                CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
+                WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
+                {
+                    command = true,
+                    method = CommandType,
+                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    _params = new Params()
+
+                };
+                requestId = ClearInput.requestId;
+                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
+                if (flag)
+                {
+                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                }
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 遠傳顧客卡處理
+        /// </summary>
+        /// <param name="CID"></param>
+        /// <param name="deviceToken"></param>
+        /// <param name="CardStr">卡號</param>
+        /// <param name="Mode">
+        /// <para>0:清除</para>
+        /// <para>1:寫入</para>
+        /// </param>
+        /// <param name="LogID"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        private bool DoSetFETCustomerCard(string CID, string deviceToken, string[] CardStr, int Mode, Int64 LogID, ref string errCode)
+        {
+            bool flag = true;
+     
+            FETCatAPI FetAPI = new FETCatAPI();
+            string requestId = "";
+            string CommandType = "";
+
+            string method = CommandType;
+            OtherService.Enum.MachineCommandType.CommandType CmdType;
+            if (Mode == 0)
+            {
+                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
+                CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard;
+                WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
+                {
+                    command = true,
+                    method = CommandType,
+                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    _params = new Params()
+
+                };
+                requestId = ClearInput.requestId;
+                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
+                if (flag)
+                {
+                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                }
+            }
+            else
+            {
+                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
+                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
+                WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                {
+                    command = true,
+                    method = CommandType,
+                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    _params = new ClientCardNoObj()
+                    {
+                          ClientCardNo = CardStr
+                    }
+
+                };
+                requestId = SetCardInput.requestId;
+                method = CommandType;
+                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetCardInput, LogID);
+                if (flag)
+                {
+                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                }
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 設定興聯萬用卡
+        /// </summary>
+        /// <param name="CID"></param>
+        /// <param name="lstCardList"></param>
+        /// <param name="Mode">
+        /// <para>0:清除</para>
+        /// <para>1:寫入</para>
+        /// </param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        private bool DoSetCensMasterCard(string CID,SendCarNoData[] lstCardList, int Mode, ref string errCode)
+        {
+            bool flag = true;
+            CensWebAPI webAPI = new CensWebAPI();
+            WSOutput_Base wsOut = new WSOutput_Base();
+       
+                //清空顧客卡及寫入萬用卡
+                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                {
+                    CID = CID,
+                    mode = Mode
+
+                };
+
+                int count = 0;
+                int CardLen = lstCardList.Length;
+                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                for (int i = 0; i < CardLen; i++)
+                {
+                    CardData[i] = new SendCarNoData();
+                    CardData[i].CardNo = lstCardList[i].CardNo;
+                    CardData[i].CardType =0;
+                    count++;
+                }
+                //  Array.Resize(ref CardData, count + 1);
+                wsInput.data = CardData;
+
+                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+            
+            if (false == flag)
+            {
+                errCode = wsOut.ErrorCode;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 設定顧客卡
+        /// </summary>
+        /// <param name="CID"></param>
+        /// <param name="lstCardList"></param>
+        /// <param name="Mode">
+        /// <para>0:清除</para>
+        /// <para>1:寫入</para>
+        /// </param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        private bool DoSetCensCustomerCard(string CID, SendCarNoData[] lstCardList,int Mode, ref string errCode)
+        {
+            bool flag = true;
+            CensWebAPI webAPI = new CensWebAPI();
+            WSOutput_Base wsOut = new WSOutput_Base();
+
+           
+            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+            {
+                CID = CID,
+                mode =Mode
+
+            };
+
+            int count = 0;
+            int CardLen = lstCardList.Length;
+            SendCarNoData[] CardData = new SendCarNoData[CardLen];
+            for (int i = 0; i < CardLen; i++)
+            {
+                CardData[i] = new SendCarNoData();
+                CardData[i].CardNo = lstCardList[i].CardNo;
+                CardData[i].CardType = 0;
+                count++;
+            }
+            //  Array.Resize(ref CardData, count + 1);
+            wsInput.data = CardData;
+
+            flag = webAPI.SendCardNo(wsInput, ref wsOut);
+
+            if (false == flag)
+            {
+                errCode = wsOut.ErrorCode;
+            }
             return flag;
         }
     }

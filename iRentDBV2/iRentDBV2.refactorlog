@@ -476,4 +476,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="FeedBackFile" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9e4beb63-6d26-47d9-a571-3dfbb9b83c27" ChangeDateTime="10/19/2020 09:26:29">
+    <Property Name="ElementName" Value="[dbo].[TB_MasterCard].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MasterCard]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MasterCardID" />
+  </Operation>
 </Operations>
