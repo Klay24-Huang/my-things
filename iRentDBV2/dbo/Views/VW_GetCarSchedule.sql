@@ -4,7 +4,7 @@
                             ISNULL(UserInfo.MEMCNAME, Main.IDNO) AS UName, ISNULL(UserInfo.MEMTEL, '') AS Mobile, 
                             Main.car_mgt_status, Main.booking_status, Main.cancel_status, Main.start_time AS SD, Main.stop_time AS ED, 
                             ISNULL(Detail.final_start_time, '1911-01-01 00:00:00') AS FS, ISNULL(Detail.final_stop_time, '1911-01-01 00:00:00') 
-                            AS FE
+                            AS FE,lend_place AS StationID
 FROM              dbo.TB_OrderMain AS Main LEFT OUTER JOIN
                             dbo.TB_OrderDetail AS Detail ON Detail.order_number = Main.order_number LEFT OUTER JOIN
                             dbo.TB_MemberData AS UserInfo ON UserInfo.MEMIDNO = Main.IDNO
