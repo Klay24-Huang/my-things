@@ -186,7 +186,7 @@ namespace WebAPI.Controllers
                                 obj.MotorPowerBaseObj = new Domain.TB.MotorPowerInfoBase()
                                 {
                                     Power = OrderDataLists[i].device3TBA,
-                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA") ? -1 : Convert.ToSingle(OrderDataLists[i].RemainingMilage)
+                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToSingle(OrderDataLists[i].RemainingMilage)
                                 };
                             }
                             
