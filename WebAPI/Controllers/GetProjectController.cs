@@ -167,7 +167,6 @@ namespace WebAPI.Controllers
                 List<StationAndProjectAndCarTypeData> lstData = new List<StationAndProjectAndCarTypeData>();
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
 
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
                 SPInput_GetStationCarTypeOfMutiStation spInput = new SPInput_GetStationCarTypeOfMutiStation()
                 {
                     StationIDs = apiInput.StationID,
@@ -176,7 +175,6 @@ namespace WebAPI.Controllers
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
                     LogID = LogID
                 };
-                List<SPOutput_GetStationCarTypeOfMutiStation> spList = new List<SPOutput_GetStationCarTypeOfMutiStation>();
 
                 if (apiInput.Mode == 1)
                 {
@@ -188,7 +186,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
+                var spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
                 if (spList != null && spList.Count > 0)
                     lstData = JsonConvert.DeserializeObject<List<StationAndProjectAndCarTypeData>>(JsonConvert.SerializeObject(spList));
 

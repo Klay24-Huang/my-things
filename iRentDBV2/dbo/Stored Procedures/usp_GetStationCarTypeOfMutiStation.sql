@@ -135,12 +135,14 @@ SET @hasData=0;
 			END
 	   END 
 
+	   SET @CarType = ISNULL(@CarType,'')
+
         --查詢
 		IF @Error = 0
 		BEGIN
-		   IF @CarType IS NULL OR @CarType = ''
 		   BEGIN
-				SELECT PROJID,
+				SELECT VW.StationID,
+				       PROJID,
 					   PRONAME,
 					   Price,
 					   PRICE_H,
@@ -158,7 +160,7 @@ SET @hasData=0;
 					   iRentStation.Latitude,
 					   iRentStation.Content,
 					   PayMode,
-					   Car.CarOfArea
+					   CarOfArea = (select top 1 c.CarOfArea from TB_Car c where c.nowStationID = VW.StationID)
 				FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
 				INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
 				AND CarNo NOT IN
@@ -185,60 +187,12 @@ SET @hasData=0;
 				LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID
 				WHERE VW.StationID IN (SELECT s.StationID FROM  @tb_StationID s)
 				AND SPCLOCK='Z' 
-				GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode,CarOfArea
+				AND VW.CarTypeGroupCode = 
+				  CASE WHEN @CarType <> '' THEN @CarType
+				  ELSE VW.CarTypeGroupCode END
+				GROUP BY VW.StationID,PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode
 				ORDER BY Price,PRICE_H ASC
 		   END
-		   ELSE
-		   BEGIN
-				SELECT PROJID,
-					   PRONAME,
-					   Price,
-					   PRICE_H,
-					   [CarBrend],
-					   [CarTypeGroupCode] AS CarType,
-					   [CarTypeName],
-					   [CarTypeImg] AS CarTypePic,
-					   OperatorICon AS Operator,
-					   Score AS OperatorScore,
-					   Seat,
-					   iRentStation.StationID,
-					   iRentStation.ADDR,
-					   iRentStation.Location AS StationName,
-					   iRentStation.Longitude,
-					   iRentStation.Latitude,
-					   iRentStation.Content,
-					   PayMode,
-					   Car.CarOfArea
-				FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
-				INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
-				AND CarNo NOT IN
-				  (SELECT CarNo
-				   FROM [TB_OrderMain]
-				   WHERE (booking_status<5
-						  AND car_mgt_status<16
-						  AND cancel_status=0)
-					 AND CarNo in
-					   (SELECT [CarNo]
-						FROM [dbo].[TB_Car]
-						WHERE nowStationID IN (SELECT s.StationID FROM  @tb_StationID s)
-						  AND CarType IN
-							(SELECT CarType
-							 FROM VW_GetFullProjectCollectionOfCarTypeGroup
-							 WHERE StationID IN (SELECT s.StationID FROM  @tb_StationID s) )
-						  AND available<2 )
-					 AND ((start_time BETWEEN @SD AND @ED)
-						  OR (stop_time BETWEEN @SD AND @ED)
-						  OR (@SD BETWEEN start_time AND stop_time)
-						  OR (@ED BETWEEN start_time AND stop_time)
-						  OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
-						  OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time)) )
-				LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID
-				WHERE VW.StationID IN (SELECT s.StationID FROM  @tb_StationID s)
-				AND SPCLOCK='Z' 
-                AND VW.CarTypeGroupCode=@CarType --過濾CarType
-				GROUP BY PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode,CarOfArea
-				ORDER BY Price,PRICE_H ASC
-       	   END
         END
 
 		--寫入錯誤訊息
@@ -267,6 +221,43 @@ SET @hasData=0;
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';
+
+/*
+TB_OrderMain	訂單基本資料檔	booking_status	預約單狀態
+0 = 會員預約、
+1 = 管理員清潔預約、
+2 = 管理員保修預約、
+3 = 延長用車狀態、
+4 = 強迫延長用車狀態、
+5 = 合約完成(已完成解除卡號動作)
+
+
+TB_OrderMain	訂單基本資料檔	car_mgt_status	取還車狀態：
+0 = 尚未取車、
+1 = 已經上傳出車照片、
+2 = 已經簽名出車單、
+3 = 已經信用卡認證、
+4 = 已經取車(記錄起始時間)、
+11 = 已經紀錄還車時間、
+12 = 已經上傳還車角度照片、
+13 = 已經上傳還車車損照片、
+14 = 已經簽名還車單、
+15 = 已經信用卡付款、
+16 = 已經檢查車輛完成並已經解除卡號
+
+TB_OrderMain	訂單基本資料檔	cancel_status	訂單修改狀態：
+0 = 無(訂單未刪除，正常預約狀態)、
+1 = 修改指派車輛(此訂單因其他預約單強迫延長而更改過訂單 or 後台重新配車過 or 取車時無車，重新配車)、
+2 = 此訂單被人工介入過(後台協助取還車 or 後台修改訂單資料)、
+3 = 訂單已取消(會員主動取消 or 逾時15分鐘未取車)、
+4 = 訂單已取消(因車輛仍在使用中又無法預約到其他車輛而取消)
+
+
+TB_Car	車輛總表	available	目前狀態：
+0:出租中;
+1:可出租;
+2:未上線
+*/
 GO
 
 
