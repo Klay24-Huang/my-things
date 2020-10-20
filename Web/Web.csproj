@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
+    <Compile Include="Models\WebCommonFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +167,9 @@
     <Content Include="Content\css\cabinet.css" />
     <Content Include="Content\css\docs.css" />
     <Content Include="Content\css\flatpickr.min.css" />
+    <Content Include="Content\css\footable.bootstrap.min.css" />
     <Content Include="Content\css\footable\fonts\footable.svg" />
+    <Content Include="Content\css\footable\footable-page.css" />
     <Content Include="Content\css\footable\footable.core.css" />
     <Content Include="Content\css\images\marker-icon-2x.png" />
     <Content Include="Content\css\images\marker-icon.png" />
@@ -185,6 +188,44 @@
     <Content Include="Content\css\vis.css" />
     <Content Include="Content\css\web-font.css" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.svg" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\footable.bootstrap.css" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\footable.bootstrap.min.css" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\js\footable.js" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\js\footable.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\footable.svg" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\fontawesome-webfont.svg" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.core.bootstrap.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.core.bootstrap.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.core.standalone.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.core.standalone.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.editing.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.editing.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.filtering.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.filtering.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.paging.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.paging.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.sorting.css" />
+    <Content Include="Content\plugins\footable-components.latest\css\footable.sorting.min.css" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.core.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.core.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.editing.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.editing.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.export.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.export.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.filtering.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.filtering.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.paging.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.paging.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.sorting.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.sorting.min.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.state.js" />
+    <Content Include="Content\plugins\footable-components.latest\js\footable.state.min.js" />
+    <Content Include="Content\plugins\moment\min\moment.min.js" />
+    <Content Include="Content\plugins\moment\moment.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="assets\helpers\_variables.scss" />
@@ -388,6 +429,31 @@
     <Content Include="Content\example\CarMachineAndCardBindExample.xlsx" />
     <Content Include="Content\example\ImportCarExample.xlsx" />
     <Content Include="Content\example\ImportMotorExample.xlsx" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\FontAwesome.otf" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\footable.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\footable.ttf" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\footable.woff" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\footabled41d.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\plugins\footable-components.latest\css\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\fontawesome-webfont.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\fontawesome-webfont.ttf" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\fontawesome-webfont.woff2" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\FontAwesome.otf" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\plugins\footable-components.latest\css\font\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.eot" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.ttf" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.woff" />
+    <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footabled41d.eot" />
+    <Content Include="Content\example\MasterCardExample.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -455,6 +521,7 @@
     <Content Include="Views\StationAndParking\StationInfoMaintain.cshtml" />
     <Content Include="Views\StationAndParking\StationInfoAdd.cshtml" />
     <Content Include="Views\SystemSetting\FeedBackKindSetting.cshtml" />
+    <Content Include="Views\CommonObj\GetCarMachineUnBindList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

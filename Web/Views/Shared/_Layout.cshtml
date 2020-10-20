@@ -63,6 +63,20 @@
             ActionStrName = "匯入車機資料(含SIM)";
             break;
         #endregion
+        #region 卡片管理
+        case "MasterCardSetting":
+            ControllerStrName = "卡片管理";
+            ActionStrName = "萬用卡設定";
+            break;
+        case "UnBindCard":
+            ControllerStrName = "卡片管理";
+            ActionStrName = "會員卡號解除";
+            break;
+        case "SetCardSetting":
+            ControllerStrName = "卡片管理";
+            ActionStrName = "會員卡號發送設定";
+            break;
+        #endregion
         #region 後臺管理
         case "UnBindCreditCard":
             ControllerStrName = "後臺管理";
@@ -101,13 +115,21 @@
     <link rel="stylesheet" href="~/Content/css/bs_autocomplete_fix.css">
     <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
-    <link rel="stylesheet" href="~/Scripts/plugin/footable-bootstrap/css/footable.bootstrap.css" />
+        <link rel="stylesheet" href="~/Content/css/footable/footable-page.css">
+    @*<link rel="stylesheet" href="~/Scripts/plugin/footable-bootstrap/css/footable.bootstrap.css" />*@
+    @*<link rel="stylesheet" href="~/Content/plugins/pages/floating-label.css" />
+    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.core.bootstrap.css" />
+    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.paging.css" />
+    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.sorting.css" />
+    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.filtering.css" />*@
+    @*<link rel="stylesheet" href="~/Content/plugins/footable-bootstrap.latest/css/footable.bootstrap.css" />*@
     <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
     @switch (actionName)
     {
         case "CarTimeLineQuery":
             <link href="~/Content/css/vis.css" rel="stylesheet">
             break;
+
     }
 </head>
 <body>
@@ -241,10 +263,10 @@
                                 地圖監控
                             </a>
                             @*<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">地圖監控</a>
-                <a class="dropdown-item" href="#">地圖監控</a>
-                <a class="dropdown-item" href="#">地圖監控</a>
-            </div>*@
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                    <a class="dropdown-item" href="#">地圖監控</a>
+                                </div>*@
                         </li>
                         <!-- 合約管理 -->
                         <li class="nav-item dropdown">
@@ -322,33 +344,33 @@
                             </div>
                         </li>
                         @*<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                系統參數設定
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="~/SystemSetting/FeedBackKindSetting">回饋類別設定</a>
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    系統參數設定
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="~/SystemSetting/FeedBackKindSetting">回饋類別設定</a>
 
-                            </div>
-                        </li>*@
+                                </div>
+                            </li>*@
                         <!-- 帳號管理 -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                客服專區
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="~/BusinessManage/DashBoard">合約/中控台</a>
+                        @*<li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    客服專區
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="~/BusinessManage/DashBoard">合約/中控台</a>
 
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                營管中心(儀表板)
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="~/BusinessManage/DashBoard">儀表板</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    營管中心(儀表板)
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="~/BusinessManage/DashBoard">儀表板</a>
 
-                            </div>
-                        </li>
+                                </div>
+                            </li>*@
                     </ul>
                 </div>
             </nav>
@@ -371,8 +393,13 @@
     <script src="~/Scripts/js/flatpickr.js"></script>
     <script src="~/Scripts/js/jquery.validate.js"></script>
     <script src="~/Scripts/js/moment-with-locales.min.js"></script>
-    @*<script src="~/Scripts/js/footable/footable.all.min.js"></script>*@
-    <script src="~/Scripts/plugin/footable-bootstrap/js/footable.min.js"></script>
+    <script src="~/Scripts/js/footable/footable.all.min.js"></script>
+    @*<script src="~/Scripts/plugin/footable-bootstrap/js/footable.js"></script>*@
+    @*<script src="~/Content/plugins/footable-components.latest/js/footable.core.js"></script>
+    <script src="~/Content/plugins/footable-components.latest/js/footable.paging.js"></script>
+    <script src="~/Content/plugins/footable-components.latest/js/footable.sorting.js"></script>
+    <script src="~/Content/plugins/footable-components.latest/js/footable.filtering.js"></script>*@
+    @*<script src="~/Content/plugins/footable-bootstrap.latest/js/footable.js"></script>*@
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
     <script src="~/Scripts/js/CommonFunc.js"></script>
     @{
@@ -384,7 +411,7 @@
                 break;
         }
     }
-<script>
+    <script>
         var jsHost = "@hostPath";
 
         $(".datePicker").flatpickr();
@@ -394,7 +421,7 @@
                 dateFormat: "Y-m-d H:i",
             }
         );
-</script>
+    </script>
     <script src="@Html.Raw(PageScriptName)"></script>
 </body>
 </html>

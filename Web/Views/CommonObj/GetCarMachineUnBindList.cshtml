@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarMachineData>
+
+@{
+    Layout = null;
+    List<SelectListItem> list = new List<SelectListItem>();
+    int CarMachineSno = ((ViewData["CarMachineNo"] == null) ? 0 : Convert.ToInt32(ViewData["CarMachineNo"].ToString()));
+}
+@if(Model!=null){
+    list.Add(new SelectListItem() { Text = "未定", Value = "" });
+}
+@foreach (var carMachineData in Model)
+{
+    list.Add(new SelectListItem() { Text = carMachineData.CID, Value = carMachineData.CID });
+}
+
+@Html.DropDownList("ddlMachine_"+CarMachineSno, list, new { Class = "form-control", @style="display:none;" })

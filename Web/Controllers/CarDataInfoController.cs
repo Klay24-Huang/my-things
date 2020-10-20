@@ -80,24 +80,158 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CarBind(string CarNo, string CID,int BindStatus,string Mode, HttpPostedFileBase fileImport)
+        [Obsolete]
+        public ActionResult CarBind(string CarNo,string CID,string BindStatus, string Mode, HttpPostedFileBase fileImport)
         {
             //GetCarBindData
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             ViewData["BindStatus"] = BindStatus;
             ViewData["CarNo"] = CarNo;
             ViewData["CID"] = CID;
             ViewData["Mode"] = Mode;
+            
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            if (Mode == "Query")
+            if (Mode == "Query" || Mode=="Explode")
             {
                 List<BE_GetCarBindData> lstData = new List<BE_GetCarBindData>();
-                lstData = carStatusCommon.GetCarBindData(CarNo, CID, BindStatus);
-                return View(lstData);
+                lstData = carStatusCommon.GetCarBindData(CarNo, CID, Convert.ToInt32(BindStatus));
+                if (Mode == "Explode")
+                {
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("搜尋結果");
+                    string[] headerField = { "車機號碼", "使用狀態", "車號", "遠傳Cat平台token", "iButton", "門號(SIM卡)" };
+                    int headerFieldLen = headerField.Length;
+                    int DataLen = lstData.Count();
+                    IRow header = sheet.CreateRow(0);
+                    for (int j = 0; j < headerFieldLen; j++)
+                    {
+                       header.CreateCell(j).SetCellValue(headerField[j]);
+                       sheet.AutoSizeColumn(j);
+                    }
+                    for (int i = 0; i < DataLen; i++){
+                       string[] DataArr = { lstData[i].CarNo, ((lstData[i].BindStatus == 1) ? "已綁定" : "未綁定"), lstData[i].deviceToken, lstData[i].iButtonKey, lstData[i].MobileNum };
+                       IRow content = sheet.CreateRow(i + 1);  
+                       for(int k=0;k< headerFieldLen; k++)
+                       {
+                           content.CreateCell(k).SetCellValue(DataArr[k]);
+                       }
+                    }
+                    MemoryStream ms = new MemoryStream();
+                    workbook.Write(ms);
+                    workbook.Clear();
+                    //   return View();
+                    return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "車機車輛綁定資料匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+                }
+                else
+                {
+                    return View(lstData);
+                }
+                
             }
             else
             {
+                if (fileImport != null)
+                {
+                    if (fileImport.ContentLength > 0)
+                    {
+                        CommonFunc baseVerify = new CommonFunc();
+                        List<ErrorInfo> lstError = new List<ErrorInfo>();
+                        string errCode = "";
+                        string fileName = string.Concat(new string[]{
+                    "ImportCarBindData_",
+                    ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                    "_",
+                    DateTime.Now.ToString("yyyyMMddHHmmss"),
+                    ".xlsx"
+                    });
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/ImportCarBindData"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/ImportCarBindData"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "車機編號", "車號", "iButton" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
+                        {
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            {
+                                errorLine = "標題列不相符";
+                                flag = false;
+                                break;
+                            }
+                        }
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.ImportCarBindData);
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+
+
+                                SPInput_BE_ImportCarBindData data = new SPInput_BE_ImportCarBindData()
+                                {
+                                    CID= sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    CarNo = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                    iButtonKey = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "").PadLeft(6, '0'),
+                                    UserID = UserId,
+                                    LogID = 0
+                                };
+
+
+                                if (flag)
+                                {
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SPInput_BE_ImportCarBindData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
+                                }
+
+                            }
+
+                        }
+                        else
+                        {
+                            ViewData["errorMsg"] = "未上傳檔案";
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "未上傳檔案";
+
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "未上傳檔案";
+                }
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorMsg"] = errorMsg;
+                    ViewData["errorLine"] = errorLine.ToString();
+                }
                 return View();
             }
            
@@ -260,7 +394,7 @@ namespace Web.Controllers
 
 
             return View();
-            return View();
+      
         }
         /// <summary>
         /// 匯入汽車車輛檔

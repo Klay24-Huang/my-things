@@ -315,6 +315,14 @@ namespace WebAPI.Models.Enum
                 /// 停車便利付修改
                 /// </summary>
                 BE_HandleChargeParkingData,
+                /// <summary>
+                /// 修改車機綁定
+                /// </summary>
+                BE_HandleCarMachineData,
+                /// <summary>
+                /// 修改萬用卡
+                /// </summary>
+                BE_HandleMasterCardData,
             #endregion
 
         }
@@ -567,7 +575,13 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_HandleChargeParkingData:
                     SPName = "usp_BE_HandleTransParking";
                     break;
-            #endregion
+                case SPType.BE_HandleCarMachineData:
+                    SPName = "usp_BE_HandleCarBindData";
+                    break;
+                case SPType.BE_HandleMasterCardData:
+                    SPName = "usp_BE_HandleMasterCard";
+                    break;
+                    #endregion
             }
             return SPName;
         }

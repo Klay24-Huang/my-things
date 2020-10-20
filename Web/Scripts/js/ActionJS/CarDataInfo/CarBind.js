@@ -6,45 +6,67 @@ $(document).ready(function () {
     $("#exampleDownload").on("click", function () {
         window.location.href = "../Content/example/CarBindExample.xlsx";
     });
-
-
+    $("#btnUpload").on("click", function () {
+        $("#Mode").val("Add");
+        $("#frmCarBind").submit();
+    })
+    $("#btnExplode").on("click", function () {
+        $("#Mode").val("Explode");
+        $("#frmCarBind").submit();
+    });
+    $("#btnSend").on("click", function () {
+        $("#Mode").val("Query");
+        console.log($("#Mode").val());
+        DoQuery();
+        //$("#frmCarBind").submit();
+    })
     var hasData = parseInt($("#len").val());
+    var Mode = $("#Mode").val();
     console.log(hasData);
     if (hasData > 0) {
+        ShowLoading("資料讀取中...");
         $('.table').footable({
             "paging": {
                 "limit": 3,
                 "size": 20
             }
         });
+       
     }
+
     if (Mode == "Add") {
         if (errorLine == "ok") {
             ShowSuccessMessage("匯入成功");
         } else {
             if (errorMsg != "") {
-                ShowFailMessage(errMsg);
+                ShowFailMessage(errorMsg);
             }
         }
     }
-
+    disabledLoading();
 });
+function DoQuery() {
+    var BindStatus = $("#BindStatus").val();
+    if (CheckIsUndefined(BindStatus)) {
+        if (parseInt(BindStatus) < 0) {
+            ShowFailMessage("請選擇使用狀態");
+        } else {
+            $("#frmCarBind").submit();
+        }
+    } else {
+        ShowFailMessage("請選擇使用狀態");
+    }
+    console.log("BindStatus="+BindStatus);
+
+} 
+
 function DoReset(Id) {
     if (NowEditID > 0) {
         NowEditID = 0;
-        $("#ParkingName_" + Id).val(ParkingName).hide();
-        $("#ParkingAddress_" + Id).val(ParkingAddress).hide();
-        $("#Latitude_" + Id).val(Latitude).hide();
-        $("#Longitude_" + Id).val(Longitude).hide();
-        $("#OpenTime_" + Id).val(OpenTime).hide();
-        $("#CloseTime_" + Id).val(CloseTime).hide();
+        $("#CID_" + Id).empty().hide();
+
     } else {
-        $("#ParkingName_" + Id).hide();
-        $("#ParkingAddress_" + Id).hide();
-        $("#Latitude_" + Id).hide();
-        $("#Longitude_" + Id).hide();
-        $("#OpenTime_" + Id).hide();
-        $("#CloseTime_" + Id).hide();
+        $("#CID_" + Id).hide();
     }
 
     $("#btnReset_" + Id).hide();
@@ -55,39 +77,22 @@ function DoReset(Id) {
 function DoEdit(Id) {
     if (NowEditID > 0) {
         //先還原前一個
-        $("#ParkingName_" + NowEditID).val(ParkingName).hide();
-        $("#ParkingAddress_" + NowEditID).val(ParkingAddress).hide();
-        $("#Latitude_" + NowEditID).val(Latitude).hide();
-        $("#Longitude_" + NowEditID).val(Longitude).hide();
-        $("#OpenTime_" + NowEditID).val(OpenTime).hide();
-        $("#CloseTime_" + NowEditID).val(CloseTime).hide();
+        $("#CID_" + NowEditID).empty().hide();
+
         $("#btnReset_" + NowEditID).hide();
         $("#btnSave_" + NowEditID).hide();
         $("#btnEdit_" + NowEditID).show();
     }
-    //再開啟下一個
-    /*    NowEditID = Id;
-        ParkingName = $("#ParkingName_" + Id).val();
-        ParkingAddress = $("#ParkingAddress_" + Id).val();
-        Latitude = $("#Latitude_" + Id).val();
-        Longitude = $("#Longitude_" + Id).val();
-        OpenTime = $("#OpenTime_" + Id).val();
-        CloseTime = $("#CloseTime_" + Id).val();
-    } else {*/
+
     NowEditID = Id;
-    ParkingName = $("#ParkingName_" + Id).val();
-    ParkingAddress = $("#ParkingAddress_" + Id).val();
-    Latitude = $("#Latitude_" + Id).val();
-    Longitude = $("#Longitude_" + Id).val();
-    OpenTime = $("#OpenTime_" + Id).val();
-    CloseTime = $("#CloseTime_" + Id).val();
+ //   CID = $("#CID_" + Id).val();
+ 
     //  }
-    $("#ParkingName_" + Id).show();
-    $("#ParkingAddress_" + Id).show();
-    $("#Latitude_" + Id).show();
-    $("#Longitude_" + Id).show();
-    $("#OpenTime_" + Id).show();
-    $("#CloseTime_" + Id).show();
+    var $options = $("#ddlMachine_0 > option").clone();
+
+    $("#CID_" + Id).append($options);
+    $("#CID_" + Id).show();
+
 
     $("#btnReset_" + Id).show();
     $("#btnSave_" + Id).show();
@@ -97,36 +102,19 @@ function DoEdit(Id) {
 function DoSave(Id) {
     ShowLoading("資料處理中");
     var Account = $("#Account").val();
-    var SParkingName = $("#ParkingName_" + Id).val();
-    var SParkingAddress = $("#ParkingAddress_" + Id).val();
-    var SLatitude = $("#Latitude_" + Id).val();
-    var SLongitude = $("#Longitude_" + Id).val();
-    var SOpenTime = $("#OpenTime_" + Id).val();
-    var SCloseTime = $("#CloseTime_" + Id).val();
+
     var flag = true;
     var errMsg = "";
-    var checkList = [SParkingName, SParkingAddress, SOpenTime, SCloseTime, SLatitude, SLongitude];
-    var errMsgList = ["停車場名稱未填", "停車場地址未填", "開放日期(起)未填", "開放日期(迄)未填", "緯度未填", "經度未填"];
-    for (var i = 0; i < checkList.length; i++) {
-        if (checkList[i] == "") {
-            errMsg = errMsgList[i];
-            flag = false;
-            break;
-        }
-    }
+
     if (flag) {
         var obj = new Object();
         obj.UserID = Account;
-        obj.ParkingID = Id;
-        obj.ParkingName = SParkingName;
-        obj.ParkingAddress = SParkingAddress;
-        obj.Longitude = SLongitude;
-        obj.Latitude = SLatitude;
-        obj.OpenTime = SOpenTime + ":00";
-        obj.CloseTime = SCloseTime + ":00";
+        obj.CID = $("#CID_"+Id).val();
+        obj.CarNo = $("#CarNo_" + Id).val();
+
         var json = JSON.stringify(obj);
         console.log(json);
-        var site = jsHost + "BE_HandleTransParking";
+        var site = jsHost + "BE_HandleCarMachine";
         console.log("site:" + site);
         $.ajax({
             url: site,
@@ -159,7 +147,7 @@ function DoSave(Id) {
                 $.busyLoadFull("hide");
                 swal({
                     title: 'Fail',
-                    text: "修改停車場發生錯誤",
+                    text: "綁定車機發生錯誤",
                     icon: 'error'
                 });
             }

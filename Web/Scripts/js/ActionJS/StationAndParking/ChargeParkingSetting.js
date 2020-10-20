@@ -12,12 +12,7 @@ $(document).ready(function () {
     var hasData = parseInt($("#len").val());
     console.log(hasData);
     if (hasData > 0) {
-        $('.table').footable({
-            "paging": {
-                "limit": 3,
-                "size": 20
-            }
-        });
+        $('.table').footable();
     }
   
 })

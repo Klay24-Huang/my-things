@@ -210,7 +210,7 @@
             </div>
         </div>
 
-        <table class="table table-striped bg-white mt-4 " data-paging="true">
+        <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
             <thead class="text-white bg-primary">
                 <tr>
                     <th scope="col">ID</th>
@@ -262,7 +262,7 @@
                         </td>
                         <td>
                             <!-- add text-danger to control font color -->
-                            <span class="icon-1 @((lstMotoData[i].GPSStatus==1)?" text-danger":"")"  onclick="detailMap(@lstMotoData[i].Latitude,@lstMotoData[i].Longitude)"></span>
+                            <span class="icon-1 @((lstMotoData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstMotoData[i].Latitude,@lstMotoData[i].Longitude)"></span>
                             <span class="icon-4  @((lstMotoData[i].TBA2<30)?" text-danger":"")"></span>@(Convert.ToInt32(lstMotoData[i].TBA2))
                             <span class="icon-7  text-cyan"></span>@(Convert.ToInt32(lstMotoData[i].LBA))
                             <br>
@@ -300,6 +300,13 @@
                 }
 
             </tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="9" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
 
 
@@ -317,7 +324,7 @@
 
         </div>
     </div>
-    <table class="table table-striped bg-white mt-4 " data-paging="true">
+    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
                 <th scope="col"></th>
@@ -333,88 +340,97 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < CarResultLen; i++){
-            <tr>
-                <td scope="row">@(i+1)</td>
-                <td>
-                    @lstCarData[i].StationName
-                </td>
-                <td>
-                    @if (lstCarData[i].NowStatus == 0)
-                    {
-                        <svg xmlns="http://www.w3.org/2000/svg" width="69.081" height="23.291" viewBox="0 0 69.081 23.291">
-                            <g transform="translate(-426.563 -359.796)">
-                                <path d="M598.734,417.45q-.879,1.667-3.459,1.67-3.392-.267-3.144-3.135h5.481v0h3.933l1.224-6.672c-1.128-1.309-3.054-1.981-5.792-2.012q-7.5.267-9.232,7.7-.661,5.123,3.68,6.541h7.364a7.581,7.581,0,0,0,1.914-.947l.572-3.144Zm-2.018-7.2q3.209.27,2.979,3.046h-7.169Q593.331,410.431,596.716,410.251Z" transform="translate(-130.416 -38.454)" fill="#cb000b" />
-                                <path d="M665.237,414.009q.666-3.136,3.495-3.316,2.806-.087,2.125,3.137l-1.411,7.7h3.692l2.247-12.253c-.615-1.359-2-2.029-4.17-1.992a7.575,7.575,0,0,0-5.206,2.507l.394-2.148h-4.563L659.3,421.535h4.561Z" transform="translate(-188.411 -38.448)" fill="#cb000b" />
-                                <path d="M446.885,363.2a4.358,4.358,0,0,1-4.161,3.406,2.813,2.813,0,0,1-2.912-3.406,4.354,4.354,0,0,1,4.159-3.4A2.808,2.808,0,0,1,446.885,363.2Z" transform="translate(-10.681 0)" fill="#cb000b" />
-                                <path d="M496.9,375.177l-3.731,20.362h4.852l1.419-7.755h.007l1.158-6.335,1.15-6.271Z" transform="translate(-53.917 -12.452)" fill="#cb000b" />
-                                <path d="M542.349,381.338q.8-5.954-6.961-6.161h-4.466l3.114,2.919,3.575,3.353-4.8,3.35-4.278,2.985h2.351l3.7,7.755h6.1l-4.7-8.035Q541.5,386.478,542.349,381.338Z" transform="translate(-82.548 -12.452)" fill="#cb000b" />
-                                <path d="M746.341,387.732h-4.47l-.753,4.085-.593,3.225-1.245,6.808q-.584,2.857,1.19,3.853h5.676l.54-2.953-.013-.094a3.069,3.069,0,0,1-1.37.358q-1.786.09-1.359-2.238l1.048-5.734H748.1l.592-3.225h-3.1Z" transform="translate(-253.044 -22.616)" fill="#cb000b" />
-                                <path d="M434.434,402.485h-5.092l-2.779,15.161h5.092Z" transform="translate(0 -34.559)" fill="#cb000b" />
-                            </g>
-                        </svg>
-                    }
+            @for (int i = 0; i < CarResultLen; i++)
+            {
+                <tr>
+                    <td scope="row">@(i+1)</td>
+                    <td>
+                        @lstCarData[i].StationName
+                    </td>
+                    <td>
+                        @if (lstCarData[i].NowStatus == 0)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="69.081" height="23.291" viewBox="0 0 69.081 23.291">
+                                <g transform="translate(-426.563 -359.796)">
+                                    <path d="M598.734,417.45q-.879,1.667-3.459,1.67-3.392-.267-3.144-3.135h5.481v0h3.933l1.224-6.672c-1.128-1.309-3.054-1.981-5.792-2.012q-7.5.267-9.232,7.7-.661,5.123,3.68,6.541h7.364a7.581,7.581,0,0,0,1.914-.947l.572-3.144Zm-2.018-7.2q3.209.27,2.979,3.046h-7.169Q593.331,410.431,596.716,410.251Z" transform="translate(-130.416 -38.454)" fill="#cb000b" />
+                                    <path d="M665.237,414.009q.666-3.136,3.495-3.316,2.806-.087,2.125,3.137l-1.411,7.7h3.692l2.247-12.253c-.615-1.359-2-2.029-4.17-1.992a7.575,7.575,0,0,0-5.206,2.507l.394-2.148h-4.563L659.3,421.535h4.561Z" transform="translate(-188.411 -38.448)" fill="#cb000b" />
+                                    <path d="M446.885,363.2a4.358,4.358,0,0,1-4.161,3.406,2.813,2.813,0,0,1-2.912-3.406,4.354,4.354,0,0,1,4.159-3.4A2.808,2.808,0,0,1,446.885,363.2Z" transform="translate(-10.681 0)" fill="#cb000b" />
+                                    <path d="M496.9,375.177l-3.731,20.362h4.852l1.419-7.755h.007l1.158-6.335,1.15-6.271Z" transform="translate(-53.917 -12.452)" fill="#cb000b" />
+                                    <path d="M542.349,381.338q.8-5.954-6.961-6.161h-4.466l3.114,2.919,3.575,3.353-4.8,3.35-4.278,2.985h2.351l3.7,7.755h6.1l-4.7-8.035Q541.5,386.478,542.349,381.338Z" transform="translate(-82.548 -12.452)" fill="#cb000b" />
+                                    <path d="M746.341,387.732h-4.47l-.753,4.085-.593,3.225-1.245,6.808q-.584,2.857,1.19,3.853h5.676l.54-2.953-.013-.094a3.069,3.069,0,0,1-1.37.358q-1.786.09-1.359-2.238l1.048-5.734H748.1l.592-3.225h-3.1Z" transform="translate(-253.044 -22.616)" fill="#cb000b" />
+                                    <path d="M434.434,402.485h-5.092l-2.779,15.161h5.092Z" transform="translate(0 -34.559)" fill="#cb000b" />
+                                </g>
+                            </svg>
+                        }
                         <p>
                             @lstCarData[i].CarNo<br>
                             (@lstCarData[i].CID)<br>
                             <span class="text-primary">車型:@lstCarData[i].CarTypeName</span>
                         </p>
-                   
+
                     </td>
-                <td>
-                    <!-- add text-danger to control font color -->
-                    <span class="icon-2 @((lstCarData[i].ACCStatus==1)?" text-danger":"")"></span>
-                    <span class="icon-8  @((lstCarData[i].GPRSStatus==1)?" text-danger":"")"></span>
-                    <span class="icon-10 @((lstCarData[i].OBDStatus==1)?" text-danger":"")"></span>
-                </td>
-                <td>
-                    <!-- add text-danger to control font color -->
-                    <span class="icon-1 @((lstCarData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstCarData[i].Latitude,@lstCarData[i].Longitude)"></span>
-                    <span class="icon-13 @((lstCarData[i].Volt<12)?" text-danger":"")"></span>
-                    <span class="icon-2"></span>
-                    <br>
-                    <span class="icon-11 @((lstCarData[i].PowerOnStatus==1)?" text-danger":"")"></span>
-                    <span class="icon-14 @((lstCarData[i].IndoorLightStatus==1)?" text-danger":"")"></span>
-                    <span class="icon-16 @((lstCarData[i].DoorStatus==1)?" text-danger":"") "></span>
-                    <br>
-                    @if (lstCarData[i].SecurityStatus == 1)
-                    {
-                        <span class="icon-12 "></span>
-                    }
-                    else
-                    {
-                        <span class="icon-15  text-danger"></span>
-                    }
+                    <td>
+                        <!-- add text-danger to control font color -->
+                        <span class="icon-2 @((lstCarData[i].ACCStatus==1)?" text-danger":"")"></span>
+                        <span class="icon-8  @((lstCarData[i].GPRSStatus==1)?" text-danger":"")"></span>
+                        <span class="icon-10 @((lstCarData[i].OBDStatus==1)?" text-danger":"")"></span>
+                    </td>
+                    <td>
+                        <!-- add text-danger to control font color -->
+                        <span class="icon-1 @((lstCarData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstCarData[i].Latitude,@lstCarData[i].Longitude)"></span>
+                        <span class="icon-13 @((lstCarData[i].Volt<12)?" text-danger":"")"></span>
+                        <span class="icon-2"></span>
+                        <br>
+                        <span class="icon-11 @((lstCarData[i].PowerOnStatus==1)?" text-danger":"")"></span>
+                        <span class="icon-14 @((lstCarData[i].IndoorLightStatus==1)?" text-danger":"")"></span>
+                        <span class="icon-16 @((lstCarData[i].DoorStatus==1)?" text-danger":"") "></span>
+                        <br>
+                        @if (lstCarData[i].SecurityStatus == 1)
+                        {
+                            <span class="icon-12 "></span>
+                        }
+                        else
+                        {
+                            <span class="icon-15  text-danger"></span>
+                        }
 
 
-                    <span class="icon-17 @((lstCarData[i].CentralLockStatus==0)?" text-danger":"")"></span>
-                    <br>
-                </td>
-                <td>
-                    @(lstCarData[i].Speed)/@(lstCarData[i].Millage)
-                </td>
-                <td><!--中控-->
-                    <button type="button" class="btn btn-outline-secondary mb-2"  onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?21:8), @(lstCarData[i].IsCens))">上鎖</button>
-                    <br>
-                    <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?20:7), @(lstCarData[i].IsCens))">解鎖</button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?23:10), @(lstCarData[i].IsCens))">上鎖</button>
-                    <br>
-                    <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?22:9), @(lstCarData[i].IsCens))">解鎖</button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?15:0), @(lstCarData[i].IsCens))">尋車</button>
-                </td>
-                <td>
-                    @((lstCarData[i].LastUpdate=="")?"無回應":Convert.ToDateTime(lstCarData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                        <span class="icon-17 @((lstCarData[i].CentralLockStatus==0)?" text-danger":"")"></span>
+                        <br>
+                    </td>
+                    <td>
+                        @(lstCarData[i].Speed)/@(lstCarData[i].Millage)
+                    </td>
+                    <td>
+                        <!--中控-->
+                        <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?21:8), @(lstCarData[i].IsCens))">上鎖</button>
+                        <br>
+                        <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?20:7), @(lstCarData[i].IsCens))">解鎖</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?23:10), @(lstCarData[i].IsCens))">上鎖</button>
+                        <br>
+                        <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?22:9), @(lstCarData[i].IsCens))">解鎖</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?15:0), @(lstCarData[i].IsCens))">尋車</button>
+                    </td>
+                    <td>
+                        @((lstCarData[i].LastUpdate=="")?"無回應":Convert.ToDateTime(lstCarData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                    </td>
+                </tr>
+            }
+
+
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="10" class="text-center">
+                    <ul class="pagination"></ul>
                 </td>
             </tr>
-             }
-
-
-
-            </tbody>
+        </tfoot>
     </table>
 </div>
 }

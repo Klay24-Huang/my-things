@@ -3,6 +3,7 @@
     List<Domain.TB.BackEnd.BE_GetCarBindData> lstData = null;
     string CID = (ViewData["CID"] == null) ? "" : ViewData["CID"].ToString();
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     int ResultLen = -1;
 
     if (Model != null)
@@ -16,97 +17,100 @@
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            保有車輛設定
+            車輛車機綁定設定
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            車機號碼
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CID" id="CID" value="@CID" maxlength="5" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            車號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
-
+        @using (Html.BeginForm("CarBind", "CarDataInfo", FormMethod.Post, new { id = "frmCarBind", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車機號碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CID" id="CID" value="@CID" maxlength="5" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CarNo" id="CarNo" value="@CarNo" />
 
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            使用狀態
-                        </div>
-                        <div class="col-md-3">
-
-                            <select class="form-control" id="BindStatus" name="BindStatus">
-                                <option value="-1"></option>
-                                <option value="0">已綁定</option>
-                                <option value="1">未綁定</option>
-                            </select>
-
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            匯入資料
-                        </div>
+                </li>
 
-                        <div class="col-md-3">                    
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                使用狀態
+                            </div>
+                            <div class="col-md-3">
+
+                                <select class="form-control" id="BindStatus" name="BindStatus">
+                                    <option value="-1"></option>
+                                    <option value="1">已綁定</option>
+                                    <option value="0">未綁定</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入資料
+                            </div>
+
+                            <div class="col-md-3">
                                 <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
-                        </div>
-                        <div class="col-md-2">
-                            限定.XLS/XLSX檔
-                        </div>
+                            </div>
+                            <div class="col-md-2">
+                                限定.XLS/XLSX檔
+                            </div>
 
-                        <div class="col-md-3">
-                            <button type="button" id="btnUpload" name="btnUpload" class="btn btn-primary">匯入</button>
-                            <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
-                        </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnUpload" name="btnUpload" class="btn btn-primary">匯入</button>
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+                            </div>
 
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <input type="hidden" name="Mode" id="Mode" value="0" />
-                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
-                            <input type="hidden" id="len" name="len" value="@ResultLen" />
-                            <button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
-                            <button type="submit" id="btnExplode" name="btnExplode" class="btn btn-primary">匯出</button>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" name="Mode" id="Mode" value="@(Mode)" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
+                                <button type="button" id="btnExplode" name="btnExplode" class="btn btn-primary">匯出</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
     </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4">
-    <table class="table bg-white footable" data-filter="#filter" id="list">
+    <table class="table bg-white table-striped bg-white mt-4 " data-paging="true">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
@@ -130,6 +134,7 @@
             }
             else
             {
+                @Html.Action("GetCarMachineUnBindList", "CommonObj", new { SEQNO =0 })
                 for (int i = 0; i < ResultLen; i++)
                 {
                     string BindStatus = (lstData[i].BindStatus == 1) ? "已綁定" : "未綁定";
@@ -138,10 +143,14 @@
                         <td></td>
                         <td scope="row">@(i+1)</td>
                         <td scope="col">
-                                    @(lstData[i].CID)
-
+                            @(lstData[i].CID)
+                            <input type="hidden" value="@(lstData[i].CID)" name="hCID_@(i+1)" id="hCID_@(i+1)" />
+                            <input type="hidden" value="@(lstData[i].CarNo)" name="CarNo_@(i+1)" id="CarNo_@(i+1)" />
+                            <select name="CID_@(i+1)" id="CID_@(i+1)" class="form-control" style="display:none;"></select>
                         </td>
-                        <td scope="col">@(BindStatus)</td>
+                        <td scope="col">
+                            @(BindStatus)
+                        </td>
                         <td scope="col">@(lstData[i].CarNo)</td>
                         <th scope="col">@(lstData[i].deviceToken)</th>
                         <td scope="col">@(lstData[i].iButtonKey)</td>
@@ -159,3 +168,9 @@
     </table>
 </div>
 <!--輸出表格結束-->
+
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>
+
