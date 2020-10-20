@@ -1,7 +1,5 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
-using Domain.SP.Input.Station;
-using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.TB;
 using Newtonsoft.Json;
@@ -10,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -54,16 +50,15 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
             Int16 APPKind = 2;
-            
+
             Int16 QueryMode = 0; //查詢模式，0:未帶入起迄日;1:代入起迄日
             DateTime SDate = DateTime.Now.AddHours(-1);
-            DateTime EDate=DateTime.Now;
+            DateTime EDate = DateTime.Now;
             string Contentjson = "";
             bool isGuest = true;
-            
+
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -78,7 +73,7 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                     }
-                    if(string.IsNullOrWhiteSpace(apiInput.SD)==false && string.IsNullOrWhiteSpace(apiInput.ED)==false)
+                    if (string.IsNullOrWhiteSpace(apiInput.SD) == false && string.IsNullOrWhiteSpace(apiInput.ED) == false)
                     {
                         flag = DateTime.TryParse(apiInput.SD, out SDate);
                         if (flag)
@@ -102,7 +97,7 @@ namespace WebAPI.Controllers
                                     {
                                         QueryMode = 1;
                                     }
-                                }                               
+                                }
                             }
                             else
                             {
@@ -116,7 +111,7 @@ namespace WebAPI.Controllers
                             errCode = "ERR151";
                         }
                     }
-                }               
+                }
             }
 
             #endregion
@@ -132,20 +127,20 @@ namespace WebAPI.Controllers
             //#endregion
             #region TB
             //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            //}
 
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-            }
             if (flag)
             {
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
@@ -155,10 +150,11 @@ namespace WebAPI.Controllers
                 if (QueryMode == 0)
                 {
                     iRentStations = _repository.GetStationCarType(apiInput.StationID);
-                    
-                    if(iRentStations != null && iRentStations.Count()>0)
+
+                    if (iRentStations != null && iRentStations.Count() > 0)
                     {
-                        iRentStations.ForEach(x => {
+                        iRentStations.ForEach(x =>
+                        {
                             x.CarTypeName = x.CarBrend + " " + x.CarTypeName;
                         });
                         OAPI_Params = JsonConvert.DeserializeObject<List<OAPI_GetCarTypeParam>>(JsonConvert.SerializeObject(iRentStations));
@@ -173,13 +169,13 @@ namespace WebAPI.Controllers
                         int len = lstData.Count;
                         if (len > 0)
                         {
-                            for(int i = 0; i < len; i++)
+                            for (int i = 0; i < len; i++)
                             {
                                 CarTypeData obj = new CarTypeData()
                                 {
                                     CarBrend = lstData[i].CarBrend,
                                     CarType = lstData[i].CarType,
-                                    CarTypeName = lstData[i].CarBrend + " " + lstData[i].CarTypeName ,
+                                    CarTypeName = lstData[i].CarBrend + " " + lstData[i].CarTypeName,
                                     CarTypePic = lstData[i].CarTypePic,
                                     Operator = lstData[i].Operator,
                                     OperatorScore = lstData[i].OperatorScore,
@@ -199,7 +195,7 @@ namespace WebAPI.Controllers
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
-                    };                
+                    };
                 }
                 else
                 {
@@ -207,7 +203,7 @@ namespace WebAPI.Controllers
                     {
                         GetCarTypeObj = OAPI_Params
                     };
-                }              
+                }
             }
             #endregion
 

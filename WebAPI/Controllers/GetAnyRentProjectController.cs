@@ -52,11 +52,9 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
-            
             int QueryMode = 0;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -67,7 +65,6 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                 
                     //判斷日期
                     if (flag)
                     {
@@ -91,9 +88,7 @@ namespace WebAPI.Controllers
                                             flag = false;
                                             errCode = "ERR154";
                                         }
-
                                     }
-
                                 }
                                 else
                                 {
@@ -112,24 +107,25 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
 
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
+
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-            
+
                 List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
                 lstData = _repository.GetProjectOfAnyRent(apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
@@ -159,8 +155,8 @@ namespace WebAPI.Controllers
                                 ProjName = lstData[0].PRONAME,
                                 Seat = lstData[0].Seat,
                                 Bill = tmpBill,
-                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price/10 : lstData[0].Price,
-                                HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H/10 : lstData[0].PRICE_H,
+                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
+                                HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content
                             });
