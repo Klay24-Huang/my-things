@@ -265,10 +265,11 @@ namespace WebAPI.Controllers
                                 method = CommandType;
                                 requestId = input.requestId;
                                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                                if (flag)
-                                {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                }
+                                //20201020 MARK BY JERRY 無連續動作，可以先不執行等待
+                                //if (flag)
+                                //{
+                                //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                //}
                             }
                         }
                       
