@@ -14,17 +14,17 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 點數查詢
+    /// 點數歷程查詢
     /// </summary>
-    public class BonusQueryController : ApiController
+    public class BonusHistoryQueryController : ApiController
     {
-
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost()]
-        public Dictionary<string, object> DoBonusQuery([FromBody] Dictionary<string, object> value)
+        public Dictionary<string, object> DoBonusHistoryQuery([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -36,12 +36,12 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BonusQueryController";
+            string funName = "BonusHistoryQueryController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BonusQuery apiInput = null;
+            IAPI_BonusHistoryQuery apiInput = null;
             //List<OAPI_BonusQuery> outputApi = new List<OAPI_BonusQuery>();
-            OAPI_BonusQuery outputApi = new OAPI_BonusQuery();
+            OAPI_BonusHistoryQuery outputApi = new OAPI_BonusHistoryQuery();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BonusQuery>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BonusHistoryQuery>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -91,6 +91,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -119,14 +120,13 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
-
             //開始送短租查詢
             if (flag)
             {
-                WebAPIOutput_NPR270Query wsOutput = new WebAPIOutput_NPR270Query();
+                WebAPIOutput_NPR271Query wsOutput = new WebAPIOutput_NPR271Query();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
-                flag = wsAPI.NPR270Query(apiInput.IDNO, ref wsOutput);
-  
+                flag = wsAPI.NPR271Query(apiInput.IDNO, apiInput.SEQNO, ref wsOutput);
+
 
                 if (flag)
                 {
@@ -134,82 +134,49 @@ namespace WebAPI.Controllers
 
                     if (giftLen > 0)
                     {
-                        //OAPI_BonusQuery objBonus = new OAPI_BonusQuery();
-                        //objBonus.BonusObj = new List<BonusData>();
-                        outputApi.BonusObj = new List<BonusData>();
+                        outputApi.BonusObj = new List<BonusHistoryData>();
                         int TotalGiftPoint = 0;
+                        int TotalUsePoint = 0;
                         int TotalLastPoint = 0;
-                        int TotalGiftPointCar = 0;
-                        int TotalGiftPointMotor = 0;
-                        int TotalLastPointCar = 0;
-                        int TotalLastPointMotor = 0;
-                        int TotalLastTransPointCar = 0;
-                        int TotalLastTransPointMotor = 0;
 
                         for (int i = 0; i < giftLen; i++)
                         {
                             DateTime tmpDate;
-                            int tmpPoint = 0;
-                            bool DateFlag = DateTime.TryParse(wsOutput.Data[i].EDATE, out tmpDate);
-                            bool PointFlag = int.TryParse(wsOutput.Data[i].GIFTPOINT, out tmpPoint);
-                            if (DateFlag && (tmpDate >= DateTime.Now) && PointFlag)
-                            {
-                                //  totalPoint += tmpPoint;
+                            bool DateFlag = DateTime.TryParse(wsOutput.Data[i].PROCDT, out tmpDate);
 
-                                BonusData objPoint = new BonusData()
+                            if (DateFlag)
+                            {
+
+
+                                BonusHistoryData objPoint = new BonusHistoryData()
                                 {
-                                    PointType = (wsOutput.Data[i].GIFTTYPE == "01") ? 0 : 1,
-                                    EDATE = (wsOutput.Data[i].EDATE == "") ? "" : (wsOutput.Data[i].EDATE.Split(' ')[0]).Replace("/", "-"),
-                                    GIFTNAME = wsOutput.Data[i].GIFTNAME,
-                                    GIFTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].GIFTPOINT) ? "0" : wsOutput.Data[i].GIFTPOINT,
-                                    LASTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? "0" : wsOutput.Data[i].LASTPOINT,
-                                    AllowSend = string.IsNullOrEmpty(wsOutput.Data[i].RCVFLG) ? 0 : ((wsOutput.Data[i].RCVFLG == "Y") ? 1 : 0)
+                                    GIFTPOINT = wsOutput.Data[i].GIFTPOINT.ToString(),
+                                    USEDATE = wsOutput.Data[i].PROCDT,
+                                    MEMO = wsOutput.Data[i].MEMO
 
                                 };
-                                if (objPoint.PointType == 0)
-                                {
-                                    if (!objPoint.GIFTNAME.Contains("【汽車】"))
-                                    {
-                                        objPoint.GIFTNAME = "【汽車】\n" + objPoint.GIFTNAME;
-                                    }
-                                    TotalGiftPointCar += int.Parse(objPoint.GIFTPOINT);
-                                    TotalLastPointCar += int.Parse(objPoint.LASTPOINT);
-                                    //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
-                                    TotalLastTransPointCar += (objPoint.AllowSend == 1 ? int.Parse(objPoint.LASTPOINT) : 0);
-                                }
-                                else if (objPoint.PointType == 1)
-                                {
-                                    if (!objPoint.GIFTNAME.Contains("【機車】"))
-                                    {
-                                        objPoint.GIFTNAME = "【機車】\n" + objPoint.GIFTNAME;
-                                    }
-                                    TotalGiftPointMotor += int.Parse(objPoint.GIFTPOINT);
-                                    TotalLastPointMotor += int.Parse(objPoint.LASTPOINT);
-                                    //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
-                                    TotalLastTransPointMotor += (objPoint.AllowSend == 1 ? int.Parse(objPoint.LASTPOINT) : 0);
-                                }
-                                //objBonus.BonusObj.Add(objPoint);
-                                outputApi.BonusObj.Add(objPoint);
 
-                                //點數加總
-                                TotalGiftPoint += int.Parse(objPoint.GIFTPOINT);
-                                TotalLastPoint += int.Parse(objPoint.LASTPOINT);
-
+                                if (wsOutput.Data[i].LOGTYPE == "01" || wsOutput.Data[i].LOGTYPE == "03")
+                                {
+                                    TotalGiftPoint += wsOutput.Data[i].GIFTPOINT;
+                                }
+                                else if (wsOutput.Data[i].LOGTYPE == "02")
+                                {
+                                    TotalUsePoint += wsOutput.Data[i].GIFTPOINT;
+                                    objPoint.MEMO = "用車折抵";
+                                    outputApi.BonusObj.Add(objPoint);
+                                }
+                                else
+                                {
+                                    TotalUsePoint += wsOutput.Data[i].GIFTPOINT;
+                                    outputApi.BonusObj.Add(objPoint);
+                                }
 
                             }
-
                         }
+                        TotalLastPoint = TotalGiftPoint - TotalUsePoint;
                         outputApi.TotalGIFTPOINT = TotalGiftPoint;
                         outputApi.TotalLASTPOINT = TotalLastPoint;
-                        outputApi.TotalCarGIFTPOINT = TotalGiftPointCar;
-                        outputApi.TotalCarLASTPOINT = TotalLastPointCar;
-                        outputApi.TotalMotorGIFTPOINT = TotalGiftPointMotor;
-                        outputApi.TotalMotorLASTPOINT = TotalLastPointMotor;
-                        //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
-                        outputApi.TotalCarTransLASTPOINT = TotalLastTransPointCar;
-                        outputApi.TotalMotorTransLASTPOINT = TotalLastTransPointMotor;
-                        //outputApi.Add(objBonus);
-                        //outputApi.BonusObj.Add(objBonus.BonusObj[]);
                     }
                 }
                 else
@@ -217,9 +184,7 @@ namespace WebAPI.Controllers
                     errCode = "ERR";
                     errMsg = wsOutput.Message;
                 }
-
             }
-
             #endregion
 
             #region 寫入錯誤Log

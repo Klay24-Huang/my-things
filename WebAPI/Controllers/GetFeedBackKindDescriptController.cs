@@ -58,10 +58,11 @@ namespace WebAPI.Controllers
             string IDNO = "";
             #endregion
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, true);
 
             if (flag)
             {
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetFeedBackKindDescript>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Access_Token, ClientIP, funName, ref errCode, ref LogID);

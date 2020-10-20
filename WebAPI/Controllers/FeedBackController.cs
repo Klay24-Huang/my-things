@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                if (!string.IsNullOrWhiteSpace(apiInput.Descript))
+                if (string.IsNullOrWhiteSpace(apiInput.Descript))
                 {
                     flag = false;
                     errCode = "ERR900";

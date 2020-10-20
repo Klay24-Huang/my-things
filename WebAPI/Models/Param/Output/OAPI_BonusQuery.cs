@@ -34,6 +34,14 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int TotalMotorLASTPOINT { set; get; }
         /// <summary>
+        /// 汽車剩餘可移轉點數加總
+        /// </summary>
+        public int TotalCarTransLASTPOINT { set; get; }
+        /// <summary>
+        /// 機車剩餘可移轉點加總
+        /// </summary>
+        public int TotalMotorTransLASTPOINT { set; get; }
+        /// <summary>
         /// 剩餘點數加總
         /// </summary>
         public int TotalLASTPOINT { set; get; }

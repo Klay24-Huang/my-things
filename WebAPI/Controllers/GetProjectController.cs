@@ -204,8 +204,8 @@ namespace WebAPI.Controllers
                         lstTmpData[0].ProjectObj.Add(new ProjectObj()
                         {
                             CarBrend = lstData[0].CarBrend,
-                            CarType = lstData[0].CarType,
-                            CarTypeName = lstData[0].CarBrend + lstData[0].CarTypeName,
+                            CarType = lstData[0].CarTypeName,
+                            CarTypeName = lstData[0].CarBrend + " " + lstData[0].CarTypeName,
                             CarTypePic = lstData[0].CarTypePic,
                             Insurance = 1,
                             InsurancePerHour = 20,

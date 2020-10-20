@@ -156,6 +156,7 @@
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
+    <Compile Include="Controllers\BonusHistoryQueryController.cs" />
     <Compile Include="Controllers\BonusQueryController.cs" />
     <Compile Include="Controllers\BookingCancelController.cs" />
     <Compile Include="Controllers\BookingController.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
@@ -363,6 +365,7 @@
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
     <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingFinishQuery.cs" />
