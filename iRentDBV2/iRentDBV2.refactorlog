@@ -483,4 +483,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="MasterCardID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1852e4d4-3821-41a7-ba78-170abfacecae" ChangeDateTime="10/20/2020 22:36:43">
+    <Property Name="ElementName" Value="[dbo].[TB_CardSettingLog].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_CardSettingLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CardSettingLogId" />
+  </Operation>
 </Operations>

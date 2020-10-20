@@ -5,46 +5,50 @@
         <div class="card-header bg-secondary text-white">
             會員卡號解除
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
+        @using (Html.BeginForm("UnBindCard", "CardDataInfo", FormMethod.Post, new { id = "frmUnBindCard", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
 
 
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            訂單編號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="([0-9]{1,})|((H)[0-9]{1,})" required value="" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            身分證字號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="IDNO" id="IDNO" value="" />
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="([0-9]{1,})|((H)[0-9]{1,})" required value="" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確認送出</button>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                身分證字號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" required value="" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <button type="submit" class="btn btn-primary">確認送出</button>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+            </ul>
+        }
+        </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->

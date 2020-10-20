@@ -63,23 +63,23 @@ CREATE PROCEDURE [dbo].[usp_HandleCarStatusByMotor]
     @deviceRSOC VARCHAR(10),
     @deviceRDistance VARCHAR(10),
     @deviceMBA FLOAT,--
-    @deviceMBAA   INT, --
-    @deviceMBAT_Hi   INT, --
-    @deviceMBAT_Lo   INT, --
+    @deviceMBAA   FLOAT, --
+    @deviceMBAT_Hi   FLOAT, --
+    @deviceMBAT_Lo   FLOAT, --
     @deviceRBA FLOAT,
-    @deviceRBAA   INT, --
-    @deviceRBAT_Hi   INT, --
-    @deviceRBAT_Lo   INT, --
+    @deviceRBAA   FLOAT, --
+    @deviceRBAT_Hi   FLOAT, --
+    @deviceRBAT_Lo   FLOAT, --
     @deviceLBA FLOAT,--
-    @deviceLBAA   INT, --
-    @deviceLBAT_Hi   INT, --
-    @deviceLBAT_Lo   INT, --
-    @deviceTMP    INT, --
-    @deviceCur    INT, --
-    @deviceTPS    INT, --
-    @deviceiVOL   INT, --
-    @deviceErr   INT, --
-    @deviceALT   INT, --
+    @deviceLBAA   FLOAT, --
+    @deviceLBAT_Hi   FLOAT, --
+    @deviceLBAT_Lo   FLOAT, --
+    @deviceTMP    FLOAT, --
+    @deviceCur    FLOAT, --
+    @deviceTPS    FLOAT, --
+    @deviceiVOL   FLOAT, --
+    @deviceErr   FLOAT, --
+    @deviceALT   FLOAT, --
     @deviceGx FLOAT,--
     @deviceGy FLOAT,--
     @deviceGz FLOAT,--
@@ -189,7 +189,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 					,[extDeviceData6]=@extDeviceData6,UPDTime=@NowTime
 				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 			END
-			INSERT INTO TB_CarRawData([CID],[deviceType],[ACCStatus],[GPSStatus]
+			INSERT INTO TB_CarRawData([CarNo],[CID],[deviceType],[ACCStatus],[GPSStatus]
 										,[GPSTime],[GPRSStatus],[Speed],[Volt],[Latitude]
 										,[Longitude],[Millage] ,[deviceCourse],[deviceRPM],[device2TBA]
 										,[device3TBA],[deviceRSOC],[deviceRDistance],[deviceMBA],[deviceMBAA]
@@ -200,7 +200,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 										,[deviceBLE_BroadCast],[devicePwr_Mode],[deviceReversing],[devicePut_Down],[devicePwr_Relay]
 										,[deviceStart_OK],[deviceHard_ACC],[deviceEMG_Break],[deviceSharp_Turn],[deviceBat_Cover]
 										,[deviceLowVoltage],[extDeviceStatus1],[extDeviceData5],[extDeviceData6]
-								)VALUES(@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus
+								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus
 								       ,@deviceGPSTime,@deviceGPRSStatus,@deviceSpeed,@deviceVolt,@deviceLatitude
 									   ,@deviceLongitude,@deviceMillage,@deviceCourse,@deviceRPM,@device2TBA
 									   ,@device3TBA,@deviceRSOC,@deviceRDistance,@deviceMBA,@deviceMBAA

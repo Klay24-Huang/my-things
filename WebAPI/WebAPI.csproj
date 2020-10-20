@@ -261,6 +261,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SentCardSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SetCarMemo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBind.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBindCreditCard.cs" />

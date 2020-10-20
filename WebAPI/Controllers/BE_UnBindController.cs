@@ -1,7 +1,9 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
+using Domain.SP.BE.Output;
 using Domain.SP.Output;
 using Domain.TB.BackEnd;
+using Domain.WebAPI.Input.CENS;
 using Reposotory.Implement.BackEnd;
 using System;
 using System.Collections.Generic;
@@ -31,7 +33,7 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoBE_UnBindController(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_UnBind(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -55,6 +57,7 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
+            Int64 tmpOrder = 0;
             #endregion
             #region 防呆
 
@@ -66,11 +69,39 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID };
-                string[] errList = { "ERR900" };
+                string[] checkList = { apiInput.UserID,apiInput.IDNO,apiInput.OrderNo };
+                string[] errList = { "ERR900" , "ERR900" , "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                if (flag)
+                {
+                    flag = baseVerify.checkIDNO(apiInput.IDNO);
+                    if (false == flag)
+                    {
+                        errCode = "ERR900";
+                    }
+                }
+                if (flag)
+                {
+                    if (apiInput.OrderNo.IndexOf("H") < 0)
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
+                    if (flag)
+                    {
+                        flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                        if (flag)
+                        {
+                            if (tmpOrder <= 0)
+                            {
+                                flag = false;
+                                errCode = "ERR900";
+                            }
 
+                        }
+                    }
+                }
 
             }
             #endregion
@@ -79,7 +110,40 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                
+                     string spName = new ObjType().GetSPName(ObjType.SPType.BE_GetCarMachineAndCheckOrder);
+                SPInput_BE_GetCarMachineAndCheckOrder spInput = new SPInput_BE_GetCarMachineAndCheckOrder()
+                {
+                    LogID = LogID,
+                    IDNO=apiInput.IDNO,
+                     OrderNo=tmpOrder
 
+                };
+                SPOutput_BE_GetCarMachineAndCheckOrder spOut = new SPOutput_BE_GetCarMachineAndCheckOrder();
+                SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder> sqlHelp = new SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag,  spOut.Error,spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    #region 車機
+                    CarCommonFunc CarComm = new CarCommonFunc();
+                    if (spOut.IsCens == 1)
+                    {
+                        SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
+                        SendCarNoData obj = new SendCarNoData()
+                        {
+                            CardNo = spOut.CardNo,
+                            CardType = 1
+                        };
+                        sendCarNoDatas[0] = obj;
+                        flag = CarComm.DoSetCensCustomerCard(spOut.CID, sendCarNoDatas, 0, ref errCode);
+                    }
+                    else
+                    {
+                        flag = CarComm.DoSetFETCustomerCard(spOut.CID, spOut.deviceToken, new string[] { spOut.CardNo },0,LogID, ref errCode);
+                    }
+                    #endregion
+                }
 
             }
             #endregion
