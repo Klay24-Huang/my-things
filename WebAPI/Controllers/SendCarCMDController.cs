@@ -502,41 +502,42 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 判斷是否成功
-            if (flag)
-            {
-                if (CarMachineType == 0)
-                {
-                    int nowCount = 0;
-                    bool waitFlag = false;
-                    while (nowCount < 30)
-                    {
-                        Thread.Sleep(1000);
-                        CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);
-                        if (obj != null)
-                        {
-                            waitFlag = true;
-                            if (obj.CmdReply != "Okay")
-                            {
-                                waitFlag = false;
-                                errCode = "ERR167";
-                            //    break;
-                            }
-                            break;
-                        }
-                        nowCount++;
-                    }
-                    if (waitFlag==false)
-                    {
-                        if (errCode != "ERR167")
-                        {
-                            flag = false;
-                            errCode = "ERR166";
-                        }
-                       
-                    }
-                }
-            }
-           
+            //20201022 MARK BY JERRY 無連續動作，可以先不執行等待
+            //if (flag)
+            //{
+            //    if (CarMachineType == 0)
+            //    {
+            //        int nowCount = 0;
+            //        bool waitFlag = false;
+            //        while (nowCount < 30)
+            //        {
+            //            Thread.Sleep(1000);
+            //            CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);
+            //            if (obj != null)
+            //            {
+            //                waitFlag = true;
+            //                if (obj.CmdReply != "Okay")
+            //                {
+            //                    waitFlag = false;
+            //                    errCode = "ERR167";
+            //                //    break;
+            //                }
+            //                break;
+            //            }
+            //            nowCount++;
+            //        }
+            //        if (waitFlag==false)
+            //        {
+            //            if (errCode != "ERR167")
+            //            {
+            //                flag = false;
+            //                errCode = "ERR166";
+            //            }
+
+            //        }
+            //    }
+            //}
+
             #endregion
 
             #region 寫入錯誤Log
