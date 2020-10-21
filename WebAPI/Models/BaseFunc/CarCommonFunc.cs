@@ -605,6 +605,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = ClearInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                                     if (flag)
                                     {
@@ -669,6 +670,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = SetNoRentInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -689,6 +691,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = SetNoRentInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -790,6 +793,7 @@ namespace WebAPI.Models.BaseFunc
 
                             };
                             requestId = input.requestId;
+                            method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
                             {
@@ -810,6 +814,7 @@ namespace WebAPI.Models.BaseFunc
 
                             };
                             requestId = input.requestId;
+                            method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
                             {
@@ -939,6 +944,7 @@ namespace WebAPI.Models.BaseFunc
 
                 };
                 requestId = ClearInput.requestId;
+                method = CommandType;
                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                 if (flag)
                 {
@@ -983,6 +989,7 @@ namespace WebAPI.Models.BaseFunc
 
                 };
                 requestId = ClearInput.requestId;
+                method = CommandType;
                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                 if (flag)
                 {
