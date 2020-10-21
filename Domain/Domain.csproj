@@ -88,6 +88,7 @@
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />

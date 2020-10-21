@@ -244,6 +244,10 @@ namespace WebAPI.Models.Enum
             /// 取得會員登入後狀態 20201016 ADD BY ADAM 
             /// </summary>
             GetMemberStatus,
+            /// <summary>
+            /// 取得會員資料 20201022 ADD BY ADAM
+            /// </summary>
+            GetMemberData,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -521,6 +525,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
+                    break;
+                case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
+                    SPName = "usp_GetMemberData";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

@@ -124,5 +124,13 @@ namespace Domain.MemberData
         /// 法定代理人
         /// </summary>
         public int F01_pic { get; set; }
+        /// <summary>
+        /// 電子簽名
+        /// </summary>
+        public int Signture_pic { get; set; }
+        /// <summary>
+        /// 電子簽名BASE64編碼
+        /// </summary>
+        public string SigntureCode { get; set; }
     }
 }
