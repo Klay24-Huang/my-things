@@ -792,7 +792,7 @@ namespace WebAPI.Models.BaseFunc
                                 _params = new Params()
 
                             };
-                            requestId = input.requestId;
+                            requestId = SetNoRentInput.requestId;
                             method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
@@ -813,7 +813,7 @@ namespace WebAPI.Models.BaseFunc
                                 _params = new Params()
 
                             };
-                            requestId = input.requestId;
+                            requestId = SetNoRentInput.requestId;
                             method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
