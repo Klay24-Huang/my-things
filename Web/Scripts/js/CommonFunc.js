@@ -177,3 +177,8 @@ function resetFileInput(file) {
 function detailMap(lat, lng) {
     window.open("http://maps.google.com.tw/maps?q=" + lng + "," + lat);
 }
+function RegexOrderNo(str) {
+    var flag = true;
+    var patt = /([0-9]{1,})|((H)[0-9]{1,})/g;
+    return patt.test(str);
+}

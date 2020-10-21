@@ -323,6 +323,18 @@ namespace WebAPI.Models.Enum
                 /// 修改萬用卡
                 /// </summary>
                 BE_HandleMasterCardData,
+                /// <summary>
+                /// 確認訂單並取出車機、卡號
+                /// </summary>
+                BE_GetCarMachineAndCheckOrder,
+                /// <summary>
+                /// 確認訂單並取出車機、卡號、身份證
+                /// </summary>
+               BE_GetCarMachineAndCheckOrderNoIDNO,
+                /// <summary>
+                /// 更新會員卡號
+                /// </summary>
+            BE_UpdCardNo
             #endregion
 
         }
@@ -580,6 +592,15 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleMasterCardData:
                     SPName = "usp_BE_HandleMasterCard";
+                    break;
+                case SPType.BE_GetCarMachineAndCheckOrder:
+                    SPName = "usp_BE_GetCarMachineAndCheckOrder";
+                    break;
+                case SPType.BE_GetCarMachineAndCheckOrderNoIDNO:
+                    SPName = "usp_BE_GetCarMachineAndCheckOrderNoIDNO";
+                    break;
+                case SPType.BE_UpdCardNo:
+                    SPName = "usp_BE_UPD_CardNo";
                     break;
                     #endregion
             }

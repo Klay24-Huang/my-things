@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_ReadCardLog>
+@{ 
+    Layout = null;
+    int ReadLen =0;
+    List<Domain.TB.BackEnd.BE_ReadCardLog> lstReadLog = null;
+    if (Model != null)
+    {
+        lstReadLog = new List<Domain.TB.BackEnd.BE_ReadCardLog>();
+        lstReadLog = Model.ToList();
+        ReadLen = lstReadLog.Count;
+    }
+}
+<div class="container mt-4" id="ShowReadCardPanel">
+    <table class="table bg-white " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">序號</th>
+                <th scope="col">日期</th>
+                <th scope="col">車號</th>
+                <th scope="col">卡號</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ReadLen == 0)
+            {
+                <tr>
+                    <td colspan="5">查無結果</td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ReadLen; i++)
+                {
+                    <tr>
+                        <td></td>
+                        <td>@(lstReadLog[i].ReadCardID)</td>
+                        <td>
+                            @(lstReadLog[i].ReadTime.ToString("yyyy-MM-dd HH:mm:ss"))
+                        </td>
+                        <td>
+                            @(lstReadLog[i].CarNo.Replace(" ",""))
+                        </td>
+                        <td>
+                            @(lstReadLog[i].CardNo)
+                            @if (lstReadLog[i].Status != "")
+                            {
+                               @("【" + lstReadLog[i].Status + "】")
+                            }
+                        </td>
+
+
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<input type="hidden" name="ReadLen" id="ReadLen" value="@ReadLen" />
+

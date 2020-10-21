@@ -5,74 +5,67 @@
         <div class="card-header bg-secondary text-white">
             訊息記錄查詢
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            卡別
-                        </div>
-                        <div class="col-md-3">
+        @using (Html.BeginForm("SentCardSetting", "CardDataInfo", FormMethod.Post, new { id = "frmSentCardSetting", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                卡別
+                            </div>
+                            <div class="col-md-3">
 
-                            <select class="form-control" id="CarType" name="CarType">
-                                <option value="-1">1</option>
-                                <option value="C">一般卡</option>
-                                <option value="M">萬用卡</option>
-                            </select>
+                                <select class="form-control" id="CarType" name="CarType">
+                                   
+                                    <option value="1">一般卡</option>
+                              
+                                </select>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            車號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CarNo" id="CarNo" value="" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            卡號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="CardNo" id="CardNo" value="" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            合約編號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="([0-9]{1,})|((H)[0-9]{1,})" required value="" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">發送至車輛</button>
+                </li>
 
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                卡號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CardNo" id="CardNo" value="" required />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                合約編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="([0-9]{1,})|((H)[0-9]{1,})"  value="" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <button type="button" name="btnSend" id="btnSend" class="btn btn-primary">發送至車輛</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->

@@ -899,7 +899,7 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="LogID"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        private bool DoSetFETMasterCard(string CID,string deviceToken, string[] CardStr, int Mode,Int64 LogID, ref string errCode)
+        public bool DoSetFETMasterCard(string CID,string deviceToken, string[] CardStr, int Mode,Int64 LogID, ref string errCode)
         {
             bool flag = true;
             FETCatAPI FetAPI = new FETCatAPI();
@@ -966,7 +966,7 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="LogID"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        private bool DoSetFETCustomerCard(string CID, string deviceToken, string[] CardStr, int Mode, Int64 LogID, ref string errCode)
+        public bool DoSetFETCustomerCard(string CID, string deviceToken, string[] CardStr, int Mode, Int64 LogID, ref string errCode)
         {
             bool flag = true;
      
@@ -1032,7 +1032,7 @@ namespace WebAPI.Models.BaseFunc
         /// </param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        private bool DoSetCensMasterCard(string CID,SendCarNoData[] lstCardList, int Mode, ref string errCode)
+        public bool DoSetCensMasterCard(string CID,SendCarNoData[] lstCardList, int Mode, ref string errCode)
         {
             bool flag = true;
             CensWebAPI webAPI = new CensWebAPI();
@@ -1078,7 +1078,7 @@ namespace WebAPI.Models.BaseFunc
         /// </param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        private bool DoSetCensCustomerCard(string CID, SendCarNoData[] lstCardList,int Mode, ref string errCode)
+        public bool DoSetCensCustomerCard(string CID, SendCarNoData[] lstCardList,int Mode, ref string errCode)
         {
             bool flag = true;
             CensWebAPI webAPI = new CensWebAPI();

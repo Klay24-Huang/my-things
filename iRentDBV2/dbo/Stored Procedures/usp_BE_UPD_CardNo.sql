@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_InsReadCardData]
+** Name: [dbo].[usp_BE_UPD_CardNo]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,26 +29,25 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_InsReadCardData]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_BE_UPD_CardNo]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/9/18 上午 05:43:31 
+** Date:2020/10/20 下午 02:12:44 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/9/18 上午 05:43:31    |  Eric|          First Release
-** 2020/10/20     配合後台功能，增加記錄刷卡當下的車號
+** 2020/10/20 下午 02:12:44    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_InsReadCardData]
-	@CID                    VARCHAR(10)            ,
+CREATE PROCEDURE [dbo].[usp_BE_UPD_CardNo]
+	@IDNO                   VARCHAR(10)           ,
+	@OrderNo                BIGINT                ,
 	@CardNo                 VARCHAR(20)           ,
-	@GPSTime                DATETIME              ,
-	@Status                 VARCHAR(50)           , --遠傳才有值
+	@UserId                 VARCHAR(10)           ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -60,10 +59,9 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @ReadCardLogID BIGINT;
-DECLARE @SD     DATETIME;
-DECLARE @ED     DATETIME;
-declare @CarNo VARCHAR(10);
+
+DECLARE @NowTime DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -71,33 +69,42 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_InsReadCardData';
+SET @FunName='usp_BE_UPD_CardNo';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @CID    =ISNULL (@CID    ,'');
-SET @CardNo=ISNULL  (@CardNo,'');
-SET @Status=ISNULL(@Status,'');
-SET @ReadCardLogID=0;
-SET @ED=DATEADD(HOUR,8,GETDATE());
-SET @SD=DATEADD(second,-30,@ED);
-SET @CarNo='';
+
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
+
+SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @OrderNo=ISNULL (@OrderNo,0);
+SET @CardNo    =ISNULL (@CardNo    ,'');
+SET @UserId=ISNULL(@UserId,'')
+
 		BEGIN TRY
-		 IF @CardNo='' OR @CID='' 
+
+		 
+		 IF @CardNo='' OR @IDNO=''  OR @OrderNo=0 OR @UserId=''
 		 BEGIN
 		   SET @Error=1;
-		   SET @ErrorCode='ERR298'
+		   SET @ErrorCode='ERR900'
  		 END
+		 
+		  --0.再次檢核token
 		 IF @Error=0
 		 BEGIN
-		  --INSERT INTO TB_ReadCardLog_201610(CID,CardNo,GPSTime)VALUES(@CID,@CardNo,@GPSTime);
-		    SELECT  TOP 1 @ReadCardLogID=ISNULL(ReadCardID,0) FROM TB_ReadCard WITH(NOLOCK) WHERE CID=@CID AND CardNo=@CardNo AND (ReadTime BETWEEN @SD AND @ED) ORDER BY ReadCardID DESC;
-			SELECT @CarNo=ISNULL(CarNo,'') FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@CID;
-			IF @ReadCardLogID=0
-			BEGIN
-		     INSERT INTO TB_ReadCard(CID,CardNo,GPSTime,[Status],CarNo)VALUES(@CID,@CardNo,@GPSTime,@Status,@CarNo);
-			END
+				SET @hasData=0;
+		        SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND IDNO=@IDNO;
+				IF @hasData=0
+				BEGIN
+					SET @Error=1;
+					SET @ErrorCode='ERR720'
+				END
+				ELSE
+				BEGIN
+					UPDATE TB_MemberData SET CARDNO=@CardNo,U_USERID=@UserId,U_SYSDT=@NowTime WHERE MEMIDNO=@IDNO;
+				END
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
@@ -124,20 +131,20 @@ SET @CarNo='';
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsReadCardData';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_UPD_CardNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsReadCardData';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_UPD_CardNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'寫入讀卡記錄', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsReadCardData';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'更新會員卡號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_UPD_CardNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsReadCardData';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_UPD_CardNo';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsReadCardData';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_UPD_CardNo';

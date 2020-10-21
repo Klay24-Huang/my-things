@@ -2,6 +2,7 @@
 (
 	[ReadCardID] BIGINT NOT NULL IDENTITY, 
     [CID] VARCHAR(20) NOT NULL DEFAULT '', 
+    [CarNo] VARCHAR(10) NOT NULL DEFAULT '',
     [CardNo] VARCHAR(50) NOT NULL DEFAULT '', 
 	[Status] VARCHAR(10) NOT NULL DEFAULT '',
     [GPSTime] DATETIME NOT NULL, 
@@ -70,3 +71,13 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
 GO
 
 CREATE UNIQUE INDEX [IX_TB_ReadCard_SearchByReadTime] ON [dbo].[TB_ReadCard] ([CID], [CardNo], [ReadTime])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'刷卡當下的車號',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_ReadCard',
+    @level2type = N'COLUMN',
+    @level2name = N'CarNo'

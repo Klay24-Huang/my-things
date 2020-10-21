@@ -134,12 +134,12 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 					,[extDeviceData2]=@extDeviceData2,[extDeviceData3]=@extDeviceData3,[extDeviceData4]=@extDeviceData4,UPDTime=@NowTime
 				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 			END
-						INSERT INTO TB_CarRawData([CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
+						INSERT INTO TB_CarRawData([CarNo],[CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
 										,[LockStatus],[IndoorLightStatus],[SecurityStatus],[Speed],[Volt]
 										,[Latitude],[Longitude],[Millage],[extDeviceStatus1],[extDeviceStatus2]
 										,[extDeviceData2],[extDeviceData3],[extDeviceData4]
-								)VALUES(@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus,@deviceGPSTime
+								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus,@deviceGPSTime
 										,@deviceOBDstatus,@deviceGPRSStatus,@devicePowerONStatus,@devcieCentralLockStatus,@deviceDoorStatus
 										,@deviceLockStatus,@deviceIndoorLightStatus,@deviceSecurityStatus,@deviceSpeed,@deviceVolt
 										,@deviceLatitude,@deviceLongitude,@deviceMillage,@extDeviceStatus1,@extDeviceStatus2

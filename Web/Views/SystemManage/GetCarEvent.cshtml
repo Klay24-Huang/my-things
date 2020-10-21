@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarEventLog>
+@{
+    Layout = null;
+    int CarEventLen = 0;
+    List<Domain.TB.BackEnd.BE_CarEventLog> lstCarEventLog = null;
+    if (Model != null)
+    {
+        lstCarEventLog = new List<Domain.TB.BackEnd.BE_CarEventLog>();
+        lstCarEventLog = Model.ToList();
+        CarEventLen = lstCarEventLog.Count;
+    }
+}
+
+<div class="container mt-4" id="ShowEventPanel">
+    <table class="table bg-white " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">序號</th>
+                <th scope="col">車號</th>
+                <th scope="col">車輛事件狀態</th>
+                <th scope="col">車門狀態</th>
+                <th scope="col">日期</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (CarEventLen == 0)
+            {
+                <tr>
+                    <td colspan="6" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < CarEventLen; i++)
+                {
+                    <tr>
+                        <td></td>
+                        <td scope="row">@(i+1)</td>
+                        <td scope="col">@(lstCarEventLog[i].CarNo.Replace(" ","")) (@(lstCarEventLog[i].CID.Replace(" ","")))</td>
+                        <td scope="col">
+
+                            <span class="icon-2 @((lstCarEventLog[i].ACCStatus==1)?" text-danger":"")"></span>
+                            <span class="icon-11 @((lstCarEventLog[i].PowerOnStatus==1)?" text-danger":"")"></span>
+                            @if (lstCarEventLog[i].deviceType == 0)
+                            {
+                                @if (lstCarEventLog[i].SecurityStatus == 1)
+                                {
+                                    <span class="icon-12 "></span><!--防盜-->
+                                }
+                                else
+                                {
+
+                                    <span class="icon-15  text-danger"></span><!--防盜-->
+                                }
+                                <span class="icon-17 @((lstCarEventLog[i].CentralLockStatus==0)?" text-danger":"")"></span>
+                                <span class="icon-14 @((lstCarEventLog[i].IndoorLightStatus==1)?" text-danger":"")"></span>
+                            }
+                            else
+                            {
+                                <span class="icon-3 @((lstCarEventLog[i].BatCover==1)?" text-danger":"")"></span>
+                                <span class="icon-6 @((lstCarEventLog[i].MotorLowVol==1)?" text-danger":"")"></span>
+                            }
+
+
+                        </td>
+                        <td scope="col">
+                            @if (lstCarEventLog[i].deviceType == 0)
+                            {
+                                <span class="icon-16" @((lstCarEventLog[i].DoorStatus == 1) ? " text-danger" : "")></span><!--車門-->
+                            }
+                         </td>
+                        <td scope="col">@(lstCarEventLog[i].MKTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="6" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<input type="hidden" name="CarEventLen" id="CarEventLen" value="@CarEventLen" />

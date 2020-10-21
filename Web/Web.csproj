@@ -501,7 +501,6 @@
     <Content Include="Views\ContactManage\ContactSetting.cshtml" />
     <Content Include="Views\Manage\AuthAndPay.cshtml" />
     <Content Include="Views\Manage\HoildayMaintain.cshtml" />
-    <Content Include="Views\Manage\UnBindCard.cshtml" />
     <Content Include="Views\Manage\UnBindCreditCard.cshtml" />
     <Content Include="Views\Manage\ResendToHieasyrent.cshtml" />
     <Content Include="Views\Report\MaintainLogReport.cshtml" />
@@ -522,6 +521,9 @@
     <Content Include="Views\StationAndParking\StationInfoAdd.cshtml" />
     <Content Include="Views\SystemSetting\FeedBackKindSetting.cshtml" />
     <Content Include="Views\CommonObj\GetCarMachineUnBindList.cshtml" />
+    <Content Include="Views\SystemManage\GetCardSettingData.cshtml" />
+    <Content Include="Views\SystemManage\GetReadCard.cshtml" />
+    <Content Include="Views\SystemManage\GetCarEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
