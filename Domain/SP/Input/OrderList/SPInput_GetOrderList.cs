@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.OrderList
 {
@@ -11,10 +7,16 @@ namespace Domain.SP.Input.OrderList
         /// <summary>
         /// 身份證
         /// </summary>
-        public string IDNO { set; get; }
+        public string IDNO { get; set; }
+
         /// <summary>
         /// JWT TOKEN
         /// </summary>
-        public string Token { set; get; }
+        public string Token { get; set; }
+
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public Int64 OrderNo { get; set; }
     }
 }

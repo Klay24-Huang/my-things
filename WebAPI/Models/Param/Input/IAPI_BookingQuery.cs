@@ -7,6 +7,9 @@ namespace WebAPI.Models.Param.Input
 {
     public class IAPI_BookingQuery
     {
-    
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public string OrderNo { get; set; }
     }
 }
