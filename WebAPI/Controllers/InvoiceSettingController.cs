@@ -122,7 +122,7 @@ namespace WebAPI.Controllers
                             }
                             break;
                         case 5:
-                        case 6:
+                        
                             if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
                             {
                                 flag = false;
@@ -133,6 +133,13 @@ namespace WebAPI.Controllers
 
                                 flag = new HiEasyRentAPI().CheckEinvBiz(apiInput.CARRIERID, ref errCode);
                               
+                            }
+                            break;
+                        case 6:
+                            if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
+                            {
+                                flag = false;
+                                errCode = "ERR193";
                             }
                             break;
                     }

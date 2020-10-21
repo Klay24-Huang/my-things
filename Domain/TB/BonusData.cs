@@ -13,6 +13,10 @@ namespace Domain.TB
     public class BonusData
     {
         /// <summary>
+        /// 流水號
+        /// </summary>
+        public string SEQNO { set; get; }
+        /// <summary>
         /// 點數類型
         /// <para>0:汽車</para>
         /// <para>1:機車</para>

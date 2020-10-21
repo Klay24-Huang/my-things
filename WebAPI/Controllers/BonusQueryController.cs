@@ -158,6 +158,9 @@ namespace WebAPI.Controllers
 
                                 BonusData objPoint = new BonusData()
                                 {
+                                    //20201021 ADD BY ADAM REASON.補上流水號
+                                    SEQNO = wsOutput.Data[i].SEQNO,
+
                                     PointType = (wsOutput.Data[i].GIFTTYPE == "01") ? 0 : 1,
                                     EDATE = (wsOutput.Data[i].EDATE == "") ? "" : (wsOutput.Data[i].EDATE.Split(' ')[0]).Replace("/", "-"),
                                     GIFTNAME = wsOutput.Data[i].GIFTNAME,

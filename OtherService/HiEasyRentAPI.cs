@@ -601,7 +601,7 @@ namespace OtherService
             WebAPIOutput_EinvBiz output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(EinvBizURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + EinvBizURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try

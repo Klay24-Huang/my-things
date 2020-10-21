@@ -41,13 +41,29 @@ namespace Domain.MemberData
         /// </summary>
         public int Audit_F01 { set; get; }
         /// <summary>
+        /// 審核簽名檔 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)
+        /// </summary>
+        public int Audit_Signture { set; get; }
+        /// <summary>
         /// 黑名單 Y/N
         /// </summary>
         public string BlackList { set; get; }
         /// <summary>
+        /// 會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
+        /// </summary>
+        public int MenuCTRL { set; get; }
+        /// <summary>
+        /// 會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
+        /// </summary>
+        public string MenuStatusText { set; get; }
+        /// <summary>
         /// 狀態文字說明
         /// </summary>
         public string StatusText { set; get; }
+        /// <summary>
+        /// 機車狀態文字說明
+        /// </summary>
+        public string StatusTextMotor { set; get; }
         /// <summary>
         /// 目前汽車出租數
         /// </summary>

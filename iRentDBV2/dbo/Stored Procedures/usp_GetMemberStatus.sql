@@ -115,19 +115,55 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 				,Audit_Motor		= ISNULL(C.MotorDriver_1,0)		--機車駕照
 				,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
 				,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
+				,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
+				--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
+				,MenuCTRL			= CASE WHEN IrFlag=0 THEN 1
+										   --身分證未上傳,駕照只要上其中一個
+										   WHEN C.ID_1=0 OR (C.CarDriver_1<>1 OR C.MotorDriver_1<>1) OR C.Self_1=0 THEN 2
+										   WHEN Audit=0 THEN 3
+										   WHEN Audit=2 THEN 4
+										   WHEN Audit=1 AND C.ID_1=1 THEN 5
+										   WHEN Audit=1 AND C.CarDriver_1=1 THEN 5
+										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN 5
+										   WHEN Audit=1 AND C.Self_1=1 THEN 5
+										   WHEN Audit=1 AND C.Signture=1 THEN 5
+										   WHEN Audit=1 AND C.ID_1=-1 THEN 6
+										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN 6
+										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN 6
+										   WHEN Audit=1 AND C.Self_1=-1 THEN 6
+										   WHEN Audit=1 AND C.Signture=-1 THEN 6
+										   ELSE 0 END
+				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
+				,MenuStatusText		= CASE WHEN Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND C.Signture=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
+										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
+										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
+										   WHEN Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
+										   WHEN Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
+										   ELSE '' END
 				,BlackList			= 'N'
 				,StatusText			= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
-										   WHEN A.Audit = 0 THEN '身分審核中~'
-										   WHEN A.Audit = 2 THEN '審核不通過，請重新提交資料'
+										   WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+										   WHEN A.Audit = 0 AND C.CarDriver_1=1 THEN '身分審核中~'
+										   WHEN A.Audit = 2 AND C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
+										   ELSE '' END
+				,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+										   WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+										   WHEN A.Audit = 0 AND C.MotorDriver_1=1 THEN '身分審核中~'
+										   WHEN A.Audit = 2 AND C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
 										   ELSE '' END
 				,NormalRentCount	= B.NormalRentBookingNowCount
 				,AnyRentCount		= B.AnyRentBookingNowCount
 				,MotorRentCount		= B.MotorRentBookingNowCount
 				,TotalRentCount		= B.NormalRentBookingNowCount + B.AnyRentBookingNowCount + B.MotorRentBookingNowCount
-			FROM TB_MemberData A WITH(NOLOCK)
-			JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
-			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
-			WHERE A.MEMIDNO=@IDNO
+				FROM TB_MemberData A WITH(NOLOCK)
+				JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
+				LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+				WHERE A.MEMIDNO=@IDNO
 		END
 		
 		--寫入錯誤訊息
