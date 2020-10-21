@@ -230,6 +230,7 @@ namespace WebAPI.Controllers
                             };
                             RentInput._params.BLE_Code = IDNO.Substring(0, 9);
                             requestId = RentInput.requestId;
+                            method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, RentInput, LogID);
                             if (flag)
                             {
