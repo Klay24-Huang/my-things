@@ -122,7 +122,7 @@ SET @Token    =ISNULL (@Token    ,'');
 		 IF @Error=0
 		 BEGIN
 			BEGIN TRAN;
-		    SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
+		    SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
 			IF @hasData=0
 			BEGIN
 			    	ROLLBACK TRAN;
@@ -132,7 +132,7 @@ SET @Token    =ISNULL (@Token    ,'');
 		
 			IF @Error=0
 			BEGIN
-				SELECT @hasData=ISNULL(order_number,0) FROM TB_OrderDetail WHERE  order_number=@OrderNo;
+				SELECT @hasData=COUNT(order_number) FROM TB_OrderDetail WHERE  order_number=@OrderNo;
 				IF @hasData=0
 				BEGIN
 					ROLLBACK TRAN;
