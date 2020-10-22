@@ -90,8 +90,8 @@ namespace WebAPI.Controllers
                                 {
                                     if (DateTime.Now > SDate)
                                     {
-                                        flag = false;
-                                        errCode = "ERR154";
+                                        //flag = false;
+                                        //errCode = "ERR154";
                                     }
                                     else
                                     {
