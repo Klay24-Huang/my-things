@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.TB;
+using Domain.TB.BackEnd;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -732,7 +733,83 @@ namespace Reposotory.Implement
             lstPolygon = GetObjList<GetPolygonRawData>(ref flag, ref lstError, SQL, para, term);
             return lstPolygon;
         }
-        
+        public List<BE_CarScheduleTimeLog> GetCarScheduleNew(string StationID,string CarNo, string SD, string ED)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarScheduleTimeLog> lstCarScheduleTimeLog = null;
+            string SQL = " SELECT * FROM VW_GetCarSchedule ";
+
+
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            string term2 = "";
+            int nowCount = 0;
+            if ("" != StationID)
+            {
+                term = "  StationID=@StationID";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != CarNo)
+            {
+                if (term != "") { term += " AND "; }
+                term += "  CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (string.IsNullOrEmpty(SD) == false)
+            {
+                if (string.IsNullOrEmpty(ED) == false)
+                {
+                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = ED;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                }
+                else
+                {
+                    term2 = " AND SD >= @SD AND  ED <= @SD";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(ED) == false)
+                {
+                    term2 = " AND SD >= @ED AND  ED <= @ED";
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term ;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            if ("" != term2)
+            {
+                SQL += term2;
+            }
+            SQL += "  ORDER BY SD ASC";
+
+            lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
+            return lstCarScheduleTimeLog;
+        }
+
         /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>

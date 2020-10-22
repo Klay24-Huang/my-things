@@ -1,1 +1,105 @@
-﻿
+﻿ @{ 
+
+     int HoildayYear = (ViewData["HoildayYear"] == null) ? DateTime.Now.Year : Convert.ToInt32(ViewData["HoildayYear"].ToString());
+     int Season = (ViewData["Season"] == null) ? Convert.ToInt32(DateTime.Now.Month/4)+1 : Convert.ToInt32(ViewData["Season"].ToString());
+     string[] SeasonStr = { "一", "二", "三", "四" };
+     string[] MonthStr = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二" };
+ }
+    <!-- card -->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            平假日維護
+        </div>
+        @using (Html.BeginForm("HoildayMaintain", "Manage", FormMethod.Post, new { id = "frmHoildayMaintain", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        設定年月
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="HoildayYear" name="HoildayYear">
+                            @{
+                                int NowYear = DateTime.Now.Year;
+
+                                for (int j = NowYear; j < NowYear + 4; j++)
+                                {
+                                    string isSelect = ((j == HoildayYear) ? " selected" : "");
+
+                                    <option value="@j" @(isSelect)>@j</option>
+
+
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        年
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="Season" name="Season">
+                            @for (int i = 0; i < 4; i++)
+                            {
+                                string isSelect = ((i == Season) ? " selected" : "");
+                                <option value="@i" @(isSelect)>@SeasonStr[i]</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        季
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 offset-md-2">
+                        @for (int i = 0; i < 3; i++)
+                        {
+
+                            int nowMonth = ((Season * 3) + 1) + i;
+                            string Mon = MonthStr[nowMonth - 1] + "月";
+                            int days = DateTime.DaysInMonth(HoildayYear, nowMonth);
+                            <div class="bg-primary text-white text-center">@Mon</div>
+                            <div class="d-flex holiday">
+                                @for (int j = 1; j <= days; j++)
+                                {
+                                    DayOfWeek dayOfWeek = new DateTime(HoildayYear, nowMonth, j).DayOfWeek;
+                                    string dayStr = string.Format("{0}{1}{2}", HoildayYear, nowMonth.ToString().PadLeft(2, '0'), j.ToString().PadLeft(2, '0'));
+                                    string HoildyStr = (dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.Saturday) ? " bg-cyan" : "";
+
+                                    <div class="form-check @(HoildyStr)">
+                                        <label class="form-check-label" for="chkHoilday_@dayStr">
+                                            @(j.ToString().PadLeft(2, '0'))
+                                        </label>
+                                        <input class="form-check-input" type="checkbox" name="chkHoilday" id="chkHoilday_@dayStr" value="@dayStr" data-Hoilday="@((dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.Saturday) ? "1" : "0")">
+                                    </div>
+
+                                }
+                            </div>
+                        }
+                   </div>
+                </div>
+          </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 offset-md-2">
+                        <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                        <button type="button" id="btnSetDef" name="btnSetDef" class="btn btn-outline-primary">預設五六日為假日</button>
+                        <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確認</button>
+                        <button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">清除</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+         }
+        </div>
+</div>

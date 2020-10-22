@@ -56,6 +56,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarOnline.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleChargeParking.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleExtendCar.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleMasterCard.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarBindData.cs" />
@@ -181,13 +182,17 @@
     <Compile Include="TB\BackEnd\BE_CardSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_CarEventLog.cs" />
     <Compile Include="TB\BackEnd\BE_CarMachineData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarScheduleTimeLog.cs" />
     <Compile Include="TB\BackEnd\BE_CarSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_ChargeParkingData.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackKindData.cs" />
+    <Compile Include="TB\BackEnd\BE_GetBookingQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarBindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetOrderPartByMessageLogQuery.cs" />
+    <Compile Include="TB\BackEnd\BE_GetOrderQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetPartOfCarDataSettingData.cs" />
+    <Compile Include="TB\BackEnd\BE_HoildayData.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCardData.cs" />
     <Compile Include="TB\BackEnd\BE_OrderHistoryData.cs" />

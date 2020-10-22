@@ -88,15 +88,39 @@
             break;
         #endregion
         #region 後臺管理
+        case "ArrearQuery":
+            ControllerStrName = "後臺管理";
+            ActionStrName = "欠費查詢";
+            break;
+        case "HoildayMaintain":
+            ControllerStrName = "後臺管理";
+            ActionStrName = "平假日維護";
+            break;
         case "UnBindCreditCard":
             ControllerStrName = "後臺管理";
             ActionStrName = "信用卡解綁";
             break;
         #endregion
         #region 合約管理
+        case "BookingQuery":
+            ControllerStrName = "合約管理";
+            ActionStrName = "預約查詢";
+            break;
+        case "ContactQuery":
+            ControllerStrName = "合約管理";
+            ActionStrName = "合約查詢";
+            break;
         case "ContactHistoryQuery":
             ControllerStrName = "合約管理";
             ActionStrName = "訂單記錄歷程查詢";
+            break;
+        case "ContactExtend":
+            ControllerStrName = "合約管理";
+            ActionStrName = "強制延長用車";
+            break;
+        case "ContactDetail":
+            ControllerStrName = "合約管理";
+            ActionStrName = "合約查詢";
             break;
             #endregion
 
@@ -136,9 +160,9 @@
     <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
     @switch (actionName)
     {
-        case "CarTimeLineQuery":
+        case "CarTimelineQuery":
             <link href="~/Content/css/vis.css" rel="stylesheet">
-            break;
+        break;
 
     }
 </head>
@@ -203,6 +227,10 @@
             @if (actionName == "ViewCarDetail")
             {
                 @("/ 車輛基本資料")
+            }
+            else if (actionName == "ContactDetail")
+            {
+                @("/ 合約明細")
             }
         </p>
 
@@ -284,7 +312,8 @@
                                 合約管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="~/ContactManage/ContactQuery">預約(合約)資料查詢</a>
+                                <a class="dropdown-item" href="~/ContactManage/BookingQuery">預約資料查詢</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactQuery">合約資料查詢</a>
                                 <a class="dropdown-item" href="~/ContactManage/ContactHistoryQuery">訂單記錄歷程查詢</a>
                                 <a class="dropdown-item" href="~/ContactManage/ContactMaintainOfMotor">機車合約修改</a>
                                 <a class="dropdown-item" href="~/ContactManage/ContactMaintainOfCar">汽車合約修改</a>
@@ -406,9 +435,9 @@
     <script src="~/Scripts/js/footable/footable.all.min.js"></script>
     @*<script src="~/Scripts/plugin/footable-bootstrap/js/footable.js"></script>*@
     @*<script src="~/Content/plugins/footable-components.latest/js/footable.core.js"></script>
-    <script src="~/Content/plugins/footable-components.latest/js/footable.paging.js"></script>
-    <script src="~/Content/plugins/footable-components.latest/js/footable.sorting.js"></script>
-    <script src="~/Content/plugins/footable-components.latest/js/footable.filtering.js"></script>*@
+        <script src="~/Content/plugins/footable-components.latest/js/footable.paging.js"></script>
+        <script src="~/Content/plugins/footable-components.latest/js/footable.sorting.js"></script>
+        <script src="~/Content/plugins/footable-components.latest/js/footable.filtering.js"></script>*@
     @*<script src="~/Content/plugins/footable-bootstrap.latest/js/footable.js"></script>*@
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
     <script src="~/Scripts/js/CommonFunc.js"></script>
@@ -416,6 +445,7 @@
         switch (actionName)
         {
             case "CarTimelineQuery":
+                <script src="~/Scripts/js/jquery-dateFormat.js"></script>
                 <script src="~/Scripts/js/moment-with-locales.min.js"></script>
                 <script src="~/Scripts/js/vis.js"></script>
                 break;

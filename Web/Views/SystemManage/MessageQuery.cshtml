@@ -6,6 +6,10 @@
     string EndDate = (ViewData["EDate"] == null) ? "" : ViewData["EDate"].ToString();
     string kind = (ViewData["ShowType"] == null) ? "" : ViewData["ShowType"].ToString();
     string[] ShowType = { "", "", "" };
+    if (kind != "")
+    {
+        ShowType[Convert.ToInt32(kind)] = " Checked";
+    }
     int ResultLen = 0;
 
 }
@@ -127,38 +131,7 @@
 <!--輸出表格-->
 @if (kind == "1")
 {
-    <div class="container mt-4" id="ShowSetCardPanel">
-        <table class="table bg-white " data-limit-navigation="5">
-            <thead class="text-white bg-primary">
-                <tr>
-                    <th data-sort="false"></th>
-                    <th scope="col">序號</th>
-                    <th scope="col">日期</th>
-                    <th scope="col">發送狀態</th>
-                    <th scope="col">車號</th>
-                    <th scope="col">卡號</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td scope="row">1</td>
-                    <td scope="col">1234567890</td>
-                    <td scope="col"></td>
-                    <td scope="col"></td>
-                    <td scope="col"></td>
-                    <td scope="col"></td>
-                </tr>
-            </tbody>
-            <tfoot class="hide-if-no-paging">
-                <tr>
-                    <td colspan="7" class="text-center">
-                        <ul class="pagination"></ul>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+    @Html.Action("GetCardSettingData", "SystemManage", new { CarNo = CarNo, SDate = StartDate, EDate = EndDate })
 }
 else if (kind == "0")
 {

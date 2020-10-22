@@ -141,7 +141,10 @@ namespace Web.Controllers
         [ChildActionOnly]
         public ActionResult GetCarEvent(string CarNo,string SDate,string EDate)
         {
-            return View();
+            List<BE_CarEventLog> lstCarEventLogs = null; //讀卡
+            CarCardCommonRepository repository = new CarCardCommonRepository(connetStr);
+            lstCarEventLogs = repository.GetCarEventLogs(CarNo, SDate, EDate);
+            return View(lstCarEventLogs);
         }
         [ChildActionOnly]
         public ActionResult GetReadCard(string CarNo, string SDate, string EDate)
@@ -154,10 +157,11 @@ namespace Web.Controllers
         [ChildActionOnly]
         public ActionResult GetCardSettingData(string CarNo, string SDate, string EDate)
         {
-            List<BE_CarEventLog> lstCarEventLogs = null; //讀卡
+            List<BE_CardSettingData> lstCarSettingLogs = null; //讀卡
             CarCardCommonRepository repository = new CarCardCommonRepository(connetStr);
-            lstCarEventLogs = repository.GetCarEventLogs(CarNo, SDate, EDate);
-            return View(lstCarEventLogs);
+            lstCarSettingLogs = repository.GetCardSettingLogs(CarNo, SDate, EDate);
+            return View(lstCarSettingLogs);
+            //return View();
         }
     }
 }

@@ -327,7 +327,11 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 更新會員卡號
                 /// </summary>
-            BE_UpdCardNo
+            BE_UpdCardNo,
+            /// <summary>
+            /// 強制延長用車
+            /// </summary>
+            BE_HandleExtendCar
             #endregion
 
         }
@@ -588,6 +592,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_UpdCardNo:
                     SPName = "usp_BE_UPD_CardNo";
+                    break;
+                case SPType.BE_HandleExtendCar:
+                    SPName = "usp_BE_HandleExtendCar";
                     break;
                     #endregion
             }
