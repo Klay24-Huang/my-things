@@ -10,10 +10,16 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 星星數
         /// </summary>
-        public int Star { set; get; }
+        public int Star { get; set; }
+
         /// <summary>
-        /// 類別描述
+        /// 描述
         /// </summary>
-        public string Descript { set; get; }
+        public string Descript { get; set; }
+
+        /// <summary>
+        /// ID
+        /// </summary>
+        public int FeedBackKindId { get; set; }
     }
 }

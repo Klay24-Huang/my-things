@@ -8,10 +8,6 @@ namespace WebAPI.Models.Param.Input
     public class IAPI_GetFeedBackKindDescript
     {
         /// <summary>
-        /// 星星數
-        /// </summary>
-        public int Star { set; get; }
-        /// <summary>
         /// 是否為機車
         /// <para>0:否</para>
         /// <para>1:是</para>
