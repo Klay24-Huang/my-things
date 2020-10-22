@@ -46,7 +46,7 @@
                             <span class="icon-11 @((lstCarEventLog[i].PowerOnStatus==1)?" text-danger":"")"></span>
                             @if (lstCarEventLog[i].deviceType == 0)
                             {
-                                @if (lstCarEventLog[i].SecurityStatus == 1)
+                                if (lstCarEventLog[i].SecurityStatus == 1)
                                 {
                                     <span class="icon-12 "></span><!--防盜-->
                                 }

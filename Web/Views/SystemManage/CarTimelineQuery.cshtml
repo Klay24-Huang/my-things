@@ -68,7 +68,7 @@
                         <div class="col-md-3">
                             <!-- datepicker with time -->
                             <div class="custom-datepicker">
-                                <input class="dateTimePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false" value="@(EndDate)">
+                                <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false" value="@(EndDate)">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -92,7 +92,8 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確認送出</button>
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            <button type="button" id="btnSend" name="btnSend" class="btn btn-primary ">確認送出</button>
 
                         </div>
                     </div>
@@ -108,20 +109,21 @@
         <div class="row">
             <div class="col-md-12">
                 <p>
-                    <span class="btn-info btn">預約中</span>
-                    <span class="btn ">已取消</span>
+                    <span class="btn btn-danger">預約中</span>
+                    <span class="btn btn-secondary">已取消</span>
                     <span class="btn btn-warning">已取車</span>
-                    <span class="btn" style="background-color: #A800CC">延時用車</span>
+                    <span class="btn btn-primary" >延時用車</span>
                     <span class="btn btn-success">已還車</span>
-                    <span class="btn btn-important">清潔/保修</span>
+                    <span class="btn btn-outline-danger">清潔/保修</span>
                 </p>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12" id="mytimeline" style="overflow: auto;">
+            <div class="col-md-12" id="visualization" name="visualization">
 
             </div>
         </div>
     </div>
+
 </div>
 

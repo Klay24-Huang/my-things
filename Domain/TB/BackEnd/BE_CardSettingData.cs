@@ -11,21 +11,34 @@ namespace Domain.TB.BackEnd
     /// </summary>
     public class BE_CardSettingData
     {
-        /// <summary>
-        /// 發送時間
-        /// </summary>
-        public DateTime SendDate { set; get; }
-        /// <summary>
-        /// 發送狀態
-        /// </summary>
-        public string SendStatus { set; get; }
+       
         /// <summary>
         /// 車號
         /// </summary>
         public string CarNo { set; get; }
         /// <summary>
+        /// 車機編號
+        /// </summary>
+        public string CID { set; get; }
+        /// <summary>
+        /// 模式：0:清空;1:寫入
+        /// </summary>
+        public int Mode { set; get; }
+        /// <summary>
+        /// 卡別：0:一般;2:萬用卡
+        /// </summary>
+        public int CardType { set; get; }
+        /// <summary>
         /// 卡號
         /// </summary>
         public string CardNo { set; get; }
+        /// <summary>
+        /// 是否成功：0:失敗;1:成功
+        /// </summary>
+        public int IsSuccess { set; get; }
+        /// <summary>
+        /// 執行時間
+        /// </summary>
+        public DateTime MKTime { set; get; }
     }
 }

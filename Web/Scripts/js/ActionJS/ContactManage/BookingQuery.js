@@ -19,7 +19,14 @@
             }
         });
     }
+
 })
 function ViewDetail(OrderNo) {
+    console.log(OrderNo);
+}
+function CancelOrder(OrderNo) {
+    console.log(OrderNo);
+}
+function ReBook(OrderNo) {
     console.log(OrderNo);
 }

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetOrderQueryForWeb>
+﻿
+@model IEnumerable<Domain.TB.BackEnd.BE_GetBookingQueryForWeb>
 @{
     string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
     string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
@@ -9,10 +10,10 @@
     string OrderNo = (ViewData["OrderNo"] == null) ? "" : ViewData["OrderNo"].ToString();
 
     int ResultLen = -1;
-    List<Domain.TB.BackEnd.BE_GetOrderQueryForWeb> lstData = null;
+    List<Domain.TB.BackEnd.BE_GetBookingQueryForWeb> lstData = null;
     if (Model != null)
     {
-        lstData = new List<Domain.TB.BackEnd.BE_GetOrderQueryForWeb>();
+        lstData = new List<Domain.TB.BackEnd.BE_GetBookingQueryForWeb>();
         lstData = Model.ToList();
         ResultLen = lstData.Count;
     }
@@ -22,9 +23,9 @@
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            合約資料查詢
+            預約資料查詢
         </div>
-        @using (Html.BeginForm("ContactQuery", "ContactManage", FormMethod.Post, new { id = "frmContactQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("BookingQuery", "ContactManage", FormMethod.Post, new { id = "frmBookingQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
         {
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
@@ -173,18 +174,20 @@
                 <th data-sort="false"></th>
                 <th scope="col">預約編號</th>
                 <th scope="col">會員帳號</th>
-                <th scope="col">合約狀態</th>
-                <th scope="col">服務據點</th>
+                <th scope="col">預計取車時間</th>
+                <th scope="col">預計還車時間</th>
                 <th scope="col">車號</th>
-
                 <th scope="col">詳細資訊</th>
+                <th scope="col">刪除訂單</th>
+                <th scope="col">重新配車</th>
+                <th scope="col">訂單修改狀態</th>
             </tr>
         </thead>
         <tbody>
             @if (ResultLen == 0)
             {
                 <tr>
-                    <td colspan="7" class="text-center">查無結果</td>
+                    <td colspan="10" class="text-center">查無結果</td>
 
 
                 </tr>
@@ -193,59 +196,73 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                    string OrderStatus = "";
-                    <tr>
-                        <td></td>
-                        <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
-                        <td scope="col">@(lstData[i].IDNO)</td>
-                        <td scope="col">
-                           @if (lstData[i].cancel_status > 0)
-                           {
-                               OrderStatus = "已取消";
-                           }
-                           else
-                           {
-                               switch (lstData[i].car_mgt_status)
-                               {
-                                   case 0:
-                                   case 1:
-                                   case 2:
-                                   case 3:
-                                       OrderStatus = "未取車";
-                                       break;
-                                   case 4:
-                                       OrderStatus = "已取車";
-                                       break;
+                    string cancel_msg = "無";
+        <tr>
+            <td></td>
+            <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
+            <td scope="col">@(lstData[i].IDNO)</td>
+            <td scope="col">@(lstData[i].SD.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+            <td scope="col">@(lstData[i].ED.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+            <td scope="col">@(lstData[i].CarNo)</td>
+            <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum))">點我觀看</button></td>
+            @if (lstData[i].cancel_status == 0)
+            {
+                <td scope="col"><Button class='btn btn-outline-secondary' onclick="CancelOrder(@(lstData[i].OrderNum));">取消預約</Button></td>
+                <td scope="col"><Button class='btn btn-outline-secondary' onclick="ReBook(@(lstData[i].OrderNum));">重新配車</Button></td>
+            }
+            else
+            {
+        <td scope="col">已過刪除時間</td>
+        <td scope="col">已過執行時間</td>
+            }
+        <td scope="col">
+            @switch (lstData[i].cancel_status)
+            {
+                case 0:
+                    {
+                        cancel_msg = "無";
+                        break;
+                    }
+                case 1:
+                    {
+                        cancel_msg = "修改指派車輛";
+                        break;
+                    }
+                case 2:
+                    {
+                        cancel_msg = "此訂單被人工介入過";
+                        break;
+                    }
+                case 3:
+                    {
+                        cancel_msg = "訂單已取消";
+                        break;
 
-                                   case 11:
-                                       OrderStatus = "已點擊還車";
-                                       break;
-                                   case 15:
-                                       OrderStatus = "已付款";
-                                       break;
-                                   case 16:
-                                       OrderStatus = "已完成還車";
-                                       break;
-                               }
-                           }
-                                       @OrderStatus
-                                   </td>
-           
-                                   <td scope="col">@(lstData[i].StationName)</td>
-           
-                                   <td scope="col">@(lstData[i].CarNo)</td>
-           
-                                   <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum))">點我觀看</button></td>
+                    }
+                case 4:
+                    {
+                        cancel_msg = "訂單已取消";
+                        break;
 
-                    </tr>
+                    }
+                case 5:
+                    {
+                        cancel_msg = "此訂單使用後台取消預約";
+                        break;
+                    }
+            }
+            @cancel_msg
+        </td>
+
+        </tr>
                 }
 
-                           }
+            }
 
         </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
-                <td colspan="7" class="text-center">
+                <td colspan="10" class="text-center">
                     <ul class="pagination"></ul>
                 </td>
             </tr>
@@ -257,5 +274,5 @@
 
 <script>
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-                           var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
 </script>

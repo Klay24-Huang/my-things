@@ -62,5 +62,24 @@ namespace Reposotory.Implement
 
             return lstFeedBackKind;
         }
+        public bool HandleHoilday(string[] newHoildays, string[] newShortHoildays, string[] DelStr)
+        {
+            bool flag = true;
+            string SQL = "";
+            int len = newHoildays.Length;
+            int DelLen = DelStr.Length;
+            if (len > 0)
+            {
+                for(int i = 0; i < len; i++)
+                {
+                    SQL += string.Format("INSERT INTO TB_Holiday([HolidayYearMonth],[HolidayDate],[use_flag])VALUES({0},{1},1);", newShortHoildays[i], newHoildays[i]);
+                }
+                ExecNonResponse(ref flag, SQL);
+            }
+            string DelSQLStr = string.Join(",", DelStr);
+            SQL = "DELETE FROM TB_Holiday WHERE HolidayDate IN (" + DelSQLStr + ");";
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
     }
 }

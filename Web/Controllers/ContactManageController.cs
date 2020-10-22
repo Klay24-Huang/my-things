@@ -12,13 +12,168 @@ namespace Web.Controllers
     public class ContactManageController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public ActionResult BookingQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult BookingQuery(string OrderNo, string IDNO, string StationID, string CarNo, string StartDate, string EndDate, string Mode)
+        {
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            ViewData["CarNo"] = CarNo;
+            ViewData["StationID"] = StationID;
+            ViewData["IDNO"] = IDNO;
+            ViewData["Mode"] = Mode;
+            ViewData["SDate"] = StartDate;
+            ViewData["EDate"] = EndDate;
+            ViewData["OrderNo"] = OrderNo;
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
+            string errCode = "";
+            Int64 tmpOrder = 0;
+
+            if (StartDate != "" && EndDate == "")
+            {
+
+                StartDate = StartDate + " 00:00:00";
+            }
+            else if (StartDate == "" && EndDate != "")
+            {
+                EndDate = EndDate + " 23:59:59";
+            }
+            else if (StartDate != "" && EndDate != "")
+            {
+                StartDate = StartDate + " 00:00:00";
+                EndDate = EndDate + " 23:59:59";
+            }
+            if (OrderNo != "")
+            {
+                if (OrderNo.IndexOf("H") < 0)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                    errorMsg = "訂單編號格式不符";
+                }
+                if (flag)
+                {
+                    flag = Int64.TryParse(OrderNo.Replace("H", ""), out tmpOrder);
+                    if (flag)
+                    {
+                        if (tmpOrder <= 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            errorMsg = "訂單編號格式不符";
+                        }
+
+                    }
+                }
+            }
+            List<BE_GetBookingQueryForWeb> lstData = null;
+            if (flag)
+            {
+                ViewData["errorLine"] = "ok";
+                lstData = repository.GetBookingQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate);
+            }
+            else
+            {
+                ViewData["errorMsg"] = errorMsg;
+                ViewData["errorLine"] = errCode.ToString();
+            }
+
+            return View(lstData);
+        }
         /// <summary>
-        /// 預約（合約）查詢
+        /// 預約查詢
         /// </summary>
         /// <returns></returns>
         public ActionResult ContactQuery()
         {
             return View();
+        }
+        /// <summary>
+        /// 合約查詢
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="StationID"></param>
+        /// <param name="CarNo"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ContactQuery(string OrderNo,string IDNO,string StationID,string CarNo,string StartDate,string EndDate,string Mode)
+        {
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+              ViewData["CarNo"] = CarNo;
+              ViewData["StationID"] = StationID;
+            ViewData["IDNO"] = IDNO;
+            ViewData["Mode"] = Mode;
+           ViewData["SDate"] = StartDate;
+           ViewData["EDate"] = EndDate;
+          ViewData["OrderNo"] = OrderNo;
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
+            string errCode = "";
+            Int64 tmpOrder = 0;
+
+            if (StartDate != "" && EndDate == "")
+            {
+              
+                StartDate = StartDate + " 00:00:00";
+            }
+            else if (StartDate == "" && EndDate != "")
+            {
+                EndDate = EndDate + " 23:59:59";
+            }
+            else if (StartDate != "" && EndDate != "")
+            {
+                StartDate = StartDate + " 00:00:00";
+                EndDate = EndDate + " 23:59:59";
+            }
+            if (OrderNo != "")
+            {
+                if (OrderNo.IndexOf("H") < 0)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                    errorMsg = "訂單編號格式不符";
+                }
+                if (flag)
+                {
+                    flag = Int64.TryParse(OrderNo.Replace("H", ""), out tmpOrder);
+                    if (flag)
+                    {
+                        if (tmpOrder <= 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            errorMsg = "訂單編號格式不符";
+                        }
+
+                    }
+                }
+            }
+            List<BE_GetOrderQueryForWeb> lstData = null;
+            if (flag)
+            {
+                ViewData["errorLine"] = "ok";
+                lstData = repository.GetOrderQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate);
+            }
+            else
+            {
+                ViewData["errorMsg"] = errorMsg;
+                ViewData["errorLine"] = errCode.ToString();
+            }
+            
+            return View(lstData);
         }
         /// <summary>
         /// 訂單記錄歷程查詢
