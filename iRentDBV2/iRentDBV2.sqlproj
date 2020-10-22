@@ -278,6 +278,7 @@
     <Build Include="dbo\Views\VW_BE_GetFETSetCardLog.sql" />
     <Build Include="dbo\Tables\TB_CardSettingLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMemberData.sql" />
+    <Build Include="dbo\Tables\TB_tmpFeedBack.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
