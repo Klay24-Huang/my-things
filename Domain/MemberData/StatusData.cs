@@ -9,6 +9,10 @@ namespace Domain.MemberData
         /// </summary>
         public string MEMIDNO { set; get; }
         /// <summary>
+        /// 姓名
+        /// </summary>
+        public string MEMNAME { set; get; }
+        /// <summary>
         /// 登入狀態 Y/N
         /// </summary>
         public string Login { set; get; }
@@ -59,7 +63,7 @@ namespace Domain.MemberData
         /// <summary>
         /// 狀態文字說明
         /// </summary>
-        public string StatusText { set; get; }
+        public string StatusTextCar { set; get; }
         /// <summary>
         /// 機車狀態文字說明
         /// </summary>
