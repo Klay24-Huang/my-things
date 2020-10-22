@@ -221,5 +221,59 @@ namespace Reposotory.Implement
             lstCarEventLogs = GetObjList<BE_CarEventLog>(ref flag, ref lstError, SQL, para, term);
             return lstCarEventLogs;
         }
+        public List<BE_CardSettingData> GetCardSettingLogs(string CarNo, string SDate, string EDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CardSettingData> lstCardSettingLogs = null;
+            string SQL = "SELECT  * FROM  TB_CardSettingLog ";
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            int nowCount = 0;
+            if (CarNo != "")
+            {
+                term = " CarNo=@CarNo ";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (SDate != "")
+            {
+                if (term != "")
+                {
+                    term += " AND ";
+                }
+                term += " MKTime>=@SDate ";
+                para[nowCount] = new SqlParameter("@SDate", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if (EDate != "")
+            {
+                if (term != "")
+                {
+                    term += " AND ";
+                }
+                term += " MKTime<=@EDate ";
+                para[nowCount] = new SqlParameter("@EDate", SqlDbType.DateTime);
+                para[nowCount].Value = EDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE (" + term + ")";
+            }
+            SQL += " ORDER BY MKTime ASC";
+
+
+            lstCardSettingLogs = GetObjList<BE_CardSettingData>(ref flag, ref lstError, SQL, para, term);
+            return lstCardSettingLogs;
+        }
     }
 }

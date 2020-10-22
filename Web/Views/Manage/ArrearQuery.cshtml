@@ -1,42 +1,54 @@
-﻿
+﻿@model IEnumerable<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>
 
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
 
+    int ResultLen = -1;
+    List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
 }
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-           欠費查詢
+            欠費查詢
         </div>
-        <ul class="list-group list-group-flush">
-            <!--每一個li是一項查詢條件-->
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            會員帳號
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">確認送出</button>
-                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+        @using (Html.BeginForm("ArrearQuery", "Manage", FormMethod.Post, new { id = "frmArrearQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員帳號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" maxlength="10" required />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" class="btn btn-primary">確認送出</button>
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        </div>
     <!--end card-->
 </div>
 <!--查詢介面結束-->
@@ -46,7 +58,7 @@
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false">
-                   
+
                 </th>
                 <th scope="col">iRent合約編號</th>
                 <th scope="col">合約編號</th>
@@ -58,19 +70,45 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td data-sort="false">
-                   
-                </td>
-                <td scope="col">iRent合約編號</td>
-                <td scope="col">合約編號</td>
-                <td scope="col">eTag</td>
-                <td scope="col"></td>
-                <td scope="col">100</td>
-                <td scope="col">0</td>
-            </tr>
-        </tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="7" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false">
+                        </td>
+                        <td scope="col">@(lstData[i].IRENTORDNO)</td>
+                        <td scope="col">@(lstData[i].ORDNO)</td>
+                        <td scope="col">@(lstData[i].SPAYMENTTYPE)</td>
+                        <td scope="col">@(lstData[i].POLNO)</td>
+                        <td scope="col">@(lstData[i].DUEAMT)</td>
+                        <td scope="col">@(lstData[i].PAIDAMT)</td>
+                    </tr>
+                }
 
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="7" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!--輸出表格結束-->
+
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>

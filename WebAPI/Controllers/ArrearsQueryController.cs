@@ -150,7 +150,7 @@ namespace WebAPI.Controllers
                                     ArrearsQueryDetail obj = new ArrearsQueryDetail()
                                     {
                                         Amount = Convert.ToInt32(WebAPIOutput.Data[i].TAMT),
-                                        ArrearsKind = WebAPIOutput.Data[i].PAYMENTTYPE,
+                                        ArrearsKind = WebAPIOutput.Data[i].PAYMENTTYPE.ToString(),
                                         EndDate = WebAPIOutput.Data[i].RNTDATE,
                                         StartDate = WebAPIOutput.Data[i].GIVEDATE,
                                         OrderNo = (string.IsNullOrEmpty(WebAPIOutput.Data[i].IRENTORDNO)) ? "-" : WebAPIOutput.Data[i].IRENTORDNO,

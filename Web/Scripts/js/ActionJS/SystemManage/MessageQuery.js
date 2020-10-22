@@ -2,7 +2,8 @@
     var hasData = parseInt($("#len").val());
     var hasRead = parseInt($("#ReadLen").val());
     var CarEventLen = parseInt($("#CarEventLen").val());
-    if (CarEventLen > 0 || hasRead > 0) {
+    var CardSettingLen = parseInt($("#CardSettingLen").val());
+    if (CarEventLen > 0 || hasRead > 0 || CardSettingLen>0) {
         $('.table').footable({
             "paging": {
                 "enabled": true,

@@ -13,12 +13,26 @@
     if (IsSuccess != "-1") {
         showLogin(parseInt(IsSuccess), LoginMessage, UserID);
     }
-    $("#btnLogin").on("click", function () {
+    $("#frmLogin").on("submit", function () {
         $.busyLoadFull("show", {
             text: "登入中",
             fontawesome: "fa fa-cog fa-spin fa-3x fa-fw"
         });
+        var UserName = $("UserId").val();
+        var UserPwd = $("#UserPwd").val();
+        if (UserName == "" || UserPwd=="") {
+            disabledLoadingAndShowAlert("帳號或密碼未填");
+            return false;
+        } else {
+            return true;
+        }
     })
+    //$("#btnLogin").on("click", function () {
+    //    $.busyLoadFull("show", {
+    //        text: "登入中",
+    //        fontawesome: "fa fa-cog fa-spin fa-3x fa-fw"
+    //    });
+    //})
 
 
 })

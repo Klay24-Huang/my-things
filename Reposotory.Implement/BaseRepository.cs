@@ -73,6 +73,28 @@ namespace Reposotory.Implement
 
             return lstObj;
         }
+        public void ExecNonResponse(ref bool flag,string SQL)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(this.ConnectionString))
+                using (SqlCommand command = new SqlCommand(SQL, conn))
+                {
+
+                    command.CommandType = CommandType.Text;
+                    command.CommandTimeout = 180;
+
+                    if (conn.State != ConnectionState.Open) conn.Open();
+
+                    int result = command.ExecuteNonQuery();
+                }
+            }
+            catch(Exception ex)
+            {
+                flag = false;
+            }
+        
+        }
         /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>

@@ -110,7 +110,7 @@
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4">
-    <table class="table bg-white table-striped bg-white mt-4 " data-paging="true">
+    <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
@@ -134,7 +134,7 @@
             }
             else
             {
-                @Html.Action("GetCarMachineUnBindList", "CommonObj", new { SEQNO =0 })
+                @Html.Action("GetCarMachineUnBindList", "CommonObj", new { SEQNO = 0 })
                 for (int i = 0; i < ResultLen; i++)
                 {
                     string BindStatus = (lstData[i].BindStatus == 1) ? "已綁定" : "未綁定";
@@ -165,6 +165,13 @@
             }
 
         </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="9" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!--輸出表格結束-->
