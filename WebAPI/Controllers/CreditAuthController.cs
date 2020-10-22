@@ -333,6 +333,10 @@ namespace WebAPI.Controllers
                             #endregion
 
                         }
+                        else
+                        {
+                            errCode = "ERR730";
+                        }
                     }
                     #endregion
                 }
