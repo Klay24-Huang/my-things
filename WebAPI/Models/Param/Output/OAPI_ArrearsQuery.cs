@@ -14,6 +14,11 @@ namespace WebAPI.Models.Param.Output
         public List<ArrearsQueryDetail> ArrearsInfos { set; get; }
 
         /// <summary>
+        /// 代繳總金額
+        /// </summary>
+        public int TotalAmount { get; set; }
+
+        /// <summary>
         /// 交易序號
         /// </summary>
         public string TradeOrderNo { set; get; }

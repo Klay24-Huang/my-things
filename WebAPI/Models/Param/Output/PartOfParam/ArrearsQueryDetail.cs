@@ -35,6 +35,16 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string EndDate { set; get; }
         /// <summary>
+        /// 車型代碼，需左補0到六碼
+        /// </summary>
+        public string CarType { set; get; }
+        /// <summary>
+        /// 是否是機車
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMotor { set; get; } 
+        /// <summary>
         /// 待繳金額
         /// </summary>
         public int Amount { set; get; }
