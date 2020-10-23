@@ -338,15 +338,23 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 確認訂單並取出車機、卡號、身份證
                 /// </summary>
-               BE_GetCarMachineAndCheckOrderNoIDNO,
+                BE_GetCarMachineAndCheckOrderNoIDNO,
                 /// <summary>
                 /// 更新會員卡號
                 /// </summary>
-            BE_UpdCardNo,
-            /// <summary>
-            /// 強制延長用車
-            /// </summary>
-            BE_HandleExtendCar
+                BE_UpdCardNo,
+                /// <summary>
+                /// 強制延長用車
+                /// </summary>
+                BE_HandleExtendCar,
+                /// <summary>
+                /// 強制取消
+                /// </summary>
+                BE_BookingCancel,
+                /// <summary>
+                /// 換車
+                /// </summary>
+                BE_ChangeCar,
             #endregion
 
         }
@@ -623,6 +631,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleExtendCar:
                     SPName = "usp_BE_HandleExtendCar";
+                    break;
+                case SPType.BE_BookingCancel:
+                    SPName = "usp_BE_BookingCancel";
+                    break;
+                case SPType.BE_ChangeCar:
+                    SPName = "usp_BE_ChangeCar";
                     break;
                     #endregion
             }

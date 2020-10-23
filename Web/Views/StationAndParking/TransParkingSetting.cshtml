@@ -107,7 +107,7 @@
                 <th data-hide="all" scope="col">開放時間(迄)</th>
             </tr>
         </thead>
-    
+
         <tbody>
             @{
                 if (ResultLen == 0)
@@ -123,7 +123,7 @@
                         <tr>
                             <td></td>
                             <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].ParkingID)" id="PK_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingID)" /></td>
-                            <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)"  class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)" class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].ParkingAddress<input type="text" name="ParkingAddress_@(lstData[i].ParkingID)" id="ParkingAddress_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].Longitude<input type="text" TextMode="Number" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkingID)" id="Longitude_@(lstData[i].ParkingID)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
@@ -149,25 +149,32 @@
                             </td>
                             <td scope="col">
                                 @lstData[i].OpenTime.ToString("yyyy-MM-dd")
-                               
-                                    <div class="custom-datepicker">
-                                        <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkingID)" name="OpenTime_@(lstData[i].ParkingID)" value="@lstData[i].OpenTime.ToString("yyyy-MM-dd HH:mm")" readonly="false"  style="display:none">
-                                     
-                                    </div>
-                               
+
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkingID)" name="OpenTime_@(lstData[i].ParkingID)" value="@lstData[i].OpenTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                </div>
+
                             </td>
                             <td scope="col">
                                 @lstData[i].CloseTime.ToString("yyyy-MM-dd")
-                                                        <div class="custom-datepicker">
-                                                            <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkingID)" name="CloseTime_@(lstData[i].ParkingID)" value="@lstData[i].CloseTime.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkingID)" name="CloseTime_@(lstData[i].ParkingID)" value="@lstData[i].CloseTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
 
-                                                        </div>
-                                                    </td>
+                                </div>
+                            </td>
                         </tr>
                     }
                 }
             }
         </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="10" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!--輸出表格結束-->

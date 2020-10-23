@@ -50,10 +50,19 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.Excel.2.1.1\lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=3.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=9.3.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.9.3.3\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -133,6 +142,7 @@
     <Compile Include="Controllers\CarDataInfoController.cs" />
     <Compile Include="Controllers\CardDataInfoController.cs" />
     <Compile Include="Controllers\CommonObjController.cs" />
+    <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\ContactManageController.cs" />
     <Compile Include="Controllers\CustomerAreaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -160,6 +170,21 @@
     <Content Include="assets\logo.png" />
     <Content Include="assets\prism.css" />
     <Content Include="assets\sweetalert.css" />
+    <Content Include="Content\Contact\css\bootstrap.min.css" />
+    <Content Include="Content\Contact\css\images\markers-matte%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-matte.png" />
+    <Content Include="Content\Contact\css\images\markers-plain.png" />
+    <Content Include="Content\Contact\css\images\markers-shadow%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-shadow.png" />
+    <Content Include="Content\Contact\css\images\markers-soft%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-soft.png" />
+    <Content Include="Content\Contact\css\layout.min.css" />
+    <Content Include="Content\Contact\images\bg00001.jpg" />
+    <Content Include="Content\Contact\images\car.jpg" />
+    <Content Include="Content\Contact\images\logo.png" />
+    <Content Include="Content\Contact\images\logo_big.jpg" />
+    <Content Include="Content\Contact\js\jquery-1.10.2.min.js" />
+    <Content Include="Content\Contact\js\jquery-ui.js" />
     <Content Include="Content\css\bootstrap-grid.css" />
     <Content Include="Content\css\bootstrap-reboot.css" />
     <Content Include="Content\css\bootstrap.css" />
@@ -179,6 +204,7 @@
     <Content Include="Content\css\jquery-filestyle.min.css" />
     <Content Include="Content\css\jquery-ui.css" />
     <Content Include="Content\css\jquery.autocomplete.css" />
+    <Content Include="Content\css\jquery.modal.min.css" />
     <Content Include="Content\css\leaflet.css" />
     <Content Include="Content\css\leaflet.draw.css" />
     <Content Include="Content\css\RealTimeMonitor.css" />
@@ -301,6 +327,7 @@
     <Content Include="Scripts\js\jquery-filestyle.js" />
     <Content Include="Scripts\js\jquery-ui.js" />
     <Content Include="Scripts\js\jquery.autocomplete.js" />
+    <Content Include="Scripts\js\jquery.modal.min.js" />
     <Content Include="Scripts\js\jquery.validate.js" />
     <Content Include="Scripts\js\map backup.js" />
     <Content Include="Scripts\js\map.js" />
@@ -456,6 +483,10 @@
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.woff" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footabled41d.eot" />
     <Content Include="Content\example\MasterCardExample.xlsx" />
+    <Content Include="Content\Contact\scss\layout.scss" />
+    <Content Include="Content\Contact\scss\setting\_mixins.scss" />
+    <Content Include="Content\Contact\scss\setting\_reset.scss" />
+    <Content Include="Content\Contact\scss\setting\_variables.scss" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -527,6 +558,7 @@
     <Content Include="Views\SystemManage\GetReadCard.cshtml" />
     <Content Include="Views\SystemManage\GetCarEvent.cshtml" />
     <Content Include="Views\ContactManage\BookingQuery.cshtml" />
+    <Content Include="Views\Contact\returnCarNew.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

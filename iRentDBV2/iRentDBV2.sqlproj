@@ -281,6 +281,8 @@
     <Build Include="dbo\Tables\TB_tmpFeedBack.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleExtendCar.sql" />
     <Build Include="dbo\Views\VW_BE_GetOrderQueryForWeb.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_BookingCancel.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ChangeCar.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

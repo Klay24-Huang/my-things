@@ -1,0 +1,147 @@
+@import "./setting/_reset.scss";
+@import "./setting/_variables.scss";
+@import "./setting/_mixins.scss";
+
+* {
+    font-family: PingFangTC-Regular, 微軟正黑體, "Noto Sans TC", Helvetica, Arial, 黑體-繁, "Heiti TC", 儷黑, LiHei, "Microsoft JhengHei", sans-serif !important;
+    color: #333333;
+}  
+ 
+@include rwd_big($ipad-pro + 1px){ 
+    .showMobile{ 
+        display: none !important;
+    } 
+} 
+@include rwd($ipad-pro + 1px){
+    .hideMobile{ 
+        display: none !important;
+    }
+}
+.hide {
+    display: none !important; 
+}  
+
+@include rwd($ipad - 1px){
+    .logo{
+        max-height: 36px;
+        object-fit: contain;
+    }
+}
+
+.table-label{
+    font-size: 14px;
+}
+
+.text-red{
+    color: #e52c2c;
+    font-weight: 600;
+}
+
+.text-red-normal{
+    color: #e52c2c;
+}
+
+.text-purple{
+    color: purple;
+}
+
+.text-blue{
+    color: blue;
+}
+
+p{
+    min-height: 24px;
+}
+
+.col-sm{
+    display: flex;
+    max-width: 40px;
+    text-align: center;
+    justify-content: center;
+    .table-label{
+        justify-content: center;
+        writing-mode: vertical-lr;
+    }
+}
+
+.flex-1{
+    flex: 1 1 auto;
+}
+
+.flex-0{
+    flex: 0 0 auto;
+}
+
+.bar-wrap{
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    padding-top: 0.25rem;
+    margin-left: 0.25rem;
+}
+
+.bar-box{
+    border: 1px solid #6c757d;
+    height: 15px;
+}
+
+.bar-text{
+    display: flex;
+    justify-content: space-between;
+    padding-right: 2rem;
+}
+
+.height-lg{
+    min-height: 50px
+}
+
+.writing-mode-lr{
+    writing-mode: lr !important;
+}
+
+.text-sm{
+    font-size: 14px;
+}
+
+.text-underline, .text-underline-m{
+    position: relative;
+    &:before{
+        content: '';
+        position: absolute;
+        left: 40px;
+        bottom: 0; 
+        width: 80%;
+        height: 1px;
+        background: #6c757d;
+    }
+}
+
+// .text-underline-m{ 
+//     width: 80%;
+//     height: 1px;
+//     background: #6c757d;
+//     margin-left: 2.5rem;
+// }
+
+@include rwd($ipad-pro){
+    .text-underline-m-box{
+        align-items: flex-start !important;
+    }
+    .text-underline-m-ct{
+        align-items: flex-start !important;
+        flex-direction: column;
+    }
+    .text-underline-m-line{
+        width: 100%;
+    }
+    .text-underline-m{
+        width: 100%;
+        margin-left: 0 !important;
+    }
+}
+
+
+.rule-label{
+    width: 65px;
+    @extend .flex-0;
+}

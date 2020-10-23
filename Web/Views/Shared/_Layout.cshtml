@@ -149,20 +149,24 @@
     <link rel="stylesheet" href="~/Content/css/bs_autocomplete_fix.css">
     <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
-        <link rel="stylesheet" href="~/Content/css/footable/footable-page.css">
+    <link rel="stylesheet" href="~/Content/css/footable/footable-page.css">
     @*<link rel="stylesheet" href="~/Scripts/plugin/footable-bootstrap/css/footable.bootstrap.css" />*@
     @*<link rel="stylesheet" href="~/Content/plugins/pages/floating-label.css" />
-    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.core.bootstrap.css" />
-    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.paging.css" />
-    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.sorting.css" />
-    <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.filtering.css" />*@
+        <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.core.bootstrap.css" />
+        <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.paging.css" />
+        <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.sorting.css" />
+        <link rel="stylesheet" href="~/Content/plugins/footable-components.latest/css/footable.filtering.css" />*@
     @*<link rel="stylesheet" href="~/Content/plugins/footable-bootstrap.latest/css/footable.bootstrap.css" />*@
     <link rel="stylesheet" href="~/Scripts/plugin/busy-load-master/app.css" />
     @switch (actionName)
     {
         case "CarTimelineQuery":
             <link href="~/Content/css/vis.css" rel="stylesheet">
-        break;
+            break;
+        case "FranchiseesMaintain":
+            <link rel="stylesheet" href="~/Content/css/jquery.modal.min.css">
+            break;
+
 
     }
 </head>
@@ -448,6 +452,9 @@
                 <script src="~/Scripts/js/jquery-dateFormat.js"></script>
                 <script src="~/Scripts/js/moment-with-locales.min.js"></script>
                 <script src="~/Scripts/js/vis.js"></script>
+                break;
+            case "FranceiseesMaintain":
+                <script src="~/Scripts/jquery.modal.min.js"></script>
                 break;
         }
     }

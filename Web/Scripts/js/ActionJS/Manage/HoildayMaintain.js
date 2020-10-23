@@ -9,8 +9,12 @@
     });
     $("#btnReset").on("click", function () {
         $("input[name='chkHoilday']").prop("checked", false);
-        SyncData();
+       // SyncData();
     });
+    $("#btnRestore").on("click", function () {
+        $("input[name='chkHoilday']").prop("checked", false);
+        SyncData();
+    })
     $("#btnSetDef").on("click", function () {
         $("input[name='chkHoilday']").each(function () {
          //   console.log($(this).val());

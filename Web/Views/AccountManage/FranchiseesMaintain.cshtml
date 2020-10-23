@@ -1,1 +1,255 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_ParkingData>
+@{
+    List<Domain.TB.BackEnd.BE_ParkingData> lstData = null;
+    string Operator = (ViewData["Operator"] == null) ? "" : ViewData["Operator"].ToString();
+    string OperatorName = (ViewData["OperatorName"] == null) ? "" : ViewData["OperatorName"].ToString();
+    string SDate = (ViewData["SDate"] == null) ? "" : ViewData["SDate"].ToString();
+    string EDate = (ViewData["EDate"] == null) ? "" : ViewData["EDate"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
+    int ResultLen = -1;
+    if (Mode == "Edit")
+    {
+        if (Model != null)
+        {
+            lstData = Model.ToList();
+            ResultLen = lstData.Count;
+        }
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            加盟業者維護
+        </div>
+
+        @using (Html.BeginForm("FranchiseesMaintain", "AccountManage", FormMethod.Post, new { id = "frmFranchiseesMaintain", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理區分
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Action("GetHandleList", "CommonObj")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                加盟業者編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="Operator" id="Operator" value="@Operator" placeholder="限數字" />
+
+                            </div>
+                            <div class="col-md-2">
+                                限數字
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                加盟業者名稱
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OperatorName" id="OperatorName" value="@OperatorName" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                有效起迄日
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@SDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker with time -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@EDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                業者LOGO
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳png檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案" onchange="handleFiles(this.files, 'fileImport');">
+                                <input type="hidden" name="hidPic" id="hidPic" value="" />
+                                <input type="hidden" name="hidPicType" id="hidPicType" value="" />
+
+
+                            </div>
+                            <div class="col-md-2">
+                                限定.png檔
+                            </div>
+                            <div class="col-md-2"> <a href="#surrounding_modal" rel="modal:open" class="btn btn-primary">檢視照片</a></div>
+
+
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <Button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">確定</Button>
+                                <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+
+    <!--end card-->
+</div>
+
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="panelResult" name="panelResult">
+    <table class="table bg-white table-striped bg-white mt-4 " data-paging="true">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">ID</th>
+                <th scope="col">加盟業者編號(ID)</th>
+                <th scope="col">加盟業者名稱</th>
+                <th data-hide="all" scope="col">業者LOGO</th>
+                <th data-hide="all" scope="col">有效起迄日(起)</th>
+                <th data-hide="all" scope="col">有效起迄日(迄)</th>
+                <th scope="col">修改</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                if (ResultLen == 0)
+                {
+                    <tr>
+                        <td colspan="8">查無結果</td>
+                    </tr>
+                }
+                else
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].ParkingID)" id="PK_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingID)" /></td>
+                            <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].ParkingAddress<input type="text" name="ParkingAddress_@(lstData[i].ParkingID)" id="ParkingAddress_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
+                            <td scope="col"><img src="" class="form-control" /></td>
+
+
+                            <td scope="col">
+                                @lstData[i].OpenTime.ToString("yyyy-MM-dd")
+
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkingID)" name="OpenTime_@(lstData[i].ParkingID)" value="@lstData[i].OpenTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                </div>
+
+                            </td>
+                            <td scope="col">
+                                @lstData[i].CloseTime.ToString("yyyy-MM-dd")
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkingID)" name="CloseTime_@(lstData[i].ParkingID)" value="@lstData[i].CloseTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                </div>
+                            </td>
+                            <td scope="col">
+                                <Button type="button" id="btnEdit_@(lstData[i].ParkingID)" name="btnEdit_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].ParkingID)');>修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].ParkingID)" name="btnSave_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].ParkingID)');>儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].ParkingID)" name="btnReset_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].ParkingID)');>取消</Button>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="8" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<!--輸出表格結束-->
+<!-- Modal HTML embedded directly into document -->
+
+    <div id="surrounding_modal" class="modal">
+        <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" width="90%" height="90%" />
+        <p id="PicInfo" name="PicInfo"></p>
+        <a href="#" rel="modal:close">Close</a>
+    </div>
+
+
+<!-- Link to open the modal -->
+<!--javascript 初始-->
+<script>
+    var Operator = '@(Operator)';
+    var Mode = '@Mode';
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var ResultDataLen = '@(ResultLen)';
+</script>
