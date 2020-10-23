@@ -499,7 +499,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_InsTmpCarImageBatch";
                     break;
                 case SPType.UploadFeedBackImage:
-                    SPName = "usp_INSTmpFeedBackPIC";
+                    //SPName = "usp_INSTmpFeedBackPIC";
+                    SPName = "usp_INSTmpFeedBackPICNew";
                     break;
                 case SPType.InsFeedBack:
                     SPName = "usp_InsFeedBack";

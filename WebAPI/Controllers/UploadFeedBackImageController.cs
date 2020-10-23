@@ -3,6 +3,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +14,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -67,19 +69,34 @@ namespace WebAPI.Controllers
                 //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_UploadCarImage>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                IAPI_UploadFeedBackImage tmpAPI = apiInput;
-                int len = tmpAPI.FeedBack.Count;
-                for(int i = 0; i < len; i++)
+                //IAPI_UploadFeedBackImage tmpAPI = apiInput;
+                //int len = tmpAPI.FeedBack.Count;
+                //for(int i = 0; i < len; i++)
+                //{
+                //    tmpAPI.FeedBack[i].FeedBackFile = tmpAPI.FeedBack[i].FeedBackFile.Length.ToString();
+                //    if(tmpAPI.FeedBack[i].SEQNO<1 || tmpAPI.FeedBack[i].SEQNO > 4)
+                //    {
+                //        CheckFlag = false;
+                //        break;
+                //    }
+                //}
+                List<FeedBackImage> restoreCarImg = apiInput.FeedBack;
+                List<FeedBackImage> tmpCarImg = new List<FeedBackImage>();
+                int len = apiInput.FeedBack.Count;
+                for (int i = 0; i < len; i++)
                 {
-                    tmpAPI.FeedBack[i].FeedBackFile = tmpAPI.FeedBack[i].FeedBackFile.Length.ToString();
-                    if(tmpAPI.FeedBack[i].SEQNO<1 || tmpAPI.FeedBack[i].SEQNO > 4)
+                    tmpCarImg.Add(
+                    new FeedBackImage()
                     {
-                        CheckFlag = false;
-                        break;
-                    }
+                        SEQNO = apiInput.FeedBack.ToArray()[i].SEQNO,
+                        FeedBackFile = apiInput.FeedBack.ToArray()[i].FeedBackFile.Length.ToString()
+                    });
                 }
+                //20201015 暫存不需要存完整圖檔
+                apiInput.FeedBack = tmpCarImg;
 
-                flag = baseVerify.InsAPLog(tmpAPI.ToString(), ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
+                apiInput.FeedBack = restoreCarImg;
                 if (false == CheckFlag)
                 {
                     flag = false;
@@ -114,12 +131,9 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-              
-               
-
             }
-        
-         
+
+
             //不開放訪客
             if (flag)
             {
@@ -157,26 +171,97 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base>(connetStr);
                 List<FeedBackImageData> CarImgDataLists = new List<FeedBackImageData>();
                 DataSet ds = new DataSet();
-                for (int i = 0; i < carImages.Length; i++)
-                {
+                //for (int i = 0; i < carImages.Length; i++)
+                //{
 
-                    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
+                //    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
+                //    {
+                //        IDNO = IDNO,
+                //        LogID = LogID,
+                //        Token = Access_Token,
+                //        FeedBackFile = carImages[i].FeedBackFile,
+                //        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
+                //        OrderNo = tmpOrder
+                //    };
+                //    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
+                //    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
+                //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //    if (flag == false)
+                //    {
+                //        break;
+                //    }
+                //}
+
+
+                string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
+                object[] objparms = new object[carImages.Length == 0 ? 1 : carImages.Length];
+                if (carImages.Length > 0)
+                {
+                    for (int i = 0; i < carImages.Length; i++)
                     {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        Token = Access_Token,
-                        FeedBackFile = carImages[i].FeedBackFile,
-                        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
-                        OrderNo = tmpOrder
-                    };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
-                    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag == false)
-                    {
-                        break;
+                        objparms[i] = new
+                        {
+                            CarImageType = carImages[i].SEQNO,
+                            CarImage = carImages[i].FeedBackFile
+                        };
                     }
                 }
+                else
+                {
+                    objparms[0] = new
+                    {
+                        CarImageType = 0,
+                        CarImage = ""
+                    };
+                }
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            tmpOrder,
+                            Access_Token,
+                            LogID
+                    },
+                        objparms
+                    };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                //logger.Trace(JsonConvert.SerializeObject(ds1));
+                if (ds1.Tables.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR999";
+                    errMsg = returnMessage;
+                }
+                else
+                {
+                    if (ds1.Tables.Count == 1)
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        if (ds1.Tables[1].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < ds1.Tables[1].Rows.Count; i++)
+                            {
+                                CarImgDataLists.Add(new FeedBackImageData
+                                {
+                                    SEQNO = Convert.ToInt32(ds1.Tables[1].Rows[i]["SEQNO"]),
+                                    HasUpload = Convert.ToInt32(ds1.Tables[1].Rows[i]["HasUpload"])
+                                });
+                            }
+                        }
+                    }
+                }
+                ds1.Dispose();
+
                 if (flag)
                 {
                     outputApi.FeedBackImageObj = new List<FeedBackImageData>();

@@ -82,15 +82,22 @@ namespace WebAPI.Controllers
                 //string restoreCarImg = apiInput.CarImage;
                 //string tmpCarImg = apiInput.CarImage.Length.ToString();
                 List<CarImages> restoreCarImg = apiInput.CarImages;
-                List<CarImages> tmpCarImg = new List<CarImages> {
-                    new CarImages() {
-                    CarType=0,
-                    CarImage=apiInput.CarImages.ToArray().Length.ToString()
-                } };
+                List<CarImages> tmpCarImg = new List<CarImages>();
+                int len = apiInput.CarImages.Count;
+                for (int i = 0; i < len; i++)
+                {
+                    tmpCarImg.Add(
+                        new CarImages()
+                        {
+                            CarType = apiInput.CarImages.ToArray()[i].CarType,
+                            CarImage = apiInput.CarImages.ToArray()[i].CarImage.Length.ToString()
+                        }
+                    );
+                }
                 //20201015 暫存不需要存完整圖檔
                 apiInput.CarImages = tmpCarImg;
 
-                flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
                 apiInput.CarImages = restoreCarImg;
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
