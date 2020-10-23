@@ -506,7 +506,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_InsFeedBack";
                     break;
                 case SPType.SettingParkingSpce:
-                    SPName = "usp_InsParkingSpace";
+                    //SPName = "usp_InsParkingSpace";
+                    SPName = "usp_InsParkingSpaceNew";
                     break;
                 case SPType.GetOrderStatusByOrderNo:
                     SPName = "usp_GetOrderStatusByOrderNo";
