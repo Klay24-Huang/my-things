@@ -403,7 +403,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_RegisterMemberData";
                     break;
                 case SPType.UploadCredentials: //上傳證件照
-                    SPName = "usp_UploadCredentials";
+                    //SPName = "usp_UploadCredentials";
+                    SPName = "usp_UploadCredentialsNew";
                     break;
                 case SPType.ReSendEmail: //重發EMail
                     SPName = "usp_ReSendEmail";

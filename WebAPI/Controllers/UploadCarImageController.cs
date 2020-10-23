@@ -233,6 +233,7 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR999";
+                        errMsg = returnMessage;
                     }
                     else
                     {
@@ -255,6 +256,7 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+                    ds1.Dispose();
                 }
                 else
                 {

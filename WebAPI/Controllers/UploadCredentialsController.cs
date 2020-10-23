@@ -4,6 +4,7 @@ using Domain.SP.Output;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -128,18 +130,51 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.UploadCredentials);
-                SPInput_UploadCredentials spInput = new SPInput_UploadCredentials()
+
+                //SPInput_UploadCredentials spInput = new SPInput_UploadCredentials()
+                //{
+                //    LogID = LogID,
+                //    IDNO = apiInput.IDNO,
+                //    CrentialsFile = apiInput.CredentialFile,
+                //    CrentialsType = apiInput.CredentialType.Value,
+                //    DeviceID = apiInput.DeviceID
+                //};
+                //SPOutput_Base spOut = new SPOutput_Base();
+                //SQLHelper<SPInput_UploadCredentials, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadCredentials, SPOutput_Base>(connetStr);
+                //flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+
+
+                object[][] parms1 = {
+                        new object[] {
+                            apiInput.IDNO,
+                            apiInput.DeviceID,
+                            apiInput.CredentialType.Value,
+                            apiInput.CredentialFile,
+                            LogID
+                    }};
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+               
+                if (ds1.Tables.Count == 0)
                 {
-                    LogID = LogID,
-                    IDNO = apiInput.IDNO,
-                    CrentialsFile = apiInput.CredentialFile,
-                    CrentialsType = apiInput.CredentialType.Value,
-                    DeviceID = apiInput.DeviceID
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_UploadCredentials, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadCredentials, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                    flag = false;
+                    errCode = "ERR999";
+                    errMsg = returnMessage;
+                }
+                else
+                {
+                    if (ds1.Tables.Count == 1)
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                }
+                ds1.Dispose();
             }
             #endregion
             #region 寫入錯誤Log
