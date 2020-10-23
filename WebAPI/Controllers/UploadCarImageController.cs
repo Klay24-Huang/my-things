@@ -228,7 +228,7 @@ namespace WebAPI.Controllers
 
                     ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
-                    logger.Trace(JsonConvert.SerializeObject(ds1));
+                    //logger.Trace(JsonConvert.SerializeObject(ds1));
                     if (ds1.Tables.Count == 0)
                     {
                         flag = false;

@@ -482,7 +482,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_SettingInvoice";
                     break;
                 case SPType.UploadCarImage:
-                    SPName = "usp_InsTmpCarImage";
+                    //SPName = "usp_InsTmpCarImage";
+                    SPName = "usp_InsTmpCarImageBatch";
                     break;
                 case SPType.UploadFeedBackImage:
                     SPName = "usp_INSTmpFeedBackPIC";
