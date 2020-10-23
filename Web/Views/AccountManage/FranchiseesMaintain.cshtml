@@ -137,8 +137,7 @@
                                 限定.png檔
                             </div>
                             <div class="col-md-2"> <a href="#surrounding_modal" rel="modal:open" class="btn btn-primary">檢視照片</a></div>
-
-
+                            @* <div class="col-md-2"> <button type="button" data-toggle="modal" data-target="#surrounding_modal" class="btn btn-primary">檢視照片</button></div> *@
 
                         </div>
                     </div>
@@ -243,7 +242,20 @@
         <a href="#" rel="modal:close">Close</a>
     </div>
 
-
+    @* using bootstrap
+    <div class="modal fade" id="surrounding_modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" width="90%" height="90%" />
+                    <p id="PicInfo" name="PicInfo"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div> *@
 <!-- Link to open the modal -->
 <!--javascript 初始-->
 <script>
