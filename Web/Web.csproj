@@ -142,6 +142,7 @@
     <Compile Include="Controllers\CarDataInfoController.cs" />
     <Compile Include="Controllers\CardDataInfoController.cs" />
     <Compile Include="Controllers\CommonObjController.cs" />
+    <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\ContactManageController.cs" />
     <Compile Include="Controllers\CustomerAreaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -169,6 +170,21 @@
     <Content Include="assets\logo.png" />
     <Content Include="assets\prism.css" />
     <Content Include="assets\sweetalert.css" />
+    <Content Include="Content\Contact\css\bootstrap.min.css" />
+    <Content Include="Content\Contact\css\images\markers-matte%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-matte.png" />
+    <Content Include="Content\Contact\css\images\markers-plain.png" />
+    <Content Include="Content\Contact\css\images\markers-shadow%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-shadow.png" />
+    <Content Include="Content\Contact\css\images\markers-soft%402x.png" />
+    <Content Include="Content\Contact\css\images\markers-soft.png" />
+    <Content Include="Content\Contact\css\layout.min.css" />
+    <Content Include="Content\Contact\images\bg00001.jpg" />
+    <Content Include="Content\Contact\images\car.jpg" />
+    <Content Include="Content\Contact\images\logo.png" />
+    <Content Include="Content\Contact\images\logo_big.jpg" />
+    <Content Include="Content\Contact\js\jquery-1.10.2.min.js" />
+    <Content Include="Content\Contact\js\jquery-ui.js" />
     <Content Include="Content\css\bootstrap-grid.css" />
     <Content Include="Content\css\bootstrap-reboot.css" />
     <Content Include="Content\css\bootstrap.css" />
@@ -467,6 +483,10 @@
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.woff" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footabled41d.eot" />
     <Content Include="Content\example\MasterCardExample.xlsx" />
+    <Content Include="Content\Contact\scss\layout.scss" />
+    <Content Include="Content\Contact\scss\setting\_mixins.scss" />
+    <Content Include="Content\Contact\scss\setting\_reset.scss" />
+    <Content Include="Content\Contact\scss\setting\_variables.scss" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -538,6 +558,7 @@
     <Content Include="Views\SystemManage\GetReadCard.cshtml" />
     <Content Include="Views\SystemManage\GetCarEvent.cshtml" />
     <Content Include="Views\ContactManage\BookingQuery.cshtml" />
+    <Content Include="Views\Contact\returnCarNew.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

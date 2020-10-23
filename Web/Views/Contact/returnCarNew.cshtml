@@ -1,0 +1,752 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>和運租車汽車出租單</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="~/Content/Contact/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/Contact/css/layout.min.css">
+    <script src="~/Content/Contact/js/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+    <main class="container">
+        <div class="row no-gutters justify-content-center mt-2">
+            <img class="col-md-5 col-12 logo" src="~/Content/Contact/images/logo_big.jpg" />
+        </div>
+        <div class="row no-gutters">
+            <div class="col-md-4 col-12 mb-1 d-flex flex-column justify-content-center align-items-md-start align-items-center mt-2 mt-md-0">
+                <div class="row align-items-center mb-2">
+                    <img style="max-width: 200px" class="col-8" src="~/Content/Contact/images/logo.png" />
+                    <div><b>關係企業</b></div>
+                </div>
+                <h6>本出租單依據『汽車運輸業管理規則』第101條製定。</h6>
+            </div>
+            <div class="col-md-4 col-12 d-flex align-items-center flex-column justify-content-center">
+                <h3 class="mb-2"><b>汽車出租單</b></h3>
+                <h6>(小客出租賃契約書)</h6>
+            </div>
+            <div class="col-md-4 col-12 border border-secondary p-1 mt-4 mt-md-4 border-bottom-0">
+                <h6 class="mb-1">契約書編號</h6>
+                <p></p>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col-md-6 col-12 d-flex flex-column">
+                <div class="row no-gutters border border-secondary">
+                    <div class="col-4 p-1 table-row">
+                        <label class="table-label">牌照號碼</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">引擎(車身)號碼</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">顏色</label>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-top-0">
+                    <div class="col-4 p-1">
+                        <label class="table-label">廠牌 / 車型</label>
+                        <p></p>
+                    </div>
+                    <div class="col-5 border-secondary border-left border-right p-1">
+                        <label class="table-label">預計還車時間及地點</label>
+                        <p></p>
+                    </div>
+                    <div class="col-3 border-secondary p-1 border border-bottom-0">
+                        <label class="table-label text-red">預計承租日數</label>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="border border-secondary">
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-6 p-1">
+                            <label class="table-label">承租人姓名 / 共同承租人1</label>
+                            <p></p>
+                        </div>
+                        <div class="col-6 border-left border-secondary p-1">
+                            <label class="table-label">護照 / 身份證號碼</label>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-6 p-1">
+                            <label class="table-label">出生日期</label>
+                            <p></p>
+                        </div>
+                        <div class="col-6 border-left border-secondary p-1">
+                            <label class="table-label">出生地 / 籍貫</label>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-6 p-1">
+                            <label class="table-label">承租人聯絡電話</label>
+                            <p></p>
+                        </div>
+                        <div class="col-6 border-left border-secondary p-1">
+                            <label class="table-label">行動電話</label>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-12 p-1">
+                            <label class="table-label">承租人聯絡地址</label>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-6 p-1">
+                            <label class="table-label">承租人服務單位名稱</label>
+                            <p></p>
+                        </div>
+                        <div class="col-6 border-left border-secondary p-1">
+                            <label class="table-label">行業別</label>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="row no-gutters border border-secondary border-bottom-0">
+                        <div class="col-6 p-1">
+                            <label class="table-label">承租人服務單位地址</label>
+                            <p></p>
+                        </div>
+                        <div class="col-6 border-left border-secondary p-1">
+                            <label class="table-label">單位電話</label>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-4 p-1">
+                        <label class="table-label text-red">緊急聯絡人</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">與承租人關係</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">聯絡電話</label>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-4 p-1">
+                        <label class="table-label">其他駕駛人姓名</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">護照/身份證號碼</label>
+                        <p></p>
+                    </div>
+                    <div class="col-4 border-left border-secondary p-1">
+                        <label class="table-label">聯絡電話</label>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-sm p-1">
+                        <label class="table-label d-flex align-items-center writing-mode-lr">租金<br>費用</label>
+                    </div>
+                    <div class="d-flex flex-1 flex-column">
+                        <div class="row no-gutters border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label mb-2">日租金</label>
+                                <p>NT$</p>
+                            </div>
+                            <div class="col-6 border border-secondary p-1 border-bottom-0">
+                                <label class="table-label mb-2 text-red">租金小計</label>
+                                <p>NT$</p>
+                            </div>
+                        </div>
+                        <div class="row no-gutters">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label mb-2">其他費用</label>
+                                <p>NT$</p>
+                            </div>
+                            <div class="col-6 border border-secondary p-1 border-top-0">
+                                <label class="table-label mb-2 text-red">費用總計</label>
+                                <p>NT$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary">
+                    <div class="col-12 p-1 d-flex">
+                        <label class="table-label">出車油量</label>
+                        <div class="bar-wrap">
+                            <div class="bar-box"></div>
+                            <ul class="bar-text">
+                                <li>E</li>
+                                <li>1/4</li>
+                                <li>2/4</li>
+                                <li>3/4</li>
+                                <li>F</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-top-0">
+                    <div class="col-12 p-1">
+                        <label class="table-label text-red">出車收款人簽名</label>
+                        <p class="height-lg">
+
+                        </p>
+                        <div class="text-sm text-right">(本出租單無出車收款人簽章無效)</div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-top-0 flex-1" style="min-height: 200px">
+                    <div class="col-12 p-1">
+                        <h6><b>備註欄：</b></h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-12">
+                <div class="row no-gutters border border-secondary">
+                    <div class="col-sm p-1">
+                        <label class="table-label d-flex align-items-center">里程統計</label>
+                    </div>
+                    <div class="d-flex flex-1 flex-column">
+                        <div class="row no-gutters border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label">出車里程數</label>
+                                <p></p>
+                            </div>
+                            <div class="col-6">
+                                <label class="table-label">出車時間</label>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="row no-gutters border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label">還車里程數</label>
+                                <p></p>
+                            </div>
+                            <div class="col-6 p-1 border-bottom border-secondary">
+                                <label class="table-label">還車時間</label>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="row no-gutters border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label">總使用里數</label>
+                                <p></p>
+                            </div>
+                            <div class="col-6 border border-secondary p-1 border-top-0">
+                                <label class="table-label text-red">實際總租用日數</label>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="row no-gutters">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label">超駛里數</label>
+                                <p></p>
+                            </div>
+                            <div class="col-6 border p-1">
+                                <label class="table-label">逾時時數</label>
+                                <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-top-0 border-bottom-0">
+                    <div class="col-sm p-1">
+                        <label class="table-label d-flex align-items-center writing-mode-lr">其他<br>費用</label>
+                    </div>
+                    <div class="d-flex flex-1 flex-column">
+                        <div class="row no-gutters border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label mb-1">超駛每公里</label>
+                                <p>NT$</p>
+                            </div>
+                            <div class="col-6 border p-1">
+                                <label class="table-label mb-1">逾時費率</label>
+                                <p>NT$</p>
+                            </div>
+                        </div>
+                        <div class="row no-gutters border border-bottom border-secondary">
+                            <div class="col-6 border-left border-right border-secondary p-1">
+                                <label class="table-label mb-1 text-red">超駛租金</label>
+                                <p>NT$</p>
+                            </div>
+                            <div class="col-6 border-left border-secondary p-1">
+                                <label class="table-label mb-1 text-red">逾時租金</label>
+                                <p>NT$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary">
+                    <div class="col-sm p-1">
+                        <label class="table-label d-flex align-items-center">還車檢查</label>
+                    </div>
+                    <div class="d-flex flex-1 flex-column border-left border-secondary">
+                        <div class="row no-gutters mt-1">
+                            <div class="col-12 pl-3 pr-3">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-1 bar-box"></div>
+                                    <h6 class="col-11 pl-2 text-sm">車況與出車相符</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row no-gutters mt-1">
+                            <div class="col-12 pl-3 pr-3">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-1 bar-box"></div>
+                                    <h6 class="col-11 pl-2 text-sm">車況與出車不相符，需整備維修</h6>
+                                </div>
+                                <div class="row no-gutters align-items-center mt-2">
+                                    <div class="col-3 d-flex justify-content-end">
+                                        <div class="col-1 bar-box"></div>
+                                    </div>
+                                    <h6 class="col-9 pl-2 d-flex text-sm"><div class="ml-2 text-red" style="width: 80px">修理費用</div><span>NT$</span></h6>
+                                </div>
+                                <div class="row no-gutters align-items-center mt-2">
+                                    <div class="col-3 d-flex justify-content-end">
+                                        <div class="col-1 bar-box"></div>
+                                    </div>
+                                    <h6 class="col-9 pl-2 d-flex text-sm"><div class="ml-2 text-red" style="width: 80px">自負額</div><span>NT$</span></h6>
+                                </div>
+                                <div class="row no-gutters align-items-center mt-2 mb-1">
+                                    <div class="col-3 d-flex justify-content-end">
+                                        <div class="col-1 bar-box"></div>
+                                    </div>
+                                    <h6 class="col-9 pl-2 d-flex text-sm"><div class="ml-2 text-red" style="width: 80px">營業損失</div><span>NT$</span></h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row no-gutters mt-1 mb-1">
+                            <div class="col-12 pl-3 pr-3">
+                                <div class="row no-gutters align-items-start align-items-md-center text-underline-m-box">
+                                    <div class="col-1 bar-box"></div>
+                                    <h6 class="col-11 pl-2 d-flex text-sm align-items-center text-underline-m-ct">歸還設備與出車不相符<div class="ml-md-4 flex-1 ml-0 text-underline-m">說明</h6>
+                                    <!-- <div class="text-underline-m"></div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-top-0  border-bottom-0">
+                    <div class="col-12 p-1">
+                        <h5><b>注意事項：<span class="text-sm">(行車請繫安全帶，並注意天候及路況，小心駕駛)</span></b></h5>
+                        <ul>
+                            <li class="d-flex"><span class="mr-1">1.</span>車輛發生事故或失竊時請立刻報警處理及通知出租人，若無前項通知，所有損害均由承租人負擔（詳見背面契約條款）。</li>
+                            <!--  <li class="d-flex"><span class="mr-1">2.</span>每日限駛里程 ─ 400KM（詳見背面契約條款）。</li>-->
+                            <li class="d-flex"><span class="mr-1">2.</span>租金包含強制險、乘客意外險、任意第三人責任險及竊盜險；另有關車損時保障雙方權益之約定，詳見背面契約條款第10條。</li>
+                            <li class="d-flex"><span class="mr-1">3.</span>上述保險不包括因自然災害（如洪水、颱風、地震等）造成之損傷及車內配備遺失或損壞之賠償責任，承租人有保管之責，若有損竊事實發生，相關賠償概由承租人負擔。</li>
+                            <!-- <li class="d-flex"><span class="mr-1">5.</span>本車輛之燃油，期間所有停車費及交通罰鍰概由承租人負擔。</li>
+                             <li class="d-flex"><span class="mr-1">6.</span>隨車證件：行照、強制保卡。</li>-->
+                        </ul>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-12 p-1 d-flex">
+                        <label class="table-label">還車油量</label>
+                        <div class="bar-wrap">
+                            <div class="bar-box"></div>
+                            <ul class="bar-text">
+                                <li>E</li>
+                                <li>1/4</li>
+                                <li>2/4</li>
+                                <li>3/4</li>
+                                <li>F</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-6 p-1">
+                        <label class="table-label text-red">收車專員簽名</label>
+                        <p>
+
+                        </p>
+                        <div class="text-sm">(需經本公司人員簽名確認,始視為正式還車)</div>
+                    </div>
+                    <div class="col-6 border-left border-secondary p-1">
+                        <label class="table-label text-red">承租人還車確認簽名</label>
+                        <p>
+                            <img src="" id="sign2" name="sign2" style="width:20%" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-12 p-1">
+                        <h6><b>車輛外觀狀況表：</b></h6>
+                        <img style="margin: 0 auto" src="~/Content/Contact/images/car.jpg">
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary border-bottom-0">
+                    <div class="col-12 p-1">
+                        <h6 class="text-red text-sm text-justify">※本人已於簽署前經合理期間審閱確認後同意本合約正面及背面各項條款，並了解保險未含零配件之損竊，若有損竊發生承租人願負損害賠償之責。若以信用卡付款時以下簽名即表示授權出租人就有關租金費，以承租人名義處理信用卡收款單以供付款。</h6>
+                    </div>
+                </div>
+                <div class="row no-gutters border border-secondary">
+                    <div class="col-12 p-1">
+                        <h5><b>承租人簽名：<div class="text-underline pt-4" style="margin-left: 5rem"> <img src="" id="sign1" name="sign1" style="width:25%" /></div></b></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row no-gutters mt-2">
+            <div class="col-md-4 col-12 mb-1 mb-md-0">
+                <div class="d-flex"><div class="text-justify" style="width: 80px">出&nbsp;租&nbsp;人&nbsp;：</div>和雲行動服務股份有限公司</div>
+                <div class="d-flex"><div class="text-justify" style="width: 80px">公司統編：</div>50885758</div>
+                <div class="d-flex"><div class="text-justify" style="width: 80px">負&nbsp;責&nbsp;人&nbsp;：</div>田天明</div>
+                <div class="d-flex"><div class="text-justify" style="width: 80px">公司住址：</div>臺北市中山區松江路433號4樓</div>
+                <div class="d-flex"><div class="text-justify" style="width: 80px">聯絡電話：</div>(02)2504-6290(代表號)</div>
+            </div>
+            <div class="col-md-5 col-12">
+                <div>汽車運輸業執照號碼：北市交三汽字第011624號</div>
+                <div>電子郵件：HLC@mail.hotaimotor.com.tw</div>
+                <div>公司網址：http://www.easyrent.com.tw</div>
+                <div style="padding-left: 80px">(契約條款詳閱背面)</div>
+                <div style="padding-left: 80px">第一聯：客戶聯</div>
+            </div>
+            <div class="col-md-3 col-12 align-items-center d-flex mt-2 mt-md-0">
+                <div class="row no-gutters">
+                    <h5 class="col-12 text-center pt-2 pb-2 border border-secondary border-bottom-0"><b>全省租車網服務專線</b></h5>
+                    <h5 class="col-12 text-red text-center pt-2 pb-2 border border-secondary">0800-024-550</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="row no-gutters mt-5 mb-5">
+            <h4 class="text-center col-12 mb-2"><b>iRent24 小時自助租車租賃契約</b></h4>
+            <p class="text-sm">出租人(以下簡稱甲方)依本約所載全部(包括印刷及手寫)之條款及條件，經簽約前與承租人(以下簡稱乙方) 逐條說明契約內容審閱完成，將甲方所指定之客車隨車附件租與乙方使用，雙方同意訂立本契約書。</p>
+            <ul class="col-12">
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第一條</div><div>
+                        小客車(機車)及隨車附件之所有權歸屬甲方，本合約僅係將該小客車(機車)及隨車附件租與乙方使用，乙
+                        方並不取得其他任何權利。在租賃期間內，乙方並非甲方任何目的之代理人，有關小客車 機車 之任何零
+                        件或附件之修護或更換，需經甲方事前核准。乙方於租賃期間內應依本合約給付甲方全部之租金與相關
+                        費用。如乙方為兩人或以上時，應負連 帶給付責任。甲方不另收取保證金或擔保品。
+                    </div>
+                </li>
+                <li class="d-flex text-sm"><div class="rule-label">第二條</div><div>乙方同意該租用之小客車(機車)、安全配備與隨車附件齊全，具有良好之性能及狀況，並同意負擔於租賃期間內所消耗之燃料，燃料收費標準依甲方所規範，並保證以合法銷售之無鉛汽油為限，如有違反本約定致租賃車輛故障者，應負擔損害賠償責任。乙方還<span class="text-red-normal">汽</span>車時，油量應留1/4。</div></li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第三條</div><div>
+
+                        乙方應依約定時間交還車輛，未於預計還車時間內還車者，將收取 3,0 00 元 次車輛調度之相關費用，另
+                        再收取「未經授權的使用費」，每一小時按時租定價計算收費，逾時六小時以上者以一日之租金額外計算
+                        收費(每30分鐘為最小計費起算單位，且不適用任何優惠) 。
+                        但因車輛本身機件故障，致乙方不能依約定
+                        時間交還車輛者，不在此限。提前還車時間每滿一日以上者，得請求退還每滿一日部分租金，但乙方享
+                        有天數折扣者，甲方得依實際使用日數重算租金，再退還餘額。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第四條</div><div>
+                        租賃期間乙方應自行駕駛(騎乘)，非經甲方事先同意並登記於本合約不得交由他人駕駛(騎乘)，亦不得擅
+                        交無駕照之他人駕駛、從事汽車運輸業行為或充作教練車等用途；並不得載送違禁品、危險品、不潔或
+                        易於污損車輛之物品及不適宜隨車之動物類等。違反約定者，甲方得終止租賃契約且即時收回車輛 ，如
+                        另有損壞，得向乙方請求賠償。另，若乙方造成車輛不潔(含寵物毛髮 )、汙損、殘留異 菸味等，甲方得
+                        向乙方收取 900 元 次作為清潔整備費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第五條</div><div>
+                        租賃期間乙方應配合稽查人員查驗出示駕駛執照、強制汽車責任保險證、汽(機)車出租單及行車執照，其
+                        間所生之停車費、過路通行費等費用，概由乙方自行負擔。前項因違規所生之處罰案件，有關罰鍰應由
+                        乙方負責繳清，如由甲方代為繳納者，乙方應負責償還；若乙方有違反道路交通管理處罰條例第三十五
+                        條之情形，而租賃車輛依同條例第八十五條之二規定遭逕行移置保管時，乙方同意委託甲方代乙方辦理
+                        分期繳納罰鍰以領回車輛；有關牌照被扣部份，自牌照被扣之日起至公路監理機關通知得領回日止之租
+                        金，由乙方負擔。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第六條</div>
+                    <div class="flex-1">
+                        <span>該小客車(機車)不得使用於下情況：</span>
+                        <div class="row no-gutters">
+                            <ul class="col-6">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>為收取明示或默示之報酬而攬載乘客或貨物。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>用以推動或拖曳任何車輛或物體。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>供競賽或其他試驗性目的。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>為任何違反中華民國法令或其他違法目的之使用。</div></li>
+                            </ul>
+                            <ul class="col-6">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>服用麻醉或迷幻藥物或酒醉駕車。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>准許或指使任何無合法駕駛執照之人使用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(七)</div><div>以詐欺或委虛偽陳述之方法向甲方取得小客車。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(八)</div><div>嚴禁超載。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第七條</div>
+                    <div class="flex-1">
+                        <div>
+                            本車輛發生擦撞、毀損、翻覆、失竊或其他肇事等意外事故時，乙方應立即報案並通知甲方以原廠修護
+                            處理，如因可歸責於乙方之事由所生之拖車費、修理費及第十條後段規定車輛修理期間之租金，應由乙
+                            方負擔。
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>立即通知甲方及警察機關，且於24小時內提出包括圖解之詳細報告，並填寫甲方出具之意外事故報告表交與甲方。(和運/和雲租車免付費服務專線<span class="text-red" style="font-size: 16px">0800-024-550按1</span>，作相關後續處理)</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>取得意外之人及其他證人之姓名與地址。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>未徵得保險公司同意前，不得私下與肇事對方達成和解。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>警方處理完畢，若車輛行駛有危險之虞，請撥專屬道路救援專線(0800-024-550按 5)，拖吊至最近之原廠維修，請勿將該小客車棄置於無人看管之處所。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>若發現小客車(機車)有機件異狀或中途拋錨，應立即告知甲方或至指定之保修廠作緊急修護，甲方同意乙方等待車輛修復之時間得以延長補足，或免收租金，但因此造成之不便，時間等衍生之損失，均不得要求甲方賠償。惟車輛駛出行駛40公里內或一小時內，機件發生故障者，乙方應立即通知甲方處理，並得要求換車，如甲方無車供應，乙方得要求解約，雙方均不得要求任何一方賠償。但一般破胎或爆胎者由乙方負責自行修復。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>如乙方怠於前項通知或違反本條(一)~(四)之規定，致喪失保險索賠權益時，所有損害均由乙方負擔。汽(機)車之毀損非經甲方之許可擅自在外修護者，甲方得請求以原廠估價予以重修，修理費由乙方負擔。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex text-sm"><div class="rule-label">第八條</div><div>乙方應盡善良管理人注意義務保管及維護本車輛，禁止出賣、設質、抵押、讓與擔保、典當車輛等行為。</div></li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第九條</div>
+                    <div class="flex-1">
+                        <div>該小客車甲方已經投保強制險，乙方依本合約之規定使用小客車時，造成第三人死亡，身體傷害之最高理賠總額，每一事故新台幣200萬元。若因乙方過失其應負責賠償損失之金額超過上述標準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制汽車責任險外，甲方另已投保下列保險：</span></div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>駕駛人及乘客個人意外險：最高理賠每一事故新台幣 1500 萬至 2700 萬元( 5 或 7人* 300 萬)，即每一名乘客均有新台幣300 萬元之保障(超載部份除外)。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡保額/每次事故傷亡總保額/每次事故財務損失保額分別為 200 萬元/ 400 萬元/ 50 萬元。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>竊盜險(10%自負額由承租人負擔)：因可歸責於乙方之事由致本車輛遺失或被盜者，甲方同意乙方支付市價與保險賠償金額之差額(不含VCD、音響、備胎等零件失竊及本約第10條所約定之營業損失，最長以20日為限)。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備(VCD、音響、備胎等零件)遺失或損壞之賠償責任，承租人對車體、車內/外部配備及相關證件/卡片(停車卡/加油卡/行照/強卡等)有保管之責，倘有損竊事實發生，相關賠償概由承租人負擔。<br>(停車卡1,000元、加油卡100元、行照200元、強卡100元、車身貼紙 100元/處、租車手冊500元等)</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第十條</div>
+                    <div class="flex-1">
+                        <div>
+                            該機車甲方已經投保強制險附加駕駛人傷害險，乙方依本合約之規定使用機車時，造成第三人死亡，身
+                            體傷害之最高理賠總額，每一事故新台幣 200 萬元。若因乙方過失其應負責賠償損失之金額超過上述標
+                            準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制機車責任險外，甲
+                            方另已投保下列保險：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>乘客體 傷責任險：每一個人體傷或死亡新台幣 200 萬元，每一意外事故之總額新台幣 200 萬元。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡保額/每次事故傷亡總保額/每次事故財務損失保額分別為 200 萬元/ 400 萬元/ 50 萬元。</div></li>
+                                <li class="d-flex text-sm">
+                                    <div class="mr-3 flex-0">(三)</div><div>
+                                        上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備 (3/4 安全帽、半罩式安全帽 遺失或損壞之賠償責任，承租人對車體、車輛內 外部配備及有保管之責，倘有損竊事實發生，
+                                        相關賠償概由承租人負擔 (3/4 安全帽 1,000 元、半罩式安全帽 500 元 。
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第十一條</div>
+                    <div class="flex-1">
+                        <div>
+                            承租車輛如發生損傷，甲方同意乙賠償金額汽車最高以新台幣壹萬元為限 、機車以新台幣壹仟元為限
+                            但有以下情形之一者，乙方應依實際維修費用賠償予甲方：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>違反本租約第四條之約定時。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>酒駕或其所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>不明車損所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>因自然災害 如颱風、地震、洪水等 所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>乙方自願負擔車輛損失而與對方和解等類似情況。</div></li>
+                            </ul>
+
+                        </div>
+                        <div>
+                            乙方除前項約定賠償外，於車輛修復（含失竊）期間，需另依下列標準賠償營業損失：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>十日以內者，償付該期間百分之七十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>在十一日以上十五日以內，償付該期間百分之六十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>在十六日以上者，並應償付該期 間百分之五十之定價。但期間之計算，最常以二十日為限。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十二條</div><div>
+                        使用「同站租還」服務時，乙方還汽車地點 需符合甲方規範 ，未依規範者，甲方除收取處理費新台幣 3 ,000
+                        元車輛調度相關費用外，並可取消乙方 iRent 會員資格且不另通知。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十三條</div><div>
+
+                        使用「路邊租還」服務時 ，乙方 限於系統公告之特定區域取 還汽 機 車（ 區域範圍詳見 App 地圖），違者
+                        將依下列第二十 一 條至 第二十四 條酌收車輛調度相關費用 ，跨服務區還車者，除收 3 ,000 元車輛調度相
+                        關費用外 ，並可取消乙方 i Rent 會員資格且不另通知 。
+
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十四條</div><div>
+                        甲方應擔保租賃期間內本車輛合於約定使用狀態，如違反，雙方得依物之瑕疵擔保或債務不履行等相關
+                        法律規定辦理。
+                    </div>
+                </li>
+                <li class="d-flex text-sm"><div class="rule-label">第十五條</div><div>因本契約發生訴訟時，甲、乙雙方同意以台灣臺北地方法院為第一審管轄法院，但不得排除消費者保護法第四十七條及民事訴訟法第四百三十六條之九規定之小額訴訟管轄法院之適用。</div></li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十六條</div><div>
+                        乙方欲續租本車輛時，應在預計還車前 20 分鐘利用甲方 iRent APP 進行延長用車申請，申請核可始為有
+                        效。
+                    </div>
+                </li>
+                <li class="d-flex text-sm"><div class="rule-label">第十七條</div><div>本契約如有未訂事宜，依相關法令、習慣及誠信原則公平解決之。</div></li>
+                <li class="d-flex text-sm"><div class="rule-label">第十八條</div><div>甲方對乙方留存之個人資料負有保密義務，非經乙方書面同意，甲方不得對外揭露或為契約目的範圍外之利用，並應處理個人資料保護法之規定保護個人資料。</div></li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十九條</div><div>
+                        行車速度超過規定最高時速 60 公里以上競速飆車或道路蛇行產生罰款及造成車牌吊銷，承租人須負擔賠
+                        償 含本公司營業損失 。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿條</div><div>
+                        乙方了解並同意甲方逕以乙方提供之信用卡收取用車費用、銷售稅金及「小客車租賃契約」所提及之乙
+                        方未遵守契約所產生費用(包含但不限於 還車逾時未延長、車輛內外部製作物損毀、車內髒污及吸菸、車
+                        輛相關文件/票卡遺失等項目)。若乙方提供之信用卡拒付任何應付金額，甲方將暫停乙方會員資格及 iRent
+                        服務使用權並循法律途徑處理。
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label ">第廿一條</div>
+                    <div class="flex-1">
+                        <div>
+                            乙方使用北北基桃-汽車路邊租還(台北市/新北市/基隆市/桃園市)服務時，還車限停放於服務區域內「路邊」公有停車格及合法免費停車格或白線區域(不含累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
+
+                                        還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div><div>
+
+                                        還車時，若將車輛停放於「私人車庫/停車區、非和運/和雲公告之調度停車場」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div><div>
+
+                                        還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第廿二條</div>
+                    <div class="flex-1">
+                        <div>
+                            乙方使用 台中-汽車路邊租還(台中市)服務時，還車限停放於台中市政府「路邊」公有 停車格 其他「路邊」合法免費停車格或白線區域，違者將依下列條款酌收車輛調度相關費用：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
+
+                                        還車時，若將車輛停放於「私人車庫 停車區、任何有進出閘門之停車場及非路邊停車格之地點」，
+                                        除照價收取停車費(上限 3 天)外，將再收取 3 ,000 元/次車輛調度費用外，並暫停 iRent 使用權限三
+                                        個月。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div><div>
+
+                                        還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費
+                                        用外，將再收取 3 ,000 元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第廿三條</div>
+                    <div class="flex-1">
+                        <div>
+                            乙方使用 台南-汽車路邊租還(台南市)服務時，還車限停放於台南市政府「路邊」公有停車格及其他「路
+                            邊」合法免費停車格或白線區域，違者將依下列條款酌收車輛調度相關費 用：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm">
+                                    <div class="mr-3 flex-0">a.</div><div>
+                                        還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，
+                                        除照價收取停車費(上限 3 天)外，將再收取 3 ,000 元/次車輛調度費用外，並暫停 iRent 使用權限三
+                                        個月。
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm">
+                                    <div class="mr-3 flex-0">b.</div><div>
+                                        還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費
+                                        用外，將再收取 3 ,000 元/次作為車輛調度相關費用。
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="d-flex" text-sm>
+                    <div class="rule-label ">第廿四條</div>
+                    <div class="flex-1">
+                        <div>
+                            乙方使用機車路邊租還(台北市/新北市/桃園市/台中市/台南市/高雄市)服務還車限停放於服務區域內「路邊」公
+                            有停車格及合法免費停車格或白線區域，違者將依下列條款酌收車輛調度相關費用：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm text-red-normal">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
+
+                                        還車時，若未將車輛停放至系統公告之特定區域（區域範圍詳見 App 地圖），將收取 2,000 元/次罰
+                                        款、 1,000 元/次車輛調度費用。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div><div>
+
+                                        還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，
+                                        除照價收取停車費(上限 3 天)外，將再收取 1,000 元/次車輛調度費用外，並暫停 iRent 使用權限三
+                                        個月。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm">
+                                    <div class="mr-3 flex-0">c.</div><div>
+
+                                        還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費用
+                                        外，將再收取 1,000 元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </main>
+
+</body>
+
+</html>
