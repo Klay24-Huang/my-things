@@ -49,6 +49,8 @@
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_ChangeCar.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangePWD.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPD_CardNo.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
+    <Compile Include="SP\BE\Output\SPOutput_BE_ChangeCar.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
     <Compile Include="SP\BE\Output\SPOutput_Login.cs" />
