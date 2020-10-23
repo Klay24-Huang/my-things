@@ -237,6 +237,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMemberInfo,
             /// <summary>
+            /// 同站以據點取出車型
+            /// </summary>
+            GetStationCarType,
+            /// <summary>
             /// 取得多據點專案
             /// </summary>
             GetStationCarTypeOfMutiStation,
@@ -524,6 +528,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberInfo:
                     SPName = "usp_GetMemberInfo";
+                    break;
+                case SPType.GetStationCarType:
+                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";
