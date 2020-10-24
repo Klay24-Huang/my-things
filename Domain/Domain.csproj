@@ -89,6 +89,7 @@
     <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
+    <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="SP\Output\Booking\SPOutput_CheckCarStatus.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_ReadCard.cs" />
     <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
+    <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
