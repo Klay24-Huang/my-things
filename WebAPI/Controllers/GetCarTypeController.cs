@@ -166,7 +166,7 @@ namespace WebAPI.Controllers
                 {
                     if (spList != null && spList.Count() > 0)
                     {
-                        spList.ForEach(x => { x.CarTypeName = x.CarBrend + " " + x.CarTypeName; });
+                        //spList.ForEach(x => { x.CarTypeName = x.CarBrend + " " + x.CarTypeName; });
                         OAPI_Params = (from a in spList
                                        select new OAPI_GetCarTypeParam
                                        {
@@ -195,7 +195,8 @@ namespace WebAPI.Controllers
                                 {
                                     CarBrend = lstData[i].CarBrend,
                                     CarType = lstData[i].CarType,
-                                    CarTypeName = lstData[i].CarBrend + " " + lstData[i].CarTypeName,
+                                    //CarTypeName = lstData[i].CarBrend + " " + lstData[i].CarTypeName,
+                                    CarTypeName = lstData[i].CarTypeName,
                                     CarTypePic = lstData[i].CarTypePic,
                                     Operator = lstData[i].Operator,
                                     OperatorScore = lstData[i].OperatorScore,

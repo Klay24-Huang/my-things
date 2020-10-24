@@ -204,8 +204,8 @@ namespace WebAPI.Controllers
                         lstTmpData[0].ProjectObj.Add(new ProjectObj()
                         {
                             CarBrend = lstData[0].CarBrend,
-                            CarType = lstData[0].CarTypeName,
-                            CarTypeName = lstData[0].CarBrend + " " + lstData[0].CarTypeName,
+                            CarType = lstData[0].CarType,
+                            CarTypeName = lstData[0].CarTypeName,
                             CarTypePic = lstData[0].CarTypePic,
                             Insurance = 1,
                             InsurancePerHour = 20,
@@ -218,7 +218,9 @@ namespace WebAPI.Controllers
                             Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                             WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                             HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
-                            CarOfArea = lstData[0].CarOfArea
+                            CarOfArea = lstData[0].CarOfArea,
+                            Content = "",
+                            IsRent = lstData[0].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
                         });
                         lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                         if (DataLen > 1)
@@ -237,7 +239,7 @@ namespace WebAPI.Controllers
                                     {
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
-                                        CarTypeName = lstData[i].CarBrend + lstData[i].CarTypeName,
+                                        CarTypeName = lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
                                         Insurance = 1,
                                         InsurancePerHour = 20,
@@ -250,7 +252,9 @@ namespace WebAPI.Controllers
                                         Bill = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
-                                        CarOfArea = lstData[i].CarOfArea
+                                        CarOfArea = lstData[i].CarOfArea,
+                                        Content = "",
+                                        IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
                                     };
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
@@ -279,7 +283,7 @@ namespace WebAPI.Controllers
                                     {
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
-                                        CarTypeName = lstData[i].CarBrend + lstData[i].CarTypeName,
+                                        CarTypeName = lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
                                         Insurance = 1,
                                         InsurancePerHour = 20,
@@ -292,7 +296,9 @@ namespace WebAPI.Controllers
                                         Bill = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
-                                        CarOfArea = lstData[i].CarOfArea
+                                        CarOfArea = lstData[i].CarOfArea,
+                                        Content = "",
+                                        IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
                                     });
                                 }
                             }

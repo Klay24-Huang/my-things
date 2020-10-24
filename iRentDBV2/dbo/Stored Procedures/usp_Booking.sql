@@ -235,7 +235,7 @@ SET @PayMode=ISNULL(@PayMode,0);
 						  SELECT  Car.CarNo,CarInfo.RentCount
 						  FROM  [TB_Car] AS Car
 						  INNER JOIN  [TB_CarInfo] AS CarInfo ON CarInfo.CarNo=Car.CarNo AND Car.CarType IN (
-							SELECT VW.CARTYPE FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW WHERE CarTypeGroupCode =@CarType AND VW.PROJID=@ProjID AND VW.StationID=@StationID
+							SELECT VW.CARTYPE FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW WHERE CarTypeGroupCode =UPPER(@CarType) AND VW.PROJID=@ProjID AND VW.StationID=@StationID
 						  )
 						  WHERE available<=1   AND nowStationID=@StationID AND CarInfo.CID<>'';	
 				--由暫存取出是否有符合的車輛
