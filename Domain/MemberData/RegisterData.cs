@@ -10,8 +10,9 @@ namespace Domain.MemberData
         public string MEMIDNO { set; get; }
         /// <summary>
         /// 密碼
+        /// 20201024 ADD BY ADAM 密碼不該出現在這裡
         /// </summary>
-        public string MEMPWD { set; get; }
+        //public string MEMPWD { set; get; }
         /// <summary>
         /// 姓名
         /// </summary>

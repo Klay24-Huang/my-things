@@ -114,23 +114,27 @@ namespace WebAPI.Controllers
                 {
                     if (ListOut != null)
                     {
-                        outputAPI = new OAPI_GetMotorStatus
+                        if (ListOut.Count > 0)
                         {
-                            CarNo = ListOut[0].CarNo,
-                            CID = ListOut[0].CID,
-                            ACCStatus = ListOut[0].ACCStatus,
-                            Latitude = ListOut[0].Latitude,
-                            Longitude = ListOut[0].Longitude,
-                            Millage = ListOut[0].Millage,
-                            deviceRDistance = ListOut[0].deviceRDistance,
-                            device2TBA = ListOut[0].device2TBA,
-                            device3TBA = ListOut[0].device3TBA,
-                            deviceMBA = ListOut[0].deviceMBA,
-                            deviceRBA = ListOut[0].deviceRBA,
-                            deviceLBA = ListOut[0].deviceLBA,
-                            extDeviceStatus1 = ListOut[0].extDeviceStatus1,
-                            deviceBat_Cover = ListOut[0].deviceBat_Cover
-                        };
+                            outputAPI = new OAPI_GetMotorStatus
+                            {
+                                CarNo = ListOut[0].CarNo,
+                                CID = ListOut[0].CID,
+                                ACCStatus = ListOut[0].ACCStatus,
+                                Latitude = ListOut[0].Latitude,
+                                Longitude = ListOut[0].Longitude,
+                                Millage = ListOut[0].Millage,
+                                deviceRDistance = ListOut[0].deviceRDistance == "NA" || ListOut[0].deviceRDistance == "" ? 0 : Convert.ToSingle(ListOut[0].deviceRDistance),
+                                device2TBA = ListOut[0].device2TBA,
+                                device3TBA = ListOut[0].device3TBA,
+                                deviceMBA = ListOut[0].deviceMBA,
+                                deviceRBA = ListOut[0].deviceRBA,
+                                deviceLBA = ListOut[0].deviceLBA,
+                                extDeviceStatus1 = ListOut[0].extDeviceStatus1,
+                                deviceBat_Cover = ListOut[0].deviceBat_Cover
+                            };
+
+                        }
                     }
                 }
             }

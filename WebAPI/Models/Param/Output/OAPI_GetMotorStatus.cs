@@ -35,7 +35,7 @@
         /// <summary>
         /// 預估里程
         /// </summary>
-        public string deviceRDistance { get; set; }
+        public float deviceRDistance { get; set; }
 
         /// <summary>
         /// 總電量兩顆平均

@@ -106,7 +106,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		IF @Error=0
 		BEGIN
 			SELECT   [MEMIDNO]
-					,[MEMPWD]
+					--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
 					,[MEMCNAME]
 					,[MEMTEL]
 					,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
