@@ -490,4 +490,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CardSettingLogId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d25a92c0-2a81-4cfa-95eb-9992cea9feea" ChangeDateTime="10/25/2020 22:23:42">
+    <Property Name="ElementName" Value="[dbo].[TB_AuditHistory].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_AuditHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AuditHistoryID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ff87e0c6-bd80-43d9-8329-52b4f95a4aab" ChangeDateTime="10/25/2020 22:27:00">
+    <Property Name="ElementName" Value="[dbo].[TB_AuditHistory].[reject]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_AuditHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RejectReason" />
+  </Operation>
 </Operations>

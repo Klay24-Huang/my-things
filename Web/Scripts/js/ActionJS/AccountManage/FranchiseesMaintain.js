@@ -4,6 +4,7 @@ var OperatorName = "";
 var OldOperatorICon = "";
 var StartDate = "";
 var EndDate = "";
+var inPicSize = 0;
 $(function () {
     
     $("#surrounding_modal").hide();

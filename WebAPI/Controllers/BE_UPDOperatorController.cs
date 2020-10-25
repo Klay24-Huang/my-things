@@ -108,7 +108,9 @@ namespace WebAPI.Controllers
             {
                 if (false == string.IsNullOrEmpty(apiInput.OperatorICon))
                 {
-                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.OperatorICon,apiInput.OldOperatorIcon, "operatoricon");
+                    apiInput.OperatorICon = apiInput.OperatorICon.Replace("⊙", "");
+                    FileName = string.Format("{0}_{1}", apiInput.OperatorAccount, DateTime.Today.ToString("yyyyMMddHHmmss"));
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.OperatorICon, FileName, "operatoricon");
                   
                 }
             }
@@ -127,7 +129,7 @@ namespace WebAPI.Controllers
                     StartDate = StartDate,
                     OperatorName = apiInput.OperatorName,
                     OperatorAccount = apiInput.OperatorAccount,
-                    OperatorICon = (apiInput.OperatorICon == "") ? "" : apiInput.OldOperatorIcon,
+                    OperatorICon = (apiInput.OperatorICon == "") ? "" : FileName,
                     OperatorID = apiInput.OperatorID
 
                 };

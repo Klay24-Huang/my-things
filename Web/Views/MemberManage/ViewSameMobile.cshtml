@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_SameMobileData>
+
+@{
+    string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
+
+    int ResultLen = -1;
+    List<Domain.TB.BackEnd.BE_SameMobileData> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.TB.BackEnd.BE_SameMobileData>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            手機重覆清單
+        </div>
+        <input type="hidden" id="len" name="len" value="@ResultLen" />
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table bg-white footable" data-filter="#filter" id="list">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"> </th>
+                <th scope="col">身份證字號</th>
+                <th scope="col">姓名</th>
+                <th scope="col">地址</th>
+                <th scope="col">電話</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="5" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false">
+                        </td>
+                        <td scope="col">@(lstData[i].IDNO)</td>
+                        <td scope="col">@(lstData[i].UserName)</td>
+                        <td scope="col">@(string.Format("{0}{1}{2}",lstData[i].CityName,lstData[i].AreaName,lstData[i].MEMADDR))</td>
+                        <td scope="col">@(lstData[i].MEMTEL)</td>
+                    </tr>
+                }
+
+            }
+           
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<!--輸出表格結束-->
+
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>
+
