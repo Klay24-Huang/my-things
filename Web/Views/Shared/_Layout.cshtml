@@ -122,6 +122,12 @@
             ControllerStrName = "合約管理";
             ActionStrName = "合約查詢";
             break;
+        #endregion
+        #region 帳號管理
+        case "FranchiseesMaintain":
+            ControllerStrName = "帳號管理";
+            ActionStrName = "加盟業者維護";
+            break;
             #endregion
 
 
@@ -164,7 +170,7 @@
             <link href="~/Content/css/vis.css" rel="stylesheet">
             break;
         case "FranchiseesMaintain":
-            <link rel="stylesheet" href="~/Content/css/jquery.modal.min.css">
+            @*<link rel="stylesheet" href="~/Content/css/jquery.modal.min.css">*@
             break;
 
 
@@ -454,7 +460,7 @@
                 <script src="~/Scripts/js/vis.js"></script>
                 break;
             case "FranceiseesMaintain":
-                <script src="~/Scripts/jquery.modal.min.js"></script>
+                @*<script src="~/Scripts/jquery.modal.min.js"></script>*@
                 break;
         }
     }

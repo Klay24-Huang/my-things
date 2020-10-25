@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -18,6 +19,21 @@ namespace CreditCardWeb.Controllers
         /// </summary>
         public ActionResult BindSuccess()
         {
+            return View();
+        }
+        public ActionResult BindSuccess(FormCollection collection)
+        {
+            string LogPath = "~/Content/CreditCardBindLog";
+            string Log = collection.ToString();
+            DirectoryInfo di = new DirectoryInfo(Server.MapPath(LogPath));
+            if (!di.Exists)
+            {
+                di.Create();
+            }
+            string data = Log;
+            string filename = string.Format("{0:yyyyMMdd}.txt", System.DateTime.Today);
+
+            System.IO.File.AppendAllText(LogPath + filename, data);
             return View();
         }
         /// <summary>

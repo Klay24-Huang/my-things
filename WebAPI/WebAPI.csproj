@@ -140,6 +140,7 @@
     <Compile Include="Controllers\BE_CarScheduleTimeLogController.cs" />
     <Compile Include="Controllers\BE_ChangeCarController.cs" />
     <Compile Include="Controllers\BE_ChangePWDController.cs" />
+    <Compile Include="Controllers\BE_CheckOperatorController.cs" />
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Controllers\BE_SetCarMemoController.cs" />
     <Compile Include="Controllers\BE_UnBindController.cs" />
     <Compile Include="Controllers\BE_UnBindCreditCardController.cs" />
+    <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
@@ -266,6 +268,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangeCar.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangePWD.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
@@ -279,6 +282,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBind.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBindCreditCard.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleHoilday.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />

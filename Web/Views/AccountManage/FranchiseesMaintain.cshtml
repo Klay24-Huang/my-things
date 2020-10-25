@@ -1,10 +1,13 @@
-﻿@model IEnumerable<Domain.TB.BackEnd.BE_ParkingData>
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_Operator>
 @{
-    List<Domain.TB.BackEnd.BE_ParkingData> lstData = null;
+    string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
+    string operatorContainer = (System.Configuration.ConfigurationManager.AppSettings["operatorContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["operatorContainer"].ToString();
+    string ImgURL = StorageBaseURL+ operatorContainer+"/";
+    List<Domain.TB.BackEnd.BE_Operator> lstData = null;
     string Operator = (ViewData["Operator"] == null) ? "" : ViewData["Operator"].ToString();
     string OperatorName = (ViewData["OperatorName"] == null) ? "" : ViewData["OperatorName"].ToString();
-    string SDate = (ViewData["SDate"] == null) ? "" : ViewData["SDate"].ToString();
-    string EDate = (ViewData["EDate"] == null) ? "" : ViewData["EDate"].ToString();
+    string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
+    string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     int ResultLen = -1;
     if (Mode == "Edit")
@@ -47,7 +50,7 @@
                                 加盟業者編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="Operator" id="Operator" value="@Operator" placeholder="限數字" />
+                                <input class="form-control" type="text" name="Operator" id="Operator" maxlength="8" value="@Operator"   />
 
                             </div>
                             <div class="col-md-2">
@@ -64,7 +67,7 @@
                                 加盟業者名稱
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="OperatorName" id="OperatorName" value="@OperatorName" />
+                                <input class="form-control" type="text" name="OperatorName" id="OperatorName" value="@OperatorName"  />
 
                             </div>
                         </div>
@@ -136,8 +139,8 @@
                             <div class="col-md-2">
                                 限定.png檔
                             </div>
-                            <div class="col-md-2"> <a href="#surrounding_modal" rel="modal:open" class="btn btn-primary">檢視照片</a></div>
-                            @* <div class="col-md-2"> <button type="button" data-toggle="modal" data-target="#surrounding_modal" class="btn btn-primary">檢視照片</button></div> *@
+                            @*<div class="col-md-2"> <a href="#surrounding_modal" rel="modal:open" class="btn btn-primary">檢視照片</a></div>*@
+                            <div class="col-md-2"> <button type="button" data-toggle="modal" data-target="#surrounding_modal" id="btnReview" class="btn btn-primary">檢視照片</button></div>
 
                         </div>
                     </div>
@@ -147,7 +150,8 @@
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
-                                <Button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">確定</Button>
+                                <input type="hidden" id="len" name="len" value="@(ResultLen)" />
+                                <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確定</Button>
                                 <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
                             </div>
                         </div>
@@ -171,6 +175,7 @@
                 <th scope="col">加盟業者編號(ID)</th>
                 <th scope="col">加盟業者名稱</th>
                 <th data-hide="all" scope="col">業者LOGO</th>
+                <th data-hide="all" scope="col"></th>
                 <th data-hide="all" scope="col">有效起迄日(起)</th>
                 <th data-hide="all" scope="col">有效起迄日(迄)</th>
                 <th scope="col">修改</th>
@@ -185,42 +190,60 @@
                         <td colspan="8">查無結果</td>
                     </tr>
                 }
-                else
+                else if(ResultLen>0)
                 {
                     for (int i = 0; i < ResultLen; i++)
                     {
-                        <tr>
-                            <td></td>
-                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].ParkingID)" id="PK_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingID)" /></td>
-                            <td scope="col">@lstData[i].ParkingName <input type="text" name="ParkingName_@(lstData[i].ParkingID)" id="ParkingName_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingName)" class="form-control" style="display:none" /></td>
-                            <td scope="col">@lstData[i].ParkingAddress<input type="text" name="ParkingAddress_@(lstData[i].ParkingID)" id="ParkingAddress_@(lstData[i].ParkingID)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" /></td>
-                            <td scope="col">@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
-                            <td scope="col"><img src="" class="form-control" /></td>
+        <tr>
+            <td></td>
+            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].OperatorID)" id="PK_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorID)" /></td>
+            <td scope="col">@lstData[i].OperatorAccount <input type="text" name="OperatorAccount_@(lstData[i].OperatorID)" id="OperatorAccount_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorAccount)" class="form-control" style="display:none" /></td>
+            <td scope="col">@lstData[i].OperatorName<input type="text" name="OperatorName_@(lstData[i].OperatorID)" id="OperatorName_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorName)" class="form-control" style="display:none" /></td>
+            <td scope="col">
+                <div class="row">
+                    <div class="col-12">
+                        <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳png檔案" data-theme="blue" id="OperatorICon_@(lstData[i].OperatorID)" name="OperatorICon_@(lstData[i].OperatorID)" data-inputSize="" data-text="上傳檔案" disabled onchange="handleFiles(this.files, 'OperatorICon_@(lstData[i].OperatorID)');">
+                        <span>@(lstData[i].OperatorICon)</span>
+                    </div>
+                </div>
 
+            </td>
+            <td scope="col">
+                <div class="row">
+                 
 
-                            <td scope="col">
-                                @lstData[i].OpenTime.ToString("yyyy-MM-dd")
+                    <div class="col-md-12"> <button type="button" class="btn btn-primary" onclick="showPic('@(lstData[i].OperatorICon)');">檢視照片</button></div>
+                </div>
 
-                                <div class="custom-datepicker">
-                                    <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkingID)" name="OpenTime_@(lstData[i].ParkingID)" value="@lstData[i].OpenTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+            </td>
 
-                                </div>
+            <td scope="col">
+                @lstData[i].StartDate.ToString("yyyy-MM-dd")
 
-                            </td>
-                            <td scope="col">
-                                @lstData[i].CloseTime.ToString("yyyy-MM-dd")
-                                <div class="custom-datepicker">
-                                    <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkingID)" name="CloseTime_@(lstData[i].ParkingID)" value="@lstData[i].CloseTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                <div class="custom-datepicker">
+                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].OperatorID)" name="StartDate_@(lstData[i].OperatorID)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+           
+                </div>
 
-                                </div>
-                            </td>
-                            <td scope="col">
-                                <Button type="button" id="btnEdit_@(lstData[i].ParkingID)" name="btnEdit_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].ParkingID)');>修改</Button>
-                                <Button type="button" id="btnSave_@(lstData[i].ParkingID)" name="btnSave_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].ParkingID)');>儲存</Button>
-                                <Button type="button" id="btnReset_@(lstData[i].ParkingID)" name="btnReset_@(lstData[i].ParkingID)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].ParkingID)');>取消</Button>
-                            </td>
-                        </tr>
+            </td>
+            <td scope="col">
+                @lstData[i].EndDate.ToString("yyyy-MM-dd")
+                <div class="custom-datepicker">
+                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].OperatorID)" name="EndDate_@(lstData[i].OperatorID)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+            
+                </div>
+            </td>
+            <td scope="col">
+                <Button type="button" id="btnEdit_@(lstData[i].OperatorID)" name="btnEdit_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" data-OldIcon="@(lstData[i].OperatorICon)" onclick="DoEdit('@(lstData[i].OperatorID)');">修改</Button>
+                <Button type="button" id="btnSave_@(lstData[i].OperatorID)" name="btnSave_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].OperatorID)');">儲存</Button>
+                <Button type="button" id="btnReset_@(lstData[i].OperatorID)" name="btnReset_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].OperatorID)');">取消</Button>
+            </td>
+        </tr>
                     }
+                }
+                else
+                {
+
                 }
             }
         </tbody>
@@ -235,31 +258,47 @@
 </div>
 <!--輸出表格結束-->
 <!-- Modal HTML embedded directly into document -->
+<!--  using bootstrap -->
 
-    <div id="surrounding_modal" class="modal">
-        <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" width="90%" height="90%" />
-        <p id="PicInfo" name="PicInfo"></p>
-        <a href="#" rel="modal:close">Close</a>
-    </div>
-
-    @* using bootstrap
-    <div class="modal fade" id="surrounding_modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" width="90%" height="90%" />
-                    <p id="PicInfo" name="PicInfo"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog"  data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail"  />
+                <p id="PicInfo" name="PicInfo"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
             </div>
         </div>
-    </div> *@
+    </div>
+</div>
+
+
+<!-- Modal -->
+@*<div class="modal fade" id="surrounding_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+               
+            </div>
+            <div class="modal-body">
+                <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail"  />
+                <p id="PicInfo" name="PicInfo"></p>
+            </div>
+            <div class="modal-footer" >
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>*@
 <!-- Link to open the modal -->
 <!--javascript 初始-->
 <script>
     var Operator = '@(Operator)';
+    var ImgBaseUrl = "@ImgURL";
     var Mode = '@Mode';
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
     var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
