@@ -9,6 +9,7 @@
 	[Score] FLOAT NOT NULL DEFAULT 5.0,
 	[use_flag] [tinyint] NOT NULL DEFAULT (1),
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
+    [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT N'',
 	[UPDTime] [datetime] NULL, 
     CONSTRAINT [PK_TB_OperatorBase] PRIMARY KEY ([OperatorID]) 
 )
@@ -88,3 +89,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OperatorBase',
     @level2type = N'COLUMN',
     @level2name = N'EndDate'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'最後修改者',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OperatorBase',
+    @level2type = N'COLUMN',
+    @level2name = N'last_Opt'

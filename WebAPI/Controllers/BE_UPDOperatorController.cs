@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using Domain.SP.Output;
 using Domain.WebAPI.Input.CENS;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,12 @@ using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
-
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 【後台】會員卡號解除
+    /// 【後台】修改加盟業者
     /// </summary>
-    public class BE_UnBindController : ApiController
+    public class BE_UPDOperatorController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoBE_UnBind(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_UPDOperator(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -40,105 +40,102 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_UnBindController";
+            string funName = "BE_UPDOperatorController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_UnBind apiInput = null;
+            IAPI_BE_UPDOperator apiInput = null;
             NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
+            DateTime StartDate=DateTime.Now, EndDate=DateTime.Now;
             string IDNO = "";
             bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
             Int64 tmpOrder = 0;
+            string FileName = "";
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UPDOperator>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID,apiInput.IDNO,apiInput.OrderNo };
-                string[] errList = { "ERR900" , "ERR900" , "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.OperatorAccount, apiInput.OperatorName };
+                string[] errList = { "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+
                 if (flag)
                 {
-                    flag = baseVerify.checkIDNO(apiInput.IDNO);
+                    //2.判斷格式
+                    flag = baseVerify.checkUniNum(apiInput.OperatorAccount);
                     if (false == flag)
                     {
-                        errCode = "ERR900";
+                        errCode = "ERR191";
                     }
                 }
                 if (flag)
                 {
-                    if (apiInput.OrderNo.IndexOf("H") < 0)
+                    if (false == DateTime.TryParseExact(apiInput.StartDate, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out StartDate))
                     {
                         flag = false;
-                        errCode = "ERR900";
+                        errCode = "ERR241";
+                    }
+                    if (false == DateTime.TryParseExact(apiInput.EndDate, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out EndDate))
+                    {
+                        flag = false;
+                        errCode = "ERR243";
                     }
                     if (flag)
                     {
-                        flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
-                        if (flag)
+                        if (StartDate > EndDate)
                         {
-                            if (tmpOrder <= 0)
-                            {
-                                flag = false;
-                                errCode = "ERR900";
-                            }
-
+                            flag = false;
+                            errCode = "ERR267";
                         }
                     }
                 }
-
             }
             #endregion
-
+            #region 判斷有無更新icon
+            if (flag)
+            {
+                if (false == string.IsNullOrEmpty(apiInput.OperatorICon))
+                {
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.OperatorICon,apiInput.OldOperatorIcon, "operatoricon");
+                  
+                }
+            }
+            #endregion
             #region TB
 
             if (flag)
             {
                 
-                     string spName = new ObjType().GetSPName(ObjType.SPType.BE_GetCarMachineAndCheckOrder);
-                SPInput_BE_GetCarMachineAndCheckOrder spInput = new SPInput_BE_GetCarMachineAndCheckOrder()
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_UPDOperator);
+                SPInput_BE_UPDOperator spInput = new SPInput_BE_UPDOperator()
                 {
                     LogID = LogID,
-                    IDNO=apiInput.IDNO,
-                     OrderNo=tmpOrder
+                    UserID = apiInput.UserID,
+                    EndDate = EndDate,
+                    StartDate = StartDate,
+                    OperatorName = apiInput.OperatorName,
+                    OperatorAccount = apiInput.OperatorAccount,
+                    OperatorICon = (apiInput.OperatorICon == "") ? "" : apiInput.OldOperatorIcon,
+                    OperatorID = apiInput.OperatorID
 
                 };
-                SPOutput_BE_GetCarMachineAndCheckOrder spOut = new SPOutput_BE_GetCarMachineAndCheckOrder();
-                SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder> sqlHelp = new SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder>(connetStr);
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_UPDOperator, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_UPDOperator, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag,  spOut.Error,spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    #region 車機
-                    CarCommonFunc CarComm = new CarCommonFunc();
-                    if (spOut.IsCens == 1)
-                    {
-                        SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
-                        SendCarNoData obj = new SendCarNoData()
-                        {
-                            CardNo = spOut.CardNo,
-                            CardType = 1
-                        };
-                        sendCarNoDatas[0] = obj;
-                        flag = CarComm.DoSetCensCustomerCard(spOut.CID, sendCarNoDatas, 0, ref errCode);
-                    }
-                    else
-                    {
-                        flag = CarComm.DoSetFETCustomerCard(spOut.CID, spOut.deviceToken, new string[] { spOut.CardNo },0,LogID, ref errCode);
-                    }
-                    #endregion
-                }
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+         
 
             }
             #endregion

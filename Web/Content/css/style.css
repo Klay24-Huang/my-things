@@ -198,17 +198,5 @@ span.focus-jfilestyle {
   overflow: scroll;
 }
 
-.review-modal__header {
-    background: #ff6666;
-    color: #fff;
-    padding: 0.375rem 0;
-}
 
-.review-modal__body {
-    overflow-x: scroll;
-}
-
-.text-review {
-    color: #ff6666;
-}
 /*# sourceMappingURL=style.css.map */

@@ -284,6 +284,9 @@
     <Build Include="dbo\Stored Procedures\usp_BE_BookingCancel.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ChangeCar.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMotorStatus.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_CheckOperator.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsOperator.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_UPDOperator.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

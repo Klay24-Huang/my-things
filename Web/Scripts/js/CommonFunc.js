@@ -58,6 +58,283 @@ function disabledLoadingAndShowAlert(message) {
         icon: 'error'
     });
 }
+/**
+ * 基本型ajax
+ * @param {any} obj
+ * @param {any} API
+ * @param {any} FailMessage
+ */
+function DoAjax(obj, API, FailMessage) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                })
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+/**
+ * 成功能跳出alert，按下確認後再submit
+ * @param {any} obj
+ * @param {any} API
+ * @param {any} FailMessage
+ * @param {any} frmObj
+ */
+function DoAjaxAfterSubmit(obj, API, FailMessage,frmObj) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    frmObj.submit();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+/**
+ * 成功能直接submit，不跳出alert
+ * @param {any} obj
+ * @param {any} API
+ * @param {any} FailMessage
+ * @param {any} frmObj
+ */
+function DoAjaxAfterSubmitNonShowMessage(obj, API, FailMessage, frmObj) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                    frmObj.submit();
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+           // $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                frmObj.submit();
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+/**
+ * 執行完AJAX後reload
+ * @param {any} obj
+ * @param {any} API
+ * @param {any} FailMessage
+ */
+function DoAjaxAfterReload(obj,API,FailMessage) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    window.location.reload();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+/**
+ * 執行完將API回傳的資料丟入callback函式內
+ * @param {any} obj
+ * @param {any} API
+ * @param {any} FailMessage
+ * @param {any} CallBack
+ */
+function DoAjaxAfterCallBack(obj, API, FailMessage,CallBack) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    CallBack(data.Data);
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
 
 /* autocomplete使用*/
 /**

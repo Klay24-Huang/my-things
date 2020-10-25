@@ -49,7 +49,7 @@ $(document).ready(function () {
     })
     if (Mode != '') {
         $("#ddlObj").val(Mode);
-        $("#ddlObj").trigger("click");
+        $("#ddlObj").trigger("change");
       
     }
     if (ResultDataLen > -1) {

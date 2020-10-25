@@ -359,6 +359,14 @@ namespace WebAPI.Models.Enum
                 /// 換車
                 /// </summary>
                 BE_ChangeCar,
+                /// <summary>
+                /// 判斷加盟業者統編是否存在
+                /// </summary>
+                BE_CheckOperator,
+                /// <summary>
+                /// 更新加盟業者
+                /// </summary>
+                BE_UPDOperator,
             #endregion
 
         }
@@ -648,7 +656,14 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_ChangeCar:
                     SPName = "usp_BE_ChangeCar";
                     break;
-                    #endregion
+                case SPType.BE_CheckOperator:
+                    SPName = "usp_BE_CheckOperator";
+                    break;
+                #endregion
+                case SPType.BE_UPDOperator:
+                    SPName = "usp_BE_UPDOperator";
+                    break;
+
             }
             return SPName;
         }
