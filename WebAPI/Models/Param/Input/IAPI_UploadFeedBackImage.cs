@@ -11,6 +11,10 @@ namespace WebAPI.Models.Param.Input
     public class IAPI_UploadFeedBackImage
     {
         public string OrderNo { set; get; }
+        /// <summary>
+        /// 車況描述
+        /// </summary>
+        public string CarDesc { get; set; }
         public List<FeedBackImage> FeedBack { set; get; }
     }
     public class FeedBackImage
