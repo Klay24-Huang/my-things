@@ -21,7 +21,7 @@ namespace WebCommon
     /// </summary>
     public class AzureStorageHandle
     {
-        public string connectionString = (ConfigurationManager.AppSettings["storageStr"] == null) ? "" : ConfigurationManager.AppSettings["storageStr"].ToString();
+        public string connectionString = (ConfigurationManager.AppSettings["StorageConnectionStrings"] == null) ? "" : ConfigurationManager.AppSettings["StorageConnectionStrings"].ToString();
         public bool UploadImage(string FileBase64Str,string dir,string FileName)
         {
             bool flag = true;
@@ -45,8 +45,7 @@ namespace WebCommon
             bool flag = true;
             string file_extension = Path.GetExtension(file.FileName);
             string filename_withExtension = Path.GetFileName(file.FileName);
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-        CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 
             // Create the blob client.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -70,6 +69,7 @@ namespace WebCommon
             {
                 cloudBlockBlob.UploadFromStream(fileStream);
             }
+            
             return flag;
         }
         /// <summary>
@@ -86,11 +86,11 @@ namespace WebCommon
             byte[] imageBytes = Convert.FromBase64String(fileStr.Replace("⊙", ""));
             fs = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
             fs.Write(imageBytes, 0, imageBytes.Length);
+      
 
             string file_extension = Path.GetExtension(fileName);
             string filename_withExtension = Path.GetFileName(fileName);
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-        CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 
             // Create the blob client.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -114,6 +114,7 @@ namespace WebCommon
             {
                 cloudBlockBlob.UploadFromStream(fileStream);
             }
+            fs.Close();
             return flag;
         }
         /// <summary>

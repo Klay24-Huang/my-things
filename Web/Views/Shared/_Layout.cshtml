@@ -123,6 +123,16 @@
             ActionStrName = "合約查詢";
             break;
         #endregion
+        #region 會員審核
+        case "Audit":
+        case "AuditDetail":
+        case "AuditHistory":
+        case "CredentialsView":
+        case "ViewSameMobile":
+            ControllerStrName = "會員管理";
+            ActionStrName = "會員審核";
+            break;
+        #endregion
         #region 帳號管理
         case "FranchiseesMaintain":
             ControllerStrName = "帳號管理";
@@ -377,6 +387,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="~/MemberManage/Audit">會員審核查詢</a>
+                                <a class="dropdown-item" href="~/MemberManage/ViewSameMobile">手機重複清單</a>
                             </div>
                         </li>
                         <!-- 帳號管理 -->

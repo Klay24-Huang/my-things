@@ -1,4 +1,5 @@
 ﻿using Domain.MemberData;
+using Domain.TB.BackEnd;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -58,6 +59,18 @@ namespace Reposotory.Implement
                 }
             }
             return obj;
+        }
+        public List<BE_SameMobileData> GetSameMobile()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_SameMobileData> lstMember = null;
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetSameMobile ORDER BY MEMTEL ASC";
+
+            lstMember = GetObjList<BE_SameMobileData>(ref flag, ref lstError, SQL, para, term);
+            return lstMember;
         }
     }
 }
