@@ -191,6 +191,9 @@ namespace WebAPI.Controllers
 
             }
 
+            outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";
+            outputApi.ArrearsInfos = outputApi.ArrearsInfos ?? new List<ArrearsQueryDetail>();
+
             #endregion
             #region 寫入金流資料表及欠費資料表
             #endregion
