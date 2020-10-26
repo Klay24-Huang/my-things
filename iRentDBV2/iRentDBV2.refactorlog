@@ -504,4 +504,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="RejectReason" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3dc5030e-ebb4-4a8a-aacc-248a6fc893c4" ChangeDateTime="10/26/2020 02:13:09">
+    <Property Name="ElementName" Value="[dbo].[TB_MemberDataOfAutdit].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_MemberDataOfAutdit]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AuditID" />
+  </Operation>
 </Operations>

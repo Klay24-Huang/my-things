@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -50,6 +51,19 @@ namespace WebAPI.Controllers
             Int16 CredentialType;
             DateTime Birth = DateTime.Now;
             string Contentjson = "";
+            string FileName = "";
+            /*
+                   /// <para>1:身份證正面</para>
+                    /// <para>2:身份證反面</para>
+                    /// <para>3:汽車駕照正面</para>
+                    /// <para>4:汽車駕照反面</para>
+                    /// <para>5:機車駕證正面</para>
+                    /// <para>6:機車駕證反面</para>
+                    /// <para>7:自拍照</para>
+                    /// <para>8:法定代理人</para>
+                    /// <para>9:其他（如台大專案）</para>
+             */
+            string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1" };
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
@@ -126,6 +140,20 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+            #region Azure Storage
+            if (flag)
+            {
+                try
+                {
+                    FileName = string.Format("{0}_{1}_{2}", apiInput.IDNO, suff[apiInput.CredentialType.Value], DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.CredentialFile, FileName, "credential");
+                }catch(Exception ex)
+                {
+                    flag = false;
+                    errCode = "ERR226";
+                }
+            }
+            #endregion
             #region TB
             if (flag)
             {
@@ -150,7 +178,8 @@ namespace WebAPI.Controllers
                             apiInput.IDNO,
                             apiInput.DeviceID,
                             apiInput.CredentialType.Value,
-                            apiInput.CredentialFile,
+                            FileName,
+                           // apiInput.CredentialFile, //改為直接將azure檔名寫入tb
                             LogID
                     }};
 
