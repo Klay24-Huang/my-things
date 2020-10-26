@@ -41,6 +41,7 @@ SELECT OrderMain.[order_number]
 	  ,Car.CarType
 	  ,Car.CarOfArea
 	  ,Car.LastOrderNo
+	  ,Car.NowOrderNo		--20201025 ADD BY ADAM 
 	  ,Car.available AS IsReturnCar
 	  ,CarInfo.IsMotor --20201006 - eason
 	  ,Operator.OperatorID

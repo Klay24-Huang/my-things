@@ -18,7 +18,7 @@
     [MEMSENDCD]      TINYINT         DEFAULT ((2)) NOT NULL,
     [CARRIERID]      VARCHAR (20)    DEFAULT ('') NOT NULL,
     [NPOBAN]         VARCHAR (20)    DEFAULT ('') NOT NULL, 
-    [MKTime] DATETIME  NOT NULL DEFAULT(dateadd(hour,(8),getdate())) NOT NULL,
+    [MKTime] DATETIME DEFAULT(dateadd(hour,(8),getdate())) NOT NULL,
     CONSTRAINT [PK_TB_MemberDataOfAutdit] PRIMARY KEY ([AuditID])
 
 )

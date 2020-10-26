@@ -24,7 +24,7 @@ namespace Domain.MemberData
         /// <summary>
         /// 生日
         /// </summary>
-        public DateTime MEMBIRTH { set; get; }
+        public string MEMBIRTH { set; get; }
 
         /// <summary>
         /// 城市
