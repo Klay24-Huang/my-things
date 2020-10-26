@@ -70,6 +70,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 車輛圖顯示地區
         /// </summary>
         public string CarOfArea { set; get; }
+
         /// <summary>
         /// 機車電力資訊，當ProjType=4時才有值
         /// </summary>
@@ -191,6 +192,17 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 16 = 已經檢查車輛完成並已經解除卡號
         /// </summary>
         public int CAR_MGT_STATUS { get; set; }
+        /// <summary> 20201026 ADD BY ADAM
+        /// 1:尚未到取車時間(取車時間半小時前)
+        /// 2:立即換車(取車前半小時，前車尚未完成還車)
+        /// 3:開始使用(取車時間半小時前)
+        /// 4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)
+        /// 5:操作車輛(取車後) 取車時間改實際取車時間
+        /// 6:操作車輛(準備還車)-
+        /// 7:物品遺漏(再開一次車門)
+        /// 8:鎖門並還車(一次性開門申請後)
+        /// </summary>
+        public int AppStatus { get; set; }
         #endregion
     }
 }

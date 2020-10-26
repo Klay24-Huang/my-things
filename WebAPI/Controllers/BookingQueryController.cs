@@ -154,6 +154,12 @@ namespace WebAPI.Controllers
                         outputApi.OrderObj = new List<ActiveOrderData>();
                         for (int i = 0; i < DataLen; i++)
                         {
+                            List<string> StationPics = new List<string>();
+                            if (OrderDataLists[i].StationPic1 != "") StationPics.Add(OrderDataLists[i].StationPic1);
+                            if (OrderDataLists[i].StationPic2 != "") StationPics.Add(OrderDataLists[i].StationPic2);
+                            if (OrderDataLists[i].StationPic3 != "") StationPics.Add(OrderDataLists[i].StationPic3);
+                            if (OrderDataLists[i].StationPic4 != "") StationPics.Add(OrderDataLists[i].StationPic4);
+
                             ActiveOrderData obj = new ActiveOrderData()
                             {
                                 CarNo = OrderDataLists[i].CarNo,
@@ -190,11 +196,13 @@ namespace WebAPI.Controllers
                                     Longitude = OrderDataLists[i].Longitude,
                                     StationID = OrderDataLists[i].StationID,
                                     StationName = OrderDataLists[i].StationName,
-                                    Tel = OrderDataLists[i].Tel
+                                    Tel = OrderDataLists[i].Tel,
+                                    StationPic = StationPics.ToArray()
                                 },
                                 MileagePerKM = (OrderDataLists[i].ProjType < 4) ? ((OrderDataLists[i].MilageUnit == 0) ? Mildef : OrderDataLists[i].MilageUnit) : 0,
                                 DailyMaxHour = 10,
-                                CAR_MGT_STATUS = OrderDataLists[i].car_mgt_status
+                                CAR_MGT_STATUS = OrderDataLists[i].car_mgt_status,
+                                AppStatus = OrderDataLists[i].AppStatus     //20201026 ADD BY ADAM REASON.增加APP對應狀態
                             };
                             obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
 

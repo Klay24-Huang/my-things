@@ -109,7 +109,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 					--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
 					,[MEMCNAME]
 					,[MEMTEL]
-					,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
+					,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
 					,[MEMCITY] AS MEMAREAID
 					,[MEMADDR]
 					,[MEMEMAIL]
@@ -126,9 +126,9 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 					,[HasVaildEMail]
 					,[Audit]
 					,[RentType]
-					,Case When [ID_1]=1 And [ID_2] =1 Then B.ID_1 Else 0 End ID_pic
-					,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then B.CarDriver_1 Else 0 End DD_pic
-					,Case When [MotorDriver_1]=1 And [MotorDriver_2]=1 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,Case When [ID_1]>0 And [ID_2]>0 Then B.ID_1 Else 0 End ID_pic
+					,Case When [CarDriver_1]>0 And [CarDriver_2]>0 Then B.CarDriver_1 Else 0 End DD_pic
+					,Case When [MotorDriver_1]>0 And [MotorDriver_2]>0 Then B.MotorDriver_1 Else 0 End MOTOR_pic
 					,ISNULL([Self_1],0) As AA_pic 
 					,ISNULL([Law_Agent],0) As F01_pic
 					,ISNULL([Signture],0) AS Signture_pic
