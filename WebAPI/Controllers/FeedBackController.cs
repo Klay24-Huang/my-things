@@ -3,6 +3,8 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.TB;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -176,6 +178,32 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+            #region 上傳圖片到azure
+            if (flag)
+            {
+                if (apiInput.Mode == 0)
+                {
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<FeedBackPIC> lstFeedBackPIC = otherRepository.GetFeedBackPIC(tmpOrder);
+                    int PICLen = lstFeedBackPIC.Count;
+                    for(int i = 0; i < PICLen; i++)
+                    {
+                        try
+                        {
+                            string FileName = string.Format("{0}_PIC{1}_{2}", apiInput.OrderNo, lstFeedBackPIC[i].SEQNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstFeedBackPIC[i].FeedBackFile, FileName, "feedbackpic");
+                            if (flag)
+                            {
+                                bool DelFlag=otherRepository.HandleTempBackPIC(lstFeedBackPIC[i].FeedBackPICID);
+                            }
+                        }catch(Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
+                    }
+                }
+            }
+            #endregion
             if (flag)
             {
                

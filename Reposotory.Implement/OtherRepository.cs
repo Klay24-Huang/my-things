@@ -1,4 +1,5 @@
 ﻿using Domain.TB;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -70,6 +71,46 @@ namespace Reposotory.Implement
             }
             string DelSQLStr = string.Join(",", DelStr);
             SQL = "DELETE FROM TB_Holiday WHERE HolidayDate IN (" + DelSQLStr + ");";
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+        public List<FeedBackPIC> GetFeedBackPIC(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<FeedBackPIC> lstFeedBackPic = null;
+
+            int nowCount = 0;
+
+            string SQL = @"
+            SELECT [tmpFeedBackPICID] AS FeedBackPICID,[SEQNO],[FeedBackFile]
+            FROM TB_tmpFeedBackPIC
+            WHERE [OrderNo]=@OrderNo
+            Order By SEQNO ASC
+            ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            if (OrderNo > 0 )
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " (OrderNo = @OrderNo ) ";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            lstFeedBackPic = GetObjList<FeedBackPIC>(ref flag, ref lstError, SQL, para, term);
+
+            return lstFeedBackPic;
+        }
+        public bool HandleTempBackPIC(Int64 FeedBackPICID)
+        {
+            bool flag = true;
+            string SQL = "";
+       
+            SQL = "DELETE FROM TB_tmpFeedBackPIC WHERE tmpFeedBackPICID ="+ FeedBackPICID + ";";
             ExecNonResponse(ref flag, SQL);
             return flag;
         }

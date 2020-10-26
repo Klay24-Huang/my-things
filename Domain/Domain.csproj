@@ -225,6 +225,7 @@
     <Compile Include="TB\CarTypeData.cs" />
     <Compile Include="TB\CityData.cs" />
     <Compile Include="TB\ErrorMessageList.cs" />
+    <Compile Include="TB\FeedBackPIC.cs" />
     <Compile Include="TB\GetFeedBackKindData.cs" />
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
