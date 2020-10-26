@@ -256,6 +256,10 @@ namespace WebAPI.Models.Enum
             /// 取得車輛狀態
             /// </summary>
             GetMotorStatus,
+            /// <summary>
+            /// 欠費查詢
+            /// </summary>
+            GetArrearsQuery,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -566,6 +570,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMotorStatus:     //取得車輛狀態
                     SPName = "usp_GetMotorStatus";
+                    break;
+                case SPType.GetArrearsQuery:
+                    SPName = "usp_ArrearsQuery_U1";//欠費查詢
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
