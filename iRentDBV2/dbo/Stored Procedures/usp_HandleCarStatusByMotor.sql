@@ -185,8 +185,9 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 					,[deviceVOL]=@deviceiVOL,[deviceErr]=@deviceErr,[deviceALT]=@deviceALT,[deviceGx]=@deviceGx,[deviceGy]=@deviceGy
 					,[deviceGz]=@deviceGz,[deviceBLE_Login]=@deviceBLE_Login,[deviceBLE_BroadCast]=@deviceBLE_BroadCast,[devicePwr_Mode]=@devicePwr_Mode,[deviceReversing]=@deviceReversing
 					,[devicePut_Down]=@devicePut_Down,[devicePwr_Relay]=@devicePwr_Relay,[deviceStart_OK]=@deviceStart_OK,[deviceHard_ACC]=@deviceHard_ACC,[deviceEMG_Break]=@deviceEMG_Break
-					,[deviceSharp_Turn]=@deviceSharp_Turn,[deviceBat_Cover]=@deviceBat_Cover,[deviceLowVoltage]=@deviceLowVoltage,[extDeviceStatus1]=@extDeviceStatus1,[extDeviceData5]=@extDeviceData5
-					,[extDeviceData6]=@extDeviceData6,UPDTime=@NowTime
+					,[deviceSharp_Turn]=@deviceSharp_Turn,[deviceBat_Cover]=@deviceBat_Cover,[deviceLowVoltage]=@deviceLowVoltage,[extDeviceStatus1]=@extDeviceStatus1
+					--,[extDeviceData5]=@extDeviceData5,[extDeviceData6]=@extDeviceData6	--ReportNow不會回傳[extDeviceData5],[extDeviceData6]，所以不作更新
+					,UPDTime=@NowTime
 				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 			END
 			INSERT INTO TB_CarRawData([CarNo],[CID],[deviceType],[ACCStatus],[GPSStatus]

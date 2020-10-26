@@ -6,9 +6,6 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -49,7 +46,6 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -82,20 +78,20 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
 
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
@@ -113,7 +109,6 @@ namespace WebAPI.Controllers
                 {
                     MotorRentObj = AllCars
                 };
-
             }
             #endregion
 

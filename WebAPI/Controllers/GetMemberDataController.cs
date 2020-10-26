@@ -1,11 +1,14 @@
 ﻿using Domain.Common;
 using Domain.MemberData;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Member;
+using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -89,6 +92,7 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
+                /*
                 _repository = new MemberRepository(connetStr);
                 RegisterData obj = new RegisterData();
                 obj = _repository.GetMemberData(IDNO);
@@ -97,6 +101,29 @@ namespace WebAPI.Controllers
                 {
                      UserData=obj
                 };
+                */
+
+                //20201022 ADD BY ADAM REASON.改為SP呼叫
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
+                SPInput_GetMemberData spMemberDataInput = new SPInput_GetMemberData()
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOutput_Base SPOutputBase = new SPOutput_Base();
+                SQLHelper<SPInput_GetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMemberData, SPOutput_Base>(connetStr);
+                List<RegisterData> lstOut = new List<RegisterData>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(spName, spMemberDataInput, ref SPOutputBase, ref lstOut, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    outputAPI = new OAPI_GetMemberData()
+                    {
+                        UserData = (lstOut == null) ? null : (lstOut.Count == 0) ? null : lstOut[0]
+                    };
+                }
             }
             #endregion
             #region 寫入錯誤Log

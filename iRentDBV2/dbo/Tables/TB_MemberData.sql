@@ -14,6 +14,10 @@
     [MEMCITY]        INT             DEFAULT ((0)) NOT NULL,
     [MEMADDR]        NVARCHAR (500)  DEFAULT (N'') NOT NULL,
     [MEMEMAIL]       VARCHAR (200)   DEFAULT (N'') NOT NULL,
+    [MEMCOMTEL] 	 varchar (20) 	 DEFAULT ('')  NOT NULL,
+	[MEMCONTRACT] 	 nvarchar (10)   DEFAULT (N'') NOT NULL,
+	[MEMCONTEL] 	 varchar (20)    DEFAULT ('')  NOT NULL,
+	[MEMMSG] 		 varchar(1)      DEFAULT ('Y') NOT NULL,
     [CARDNO]         VARCHAR (20)    DEFAULT ('') NOT NULL,
     [UNIMNO]         VARCHAR (10)    DEFAULT ('') NOT NULL,
     [MEMSENDCD]      TINYINT         DEFAULT ((2)) NOT NULL,
@@ -91,6 +95,22 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'統編', @l
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'卡片內碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'CARDNO';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'活動及優惠訊息通知(Y:是 N:否)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMMSG';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'緊急連絡人電話', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMCONTEL';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'緊急連絡人', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMCONTRACT';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'公司電話', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'MEMCOMTEL';
 
 
 GO

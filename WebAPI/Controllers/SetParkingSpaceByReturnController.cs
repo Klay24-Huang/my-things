@@ -14,6 +14,7 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Utils;
 using WebCommon;
 namespace WebAPI.Controllers
 {
@@ -151,19 +152,54 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
-                {
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    Token = Access_Token
-                };
+                //SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
+                //{
+                //    IDNO = IDNO,
+                //    OrderNo = tmpOrder,
+                //    ParkingSpace = apiInput.ParkingSpace,
+                //    ParkingSpaceImage = apiInput.ParkingSpaceImage,
+                //    LogID = LogID,
+                //    Token = Access_Token
+                //};
                 string SPName = new ObjType().GetSPName(ObjType.SPType.SettingParkingSpce);
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base>(connetStr);
-   
-                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-      
+                //SPOutput_Base spOut = new SPOutput_Base();
+                //SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base>(connetStr);
+
+                //flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            tmpOrder,
+                            apiInput.ParkingSpace,
+                            apiInput.ParkingSpaceImage,
+                            Access_Token,
+                            LogID
+                    }};
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (ds1.Tables.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR999";
+                    errMsg = returnMessage;
+                }
+                else
+                {
+                    if (ds1.Tables.Count == 1)
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                }
+                ds1.Dispose();
+
             }
             #endregion
 

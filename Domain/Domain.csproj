@@ -47,6 +47,7 @@
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
+    <Compile Include="MemberData\StatusData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
@@ -90,11 +91,16 @@
     <Compile Include="SP\Input\Booking\SPInput_CarMachineCommon.cs" />
     <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
+    <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
+    <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
+    <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\Mochi\SPInput_DisabledMochiPark.cs" />
@@ -161,6 +167,8 @@
     <Compile Include="SP\Output\Booking\SPOutput_CarMachineCommon.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_CheckCarStatus.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_ReadCard.cs" />
+    <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
+    <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
@@ -210,6 +218,7 @@
     <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BatExchangeStationData.cs" />
     <Compile Include="TB\BonusData.cs" />
+    <Compile Include="TB\BonusHistoryData.cs" />
     <Compile Include="TB\CarCMDResponse.cs" />
     <Compile Include="TB\CarData.cs" />
     <Compile Include="TB\CarInfo.cs" />
@@ -251,6 +260,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ETAG010.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR271Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
@@ -290,6 +300,8 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR271Query.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR271QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR320Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR330QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Check.cs" />

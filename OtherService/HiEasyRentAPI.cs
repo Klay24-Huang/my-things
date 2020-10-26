@@ -30,6 +30,7 @@ namespace OtherService
         protected string NPR136SaveURL; //
         protected string NPR260SendURL; //簡訊發送
         protected string NPR270QueryURL; //點數查詢
+        protected string NPR271QueryURL; //點數歷程查詢
         protected string NPR370CheckURL; //點數轉贈前檢查
         protected string NPR370SaveURL;  //進行轉贈
         protected string NPR330QueryURL; //欠費查詢
@@ -55,6 +56,7 @@ namespace OtherService
             NPR136SaveURL = (ConfigurationManager.AppSettings.Get("NPR136SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136SaveURL").ToString();
             NPR260SendURL = (ConfigurationManager.AppSettings.Get("NPR260SendURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR260SendURL").ToString();
             NPR270QueryURL = (ConfigurationManager.AppSettings.Get("NPR270QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR270QueryURL").ToString();
+            NPR271QueryURL = (ConfigurationManager.AppSettings.Get("NPR271QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR271QueryURL").ToString();
             NPR370CheckURL = (ConfigurationManager.AppSettings.Get("NPR370CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370CheckURL").ToString();
             NPR370SaveURL = (ConfigurationManager.AppSettings.Get("NPR370SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370SaveURL").ToString();
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
@@ -259,6 +261,99 @@ namespace OtherService
                     WebAPIName = "NPR270Query",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + NPR270QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
+        #endregion
+        #region 點數歷程查詢
+        /// <summary>
+        /// 點數歷程查詢
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="SEQNO"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool NPR271Query(string IDNO, int SEQNO, ref WebAPIOutput_NPR271Query output)
+        {
+            bool flag = false;
+            WebAPIInput_NPR271Query input = new WebAPIInput_NPR271Query()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                ID = IDNO,
+                SEQNO = SEQNO
+            };
+
+            output = DoNPR271Query(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 點數歷程查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR271Query> DoNPR271Query(WebAPIInput_NPR271Query input)
+        {
+            WebAPIOutput_NPR271Query output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR270QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR271Query>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR271Query()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR271Query",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR271QueryURL
                 };
                 bool flag = true;
                 string errCode = "";
@@ -506,7 +601,7 @@ namespace OtherService
             WebAPIOutput_EinvBiz output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(EinvBizURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + EinvBizURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try

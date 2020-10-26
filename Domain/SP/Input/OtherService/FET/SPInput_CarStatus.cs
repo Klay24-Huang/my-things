@@ -33,7 +33,7 @@ namespace Domain.SP.Input.OtherService.FET
         public double deviceVolt { get; set; }
         public double deviceLatitude { get; set; }
         public double deviceLongitude { get; set; }
-        public int deviceMillage { get; set; }
+        public double deviceMillage { get; set; }
         public int extDeviceStatus1 { get; set; }
         public int extDeviceStatus2 { get; set; }
         public string extDeviceData2 { get; set; }

@@ -3,6 +3,8 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +15,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -22,6 +25,8 @@ namespace WebAPI.Controllers
     /// </summary>
     public class UploadCarImageController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 上傳出還車照
@@ -77,15 +82,22 @@ namespace WebAPI.Controllers
                 //string restoreCarImg = apiInput.CarImage;
                 //string tmpCarImg = apiInput.CarImage.Length.ToString();
                 List<CarImages> restoreCarImg = apiInput.CarImages;
-                List<CarImages> tmpCarImg = new List<CarImages> {
-                    new CarImages() {
-                    CarType=0,
-                    CarImage=apiInput.CarImages.ToArray().Length.ToString()
-                } };
+                List<CarImages> tmpCarImg = new List<CarImages>();
+                int len = apiInput.CarImages.Count;
+                for (int i = 0; i < len; i++)
+                {
+                    tmpCarImg.Add(
+                        new CarImages()
+                        {
+                            CarType = apiInput.CarImages.ToArray()[i].CarType,
+                            CarImage = apiInput.CarImages.ToArray()[i].CarImage.Length.ToString()
+                        }
+                    );
+                }
                 //20201015 暫存不需要存完整圖檔
                 apiInput.CarImages = tmpCarImg;
 
-                flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
                 apiInput.CarImages = restoreCarImg;
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
@@ -179,39 +191,115 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 //20201018 修改 by eric，以效能的方面來看，carImages.Length會變成每一次迴圈都會去取lenth，建議改為int len=carImages.Length
                 int CarImagesLen = carImages.Length;
-                for (int i = 0; i < CarImagesLen; i++)
-                {
 
-                    if (carImages[i].CarType < 1 || carImages[i].CarType > 8)
+                string SPName = new ObjType().GetSPName(ObjType.SPType.UploadCarImage);
+                //string SPName = "usp_InsTmpCarImageBatch";
+                if (SPName == "usp_InsTmpCarImageBatch")
+                {
+                    object[] objparms = new object[CarImagesLen == 0 ? 1 : CarImagesLen];
+                    if (CarImagesLen > 0)
                     {
-                        flag = false;
-                        errCode = "ERR900";
-                        break;
+                        for (int i = 0; i < CarImagesLen; i++)
+                        {
+                            objparms[i] = new
+                            {
+                                CarImageType = carImages[i].CarType,
+                                CarImage = carImages[i].CarImage
+                            };
+                        }
                     }
-                    if (string.IsNullOrEmpty(carImages[i].CarImage))
+                    else
                     {
-                        flag = false;
-                        errCode = "ERR900";
-                        break;
+                        objparms[0] = new
+                        {
+                            CarImageType = 0,
+                            CarImage = ""
+                        };
                     }
-                    SPInput_UploadCarImage spInput = new SPInput_UploadCarImage()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        Token = Access_Token,
-                        //CarImage=apiInput.CarImage,
-                        //CarImageType=Convert.ToInt16(apiInput.CarType),
-                        CarImage = carImages[i].CarImage,
-                        CarImageType = Convert.ToInt16(carImages[i].CarType),
-                        Mode = Convert.ToInt16(apiInput.Mode),
-                        OrderNo = tmpOrder
+
+                    object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            tmpOrder,
+                            Access_Token,
+                            Convert.ToInt16(apiInput.Mode),
+                            LogID
+                    },
+                        objparms
                     };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadCarImage);
-                    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag == false)
+
+                    DataSet ds1 = null;
+                    string returnMessage = "";
+                    string messageLevel = "";
+                    string messageType = "";
+
+                    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                    //logger.Trace(JsonConvert.SerializeObject(ds1));
+                    if (ds1.Tables.Count == 0)
                     {
-                        break;
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                    else
+                    {
+                        if (ds1.Tables.Count == 1)
+                        {
+                            baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                        }
+                        else
+                        {
+                            if (ds1.Tables[1].Rows.Count > 0)
+                            {
+                                for (int i = 0; i < ds1.Tables[1].Rows.Count; i++)
+                                {
+                                    CarImgDataLists.Add(new CarImageData
+                                    {
+                                        CarImageType = Convert.ToInt32(ds1.Tables[1].Rows[i]["CarImageType"]),
+                                        HasUpload = Convert.ToInt32(ds1.Tables[1].Rows[i]["HasUpload"])
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    ds1.Dispose();
+                }
+                else
+                {
+                    for (int i = 0; i < CarImagesLen; i++)
+                    {
+
+                        if (carImages[i].CarType < 1 || carImages[i].CarType > 8)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            break;
+                        }
+                        if (string.IsNullOrEmpty(carImages[i].CarImage))
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            break;
+                        }
+                        SPInput_UploadCarImage spInput = new SPInput_UploadCarImage()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            Token = Access_Token,
+                            //CarImage=apiInput.CarImage,
+                            //CarImageType=Convert.ToInt16(apiInput.CarType),
+                            CarImage = carImages[i].CarImage,
+                            CarImageType = Convert.ToInt16(carImages[i].CarType),
+                            Mode = Convert.ToInt16(apiInput.Mode),
+                            OrderNo = tmpOrder
+                        };
+                        flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                        if (flag == false)
+                        {
+                            break;
+                        }
                     }
                 }
                 if (flag)

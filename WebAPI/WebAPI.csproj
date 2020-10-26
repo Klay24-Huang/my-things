@@ -51,6 +51,9 @@
     <Reference Include="Azure.Storage.Common, Version=12.5.2.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Storage.Common.12.5.2\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ApplicationBlocks.Data">
+      <HintPath>Reference\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -61,12 +64,25 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.7.5\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="SSAPI.Local">
+      <HintPath>Reference\SSAPI.Local.dll</HintPath>
+    </Reference>
+    <Reference Include="SSAPI.Model">
+      <HintPath>Reference\SSAPI.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="SSAPI.Service">
+      <HintPath>Reference\SSAPI.Service.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.7.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -81,6 +97,8 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Channels" />
     <Reference Include="System.Text.Encodings.Web, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.4.7.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
@@ -91,6 +109,7 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -166,6 +185,7 @@
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
+    <Compile Include="Controllers\BonusHistoryQueryController.cs" />
     <Compile Include="Controllers\BonusQueryController.cs" />
     <Compile Include="Controllers\BookingCancelController.cs" />
     <Compile Include="Controllers\BookingController.cs" />
@@ -187,8 +207,10 @@
     <Compile Include="Controllers\DeleteCreditCardBindController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
+    <Compile Include="Controllers\GetMemberStatusController.cs" />
     <Compile Include="Controllers\FeedBackController.cs" />
     <Compile Include="Controllers\GetFeedBackKindDescriptController.cs" />
+    <Compile Include="Controllers\GetMotorStatusController.cs" />
     <Compile Include="Controllers\GetPayDetailController.cs" />
     <Compile Include="Controllers\GetPolygonController.cs" />
     <Compile Include="Controllers\GetAnyRentProjectController.cs" />
@@ -241,6 +263,7 @@
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
+    <Compile Include="Controllers\SetMemberDataController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\SyncMochiParkController.cs" />
@@ -293,6 +316,7 @@
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
@@ -328,6 +352,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetMotorStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
@@ -361,6 +386,7 @@
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetDefPayMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
@@ -382,6 +408,7 @@
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
     <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingFinishQuery.cs" />
@@ -402,7 +429,9 @@
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFeedBackKind.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMotorStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPayDetail.cs" />
@@ -446,10 +475,15 @@
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
     <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\ServerInfo.cs" />
+    <Compile Include="Utils\WebApiClient.cs" />
+    <Compile Include="Utils\WebApiClientBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NLog.config" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentV2-testapi-adam - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-testApp-api - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">

@@ -234,7 +234,24 @@ namespace WebAPI.Controllers
             if (false == flag && false == isWriteError)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                errMsg = errCode;
+
+                //20201020 ADD BY JERRY 增加DB錯誤寫入LOG的處理
+                if (lstError.ToArray<ErrorInfo>().Length > 0)
+                {
+                    for(int i=0;i< lstError.ToArray<ErrorInfo>().Length; i++)
+                    {
+                        ErrorInfo errorInfo = lstError.ToArray<ErrorInfo>()[i];
+                        baseVerify.InsErrorLog(funName, errorInfo.ErrorCode, ErrType, LogID, 0, 0, errorInfo.ErrorMsg);
+
+                        //20201020 ADD BY JERRY 增加錯誤訊息回傳
+                        errCode = errorInfo.ErrorCode;
+                        errMsg = errorInfo.ErrorMsg;
+                    }
+                }
             }
+
+
             #endregion
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);

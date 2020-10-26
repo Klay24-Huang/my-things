@@ -37,23 +37,23 @@ namespace WebAPI.Models.Param.Input
         public string deviceRSOC { get; set; }
         public string deviceRDistance { get; set; }
         public double deviceMBA { get; set; }
-        public int deviceMBAA { get; set; }
-        public int deviceMBAT_Hi { get; set; }
-        public int deviceMBAT_Lo { get; set; }
+        public double deviceMBAA { get; set; }
+        public double deviceMBAT_Hi { get; set; }
+        public double deviceMBAT_Lo { get; set; }
         public double deviceRBA { get; set; }
-        public int deviceRBAA { get; set; }
-        public int deviceRBAT_Hi { get; set; }
-        public int deviceRBAT_Lo { get; set; }
+        public double deviceRBAA { get; set; }
+        public double deviceRBAT_Hi { get; set; }
+        public double deviceRBAT_Lo { get; set; }
         public double deviceLBA { get; set; }
-        public int deviceLBAA { get; set; }
-        public int deviceLBAT_Hi { get; set; }
-        public int deviceLBAT_Lo { get; set; }
-        public int deviceTMP { get; set; }
-        public int deviceCur { get; set; }
-        public int deviceTPS { get; set; }
-        public int deviceiVOL { get; set; }
-        public int deviceErr { get; set; }
-        public int deviceALT { get; set; }
+        public double deviceLBAA { get; set; }
+        public double deviceLBAT_Hi { get; set; }
+        public double deviceLBAT_Lo { get; set; }
+        public double deviceTMP { get; set; }
+        public double deviceCur { get; set; }
+        public double deviceTPS { get; set; }
+        public double deviceiVOL { get; set; }
+        public double deviceErr { get; set; }
+        public double deviceALT { get; set; }
         public double deviceGx { get; set; }
         public double deviceGy { get; set; }
         public double deviceGz { get; set; }

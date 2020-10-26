@@ -161,7 +161,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
 
-                    if (spOut.car_mgt_status > 4 && spOut.car_mgt_status < 16 && spOut.cancel_status == 0)  //未完成訂單（包含未取消）
+                    if (spOut.car_mgt_status >= 4 && spOut.car_mgt_status < 16 && spOut.cancel_status == 0)  //未完成訂單（包含未取消）
                     {
 
                         FETCatAPI FetAPI = new FETCatAPI();
@@ -265,10 +265,11 @@ namespace WebAPI.Controllers
                                 method = CommandType;
                                 requestId = input.requestId;
                                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                                if (flag)
-                                {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                }
+                                //20201020 MARK BY JERRY 無連續動作，可以先不執行等待
+                                //if (flag)
+                                //{
+                                //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                //}
                             }
                         }
                       

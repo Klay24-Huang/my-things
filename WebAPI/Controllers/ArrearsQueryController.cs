@@ -175,7 +175,10 @@ namespace WebAPI.Controllers
                                     }
                                     outputApi.ArrearsInfos.Add(obj);
                                 }
-                                
+
+                                outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";                            
+                                if(outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count()>0)
+                                    outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Amount).Sum();                            
                             }
                         }
                         else
@@ -184,7 +187,6 @@ namespace WebAPI.Controllers
                             errMsg = WebAPIOutput.Message;
                             flag = false;
                         }
-
                     }
                     else
                     {

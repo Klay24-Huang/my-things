@@ -58,7 +58,6 @@ namespace WebAPI.Controllers
             int ProjType = 0;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -69,7 +68,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    string[] checkList = { apiInput.ProjID,apiInput.SDate,apiInput.EDate };
+                    string[] checkList = { apiInput.ProjID, apiInput.SDate, apiInput.EDate };
                     string[] errList = { "ERR900", "ERR900", "ERR900" };
                     //1.判斷必填
                     flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -93,12 +92,10 @@ namespace WebAPI.Controllers
                                     {
                                         if (DateTime.Now > SDate)
                                         {
-                                            flag = false;
-                                            errCode = "ERR154";
+                                            //flag = false;
+                                            //errCode = "ERR154";
                                         }
-
                                     }
-
                                 }
                                 else
                                 {
@@ -150,7 +147,6 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-                       
                     }
                 }
             }
@@ -158,30 +154,31 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
 
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
+
             if (flag)
             {
                 projectRepository = new ProjectRepository(connetStr);
                 BillCommon billCommon = new BillCommon();
                 float MilUnit = billCommon.GetMilageBase(apiInput.ProjID, apiInput.CarType, SDate, EDate, LogID);
-              
+
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-                if (QueryMode == 0 || (QueryMode==1 && ProjType==3))
+                if (QueryMode == 0 || (QueryMode == 1 && ProjType == 3))
                 {
-                    
+
                     ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
 
                     if (priceBase != null)
@@ -189,24 +186,18 @@ namespace WebAPI.Controllers
                         outputApi = new OAPI_GetEstimate()
                         {
                             CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday)),
-                            InsuranceBill = (apiInput.Insurance==1)?Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)):0,
+                            InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0,
                             InsurancePerHour = 20,
                             MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
                             MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
-
                         };
                         outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
                     }
-
                 }
                 else
                 {
                     //先不開啟汽車以分計費
-
-                    
                 }
-              
-
             }
             #endregion
 

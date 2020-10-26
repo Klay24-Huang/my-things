@@ -143,6 +143,8 @@ namespace WebAPI.Controllers
                         int TotalGiftPointMotor = 0;
                         int TotalLastPointCar = 0;
                         int TotalLastPointMotor = 0;
+                        int TotalLastTransPointCar = 0;
+                        int TotalLastTransPointMotor = 0;
 
                         for (int i = 0; i < giftLen; i++)
                         {
@@ -156,6 +158,9 @@ namespace WebAPI.Controllers
 
                                 BonusData objPoint = new BonusData()
                                 {
+                                    //20201021 ADD BY ADAM REASON.補上流水號
+                                    SEQNO = wsOutput.Data[i].SEQNO,
+
                                     PointType = (wsOutput.Data[i].GIFTTYPE == "01") ? 0 : 1,
                                     EDATE = (wsOutput.Data[i].EDATE == "") ? "" : (wsOutput.Data[i].EDATE.Split(' ')[0]).Replace("/", "-"),
                                     GIFTNAME = wsOutput.Data[i].GIFTNAME,
@@ -172,6 +177,8 @@ namespace WebAPI.Controllers
                                     }
                                     TotalGiftPointCar += int.Parse(objPoint.GIFTPOINT);
                                     TotalLastPointCar += int.Parse(objPoint.LASTPOINT);
+                                    //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
+                                    TotalLastTransPointCar += (objPoint.AllowSend == 1 ? int.Parse(objPoint.LASTPOINT) : 0);
                                 }
                                 else if (objPoint.PointType == 1)
                                 {
@@ -181,6 +188,8 @@ namespace WebAPI.Controllers
                                     }
                                     TotalGiftPointMotor += int.Parse(objPoint.GIFTPOINT);
                                     TotalLastPointMotor += int.Parse(objPoint.LASTPOINT);
+                                    //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
+                                    TotalLastTransPointMotor += (objPoint.AllowSend == 1 ? int.Parse(objPoint.LASTPOINT) : 0);
                                 }
                                 //objBonus.BonusObj.Add(objPoint);
                                 outputApi.BonusObj.Add(objPoint);
@@ -199,6 +208,9 @@ namespace WebAPI.Controllers
                         outputApi.TotalCarLASTPOINT = TotalLastPointCar;
                         outputApi.TotalMotorGIFTPOINT = TotalGiftPointMotor;
                         outputApi.TotalMotorLASTPOINT = TotalLastPointMotor;
+                        //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
+                        outputApi.TotalCarTransLASTPOINT = TotalLastTransPointCar;
+                        outputApi.TotalMotorTransLASTPOINT = TotalLastTransPointMotor;
                         //outputApi.Add(objBonus);
                         //outputApi.BonusObj.Add(objBonus.BonusObj[]);
                     }

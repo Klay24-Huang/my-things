@@ -10,8 +10,9 @@ namespace Domain.MemberData
         public string MEMIDNO { set; get; }
         /// <summary>
         /// 密碼
+        /// 20201024 ADD BY ADAM 密碼不該出現在這裡
         /// </summary>
-        public string MEMPWD { set; get; }
+        //public string MEMPWD { set; get; }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -124,5 +125,13 @@ namespace Domain.MemberData
         /// 法定代理人
         /// </summary>
         public int F01_pic { get; set; }
+        /// <summary>
+        /// 電子簽名
+        /// </summary>
+        public int Signture_pic { get; set; }
+        /// <summary>
+        /// 電子簽名BASE64編碼
+        /// </summary>
+        public string SigntureCode { get; set; }
     }
 }

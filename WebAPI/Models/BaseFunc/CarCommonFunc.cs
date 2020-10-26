@@ -518,23 +518,23 @@ namespace WebAPI.Models.BaseFunc
                         string requestId = "";
                         string CommandType = "";
                         OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        {
-                            command = true,
-                            method = CommandType,
-                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            _params = new Params()
+                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        //{
+                        //    command = true,
+                        //    method = CommandType,
+                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        //    _params = new Params()
 
-                        };
-                        requestId = input.requestId;
+                        //};
+                        //requestId = input.requestId;
                         string method = CommandType;
-                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        if (flag)
-                        {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
+                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -605,6 +605,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = ClearInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                                     if (flag)
                                     {
@@ -669,6 +670,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = SetNoRentInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -689,6 +691,7 @@ namespace WebAPI.Models.BaseFunc
 
                                     };
                                     requestId = SetNoRentInput.requestId;
+                                    method = CommandType;
                                     flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                     if (flag)
                                     {
@@ -709,23 +712,23 @@ namespace WebAPI.Models.BaseFunc
                     string requestId = "";
                     string CommandType = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
+                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    //{
+                    //    command = true,
+                    //    method = CommandType,
+                    //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //    _params = new Params()
 
-                    };
-                    requestId = input.requestId;
+                    //};
+                    //requestId = input.requestId;
                     string method = CommandType;
-                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    if (flag)
-                    {
-                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    }
+                    //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                    //if (flag)
+                    //{
+                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //}
 
                     if (flag)
                     {
@@ -789,7 +792,8 @@ namespace WebAPI.Models.BaseFunc
                                 _params = new Params()
 
                             };
-                            requestId = input.requestId;
+                            requestId = SetNoRentInput.requestId;
+                            method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
                             {
@@ -809,7 +813,8 @@ namespace WebAPI.Models.BaseFunc
                                 _params = new Params()
 
                             };
-                            requestId = input.requestId;
+                            requestId = SetNoRentInput.requestId;
+                            method = CommandType;
                             flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                             if (flag)
                             {
@@ -939,6 +944,7 @@ namespace WebAPI.Models.BaseFunc
 
                 };
                 requestId = ClearInput.requestId;
+                method = CommandType;
                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                 if (flag)
                 {
@@ -983,6 +989,7 @@ namespace WebAPI.Models.BaseFunc
 
                 };
                 requestId = ClearInput.requestId;
+                method = CommandType;
                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
                 if (flag)
                 {

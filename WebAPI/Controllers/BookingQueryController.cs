@@ -4,6 +4,7 @@ using Domain.SP.Input.OrderList;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -45,41 +46,63 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_BookingQuery apiInput = null;
             OAPI_BookingQuery outputApi = null;
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            Int64 tmpOrder = -1;
+            bool HasInput = false;
             #endregion
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
+            if (value != null)
+                HasInput = true;
+
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, HasInput);
 
             if (flag)
             {
+                apiInput = JsonConvert.DeserializeObject<IAPI_BookingQuery>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Access_Token, ClientIP, funName, ref errCode, ref LogID);
             }
-            //不開放訪客
+
             if (flag)
             {
-                if (isGuest)
+                if (apiInput != null)
                 {
-                    flag = false;
-                    errCode = "ERR101";
+                    if (!string.IsNullOrWhiteSpace(apiInput.OrderNo))
+                    {
+                        if (apiInput.OrderNo.IndexOf("H") < 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                        }
+                        if (flag)
+                        {
+                            flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                            if (flag)
+                            {
+                                if (tmpOrder <= 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR900";
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
-            else
+
+            //不開放訪客
+            if (isGuest)
             {
-                if (isGuest)
-                {
-                    flag = false;
-                    errCode = "ERR101";
-                }
+                flag = false;
+                errCode = "ERR101";
             }
             #endregion
 
@@ -110,7 +133,8 @@ namespace WebAPI.Controllers
                 {
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    OrderNo = tmpOrder
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderList);
                 SPOutput_Base spOut = new SPOutput_Base();
@@ -122,7 +146,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     BillCommon billCommon = new BillCommon();
-                   
+
                     int DataLen = OrderDataLists.Count;
                     if (DataLen > 0)
                     {
@@ -174,7 +198,7 @@ namespace WebAPI.Controllers
                             };
                             obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
 
-                            if (obj.ProjType == 4)
+                            if (obj.ProjType == 4)  //機車
                             {
                                 obj.MotorBasePriceObj = new Domain.TB.MotorBillBase()
                                 {
@@ -186,10 +210,10 @@ namespace WebAPI.Controllers
                                 obj.MotorPowerBaseObj = new Domain.TB.MotorPowerInfoBase()
                                 {
                                     Power = OrderDataLists[i].device3TBA,
-                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "N") ? -1 : Convert.ToSingle(OrderDataLists[i].RemainingMilage)
+                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToSingle(OrderDataLists[i].RemainingMilage)
                                 };
                             }
-                            
+
                             obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;
                             obj.OrderStatus = GetOrderStatus(OrderDataLists[i].car_mgt_status, OrderDataLists[i].booking_status, OrderDataLists[i].already_lend_car, OrderDataLists[i].IsReturnCar, Convert.ToDateTime(obj.StopTime));
                             outputApi.OrderObj.Add(obj);
@@ -211,6 +235,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        #region 取得訂單狀態
         private int GetOrderStatus(int car_mgt_status,int booking_status,int already_lend_car,int isReturn,DateTime? stop_time)
         {
             int OrderStatus = 0;
@@ -258,5 +284,6 @@ namespace WebAPI.Controllers
         
             return OrderStatus;
         }
+        #endregion
     }
 }

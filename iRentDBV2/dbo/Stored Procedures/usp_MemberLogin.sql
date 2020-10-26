@@ -105,17 +105,39 @@ SET @DeviceID   =ISNULL(@DeviceID,'');
 		--3.回傳基本資料
 		IF @Error=0
 		BEGIN
-			SELECT [MEMIDNO],[MEMPWD],[MEMCNAME],[MEMTEL],ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
-				,[MEMCITY] AS MEMAREAID,[MEMADDR],[MEMEMAIL],[CARDNO],[UNIMNO]
-				,[MEMSENDCD],[CARRIERID],[NPOBAN],[HasCheckMobile],[NeedChangePWD]
-				,[HasBindSocial],[IrFlag],[PayMode],[HasVaildEMail],[Audit],[RentType]
-				,Case When [ID_1]=1 And [ID_2] =1 Then 1 Else 0 End ID_pic
-				,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then 1 Else 0 End DD_pic
-				,Case When [MotorDriver_1]=1 And [MotorDriver_1]=1 Then 1 Else 0 End MOTOR_pic
-				,ISNULL([Self_1],0) As AA_pic, ISNULL([Law_Agent],0) As F01_pic
-			FROM TB_MemberData
-			Left Join [TB_Credentials] on [TB_Credentials].IDNO=TB_MemberData.MEMIDNO
-			WHERE MEMIDNO=@MEMIDNO AND MEMPWD=@PWD;
+
+			SELECT   [MEMIDNO]
+					--,[MEMPWD]	--20201024 ADD BY ADAM REASON.安全考量移除
+					,[MEMCNAME]
+					,[MEMTEL]
+					,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
+					,[MEMCITY] AS MEMAREAID
+					,[MEMADDR]
+					,[MEMEMAIL]
+					,[CARDNO]
+					,[UNIMNO]
+					,[MEMSENDCD]
+					,[CARRIERID]
+					,[NPOBAN]
+					,[HasCheckMobile]
+					,[NeedChangePWD]
+					,[HasBindSocial]
+					,[IrFlag]
+					,[PayMode]
+					,[HasVaildEMail]
+					,[Audit]
+					,[RentType]
+					,Case When [ID_1]=1 And [ID_2] =1 Then B.ID_1 Else 0 End ID_pic
+					,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then B.CarDriver_1 Else 0 End DD_pic
+					,Case When [MotorDriver_1]=1 And [MotorDriver_2]=1 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,ISNULL([Self_1],0) As AA_pic 
+					,ISNULL([Law_Agent],0) As F01_pic
+					,ISNULL([Signture],0) AS Signture_pic
+					,ISNULL(CrentialsFile,'') AS SigntureCode
+			FROM TB_MemberData A WITH(NOLOCK)
+			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+			WHERE A.MEMIDNO=@MEMIDNO AND  MEMPWD=@PWD;
 		END
 		--寫入錯誤訊息
 		IF @Error=1

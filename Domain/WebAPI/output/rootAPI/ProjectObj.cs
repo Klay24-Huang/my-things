@@ -90,5 +90,9 @@ namespace Domain.WebAPI.output.rootAPI
         /// 其他備註
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 是否可租 Y/N
+        /// </summary>
+        public string IsRent { get; set; }
     }
 }

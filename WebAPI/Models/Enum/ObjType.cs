@@ -82,6 +82,10 @@ namespace WebAPI.Models.Enum
             /// 設定預設支付方式
             /// </summary>
             SetDefPayMode,
+            /// <summary>
+            /// 修改會員資料
+            /// </summary>
+            SetMemberData,
             #endregion
             /// <summary>
             /// Token Check
@@ -233,11 +237,25 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMemberInfo,
             /// <summary>
+            /// 同站以據點取出車型
+            /// </summary>
+            GetStationCarType,
+            /// <summary>
             /// 取得多據點專案
             /// </summary>
             GetStationCarTypeOfMutiStation,
-
-            
+            /// <summary>
+            /// 取得會員登入後狀態 20201016 ADD BY ADAM 
+            /// </summary>
+            GetMemberStatus,
+            /// <summary>
+            /// 取得會員資料 20201022 ADD BY ADAM
+            /// </summary>
+            GetMemberData,
+            /// <summary>
+            /// 取得車輛狀態
+            /// </summary>
+            GetMotorStatus,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -397,7 +415,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_RegisterMemberData";
                     break;
                 case SPType.UploadCredentials: //上傳證件照
-                    SPName = "usp_UploadCredentials";
+                    //SPName = "usp_UploadCredentials";
+                    SPName = "usp_UploadCredentialsNew";
                     break;
                 case SPType.ReSendEmail: //重發EMail
                     SPName = "usp_ReSendEmail";
@@ -410,6 +429,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetDefPayMode:
                     SPName = "usp_SetDefPayMode";
+                    break;
+                case SPType.SetMemberData:  //修改會員資料
+                    SPName = "usp_SetMemberData";
                     break;
                 #endregion
                 case SPType.CheckToken: //Check Token
@@ -485,16 +507,19 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_SettingInvoice";
                     break;
                 case SPType.UploadCarImage:
-                    SPName = "usp_InsTmpCarImage";
+                    //SPName = "usp_InsTmpCarImage";
+                    SPName = "usp_InsTmpCarImageBatch";
                     break;
                 case SPType.UploadFeedBackImage:
-                    SPName = "usp_INSTmpFeedBackPIC";
+                    //SPName = "usp_INSTmpFeedBackPIC";
+                    SPName = "usp_INSTmpFeedBackPICNew";
                     break;
                 case SPType.InsFeedBack:
                     SPName = "usp_InsFeedBack";
                     break;
                 case SPType.SettingParkingSpce:
-                    SPName = "usp_InsParkingSpace";
+                    //SPName = "usp_InsParkingSpace";
+                    SPName = "usp_InsParkingSpaceNew";
                     break;
                 case SPType.GetOrderStatusByOrderNo:
                     SPName = "usp_GetOrderStatusByOrderNo";
@@ -527,8 +552,20 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMemberInfo:
                     SPName = "usp_GetMemberInfo";
                     break;
+                case SPType.GetStationCarType:
+                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";
+                    break;
+                case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
+                    SPName = "usp_GetMemberStatus";
+                    break;
+                case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
+                    SPName = "usp_GetMemberData";
+                    break;
+                case SPType.GetMotorStatus:     //取得車輛狀態
+                    SPName = "usp_GetMotorStatus";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

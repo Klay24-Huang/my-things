@@ -10,7 +10,6 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -55,7 +54,6 @@ namespace WebAPI.Controllers
             int QueryMode = 0;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -66,7 +64,6 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                   
                     //判斷日期
                     if (flag)
                     {
@@ -87,12 +84,10 @@ namespace WebAPI.Controllers
                                     {
                                         if (DateTime.Now > SDate)
                                         {
-                                            flag = false;
-                                            errCode = "ERR154";
+                                            //flag = false;
+                                            //errCode = "ERR154";
                                         }
-
                                     }
-
                                 }
                                 else
                                 {
@@ -111,20 +106,20 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
 
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
@@ -137,7 +132,7 @@ namespace WebAPI.Controllers
                     {
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
-                        {                           
+                        {
                             int isMin = 1;
                             lstTmpData.Add(new MotorProjectObj()
                             {
@@ -152,10 +147,10 @@ namespace WebAPI.Controllers
                                 OperatorScore = lstData[0].OperatorScore,
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
-                                BaseMinutes=lstData[0].BaseMinutes,
-                                BasePrice=lstData[0].BasePrice,
-                                MaxPrice=lstData[0].MaxPrice,
-                                PerMinutesPrice=lstData[0].PerMinutesPrice,
+                                BaseMinutes = lstData[0].BaseMinutes,
+                                BasePrice = lstData[0].BasePrice,
+                                MaxPrice = lstData[0].MaxPrice,
+                                PerMinutesPrice = lstData[0].PerMinutesPrice,
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
                                 Power = lstData[0].Power,
@@ -164,7 +159,7 @@ namespace WebAPI.Controllers
                             if (DataLen > 1)
                             {
                                 for (int i = 1; i < DataLen; i++)
-                                {                                   
+                                {
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (MotorProjectObj proj)
                                     {

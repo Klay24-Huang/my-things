@@ -245,6 +245,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_Handle_CarSetting.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleCarDataSettingMemo.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CarDataSettingSetOnline.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMemberStatus.sql" />
     <Build Include="dbo\Views\VW_BE_GetPartOfCarDataSetting.sql" />
     <Build Include="dbo\Tables\TB_Mobile.sql" />
     <Build Include="dbo\Views\VW_GetCarDetail.sql" />
@@ -264,6 +265,7 @@
     <Build Include="dbo\Tables\TB_tmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_INSTmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsFeedBack.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ImportCarBindData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleCarBindData.sql" />
     <Build Include="dbo\Tables\TB_MasterCard.sql" />
@@ -275,14 +277,18 @@
     <Build Include="dbo\Views\VW_BE_GetCarRawData.sql" />
     <Build Include="dbo\Views\VW_BE_GetFETSetCardLog.sql" />
     <Build Include="dbo\Tables\TB_CardSettingLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMemberData.sql" />
+    <Build Include="dbo\Tables\TB_tmpFeedBack.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleExtendCar.sql" />
     <Build Include="dbo\Views\VW_BE_GetOrderQueryForWeb.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_BookingCancel.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ChangeCar.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMotorStatus.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CheckOperator.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsOperator.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_UPDOperator.sql" />
     <Build Include="dbo\Tables\TB_SPECLock.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetStationCarType.sql" />
     <Build Include="dbo\Views\VW_BE_GetSameMobile.sql" />
     <Build Include="dbo\Tables\TB_AuditHistory.sql" />
   </ItemGroup>

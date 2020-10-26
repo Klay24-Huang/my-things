@@ -61,6 +61,8 @@ DECLARE @hasData TINYINT;
 DECLARE @LogID   BIGINT;
 DECLARE @CID	VARCHAR(10);
 DECLARE @deviceToken	VARCHAR(512);
+DECLARE @extDeviceData5 VARCHAR(128);
+DECLARE @extDeviceData6 VARCHAR(256);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -77,6 +79,8 @@ SET @requestId    =ISNULL (@requestId    ,'');
 SET @method       =ISNULL (@method,'');
 SET @CID		 ='';
 SET @deviceToken ='';
+SET @extDeviceData5 = '';
+SET @extDeviceData6 = '';
 SET @receiveRawData	 =ISNULL(@receiveRawData	,'');
 SET @CmdReply	 =ISNULL(@CmdReply	,'');
 SET @LogID=0;
@@ -92,6 +96,24 @@ SET @LogID=0;
 		 BEGIN
 		    SELECT @deviceToken=deviceToken,@CID=CID FROM TB_SendFETCatCMD WITH(NOLOCK) WHERE requestId=@requestId;
 			INSERT INTO TB_ReceiveFETCatCMD(requestId,method,CmdReply,receiveRawData,CID,deviceToken)VALUES(@requestId,@method,@CmdReply,@receiveRawData,@CID,@deviceToken);
+
+			--method=[SetMotorcycleRent]，需更新[TB_CarStatus]的[extDeviceData5],[extDeviceData6]
+			IF @method = 'SetMotorcycleRent'
+			BEGIN
+				BEGIN TRY
+				SELECT @extDeviceData5 = extDeviceData5, @extDeviceData6 = extDeviceData6
+				FROM OPENJSON(@receiveRawData)
+				  WITH (
+					extDeviceData5 VARCHAR(128) '$.extDeviceData5',
+					extDeviceData6 VARCHAR(256) '$.extDeviceData6'
+				);
+				END TRY
+				BEGIN CATCH
+				END CATCH
+				UPDATE TB_CarStatus
+				SET extDeviceData5 = @extDeviceData5, extDeviceData6 = @extDeviceData6
+				WHERE CID = @CID
+			END
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

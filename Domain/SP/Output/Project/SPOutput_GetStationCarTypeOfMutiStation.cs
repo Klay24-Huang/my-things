@@ -79,5 +79,9 @@ namespace Domain.SP.Output.Project
         /// 站別類型
         /// </summary>
         public string CarOfArea { get; set; }
+        /// <summary>
+        /// 是否可租 Y/N
+        /// </summary>
+        public string IsRent { get; set; }
     }
 }
