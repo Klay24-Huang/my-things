@@ -287,6 +287,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_CheckOperator.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsOperator.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_UPDOperator.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetStationCarType.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
