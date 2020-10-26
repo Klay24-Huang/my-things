@@ -222,6 +222,7 @@
     <Compile Include="TB\CarCMDResponse.cs" />
     <Compile Include="TB\CarData.cs" />
     <Compile Include="TB\CarInfo.cs" />
+    <Compile Include="TB\CarPIC.cs" />
     <Compile Include="TB\CarTypeData.cs" />
     <Compile Include="TB\CityData.cs" />
     <Compile Include="TB\ErrorMessageList.cs" />

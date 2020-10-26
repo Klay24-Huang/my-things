@@ -4,6 +4,7 @@ using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Wallet;
+using Domain.TB;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
@@ -11,6 +12,7 @@ using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
 using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -339,6 +341,35 @@ namespace WebAPI.Controllers
                         }
                     }
                     #endregion
+                  
+                        #region 寫還車照片到azure
+                        if (flag)
+                        {
+
+                            OtherRepository otherRepository = new OtherRepository(connetStr);
+                            List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 1);
+                            int PICLen = lstCarPIC.Count;
+                            for (int i = 0; i < PICLen; i++)
+                            {
+                                try
+                                {
+                                    string FileName = string.Format("{0}_{1}_{2}", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+                                    flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                                    if (flag)
+                                    {
+                                        bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 1, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    flag = true; //先bypass，之後補傳再刪
+                                }
+                            }
+
+                        }
+                        #endregion
+                    
                 }
                 #endregion
             }
