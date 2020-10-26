@@ -48,7 +48,8 @@ BEGIN
 					a.PAYMENTTYPE AS ArrearsKind, --欠費種類 1:租金,2:罰單,3:停車費,4:ETAG
 					a.RNTDATE AS EndDate, --實際還車時間
 					a.GIVEDATE AS StartDate, --實際取車時間
-					ISNULL(a.IRENTORDNO, '-') AS OrderNo, --iRent合約編號
+					OrderNo = CASE WHEN a.IRENTORDNO IS NULL OR a.IRENTORDNO = '' THEN '-'
+					          ELSE 'H' + RIGHT(REPLICATE('0', 7) + CAST(a.IRENTORDNO as NVARCHAR), 7) END,
 					a.CNTRNO AS ShortOrderNo, --短租合約編號
 					StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WHERE s.StationID = a.INBRNHCD),'-'), --取車據點
 					CarType = ISNULL(( --車型代碼
@@ -88,3 +89,6 @@ BEGIN
 	SELECT @ErrorCode[ErrorCode], @ErrorMsg[ErrorMsg], @SQLExceptionCode[SQLExceptionCode], @SQLExceptionMsg[SQLExceptionMsg], @Error[Error]
 
 END
+GO
+
+
