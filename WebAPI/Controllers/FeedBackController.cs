@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
                             flag = new AzureStorageHandle().UploadFileToAzureStorage(lstFeedBackPIC[i].FeedBackFile, FileName, "feedbackpic");
                             if (flag)
                             {
-                                bool DelFlag=otherRepository.HandleTempBackPIC(lstFeedBackPIC[i].FeedBackPICID);
+                                bool DelFlag=otherRepository.HandleTempBackPIC(lstFeedBackPIC[i].FeedBackPICID,FileName); //更新為azure的檔名
                             }
                         }catch(Exception ex)
                         {

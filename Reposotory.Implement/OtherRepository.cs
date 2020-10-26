@@ -105,12 +105,12 @@ namespace Reposotory.Implement
 
             return lstFeedBackPic;
         }
-        public bool HandleTempBackPIC(Int64 FeedBackPICID)
+        public bool HandleTempBackPIC(Int64 FeedBackPICID,string FileName)
         {
             bool flag = true;
             string SQL = "";
        
-            SQL = "DELETE FROM TB_tmpFeedBackPIC WHERE tmpFeedBackPICID ="+ FeedBackPICID + ";";
+            SQL = "UPDATE TB_tmpFeedBackPIC SET FeedBackFile='"+FileName+"' WHERE tmpFeedBackPICID =" + FeedBackPICID + ";";
             ExecNonResponse(ref flag, SQL);
             return flag;
         }

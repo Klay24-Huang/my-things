@@ -66,6 +66,10 @@ DECLARE @NowTime DATETIME;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
+DECLARE @PIC1 NVARCHAR(100);
+DECLARE @PIC2 NVARCHAR(100);
+DECLARE @PIC3 NVARCHAR(100);
+DECLARE @PIC4 NVARCHAR(100);
 
 /*初始設定*/
 SET @Error=0;
@@ -88,6 +92,10 @@ SET @Token    =ISNULL (@Token    ,'');
 SET @Descript=ISNULL(@Descript,'');
 SET @Mode=ISNULL(@Mode,-1);
 SET @Star=ISNULL(@Star,-1);
+SET @PIC1='';
+SET @PIC2='';
+SET @PIC3='';
+SET @PIC4='';
 
 		BEGIN TRY
 
@@ -152,8 +160,14 @@ SET @Star=ISNULL(@Star,-1);
 		 END
 		 IF @Error=0
 		 BEGIN
-
-				INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,'','','','');
+				IF @Mode=0
+				BEGIN
+					  SELECT  @PIC1=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=1 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+					  SELECT  @PIC2=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=2 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+					  SELECT  @PIC3=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=3 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+					  SELECT  @PIC4=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=4 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+				END
+				INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
 
 		 END
 		--寫入錯誤訊息

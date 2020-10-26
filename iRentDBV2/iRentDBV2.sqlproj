@@ -292,7 +292,6 @@
     <Build Include="dbo\Stored Procedures\usp_GetStationCarType.sql" />
     <Build Include="dbo\Views\VW_BE_GetSameMobile.sql" />
     <Build Include="dbo\Tables\TB_AuditHistory.sql" />
-    <Build Include="dbo\Stored Procedures\usp_INSTmpFeedBackPICNew_1.sql" />
     <Build Include="dbo\Stored Procedures\usp_ArrearsQuery_U1.sql" />
     <Build Include="dbo\Stored Procedures\usp_UploadCredentialsNew.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsParkingSpaceNew.sql" />
