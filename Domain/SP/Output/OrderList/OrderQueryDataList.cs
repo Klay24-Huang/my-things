@@ -33,6 +33,10 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string Content { set; get; }
 
+        public string StationPic1 { set; get; }
+        public string StationPic2 { set; get; }
+        public string StationPic3 { set; get; }
+        public string StationPic4 { set; get; }
         #region 營運商相關              
         /// <summary>
         /// 營運商名稱
@@ -206,6 +210,17 @@ namespace Domain.SP.Output.OrderList
         /// 前車是否已還車
         /// </summary>
         public int IsReturnCar { set; get; }
+        /// <summary> 20201026 ADD BY ADAM
+        /// 1:尚未到取車時間(取車時間半小時前)
+        /// 2:立即換車(取車前半小時，前車尚未完成還車)
+        /// 3:開始使用(取車時間半小時前)
+        /// 4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)
+        /// 5:操作車輛(取車後) 取車時間改實際取車時間
+        /// 6:操作車輛(準備還車)-
+        /// 7:物品遺漏(再開一次車門)
+        /// 8:鎖門並還車(一次性開門申請後)
+        /// </summary>
+        public int AppStatus { set; get; }
         #endregion
     }
 }

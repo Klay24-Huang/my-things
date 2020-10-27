@@ -57,8 +57,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion, apiInput.MEMADDR, apiInput.MEMEMAIL, apiInput.Signture };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion, apiInput.MEMADDR, apiInput.Signture };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
@@ -129,9 +129,8 @@ namespace WebAPI.Controllers
                     MEMBIRTH = Birth,
                     MEMCITY = apiInput.AreaID,
                     MEMADDR = apiInput.MEMADDR,
-                    MEMEMAIL = apiInput.MEMEMAIL,
                     Signture = apiInput.Signture,
-                    MEMTEL = apiInput.MEMTEL,
+                    MEMHTEL = apiInput.MEMHTEL,
                     MEMCOMTEL = apiInput.MEMCOMTEL,
                     MEMCONTRACT = apiInput.MEMCONTRACT,
                     MEMCONTEL = apiInput.MEMCONTEL,

@@ -38,14 +38,9 @@ namespace Domain.SP.Input.Member
         public string MEMADDR { get; set; }
 
         /// <summary>
-        /// EMAIL
+        /// 連絡電話(住家)
         /// </summary>
-        public string MEMEMAIL { get; set; }
-
-        /// <summary>
-        /// 聯絡電話(手機)
-        /// </summary>
-        public string MEMTEL { get; set; }
+        public string MEMHTEL { get; set; }
 
         /// <summary>
         /// 公司電話

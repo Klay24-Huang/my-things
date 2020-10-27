@@ -22,9 +22,13 @@ namespace Domain.MemberData
         /// </summary>
         public string MEMTEL { set; get; }
         /// <summary>
+        /// 連絡電話(住家)
+        /// </summary>
+        public string MEMHTEL { get; set; }
+        /// <summary>
         /// 生日
         /// </summary>
-        public DateTime MEMBIRTH { set; get; }
+        public string MEMBIRTH { set; get; }
 
         /// <summary>
         /// 城市
@@ -38,6 +42,25 @@ namespace Domain.MemberData
         /// 信箱
         /// </summary>
         public string MEMEMAIL { set; get; }
+        /// <summary>
+        /// 公司電話
+        /// </summary>
+        public string MEMCOMTEL { get; set; }
+
+        /// <summary>
+        /// 緊急連絡人
+        /// </summary>
+        public string MEMCONTRACT { get; set; }
+
+        /// <summary>
+        /// 緊急連絡人電話(手機)
+        /// </summary>
+        public string MEMCONTEL { get; set; }
+
+        /// <summary>
+        /// 活動及優惠訊息通知 (Y:是 N:否)
+        /// </summary>
+        public string MEMMSG { get; set; }
         /// <summary>
         /// 卡號
         /// </summary>
