@@ -74,95 +74,100 @@ SET @hasData=0;
 
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
-	BEGIN TRY
-        IF @Token='' OR @IDNO=''
+BEGIN TRY
+	IF @Token='' OR @IDNO=''
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+		        
+    --0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+		IF @hasData=0
 		BEGIN
 			SET @Error=1;
-			SET @ErrorCode='ERR900'
+			SET @ErrorCode='ERR101';
 		END
-		        
-        --0.再次檢核token
-		IF @Error=0
+		ELSE
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
 		END
+	END
 
-		--1.取得資料
-		IF @Error=0
-		BEGIN
-			SELECT   [MEMIDNO]
-					--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
-					,[MEMCNAME]
-					,[MEMTEL]
-					,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
-					,[MEMCITY] AS MEMAREAID
-					,[MEMADDR]
-					,[MEMEMAIL]
-					,[CARDNO]
-					,[UNIMNO]
-					,[MEMSENDCD]
-					,[CARRIERID]
-					,[NPOBAN]
-					,[HasCheckMobile]
-					,[NeedChangePWD]
-					,[HasBindSocial]
-					,[IrFlag]
-					,[PayMode]
-					,[HasVaildEMail]
-					,[Audit]
-					,[RentType]
-					,Case When [ID_1]=1 And [ID_2] =1 Then B.ID_1 Else 0 End ID_pic
-					,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then B.CarDriver_1 Else 0 End DD_pic
-					,Case When [MotorDriver_1]=1 And [MotorDriver_2]=1 Then B.MotorDriver_1 Else 0 End MOTOR_pic
-					,ISNULL([Self_1],0) As AA_pic 
-					,ISNULL([Law_Agent],0) As F01_pic
-					,ISNULL([Signture],0) AS Signture_pic
-					,ISNULL(CrentialsFile,'') AS SigntureCode
-			FROM TB_MemberData A WITH(NOLOCK)
-			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
-			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
-			WHERE A.MEMIDNO=@IDNO
-
-		END
+	--1.取得資料
+	IF @Error=0
+	BEGIN
+		SELECT   [MEMIDNO]
+				--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
+				,[MEMCNAME]
+				,[MEMTEL]
+				,[MEMHTEL]
+				,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
+				--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
+				,[MEMCITY] AS MEMAREAID
+				,[MEMADDR]
+				,[MEMEMAIL]
+				,[MEMCOMTEL]
+				,[MEMCONTRACT]
+				,[MEMCONTEL]
+				,[MEMMSG]
+				,[CARDNO]
+				,[UNIMNO]
+				,[MEMSENDCD]
+				,[CARRIERID]
+				,[NPOBAN]
+				,[HasCheckMobile]
+				,[NeedChangePWD]
+				,[HasBindSocial]
+				,[IrFlag]
+				,[PayMode]
+				,[HasVaildEMail]
+				,[Audit]
+				,[RentType]
+				,Case When [ID_1]>0 And [ID_2]>0 Then B.ID_1 Else 0 End ID_pic
+				,Case When [CarDriver_1]>0 And [CarDriver_2]>0 Then B.CarDriver_1 Else 0 End DD_pic
+				,Case When [MotorDriver_1]>0 And [MotorDriver_2]>0 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+				,ISNULL([Self_1],0) As AA_pic 
+				,ISNULL([Law_Agent],0) As F01_pic
+				,ISNULL([Signture],0) AS Signture_pic
+				,ISNULL(CrentialsFile,'') AS SigntureCode
+		FROM TB_MemberData A WITH(NOLOCK)
+		Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+		LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+		WHERE A.MEMIDNO=@IDNO
+	END
 		
-		--寫入錯誤訊息
-		IF @Error=1
-		BEGIN
-			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END
-	END TRY
-	BEGIN CATCH
-		SET @Error=-1;
-		SET @ErrorCode='ERR999';
-		SET @ErrorMsg='我要寫錯誤訊息';
-		SET @SQLExceptionCode=ERROR_NUMBER();
-		SET @SQLExceptionMsg=ERROR_MESSAGE();
-		IF @@TRANCOUNT > 0
-		BEGIN
-			print 'rolling back transaction' /* <- this is never printed */
-			ROLLBACK TRAN
-		END
-		SET @IsSystem=1;
-		SET @ErrorType=4;
-			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberData';

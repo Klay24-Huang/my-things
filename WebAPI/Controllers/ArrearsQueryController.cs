@@ -17,6 +17,11 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using System.Data;
+using WebAPI.Utils;
+using Domain.SP.Output;
+using System.CodeDom;
+
 namespace WebAPI.Controllers
 {
     /// <summary>
@@ -144,41 +149,25 @@ namespace WebAPI.Controllers
                            if (DataLen > 0)
                             {
                                 outputApi = new OAPI_ArrearsQuery();
-                                outputApi.ArrearsInfos = new List<ArrearsQueryDetail>();
-                                for(int i = 0; i < DataLen; i++)
-                                {
-                                    ArrearsQueryDetail obj = new ArrearsQueryDetail()
-                                    {
-                                        Amount = Convert.ToInt32(WebAPIOutput.Data[i].TAMT),
-                                        ArrearsKind = WebAPIOutput.Data[i].PAYMENTTYPE.ToString(),
-                                        EndDate = WebAPIOutput.Data[i].RNTDATE,
-                                        StartDate = WebAPIOutput.Data[i].GIVEDATE,
-                                        OrderNo = (string.IsNullOrEmpty(WebAPIOutput.Data[i].IRENTORDNO)) ? "-" : WebAPIOutput.Data[i].IRENTORDNO,
-                                        ShortOrderNo = WebAPIOutput.Data[i].CNTRNO
-                                       
-                                    };
-                                    if (hasData)
-                                    {
-                                        int Index = lstStation.FindIndex(delegate (iRentStationBaseInfo station)
-                                          {
-                                              return WebAPIOutput.Data[i].INBRNHCD == station.StationID;
-  
-                                          });
-                                        if (Index > -1)
-                                        {
-                                            obj.StationName = lstStation[Index].StationName;
-                                        }
-                                        else
-                                        {
-                                            obj.StationName = "-";
-                                        }
-                                    }
-                                    outputApi.ArrearsInfos.Add(obj);
-                                }
+                                var spTb_input = WebAPIOutput.Data;
+                                string sp_ArrearsQuery_Err = "";//sp呼叫錯誤回傳
+                                var sp_result = sp_ArrearsQuery(spTb_input, LogID, ref sp_ArrearsQuery_Err);
 
-                                outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";                            
-                                if(outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count()>0)
-                                    outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Amount).Sum();                            
+                                if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
+                                {
+                                    outputApi.ArrearsInfos = sp_result;
+                                    string OrderNo = outputApi.ArrearsInfos.Where(x => !string.IsNullOrWhiteSpace(x.OrderNo)).Select(y => y.OrderNo).FirstOrDefault();
+                                    outputApi.TradeOrderNo = OrderNo ?? "";
+
+                                    if (outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count() > 0)
+                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Amount).Sum();
+                                }
+                                else
+                                {
+                                    errCode = "ERR";
+                                    errMsg = sp_ArrearsQuery_Err;
+                                    flag = false;
+                                }                          
                             }
                         }
                         else
@@ -202,6 +191,9 @@ namespace WebAPI.Controllers
 
             }
 
+            outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";
+            outputApi.ArrearsInfos = outputApi.ArrearsInfos ?? new List<ArrearsQueryDetail>();
+
             #endregion
             #region 寫入金流資料表及欠費資料表
             #endregion
@@ -216,5 +208,98 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        private List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, Int64 LogID,ref string errMsg)
+        {
+            List<ArrearsQueryDetail> re = new List<ArrearsQueryDetail>();
+
+            try
+            {
+               string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrearsQuery);
+                int apiLen = apiList.Length;
+                object[] objparms = new object[apiLen == 0 ? 1 : apiLen];
+                if (apiLen > 0)
+                {
+                    for (int i = 0; i < apiLen; i++)
+                    {
+                        objparms[i] = new
+                        {
+                            CUSTID = apiList[i].CUSTID,
+                            ORDNO = apiList[i].ORDNO,
+                            CNTRNO = apiList[i].CNTRNO,
+                            PAYMENTTYPE = apiList[i].PAYMENTTYPE,
+                            SPAYMENTTYPE = apiList[i].SPAYMENTTYPE,
+                            DUEAMT = apiList[i].DUEAMT,
+                            PAIDAMT = apiList[i].PAIDAMT,
+                            CARNO = apiList[i].CARNO,
+                            POLNO = apiList[i].POLNO,
+                            PAYTYPE = apiList[i].PAYTYPE,
+                            GIVEDATE = apiList[i].GIVEDATE,
+                            RNTDATE = apiList[i].RNTDATE,
+                            INBRNHCD = apiList[i].INBRNHCD,
+                            IRENTORDNO = apiList[i].IRENTORDNO,
+                            TAMT = apiList[i].TAMT
+                        };
+                    }
+                }
+                else
+                {
+                    objparms[0] = new
+                    {
+                        CARNO = "",
+                        CNTRNO = "",
+                        CUSTID = "",
+                        DUEAMT = 0,
+                        GIVEDATE = "",
+                        INBRNHCD = "",
+                        IRENTORDNO = "",
+                        ORDNO = "",
+                        PAIDAMT = 0,
+                        PAYMENTTYPE = "",
+                        PAYTYPE = "",
+                        POLNO = "",
+                        RNTDATE = "",
+                        SPAYMENTTYPE = "",
+                        TAMT = 0
+                    };
+                }
+
+                object[][] parms1 = {
+                    new object[] {
+                        LogID
+                    },
+                    objparms
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if(string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<ArrearsQueryDetail>(ds1.Tables[0]);
+                    else if(ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errMsg = re_db.ErrorMsg;                        
+                    }
+                }
+                else
+                    errMsg = returnMessage;
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.ToString();
+                throw ex;
+            }
+        }
+    
     }
 }

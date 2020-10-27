@@ -51,13 +51,11 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             bool CheckFlag = true;
             string IDNO = "";
-
 
             #endregion
             #region 防呆
@@ -151,7 +149,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -164,6 +161,7 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+
             if (flag)
             {
                 FeedBackImage[] carImages = apiInput.FeedBack.ToArray();
@@ -192,7 +190,6 @@ namespace WebAPI.Controllers
                 //    }
                 //}
 
-
                 string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
                 object[] objparms = new object[carImages.Length == 0 ? 1 : carImages.Length];
                 if (carImages.Length > 0)
@@ -219,6 +216,7 @@ namespace WebAPI.Controllers
                         new object[] {
                             IDNO,
                             tmpOrder,
+                            apiInput.CarDesc,
                             Access_Token,
                             LogID
                     },

@@ -1,5 +1,4 @@
-/****** Object:  StoredProcedure [dbo].[usp_SetMemberData]    Script Date: 2020/10/19 上午 10:45:14 ******/
-
+/****** Object:  StoredProcedure [dbo].[usp_SetMemberData]    Script Date: 2020/10/27 上午 10:38:05 ******/
 /****************************************************************
 ** Name: [dbo].[usp_SetMemberData]
 ** Desc: 
@@ -34,15 +33,15 @@
 ** EXEC @Error=[dbo].[usp_RegisterMemberData]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
-** Auth:Jet 
-** Date:2020/10/19 上午 10:45:14
+** Auth:
+** Date:
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/19 上午 10:45:14    |  Jet|          First Release
+** 
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SetMemberData]
@@ -52,9 +51,8 @@ CREATE PROCEDURE [dbo].[usp_SetMemberData]
 	@MEMBIRTH               DATETIME              , --生日
 	@MEMCITY                INT                   , --行政區id
 	@MEMADDR                NVARCHAR(500)		  , --地址
-	@MEMEMAIL				VARCHAR(200)		  , --EMail
 	@Signture		        VARCHAR(8000)         , --簽名檔
-	@MEMTEL					VARCHAR(20)			  , --聯絡電話(手機)
+	@MEMHTEL				VARCHAR(20)			  , --連絡電話(住家)
 	@MEMCOMTEL				VARCHAR(20)			  , --公司電話
 	@MEMCONTRACT			NVARCHAR(10)		  , --緊急連絡人
 	@MEMCONTEL				VARCHAR(20)			  , --緊急連絡人電話
@@ -88,20 +86,19 @@ SET @MEMCNAME=ISNULL (@MEMCNAME    ,'');
 SET @MEMBIRTH=ISNULL(@MEMBIRTH,'');
 SET @MEMCITY =ISNULL(@MEMCITY ,0);
 SET @MEMADDR =ISNULL(@MEMADDR ,'');
-SET @MEMEMAIL=ISNULL(@MEMEMAIL,'');
 SET @Signture=ISNULL(@Signture,'');
-SET @MEMTEL  =ISNULL(@MEMTEL,'');
+SET @MEMHTEL  =ISNULL(@MEMHTEL,'');
 SET @MEMCOMTEL=ISNULL(@MEMCOMTEL,'');
 SET @MEMCONTRACT=ISNULL(@MEMCONTRACT,'');
 SET @MEMCONTEL=ISNULL(@MEMCONTEL,'');
 SET @MEMMSG  =ISNULL(@MEMMSG,'Y');
 
 BEGIN TRY
-	IF @IDNO='' OR @DeviceID='' OR @MEMCNAME='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @MEMEMAIL='' OR @Signture=''
-	BEGIN
-		SET @Error=1;
-		SET @ErrorCode='ERR900'
-	END
+	IF @IDNO='' OR @DeviceID='' OR @MEMCNAME='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @Signture=''
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR900'
+		END
 
 	IF @Error=0
 	BEGIN
@@ -126,8 +123,8 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		UPDATE TB_MemberData
-		SET MEMCNAME=@MEMCNAME,MEMBIRTH=@MEMBIRTH,MEMCITY=@MEMCITY,MEMADDR=@MEMADDR,MEMEMAIL=@MEMEMAIL
-			,MEMTEL=@MEMTEL,MEMCOMTEL=@MEMCOMTEL,MEMCONTRACT=@MEMCONTRACT,MEMCONTEL=@MEMCONTEL,MEMMSG=@MEMMSG
+		SET MEMCNAME=@MEMCNAME,MEMBIRTH=@MEMBIRTH,MEMCITY=@MEMCITY,MEMADDR=@MEMADDR
+			,MEMHTEL=@MEMHTEL,MEMCOMTEL=@MEMCOMTEL,MEMCONTRACT=@MEMCONTRACT,MEMCONTEL=@MEMCONTEL,MEMMSG=@MEMMSG
 		WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
@@ -194,4 +191,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetMemberData';
 GO
-
