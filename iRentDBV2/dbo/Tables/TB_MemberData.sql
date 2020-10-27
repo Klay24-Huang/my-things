@@ -9,6 +9,7 @@
     [MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
     [MEMPWD]         VARCHAR (50)    DEFAULT ('') NOT NULL,
     [MEMTEL]         VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [MEMHTEL]        VARCHAR (20)    DEFAULT ('') NOT NULL,
     [MEMBIRTH]       DATETIME        NULL,
     [MEMCOUNTRY]     INT             DEFAULT ((0)) NOT NULL,
     [MEMCITY]        INT             DEFAULT ((0)) NOT NULL,
