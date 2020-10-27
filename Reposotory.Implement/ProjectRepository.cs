@@ -93,7 +93,8 @@ namespace Reposotory.Implement
             {
                 if (projType == 0)
                 {
-                    term += " CarTypeGroupCode=@CarType";
+                    //term += " CarTypeGroupCode=@CarType";
+                    term += " CarTypeName=@CarType";    //20201027 ADD BY ADAM REASON.目前輸出是由CarTypeName
                     para[nowCount] = new SqlParameter("@CarType", SqlDbType.VarChar, 20);
                     para[nowCount].Value = CarType.ToUpper();
                     para[nowCount].Direction = ParameterDirection.Input;

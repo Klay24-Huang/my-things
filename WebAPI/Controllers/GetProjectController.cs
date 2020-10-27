@@ -199,6 +199,7 @@ namespace WebAPI.Controllers
                             Longitude = lstData[0].Longitude,
                             StationID = lstData[0].StationID,
                             StationName = lstData[0].StationName,
+                            IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
                             ProjectObj = new List<ProjectObj>()
                         });
                         lstTmpData[0].ProjectObj.Add(new ProjectObj()
@@ -264,6 +265,7 @@ namespace WebAPI.Controllers
                                         Longitude = lstData[i].Longitude,
                                         StationID = lstData[i].StationID,
                                         StationName = lstData[i].StationName,
+                                        IsRent = lstData[i].IsRent,
                                         ProjectObj = new List<ProjectObj>(),
                                         Minimum = tmpBill
                                     };
