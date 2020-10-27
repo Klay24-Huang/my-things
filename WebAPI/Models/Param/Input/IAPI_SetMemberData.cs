@@ -52,19 +52,14 @@ namespace WebAPI.Models.Param.Input
         public string MEMADDR { get; set; }
 
         /// <summary>
-        /// 會員email
-        /// </summary>
-        public string MEMEMAIL { get; set; }
-
-        /// <summary>
         /// 電子簽名（Base64)
         /// </summary>
         public string Signture { get; set; }
 
         /// <summary>
-        /// 聯絡電話(手機)
+        /// 連絡電話(住家)
         /// </summary>
-        public string MEMTEL { get; set; }
+        public string MEMHTEL { get; set; }
 
         /// <summary>
         /// 公司電話
@@ -77,7 +72,7 @@ namespace WebAPI.Models.Param.Input
         public string MEMCONTRACT { get; set; }
 
         /// <summary>
-        /// 緊急連絡人電話
+        /// 緊急連絡人電話(手機)
         /// </summary>
         public string MEMCONTEL { get; set; }
 
