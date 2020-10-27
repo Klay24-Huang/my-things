@@ -137,17 +137,21 @@ BEGIN TRY
                 ,already_lend_car
                 ,IsReturnCar
 				--20201026 ADD BY ADAM REASON.增加AppStatus
-                ,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1             --1:尚未到取車時間(取車時間半小時前)
+				,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1             --1:尚未到取車時間(取車時間半小時前)
                                   WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
                                        AND VW.NowOrderNo>0 AND car_mgt_status=0 THEN 2                                  --2:立即換車(取車前半小時，前車尚未完成還車)
+								  WHEN car_mgt_status=0 AND @NowTime > VW.stop_pick_time THEN 9							--9:未取車
                                   WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
                                        AND car_mgt_status=0    THEN 3                                                   --3:開始使用(取車時間半小時前)
                                   WHEN VW.start_time < @NowTime AND @NowTime < VW.stop_pick_time 
                                        AND car_mgt_status=0    THEN 4                                                   --4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)
-                                  WHEN car_mgt_status=4 THEN 5															--5:操作車輛(取車後) 取車時間改實際取車時間
-                                  WHEN car_mgt_status=4 AND DATEADD(mi,-30,stop_time) < @NowTime THEN 6                 --6:操作車輛(準備還車)-
-																														--7:
-																														--8:
+                                  WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) > @NowTime 
+										AND car_mgt_status >0	THEN 5													--5:操作車輛(取車後) 取車時間改實際取車時間
+                                  WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) < @NowTime THEN 6                 --6:操作車輛(準備還車)-
+								  WHEN car_mgt_status<=11 AND stop_time < @NowTime THEN 6
+								  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) < @NowTime THEN 7			--7:物品遺漏(再開一次車門)
+								  WHEN car_mgt_status=16 
+										AND start_door_time is not null AND end_door_time is null THEN 8				--8:鎖門並還車(一次性開門申請後)
                                   ELSE 0 END
 				,StationPic1 = i1.StationPic
 				,StationPic2 = i2.StationPic
@@ -164,7 +168,8 @@ BEGIN TRY
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
             WHERE IDNO=@IDNO AND cancel_status=0
-            AND car_mgt_status<16    --排除已還車的
+			AND (car_mgt_status<16    --排除已還車的
+				OR (car_mgt_status=16 AND final_stop_time is not null AND DATEADD(mi,15,final_stop_time) > @NowTime))	--還車後15分鐘內
             AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
             ORDER BY start_time ASC 
 			
