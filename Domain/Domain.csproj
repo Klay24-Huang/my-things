@@ -78,6 +78,7 @@
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
     <Compile Include="SP\BE\Output\SPOutput_Login.cs" />
+    <Compile Include="SP\Input\Arrears\SPInput_ArrearsQuery.cs" />
     <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />
     <Compile Include="SP\Input\Battle\SPInput_GetKey.cs" />
     <Compile Include="SP\Input\Battle\SPInput_MaintainBase.cs" />
