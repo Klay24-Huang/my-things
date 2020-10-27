@@ -152,6 +152,19 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
+                string FileName = string.Format("{0}_ParkingSpace_{1}.png", apiInput.OrderNo, DateTime.Now.ToString("yyyyMMddHHmmss"));
+                #region 加入azure
+                if (apiInput.ParkingSpaceImage.Length > 0)
+                {
+                    try
+                    {
+                        flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpaceImage, FileName, "carpic");
+                    }catch(Exception ex)
+                    {
+                        flag = true;
+                    }
+                }
+                #endregion
                 //SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
                 //{
                 //    IDNO = IDNO,
@@ -173,7 +186,7 @@ namespace WebAPI.Controllers
                             IDNO,
                             tmpOrder,
                             apiInput.ParkingSpace,
-                            apiInput.ParkingSpaceImage,
+                            (FileName!="")?FileName:apiInput.ParkingSpaceImage,
                             Access_Token,
                             LogID
                     }};

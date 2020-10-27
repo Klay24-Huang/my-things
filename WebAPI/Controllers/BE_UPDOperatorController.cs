@@ -109,7 +109,7 @@ namespace WebAPI.Controllers
                 if (false == string.IsNullOrEmpty(apiInput.OperatorICon))
                 {
                     apiInput.OperatorICon = apiInput.OperatorICon.Replace("⊙", "");
-                    FileName = string.Format("{0}_{1}", apiInput.OperatorAccount, DateTime.Today.ToString("yyyyMMddHHmmss"));
+                    FileName = string.Format("{0}_{1}.png", apiInput.OperatorAccount, DateTime.Today.ToString("yyyyMMddHHmmss"));
                     flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.OperatorICon, FileName, "operatoricon");
                   
                 }

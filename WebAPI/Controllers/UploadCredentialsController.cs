@@ -145,7 +145,7 @@ namespace WebAPI.Controllers
             {
                 try
                 {
-                    FileName = string.Format("{0}_{1}_{2}", apiInput.IDNO, suff[apiInput.CredentialType.Value], DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, suff[apiInput.CredentialType.Value], DateTime.Now.ToString("yyyyMMddHHmmss"));
                     flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.CredentialFile, FileName, "credential");
                 }catch(Exception ex)
                 {

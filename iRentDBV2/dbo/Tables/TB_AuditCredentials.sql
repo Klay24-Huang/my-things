@@ -1,20 +1,19 @@
-﻿CREATE TABLE [dbo].[TB_tmpCrentialsPIC]
+﻿CREATE TABLE [dbo].[TB_AuditCredentials]
 (
 	[IDNO] VARCHAR(20) NOT NULL, 
     [CrentialsType] TINYINT NOT NULL DEFAULT 0, 
     [CrentialsFile] VARCHAR(8000) NOT NULL DEFAULT '', 
 	[MKTime] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
     [UPDTime] DATETIME NOT NULL, 
-    CONSTRAINT [PK_TB_tmpCrentialsPIC] PRIMARY KEY ([IDNO], [CrentialsType]) 
+    CONSTRAINT [PK_TB_AuditCredentials] PRIMARY KEY ([CrentialsType], [IDNO]), 
 )
-
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'圖檔（以Azure檔名存入）',
+    @value = N'圖檔（以Azure檔名）',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_tmpCrentialsPIC',
+    @level1name = N'TB_AuditCredentials',
     @level2type = N'COLUMN',
     @level2name = N'CrentialsFile'
 GO
@@ -23,7 +22,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_tmpCrentialsPIC',
+    @level1name = N'TB_AuditCredentials',
     @level2type = N'COLUMN',
     @level2name = N'CrentialsType'
 GO
@@ -32,7 +31,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_tmpCrentialsPIC',
+    @level1name = N'TB_AuditCredentials',
     @level2type = N'COLUMN',
     @level2name = N'MKTime'
 GO
@@ -41,15 +40,15 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_tmpCrentialsPIC',
+    @level1name = N'TB_AuditCredentials',
     @level2type = N'COLUMN',
     @level2name = N'UPDTime'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'證件資料表（暫存檔）',
+    @value = N'證件資料表（待審）',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_tmpCrentialsPIC',
+    @level1name = N'TB_AuditCredentials',
     @level2type = NULL,
     @level2name = NULL

@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
                     {
                         try
                         {
-                            string FileName = string.Format("{0}_PIC{1}_{2}", apiInput.OrderNo, lstFeedBackPIC[i].SEQNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
+                            string FileName = string.Format("{0}_PIC{1}_{2}.png", apiInput.OrderNo, lstFeedBackPIC[i].SEQNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
                             flag = new AzureStorageHandle().UploadFileToAzureStorage(lstFeedBackPIC[i].FeedBackFile, FileName, "feedbackpic");
                             if (flag)
                             {
