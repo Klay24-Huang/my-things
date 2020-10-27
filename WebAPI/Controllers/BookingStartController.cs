@@ -488,6 +488,33 @@ namespace WebAPI.Controllers
                 #endregion
 
             }
+            #region 寫取車照片到azure
+            if (flag)
+            {
+             
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder,0);
+                    int PICLen = lstCarPIC.Count;
+                    for (int i = 0; i < PICLen; i++)
+                    {
+                        try
+                        {
+                            string FileName = string.Format("{0}_{1}_{2}", apiInput.OrderNo, (lstCarPIC[i].ImageType==5)?"Sign": "PIC"+lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+                           
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                            if (flag)
+                            {
+                                bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder,0,lstCarPIC[i].ImageType,FileName); //更新為azure的檔名
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
+                    }
+                
+            }
+            #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
             {
