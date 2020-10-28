@@ -154,6 +154,7 @@ namespace WebAPI.Controllers
                                 string sp_ArrearsQuery_Err = "";//sp呼叫錯誤回傳
                                 var spInput = new SPInput_ArrearsQuery()
                                 {
+                                    IDNO = apiInput.IDNO,
                                     IsSave = apiInput.IsSave,
                                     LogID = LogID
                                 };
@@ -198,6 +199,7 @@ namespace WebAPI.Controllers
 
             }
 
+            outputApi = outputApi ?? new OAPI_ArrearsQuery();
             outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";
             outputApi.ArrearsInfos = outputApi.ArrearsInfos ?? new List<ArrearsQueryDetail>();
 
@@ -273,6 +275,7 @@ namespace WebAPI.Controllers
 
                 object[][] parms1 = {
                     new object[] {
+                        spInput.IDNO,
                         spInput.IsSave,
                         spInput.LogID
                     },

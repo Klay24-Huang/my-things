@@ -9,6 +9,10 @@ namespace Domain.SP.Input.Arrears
     public class SPInput_ArrearsQuery
     {
         /// <summary>
+        /// 身分證號
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
         /// 使否儲存查詢紀錄:0(不儲存), 1(儲存)
         /// </summary>
         public int IsSave { get; set; }

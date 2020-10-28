@@ -301,8 +301,9 @@
     <Build Include="dbo\User Defined Types\TY_ArrearsQuery.sql" />
     <Build Include="dbo\Tables\TB_MemberDataOfAutdit.sql" />
     <Build Include="dbo\Tables\TB_AuditCredentials.sql" />
-    <Build Include="dbo\Tables\TB_NPR330.sql" />
     <Build Include="dbo\Tables\TB_AuditCrentialsReject.sql" />
+    <Build Include="dbo\Tables\TB_NPR330Save.sql" />
+    <Build Include="dbo\Tables\TB_NPR330Detail.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
