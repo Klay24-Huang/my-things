@@ -62,10 +62,10 @@ BEGIN
 					INTO #tmp_ArrearsQuery
 					FROM  @ArrearsQuery a	
 
+					DECLARE @MasteId int = 0
 					IF @IsSave = 1
 					BEGIN
-					   INSERT INTO TB_NPR330Save VALUES (@IDNO, DATEADD(HOUR,8,GETDATE()), DATEADD(HOUR,8,GETDATE()))
-					   DECLARE @MasteId int
+					   INSERT INTO TB_NPR330Save VALUES (@IDNO, DATEADD(HOUR,8,GETDATE()), DATEADD(HOUR,8,GETDATE()))				   
 					   SELECT @MasteId = @@IDENTITY 
 					   IF @MasteId > 0
 					   BEGIN
@@ -85,24 +85,6 @@ BEGIN
 						   DATEADD(HOUR,8,GETDATE()),
 						   DATEADD(HOUR,8,GETDATE())
 						   FROM #tmp_ArrearsQuery t
-
-							SELECT 
-							@MasteId[NPR330Save_ID],
-							t.Amount, --待繳金額
-							t.ArrearsKind, --欠費種類 1:租金,2:罰單,3:停車費,4:ETAG
-							t.EndDate, --實際還車時間
-							t.StartDate, --實際取車時間
-							OrderNo = CASE WHEN t.OrderNo IS NULL OR t.OrderNo = '' THEN '-'
-									 ELSE 'H' + RIGHT(REPLICATE('0', 7) + CAST(t.OrderNo as NVARCHAR), 7) END,
-							t.ShortOrderNo, --短租合約編號
-							StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WHERE s.StationID = t.StationID),'-'), --取車據點
-							CarType = ISNULL(( --車型代碼
-								SELECT TOP 1 ct.CarTypeName FROM TB_CarType ct
-								WHERE ct.CarType = (
-									SELECT TOP 1 c.CarType FROM TB_Car c WHERE c.CarNo = t.CarNo)
-							),''),
-							IsMotor = ISNULL((SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WHERE c.CarNo = t.CarNo),0) ---是否是機車0否,1是
-							FROM  #tmp_ArrearsQuery t
 					   END
 					   ELSE
 					   BEGIN
@@ -111,6 +93,27 @@ BEGIN
 						   SET @ErrorMsg = 'TB_NPR330Save存檔失敗'
 					   END
 					END
+
+					IF @Error = 0
+			        BEGIN
+						SELECT 
+						ISNULL(@MasteId,0)[NPR330Save_ID], --若IsSave為0, @MasteId為0
+						t.Amount, --待繳金額
+						t.ArrearsKind, --欠費種類 1:租金,2:罰單,3:停車費,4:ETAG
+						t.EndDate, --實際還車時間
+						t.StartDate, --實際取車時間
+						OrderNo = CASE WHEN t.OrderNo IS NULL OR t.OrderNo = '' THEN '-'
+									ELSE 'H' + RIGHT(REPLICATE('0', 7) + CAST(t.OrderNo as NVARCHAR), 7) END,
+						t.ShortOrderNo, --短租合約編號
+						StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WHERE s.StationID = t.StationID),'-'), --取車據點
+						CarType = ISNULL(( --車型代碼
+							SELECT TOP 1 ct.CarTypeName FROM TB_CarType ct
+							WHERE ct.CarType = (
+								SELECT TOP 1 c.CarType FROM TB_Car c WHERE c.CarNo = t.CarNo)
+						),''),
+						IsMotor = ISNULL((SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WHERE c.CarNo = t.CarNo),0) ---是否是機車0否,1是
+						FROM  #tmp_ArrearsQuery t
+					END			     		
 			END
 			ELSE
 			BEGIN
