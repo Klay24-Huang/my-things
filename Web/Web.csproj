@@ -165,6 +165,17 @@
   <ItemGroup>
     <Content Include="assets\bootstrap.min.css" />
     <Content Include="assets\chosen.css" />
+    <Content Include="assets\EvTimeLine\cabinet.css" />
+    <Content Include="assets\EvTimeLine\chosen.css" />
+    <Content Include="assets\EvTimeLine\datepicker-zh-TW.js" />
+    <Content Include="assets\EvTimeLine\drawer.js" />
+    <Content Include="assets\EvTimeLine\evTrack.css" />
+    <Content Include="assets\EvTimeLine\EvTrack.js" />
+    <Content Include="assets\EvTimeLine\fullcalendar.css" />
+    <Content Include="assets\EvTimeLine\jquery-ui-timepicker-addon.js" />
+    <Content Include="assets\EvTimeLine\jquery.cabinet.js" />
+    <Content Include="assets\EvTimeLine\jquery.chosen.min.js" />
+    <Content Include="assets\EvTimeLine\theme\avocado.css" />
     <Content Include="assets\fullcalendar.css" />
     <Content Include="assets\jquery-ui.css" />
     <Content Include="assets\logo.png" />

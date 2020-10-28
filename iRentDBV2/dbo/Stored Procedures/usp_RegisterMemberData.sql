@@ -125,14 +125,14 @@ SET @Signture=ISNULL(@Signture,'');
 				   INSERT INTO TB_Credentials(IDNO,Signture)VALUES(@IDNO,1);
 
 				   SET @hasData=0;
-				   SELECT @hasData=COUNT(1) FROM TB_CrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+				   SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;	--改為查TB_tmpCrentialsPIC
 				     IF @hasData=0
 				     BEGIN
-						INSERT INTO TB_CrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
+						INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
 					 END
 					 ELSE
 					 BEGIN
-						UPDATE TB_CrentialsPIC
+						UPDATE TB_tmpCrentialsPIC
 						SET CrentialsFile=@Signture
 						WHERE IDNO=@IDNO AND CrentialsType=11;
 					 END
@@ -142,18 +142,30 @@ SET @Signture=ISNULL(@Signture,'');
 					UPDATE TB_Credentials SET Signture=1 WHERE IDNO=@IDNO;
 					
 					SET @hasData=0;
-				    SELECT @hasData=COUNT(1) FROM TB_CrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+				    SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
 					IF @hasData=0
 				     BEGIN
-						INSERT INTO TB_CrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
+						INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
 					 END
 					 ELSE
 					 BEGIN
-						UPDATE TB_CrentialsPIC
+						UPDATE TB_tmpCrentialsPIC
 						SET CrentialsFile=@Signture
 						WHERE IDNO=@IDNO AND CrentialsType=11;
 					 END
 				END
+		 END
+		 IF @Error=0
+		 BEGIN
+			INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+												[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+												[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+												[CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
+			SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+					[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+					[CARRIERID],[NPOBAN],2,0,1  
+           FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1
