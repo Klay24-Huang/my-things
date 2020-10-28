@@ -24,6 +24,8 @@ SELECT OrderMain.[order_number]
 	  ,ISNULL(OrderDetil.already_lend_car,2) AS already_lend_car
 	  ,OrderDetil.final_start_time
 	  ,OrderDetil.final_stop_time
+	  ,OrderDetil.start_door_time		--20201027 ADD BY ADAM REASON
+	  ,OrderDetil.end_door_time			--20201027 ADD BY ADAM REASON
       ,ISNULL(OrderDetil.final_price,0) AS final_price
       ,ISNULL(OrderDetil.pure_price,0) AS  pure_price
       ,ISNULL(OrderDetil.mileage_price,0) AS mileage_price

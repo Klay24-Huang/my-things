@@ -35,6 +35,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public string[] StationPic { set; get; }
         /// <summary>
+        /// 是否有車可租(BY據點)
+        /// </summary>
+        public string IsRent { set; get; }
+        /// <summary>
         /// 專案資料
         /// </summary>
         public List<ProjectObj> ProjectObj { set; get; }
