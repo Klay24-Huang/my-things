@@ -219,7 +219,7 @@ namespace WebAPI.Controllers
                         {
                             CmdReply = CMDBase.CmdReply,
                             method = CMDBase.method,
-                            requestId = CMDBase.requestId,
+                            requestId = CMDBase.requestId??CMDBase.id,
                             receiveRawData = Contentjson
                         };
                        
