@@ -265,7 +265,7 @@ namespace Reposotory.Implement
             if (hasRange)
             {
                 //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
-                SQL += string.Format(" AND (Latitude>={0} AND Latitude<={1}) AND (Longitude>={2} AND Longitude<={3})", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3]);
+                SQL += string.Format(" AND (Lat>={0} AND Lat<={1}) AND (Lon>={2} AND Lon<={3})", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3]);
             }
 
             lstBat = GetObjList<BatExchangeStationData>(ref flag, ref lstError, SQL, para, term);

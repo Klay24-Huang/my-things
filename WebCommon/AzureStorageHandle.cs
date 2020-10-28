@@ -82,12 +82,14 @@ namespace WebCommon
         public bool UploadFileToAzureStorage(string fileStr, string fileName, string ContainerName)
         {
             bool flag = true;
-            FileStream fs;
-            byte[] imageBytes = Convert.FromBase64String(fileStr.Replace("⊙", ""));
-            fs = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
-            fs.Write(imageBytes, 0, imageBytes.Length);
-      
 
+            //FileStream fs;
+            //byte[] imageBytes = Convert.FromBase64String(fileStr.Replace("⊙", ""));
+            //fs = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
+            //fs.Write(imageBytes, 0, imageBytes.Length);
+
+            byte[] imageBytes = Convert.FromBase64String(fileStr.Replace("⊙", ""));
+            Stream fs = new MemoryStream(imageBytes);
             string file_extension = Path.GetExtension(fileName);
             string filename_withExtension = Path.GetFileName(fileName);
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);

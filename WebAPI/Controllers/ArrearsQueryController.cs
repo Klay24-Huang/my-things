@@ -21,6 +21,7 @@ using System.Data;
 using WebAPI.Utils;
 using Domain.SP.Output;
 using System.CodeDom;
+using Domain.SP.Input.Arrears;
 
 namespace WebAPI.Controllers
 {
@@ -151,7 +152,13 @@ namespace WebAPI.Controllers
                                 outputApi = new OAPI_ArrearsQuery();
                                 var spTb_input = WebAPIOutput.Data;
                                 string sp_ArrearsQuery_Err = "";//sp呼叫錯誤回傳
-                                var sp_result = sp_ArrearsQuery(spTb_input, LogID, ref sp_ArrearsQuery_Err);
+                                var spInput = new SPInput_ArrearsQuery()
+                                {
+                                    IsSave = apiInput.IsSave,
+                                    LogID = LogID
+                                };
+
+                                var sp_result = sp_ArrearsQuery(spTb_input, spInput, ref sp_ArrearsQuery_Err);
 
                                 if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
                                 {
@@ -209,7 +216,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        private List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, Int64 LogID,ref string errMsg)
+        private List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, SPInput_ArrearsQuery spInput, ref string errMsg)
         {
             List<ArrearsQueryDetail> re = new List<ArrearsQueryDetail>();
 
@@ -266,7 +273,8 @@ namespace WebAPI.Controllers
 
                 object[][] parms1 = {
                     new object[] {
-                        LogID
+                        spInput.IsSave,
+                        spInput.LogID
                     },
                     objparms
                 };

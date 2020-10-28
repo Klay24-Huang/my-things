@@ -154,6 +154,7 @@ namespace WebAPI.Controllers
                         outputApi.OrderObj = new List<ActiveOrderData>();
                         for (int i = 0; i < DataLen; i++)
                         {
+                            //20201026 ADD BY ADAM REASON.增加據點圖片
                             List<string> StationPics = new List<string>();
                             if (OrderDataLists[i].StationPic1 != "") StationPics.Add(OrderDataLists[i].StationPic1);
                             if (OrderDataLists[i].StationPic2 != "") StationPics.Add(OrderDataLists[i].StationPic2);
