@@ -46,6 +46,7 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             DateTime Birth = DateTime.Now;
             string Contentjson = "";
+            string FileName = "";
             #endregion
 
             #region 防呆
@@ -115,7 +116,26 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+            #region upload to azure
+            if (flag)
+            {
+                if (apiInput.Signture != "")
+                {
+                  
+                        try
+                        {
+                            FileName = string.Format("{0}_Sign_{1}.png", apiInput.IDNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.Signture, FileName, "credential");
+                        }
+                        catch (Exception ex)
+                        {
+                            flag = false;
+                            errCode = "ERR226";
+                        }
 
+                }
+            }
+            #endregion
             #region TB
             if (flag)
             {

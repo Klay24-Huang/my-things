@@ -2,7 +2,7 @@
 (
 		[IDNO] VARCHAR(20) NOT NULL, 
     [CrentialsType] TINYINT NOT NULL DEFAULT 0, 
-    [RejectReason] NVARCHAR(8000) NOT NULL DEFAULT '', 
+    [RejectReason] NVARCHAR(1024) NOT NULL DEFAULT '', 
 	[MKTime] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
     [UPDTime] DATETIME NOT NULL, 
     CONSTRAINT [PK_TB_AuditCrentialsReject] PRIMARY KEY ([CrentialsType], [IDNO]), 
