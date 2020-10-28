@@ -199,6 +199,7 @@
     <Compile Include="TB\BackEnd\BE_CarScheduleTimeLog.cs" />
     <Compile Include="TB\BackEnd\BE_CarSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_ChargeParkingData.cs" />
+    <Compile Include="TB\BackEnd\BE_EvTimeLine.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackKindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetBookingQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarBindData.cs" />

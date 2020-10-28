@@ -18,6 +18,9 @@
     [MEMSENDCD]      TINYINT         DEFAULT ((2)) NOT NULL,
     [CARRIERID]      VARCHAR (20)    DEFAULT ('') NOT NULL,
     [NPOBAN]         VARCHAR (20)    DEFAULT ('') NOT NULL, 
+    [AuditKind]      TINYINT         DEFAULT(0) NOT NULL,
+    [HasAudit]       TINYINT         DEFAULT(0) NOT NULL,
+    [IsNew]          TINYINT         DEFAULT(0) NOT NULL,
     [MKTime] DATETIME  DEFAULT(dateadd(hour,(8),getdate())) NOT NULL,
     CONSTRAINT [PK_TB_MemberDataOfAutdit] PRIMARY KEY ([AuditID])
 
@@ -90,3 +93,31 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'姓名', @l
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'帳號(身份證)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'MEMIDNO';
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'有無審核過（0:否;1:有)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberDataOfAutdit',
+    @level2type = N'COLUMN',
+    @level2name = N'HasAudit'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'送審方式（0:修改會員資料;1:修改證件照;2:兩者皆有)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberDataOfAutdit',
+    @level2type = N'COLUMN',
+    @level2name = N'AuditKind'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否為新加入(0:否;1:是)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberDataOfAutdit',
+    @level2type = N'COLUMN',
+    @level2name = N'IsNew'

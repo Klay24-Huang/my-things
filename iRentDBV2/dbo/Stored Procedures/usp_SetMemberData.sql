@@ -68,6 +68,14 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
+
+DECLARE @OMEMCNAME				NVARCHAR(10)    
+DECLARE @OMEMBIRTH               DATETIME        
+DECLARE @OMEMCITY                INT             
+DECLARE @OMEMADDR                NVARCHAR(500)	
+DECLARE @OSignture		        VARCHAR(8000)   
+DECLARE @OMEMHTEL				VARCHAR(20)		
+DECLARE @AuditKind              TINYINT;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -92,7 +100,7 @@ SET @MEMCOMTEL=ISNULL(@MEMCOMTEL,'');
 SET @MEMCONTRACT=ISNULL(@MEMCONTRACT,'');
 SET @MEMCONTEL=ISNULL(@MEMCONTEL,'');
 SET @MEMMSG  =ISNULL(@MEMMSG,'Y');
-
+SET @AuditKind=0;
 BEGIN TRY
 	IF @IDNO='' OR @DeviceID='' OR @MEMCNAME='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @Signture=''
 		BEGIN
@@ -119,7 +127,15 @@ BEGIN TRY
 			END
 		END
 	END
+	--先取出未修改前的資料
+	IF @Error=0
+	BEGIN
+		SELECT @OMEMCNAME=ISNULL(MEMCNAME,''),	@OMEMBIRTH=ISNULL(MEMBIRTH,'1911-01-01 00:00:00'),@OMEMCITY=ISNULL(MEMCITY,0),@OMEMADDR=ISNULL(MEMADDR,''),@OMEMHTEL=ISNULL(MEMHTEL,'')
+		FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 
+		SELECT @OSignture=ISNULL(CrentialsFile,'') FROM TB_CrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11
+			
+	END
 	IF @Error=0
 	BEGIN
 		UPDATE TB_MemberData
@@ -134,14 +150,14 @@ BEGIN TRY
 			INSERT INTO TB_Credentials(IDNO,Signture)VALUES(@IDNO,1);
 
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_CrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
 			IF @hasData=0
 			BEGIN
-				INSERT INTO TB_CrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_CrentialsPIC
+				UPDATE TB_tmpCrentialsPIC
 				SET CrentialsFile=@Signture
 				WHERE IDNO=@IDNO AND CrentialsType=11;
 			END
@@ -151,16 +167,51 @@ BEGIN TRY
 			UPDATE TB_Credentials SET Signture=1 WHERE IDNO=@IDNO;
 					
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_CrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
 			IF @hasData=0
 			BEGIN
-				INSERT INTO TB_CrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_CrentialsPIC
+				UPDATE TB_tmpCrentialsPIC
 				SET CrentialsFile=@Signture
 				WHERE IDNO=@IDNO AND CrentialsType=11;
+			END
+		END
+	END
+	--審核的判斷
+	IF @Error=0
+	BEGIN
+		IF  @MEMCNAME<>@OMEMCNAME OR @MEMBIRTH<>@OMEMBIRTH OR @MEMCITY<>@OMEMCITY OR @MEMADDR<>@OMEMADDR OR @Signture<>@OSignture
+		BEGIN
+				IF @Signture<>@OSignture AND  @MEMCNAME=@OMEMCNAME AND @MEMBIRTH=@OMEMBIRTH AND @MEMCITY=@OMEMCITY AND @MEMADDR=@OMEMADDR
+				BEGIN
+					SET @AuditKind=1;
+				END
+				ELSE
+				BEGIN
+					SET @AuditKind=2;
+				END
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
+			IF @hasData=0
+			BEGIN
+					INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+												[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+												[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+												[CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
+					SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+							[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+							[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+							[CARRIERID],[NPOBAN],@AuditKind,0,0  
+				   FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+			END
+			ELSE
+			BEGIN
+				UPDATE TB_MemberDataOfAutdit
+				SET [AuditKind]=@AuditKind,[HasAudit]=0
+				WHERE MEMIDNO=@IDNO;
 			END
 		END
 	END
