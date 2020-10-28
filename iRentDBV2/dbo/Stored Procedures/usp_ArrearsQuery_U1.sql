@@ -75,8 +75,8 @@ BEGIN
 					   t.StationID,
 					   t.CarType,
 					   t.IsMotor,
-					   GETDATE(),
-					   GETDATE()
+					   DATEADD(HOUR,8,GETDATE()),
+					   DATEADD(HOUR,8,GETDATE())
 					   FROM #tmp_ArrearsQuery t
 					END
 
