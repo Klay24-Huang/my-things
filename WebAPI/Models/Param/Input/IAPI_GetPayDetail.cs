@@ -15,8 +15,13 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string OrderNo { set; get; }
         /// <summary>
-        /// 使用的點數
+        /// 汽車使用的點數
         /// </summary>
         public int Discount { set; get; }
+
+        /// <summary>
+        /// 機車使用的點數
+        /// </summary>
+        public int MotorDiscount { set; get; }
     }
 }
