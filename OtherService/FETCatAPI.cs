@@ -158,6 +158,8 @@ namespace OtherService
                 }
 
             }
+            //20201028車機無回應時設定為成功，以狀態檔為主
+            waitFlag = true;
             return waitFlag;
         }
         private async Task<Boolean> doSendCMD(string input, string URL, SPInput_InsSendCMD spInput)
