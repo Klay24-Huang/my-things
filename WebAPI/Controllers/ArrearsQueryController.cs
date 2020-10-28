@@ -139,13 +139,6 @@ namespace WebAPI.Controllers
                     {
                         if (WebAPIOutput.RtnCode == "0")
                         {
-                            List<iRentStationBaseInfo> lstStation = new StationAndCarRepository(connetStr).GetAlliRentStationBaseData();
-                            bool hasData = true;
-                            hasData = (lstStation != null);
-                            if (hasData == true)
-                            {
-                                hasData = (lstStation.Count > 0);
-                            }
                             int DataLen = WebAPIOutput.Data.Count();
                            if (DataLen > 0)
                             {
