@@ -12,6 +12,11 @@ namespace Domain.WebAPI.output.rootAPI
     public class ProjectObj
     {
         /// <summary>
+        /// 站點代碼        //20201028 ADD BY ADAM
+        /// </summary>
+        public string StationID { set; get; }
+
+        /// <summary>
         /// 專案代碼
         /// </summary>
         public string ProjID { set; get; }
@@ -70,8 +75,8 @@ namespace Domain.WebAPI.output.rootAPI
         /// <summary>
         /// 預估費用
         /// </summary>
-        public int Bill { set; get; }
-
+        //public int Bill { set; get; }
+        public int Price { set; get; }      //20201028 ADD BY ADAM
         /// <summary>
         /// 平日每小時金額
         /// </summary>

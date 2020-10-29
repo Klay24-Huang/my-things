@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Rent
 {
@@ -19,39 +15,45 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 總價
         /// </summary>
-        public int final_price {set;get; } = 0;
+        public int final_price { set; get; } = 0;
         /// <summary>
         /// 車輛租金
         /// </summary>
-        public int pure_price {set;get; } = 0;
+        public int pure_price { set; get; } = 0;
         /// <summary>
         /// 里程費
         /// </summary>
-        public int mileage_price {set;get; } = 0;
+        public int mileage_price { set; get; } = 0;
         /// <summary>
         /// 安心服務費
         /// </summary>
-        public int Insurance_price {set;get; } = 0;
+        public int Insurance_price { set; get; } = 0;
         /// <summary>
         ///  罰金
         /// </summary>
-        public int fine_price {set;get; } = 0;
+        public int fine_price { set; get; } = 0;
         /// <summary>
-        ///   使用的時數
+        /// 使用時數(汽車)
         /// </summary>
-        public int gift_point {set;get; } = 0;
+        public int gift_point { set; get; } = 0;
+
+        /// <summary>
+        /// 使用時數(機車)
+        /// </summary>
+        public int gift_motor_point { get; set; } = 0;
+
         /// <summary>
         /// ETAG費用
         /// </summary>
-        public int Etag {set;get; } = 0;
+        public int Etag { set; get; } = 0;
         /// <summary>
         /// 特約停車場停車費
         /// </summary>
-        public int parkingFee {set;get; } = 0;
+        public int parkingFee { set; get; } = 0;
         /// <summary>
         /// 轉乘優惠
         /// </summary>
-        public int TransDiscount { set; get; } = 0;               
+        public int TransDiscount { set; get; } = 0;
 
         /// <summary>
         /// auth token

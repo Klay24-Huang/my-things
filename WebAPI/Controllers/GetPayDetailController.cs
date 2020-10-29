@@ -123,10 +123,14 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR202";
                     }
-                    else
+
+                    if (apiInput.MotorDiscount < 0)
                     {
-                        Discount = apiInput.Discount;
+                        flag = false;
+                        errCode = "ERR202";
                     }
+
+                    Discount = apiInput.Discount + apiInput.MotorDiscount;
                 }
 
                 //不開放訪客
@@ -138,7 +142,6 @@ namespace WebAPI.Controllers
                         errCode = "ERR101";
                     }
                 }
-
             }
             #endregion
             #region 取出基本資料
@@ -205,12 +208,11 @@ namespace WebAPI.Controllers
                 {
                     ProjType = OrderDataLists[0].ProjType;
                     SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
-                    //  SD = new DateTime(SD.Year,SD.Month,SD.Day,SD.Hour,SD.Minute,0); //去秒數
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
                     ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                     FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
-                    FED = FED.AddSeconds(FED.Second * -1); //去秒數
+                    FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (FED.Subtract(ED).Ticks > 0)
                     {
@@ -287,6 +289,12 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR207";
                             }
+                        }
+
+                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > 使用時數
+                        {
+                            flag = false;
+                            errCode = "ERR303";
                         }
 
                         if (flag)
@@ -450,7 +458,7 @@ namespace WebAPI.Controllers
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (ProjType == 4)
                     {
-                        if (TotalPoint >= TotalRentMinutes)
+                        if (TotalPoint >= TotalRentMinutes) //可使用總點數 >= 總租車時數
                         {
                             ActualRedeemableTimePoint = TotalRentMinutes;
                         }
@@ -461,9 +469,9 @@ namespace WebAPI.Controllers
                                 ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
                             }
                         }
-                        if (Discount >= TotalRentMinutes)
+                        if (Discount >= TotalRentMinutes)   // 要折抵的點數 >= 總租車時數
                         {
-                            Discount = (days * 600) + (hours * 60) + (mins);        //自動縮減
+                            Discount = (days * 600) + (hours * 60) + (mins);    //自動縮減
                         }
                         else
                         {
@@ -473,9 +481,9 @@ namespace WebAPI.Controllers
                                 Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
                             }
                         }
-                        TotalRentMinutes -= Discount;
+                        TotalRentMinutes -= Discount;   // 總租車時數 = 總租車時數 - 要折抵的點數
 
-                        if (UseMonthMode)
+                        if (UseMonthMode)   //true:有月租;false:無月租
                         {
                             billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, monthlyRentDatas[0].WorkDayRateForMoto, monthlyRentDatas[0].HoildayRateForMoto, OrderDataLists[0].MaxPrice, ref CarRentPrice);
                             outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForMoto;
@@ -600,19 +608,20 @@ namespace WebAPI.Controllers
                     string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
                     SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                     {
-                        Etag = outputApi.Rent.ETAGRental,
-                        final_price = outputApi.Rent.TotalRental,
-                        fine_price = outputApi.Rent.OvertimeRental,
-                        gift_point = Discount,
                         IDNO = IDNO,
-                        Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
-                        LogID = LogID,
-                        mileage_price = outputApi.Rent.MileageRent,
                         OrderNo = tmpOrder,
-                        parkingFee = outputApi.Rent.ParkingFee,
+                        final_price = outputApi.Rent.TotalRental,
                         pure_price = outputApi.Rent.CarRental,
+                        mileage_price = outputApi.Rent.MileageRent,
+                        Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
+                        fine_price = outputApi.Rent.OvertimeRental,
+                        gift_point = apiInput.Discount,
+                        gift_motor_point = apiInput.MotorDiscount,
+                        Etag = outputApi.Rent.ETAGRental,
+                        parkingFee = outputApi.Rent.ParkingFee,
+                        TransDiscount = outputApi.Rent.TransferPrice,
                         Token = Access_Token,
-                        TransDiscount = outputApi.Rent.TransferPrice
+                        LogID = LogID,
                     };
                     SPOutput_Base SPOutput = new SPOutput_Base();
                     SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);

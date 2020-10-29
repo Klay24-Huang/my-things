@@ -142,6 +142,7 @@ namespace WebAPI.Controllers
 
                             lstTmpData.Add(new ProjectObj()
                             {
+                                StationID = lstData[0].StationID,
                                 CarBrend = lstData[0].CarBrend,
                                 CarType = lstData[0].CarType,
                                 CarTypeName = lstData[0].CarTypeName,
@@ -154,7 +155,8 @@ namespace WebAPI.Controllers
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
                                 Seat = lstData[0].Seat,
-                                Bill = tmpBill,
+                                //Bill = tmpBill,
+                                Price = tmpBill,
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
@@ -169,7 +171,8 @@ namespace WebAPI.Controllers
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (ProjectObj proj)
                                     {
-                                        return proj.Bill > tmpBill && proj.IsMinimum == 1;
+                                        //return proj.Bill > tmpBill && proj.IsMinimum == 1;
+                                        return proj.Price > tmpBill && proj.IsMinimum == 1;
                                     });
                                     if (index > -1)
                                     {
@@ -178,6 +181,7 @@ namespace WebAPI.Controllers
                                     }
                                     lstTmpData.Add(new ProjectObj()
                                     {
+                                        StationID = lstData[i].StationID,
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
                                         CarTypeName = lstData[i].CarTypeName,
@@ -190,7 +194,8 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill,
+                                        //Bill = tmpBill,
+                                        Price = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,

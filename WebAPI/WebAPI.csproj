@@ -235,6 +235,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
+    <Compile Include="Controllers\MonthSubscriptionController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
