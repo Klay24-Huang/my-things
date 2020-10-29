@@ -7,7 +7,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
 {
     public class OrderFinishObj
     {
-    
+        /// <summary>
+        /// 年分
+        /// </summary>
+        public int RentYear { set; get; }
         /// <summary>
         /// 訂單編號
         /// </summary>
