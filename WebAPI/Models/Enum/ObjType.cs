@@ -260,6 +260,10 @@ namespace WebAPI.Models.Enum
             /// 欠費查詢
             /// </summary>
             GetArrearsQuery,
+            /// <summary>
+            /// 強還(For測試)
+            /// </summary>
+            EnforceReturnCar,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -573,6 +577,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetArrearsQuery:
                     SPName = "usp_ArrearsQuery_U1";//欠費查詢
+                    break;
+                case SPType.EnforceReturnCar:   //強還(For測試)
+                    SPName = "usp_EnforceReturnCar";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
