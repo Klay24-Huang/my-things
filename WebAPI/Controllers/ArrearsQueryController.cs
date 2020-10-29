@@ -157,11 +157,11 @@ namespace WebAPI.Controllers
                                 if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
                                 {
                                     outputApi.ArrearsInfos = sp_result;
-                                    string OrderNo = outputApi.ArrearsInfos.Where(x => !string.IsNullOrWhiteSpace(x.OrderNo)).Select(y => y.OrderNo).FirstOrDefault();
-                                    outputApi.TradeOrderNo = OrderNo ?? "";
+                                    string NPR330Save_ID = outputApi.ArrearsInfos.Select(y => y.NPR330Save_ID).FirstOrDefault().ToString();
+                                    outputApi.TradeOrderNo = NPR330Save_ID ?? "";
 
                                     if (outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count() > 0)
-                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Amount).Sum();
+                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Total_Amount).Sum();
                                 }
                                 else
                                 {
