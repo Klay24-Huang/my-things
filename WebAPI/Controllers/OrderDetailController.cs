@@ -1,31 +1,20 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.OrderList;
-using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
-using Domain.SP.Output.OrderList;
-using Domain.SP.Output.Rent;
 using Domain.TB;
-using Domain.WebAPI.Input.FET;
-using Domain.WebAPI.Input.Param;
-using Domain.WebAPI.Output.CENS;
-using OtherService;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
 using System.Web.Http;
-using WebAPI.Models;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -36,13 +25,12 @@ namespace WebAPI.Controllers
     public class OrderDetailController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-     
+
         [HttpPost]
         public Dictionary<string, object> DoOrderDetail(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -54,21 +42,16 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAP_OrderDetail apiInput = null;
-            OAPI_OrderDetail outputApi =null;
+            OAPI_OrderDetail outputApi = null;
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -100,11 +83,9 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -116,6 +97,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -123,7 +105,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -137,7 +118,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            //開始做取消預約
+            //取得訂單明細
             if (flag)
             {
                 SPInput_GetOrderDetail spInput = new SPInput_GetOrderDetail()
@@ -158,57 +139,58 @@ namespace WebAPI.Controllers
                 {
                     if (orderFinishDataLists.Count > 0)
                     {
-                        int gd=0, gh=0, gm=0;
-                        int md=0, mh=0, mm=0;
-                        int ud=0, uh=0, um=0;
+                        int gd = 0, gh = 0, gm = 0;
+                        int md = 0, mh = 0, mm = 0;
+                        int ud = 0, uh = 0, um = 0;
                         int td = 0, th = 0, tm = 0;
+                        int gmd = 0, gmh = 0, gmm = 0;
                         int total = Convert.ToInt32(Convert.ToDateTime(orderFinishDataLists[0].EndTime).Subtract(Convert.ToDateTime(orderFinishDataLists[0].StartTime)).TotalMinutes);
-                        int useHour = Convert.ToInt32(total - orderFinishDataLists[0].GiftPoint - (orderFinishDataLists[0].MonthlyHours * 60));
+                        int useHour = Convert.ToInt32(total - orderFinishDataLists[0].GiftPoint - orderFinishDataLists[0].GiftMotorPoint - (orderFinishDataLists[0].MonthlyHours * 60));
                         BillCommon billComm = new BillCommon();
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].GiftPoint), ref gd, ref gh, ref gm);
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].MonthlyHours*60), ref md, ref mh, ref mm);
+                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].MonthlyHours * 60), ref md, ref mh, ref mm);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
+                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].GiftMotorPoint), ref gmd, ref gmh, ref gmm);
                         outputApi = new OAPI_OrderDetail()
                         {
-                            CarBrend = orderFinishDataLists[0].CarBrend,
-                            CarNo = orderFinishDataLists[0].CarNo,
-                            CarRentBill = orderFinishDataLists[0].pure_price,
-                            CarTypeName = orderFinishDataLists[0].CarTypeName,
-                            CarTypePic = orderFinishDataLists[0].CarTypePic,
-                            ContactURL = "",
-                            EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
-                            EtagBill = orderFinishDataLists[0].Etag,
-                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),
-                            InsuranceBill = orderFinishDataLists[0].Insurance_price,
-                            InvoiceBill = orderFinishDataLists[0].invoice_price,
-                            InvoiceDate = orderFinishDataLists[0].invoice_date,
-                            InvoiceNo = orderFinishDataLists[0].invoiceCode,
-                            InvoiceType = orderFinishDataLists[0].InvoiceType,
-                            InvoiceURL = "",
-                            MileageBill = orderFinishDataLists[0].mileage_price,
-                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),
-                            NPOBAN = orderFinishDataLists[0].NPOBAN,
-                            NPOBAN_Name = orderFinishDataLists[0].NPOBAN_Name,
-                            Operator = orderFinishDataLists[0].Operator,
-                            OperatorScore = orderFinishDataLists[0].OperatorScore,
                             OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(7, '0')),
+                            ContactURL = "",
+                            Operator = orderFinishDataLists[0].Operator,
+                            CarTypePic = orderFinishDataLists[0].CarTypePic,
+                            CarNo = orderFinishDataLists[0].CarNo,
+                            Seat = orderFinishDataLists[0].Seat,
+                            CarBrend = orderFinishDataLists[0].CarBrend,
+                            CarTypeName = orderFinishDataLists[0].CarTypeName,
+                            StationName = orderFinishDataLists[0].StationName,
+                            OperatorScore = orderFinishDataLists[0].OperatorScore,
+                            ProjName = orderFinishDataLists[0].ProjName,
+                            CarRentBill = orderFinishDataLists[0].pure_price,
+                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
+                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),
+                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),
+                            GiftMotorPoint = string.Format("{0}天{1}時{2}分", gmd, gmh, gmm),
+                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
+                            MileageBill = orderFinishDataLists[0].mileage_price,
+                            InsuranceBill = orderFinishDataLists[0].Insurance_price,
+                            EtagBill = orderFinishDataLists[0].Etag,
                             OverTimeBill = orderFinishDataLists[0].fine_price,
                             ParkingBill = orderFinishDataLists[0].parkingFee,
-                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
-                            ProjName = orderFinishDataLists[0].ProjName,
-                            Seat = orderFinishDataLists[0].Seat,
-                            StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
-                            StationName = orderFinishDataLists[0].StationName,
+                            TransDiscount = orderFinishDataLists[0].TransDiscount,
                             TotalBill = orderFinishDataLists[0].final_price,
-                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
-                            TransDiscount = orderFinishDataLists[0].TransDiscount
+                            InvoiceType = orderFinishDataLists[0].InvoiceType,
+                            NPOBAN = orderFinishDataLists[0].NPOBAN,
+                            NPOBAN_Name = orderFinishDataLists[0].NPOBAN_Name,
+                            InvoiceNo = orderFinishDataLists[0].invoiceCode,
+                            InvoiceDate = orderFinishDataLists[0].invoice_date,
+                            InvoiceBill = orderFinishDataLists[0].invoice_price,
+                            InvoiceURL = "",
+                            StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
+                            EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
                         };
                     }
                 }
-
             }
-
             #endregion
 
             #region 寫入錯誤Log

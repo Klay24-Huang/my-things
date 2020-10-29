@@ -18,6 +18,7 @@
 	[fine_interval] [int] NOT NULL DEFAULT 0,
 	[fine_rate] [int] NOT NULL DEFAULT 0,
 	[gift_point] [int] NOT NULL DEFAULT 0,
+    [gift_motor_point] [int] NOT NULL DEFAULT 0,
     [monthly_workday] [float] not null DEFAULT 0.0,
     [monthly_holiday] [float] not null DEFAULT 0.0,
 	[Etag] [int] NOT NULL DEFAULT 0,

@@ -32,6 +32,7 @@ SELECT OrderMain.[order_number]
       ,ISNULL(OrderDetil.Insurance_price,0) AS Insurance_price
       ,ISNULL(OrderDetil.fine_price,0) AS fine_price
       ,ISNULL(OrderDetil.gift_point,0) AS gift_point
+	  ,ISNULL(OrderDetil.gift_motor_point, 0) AS gift_motor_point
       ,ISNULL(OrderDetil.Etag,0) AS Etag
       ,ISNULL(OrderDetil.already_payment,0) AS already_payment
       ,ISNULL(OrderDetil.start_mile,0) AS start_mile
