@@ -176,16 +176,55 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 			ELSE
 			BEGIN
 				UPDATE TB_CarStatus
-				SET  [ACCStatus]=@deviceACCStatus,[GPSStatus]=@deviceGPSStatus,[GPSTime]=@deviceGPSTime,[GPRSStatus]=@deviceGPRSStatus,[Speed]=@deviceSpeed
-					,[Volt]=@deviceVolt,[Latitude]=@deviceLatitude,[Longitude]=@deviceLongitude,[Millage]=@deviceMillage,[deviceCourse]=@deviceCourse
-					,[deviceRPM]=@deviceRPM,[device2TBA]=@device2TBA,[device3TBA]=@device3TBA,[deviceRSOC]=@deviceRSOC,[deviceRDistance]=@deviceRDistance
-					,[deviceMBA]=@deviceMBA,[deviceMBAA]=@deviceMBAA,[deviceMBAT_Hi]=@deviceMBAT_Hi,[deviceMBAT_Lo]=@deviceMBAT_Lo,[deviceRBA]=@deviceRBA
-					,[deviceRBAA]=@deviceRBAA,[deviceRBAT_Hi]=@deviceRBAT_Hi,[deviceRBAT_Lo]=@deviceRBAT_Lo,[deviceLBA]=@deviceLBA,[deviceLBAA]=@deviceLBAA
-					,[deviceLBAT_Hi]=@deviceLBAT_Hi,[deviceLBAT_Lo]=@deviceLBAT_Lo,[deviceTMP]=@deviceTMP,[deviceCur]=@deviceCur,[deviceTPS]=@deviceTPS
-					,[deviceVOL]=@deviceiVOL,[deviceErr]=@deviceErr,[deviceALT]=@deviceALT,[deviceGx]=@deviceGx,[deviceGy]=@deviceGy
-					,[deviceGz]=@deviceGz,[deviceBLE_Login]=@deviceBLE_Login,[deviceBLE_BroadCast]=@deviceBLE_BroadCast,[devicePwr_Mode]=@devicePwr_Mode,[deviceReversing]=@deviceReversing
-					,[devicePut_Down]=@devicePut_Down,[devicePwr_Relay]=@devicePwr_Relay,[deviceStart_OK]=@deviceStart_OK,[deviceHard_ACC]=@deviceHard_ACC,[deviceEMG_Break]=@deviceEMG_Break
-					,[deviceSharp_Turn]=@deviceSharp_Turn,[deviceBat_Cover]=@deviceBat_Cover,[deviceLowVoltage]=@deviceLowVoltage,[extDeviceStatus1]=@extDeviceStatus1
+				SET  [ACCStatus]=@deviceACCStatus,
+					 [GPSStatus]=@deviceGPSStatus,
+					 [GPSTime]=@deviceGPSTime,
+					 [GPRSStatus]=@deviceGPRSStatus,
+					 [Speed]=@deviceSpeed,
+					 [Volt]=@deviceVolt,
+					 [Latitude]=@deviceLatitude,
+					 [Longitude]=@deviceLongitude,
+					 [Millage]= CASE WHEN @deviceMillage IS NOT NULL THEN @deviceMillage ELSE Millage END,
+					 [deviceCourse]=@deviceCourse,
+					 [deviceRPM]= CASE WHEN @deviceRPM IS NOT NULL THEN @deviceRPM ELSE deviceRPM END,
+					 [device2TBA]= CASE WHEN @device2TBA IS NOT NULL THEN @device2TBA ELSE device2TBA END,
+					 [device3TBA]= CASE WHEN @device3TBA IS NOT NULL THEN @device3TBA ELSE device3TBA END,
+					 [deviceRSOC]= CASE WHEN @deviceRSOC IS NOT NULL THEN @deviceRSOC ELSE deviceRSOC END,
+					 [deviceRDistance]= CASE WHEN @deviceRDistance IS NOT NULL THEN @deviceRDistance ELSE deviceRDistance END,
+					 [deviceMBA]= CASE WHEN @deviceMBA IS NOT NULL THEN @deviceMBA ELSE deviceMBA END,
+					 [deviceMBAA]= CASE WHEN @deviceMBAA IS NOT NULL THEN @deviceMBAA ELSE deviceMBAA END,
+					 [deviceMBAT_Hi]= CASE WHEN @deviceMBAT_Hi IS NOT NULL THEN @deviceMBAT_Hi ELSE deviceMBAT_Hi END,
+					 [deviceMBAT_Lo]= CASE WHEN @deviceMBAT_Lo IS NOT NULL THEN @deviceMBAT_Lo ELSE deviceMBAT_Lo END,
+					 [deviceRBA]= CASE WHEN @deviceRBA IS NOT NULL THEN @deviceRBA ELSE deviceRBA END,
+					 [deviceRBAA]= CASE WHEN @deviceRBAA IS NOT NULL THEN @deviceRBAA ELSE deviceRBAA END,
+					 [deviceRBAT_Hi]= CASE WHEN @deviceRBAT_Hi IS NOT NULL THEN @deviceRBAT_Hi ELSE deviceRBAT_Hi END,
+					 [deviceRBAT_Lo]= CASE WHEN @deviceRBAT_Lo IS NOT NULL THEN @deviceRBAT_Lo ELSE deviceRBAT_Lo END,
+					 [deviceLBA]= CASE WHEN @deviceLBA IS NOT NULL THEN @deviceLBA ELSE deviceLBA END,
+					 [deviceLBAA]= CASE WHEN @deviceLBAA IS NOT NULL THEN @deviceLBAA ELSE deviceLBAA END,
+					 [deviceLBAT_Hi]= CASE WHEN @deviceLBAT_Hi IS NOT NULL THEN @deviceLBAT_Hi ELSE deviceLBAT_Hi END,
+					 [deviceLBAT_Lo]= CASE WHEN @deviceLBAT_Lo IS NOT NULL THEN @deviceLBAT_Lo ELSE deviceLBAT_Lo END,
+					 [deviceTMP]= CASE WHEN @deviceTMP IS NOT NULL THEN @deviceTMP ELSE deviceTMP END,
+					 [deviceCur]= CASE WHEN @deviceCur IS NOT NULL THEN @deviceCur ELSE deviceCur END,
+					 [deviceTPS]= CASE WHEN @deviceTPS IS NOT NULL THEN @deviceTPS ELSE deviceTPS END,
+					 [deviceVOL]= CASE WHEN @deviceiVOL IS NOT NULL THEN @deviceiVOL ELSE deviceVOL END,
+					 [deviceErr]= CASE WHEN @deviceErr IS NOT NULL THEN @deviceErr ELSE deviceErr END,
+					 [deviceALT]= CASE WHEN @deviceALT IS NOT NULL THEN @deviceALT ELSE deviceALT END,
+					 [deviceGx]= CASE WHEN @deviceGx IS NOT NULL THEN @deviceGx ELSE deviceGx END,
+					 [deviceGy]= CASE WHEN @deviceGy IS NOT NULL THEN @deviceGy ELSE deviceGy END,
+					 [deviceGz]= CASE WHEN @deviceGz IS NOT NULL THEN @deviceGz ELSE deviceGz END,
+					 [deviceBLE_Login]=@deviceBLE_Login,
+					 [deviceBLE_BroadCast]=@deviceBLE_BroadCast,
+					 [devicePwr_Mode]=@devicePwr_Mode,
+					 [deviceReversing]=@deviceReversing,
+					 [devicePut_Down]=@devicePut_Down,
+					 [devicePwr_Relay]=@devicePwr_Relay,
+					 [deviceStart_OK]=@deviceStart_OK,
+					 [deviceHard_ACC]=@deviceHard_ACC,
+					 [deviceEMG_Break]=@deviceEMG_Break,
+					 [deviceSharp_Turn]=@deviceSharp_Turn,
+					 [deviceBat_Cover]=@deviceBat_Cover,
+					 [deviceLowVoltage]=@deviceLowVoltage,
+					 [extDeviceStatus1]=@extDeviceStatus1
 					--,[extDeviceData5]=@extDeviceData5,[extDeviceData6]=@extDeviceData6	--ReportNow不會回傳[extDeviceData5],[extDeviceData6]，所以不作更新
 					,UPDTime=@NowTime
 				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
