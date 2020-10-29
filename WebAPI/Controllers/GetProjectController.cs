@@ -191,41 +191,45 @@ namespace WebAPI.Controllers
                     {
                         int DataLen = lstData.Count;
 
-                        lstTmpData.Add(new GetProjectObj()
+                        if (DataLen > 0)
                         {
-                            ADDR = lstData[0].ADDR,
-                            Content = lstData[0].Content,
-                            Latitude = lstData[0].Latitude,
-                            Longitude = lstData[0].Longitude,
-                            StationID = lstData[0].StationID,
-                            StationName = lstData[0].StationName,
-                            IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
-                            ProjectObj = new List<ProjectObj>()
-                        });
-                        lstTmpData[0].ProjectObj.Add(new ProjectObj()
-                        {
-                            CarBrend = lstData[0].CarBrend,
-                            CarType = lstData[0].CarType,
-                            CarTypeName = lstData[0].CarTypeName,
-                            CarTypePic = lstData[0].CarTypePic,
-                            Insurance = 1,
-                            InsurancePerHour = 20,
-                            IsMinimum = 1,
-                            Operator = lstData[0].Operator,
-                            OperatorScore = lstData[0].OperatorScore,
-                            ProjID = lstData[0].PROJID,
-                            ProjName = lstData[0].PRONAME,
-                            Seat = lstData[0].Seat,
-                            Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
-                            WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
-                            HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
-                            CarOfArea = lstData[0].CarOfArea,
-                            Content = "",
-                            IsRent = lstData[0].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
-                        });
-                        lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
-                        if (DataLen > 1)
-                        {
+                            lstTmpData.Add(new GetProjectObj()
+                            {
+                                ADDR = lstData[0].ADDR,
+                                Content = lstData[0].Content,
+                                Latitude = lstData[0].Latitude,
+                                Longitude = lstData[0].Longitude,
+                                StationID = lstData[0].StationID,
+                                StationName = lstData[0].StationName,
+                                IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
+                                ProjectObj = new List<ProjectObj>()
+                            });
+                            lstTmpData[0].ProjectObj.Add(new ProjectObj()
+                            {
+                                StationID = lstData[0].StationID,
+                                CarBrend = lstData[0].CarBrend,
+                                CarType = lstData[0].CarType,
+                                CarTypeName = lstData[0].CarTypeName,
+                                CarTypePic = lstData[0].CarTypePic,
+                                Insurance = 1,
+                                InsurancePerHour = 20,
+                                IsMinimum = 1,
+                                Operator = lstData[0].Operator,
+                                OperatorScore = lstData[0].OperatorScore,
+                                ProjID = lstData[0].PROJID,
+                                ProjName = lstData[0].PRONAME,
+                                Seat = lstData[0].Seat,
+                                //Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
+                                Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
+                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
+                                HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
+                                CarOfArea = lstData[0].CarOfArea,
+                                Content = "",
+                                IsRent = lstData[0].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
+                            });
+                            //lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
+                            lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Price;
+
                             for (int i = 1; i < DataLen; i++)
                             {
                                 int index = lstTmpData.FindIndex(delegate (GetProjectObj station)
@@ -238,6 +242,7 @@ namespace WebAPI.Controllers
                                     int isMin = 0;
                                     ProjectObj tmpObj = new ProjectObj()
                                     {
+                                        StationID = lstData[i].StationID,
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
                                         CarTypeName = lstData[i].CarTypeName,
@@ -250,7 +255,8 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill,
+                                        //Bill = tmpBill,
+                                        Price = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
@@ -283,6 +289,7 @@ namespace WebAPI.Controllers
                                     }
                                     lstTmpData[index].ProjectObj.Add(new ProjectObj()
                                     {
+                                        StationID = lstData[i].StationID,
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
                                         CarTypeName = lstData[i].CarTypeName,
@@ -295,7 +302,8 @@ namespace WebAPI.Controllers
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
                                         Seat = lstData[i].Seat,
-                                        Bill = tmpBill,
+                                        //Bill = tmpBill,
+                                        Price = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,

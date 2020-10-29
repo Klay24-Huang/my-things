@@ -88,6 +88,7 @@ namespace WebAPI.Controllers
 
             }
             //不開放訪客
+            /*
             if (flag)
             {
                 if (isGuest)
@@ -95,10 +96,11 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR101";
                 }
-            }
+            }*/
             #endregion
             #region TB
             //Token判斷
+            /*
             if (flag && isGuest == false)
             {
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
@@ -117,7 +119,7 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
-         
+            */
 
             #region 取出交換站資料
             if (flag)

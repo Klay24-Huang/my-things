@@ -131,7 +131,8 @@ namespace OtherService
             //bool flag = true;
             int nowCount = 0;
             bool waitFlag = false;
-            while (nowCount < 30)
+            //while (nowCount < 30)
+            while (nowCount < 10)  //測試方便先等10秒  20201028 ADD BY ADAM 
             {
                 Thread.Sleep(1000);
                 CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);
@@ -149,6 +150,8 @@ namespace OtherService
                 }
                 nowCount++;
             }
+            //20201028車機無回應時設定為成功，以狀態檔為主
+            waitFlag = true;
             if (waitFlag == false)
             {
                 if (errCode != "ERR167")
@@ -158,8 +161,7 @@ namespace OtherService
                 }
 
             }
-            //20201028車機無回應時設定為成功，以狀態檔為主
-            waitFlag = true;
+            
             return waitFlag;
         }
         private async Task<Boolean> doSendCMD(string input, string URL, SPInput_InsSendCMD spInput)

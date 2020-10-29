@@ -223,6 +223,7 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            CID = spOut.CID;
                             //取最新狀況, 先送getlast之後從tb捉最近一筆
                             FETCatAPI FetAPI = new FETCatAPI();
                             string requestId = "";
