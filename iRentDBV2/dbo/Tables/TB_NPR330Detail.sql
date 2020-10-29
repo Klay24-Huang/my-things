@@ -20,7 +20,10 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330_MKTime]  DEFAULT (getdate()) FOR [MKTime]
+ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330_MKTime]  DEFAULT (dateadd(hour,(8),getdate())) FOR [MKTime]
+GO
+
+ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_UPDTime]  DEFAULT (dateadd(hour,(8),getdate())) FOR [UPDTime]
 GO
 
 ALTER TABLE [dbo].[TB_NPR330Detail]  WITH CHECK ADD  CONSTRAINT [FK_TB_NPR330Detail_TB_NPR330Save] FOREIGN KEY([NPR330Save_ID])
@@ -33,7 +36,10 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'流水號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'NPR330Detail_ID'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'對應TB_NPR330Save' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'NPR330Save_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'對應TB_NPR330Save流水號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'NPR330Save_ID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'車號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'CarNo'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'待繳金額' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'Amount'
@@ -69,7 +75,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'更新時間' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'UPDTime'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'欠費查詢紀錄' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'欠費查詢紀錄-子表' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail'
 GO
 
 

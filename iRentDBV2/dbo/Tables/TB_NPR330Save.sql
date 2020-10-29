@@ -19,4 +19,5 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'身分證號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Save', @level2type=N'COLUMN',@level2name=N'IDNO'
 GO
 
-
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'欠費查詢紀錄-主表' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Save'
+GO
