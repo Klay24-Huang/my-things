@@ -21,9 +21,9 @@ namespace Domain.TB.BackEnd
         /// GPS狀態
         /// </summary>
         public Int16 GPSStatus { set; get; }
-        public double SPEED { set; get; }
-        public Decimal Lat { set; get; }
-        public Decimal Lng { set; get; }
+        public double Speed { set; get; }
+        public Decimal Latitude { set; get; }
+        public Decimal Longitude { set; get; }
         public DateTime GPSTime { set; get; }
 
         public Int64 CarStatus { set; get; }

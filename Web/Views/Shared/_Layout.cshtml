@@ -119,6 +119,7 @@
             ActionStrName = "強制延長用車";
             break;
         case "ContactDetail":
+        case "ContactMotorDetail":
             ControllerStrName = "合約管理";
             ActionStrName = "合約查詢";
             break;
@@ -137,6 +138,12 @@
         case "FranchiseesMaintain":
             ControllerStrName = "帳號管理";
             ActionStrName = "加盟業者維護";
+            break;
+        #endregion
+        #region 車輛軌跡查詢
+        case "Index":
+            ControllerStrName = "地圖監控";
+            ActionStrName = "車輛軌跡查詢";
             break;
             #endregion
 
@@ -182,7 +189,17 @@
         case "FranchiseesMaintain":
             @*<link rel="stylesheet" href="~/Content/css/jquery.modal.min.css">*@
             break;
-
+        case "Index":
+            if (controllName == "Monitor")
+            {
+                <link href='~/assets/EvTimeLine/chosen.css' rel='stylesheet' tyle="text/css">
+                <link href="~/assets/EvTimeLine/theme/avocado.css" rel="stylesheet" type="text/css" id="theme-style">
+                <link href="~/assets/EvTimeLine/prism.css" rel="stylesheet/less" type="text/css">
+                <link href='~/assets/EvTimeLine/fullcalendar.css' rel='stylesheet' tyle="text/css">
+                <link href="~/assets/EvTimeLine/cabinet.css" rel="stylesheet" type="text/css" id="theme-style">
+                <link href="~/assets/EvTimeLine/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css">
+            }
+            break;
 
     }
 </head>
@@ -247,11 +264,11 @@
             @if (actionName == "ViewCarDetail")
             {
                 @("/ 車輛基本資料")
-            }
-            else if (actionName == "ContactDetail")
-            {
+                }
+                else if (actionName == "ContactDetail" || actionName== "ContactMotorDetail")
+                {
                 @("/ 合約明細")
-            }
+                }
         </p>
 
     </div>
@@ -320,11 +337,10 @@
                             <a class="nav-link dropdown-toggle text-white" href="~/Monitor/Index" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 地圖監控
                             </a>
-                            @*<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                    <a class="dropdown-item" href="#">地圖監控</a>
-                                </div>*@
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="~/Monitor/Index" target="_blank">地圖監控</a>
+
+                            </div>
                         </li>
                         <!-- 合約管理 -->
                         <li class="nav-item dropdown">
@@ -472,6 +488,14 @@
                 break;
             case "FranceiseesMaintain":
                 @*<script src="~/Scripts/jquery.modal.min.js"></script>*@
+                break;
+            case "Index":
+                if (controllName == "Monitor")
+                {
+                    <script src="~/assets/EvTimeLine/datepicker-zh-TW.js"></script>
+                    <script src="~/assets/EvTimeLine/jquery-ui-timepicker-addon.js"></script>
+                    <script src="~/assets/EvTimeLine/EvTrack.js"></script>
+                }
                 break;
         }
     }

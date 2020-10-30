@@ -132,9 +132,17 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BookingStart,
             /// <summary>
+            /// 後台強取
+            /// </summary>
+            BE_BookingStart,
+            /// <summary>
             /// 取車前判斷(用於執行usp_BookingStart與usp_BookingStartMotor前)
             /// </summary>
             BeforeBookingStart,
+            /// <summary>
+            /// 後台強取前判斷(用於執行usp_BE_BookingStart與usp_BE_BookingStartMotor前)
+            /// </summary>
+            BE_BeforeBookingStart,
             /// <summary>
             /// 取車前判斷車況
             /// </summary>
@@ -159,6 +167,10 @@ namespace WebAPI.Models.Enum
             /// 還車前檢查車況
             /// </summary>
             CheckCarStatusByReturn,
+            /// <summary>
+            /// 後台強還，還車前檢查車況
+            /// </summary>
+            BE_CheckCarStatusByReturn,
             /// <summary>
             /// 通過檢查，寫入還車時間
             /// </summary>
@@ -201,13 +213,25 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetOrderStatusByOrderNo,
             /// <summary>
+            /// 後台強還，使用訂單編號取出該訂單基本資訊
+            /// </summary>
+            BE_GetOrderStatusByOrderNo,
+            /// <summary>
             /// 計算及寫入最終租金
             /// </summary>
             CalFinalPrice,
             /// <summary>
+            /// 後台強還計算及寫入最終租金
+            /// </summary>
+            BE_CalFinalPrice,
+            /// <summary>
             /// 完成付款
             /// </summary>
             DonePayRentBill,
+            /// <summary>
+            /// 後台強還設定狀態
+            /// </summary>
+            BE_ContactFinish,
             /// <summary>
             /// 電子柵欄查詢
             /// </summary>
@@ -471,8 +495,14 @@ namespace WebAPI.Models.Enum
                 case SPType.BookingStart:
                     SPName = "usp_BookingStart";
                     break;
+                case SPType.BE_BookingStart:
+                    SPName = "usp_BE_BookingStart";
+                    break;
                 case SPType.BeforeBookingStart:
                     SPName = "usp_BeforeBookingStart";
+                    break;
+                case SPType.BE_BeforeBookingStart:
+                    SPName = "usp_BE_BeforeBookingStart";
                     break;
                 case SPType.CheckCarStatus:
                     SPName = "usp_CheckCarStatus";
@@ -504,6 +534,9 @@ namespace WebAPI.Models.Enum
                 case SPType.CheckCarStatusByReturn:
                     SPName = "usp_CheckCarStatusByReturn";
                     break;
+                case SPType.BE_CheckCarStatusByReturn:
+                    SPName = "usp_BE_CheckCarStatusByReturn";
+                    break;
                 case SPType.ReturnCar:
                     SPName = "usp_ReturnCar";
                     break;
@@ -528,11 +561,20 @@ namespace WebAPI.Models.Enum
                 case SPType.GetOrderStatusByOrderNo:
                     SPName = "usp_GetOrderStatusByOrderNo";
                     break;
+                case SPType.BE_GetOrderStatusByOrderNo:
+                    SPName = "usp_BE_GetOrderStatusByOrderNo";
+                    break;
                 case SPType.CalFinalPrice:
                     SPName = "usp_CalFinalPrice";
                     break;
+                case SPType.BE_CalFinalPrice:
+                    SPName = "usp_BE_CalFinalPrice";
+                    break;
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
+                    break;
+                case SPType.BE_ContactFinish:
+                    SPName = "usp_BE_ContactFinish";
                     break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";

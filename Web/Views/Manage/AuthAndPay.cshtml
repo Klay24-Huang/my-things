@@ -1,7 +1,17 @@
-﻿
+﻿@model IEnumerable<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>
+
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
 
+    int ResultLen = -1;
+    List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+    int Sum = 0;
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -57,24 +67,41 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-               <td data-sort="false">
-                    <input type="checkbox" id="chkAll" name="chkAll" />
-                </td>
-                <td scope="col">iRent合約編號</td>
-                <td scope="col">合約編號</td>
-                <td scope="col">eTag</td>
-                <td scope="col"></td>
-                <td scope="col">100</td>
-                <td scope="col">0</td>
-            </tr>
+
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="7" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    Sum += (Convert.ToInt32(lstData[i].DUEAMT) - Convert.ToInt32(lstData[i].PAIDAMT));
+                    <tr>
+                        <td data-sort="false">
+                            <input type="checkbox" id="chk_@(i)" name="chkPay" />
+                        </td>
+                        <td scope="col">@(lstData[i].IRENTORDNO)</td>
+                        <td scope="col">@(lstData[i].ORDNO)</td>
+                        <td scope="col">@(lstData[i].SPAYMENTTYPE)</td>
+                        <td scope="col">@(lstData[i].POLNO)</td>
+                        <td scope="col">@(lstData[i].DUEAMT)</td>
+                        <td scope="col">@(lstData[i].PAIDAMT)</td>
+                    </tr>
+                }
+
+            }
         </tbody>
         <tfoot>
             <tr>
-                <td scope="col" colspan="5" class="text-center">此次刷卡金額100元</td>
+                <td scope="col" colspan="5" class="text-center">此次刷卡金額@(Sum)元</td>
                 <td scope="col" colspan="2">
                     <button type="submit" class="btn btn-primary">刷卡授權</button>
-                    <button type="submit" class="btn btn-secondary">退出</button>
+                    @*<button type="submit" class="btn btn-secondary">退出</button>*@
                 </td>
             </tr>
         </tfoot>

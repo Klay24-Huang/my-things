@@ -49,6 +49,7 @@
     <Compile Include="CommonRepository.cs" />
     <Compile Include="ContactRepository.cs" />
     <Compile Include="Enum\ObjType.cs" />
+    <Compile Include="EventHandleRepository.cs" />
     <Compile Include="ManagerRepository.cs" />
     <Compile Include="MemberRepository.cs" />
     <Compile Include="MonthlyRentRepository.cs" />

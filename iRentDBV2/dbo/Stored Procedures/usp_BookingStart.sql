@@ -47,8 +47,7 @@ CREATE PROCEDURE [dbo].[usp_BookingStart]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
-	@StopTime               VARCHAR(20)           , --路邊租還才能更改結束日
-        
+	@StopTime               VARCHAR(20)           , --路邊租還才能更改結束日       
 	@NowMileage             FLOAT                 ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -188,6 +187,12 @@ SET @NowMileage=ISNULL(@NowMileage,0);
 					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 					--更新車輛狀態
 					UPDATE TB_Car SET available=0,NowOrderNo=@OrderNo WHERE CarNo=@CarNo;
+					--加入機車取車時的電池電量及經緯度
+					IF @ProjType=4
+					BEGIN
+						INSERT INTO TB_OrderDataByMotor(OrderNo,P_lat,P_lon,P_LBA,P_RBA,P_MBA,P_TBA)
+						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WHERE CarNo=@CarNo
+					END
 					COMMIT TRAN;
 
 					--

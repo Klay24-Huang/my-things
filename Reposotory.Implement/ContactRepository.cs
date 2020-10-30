@@ -319,5 +319,150 @@ namespace Reposotory.Implement
 
             return lstOrderPart;
         }
+        /// <summary>
+        /// 後台訂單明細使用
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+        public BE_OrderDetailData GetOrderDetail(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_OrderDetailData> lstOrder = null;
+            BE_OrderDetailData obj = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT *  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " OrderNo=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            SQL += " ORDER BY OrderNo ASC;";
+
+            lstOrder = GetObjList<BE_OrderDetailData>(ref flag, ref lstError, SQL, para, term);
+            if (lstOrder != null)
+            {
+                if (lstOrder.Count > 0)
+                {
+                    obj = new BE_OrderDetailData();
+                    obj = lstOrder[0];
+                }
+            }
+
+            return obj;
+        }
+        /// <summary>
+        /// 取出出還車照
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        public List<BE_CarImageData> GetOrdeCarImage(Int64 OrderNo,int Mode,bool IsContact)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarImageData> lstCarImage = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT ImageType,Image  FROM TB_CarImage WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = " ImageType<>5 ";
+            if (IsContact)
+            {
+                term= " ImageType=5 ";
+            }
+
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " OrderNo=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (Mode >= 0 && Mode<2)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " Mode=@Mode";
+                para[nowCount] = new SqlParameter("@Mode", SqlDbType.BigInt);
+                para[nowCount].Value = Mode;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            SQL += " ORDER BY OrderNo ASC;";
+
+            lstCarImage = GetObjList<BE_CarImageData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarImage;
+        }
+        /// <summary>
+        /// 判斷強還時是不是已經有其他車取車，以判斷要不要清空車機
+        /// </summary>
+        /// <param name="OrderNum"></param>
+        /// <returns></returns>
+        public BE_CheckHasOrder CheckCanClear(string OrderNum)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CheckHasOrder> lstBookingControl = null;
+            string SQL = "SELECT COUNT(order_number) AS Flag FROM TB_OrderMain  WITH (NOLOCK) ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            int nowCount = 0;
+            if (false == string.IsNullOrEmpty(OrderNum))
+            {
+                term = " (car_mgt_status>=4 AND car_mgt_status<16 AND cancel_status=0) AND (DATEADD(HOUR,8,GETDATE()) BETWEEN start_time AND stop_time) AND ";
+                term += " order_number <> @OrderNum AND CarNo = (SELECT CarNo FROM TB_OrderMain WITH (NOLOCK)WHERE order_number = @OrderNum)";
+                para[nowCount] = new SqlParameter("@OrderNum", SqlDbType.VarChar, 30);
+                para[nowCount].Value = OrderNum;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + "  ";
+            }
+
+            lstBookingControl = GetObjList<BE_CheckHasOrder>(ref flag, ref lstError, SQL, para, term);
+            BE_CheckHasOrder tmp = null;
+            if (lstBookingControl.Count > 0)
+            {
+                tmp = lstBookingControl[0];
+            }
+
+            return tmp;
+        }
+
     }
 }

@@ -18,6 +18,7 @@
 	[fine_interval] [int] NOT NULL DEFAULT 0,
 	[fine_rate] [int] NOT NULL DEFAULT 0,
 	[gift_point] [int] NOT NULL DEFAULT 0,
+    [gift_motor_point] [int] NOT NULL DEFAULT 0,
     [monthly_workday] [float] not null DEFAULT 0.0,
     [monthly_holiday] [float] not null DEFAULT 0.0,
 	[Etag] [int] NOT NULL DEFAULT 0,
@@ -183,3 +184,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_OrderDetail',
     @level2type = N'COLUMN',
     @level2name = N'monthly_holiday'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'使用的機車點數',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_OrderDetail',
+    @level2type = N'COLUMN',
+    @level2name = N'gift_motor_point'

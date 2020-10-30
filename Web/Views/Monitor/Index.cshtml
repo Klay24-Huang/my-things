@@ -26,44 +26,28 @@
     <!-- Styles -->
     <link href='~/assets/EvTimeLine/chosen.css' rel='stylesheet' tyle="text/css">
     <link href="~/assets/EvTimeLine/theme/avocado.css" rel="stylesheet" type="text/css" id="theme-style">
-    <link href="~/Content/css/prism.css" rel="stylesheet/less" type="text/css">
+    <link href="~/assets/EvTimeLine/prism.css" rel="stylesheet/less" type="text/css">
     <link href='~/assets/EvTimeLine/fullcalendar.css' rel='stylesheet' tyle="text/css">
-    <link href="~/Content/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="~/assets/EvTimeLine/bootstrap3.0.min.css">
+    <link rel="stylesheet" href="~/Content/css/bootstrap.css" />
     <link href="~/Content/css/jquery-ui.css" rel="stylesheet">
-    <link href="~/Content/css/sweetalert.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/css/sweetalert2.css">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,600,300' rel='stylesheet' type='text/css'>
-    <link href="~/Content/css/cabinet.css" rel="stylesheet" type="text/css" id="theme-style">
+    <link href="~/assets/EvTimeLine/cabinet.css" rel="stylesheet" type="text/css" id="theme-style">
     <link href="~/assets/EvTimeLine/evTrack.css" rel="stylesheet" type="text/css">
-    <link href="~/Content/css/style.css" rel="stylesheet" type="text/css">
-    @*<link href="~/assets/css/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css">
-        <link href="~/assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <link href="~/assets/css/jquery.autocomplete.css" rel="stylesheet">
-        <script src="~/assets/js/jquery/1.9.1/jquery-1.9.1.js"></script>*@
+    <link href="~/assets/EvTimeLine/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/EvTimeLine/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/assets/EvTimeLine/jquery.autocomplete.css" rel="stylesheet">
+    <script src="~/assets/EvTimeLine/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="~/Content/css/footable/footable.core.css">
+    <link rel="stylesheet" href="~/Content/css/footable/footable-page.css">
 
     @*<script src="~/assets/js/jquery.autocomplete.js"></script>*@
-
+    @*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk869ONTbT88W_HJpJtw37Dxmzmgv5AHE&libraries=drawing"></script>*@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVquooZC9O0F84LwJ-FRL3LzVmP_ExJ5M&libraries=drawing"></script>
 
-    <!-- import js -->
-    <script src="~/Scripts/js/jquery-3.5.1.min.js"></script>
-    <script src="~/Scripts/js/jquery-ui.js"></script>
+
     <script src="~/Scripts/plugin/sweetalert/dist/sweetalert.min.js"></script>
-    @*<script src="~/Scripts/js/jquery.autocomplete.js"></script>*@
-    <script src="~/Scripts/js/popper.js"></script>
-    <script src="~/Scripts/js/bootstrap.bundle.min.js"></script>
-    <script src="~/Scripts/js/jquery-filestyle.js"></script>
-    <script src="~/Scripts/js/flatpickr.js"></script>
-    <script src="~/Scripts/js/jquery.validate.js"></script>
-    <script src="~/Scripts/js/moment-with-locales.min.js"></script>
-    <script src="~/Scripts/js/footable/footable.all.min.js"></script>
-    @*<script src="~/Scripts/plugin/footable-bootstrap/js/footable.js"></script>*@
-    @*<script src="~/Content/plugins/footable-components.latest/js/footable.core.js"></script>
-        <script src="~/Content/plugins/footable-components.latest/js/footable.paging.js"></script>
-        <script src="~/Content/plugins/footable-components.latest/js/footable.sorting.js"></script>
-        <script src="~/Content/plugins/footable-components.latest/js/footable.filtering.js"></script>*@
-    @*<script src="~/Content/plugins/footable-bootstrap.latest/js/footable.js"></script>*@
-    <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
-    <script src="~/Scripts/js/CommonFunc.js"></script>
     <!-- HTML5, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
         <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,10 +56,10 @@
 </head>
 <body>
     <!-- Map -->
-    <div class="container-fluid bg-dark" style="padding-left:50px;">
+    <div class="container-fluid" style="padding-left:50px;">
         <ul id="myTab" class="nav nav-tabs">
-            <li class="active"><a href="#home" class="btn btn-danger" data-toggle="tab">地圖顯示</a></li>
-            <li><a href="#table" class="btn btn-outline-info" data-toggle="tab">表格顯示</a></li>
+            <li class="active"><a href="#home" data-toggle="tab">地圖顯示</a></li>
+            <li><a href="#table" data-toggle="tab">表格顯示</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="home">
@@ -93,8 +77,8 @@
                         <div class="well">
 
                             <!-- Add News: WYSIWYG Edior -->
-                            <table class="table-hover table">
-                                <thead>
+                            <table class="table bg-white" data-filter="#filter" id="list" data-limit-navigation="5">
+                                <thead class="text-white bg-primary">
                                     <tr>
                                         <th>序號</th>
                                         <th>車牌</th>
@@ -102,8 +86,8 @@
                                         <th>營運狀態</th>
                                         <th>衛星狀態</th>
                                         <th>速度</th>
-                                        <th>回報位置</th>
-                                        <th>景點</th>
+                                        @* <th>回報位置</th>
+        <th>景點</th>*@
                                         <th>回報時間</th>
                                     </tr>
                                 </thead>
@@ -113,24 +97,34 @@
                                         string address = "addr" + i.ToString();
                                         string Lat = "Lat" + i.ToString();
                                         string Lng = "Lng" + i.ToString();
-                                        <tr>
-                                            <td>@(i+1)</td>
-                                            <td>@lstEv[i].CarNo</td>
-                                            <td>開機</td>
-                                            <td>@((lstEv[i].CarStatus==0)?"可出租":"H"+ lstEv[i].CarStatus.ToString().PadLeft(7,'0'))</td>
-                                            <td>@((lstEv[i].GPSStatus == 0)?"未定位":"已定位")</td>
-                                            <td>@((lstEv[i].SPEED == 2) ? 0 : Convert.ToInt32(lstEv[i].SPEED))</td>
-                                            <td><span id="@address"></span><input type="hidden" id="@Lat" value="@lstEv[i].Lat"><input type="hidden" id="@Lng" value="@lstEv[i].Lng"></td>
-                                            <td></td>
-                                            <td>@lstEv[i].GPSTime</td>
+                                    <tr>
+                                        <td>@(i+1)</td>
+                                        <td>@lstEv[i].CarNo</td>
+                                        <td>開機</td>
+                                        <td>@((lstEv[i].CarStatus==0)?"可出租":"H"+ lstEv[i].CarStatus.ToString().PadLeft(7,'0'))</td>
+                                        <td>@((lstEv[i].GPSStatus == 0)?"未定位":"已定位")</td>
+                                        <td>@((lstEv[i].Speed <0) ? 0 : Convert.ToInt32(lstEv[i].Speed))</td>
+                                        @*  <td>
+             <input type="hidden" id="@Lat" value="@lstEv[i].Latitude"><input type="hidden" id="@Lng" value="@lstEv[i].Longitude">
+             <span class="icon-1 @((lstEv[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstEv[i].Latitude,@lstEv[i].Longitude)"></span>
+         </td>
+        <td></td>*@
+                                        <td>@lstEv[i].GPSTime</td>
 
 
-                                        </tr>
+                                    </tr>
                                     }
 
 
 
                                 </tbody>
+                                <tfoot class="hide-if-no-paging">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <ul class="pagination"></ul>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                             <!-- / Add News: WYSIWYG Edior -->
 
@@ -198,7 +192,7 @@
                                     <label for="call" class="col-sm-2 control-label">查詢車號</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="ObjCar" name="ObjCar" placeholder="輸入車號" value="@((ViewData["CarNo"]==null?"":ViewData["CarNo"].ToString()))">
-                                   
+
                                     </div>
                                 </div>
                                 <div class="form-group" id="DateTerm" name="DateTerm">
@@ -210,12 +204,12 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                @*<div class="form-group">
                                         <label for="address" class="col-sm-2 control-label">地址</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control" id="address" placeholder="輸入地址">
                                         </div>
-                                    </div>
+                                    </div>*@
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
                                         <button id="btnQuery" name="btnQuery" class="btn btn-default">查詢</button>
@@ -233,7 +227,7 @@
                                         <select name="TimeLine" id="TimeLine">
                                             @for (int j = 0; j < len; j++)
                                             {
-                                                string value = (j + 1).ToString() + ";" + lstEv[j].CarNo + ";" + lstEv[j].Lat.ToString() + ";" + lstEv[j].Lng.ToString() + ";" + lstEv[j].SPEED.ToString();
+                                                string value = (j + 1).ToString() + ";" + lstEv[j].CarNo + ";" + lstEv[j].Latitude.ToString() + ";" + lstEv[j].Longitude.ToString() + ";" + lstEv[j].Speed.ToString();
                                                 value += ";" + lstEv[j].CarStatus + ";" + lstEv[j].CCNum + ";" + lstEv[j].FactoryYear + ";" + lstEv[j].GPSStatus + ";" + lstEv[j].GPSTime;
                                                 string text = (j + 1).ToString() + ":" + lstEv[j].CarNo + "(" + lstEv[j].GPSTime + ")";
                                                 <option value="@value">@text</option>
@@ -284,12 +278,12 @@
                                         <input type="text" class="form-control" id="update" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="neer" class="col-xs-2 control-label">最近地址</label>
-                                    <div class="col-xs-10">
-                                        <input type="text" class="form-control" id="neer" readonly>
-                                    </div>
-                                </div>
+                                @*<div class="form-group">
+                                        <label for="neer" class="col-xs-2 control-label">最近地址</label>
+                                        <div class="col-xs-10">
+                                            <input type="text" class="form-control" id="neer" readonly>
+                                        </div>
+                                    </div>*@
                             </form>
                         </div>
                         <!-- / Add News: Content -->
@@ -302,20 +296,21 @@
             </div>
         </div>
     </div>
+    <!-- Javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 
-</body>
+    <script src="~/Scripts/js/CommonFunc.js"></script>
 
-<!-- Javascript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
+    <script src="~/assets/EvTimeLine/datepicker-zh-TW.js"></script>
+    <script src="~/assets/EvTimeLine/jquery-ui-timepicker-addon.js"></script>
+    <script src="~/assets/EvTimeLine/EvTrack.js"></script>
+    <script src="~/Scripts/js/moment-with-locales.min.js"></script>
+    <script src="~/Scripts/js/footable/footable.all.min.js"></script>
 
-@*<script src="//code.jquery.com/jquery-1.11.3.js"></script>
-    <script src="//code.jquery.com/ui/1.12.0-rc.1/jquery-ui.js"></script>*@
-<script src="~/assets/EvTimeLine/datepicker-zh-TW.js"></script>
-<script src="~/assets/EvTimeLine/jquery-ui-timepicker-addon.js"></script>
-<script src="~/assets/EvTimeLine/EvTrack.js"></script>
-
-<script type="text/javascript">
+    <script type="text/javascript">
 		var map_options = {
 			center: new google.maps.LatLng(23.973875,120.982024),
 			zoom: 8,
@@ -339,7 +334,9 @@
 		});
 		var Mode = '@Mode';
     console.log("Mode="+Mode);
-  
+   // $("#Mode").val(Mode);
+ //   $('#Mode option').filter('[value="' + Mode + '"]').attr("checked", true);
+    // document.getElementsByName("Mode").options[parseInt(Mode,10)].checked=true;
     document.getElementById("Mode"+Mode).checked = true;
     switch (Mode) {
         case "0":
@@ -356,8 +353,12 @@
             break;
     }
 
+        var len = '@len';
+    </script>
 
-</script>
+</body>
+
+
 
 
 <!-- Mirrored from lycaste.co/projects/avocadopanel/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 27 Jul 2016 07:40:43 GMT -->

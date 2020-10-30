@@ -165,6 +165,10 @@
   <ItemGroup>
     <Content Include="assets\bootstrap.min.css" />
     <Content Include="assets\chosen.css" />
+    <Content Include="assets\EvTimeLine\bootstrap-responsive.css" />
+    <Content Include="assets\EvTimeLine\bootstrap-theme.min.css" />
+    <Content Include="assets\EvTimeLine\bootstrap.min.css" />
+    <Content Include="assets\EvTimeLine\bootstrap3.0.min.css" />
     <Content Include="assets\EvTimeLine\cabinet.css" />
     <Content Include="assets\EvTimeLine\chosen.css" />
     <Content Include="assets\EvTimeLine\datepicker-zh-TW.js" />
@@ -172,9 +176,15 @@
     <Content Include="assets\EvTimeLine\evTrack.css" />
     <Content Include="assets\EvTimeLine\EvTrack.js" />
     <Content Include="assets\EvTimeLine\fullcalendar.css" />
+    <Content Include="assets\EvTimeLine\jquery-1.10.2.min.js" />
+    <Content Include="assets\EvTimeLine\jquery-1.9.1.js" />
+    <Content Include="assets\EvTimeLine\jquery-ui-1.10.2.custom.min.js" />
+    <Content Include="assets\EvTimeLine\jquery-ui-timepicker-addon.css" />
     <Content Include="assets\EvTimeLine\jquery-ui-timepicker-addon.js" />
+    <Content Include="assets\EvTimeLine\jquery.autocomplete.css" />
     <Content Include="assets\EvTimeLine\jquery.cabinet.js" />
     <Content Include="assets\EvTimeLine\jquery.chosen.min.js" />
+    <Content Include="assets\EvTimeLine\style.css" />
     <Content Include="assets\EvTimeLine\theme\avocado.css" />
     <Content Include="assets\fullcalendar.css" />
     <Content Include="assets\jquery-ui.css" />
@@ -207,11 +217,32 @@
     <Content Include="Content\css\footable\fonts\footable.svg" />
     <Content Include="Content\css\footable\footable-page.css" />
     <Content Include="Content\css\footable\footable.core.css" />
+    <Content Include="Content\css\images\car.png" />
+    <Content Include="Content\css\images\close.png" />
+    <Content Include="Content\css\images\location.png" />
     <Content Include="Content\css\images\marker-icon-2x.png" />
     <Content Include="Content\css\images\marker-icon.png" />
     <Content Include="Content\css\images\marker-shadow.png" />
+    <Content Include="Content\css\images\moto.png" />
     <Content Include="Content\css\images\spritesheet-2x.png" />
     <Content Include="Content\css\images\spritesheet.svg" />
+    <Content Include="Content\css\images\txt.png" />
+    <Content Include="Content\css\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_38667f_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_3d3d3d_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_616161_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_898989_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_bd7b00_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_d19405_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_eb990f_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_ed9f26_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_fadc7a_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_ffe180_256x240.png" />
+    <Content Include="Content\css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="Content\css\jquery-filestyle.min.css" />
     <Content Include="Content\css\jquery-ui.css" />
     <Content Include="Content\css\jquery.autocomplete.css" />
@@ -291,11 +322,13 @@
     <Content Include="Scripts\js\ActionJS\CardDataInfo\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\BookingQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactBooking.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactExtend.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainByDiscount.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfCar.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfMotor.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactMotorDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactSetting.js" />
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
@@ -459,6 +492,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\image\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\footable\fonts\footable.eot" />
@@ -502,6 +536,15 @@
     <Content Include="Content\Contact\scss\setting\_mixins.scss" />
     <Content Include="Content\Contact\scss\setting\_reset.scss" />
     <Content Include="Content\Contact\scss\setting\_variables.scss" />
+    <Content Include="Content\upload\ImportCarBindData\ImportCarBindData_98105_20201019145339.xlsx" />
+    <Content Include="Content\upload\ImportCarMachineData\ImportCarMachineDatat_98105_20201016154828.xlsx" />
+    <Content Include="Content\upload\ImportCarMachineData\ImportCarMachineDatat_98105_20201016154941.xlsx" />
+    <Content Include="Content\upload\ImportMasterCardData\ImportMasterCardData_98105_20201020105254.xlsx" />
+    <Content Include="Content\upload\ImportMasterCardData\ImportMasterCardData_98105_20201020110042.xlsx" />
+    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162126.xlsx" />
+    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162332.xlsx" />
+    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162529.xlsx" />
+    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162645.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -578,6 +621,8 @@
     <Content Include="Views\MemberManage\AuditDetail.cshtml" />
     <Content Include="Views\MemberManage\CredentialsView.cshtml" />
     <Content Include="Views\MemberManage\ViewSameMobile.cshtml" />
+    <Content Include="Views\ContactManage\ContactDetail.cshtml" />
+    <Content Include="Views\ContactManage\ContactMotorDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

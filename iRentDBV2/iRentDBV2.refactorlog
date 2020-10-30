@@ -511,4 +511,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="AuditID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="dc782591-c0fb-4126-9d86-d15da6b60cee" ChangeDateTime="10/28/2020 22:04:31">
+    <Property Name="ElementName" Value="[dbo].[TB_OrderParkingFeeByMachi].[OrderNum]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_OrderParkingFeeByMachi]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OrderNo" />
+  </Operation>
 </Operations>

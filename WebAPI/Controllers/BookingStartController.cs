@@ -476,8 +476,9 @@ namespace WebAPI.Controllers
                                     }
                                 }
                             }
-                            #endregion
+                            
                         }
+                        #endregion
                     }
                 }
                 //送短租, 先pendding

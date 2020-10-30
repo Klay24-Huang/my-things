@@ -815,6 +815,38 @@ namespace Reposotory.Implement
             lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
             return lstCarScheduleTimeLog;
         }
+        public List<BE_CarScheduleTimeLog> GetOrderStatus(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarScheduleTimeLog> lstCarScheduleTimeLog = null;
+            string SQL = " SELECT * FROM VW_GetCarSchedule ";
+
+
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            string term2 = "";
+            int nowCount = 0;
+            if (OrderNo>0)
+            {
+                term = "  OrderNum=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+        
+            SQL += "  ORDER BY SD ASC";
+
+            lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
+            return lstCarScheduleTimeLog;
+        }
 
         /// <summary>
         /// 取得經緯度最大範圍

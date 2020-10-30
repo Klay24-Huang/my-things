@@ -197,6 +197,7 @@
                 for (int i = 0; i < ResultLen; i++)
                 {
                     string cancel_msg = "無";
+                    int isMotor = (lstData[i].CarNo.Substring(0, 1) == "E") ? 1 : 0;
         <tr>
             <td></td>
             <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
@@ -204,7 +205,7 @@
             <td scope="col">@(lstData[i].SD.ToString("yyyy-MM-dd HH:mm:ss"))</td>
             <td scope="col">@(lstData[i].ED.ToString("yyyy-MM-dd HH:mm:ss"))</td>
             <td scope="col">@(lstData[i].CarNo)</td>
-            <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum))">點我觀看</button></td>
+            <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum),@(isMotor));">點我觀看</button></td>
             @if (lstData[i].cancel_status == 0)
             {
                 <td scope="col"><Button class='btn btn-outline-secondary' onclick="CancelOrder('@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))');">取消預約</Button></td>
@@ -269,7 +270,9 @@
         </tfoot>
     </table>
 </div>
-
+<form action="" id="showDetail" name="showDetail" method="post">
+    <input type="hidden" id="DetailOrderNo" name="DetailOrderNo" />
+</form>
 <!--輸出表格結束-->
 
 <script>

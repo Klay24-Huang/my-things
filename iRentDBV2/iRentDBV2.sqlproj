@@ -303,6 +303,20 @@
     <Build Include="dbo\Tables\TB_AuditCredentials.sql" />
     <Build Include="dbo\Tables\TB_NPR330.sql" />
     <Build Include="dbo\Tables\TB_AuditCrentialsReject.sql" />
+    <Build Include="dbo\Views\VW_BE_GetEVTimeLine.sql" />
+    <Build Include="dbo\Views\VW_BE_GetOrderForTimeLine.sql" />
+    <Build Include="dbo\Tables\TB_OrderParkingFeeByMachi.sql" />
+    <Build Include="dbo\Tables\TB_OrderParkingDetailByMachi.sql" />
+    <Build Include="dbo\Tables\TB_OrderOtherFee.sql" />
+    <Build Include="dbo\Tables\TB_OrderDataByMotor.sql" />
+    <Build Include="dbo\Views\VW_BE_GetOrderFullDetail.sql" />
+    <Build Include="dbo\Views\VW_BE_GetContactData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_BeforeBookingStart.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_BookingStart.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ContactFinish.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_CalFinalPrice.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetOrderStatusByOrderNo.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_CheckCarStatusByReturn.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

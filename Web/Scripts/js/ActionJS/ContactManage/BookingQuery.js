@@ -21,7 +21,14 @@
     }
 
 })
-function ViewDetail(OrderNo) {
+function ViewDetail(OrderNo, Mode) {
+    $("#DetailOrderNo").val(OrderNo);
+    if (Mode == 0) {
+        document.getElementById("showDetail").action="ContactDetail"
+    } else {
+        document.getElementById("showDetail").action = "ContactMotorDetail"
+    }
+    $("#showDetail").submit()
     console.log(OrderNo);
 }
 function CancelOrder(OrderNo) {

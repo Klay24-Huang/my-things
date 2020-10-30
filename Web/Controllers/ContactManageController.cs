@@ -243,5 +243,87 @@ namespace Web.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// 訂單（合約）明細
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+        public ActionResult ContactDetail(string DetailOrderNo)
+        {
+            BE_OrderDataCombind obj = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            Int64 tmpOrder = 0;
+            bool flag = true;
+            if (string.IsNullOrEmpty(DetailOrderNo))
+            {
+                flag = false;
+
+            }
+            else
+            {
+                if (DetailOrderNo != "")
+                {
+
+                    tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
+
+                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
+                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
+                    obj = new BE_OrderDataCombind()
+                    {
+                        Data = repository.GetOrderDetail(tmpOrder),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false)
+                    };
+
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            return View(obj);
+    
+        }
+        /// <summary>
+        /// 訂單（合約）明細（機車）
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+
+        public ActionResult ContactMotorDetail(string DetailOrderNo)
+        {
+            BE_OrderDataCombind obj = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            Int64 tmpOrder = 0;
+            bool flag = true;
+            if (string.IsNullOrEmpty(DetailOrderNo))
+            {
+                flag = false;
+
+            }
+            else
+            {
+                if (DetailOrderNo != "")
+                {
+
+                    tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
+
+                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
+                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
+                    obj = new BE_OrderDataCombind()
+                    {
+                        Data = repository.GetOrderDetail(tmpOrder),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false)
+                    };
+
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            return View(obj);
+        }
     }
 }

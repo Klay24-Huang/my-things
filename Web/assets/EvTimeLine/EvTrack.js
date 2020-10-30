@@ -24,9 +24,9 @@
         $("#InforContent").show();
 
         setValue($('#TimeLine').val());
-        for (var i = 0; i < len; i++) {
-            GetAddress($("#Lng"+i.toString()).val(),$("#Lat"+i.toString()).val(),"addr"+i.toString());
-        }
+        //for (var i = 0; i < len; i++) {
+        //    GetAddress($("#Lng"+i.toString()).val(),$("#Lat"+i.toString()).val(),"addr"+i.toString());
+        //}
         $("#TimeLine").on("change", function () {
             console.log($(this).val());
             setValue($(this).val());
@@ -37,6 +37,16 @@
     } else {
         $("#TimeContent").hide();
         $("#InforContent").hide();
+    }
+    SetCar($("#ObjCar"))
+    if (parseInt(len) > 0) {
+        $('.table').footable({
+            "paging": {
+                "enabled": true,
+                "limit": 3,
+                "size": 20
+            }
+        });
     }
     //$("#TimeContent").hide();
     //$("#InforContent").hide();
@@ -93,16 +103,7 @@
         }
 
     });
-    var CarList = $("#hidCar").val();
-    console.log("CarList="+CarList);
-    if (CarList !== "") {
-        var Car = CarList.split(";");
-        $("#ObjCar").autocomplete({
-            source:Car,
-            minLength: 3,
-            matchCase: false
-        });
-    }
+
 
     $('input[name$="Mode"]').on('click', function () {
         var type = $(this).val();
@@ -138,14 +139,14 @@ function setValue(value) {
     if (carData[7] === "") {
         $("#old").val("未設定出廠年份");
     } else {
-        var old = new Date().getYear() - parseInt(carData[7], 10);
+        var old = new Date().getFullYear() - parseInt(carData[7].substr(0, 4), 10);
         $("#old").val(old.toString() + "年多");
     }
     $("#speed").val(carData[4]);
     $("#cc").val(carData[6]);
     $("#update").val(carData[9]);
-    GetAddressForText(carData[3], carData[2], "neer");
-    $("#neer").val();
+    //GetAddressForText(carData[3], carData[2], "neer");
+    //$("#neer").val();
     console.log("lat:" + carData[2] + ";Lng:" + carData[3]);
     setMap(parseFloat(carData[2]), parseFloat(carData[3]), carData[1]);
 }
@@ -154,7 +155,11 @@ function setMap(lat, lng, carNo) {
     deleteMarkers();
  
     var myLatLng = { lat: lat, lng: lng };
-    var image = '../assets/img/icon_m_car.png';
+    var isMotor=carNo.toString().substr(0, 1);
+    var image = '../Content/css/images/car.png';
+    if (isMotor == "E") {
+        image= '../Content/css/images/moto.png';
+    }
     var marker = new google.maps.Marker({
         map: map,
         position: myLatLng,
