@@ -116,28 +116,21 @@ SET @hasData=0;
 		   FROM TB_NPR330Detail d
            WHERE d.useFlag = 1 AND d.NPR330Save_ID = @NPR330Save_ID
 
-		   --同OrderNo的NPR330Save_ID
+		   --同IDNO的NPR330Save_ID
 		   DECLARE @tb_NPR330Save_ID TABLE(sId INT)		   
 		   INSERT INTO @tb_NPR330Save_ID
 		   SELECT s.NPR330Save_ID FROM TB_NPR330Save s
 		   WHERE s.NPR330Save_ID <> @NPR330Save_ID 
-		     AND s.NPR330Save_ID in (
-		     SELECT DISTINCT d.NPR330Save_ID FROM TB_NPR330Detail d WHERE d.OrderNo IN (
-			    SELECT d2.OrderNo FROM TB_NPR330Detail d2 
-				WHERE d2.NPR330Save_ID = @NPR330Save_ID AND d2.useFlag = 1
-			 )
-		   )
+		   AND s.IDNO = @IDNO		   
 
 		   IF (SELECT COUNT(*) FROM　@tb_NPR330Save_ID) > 0　
 		   BEGIN		   
-			   --將TB_NPR330Save相同OrderNo的useFlag設為0
 			   UPDATE s SET 
 			   s.useFlag = 0,
 			   s.UPDTime = DATEADD(HOUR,8,GETDATE())
 			   FROM TB_NPR330Save s
 			   WHERE s.NPR330Save_ID IN (SELECT sId FROM @tb_NPR330Save_ID) 		    
 
-			   --TB_NPR330Detail與取出NPR330Save_ID相同的useFlag設為0
 			   UPDATE d SET
 			   d.useFlag = 0,
 			   d.UPDTime = DATEADD(HOUR,8,GETDATE())
