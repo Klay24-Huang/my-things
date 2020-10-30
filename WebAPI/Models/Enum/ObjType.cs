@@ -209,6 +209,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             DonePayRentBill,
             /// <summary>
+            /// 完成補繳
+            /// </summary>
+            DonePayBack,
+            /// <summary>
             /// 電子柵欄查詢
             /// </summary>
             PolygonListQuery,
@@ -537,6 +541,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.DonePayRentBill:
                     SPName = "usp_DonePayRentBill";
+                    break;
+                case SPType.DonePayBack:
+                    SPName = "usp_DonePayBack";
                     break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";

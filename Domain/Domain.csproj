@@ -143,6 +143,7 @@
     <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckOpenDoorCode.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_DonePayBack.cs" />
     <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetCarStatusBeforeOpenDoorFinish.cs" />
