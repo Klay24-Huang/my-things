@@ -66,6 +66,8 @@ SELECT OrderMain.[order_number]
 	  ,ISNULL(PriceByMinutes.MaxPriceH		 ,0) AS MaxPriceH --20201006 - eason
 	  ,ISNULL(CarStatus.device3TBA,0) AS device3TBA
 	  ,ISNULL(CarStatus.deviceRDistance,'') AS RemainingMilage
+	  ,CarStatus.Latitude AS CarLatitude
+	  ,CarStatus.Longitude AS CarLongitude
 	  ,Station.Content AS [Content]
 	  ,Station.Latitude
 	  ,Station.Longitude
