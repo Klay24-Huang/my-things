@@ -86,6 +86,16 @@ namespace Domain.SP.Output.OrderList
         /// <para>1:是</para>
         /// </summary>
         public int IsMotor { set; get; }
+
+        /// <summary>
+        /// 車緯度
+        /// </summary>
+        public decimal CarLatitude { get; set; }
+
+        /// <summary>
+        /// 車經度
+        /// </summary>
+        public decimal CarLongitude { get; set; }
         #endregion
         #region 機車相關電力相關
         /// <summary>

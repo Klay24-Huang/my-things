@@ -203,7 +203,9 @@ namespace WebAPI.Controllers
                                 MileagePerKM = (OrderDataLists[i].ProjType < 4) ? ((OrderDataLists[i].MilageUnit == 0) ? Mildef : OrderDataLists[i].MilageUnit) : 0,
                                 DailyMaxHour = 10,
                                 CAR_MGT_STATUS = OrderDataLists[i].car_mgt_status,
-                                AppStatus = OrderDataLists[i].AppStatus     //20201026 ADD BY ADAM REASON.增加APP對應狀態
+                                AppStatus = OrderDataLists[i].AppStatus,     //20201026 ADD BY ADAM REASON.增加APP對應狀態
+                                CarLatitude = OrderDataLists[i].CarLatitude,
+                                CarLongitude = OrderDataLists[i].CarLongitude,
                             };
                             obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
 
@@ -229,7 +231,6 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
             }
             #endregion
 
