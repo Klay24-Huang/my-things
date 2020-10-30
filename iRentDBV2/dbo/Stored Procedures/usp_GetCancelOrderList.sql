@@ -86,110 +86,129 @@ SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
-SET @Token    =ISNULL (@Token    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
+SET @Token=ISNULL (@Token,'');
 SET @pageSize=ISNULL(@pageSize,10);		
-SET @pageNo	 =ISNULL(@pageNo,1);
+SET @pageNo=ISNULL(@pageNo,1);
 SET @maxPage=0;
 
-		BEGIN TRY
-	
+BEGIN TRY
+	IF @Token='' OR @IDNO='' 
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @Token='' OR @IDNO='' 
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
-		 END
-		 IF @Error=0
-		 BEGIN
-		       SELECT @hasData=COUNT(order_number) 	FROM TB_OrderMain AS OrderMain  WITH(NOLOCK)  WHERE IDNO=@IDNO AND cancel_status>0
-			   IF @hasData>0
-			   BEGIN
-					SET @maxPage=CEILING(@hasData/@pageSize);
-					IF (@hasData%@pageSize>0)
-					BEGIN
-						SET @maxPage=@maxPage+1;
+		END
+	END
 
-					END
-					IF @pageNo>@maxPage
-					BEGIN
-					   SET @pageNo=@maxPage;
-					END
-			   END
-			   
-		 END
-		 IF @Error=0
-		 BEGIN
-				;WITH T
-				AS (
-					SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo
-						,OrderMain.order_number,OrderMain.CarNo,OrderMain.init_price,OrderMain.ProjID,OrderMain.ProjType,OrderMain.start_time,OrderMain.stop_time
-						,VWFullData.Seat,VWFullData.CarBrend,VWFullData.Score,VWFullData.OperatorICon,VWFullData.CarTypeImg,VWFullData.CarTypeName,VWFullData.PRONAME
-						,ISNULL(Setting.MilageBase,IIF(OrderMain.ProjType=4,0,-1)) AS MilageUnit
-						,Case WHEN OrderMain.ProjType=0 THEN '同站' WHEN OrderMain.ProjType=3 Then REPLACE(VWFullData.PRONAME,'路邊汽車推廣專案','') WHEN OrderMain.ProjType=4 THEN REPLACE(VWFullData.PRONAME,'10載便利','') End As CarOfArea
-						,Case WHEN OrderMain.ProjType=0 THEN iRentStation.Location ELSE '' END As StationName 
-						,Car.IsMotor ,Car.WeekdayPrice ,Car.HoildayPrice ,Car.WeekdayPriceByMinutes ,Car.HoildayPriceByMinutes --20201008 Eason
-					FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
-					LEFT JOIN TB_CarInfo As Car WITH(NOLOCK)  ON Car.CarNo=OrderMain.CarNo
-					LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
-					LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=OrderMain.ProjID AND (OrderMain.start_time BETWEEN Setting.SDate AND Setting.EDate)
-					LEFT JOIN TB_iRentStation As iRentStation WITH(NOLOCK) ON iRentStation.StationID=OrderMain.lend_place
-					WHERE IDNO=@IDNO AND cancel_status>0
-					AND isDelete=0		--20201006 ADD BY ADAM REASON.排除已刪除的清單
-				),
-				T2 AS (
-				    SELECT COUNT(1) TotalCount FROM T
-				)
-				SELECT *
-					FROM T2, T
-					WHERE RowNo BETWEEN (@pageNo - 1) * @pageSize  + 1 AND @pageNo * @pageSize;
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(order_number) 	FROM TB_OrderMain AS OrderMain  WITH(NOLOCK)  WHERE IDNO=@IDNO AND cancel_status>0
+		IF @hasData>0
+		BEGIN
+			SET @maxPage=CEILING(@hasData/@pageSize);
+			IF (@hasData%@pageSize>0)
+			BEGIN
+				SET @maxPage=@maxPage+1;
+			END
+			IF @pageNo>@maxPage
+			BEGIN
+				SET @pageNo=@maxPage;
+			END
+		END
+	END
 
-			
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+	IF @Error=0
+	BEGIN
+		;WITH T
+		AS (
+			SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo ,
+				OrderMain.order_number,
+				OrderMain.CarNo,
+				OrderMain.init_price,
+				OrderMain.ProjID,
+				OrderMain.ProjType,
+				OrderMain.start_time,
+				OrderMain.stop_time ,
+				VWFullData.Seat,
+				VWFullData.CarBrend,
+				VWFullData.Score,
+				VWFullData.OperatorICon,
+				VWFullData.CarTypeImg,
+				VWFullData.CarTypeName,
+				VWFullData.PRONAME ,
+				InsurancePurePrice,
+				init_TransDiscount --20201009 eason 計算預估總金額
+				,ISNULL(Setting.MilageBase, IIF(OrderMain.ProjType=4, 0, -1)) AS MilageUnit ,
+				CASE WHEN OrderMain.ProjType=0 THEN '同站' ELSE iRentStation.Area END CarOfArea ,
+				CASE WHEN OrderMain.ProjType=0 THEN iRentStation.Location ELSE '' END AS StationName ,
+				Car.IsMotor,
+				Car.WeekdayPrice,
+				Car.HoildayPrice,
+				Car.WeekdayPriceByMinutes,
+				Car.HoildayPriceByMinutes --20201008 Eason
+			FROM TB_OrderMain AS OrderMain WITH(NOLOCK)
+			LEFT JOIN TB_CarInfo AS Car WITH(NOLOCK) ON Car.CarNo=OrderMain.CarNo
+			LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup AS VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType
+			AND VWFullData.StationID=OrderMain.lend_place
+			AND VWFullData.PROJID=OrderMain.ProjID
+			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=OrderMain.ProjID
+			AND (OrderMain.start_time BETWEEN Setting.SDate AND Setting.EDate)
+			LEFT JOIN TB_iRentStation AS iRentStation WITH(NOLOCK) ON iRentStation.StationID=OrderMain.lend_place
+			WHERE IDNO=@IDNO 
+			AND cancel_status>0
+			AND isDelete=0		--20201006 ADD BY ADAM REASON.排除已刪除的清單
+		),
+		T2 AS (
+			SELECT COUNT(1) TotalCount FROM T
+		)
+		SELECT *
+		FROM T2, T
+		WHERE RowNo BETWEEN (@pageNo - 1) * @pageSize  + 1 AND @pageNo * @pageSize;
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetCancelOrderList';

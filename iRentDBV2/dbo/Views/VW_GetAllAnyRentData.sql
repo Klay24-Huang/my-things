@@ -1,15 +1,60 @@
 ﻿CREATE VIEW [dbo].[VW_GetAllAnyRentData]
 	AS 
-
-	  	SELECT Car.[CarNo],CarStatus.[CID],[Token],[deviceType],[ACCStatus],[GPSStatus],[GPSTime],[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus],[LockStatus],[IndoorLightStatus],[SecurityStatus]
-      ,[Speed],[Volt],[Latitude],[Longitude],[Millage],[extDeviceStatus1],[extDeviceStatus2],[extDeviceData3] ,[extDeviceData4],[extDeviceData7],WriteTime,Car.available ,Car.nowStationID
-	  ,FullProj.[PROJID],[PRONAME],[PRODESC],[CarBrend],FullProj.CarTypeName,CarInfo.CarType,FullProj.[ShowStart], FullProj.[ShowEnd],FullProj.[PRSTDT],FullProj.[PRENDT],FullProj.[PRICE],FullProj.[PRICE_H]
-	  ,op.OperatorICon, op.Score, cg.CarTypeImg, cg.Seat --2020-09-30 eason 補欄位 供應商, 幾顆星評價, 車輛圖示, 座位數
-      FROM TB_CarStatus AS CarStatus
-INNER JOIN 	  TB_Car AS Car WITH(NOLOCK) ON Car.CarNo=CarStatus.CarNo
-INNER JOIN TB_OperatorBase op on op.OperatorID = Car.Operator --2020-09-30 eason
-INNER JOIN TB_CarTypeGroupConsist cgc on cgc.CarType = Car.CarType --2020-09-30 eason
-INNER JOIN TB_CarTypeGroup cg on cg.CarTypeGroupID = cgc.CarTypeGroupID --2020-09-30 eason
-INNER JOIN TB_CarInfo As CarInfo WITH(NOLOCK) ON CarInfo.CarNo=CarStatus.CarNo
-INNER JOIN VW_FullProjectCollection AS FullProj WITH(NOLOCK) ON Car.nowStationID=FullProj.StationID AND CarInfo.CarType=FullProj.CARTYPE AND FullProj.IOType='O' AND FullProj.PROJTYPE=3
-	  WHERE Car.available<2 AND ((FullProj.[ShowStart]<=GETDATE() AND FullProj.[ShowEnd]>GETDATE()) OR FullProj.[PRSTDT]<=GETDATE() AND FullProj.[PRENDT]>GETDATE())
+SELECT Car.CarNo,
+       CarStatus.CID,
+       CarStatus.Token,
+       CarStatus.deviceType,
+       CarStatus.ACCStatus,
+       CarStatus.GPSStatus,
+       CarStatus.GPSTime,
+       CarStatus.OBDStatus,
+       CarStatus.GPRSStatus,
+       CarStatus.PowerOnStatus,
+       CarStatus.CentralLockStatus,
+       CarStatus.DoorStatus,
+       CarStatus.LockStatus,
+       CarStatus.IndoorLightStatus,
+       CarStatus.SecurityStatus,
+       CarStatus.Speed,
+       CarStatus.Volt,
+       CarStatus.Latitude,
+       CarStatus.Longitude,
+       CarStatus.Millage,
+       CarStatus.extDeviceStatus1,
+       CarStatus.extDeviceStatus2,
+       CarStatus.extDeviceData3,
+       CarStatus.extDeviceData4,
+       CarStatus.extDeviceData7,
+       CarStatus.WriteTime,
+       Car.available,
+       Car.nowStationID,
+       FullProj.PROJID,
+       FullProj.PRONAME,
+       FullProj.PRODESC,
+       FullProj.CarBrend,
+       FullProj.CarTypeName,
+       Car.CarType,
+       FullProj.ShowStart,
+       FullProj.ShowEnd,
+       FullProj.PRSTDT,
+       FullProj.PRENDT,
+       FullProj.PRICE,
+       FullProj.PRICE_H,
+       op.OperatorICon,
+       op.Score,
+       cg.CarTypeImg,
+       cg.Seat,
+       Station.Area
+FROM dbo.TB_CarStatus AS CarStatus WITH (NOLOCK)
+INNER JOIN dbo.TB_Car AS Car WITH (NOLOCK) ON Car.CarNo = CarStatus.CarNo
+INNER JOIN dbo.TB_OperatorBase AS op WITH (NOLOCK) ON op.OperatorID = Car.Operator
+INNER JOIN dbo.TB_CarTypeGroupConsist AS cgc WITH (NOLOCK) ON cgc.CarType = Car.CarType
+INNER JOIN dbo.TB_CarTypeGroup AS cg WITH (NOLOCK) ON cg.CarTypeGroupID = cgc.CarTypeGroupID
+INNER JOIN dbo.VW_FullProjectCollection AS FullProj WITH (NOLOCK) ON Car.nowStationID = FullProj.StationID AND Car.CarType = FullProj.CARTYPE AND FullProj.IOType = 'O' AND FullProj.PROJTYPE = 3
+LEFT OUTER JOIN dbo.TB_iRentStation AS Station WITH (NOLOCK) ON Station.StationID = Car.nowStationID
+WHERE (Car.available < 2)
+  AND (FullProj.ShowStart <= GETDATE())
+  AND (FullProj.ShowEnd > GETDATE())
+  OR (Car.available < 2)
+  AND (FullProj.PRSTDT <= GETDATE())
+  AND (FullProj.PRENDT > GETDATE())

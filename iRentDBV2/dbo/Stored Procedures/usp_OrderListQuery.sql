@@ -136,8 +136,6 @@ BEGIN TRY
                 ,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
                 ,already_lend_car
                 ,IsReturnCar
-				,[CarLatitude]
-				,[CarLongitude]
 				--20201026 ADD BY ADAM REASON.增加AppStatus
 				,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1             --1:尚未到取車時間(取車時間半小時前)
                                   WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
@@ -159,6 +157,9 @@ BEGIN TRY
 				,StationPic2 = i2.StationPic
 				,StationPic3 = i3.StationPic
 				,StationPic4 = i4.StationPic
+				,[CarLatitude]
+				,[CarLongitude]
+				,Area
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription

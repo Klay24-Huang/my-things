@@ -165,7 +165,7 @@ namespace WebAPI.Controllers
                             {
                                 CarNo = OrderDataLists[i].CarNo,
                                 CarBrend = OrderDataLists[i].CarBrend,
-                                CarOfArea = OrderDataLists[i].CarOfArea,
+                                CarOfArea = OrderDataLists[i].Area,
                                 CarRentBill = OrderDataLists[i].init_price,
                                 CarTypeName = OrderDataLists[i].CarTypeName,
                                 CarTypePic = OrderDataLists[i].CarTypeImg,

@@ -47,27 +47,19 @@ namespace WebAPI.Controllers
             IAPI_BookingFisishQuery apiInput = null;
             OAPI_BookingFinishQuery outputApi = new OAPI_BookingFinishQuery();
             outputApi.OrderFinishObjs = new List<OrderFinishObj>();
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             MotorInfo motorinfo = new MotorInfo();
             CarInfo carInfo = new CarInfo();
-
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-            string CID = "";
             int NowPage = 0;
             int pageSize = 10;
-            DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -92,7 +84,6 @@ namespace WebAPI.Controllers
                 {
                     NowPage = 1;
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -112,7 +103,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -128,14 +118,12 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag)
             {
-
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.GetFinishOrder);
                 SPInput_GetFinishOrder spCheckTokenInput = new SPInput_GetFinishOrder()
                 {
-
                     LogID = LogID,
                     Token = Access_Token,
-                    ShowYear=apiInput.ShowOneYear,
+                    ShowYear = apiInput.ShowOneYear,
                     IDNO = IDNO,
                     pageNo = NowPage,
                     pageSize = 10
@@ -159,25 +147,22 @@ namespace WebAPI.Controllers
                             OrderFinishObj obj = new OrderFinishObj()
                             {
                                 RentYear = orderFinishDataLists[i].RentYear,        //20201029 ADD BY ADAM 年份移到下面
-                                 Bill = orderFinishDataLists[i].final_price,
-                                  CarOfArea= orderFinishDataLists[i].CarOfArea,
-                                   CarTypePic= orderFinishDataLists[i].CarTypeImg,
-                                    OrderNo=string.Format("H{0}", orderFinishDataLists[i].OrderNo.ToString().PadLeft(7,'0')),
-                                     ProjType= orderFinishDataLists[i].ProjType,
-                                      RentDateTime= orderFinishDataLists[i].final_start_time.ToString("MM月dd日 HH:mm"),
-                                       StationName= orderFinishDataLists[i].StationName,
-                                        UniCode= orderFinishDataLists[i].UniCode,
-                                         TotalRentTime= baseVerify.DateDiff(orderFinishDataLists[i].final_stop_time, orderFinishDataLists[i].final_start_time),
+                                Bill = orderFinishDataLists[i].final_price,
+                                CarOfArea = orderFinishDataLists[i].Area,
+                                CarTypePic = orderFinishDataLists[i].CarTypeImg,
+                                OrderNo = string.Format("H{0}", orderFinishDataLists[i].OrderNo.ToString().PadLeft(7, '0')),
+                                ProjType = orderFinishDataLists[i].ProjType,
+                                RentDateTime = orderFinishDataLists[i].final_start_time.ToString("MM月dd日 HH:mm"),
+                                StationName = orderFinishDataLists[i].StationName,
+                                UniCode = orderFinishDataLists[i].UniCode,
+                                TotalRentTime = baseVerify.DateDiff(orderFinishDataLists[i].final_stop_time, orderFinishDataLists[i].final_start_time),
                                 CarNo = orderFinishDataLists[i].CarNo.Replace(" ", ""),
-                               
-
                             };
                             outputApi.OrderFinishObjs.Add(obj);
                         }
                     }
                 }
             }
-
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)

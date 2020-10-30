@@ -54,21 +54,14 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             MotorInfo motorinfo = new MotorInfo();
             CarInfo carInfo = new CarInfo();
-
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-            string CID = "";
             int NowPage = 0;
             int pageSize = 10;
-            DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -93,7 +86,6 @@ namespace WebAPI.Controllers
                 {
                     NowPage = 1;
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -113,7 +105,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -127,13 +118,11 @@ namespace WebAPI.Controllers
                 }
             }
             //Token判斷
-            if (flag )
+            if (flag)
             {
-
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.GetCancelOrder);
                 SPInput_GetCancelOrder spCheckTokenInput = new SPInput_GetCancelOrder()
                 {
-
                     LogID = LogID,
                     Token = Access_Token,
                     IDNO = IDNO,
@@ -144,7 +133,7 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_GetCancelOrder, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetCancelOrder, SPOutput_Base>(connetStr);
                 List<OrderCancelDataList> orderCancelDataLists = new List<OrderCancelDataList>();
                 DataSet ds = new DataSet();
-                flag = sqlHelp.ExeuteSP(CheckTokenName, spCheckTokenInput, ref spOut,ref orderCancelDataLists,ref ds, ref lstError);
+                flag = sqlHelp.ExeuteSP(CheckTokenName, spCheckTokenInput, ref spOut, ref orderCancelDataLists, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
@@ -158,14 +147,14 @@ namespace WebAPI.Controllers
                             OrderCancelObj obj = new OrderCancelObj()
                             {
                                 CarBrend = orderCancelDataLists[i].CarBrend,
-                                CarNo = orderCancelDataLists[i].CarNo.Replace(" ",""),
+                                CarNo = orderCancelDataLists[i].CarNo.Replace(" ", ""),
                                 CarRentBill = orderCancelDataLists[i].init_price,
                                 CarTypeImg = orderCancelDataLists[i].CarTypeImg,
                                 CarTypeName = orderCancelDataLists[i].CarTypeName,
                                 ED = orderCancelDataLists[i].stop_time,
-                                Milage =  billCommon.CalMilagePay(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20),
-                                MilageUnit = (orderCancelDataLists[i].MilageUnit<0)? Mildef : orderCancelDataLists[i].MilageUnit,
-                                MilOfHours = (orderCancelDataLists[i].MilageUnit==0)?0:20,
+                                Milage = billCommon.CalMilagePay(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20),
+                                MilageUnit = (orderCancelDataLists[i].MilageUnit < 0) ? Mildef : orderCancelDataLists[i].MilageUnit,
+                                MilOfHours = (orderCancelDataLists[i].MilageUnit == 0) ? 0 : 20,
                                 OperatorICon = orderCancelDataLists[i].OperatorICon,
                                 order_number = string.Format("H{0}", orderCancelDataLists[i].order_number.ToString().PadLeft(7, '0')),
                                 Price = orderCancelDataLists[i].init_price,
@@ -191,7 +180,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-        
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
