@@ -3,6 +3,7 @@ using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.OtherService.FET;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -23,10 +24,15 @@ namespace WebAPI.Controllers
     /// </summary>
     public class ReceiveCarDataController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
     
         public Dictionary<string, object> doVerifyEMail(Dictionary<string, object> value)
         {
+            //20201030 NLog紀錄傳入資料
+            logger.Trace(value["para"].ToString());
+
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
