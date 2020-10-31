@@ -236,7 +236,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
-    <Compile Include="Controllers\MonthSubscriptionController.cs" />
+    <Compile Include="Controllers\MonthlySubscriptionController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
@@ -366,6 +366,7 @@
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />

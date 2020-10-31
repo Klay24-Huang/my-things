@@ -16,9 +16,10 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int TotalPage { set; get; }
         /// <summary>
-        /// 租用年
+        /// 租用年 
+        /// 20201029 ADD BY ADAM REASON.移到完成訂單資訊內
         /// </summary>
-        public string RentYear { set; get; }
+        //public string RentYear { set; get; }
 
         /// <summary>
         /// 完成的訂單資訊

@@ -268,6 +268,10 @@ namespace WebAPI.Models.Enum
             /// 強還(For測試)
             /// </summary>
             EnforceReturnCar,
+            /// <summary>
+            /// 月租訂閱
+            /// </summary>
+            MonthlySubscription,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -587,6 +591,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.EnforceReturnCar:   //強還(For測試)
                     SPName = "usp_EnforceReturnCar";
+                    break;
+                case SPType.MonthlySubscription:
+                    SPName = "usp_MonthRent_I01";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
