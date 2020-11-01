@@ -3,6 +3,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.TB;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "MonthlyScriptionController";
+            string funName = "MonthlySubscriptionController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
@@ -60,7 +61,7 @@ namespace WebAPI.Controllers
                 //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject <IAPI_MonthlySubscription>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
             }
             #endregion
 
@@ -81,7 +82,13 @@ namespace WebAPI.Controllers
                         {
                             IDNO = MonthlyRentData[i].IDNO,
                             Workday = MonthlyRentData[i].Workday,
-                            Holiday = MonthlyRentData[i].Holiday
+                            Holiday = MonthlyRentData[i].Holiday,
+                            MotoTotal = MonthlyRentData[i].MotoTotal,
+                            StartDate = MonthlyRentData[i].StartDate,
+                            EndDate = MonthlyRentData[i].EndDate,
+                            seqno = MonthlyRentData[i].seqno,
+                            ProjID = MonthlyRentData[i].ProjID,
+                            ProjNM = MonthlyRentData[i].ProjNM
                         };
                     }
                 }

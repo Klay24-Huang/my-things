@@ -307,14 +307,10 @@
     <Build Include="dbo\Stored Procedures\usp_EnforceReturnCar.sql" />
     <Build Include="dbo\Stored Procedures\usp_MonthRent_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayBack.sql" />
-    <Build Include="TY_ParkingSpaceImage.sql" />
-    <Build Include="TY_MonthlyRent.sql" />
+    <Build Include="dbo\User Defined Types\TY_MonthlyRent.sql" />
+    <Build Include="dbo\User Defined Types\TY_ParkingSpaceImage.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="dbo\User Defined Types\TY_MonthlyRent.sql" />
-    <None Include="dbo\User Defined Types\TY_ParkingSpaceImage.sql" />
   </ItemGroup>
 </Project>
