@@ -798,7 +798,7 @@ namespace OtherService
             WebAPIOutput_NPR320Query output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(NPR320QueryURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR320QueryURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try
@@ -846,7 +846,7 @@ namespace OtherService
                     WebAPIInput = JsonConvert.SerializeObject(input),
                     WebAPIName = "NPR320Query",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
-                    WebAPIURL = NPR320QueryURL
+                    WebAPIURL = BaseURL + NPR320QueryURL
                 };
                 bool flag = true;
                 string errCode = "";
@@ -956,6 +956,88 @@ namespace OtherService
         }
         #endregion
         #region 060
+        public bool NPR06Save(WebAPIInput_NPR060Save input, ref WebAPIOutput_NPR060Save output)
+        {
+            bool flag = false;
+
+
+
+            output = DoNPR060Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 點數查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR060Save> DoNPR060Save(WebAPIInput_NPR060Save input)
+        {
+            WebAPIOutput_NPR060Save output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR060SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR060Save>(responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR060Save()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR060Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR060SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+
+            return output;
+        }
         #endregion
         #region 125
         #endregion

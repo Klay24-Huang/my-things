@@ -32,6 +32,14 @@
             }
         }
         if (flag) {
+            if (type == "1" && ReturnDate == "") {
+                flag = false;
+                errMsg = "還車時間未填"
+            } else {
+                ReturnDate = ReturnDate + ":00";
+            }
+        }
+        if (flag) {
             var Account = $("#Account").val();
             var obj = new Object();
             obj.UserID = Account;

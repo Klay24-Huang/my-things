@@ -154,6 +154,8 @@
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
+    <Compile Include="Controllers\BE_AuditController.cs" />
+    <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
     <Compile Include="Controllers\BE_CarScheduleTimeLogController.cs" />
@@ -178,6 +180,7 @@
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
+    <Compile Include="Controllers\BE_ReSendToHiEasyRentController.cs" />
     <Compile Include="Controllers\BE_SentCardSettingController.cs" />
     <Compile Include="Controllers\BE_SetCarMemoController.cs" />
     <Compile Include="Controllers\BE_UnBindController.cs" />
@@ -236,7 +239,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
-    <Compile Include="Controllers\MonthSubscriptionController.cs" />
+    <Compile Include="Controllers\MonthlyRentExchangeController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
@@ -368,6 +371,7 @@
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlyRentExchange.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />

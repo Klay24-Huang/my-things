@@ -156,11 +156,11 @@ SET @NowMileage=ISNULL(@NowMileage,0);
 					--更新訂單主檔
 					IF @ProjType=3 AND @StopTime<>''
 					BEGIN
-						UPDATE TB_OrderMain SET stop_time=@stopTime,car_mgt_status=4 WHERE order_number=@OrderNo AND start_time<CONVERT(datetime,@StopTime);
+						UPDATE TB_OrderMain SET stop_time=@stopTime,car_mgt_status=4,modified_status=1 WHERE order_number=@OrderNo AND start_time<CONVERT(datetime,@StopTime);
 					END
 					ELSE
 					BEGIN
-						UPDATE TB_OrderMain SET car_mgt_status=4 WHERE order_number=@OrderNo	
+						UPDATE TB_OrderMain SET car_mgt_status=4,modified_status=1 WHERE order_number=@OrderNo	
 					END
 					--更新主控表
 					UPDATE  [dbo].[TB_BookingStatusOfUser]

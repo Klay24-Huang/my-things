@@ -53,6 +53,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_BeforeBookingStart.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingStart.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_CalFinalPrice.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangeCar.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangePWD.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_CheckCarByReturn.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ContactFinish.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_GetOrderStatusByOrderNo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarBindData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarOnline.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />
@@ -315,6 +317,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_EinvBiz.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />

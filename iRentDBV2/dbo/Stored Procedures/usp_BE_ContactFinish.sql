@@ -122,7 +122,7 @@ SET @ParkingSpace='';
 					
 					--更新訂單主檔
 					UPDATE TB_OrderMain
-					SET booking_status=5,car_mgt_status=16
+					SET booking_status=5,car_mgt_status=16,modified_status=2
 					WHERE order_number=@OrderNo;
 					
 					--更新訂單明細

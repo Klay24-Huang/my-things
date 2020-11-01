@@ -317,6 +317,8 @@
     <Build Include="dbo\Stored Procedures\usp_BE_CalFinalPrice.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetOrderStatusByOrderNo.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CheckCarStatusByReturn.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleHiEasyRentRetry.sql" />
+    <Build Include="dbo\Views\VW_InsBookingControl.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
