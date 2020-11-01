@@ -606,7 +606,8 @@ namespace Reposotory.Implement
                    VW.Seat,
                    VW.PayMode,
                    irs.Content,
-                   REPLACE([PRONAME],'路邊汽車推廣專案','') As CarOfArea
+                   REPLACE([PRONAME],'路邊汽車推廣專案','') As CarOfArea,
+                    VW.StationID
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID

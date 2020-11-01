@@ -12,6 +12,11 @@ namespace Domain.TB
     public class ProjectAndCarTypeData
     {
         /// <summary>
+        /// 站點代碼
+        /// </summary>
+        public string StationID { set; get; }
+
+        /// <summary>
         /// 專案代碼
         /// </summary>
         public string PROJID { set; get; }

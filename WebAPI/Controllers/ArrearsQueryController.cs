@@ -139,13 +139,6 @@ namespace WebAPI.Controllers
                     {
                         if (WebAPIOutput.RtnCode == "0")
                         {
-                            List<iRentStationBaseInfo> lstStation = new StationAndCarRepository(connetStr).GetAlliRentStationBaseData();
-                            bool hasData = true;
-                            hasData = (lstStation != null);
-                            if (hasData == true)
-                            {
-                                hasData = (lstStation.Count > 0);
-                            }
                             int DataLen = WebAPIOutput.Data.Count();
                            if (DataLen > 0)
                             {
@@ -154,6 +147,7 @@ namespace WebAPI.Controllers
                                 string sp_ArrearsQuery_Err = "";//sp呼叫錯誤回傳
                                 var spInput = new SPInput_ArrearsQuery()
                                 {
+                                    IDNO = apiInput.IDNO,
                                     IsSave = apiInput.IsSave,
                                     LogID = LogID
                                 };
@@ -163,11 +157,11 @@ namespace WebAPI.Controllers
                                 if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
                                 {
                                     outputApi.ArrearsInfos = sp_result;
-                                    string OrderNo = outputApi.ArrearsInfos.Where(x => !string.IsNullOrWhiteSpace(x.OrderNo)).Select(y => y.OrderNo).FirstOrDefault();
-                                    outputApi.TradeOrderNo = OrderNo ?? "";
+                                    string NPR330Save_ID = outputApi.ArrearsInfos.Select(y => y.NPR330Save_ID).FirstOrDefault().ToString();
+                                    outputApi.TradeOrderNo = NPR330Save_ID ?? "";
 
                                     if (outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count() > 0)
-                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Amount).Sum();
+                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Total_Amount).Sum();
                                 }
                                 else
                                 {
@@ -198,6 +192,7 @@ namespace WebAPI.Controllers
 
             }
 
+            outputApi = outputApi ?? new OAPI_ArrearsQuery();
             outputApi.TradeOrderNo = outputApi.TradeOrderNo ?? "";
             outputApi.ArrearsInfos = outputApi.ArrearsInfos ?? new List<ArrearsQueryDetail>();
 
@@ -273,6 +268,7 @@ namespace WebAPI.Controllers
 
                 object[][] parms1 = {
                     new object[] {
+                        spInput.IDNO,
                         spInput.IsSave,
                         spInput.LogID
                     },
