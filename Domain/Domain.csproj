@@ -98,6 +98,7 @@
     <Compile Include="SP\Input\Booking\SPInput_CarMachineCommon.cs" />
     <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
+    <Compile Include="SP\Input\Car\SPInput_EnforceReturnCar.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckOpenDoorCode.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_DonePayBack.cs" />
     <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetCarStatusBeforeOpenDoorFinish.cs" />

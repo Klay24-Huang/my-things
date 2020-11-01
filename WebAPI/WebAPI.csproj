@@ -207,6 +207,7 @@
     <Compile Include="Controllers\CreditAuthController.cs" />
     <Compile Include="Controllers\DeleteCreditCardBindController.cs" />
     <Compile Include="Controllers\EDI_STATIONController.cs" />
+    <Compile Include="Controllers\EnforceReturnCarController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
     <Compile Include="Controllers\GetMemberStatusController.cs" />
     <Compile Include="Controllers\FeedBackController.cs" />
@@ -236,7 +237,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
-    <Compile Include="Controllers\MonthSubscriptionController.cs" />
+    <Compile Include="Controllers\MonthlySubscriptionController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
     <Compile Include="Controllers\MotorRentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
@@ -347,6 +348,7 @@
     <Compile Include="Models\Param\Input\IAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_DeleteCreditCardAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
+    <Compile Include="Models\Param\Input\IAPI_EnforceReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_FeedBack.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
@@ -368,6 +370,7 @@
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />

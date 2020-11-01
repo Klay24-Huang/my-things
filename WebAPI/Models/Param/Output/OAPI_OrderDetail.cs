@@ -1,138 +1,170 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace WebAPI.Models.Param.Output
+﻿namespace WebAPI.Models.Param.Output
 {
     public class OAPI_OrderDetail
     {
         /// <summary>
         /// 訂單編號
         /// </summary>
-        public string OrderNo { set; get; }
+        public string OrderNo { get; set; }
+
         /// <summary>
         /// 合約網址
         /// </summary>
-        public string ContactURL { set; get; }
+        public string ContactURL { get; set; }
+
         /// <summary>
         /// 營運商
         /// </summary>
-        public string Operator { set; get; }
+        public string Operator { get; set; }
+
         /// <summary>
         /// 車輛圖片
         /// </summary>
-        public string CarTypePic { set; get; }
+        public string CarTypePic { get; set; }
+
         /// <summary>
         /// 車號
         /// </summary>
-        public string CarNo { set; get; }
+        public string CarNo { get; set; }
+
         /// <summary>
         /// 座椅數
         /// </summary>
-        public int Seat { set; get; }
+        public int Seat { get; set; }
+
         /// <summary>
         /// 品牌
         /// </summary>
-        public string CarBrend { set; get; }
+        public string CarBrend { get; set; }
+
         /// <summary>
         /// 車型名稱
         /// </summary>
-        public string CarTypeName { set; get; }
+        public string CarTypeName { get; set; }
+
         /// <summary>
         /// 據點名稱
         /// </summary>
-        public string StationName { set; get; }
+        public string StationName { get; set; }
+
         /// <summary>
         /// 評分
         /// </summary>
-        public float OperatorScore { set; get; }
+        public float OperatorScore { get; set; }
+
         /// <summary>
         /// 專案名稱
         /// </summary>
-        public string ProjName { set; get; }
+        public string ProjName { get; set; }
+
         /// <summary>
         /// 車輛租金
         /// </summary>
-        public int CarRentBill { set; get; }
+        public int CarRentBill { get; set; }
+
         /// <summary>
         /// 使用時數
         /// </summary>
-        public string TotalHours { set; get; }
+        public string TotalHours { get; set; }
+
         /// <summary>
         /// 月租抵扣
         /// </summary>
-        public string MonthlyHours { set; get; }
+        public string MonthlyHours { get; set; }
+
         /// <summary>
-        /// 時數抵扣
+        /// 折抵時數(汽車)
         /// </summary>
-        public string GiftPoint { set; get; }
+        public string GiftPoint { get; set; }
+
+        /// <summary>
+        /// 折抵時數(機車)
+        /// </summary>
+        public string GiftMotorPoint { get; set; }
+
         /// <summary>
         ///  計費時數
         /// </summary>
-        public string PayHours { set; get; }
+        public string PayHours { get; set; }
+
         /// <summary>
         /// 里程費
         /// </summary>
-        public int MileageBill { set; get; }
+        public int MileageBill { get; set; }
+
         /// <summary>
         /// 安心服務費
         /// </summary>
-        public int InsuranceBill { set; get; }
+        public int InsuranceBill { get; set; }
+
         /// <summary>
         /// etag費用
         /// </summary>
-        public int EtagBill { set; get; }
+        public int EtagBill { get; set; }
+
         /// <summary>
         /// 逾時費
         /// </summary>
-        public int OverTimeBill { set; get; }
+        public int OverTimeBill { get; set; }
+
         /// <summary>
         /// 代收停車費
         /// </summary>
-        public int ParkingBill { set; get; }
+        public int ParkingBill { get; set; }
+
         /// <summary>
         /// 轉乘優惠折抵
         /// </summary>
-        public int TransDiscount { set; get; }
-        public int TotalBill { set; get; }
+        public int TransDiscount { get; set; }
+
+        /// <summary>
+        /// 總金額
+        /// </summary>
+        public int TotalBill { get; set; }
+
         /// <summary>
         /// 發票類型
         /// </summary>
-        public int InvoiceType { set; get; }
+        public int InvoiceType { get; set; }
+
       /// <summary>
       /// 捐贈碼
       /// </summary>
-        public string NPOBAN { set; get; }
+        public string NPOBAN { get; set; }
+
         /// <summary>
         /// 捐贈協會名稱
         /// </summary>
-        public string NPOBAN_Name { set; get; }
+        public string NPOBAN_Name { get; set; }
+
         /// <summary>
         /// 發票號碼
         /// </summary>
-        public string InvoiceNo { set; get; }
+        public string InvoiceNo { get; set; }
+
         /// <summary>
         /// 發票日期
         /// </summary>
-        public string InvoiceDate { set; get; }
+        public string InvoiceDate { get; set; }
+
         /// <summary>
         /// 發票金額
         /// </summary>
-        public int InvoiceBill { set; get; }
+        public int InvoiceBill { get; set; }
+
         /// <summary>
         /// 發票網址
         /// </summary>
-        public string InvoiceURL { set; get; }
-   
-  
+        public string InvoiceURL { get; set; }
+
         /// <summary>
         /// 開始時間
         /// </summary>
-        public string StartTime { set; get; }
+        public string StartTime { get; set; }
+
         /// <summary>
         /// 結束時間
         /// </summary>
-        public string EndTime { set; get; }
+        public string EndTime { get; set; }
     }
 }

@@ -1,19 +1,88 @@
 ﻿CREATE VIEW [dbo].[VW_GetAllMotorAnyRentData]
 	AS 
-SELECT Car.[CarNo],CarStatus.[CID],[Token],[deviceType],[ACCStatus],[GPSStatus],[GPSTime],[GPRSStatus],[Speed],[Volt],[Latitude],[Longitude],[Millage],[deviceCourse]
-      ,[deviceRPM],[device2TBA],[device3TBA],[deviceRSOC],[deviceRDistance],[deviceMBA],[deviceMBAA],[deviceMBAT_Hi],[deviceMBAT_Lo],[deviceRBA]
-      ,[deviceRBAA],[deviceRBAT_Hi],[deviceRBAT_Lo],[deviceLBA],[deviceLBAA],[deviceLBAT_Hi],[deviceLBAT_Lo],[deviceTMP]
-      ,[deviceCur],[deviceTPS],[deviceVOL],[deviceErr],[deviceALT],[deviceGx],[deviceGy],[deviceGz]
-      ,[deviceBLE_Login],[deviceBLE_BroadCast],[devicePwr_Mode],[deviceReversing],[devicePut_Down]
-      ,[devicePwr_Relay],[deviceStart_OK],[deviceHard_ACC],[deviceEMG_Break],[deviceSharp_Turn]
-      ,[deviceBat_Cover],[extDeviceStatus1],[extDeviceData5],[extDeviceData6],Car.available 
-	  ,FullProj.[PROJID],[PRONAME],[PRODESC],[CarBrend],[CarTypeName],CarInfo.CarType,FullProj.[ShowStart], FullProj.[ShowEnd]
-	  ,FullProj.[PRSTDT],FullProj.[PRENDT],FullProj.[PRICE],FullProj.[PRICE_H]
-	  ,OperatorBase.[OperatorICon],OperatorBase.[Score],PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice],PriceByMinutes.[Price] As PerMinutesPrice
-FROM TB_CarStatus AS CarStatus
-INNER JOIN TB_Car AS Car WITH(NOLOCK) ON Car.CarNo=CarStatus.CarNo
-INNER JOIN TB_CarInfo As CarInfo WITH(NOLOCK) ON CarInfo.CarNo=CarStatus.CarNo
-INNER JOIN VW_FullProjectCollection AS FullProj WITH(NOLOCK) ON Car.nowStationID=FullProj.StationID AND CarInfo.CarType=FullProj.CARTYPE AND FullProj.IOType='O' AND FullProj.PROJTYPE=4
-INNER JOIN TB_OperatorBase As OperatorBase WITH(NOLOCK) On OperatorBase.OperatorID=Car.Operator
-INNER JOIN TB_PriceByMinutes As PriceByMinutes WITH(NOLOCK) On PriceByMinutes.ProjID=FullProj.PROJID And PriceByMinutes.CarType=Car.CarType
-WHERE Car.available<2 AND ((FullProj.[ShowStart]<=GETDATE() AND FullProj.[ShowEnd]>GETDATE()) OR FullProj.[PRSTDT]<=GETDATE() AND FullProj.[PRENDT]>GETDATE())
+SELECT Car.CarNo,
+       CarStatus.CID,
+       CarStatus.Token,
+       CarStatus.deviceType,
+       CarStatus.ACCStatus,
+       CarStatus.GPSStatus,
+       CarStatus.GPSTime,
+       CarStatus.GPRSStatus,
+       CarStatus.Speed,
+       CarStatus.Volt,
+       CarStatus.Latitude,
+       CarStatus.Longitude,
+       CarStatus.Millage,
+       CarStatus.deviceCourse,
+       CarStatus.deviceRPM,
+       CarStatus.device2TBA,
+       CarStatus.device3TBA,
+       CarStatus.deviceRSOC,
+       CarStatus.deviceRDistance,
+       CarStatus.deviceMBA,
+       CarStatus.deviceMBAA,
+       CarStatus.deviceMBAT_Hi,
+       CarStatus.deviceMBAT_Lo,
+       CarStatus.deviceRBA,
+       CarStatus.deviceRBAA,
+       CarStatus.deviceRBAT_Hi,
+       CarStatus.deviceRBAT_Lo,
+       CarStatus.deviceLBA,
+       CarStatus.deviceLBAA,
+       CarStatus.deviceLBAT_Hi,
+       CarStatus.deviceLBAT_Lo,
+       CarStatus.deviceTMP,
+       CarStatus.deviceCur,
+       CarStatus.deviceTPS,
+       CarStatus.deviceVOL,
+       CarStatus.deviceErr,
+       CarStatus.deviceALT,
+       CarStatus.deviceGx,
+       CarStatus.deviceGy,
+       CarStatus.deviceGz,
+       CarStatus.deviceBLE_Login,
+       CarStatus.deviceBLE_BroadCast,
+       CarStatus.devicePwr_Mode,
+       CarStatus.deviceReversing,
+       CarStatus.devicePut_Down,
+       CarStatus.devicePwr_Relay,
+       CarStatus.deviceStart_OK,
+       CarStatus.deviceHard_ACC,
+       CarStatus.deviceEMG_Break,
+       CarStatus.deviceSharp_Turn,
+       CarStatus.deviceBat_Cover,
+       CarStatus.extDeviceStatus1,
+       CarStatus.extDeviceData5,
+       CarStatus.extDeviceData6,
+       Car.available,
+       FullProj.PROJID,
+       FullProj.PRONAME,
+       FullProj.PRODESC,
+       FullProj.CarBrend,
+       FullProj.CarTypeName,
+       CarInfo.CarType,
+       FullProj.ShowStart,
+       FullProj.ShowEnd,
+       FullProj.PRSTDT,
+       FullProj.PRENDT,
+       FullProj.PRICE,
+       FullProj.PRICE_H,
+       OperatorBase.OperatorICon,
+       OperatorBase.Score,
+       PriceByMinutes.BaseMinutes,
+       PriceByMinutes.BaseMinutesPrice,
+       PriceByMinutes.Price AS PerMinutesPrice,
+       Station.Area
+FROM dbo.TB_CarStatus AS CarStatus
+INNER JOIN dbo.TB_Car AS Car WITH (NOLOCK) ON Car.CarNo = CarStatus.CarNo
+INNER JOIN dbo.TB_CarInfo AS CarInfo WITH (NOLOCK) ON CarInfo.CarNo = CarStatus.CarNo
+INNER JOIN dbo.VW_FullProjectCollection AS FullProj WITH (NOLOCK) ON Car.nowStationID = FullProj.StationID AND CarInfo.CarType = FullProj.CARTYPE AND FullProj.IOType = 'O' AND FullProj.PROJTYPE = 4
+INNER JOIN dbo.TB_OperatorBase AS OperatorBase WITH (NOLOCK) ON OperatorBase.OperatorID = Car.Operator
+INNER JOIN dbo.TB_PriceByMinutes AS PriceByMinutes WITH (NOLOCK) ON PriceByMinutes.ProjID = FullProj.PROJID AND PriceByMinutes.CarType = Car.CarType
+LEFT OUTER JOIN dbo.TB_iRentStation AS Station WITH (NOLOCK) ON Station.StationID = Car.nowStationID
+WHERE (Car.available < 2)
+  AND (FullProj.ShowStart <= GETDATE())
+  AND (FullProj.ShowEnd > GETDATE())
+  OR (Car.available < 2)
+  AND (FullProj.PRSTDT <= GETDATE())
+  AND (FullProj.PRENDT > GETDATE())

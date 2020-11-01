@@ -19,7 +19,7 @@ namespace OtherService
     /// <summary>
     /// 和雲WebAPI
     /// </summary>
-   public  class HiEasyRentAPI
+    public class HiEasyRentAPI
     {
         protected string userid;
         protected string apikey;
@@ -80,16 +80,16 @@ namespace OtherService
             return EncryptStr;
         }
         #region 發送簡訊
-        public bool NPR260Send(string TARGET, string Message,string RENO, ref WebAPIOutput_NPR260Send output)
+        public bool NPR260Send(string TARGET, string Message, string RENO, ref WebAPIOutput_NPR260Send output)
         {
             bool flag = true;
             WebAPIInput_NPR260Send input = new WebAPIInput_NPR260Send()
             {
                 sig = GenerateSig(),
                 user_id = userid,
-                TARGET=TARGET,
-                 MESSAGE=Message,
-                 RENO=RENO
+                TARGET = TARGET,
+                MESSAGE = Message,
+                RENO = RENO
             };
             output = DoNPR260Send(input).Result;
             if (output.Result)
@@ -117,7 +117,7 @@ namespace OtherService
             WebAPIOutput_NPR260Send output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL+NPR260SendURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR260SendURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try
@@ -130,20 +130,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR260Send>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -151,7 +147,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_NPR260Send()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -165,14 +160,13 @@ namespace OtherService
                     WebAPIInput = JsonConvert.SerializeObject(input),
                     WebAPIName = "NPR260Send",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
-                    WebAPIURL = BaseURL+NPR260SendURL
+                    WebAPIURL = BaseURL + NPR260SendURL
                 };
                 bool flag = true;
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }
@@ -194,7 +188,6 @@ namespace OtherService
                 ID = IDNO
             };
 
-
             output = DoNPR270Query(input).Result;
             if (output.Result)
             {
@@ -212,7 +205,7 @@ namespace OtherService
             WebAPIOutput_NPR270Query output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL+NPR270QueryURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR270QueryURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try
@@ -225,20 +218,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR270Query>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -246,7 +235,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_NPR270Query()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -267,7 +255,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }
@@ -324,14 +311,12 @@ namespace OtherService
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR271Query>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -360,7 +345,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }
@@ -422,13 +406,10 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
@@ -443,7 +424,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_NPR370Check()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -465,12 +445,11 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
 
-
             return output;
         }
         #endregion
         #region 點數轉贈
-        public bool NPR370Save(string IDNO, string TargetId, int Pointer, string GiftType,  ref WebAPIOutput_NPR370Save output)
+        public bool NPR370Save(string IDNO, string TargetId, int Pointer, string GiftType, ref WebAPIOutput_NPR370Save output)
         {
             bool flag = true;
             WebAPIInput_NPR370Save input = new WebAPIInput_NPR370Save()
@@ -514,20 +493,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR370Save>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -535,7 +510,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_NPR370Save()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -556,7 +530,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }
@@ -614,20 +587,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_EinvBiz>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -657,7 +626,6 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
 
-
             return output;
         }
         #endregion
@@ -677,7 +645,6 @@ namespace OtherService
                 user_id = userid,
                 MEMIDNO = IDNO
             };
-
 
             output = DoNPR330Query(input).Result;
             if (output.Result)
@@ -709,20 +676,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_ArrearQuery>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -730,7 +693,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_ArrearQuery()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -751,7 +713,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }
@@ -798,7 +759,7 @@ namespace OtherService
             WebAPIOutput_NPR320Query output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(NPR320QueryURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR320QueryURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try
@@ -811,20 +772,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR320Query>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -832,7 +789,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_NPR320Query()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -854,7 +810,6 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
 
-
             return output;
         }
         #endregion
@@ -866,7 +821,7 @@ namespace OtherService
             {
                 sig = GenerateSig(),
                 user_id = userid,
-                 IRENTORDNO = IRENTORDNO,
+                IRENTORDNO = IRENTORDNO,
                 RNTDATETIME = RNTDATETIME
             };
             output = DoETAG010Send(input).Result;
@@ -883,7 +838,6 @@ namespace OtherService
             }
             return flag;
         }
-
 
         /// <summary>
         /// 發送簡訊執行端
@@ -908,20 +862,16 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
                 {
-
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_ETAG010>(responseStr);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -929,7 +879,6 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_ETAG010()
                 {
-
                     Message = "發生異常錯誤",
                     Result = false
                 };
@@ -950,7 +899,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
-
 
             return output;
         }

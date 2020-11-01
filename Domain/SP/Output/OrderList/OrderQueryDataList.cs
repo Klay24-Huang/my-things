@@ -4,6 +4,7 @@ namespace Domain.SP.Output.OrderList
 {
     public class OrderQueryDataList
     {
+        #region 據點相關
         /// <summary>
         /// 據點代碼
         /// </summary>
@@ -32,6 +33,12 @@ namespace Domain.SP.Output.OrderList
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
+
+        /// <summary>
+        /// 據點地區
+        /// </summary>
+        public string Area { get; set; }
+        #endregion
 
         public string StationPic1 { set; get; }
         public string StationPic2 { set; get; }
@@ -86,6 +93,16 @@ namespace Domain.SP.Output.OrderList
         /// <para>1:是</para>
         /// </summary>
         public int IsMotor { set; get; }
+
+        /// <summary>
+        /// 車緯度
+        /// </summary>
+        public decimal CarLatitude { get; set; }
+
+        /// <summary>
+        /// 車經度
+        /// </summary>
+        public decimal CarLongitude { get; set; }
         #endregion
         #region 機車相關電力相關
         /// <summary>

@@ -45,6 +45,9 @@ namespace WebAPI.Controllers
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
+
+        private CommonFunc baseVerify { get; set; }
+
         [HttpPost]
         public Dictionary<string, object> DoCreditAuth(Dictionary<string, object> value)
         {
@@ -63,7 +66,7 @@ namespace WebAPI.Controllers
             IAPI_CreditAuth apiInput = null;
             NullOutput apiOutput = null;
             Token token = null;
-            CommonFunc baseVerify = new CommonFunc();
+            baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
             string Contentjson = "";
@@ -149,6 +152,23 @@ namespace WebAPI.Controllers
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                 #region 這邊要再加上查訂單狀態
+
+                SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+                {
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    OrderNo = tmpOrder,
+                    Token = Access_Token,
+                    transaction_no = ""
+                };
+                SPInput_DonePayBack spInput_PayBack = new SPInput_DonePayBack()
+                {
+                    NPR330Save_ID = apiInput.NPR330Save_ID.Value,
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+
                 if (apiInput.PayType == 0)
                 {
                     #region 取出訂單資訊
@@ -203,174 +223,204 @@ namespace WebAPI.Controllers
                         flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
                     }
                     #endregion
-                    #region 台新信用卡
+                    #region 台新信用卡-Mark
+                    //if (flag)
+                    //{
+                    //    //送台新查詢
+                    //    TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+                    //    PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+                    //    {
+                    //        ApiVer = ApiVerOther,
+                    //        ApposId = TaishinAPPOS,
+                    //        RequestParams = new GetCreditCardListRequestParamasData()
+                    //        {
+                    //            MemberId = IDNO,
+                    //        },
+                    //        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                    //        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                    //        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+
+                    //    };
+                    //    WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+                    //    flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+                    //    if (flag)
+                    //    {
+                    //        int Len = wsOutput.ResponseParams.ResultData.Count;
+                    //        bool hasFind = false;
+                    //        string CardToken = "";
+                    //        if (Len > 0)
+                    //        {
+                    //            CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                    //            hasFind = true;
+                    //        }
+
+                    //        #region 直接授權
+                    //        if (hasFind)//有找到，可以做扣款
+                    //        {
+                    //            SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+                    //            {
+                    //                IDNO = IDNO,
+                    //                LogID = LogID,
+                    //                OrderNo = tmpOrder,
+                    //                Token = Access_Token,
+                    //                transaction_no = ""
+                    //            };
+
+                    //            Thread.Sleep(1000);
+                    //            if (Amount > 0)
+                    //            {
+                    //                Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
+                    //                {
+                    //                    Amount = Amount.ToString() + "00",
+                    //                    Name = string.Format("{0}租金", apiInput.OrderNo),
+                    //                    NonPoint = "N",
+                    //                    NonRedeem = "N",
+                    //                    Price = Amount.ToString() + "00",
+                    //                    Quantity = "1"
+                    //                };
+                    //                PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
+                    //                {
+                    //                    ApiVer = "1.0.2",
+                    //                    ApposId = TaishinAPPOS,
+                    //                    RequestParams = new Domain.WebAPI.Input.Taishin.AuthRequestParams()
+                    //                    {
+                    //                        CardToken = CardToken,
+                    //                        InstallPeriod = "0",
+                    //                        InvoiceMark = "N",
+                    //                        Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
+                    //                        MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                    //                        MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                    //                        MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //                        NonRedeemAmt = Amount.ToString() + "00",
+                    //                        NonRedeemdescCode = "",
+                    //                        Remark1 = "",
+                    //                        Remark2 = "",
+                    //                        Remark3 = "",
+                    //                        ResultUrl = BindResultURL,
+                    //                        TradeAmount = Amount.ToString() + "00",
+                    //                        TradeType = "1",
+                    //                        UseRedeem = "N"
+
+                    //                    },
+                    //                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                    //                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+
+                    //                };
+                    //                WSAuthInput.RequestParams.Item.Add(item);
+
+                    //                WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                    //                flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
+                    //                if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
+                    //                {
+                    //                    flag = false;
+                    //                    errCode = "ERR197";
+                    //                }
+                    //                if (flag)
+                    //                {
+                    //                    PayInput.transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
+                    //                }
+                    //            }
+                    //            else
+                    //            {
+                    //                PayInput.transaction_no = "Free";
+                    //            }
+                    //            if (flag)
+                    //            {
+                    //                //if (OrderDataLists[0].ProjType == 4)
+                    //                //{
+                    //                //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                    //                //    if (Motorflag == false)
+                    //                //    {
+                    //                //        //寫入車機錯誤
+                    //                //    }
+                    //                //}
+                    //                bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                    //                if (CarFlag == false)
+                    //                {
+                    //                    //寫入車機錯誤
+                    //                }
+                    //                string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                    //                SPOutput_Base PayOutput = new SPOutput_Base();
+                    //                SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                    //                flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                    //                baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                    //            }
+                              
+                    //        }
+                    //        else
+                    //        {
+                    //            flag = false;
+                    //            errCode = "ERR195";
+                    //        }
+                    //        #endregion
+
+                    //    }
+                    //    else
+                    //    {
+                    //        errCode = "ERR730";
+                    //    }
+                    //}
+                    #endregion
+                  
+                    if(flag)
+                    {
+                        flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
+                        if(flag)
+                        {
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                            SPOutput_Base PayOutput = new SPOutput_Base();
+                            SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                        }
+                    }
+
+                    #region 寫還車照片到azure
                     if (flag)
                     {
-                        //送台新查詢
-                        TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                        PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+
+                        OtherRepository otherRepository = new OtherRepository(connetStr);
+                        List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 1);
+                        int PICLen = lstCarPIC.Count;
+                        for (int i = 0; i < PICLen; i++)
                         {
-                            ApiVer = ApiVerOther,
-                            ApposId = TaishinAPPOS,
-                            RequestParams = new GetCreditCardListRequestParamasData()
+                            try
                             {
-                                MemberId = IDNO,
-                            },
-                            Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                            TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+                                string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
 
-                        };
-                        WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                        flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
-                        if (flag)
-                        {
-                            int Len = wsOutput.ResponseParams.ResultData.Count;
-                            bool hasFind = false;
-                            string CardToken = "";
-                            if (Len > 0)
-                            {
-                                CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
-                                hasFind = true;
-                            }
-
-                            #region 直接授權
-                            if (hasFind)//有找到，可以做扣款
-                            {
-                                SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
-                                {
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    OrderNo = tmpOrder,
-                                    Token = Access_Token,
-                                    transaction_no = ""
-                                };
-
-                                Thread.Sleep(1000);
-                                if (Amount > 0)
-                                {
-                                    Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
-                                    {
-                                        Amount = Amount.ToString() + "00",
-                                        Name = string.Format("{0}租金", apiInput.OrderNo),
-                                        NonPoint = "N",
-                                        NonRedeem = "N",
-                                        Price = Amount.ToString() + "00",
-                                        Quantity = "1"
-                                    };
-                                    PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
-                                    {
-                                        ApiVer = "1.0.2",
-                                        ApposId = TaishinAPPOS,
-                                        RequestParams = new Domain.WebAPI.Input.Taishin.AuthRequestParams()
-                                        {
-                                            CardToken = CardToken,
-                                            InstallPeriod = "0",
-                                            InvoiceMark = "N",
-                                            Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
-                                            MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
-                                            MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                            MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                            NonRedeemAmt = Amount.ToString() + "00",
-                                            NonRedeemdescCode = "",
-                                            Remark1 = "",
-                                            Remark2 = "",
-                                            Remark3 = "",
-                                            ResultUrl = BindResultURL,
-                                            TradeAmount = Amount.ToString() + "00",
-                                            TradeType = "1",
-                                            UseRedeem = "N"
-
-                                        },
-                                        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                                        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-
-                                    };
-                                    WSAuthInput.RequestParams.Item.Add(item);
-
-                                    WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                                    flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
-                                    if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
-                                    {
-                                        flag = false;
-                                        errCode = "ERR197";
-                                    }
-                                    if (flag)
-                                    {
-                                        PayInput.transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
-                                    }
-                                }
-                                else
-                                {
-                                    PayInput.transaction_no = "Free";
-                                }
+                                flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
                                 if (flag)
                                 {
-                                    //if (OrderDataLists[0].ProjType == 4)
-                                    //{
-                                    //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                    //    if (Motorflag == false)
-                                    //    {
-                                    //        //寫入車機錯誤
-                                    //    }
-                                    //}
-                                    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                    if (CarFlag == false)
-                                    {
-                                        //寫入車機錯誤
-                                    }
-                                    string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
-                                    SPOutput_Base PayOutput = new SPOutput_Base();
-                                    SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
-                                    flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                                    baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                                    bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 1, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
                                 }
-                              
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                flag = false;
-                                errCode = "ERR195";
+                                flag = true; //先bypass，之後補傳再刪
                             }
-                            #endregion
+                        }
 
+                    }
+                    #endregion
+                }
+                else if(apiInput.PayType == 1)
+                {
+                    if(flag)
+                    {
+                        if(apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
+                        {
+                            flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
+                            if (flag)
+                                flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
                         }
                         else
                         {
-                            errCode = "ERR730";
+                            errCode = "ERR111";
+                            flag = false;
                         }
                     }
-                    #endregion
-                  
-                        #region 寫還車照片到azure
-                        if (flag)
-                        {
-
-                            OtherRepository otherRepository = new OtherRepository(connetStr);
-                            List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 1);
-                            int PICLen = lstCarPIC.Count;
-                            for (int i = 0; i < PICLen; i++)
-                            {
-                                try
-                                {
-                                    string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-                                    flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
-                                    if (flag)
-                                    {
-                                        bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 1, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    flag = true; //先bypass，之後補傳再刪
-                                }
-                            }
-
-                        }
-                        #endregion
-                    
                 }
+
                 #endregion
             }
             #endregion
@@ -385,5 +435,185 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        /// <summary>
+        /// 台新信用卡交易
+        /// </summary>
+        private bool TaishinCardTrade(
+            IAPI_CreditAuth apiInput,
+            ref SPInput_DonePayRent PayInput,
+            ref int Amount, ref string errCode)
+        {
+            bool flag = true;
+
+            string IDNO = PayInput.IDNO;
+            Int64 LogID = PayInput.LogID;
+            Int64 tmpOrder = PayInput.OrderNo;
+            string Access_Token = PayInput.Token;
+
+            #region 台新信用卡
+            if (flag)
+            {
+                //送台新查詢
+                TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+                PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+                {
+                    ApiVer = ApiVerOther,
+                    ApposId = TaishinAPPOS,
+                    RequestParams = new GetCreditCardListRequestParamasData()
+                    {
+                        MemberId = IDNO,
+                    },
+                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                    TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+
+                };
+                WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+                flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+                if (flag)
+                {
+                    int Len = wsOutput.ResponseParams.ResultData.Count;
+                    bool hasFind = false;
+                    string CardToken = "";
+                    if (Len > 0)
+                    {
+                        CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                        hasFind = true;
+                    }
+
+                    #region 直接授權
+                    if (hasFind)//有找到，可以做扣款
+                    {
+                        //SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+                        //{
+                        //    IDNO = IDNO,
+                        //    LogID = LogID,
+                        //    OrderNo = tmpOrder,
+                        //    Token = Access_Token,
+                        //    transaction_no = ""
+                        //};
+
+                        Thread.Sleep(1000);
+                        if (Amount > 0)
+                        {
+                            Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
+                            {
+                                Amount = Amount.ToString() + "00",
+                                Name = string.Format("{0}租金", apiInput.OrderNo),
+                                NonPoint = "N",
+                                NonRedeem = "N",
+                                Price = Amount.ToString() + "00",
+                                Quantity = "1"
+                            };
+                            PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
+                            {
+                                ApiVer = "1.0.2",
+                                ApposId = TaishinAPPOS,
+                                RequestParams = new Domain.WebAPI.Input.Taishin.AuthRequestParams()
+                                {
+                                    CardToken = CardToken,
+                                    InstallPeriod = "0",
+                                    InvoiceMark = "N",
+                                    Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
+                                    MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                                    MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    NonRedeemAmt = Amount.ToString() + "00",
+                                    NonRedeemdescCode = "",
+                                    Remark1 = "",
+                                    Remark2 = "",
+                                    Remark3 = "",
+                                    ResultUrl = BindResultURL,
+                                    TradeAmount = Amount.ToString() + "00",
+                                    TradeType = "1",
+                                    UseRedeem = "N"
+
+                                },
+                                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+
+                            };
+                            WSAuthInput.RequestParams.Item.Add(item);
+
+                            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                            flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
+                            if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
+                            {
+                                flag = false;
+                                errCode = "ERR197";
+                            }
+                            if (flag)
+                            {
+                                PayInput.transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
+                            }
+                        }
+                        else
+                        {
+                            PayInput.transaction_no = "Free";
+                        }
+                        if (flag)
+                        {
+                            //if (OrderDataLists[0].ProjType == 4)
+                            //{
+                            //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                            //    if (Motorflag == false)
+                            //    {
+                            //        //寫入車機錯誤
+                            //    }
+                            //}
+
+                            if (apiInput.PayType == 0)
+                            {
+                                bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                if (CarFlag == false)
+                                {
+                                    //寫入車機錯誤
+                                }
+                            }
+
+                            //string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+                            //SPOutput_Base PayOutput = new SPOutput_Base();
+                            //SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR195";
+                    }
+                    #endregion
+                }
+                else
+                {
+                    flag = false;
+                    errCode = "ERR730";
+                }
+            }
+            #endregion
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 欠費繳交
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
+        private bool DonePayBack(SPInput_DonePayBack spInput, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            bool flag = true;
+            string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayBack);
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_DonePayBack, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayBack, SPOutput_Base>(connetStr);
+            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, spInput, ref spOutput, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
+            return flag;
+        }
+    
     }
 }
