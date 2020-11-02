@@ -39,6 +39,10 @@ namespace OtherService.Enum
              /// </summary>
              HandleCarStatusByMotor,
             BE_HandleCarMachineData,
+            /// <summary>
+            /// 取得DeviceName
+            /// </summary>
+            GetIDUCmdDeviceName
         }
         /// <summary>
         /// 取出SPName
@@ -70,6 +74,9 @@ namespace OtherService.Enum
                     break;
                 case SPType.HandleCarStatusByMotor:
                     SPName = "usp_HandleCarStatusByMotor";
+                    break;
+                case SPType.GetIDUCmdDeviceName:
+                    SPName = "usp_GetIDUCmdDeviceName";
                     break;
 
 
