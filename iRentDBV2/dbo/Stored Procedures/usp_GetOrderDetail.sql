@@ -147,7 +147,9 @@ BEGIN TRY
 			   Main.[CARRIERID],
 			   Main.[NPOBAN],
 			   Main.unified_business_no,
-			   ISNULL(Love.LoveName, '') AS NPOBAN_Name
+			   ISNULL(Love.LoveName, '') AS NPOBAN_Name,
+			   VW.Millage,
+			   VW.Area
 		FROM [dbo].[VW_GetOrderData] AS VW
 		INNER JOIN [TB_OrderDetail] AS Detail ON Detail.order_number=VW.order_number
 		LEFT JOIN [TB_OrderMain] AS Main ON Main.order_number=VW.order_number
