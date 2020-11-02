@@ -163,7 +163,7 @@ namespace WebAPI.Controllers
                 };
                 SPInput_DonePayBack spInput_PayBack = new SPInput_DonePayBack()
                 {
-                    NPR330Save_ID = apiInput.NPR330Save_ID.Value,
+                    NPR330Save_ID = apiInput.NPR330Save_ID == null ? 0 : apiInput.NPR330Save_ID.Value,
                     IDNO = IDNO,
                     Token = Access_Token,
                     LogID = LogID
