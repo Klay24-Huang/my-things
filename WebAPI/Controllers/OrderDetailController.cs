@@ -187,6 +187,8 @@ namespace WebAPI.Controllers
                             InvoiceURL = "",
                             StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
                             EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
+                            Millage = orderFinishDataLists[0].Millage,
+                            CarOfArea = orderFinishDataLists[0].Area
                         };
                     }
                 }
