@@ -32,6 +32,7 @@ SELECT OrderMain.[order_number]
       ,ISNULL(OrderDetil.Insurance_price,0) AS Insurance_price
       ,ISNULL(OrderDetil.fine_price,0) AS fine_price
       ,ISNULL(OrderDetil.gift_point,0) AS gift_point
+	  ,ISNULL(OrderDetil.gift_motor_point, 0) AS gift_motor_point
       ,ISNULL(OrderDetil.Etag,0) AS Etag
       ,ISNULL(OrderDetil.already_payment,0) AS already_payment
       ,ISNULL(OrderDetil.start_mile,0) AS start_mile
@@ -65,12 +66,15 @@ SELECT OrderMain.[order_number]
 	  ,ISNULL(PriceByMinutes.MaxPriceH		 ,0) AS MaxPriceH --20201006 - eason
 	  ,ISNULL(CarStatus.device3TBA,0) AS device3TBA
 	  ,ISNULL(CarStatus.deviceRDistance,'') AS RemainingMilage
+	  ,CarStatus.Latitude AS CarLatitude
+	  ,CarStatus.Longitude AS CarLongitude
 	  ,Station.Content AS [Content]
 	  ,Station.Latitude
 	  ,Station.Longitude
 	  ,Station.[Location] AS StationName 
 	  ,Station.ADDR 
 	  ,Station.Tel
+	  ,Station.Area
   FROM [dbo].[TB_OrderMain] AS OrderMain  WITH(NOLOCK)
   LEFT JOIN [dbo].[TB_OrderDetail] AS OrderDetil WITH(NOLOCK) ON OrderDetil.order_number=OrderMain.order_number 
   LEFT JOIN [dbo].[TB_Car] AS Car WITH(NOLOCK) ON Car.CarNo=OrderMain.CarNo

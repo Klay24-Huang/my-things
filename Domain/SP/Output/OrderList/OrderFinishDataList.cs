@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Output.OrderList
 {
@@ -54,8 +50,10 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string CarOfArea { set; get; }
 
+        /// <summary>
+        /// 據點名稱
+        /// </summary>
         public string StationName { set; get; }
-
      
         /// <summary>
         /// 車輛圖片
@@ -65,5 +63,10 @@ namespace Domain.SP.Output.OrderList
         /// 出租年
         /// </summary>
         public int RentYear { set; get; }
+
+        /// <summary>
+        /// 據點地區
+        /// </summary>
+        public string Area { get; set; }
     }
 }

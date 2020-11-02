@@ -15,11 +15,6 @@ namespace Domain.SP.Input.Car
         public string Token { set; get; }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public Int64 LogID { set; get; }
-
-        /// <summary>
         /// 車號
         /// </summary>
         public string CarNo { get; set; }

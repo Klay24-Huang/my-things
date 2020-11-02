@@ -30,7 +30,8 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
       [HttpPost]
-        public Dictionary<string, object> DoSetParkingSpaceByReturn(Dictionary<string, object> value)
+        //public Dictionary<string, object> DoSetParkingSpaceByReturn(Dictionary<string, object> value)
+        public Dictionary<string, object> DoSetParkingSpaceByReturn(IAPI_SetParkingSpaceByReturn apiInput)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -45,7 +46,7 @@ namespace WebAPI.Controllers
             string funName = "SetParkingSpaceByReturnController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_SetParkingSpaceByReturn apiInput = null;
+            //IAPI_SetParkingSpaceByReturn apiInput = null;
             NullOutput outputApi = new NullOutput();
             Int64 tmpOrder = -1;
             Token token = null;
@@ -62,19 +63,19 @@ namespace WebAPI.Controllers
 
             #endregion
             #region 防呆
-
+            Dictionary<string, object> value = new Dictionary<string, object>();
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetParkingSpaceByReturn>(Contentjson);
+                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetParkingSpaceByReturn>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                string restoreCarImg = apiInput.ParkingSpaceImage;
-                string tmpCarImg = apiInput.ParkingSpaceImage.Length.ToString();
+                //string restoreCarImg = apiInput.ParkingSpaceImage;
+                //string tmpCarImg = apiInput.ParkingSpaceImage.Length.ToString();
 
                 flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
-                apiInput.ParkingSpaceImage = restoreCarImg;
+                //apiInput.ParkingSpaceImage = restoreCarImg;
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
                     flag = false;
@@ -112,14 +113,14 @@ namespace WebAPI.Controllers
                     errCode = "ERR900";
                 }
             }
-            if (flag)
-            {
-                if (string.IsNullOrEmpty(apiInput.ParkingSpaceImage))
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
+            //if (flag)
+            //{
+            //    if (string.IsNullOrEmpty(apiInput.ParkingSpaceImage))
+            //    {
+            //        flag = false;
+            //        errCode = "ERR900";
+            //    }
+            //}
             //不開放訪客
             if (flag)
             {
@@ -152,19 +153,25 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                string FileName = string.Format("{0}_ParkingSpace_{1}.png", apiInput.OrderNo, DateTime.Now.ToString("yyyyMMddHHmmss"));
-                #region 加入azure
-                if (apiInput.ParkingSpaceImage.Length > 0)
+                for (int i = 0; i < apiInput.ParkingSpacePic.Count; i++)
                 {
-                    try
+                    string FileName = string.Format("{0}_ParkingSpace_{1}_{2}.png", apiInput.OrderNo,apiInput.ParkingSpacePic[i].SEQNO.ToString() , DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    #region 加入azure
+                    //if (apiInput.ParkingSpaceImage.Length > 0)
+                    if (apiInput.ParkingSpacePic[i].ParkingSpaceFile.Length > 0)
                     {
-                        flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpaceImage, FileName, "carpic");
-                    }catch(Exception ex)
-                    {
-                        flag = true;
+                        try
+                        {
+                            //flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpaceImage, FileName, "carpic");
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpacePic[i].ParkingSpaceFile, FileName, "carpic");
+                        }
+                        catch (Exception ex)
+                        {
+                            flag = true;
+                        }
                     }
+                    #endregion
                 }
-                #endregion
                 //SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
                 //{
                 //    IDNO = IDNO,
@@ -180,16 +187,39 @@ namespace WebAPI.Controllers
 
                 //flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                ParkingSpaceImage[] parkingImages = apiInput.ParkingSpacePic.ToArray();
+                object[] objparms = new object[parkingImages.Length == 0 ? 1 : parkingImages.Length];
+                if (parkingImages.Length > 0)
+                {
+                    for(int i=0;i<parkingImages.Length;i++)
+                    {
+                        objparms[i] = new
+                        {
+                            parkingSeqno = parkingImages[i].SEQNO,
+                            parkingImage = parkingImages[i].ParkingSpaceFile
+                        };
+                    }
+                }
+                else
+                {
+                    objparms[0] = new
+                    {
+                        parkingSeqno = 0,
+                        parkingImage = ""
+                    };
+                }
 
                 object[][] parms1 = {
                         new object[] {
                             IDNO,
                             tmpOrder,
                             apiInput.ParkingSpace,
-                            (FileName!="")?FileName:apiInput.ParkingSpaceImage,
+                            //(FileName!="")?FileName:apiInput.ParkingSpaceImage,
                             Access_Token,
                             LogID
-                    }};
+                    },
+                        objparms
+                };
 
                 DataSet ds1 = null;
                 string returnMessage = "";

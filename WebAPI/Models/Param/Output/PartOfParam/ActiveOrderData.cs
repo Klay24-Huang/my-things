@@ -8,22 +8,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class ActiveOrderData
     {
         #region 據點相關
-        ///// <summary>
-        ///// 據點名稱，對應tb裡的Location
-        ///// </summary>
-        //public string StationName { set; get; }
-        ///// <summary>
-        ///// 地址
-        ///// </summary>
-        //public string ADDR { set; get; }
-        ///// <summary>
-        ///// 緯度
-        ///// </summary>
-        //public float Latitude { set; get; }
-        ///// <summary>
-        ///// 經度
-        ///// </summary>
-        //public float Longitude { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public iRentStationData StationInfo { set; get; }
         #endregion
 
@@ -70,6 +57,16 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 車輛圖顯示地區
         /// </summary>
         public string CarOfArea { set; get; }
+
+        /// <summary>
+        /// 車緯度
+        /// </summary>
+        public decimal CarLatitude { get; set; }
+
+        /// <summary>
+        /// 車經度
+        /// </summary>
+        public decimal CarLongitude { get; set; }
 
         /// <summary>
         /// 機車電力資訊，當ProjType=4時才有值

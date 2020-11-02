@@ -21,5 +21,9 @@ namespace WebAPI.Models.Param.Input
         /// 罰金或補繳代碼
         /// </summary>
         public string CNTRNO { set; get; }
+        /// <summary>
+        /// 欠款查詢主表ID, 欠費補繳用
+        /// </summary>
+        public int? NPR330Save_ID { get; set; }
     }
 }

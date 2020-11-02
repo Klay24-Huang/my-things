@@ -233,6 +233,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_ContactFinish,
             /// <summary>
+            /// 完成補繳
+            /// </summary>
+            DonePayBack,
+            /// <summary>
             /// 電子柵欄查詢
             /// </summary>
             PolygonListQuery,
@@ -284,6 +288,14 @@ namespace WebAPI.Models.Enum
             /// 欠費查詢
             /// </summary>
             GetArrearsQuery,
+            /// <summary>
+            /// 強還(For測試)
+            /// </summary>
+            EnforceReturnCar,
+            /// <summary>
+            /// 月租訂閱
+            /// </summary>
+            MonthlySubscription,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -576,6 +588,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";
                     break;
+                case SPType.DonePayBack:
+                    SPName = "usp_DonePayBack";
+                    break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";
                     break;
@@ -615,6 +630,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetArrearsQuery:
                     SPName = "usp_ArrearsQuery_U1";//欠費查詢
+                    break;
+                case SPType.EnforceReturnCar:   //強還(For測試)
+                    SPName = "usp_EnforceReturnCar";
+                    break;
+                case SPType.MonthlySubscription:
+                    SPName = "usp_MonthRent_I01";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

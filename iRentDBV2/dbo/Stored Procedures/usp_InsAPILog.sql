@@ -84,6 +84,12 @@ SET @ErrorType=1;
 			IF @Error=0
 			BEGIN
 			   SELECT @APIID=APIID FROM TB_APIList WHERE APIName=@APIName;
+			   --20201029不知道的APIName也要記錄，設定@APIID=999
+			   IF @APIID=0
+			   BEGIN
+					SET @APIID = 999
+					SET @ORDNO = @APIName
+			   END
 			   IF @APIID>0
 			   BEGIN
 					INSERT INTO TB_APILog(APIID,CLIENTIP,APIInput,ORDNO)VALUES(@APIID,@ClientIP,@APIInput,@ORDNO);

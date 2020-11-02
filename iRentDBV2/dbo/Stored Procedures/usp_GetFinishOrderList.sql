@@ -86,92 +86,103 @@ SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
+SET @Token=ISNULL (@Token,'');
 
-SET @Token    =ISNULL (@Token    ,'');
-
-		BEGIN TRY
-		
+BEGIN TRY
+	IF @Token='' OR @IDNO=''  
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR900'
+		END
 		 
-		 IF @Token='' OR @IDNO=''  
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+	--0.再次檢核token
+	IF @Error=0
+		BEGIN
+			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 			IF @hasData=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR101';
-			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
 				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
+					SET @Error=1;
+					SET @ErrorCode='ERR101';
 				END
-			END
-		 END
-		 IF @Error=0
-		 BEGIN
-		      IF @ShowYear=0
-			  BEGIN
-			     SET @ShowYear=YEAR(@NowTime);
-			  END
+			ELSE
+				BEGIN
+					SET @hasData=0;
+					SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+					IF @hasData=0
+						BEGIN
+							SET @Error=1;
+							SET @ErrorCode='ERR101';
+						END
+				END
+		END
 
-				;WITH T
-				AS (
-				   SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo
-								,OrderMain.order_number AS OrderNo,OrderMain.CarNo,OrderMain.ProjType,OrderMain.unified_business_no AS UniCode,OrderDetail.final_start_time,OrderDetail.final_stop_time,OrderDetail.final_price
-								,Car.CarOfArea,Station.[Location] AS StationName
-								,VWFullData.CarTypeImg
-								,YEAR(OrderDetail.final_start_time) AS RentYear
-								FROM TB_OrderMain AS OrderMain WITH(NOLOCK) 
-								LEFT JOIN TB_Car AS Car ON Car.CarNo=OrderMain.CarNo
-								LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup As VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType AND VWFullData.StationID=OrderMain.lend_place AND VWFullData.PROJID=OrderMain.ProjID
-								LEFT JOIN TB_iRentStation AS Station ON Station.StationID=OrderMain.lend_place
-								INNER JOIN TB_OrderDetail AS OrderDetail WITH(NOLOCK) ON OrderDetail.order_number=OrderMain.order_number
-							     WHERE IDNO=@IDNO AND isDelete=0 AND car_mgt_status=16 AND booking_status=5 AND YEAR(OrderDetail.final_start_time)=@ShowYear
-				    ),
-				T2 AS (
-				    SELECT COUNT(1) TotalCount FROM T
-				)
-				SELECT *
-					FROM T2, T
-					WHERE RowNo BETWEEN (@pageNo - 1) * @pageSize  + 1 AND @pageNo * @pageSize;
+	IF @Error=0
+		BEGIN
+			IF @ShowYear=0
+				BEGIN
+					SET @ShowYear=YEAR(@NowTime);
+				END
 
-			
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+			;WITH T
+			AS (
+				SELECT ROW_NUMBER() OVER (ORDER BY start_time DESC) AS RowNo ,
+					OrderMain.order_number AS OrderNo,
+					OrderMain.CarNo,
+					OrderMain.ProjType,
+					OrderMain.unified_business_no AS UniCode,
+					OrderDetail.final_start_time,
+					OrderDetail.final_stop_time,
+					OrderDetail.final_price ,
+					Car.CarOfArea,
+					Station.[Location] AS StationName ,
+					VWFullData.CarTypeImg ,
+					YEAR(OrderDetail.final_start_time) AS RentYear ,
+					Station.Area
+				FROM TB_OrderMain AS OrderMain WITH(NOLOCK)
+				LEFT JOIN TB_Car AS Car ON Car.CarNo=OrderMain.CarNo
+				LEFT JOIN VW_GetFullProjectCollectionOfCarTypeGroup AS VWFullData WITH(NOLOCK) ON VWFullData.CARTYPE=Car.CarType
+				AND VWFullData.StationID=OrderMain.lend_place
+				AND VWFullData.PROJID=OrderMain.ProjID
+				LEFT JOIN TB_iRentStation AS Station ON Station.StationID=OrderMain.lend_place
+				INNER JOIN TB_OrderDetail AS OrderDetail WITH(NOLOCK) ON OrderDetail.order_number=OrderMain.order_number
+				WHERE IDNO=@IDNO
+				  AND isDelete=0
+				  AND car_mgt_status=16
+				  AND booking_status=5
+				  AND YEAR(OrderDetail.final_start_time)=@ShowYear
+				),
+			T2 AS (
+				SELECT COUNT(1) TotalCount FROM T
+			)
+			SELECT *
+			FROM T2, T
+			WHERE RowNo BETWEEN (@pageNo - 1) * @pageSize  + 1 AND @pageNo * @pageSize;
+		END
+
+	--寫入錯誤訊息
+	IF @Error=1
+		BEGIN
+			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+		END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+		BEGIN
+			print 'rolling back transaction' /* <- this is never printed */
+			ROLLBACK TRAN
+		END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetFinishOrderList';

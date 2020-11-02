@@ -157,6 +157,9 @@ BEGIN TRY
 				,StationPic2 = i2.StationPic
 				,StationPic3 = i3.StationPic
 				,StationPic4 = i4.StationPic
+				,[CarLatitude]
+				,[CarLongitude]
+				,Area
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
