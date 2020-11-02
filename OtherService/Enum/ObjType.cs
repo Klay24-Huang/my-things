@@ -38,6 +38,7 @@ namespace OtherService.Enum
              /// 寫入遠傳定時回報及GetInfo(機車)
              /// </summary>
              HandleCarStatusByMotor,
+            BE_HandleCarMachineData,
         }
         /// <summary>
         /// 取出SPName
