@@ -35,6 +35,16 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult StationInfoSetting(string StationID,int NotMach)
+        {
+            ViewData["StationID"] = StationID;
+            ViewData["NotMuch"] = NotMach;
+            List<BE_GetPartOfStationInfo> lstData = null;
+            StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+            lstData = repository.GetPartOfStation(StationID, (NotMach == 1));
+            return View(lstData);
+        }
         /// <summary>
         /// 據點資訊新增
         /// </summary>

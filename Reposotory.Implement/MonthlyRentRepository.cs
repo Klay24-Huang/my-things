@@ -126,9 +126,9 @@ namespace Reposotory.Implement
                 LogID = LogID,
                 OrderNo = OrderNo,
                 MonthlyRentId = MonthlyRentId,
-                UseHolidayHours = UseHolidayHours,
-                UseMotoTotalHours = UseMotoTotalHours,
-                UseWorkDayHours = UseWorkDayHours
+                UseHolidayHours = UseHolidayHours*60,
+                UseMotoTotalHours = UseMotoTotalHours*60,
+                UseWorkDayHours = UseWorkDayHours*60
             };
             SPOutput_Base SPOutput = new SPOutput_Base();
             SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base>(ConnectionString);

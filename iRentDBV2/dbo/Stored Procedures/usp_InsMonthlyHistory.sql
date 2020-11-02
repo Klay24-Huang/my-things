@@ -107,7 +107,8 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 		 BEGIN
 		 SET @UseWorkDayHours=CAST(@UseWorkDayHours AS FLOAT)/60.0;
 		 SET @UseHolidayHours=CAST(@UseHolidayHours AS FLOAT)/60.0;
-		 SET @UseMotoTotalHours=CAST(@UseMotoTotalHours AS FLOAT)/60.0;
+		 --SET @UseMotoTotalHours=CAST(@UseMotoTotalHours AS FLOAT)/60.0;
+		  SET @UseMotoTotalHours=CAST(@UseMotoTotalHours AS FLOAT); --20201102，機車改為分鐘數
 		    SELECT @StartDate=StartDate,@EndDate=EndDate FROM TB_MonthlyRent WHERE MonthlyRentId=@MonthlyRentId;
 		 	INSERT INTO TB_MonthlyRentHistory([OrderNo],[IDNO],[StartDate],[EndDate],[UseWorkDayHours],[UseHolidayHours],[UseMotoTotalHours],[MonthlyRentId])VALUES(@OrderNo,@IDNO,@StartDate,@EndDate,@UseWorkDayHours,@UseHolidayHours,@UseMotoTotalHours,@MonthlyRentId);
 			UPDATE TB_MonthlyRent

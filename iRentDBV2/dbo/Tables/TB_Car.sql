@@ -85,3 +85,27 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_Car',
     @level2type = N'COLUMN',
     @level2name = N'LastOrderNo'
+--GO
+--CREATE TRIGGER TR_MainTain_Car
+--   ON  [dbo].[TB_Car]
+--   AFTER  UPDATE
+--AS 
+--BEGIN
+--	-- SET NOCOUNT ON added to prevent extra result sets from
+--	-- interfering with SELECT statements.
+--	SET NOCOUNT ON;
+
+--    -- Insert statements for trigger here
+--    DECLARE @NowStationID VARCHAR(10)
+--    DECLARE @available TINYINT;
+
+--	SELECT @NowStationID=nowStationID,@available=available FROM INSERTED;
+--    IF @available=2
+--    BEGIN
+--        UPDATE TB_iRentStation
+--        SET NowOnlineNum=NowOnlineNum-1
+--        WHERE StationID=@NowStationID AND (NowOnlineNum-1)>=0
+--    END
+
+--END
+--GO

@@ -59,7 +59,8 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData INT;
 DECLARE @NowTime DATETIME;
-
+DECLARE @NowStationID VARCHAR(10);
+DECLARE @available TINYINT;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -113,7 +114,23 @@ SET @UserID    =ISNULL (@UserID    ,'');
 		 END
 		 IF @Error=0
 		 BEGIN
+		    SELECT @NowStationID=nowStationID,@available=available FROM TB_Car WHERE CarNo=@CarNo;
 			UPDATE TB_Car SET available=@Online,UPDTime=@NowTime,last_opt=@UserID WHERE CarNo=@CarNo;
+			IF @Online=2
+			BEGIN
+				UPDATE TB_iRentStation 
+				SET NowOnlineNum=NowOnlineNum-1
+				WHERE StationID=@NowStationID AND (NowOnlineNum-1)>=0
+			END
+			ELSE
+			BEGIN
+				IF @available=2
+				BEGIN
+					UPDATE TB_iRentStation 
+				SET NowOnlineNum=NowOnlineNum+1
+				WHERE StationID=@NowStationID
+				END
+			END
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

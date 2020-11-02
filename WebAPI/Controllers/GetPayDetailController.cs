@@ -400,7 +400,8 @@ namespace WebAPI.Controllers
                                 //機車沒有分平假日，直接送即可
                                 for (int i = 0; i < MonthlyLen; i++)
                                 {
-                                    int MotoTotalHours = Convert.ToInt32(60 * monthlyRentDatas[i].MotoTotalHours);
+                                    //int MotoTotalHours = Convert.ToInt32(60 * monthlyRentDatas[i].MotoTotalHours); //20201102月租改為以分鐘數回傳
+                                    int MotoTotalHours = Convert.ToInt32(monthlyRentDatas[i].MotoTotalHours);
                                     if (MotoTotalHours >= TotalRentMinutes) //全部扣光
                                     {
                                         flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄

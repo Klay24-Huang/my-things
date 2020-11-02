@@ -102,10 +102,10 @@ SET @Mode=ISNULL (@Mode,0);
 			IF @Mode=1
 			BEGIN
 				SELECT @hasData=COUNT(1) FROM TB_BookingControl WHERE order_number=@OrderNo;
-				IF @hasData=0
-				BEGIN
+				--IF @hasData=0
+				--BEGIN
 					
-				END
+				--END
 			END
 		END
 		--寫入錯誤訊息

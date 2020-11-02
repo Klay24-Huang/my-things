@@ -9,8 +9,18 @@
 	[Latitude] [DECIMAL](9,6) NOT NULL DEFAULT 23.973875,
 	[Longitude] [DECIMAL](9,6) NOT NULL DEFAULT 120.982025,
 	[Content] [nvarchar](500) NOT NULL DEFAULT '',
-	[CityID] [tinyint] NOT NULL DEFAULT 0,
+    [ContentForAPP] [nvarchar](500) NOT NULL DEFAULT '',
+	[UNICode] [VARCHAR](10) NOT NULL DEFAULT '',
+    [CityID] [tinyint] NOT NULL DEFAULT 0,
+    [AreaID] [int] NOT NULL DEFAULT 0,
+    [IsRequiredForReturn] [TINYINT] NOT NULL DEFAULT 0,
+    [CommonLendStation] VARCHAR(10) NOT NULL DEFAULT 'X088',
+    [FCODE] VARCHAR(100) NOT NULL DEFAULT 0,
+    [SDate] DATETIME NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
+    [EDate] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59',
 	[IsNormalStation] [tinyint] NOT NULL DEFAULT 0,
+    [AllowParkingNum] INT not null default 0,
+    [NowOnlineNum] INT NOT NULL DEFAULT 0,
 	[use_flag] [tinyint] NOT NULL DEFAULT 2,
     [Area] [varchar](10) NOT NULL DEFAULT '',
 	[MKTime] [datetime] NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
@@ -205,3 +215,92 @@ BEGIN
 
 END
 GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'車位數',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'AllowParkingNum'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'統一編號',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'UNICode'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'據點地塊行政區代碼',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'AreaID'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'目前上線數',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'NowOnlineNum'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'迄日',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'EDate'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'起日',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'SDate'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'財務-部門代碼',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'FCODE'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'共同出車庫位',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'CommonLendStation'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'還車位置資訊必填',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'IsRequiredForReturn'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'據點描述（app顯示）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStation',
+    @level2type = N'COLUMN',
+    @level2name = N'ContentForAPP'

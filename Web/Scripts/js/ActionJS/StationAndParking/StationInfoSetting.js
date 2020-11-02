@@ -1,19 +1,15 @@
 ﻿$(document).ready(function () {
   
-    var StationList = $("#hidStation").val();
+    SetStation($("#StationID"), $("#StationName"));
 
-    if (StationList !== "") {
-        var Station = StationList.split(";");
-   
-        $("#StationID").autocomplete({
-            source: Station,
-            minLength: 1,
-            matchCase: true
-        });
-   
-    }
-    
+    $("#btnSend").on("click", function () {
+        ShowLoading("資料查詢中");
+        var StationID = $("#StationID").val();
+        var isMach = $("#NotMach").val();
+        if (CheckStorageIsNull(isMach) == false && StationID == "") {
+            disabledLoadingAndShowAlert("請至少選擇一個查詢條件");
+        } else {
+            $("#frmStationSetting").submit();
+        }
+    });
 });
-function detailMap(lat, lng) {
-
-}
