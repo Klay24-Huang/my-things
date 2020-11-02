@@ -40,6 +40,7 @@ namespace WebAPI.Models.Param.Input
         /// <para>8:法定代理人</para>
         /// <para>9:其他（如台大專案）</para>
         /// <para>10:企業用戶</para>
+        /// <para>11:簽名檔</para>
         /// </summary>
         public Int16? CredentialType { set; get; }
 
