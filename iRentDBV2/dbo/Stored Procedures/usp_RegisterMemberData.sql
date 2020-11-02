@@ -44,25 +44,27 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_RegisterMemberData]
-	@IDNO                   VARCHAR(10)           ,
-	@DeviceID               VARCHAR(128)          ,
-	@MEMCNAME				NVARCHAR(10)          , --姓名
-	@MEMBIRTH               DATETIME              , --生日
-	@MEMCITY                INT                   , --行政區id
-	@MEMADDR                NVARCHAR(500)		  , --地址
-	@MEMEMAIL				VARCHAR(200)		  , --EMail
-	@Signture		        VARCHAR(8000)        , --簽名檔
-	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@IDNO                   VARCHAR(10)				,
+	@DeviceID               VARCHAR(128)			,
+	@MEMCNAME				NVARCHAR(10)			,	--姓名
+	@MEMBIRTH               DATETIME				,	--生日
+	@MEMCITY                INT						,	--行政區id
+	@MEMADDR                NVARCHAR(500)			,	--地址
+	@MEMEMAIL				VARCHAR(200)			,	--EMail
+	@LogID                  BIGINT					,
+	@FileName		        VARCHAR(100)			,	--簽名檔檔案名稱
+	@ErrorCode 				VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT		--回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
+DECLARE @NowTime DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -82,114 +84,115 @@ SET @MEMBIRTH=ISNULL(@MEMBIRTH,'');
 SET @MEMCITY =ISNULL(@MEMCITY ,0);
 SET @MEMADDR =ISNULL(@MEMADDR ,'');
 SET @MEMEMAIL=ISNULL(@MEMEMAIL,'');
-SET @Signture=ISNULL(@Signture,'');
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
-
-
-		BEGIN TRY
-		 IF @DeviceID='' OR @IDNO='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @MEMEMAIL='' OR @Signture='' OR @MEMCNAME=''
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
+BEGIN TRY
+	IF @DeviceID='' OR @IDNO='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @MEMEMAIL='' OR @MEMCNAME=''
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @Error=0
-		 BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR130';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND HasCheckMobile=1;
 			IF @hasData=0
 			BEGIN
-					SET @Error=1;
-				    SET @ErrorCode='ERR130';
+				SET @Error=1;
+				SET @ErrorCode='ERR135';
+			END
+		END
+	END
+
+	IF @Error=0
+	BEGIN
+		UPDATE TB_MemberData
+		SET MEMADDR=@MEMADDR,MEMBIRTH=@MEMBIRTH,MEMCITY=@MEMCITY,MEMCNAME=@MEMCNAME,MEMEMAIL=@MEMEMAIL,IrFlag=1
+		WHERE MEMIDNO=@IDNO;
+
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_Credentials WHERE IDNO=@IDNO;
+		IF @hasData=0
+		BEGIN
+			INSERT INTO TB_Credentials(IDNO,Signture)VALUES(@IDNO,1);
+
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;	--改為查TB_tmpCrentialsPIC
+			IF @hasData=0
+			BEGIN
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@FileName);
 			END
 			ELSE
 			BEGIN
-					SET @hasData=0;
-					SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND HasCheckMobile=1;
-					IF @hasData=0
-					BEGIN
-					   SET @Error=1;
-					   SET @ErrorCode='ERR135';
-					END
+				UPDATE TB_tmpCrentialsPIC
+				SET CrentialsFile=@FileName,UPDTime=@NowTime
+				WHERE IDNO=@IDNO AND CrentialsType=11;
 			END
-		 END
-		 IF @Error=0
-		 BEGIN
-		 		UPDATE TB_MemberData
-				SET MEMADDR=@MEMADDR,MEMBIRTH=@MEMBIRTH,MEMCITY=@MEMCITY,MEMCNAME=@MEMCNAME,MEMEMAIL=@MEMEMAIL,IrFlag=1
-				WHERE MEMIDNO=@IDNO;
-
-				SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Credentials WHERE IDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   INSERT INTO TB_Credentials(IDNO,Signture)VALUES(@IDNO,1);
-
-				   SET @hasData=0;
-				   SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;	--改為查TB_tmpCrentialsPIC
-				     IF @hasData=0
-				     BEGIN
-						INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
-					 END
-					 ELSE
-					 BEGIN
-						UPDATE TB_tmpCrentialsPIC
-						SET CrentialsFile=@Signture
-						WHERE IDNO=@IDNO AND CrentialsType=11;
-					 END
-				END
-				ELSE
-				BEGIN
-					UPDATE TB_Credentials SET Signture=1 WHERE IDNO=@IDNO;
+		END
+		ELSE
+		BEGIN
+			UPDATE TB_Credentials SET Signture=1 WHERE IDNO=@IDNO;
 					
-					SET @hasData=0;
-				    SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
-					IF @hasData=0
-				     BEGIN
-						INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@Signture);
-					 END
-					 ELSE
-					 BEGIN
-						UPDATE TB_tmpCrentialsPIC
-						SET CrentialsFile=@Signture
-						WHERE IDNO=@IDNO AND CrentialsType=11;
-					 END
-				END
-		 END
-		 IF @Error=0
-		 BEGIN
-			INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
-												[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
-												[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-												[CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
-			SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
-					[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
-					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-					[CARRIERID],[NPOBAN],2,0,1  
-           FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+			IF @hasData=0
 			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@FileName);
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				UPDATE TB_tmpCrentialsPIC
+				SET CrentialsFile=@FileName,UPDTime=@NowTime
+				WHERE IDNO=@IDNO AND CrentialsType=11;
 			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+	END
+
+	IF @Error=0
+	BEGIN
+		INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+										  [MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+										  [MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+										  [CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
+		SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+				[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+				[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+				[CARRIERID],[NPOBAN],2,0,1  
+		FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_RegisterMemberData';

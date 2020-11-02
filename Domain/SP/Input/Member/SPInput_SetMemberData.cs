@@ -63,11 +63,6 @@ namespace Domain.SP.Input.Member
         public string MEMMSG { get; set; }
 
         /// <summary>
-        /// 簽名檔
-        /// </summary>
-        public string Signture { get; set; }
-
-        /// <summary>
         /// 
         /// </summary>
         public Int64 LogID { get; set; }
