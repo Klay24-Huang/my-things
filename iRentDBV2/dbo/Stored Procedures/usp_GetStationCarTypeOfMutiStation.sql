@@ -61,6 +61,7 @@ CREATE PROCEDURE [dbo].[usp_GetStationCarTypeOfMutiStation]
 	@SD                     DATETIME		      , --起日
 	@ED                     DATETIME              , --迄日
 	@CarType                VARCHAR(10)           , --車型群組代碼
+	@IDNO					VARCHAR(10)			  , --會員代碼
 	@LogID                  BIGINT                , --               ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -251,7 +252,7 @@ SET @hasData=0;
 						,Price					= P.PROPRICE_N			--平日
 						,Price_H				= P.PROPRICE_H			--假日
 						,CarBrend				= D.CarBrend
-						,CarType				= D.CarTypeName
+						,CarType				= E.CarTypeGroupCode
 						,CarTypeName			= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
 						,CarTypePic				= E.CarTypeImg			--車輛ICON對照
 						,Operator				= O.OperatorICon		--運營商ICON
@@ -265,6 +266,8 @@ SET @hasData=0;
 						,PayMode				= P.PayMode
 						,CarOfArea				= I.Area
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
+						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END		--安心服務
+						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 				FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
 				JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
 				JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=C.CarType
@@ -274,6 +277,12 @@ SET @hasData=0;
 				JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
 				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
 				LEFT JOIN #BookingList BL ON C.nowStationID=BL.nowStationID AND C.CarType=BL.CarType
+				LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
+				LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
+				LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=E.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 				--LEFT JOIN (SELECT CarNo FROM #TB_OrderMain GROUP BY CarNo) T ON C.CarNo=T.CarNo
 				WHERE 1=1
 				AND D.CarTypeName = CASE WHEN @CarType<>'' THEN @CarType ELSE D.CarTypeName END

@@ -157,6 +157,12 @@ SET @ParkingSpace='';
 						SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
 						WHERE IDNO=@IDNO;
 
+						--20201102 ADD BY ADAM REASON.檢查資料是否存在 
+						IF EXISTS(SELECT OrderNo FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo)
+						BEGIN
+							DELETE FROM TB_OrderDataByMotor WHERE OrderNo=@OrderNo
+						END
+
 						--寫入機車還車時的資訊 20201030 ADD BY ERIC
 						INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
 						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WHERE CarNo=@CarNo;

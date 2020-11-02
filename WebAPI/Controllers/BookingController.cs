@@ -4,6 +4,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
+using Domain.SP.Input.Bill;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -17,6 +18,7 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.SP.Output.Bill;
 
 namespace WebAPI.Controllers
 {
@@ -64,6 +66,7 @@ namespace WebAPI.Controllers
             int AnyRentDefaultPickTime = 30;
             int MotorRentDefaultPickTime = 30;
             int price = 0, InsurancePurePrice=0;
+            int InsurancePerHours = 0;
             string IDNO = "";
             
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
@@ -161,7 +164,26 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-              
+
+                //20201103 ADD BY ADAM REASON.取得安心服務每小時價格
+                if (flag)
+                {
+                    string GetInsurancePriceName = new ObjType().GetSPName(ObjType.SPType.GetInsurancePrice);
+                    SPInput_GetInsurancePrice spGetInsurancePrice = new SPInput_GetInsurancePrice()
+                    {
+                        IDNO = IDNO,
+                        CarType = CarType,
+                        LogID = LogID
+                    };
+                    SPOutput_GetInsurancePrice spOut = new SPOutput_GetInsurancePrice();
+                    SQLHelper<SPInput_GetInsurancePrice, SPOutput_GetInsurancePrice> sqlHelp = new SQLHelper<SPInput_GetInsurancePrice, SPOutput_GetInsurancePrice>(connetStr);
+                    flag = sqlHelp.ExecuteSPNonQuery(GetInsurancePriceName, spGetInsurancePrice, ref spOut, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    if (flag)
+                    {
+                        InsurancePerHours =int.Parse(spOut.InsurancePerHours.ToString());
+                    }
+                }
             }
             #endregion
             #region TB
@@ -201,7 +223,9 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
+                //InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
+                //20201103 ADD BY SS ADAM REASON.計算安心服務價格
+                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePerHours*10 , InsurancePerHours*10, lstHoliday)) : 0;
                 //計算初始租金
                 if (ProjType < 4)
                 {

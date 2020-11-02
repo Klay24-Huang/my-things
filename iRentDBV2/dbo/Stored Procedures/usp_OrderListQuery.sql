@@ -149,7 +149,7 @@ BEGIN TRY
 										AND car_mgt_status >0	THEN 5													--5:操作車輛(取車後) 取車時間改實際取車時間
                                   WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) < @NowTime THEN 6                 --6:操作車輛(準備還車)-
 								  WHEN car_mgt_status<=11 AND stop_time < @NowTime THEN 6
-								  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) < @NowTime THEN 7			--7:物品遺漏(再開一次車門)
+								  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) > @NowTime THEN 7			--7:物品遺漏(再開一次車門)
 								  WHEN car_mgt_status=16 
 										AND start_door_time is not null AND end_door_time is null THEN 8				--8:鎖門並還車(一次性開門申請後)
                                   ELSE 0 END

@@ -161,6 +161,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 				,AnyRentCount		= ISNULL(B.AnyRentBookingNowCount,0)
 				,MotorRentCount		= ISNULL(B.MotorRentBookingNowCount,0)
 				,TotalRentCount		= ISNULL(B.NormalRentBookingNowCount,0) + ISNULL(B.AnyRentBookingNowCount,0) + ISNULL(B.MotorRentBookingNowCount,0)
+				
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
