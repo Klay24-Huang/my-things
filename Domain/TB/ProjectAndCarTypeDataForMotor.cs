@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.TB
 {
     /// <summary>
     /// 機車取得專案
     /// </summary>
-   public class ProjectAndCarTypeDataForMotor
+    public class ProjectAndCarTypeDataForMotor
     {
         /// <summary>
         /// 專案代碼
@@ -19,6 +15,12 @@ namespace Domain.TB
         /// 專案名稱
         /// </summary>
         public string PRONAME { set; get; }
+
+        /// <summary>
+        /// 優惠專案描述
+        /// </summary>
+        public string PRODESC { get; set; }
+
         /// <summary>
         /// 車子品牌
         /// </summary>

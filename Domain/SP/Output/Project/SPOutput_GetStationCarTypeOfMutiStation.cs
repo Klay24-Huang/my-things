@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Output.Project
 {
@@ -16,6 +12,12 @@ namespace Domain.SP.Output.Project
         /// 專案名稱
         /// </summary>
         public string PRONAME { set; get; }
+
+        /// <summary>
+        /// 優惠專案描述
+        /// </summary>
+        public string PRODESC { get; set; }
+
         /// <summary>
         /// 專案平日價
         /// </summary>

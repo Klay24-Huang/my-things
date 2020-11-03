@@ -1,6 +1,4 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -11,7 +9,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -154,6 +151,7 @@ namespace WebAPI.Controllers
                                 OperatorScore = lstData[0].OperatorScore,
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
+                                ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
                                 //Bill = tmpBill,
                                 Price = tmpBill,
@@ -193,6 +191,7 @@ namespace WebAPI.Controllers
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,

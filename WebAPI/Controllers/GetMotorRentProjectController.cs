@@ -1,6 +1,4 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -10,7 +8,6 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -147,6 +144,7 @@ namespace WebAPI.Controllers
                                 OperatorScore = lstData[0].OperatorScore,
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
+                                ProDesc = lstData[0].PRODESC,
                                 BaseMinutes = lstData[0].BaseMinutes,
                                 BasePrice = lstData[0].BasePrice,
                                 MaxPrice = lstData[0].MaxPrice,
@@ -183,6 +181,7 @@ namespace WebAPI.Controllers
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         BaseMinutes = lstData[i].BaseMinutes,
                                         BasePrice = lstData[i].BasePrice,
                                         MaxPrice = lstData[i].MaxPrice,

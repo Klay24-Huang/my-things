@@ -219,6 +219,7 @@ namespace WebAPI.Controllers
                                 OperatorScore = lstData[0].OperatorScore,
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
+                                ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
                                 //Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                                 Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
@@ -255,6 +256,7 @@ namespace WebAPI.Controllers
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
@@ -302,6 +304,7 @@ namespace WebAPI.Controllers
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
@@ -314,7 +317,6 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-
                     }
                 }
 
