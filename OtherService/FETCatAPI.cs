@@ -1,17 +1,13 @@
 ﻿using Domain.SP.Input.OtherService.FET;
 using Domain.SP.Output;
-using Domain.SP.Output.OtherService.FET;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using OtherService.Enum;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,9 +25,6 @@ namespace OtherService
     {
         private string BasePath = ConfigurationManager.AppSettings.Get("CatBaseURL");
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string UseIDUCmd = ConfigurationManager.AppSettings.Get("UseIDUCmd") ?? "0";
-        private string UseIDUCmdIsOnlyReportNow = ConfigurationManager.AppSettings.Get("UseIDUCmdIsOnlyReportNow") ?? "0";
-        private string IDUBasePath = ConfigurationManager.AppSettings.Get("CatIDUBaseURL");
         public bool DoSendCmd(string deviceToken,string CID,OtherService.Enum.MachineCommandType.CommandType commandType,WSInput_Base<Params> Input, Int64 LogID)
         {
             bool flag = false;
@@ -173,18 +166,6 @@ namespace OtherService
         }
         private async Task<Boolean> doSendCMD(string input, string URL, SPInput_InsSendCMD spInput)
         {
-            //20201102 ReportNow可以使用IDUCmd
-            if (UseIDUCmd == "1")
-            {
-                if (spInput.method == "ReportNow" || (spInput.method != "ReportNow" && UseIDUCmdIsOnlyReportNow == "0"))
-                {
-                    if (doSendIDUCMD(JsonConvert.SerializeObject(spInput)).Result)
-                    {
-                        return true;
-                    }
-                }
-            }
-
             bool flag = false;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "POST";
@@ -234,107 +215,6 @@ namespace OtherService
                 flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
             }
             return flag;
-        }
-
-        private async Task<Boolean> doSendIDUCMD(string spInputStr)
-        {
-            bool flag = false;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(IDUBasePath);
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            DateTime MKTime = DateTime.Now;
-            DateTime RTime = MKTime;
-
-            SPInput_InsSendCMD spInput = JsonConvert.DeserializeObject<SPInput_InsSendCMD>(spInputStr);
-            try
-            {                
-                string deviceName = GetIDUCmdDeviceName(spInput.CID, ref flag);
-
-                WSIDUInput_Base<object> input = new WSIDUInput_Base<object>()
-                {
-                    deviceName = deviceName,
-                    method = spInput.method,
-                    requestId = spInput.requestId,
-                    _params = JsonConvert.DeserializeObject<JObject>(spInput.SendParams)["params"]
-
-                };
-                string inputStr = JsonConvert.SerializeObject(input).Replace("_params", "params");
-                spInput.SendParams = inputStr;
-
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                string postBody = inputStr;//將匿名物件序列化為json字串
-                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-
-                using (Stream reqStream = request.GetRequestStream())
-                {
-                    reqStream.Write(byteArray, 0, byteArray.Length);
-                }
-
-
-
-                //發出Request
-                string responseStr = "";
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                {
-
-                    if (response.StatusCode.ToString() == "OK")
-                    {
-                        flag = true;
-                    }
-                    spInput.HttpStatus = response.StatusCode.ToString();
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                spInput.HttpStatus = "exception";
-            }
-            finally
-            {
-                SPOutput_Base spout = new SPOutput_Base();
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                string SPName = new OtherService.Enum.ObjType().GetSPName(Enum.ObjType.SPType.InsSendCMD);
-
-
-                SQLHelper<SPInput_InsSendCMD, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsSendCMD, SPOutput_Base>(connetStr);
-                flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
-            }
-            return flag;
-        }
-
-        /// <summary>
-        /// GetIDUCmdDeviceName
-        /// </summary>
-        /// <param name="spInput">spInput</param>
-        /// <param name="flag">flag</param>
-        /// <param name="lstError">lstError</param>
-        /// <param name="errCode">errCode</param>
-        /// <returns></returns>
-        private string GetIDUCmdDeviceName(string cid, ref bool flag)
-        {
-            string deviceName = "";
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            SPInput_GetIDUCmdDeviceName spInput = new SPInput_GetIDUCmdDeviceName
-            { 
-                CID = cid,
-                LogID = 0
-            };
-
-            List<SPOutput_GetIDUCmdDeviceName> re = new List<SPOutput_GetIDUCmdDeviceName>();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.GetIDUCmdDeviceName);
-            SPOutput_Base spOut = new SPOutput_Base();
-            SQLHelper<SPInput_GetIDUCmdDeviceName, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetIDUCmdDeviceName, SPOutput_Base>(connetStr);
-            DataSet ds = new DataSet();
-            flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref re, ref ds, ref lstError);
-            if (flag)
-            {
-                if (re.Count > 0)
-                {
-                    deviceName = re.First().DeviceName;
-                }
-            }
-            return deviceName;
         }
     }
 }

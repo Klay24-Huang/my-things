@@ -131,7 +131,6 @@
     <Compile Include="SP\Input\OtherService\Common\SPInut_WebAPILog.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatus.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
-    <Compile Include="SP\Input\OtherService\FET\SPInput_GetIDUCmdDeviceName.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
@@ -193,7 +192,6 @@
     <Compile Include="SP\Output\OrderList\OrderQueryDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
-    <Compile Include="SP\Output\OtherService\FET\SPOutput_GetIDUCmdDeviceName.cs" />
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
@@ -279,7 +277,6 @@
     <Compile Include="WebAPI\Input\CENS\WSInput_SendCardNo.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SendLock.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />
-    <Compile Include="WebAPI\Input\FET\WSIDUInput_Base.cs" />
     <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EinvBiz.cs" />
