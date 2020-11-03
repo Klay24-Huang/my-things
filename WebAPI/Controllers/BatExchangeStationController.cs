@@ -82,6 +82,15 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
+
+                            if (flag)
+                            {
+                                if (apiInput.Latitude.Value < 0 || apiInput.Longitude.Value < 0 || apiInput.Radius.Value < 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR112";
+                                }
+                            }
                         }
                     }
                 }
