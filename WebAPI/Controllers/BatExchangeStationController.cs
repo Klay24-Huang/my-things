@@ -85,7 +85,7 @@ namespace WebAPI.Controllers
 
                             if (flag)
                             {
-                                if (apiInput.Latitude.Value < 0 || apiInput.Longitude.Value < 0 || apiInput.Radius.Value < 0)
+                                if (apiInput.Latitude.Value <= 0 || apiInput.Longitude.Value <= 0 || apiInput.Radius.Value <= 0)
                                 {
                                     flag = false;
                                     errCode = "ERR112";
