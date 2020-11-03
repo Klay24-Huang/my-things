@@ -174,6 +174,7 @@ namespace WebAPI.Controllers
                 }
 
                 //20201103 ADD BY ADAM REASON.取得安心服務每小時價格
+                /*
                 if (flag)
                 {
                     string GetInsurancePriceName = new ObjType().GetSPName(ObjType.SPType.GetInsurancePrice);
@@ -191,7 +192,7 @@ namespace WebAPI.Controllers
                     {
                         InsurancePerHours =int.Parse(spOut.InsurancePerHours.ToString());
                     }
-                }
+                }*/
             }
             #endregion
             #region 檢查信用卡是否綁卡

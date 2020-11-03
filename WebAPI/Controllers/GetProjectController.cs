@@ -168,6 +168,7 @@ namespace WebAPI.Controllers
                     SD = SDate,
                     ED = EDate,
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
+                    IDNO = "",
                     LogID = LogID
                 };
 
