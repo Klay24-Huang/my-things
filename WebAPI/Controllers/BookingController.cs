@@ -19,6 +19,10 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 using Domain.SP.Output.Bill;
+using OtherService;
+using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
+using Domain.WebAPI.Input.Taishin;
+using Domain.WebAPI.output.Taishin;
 
 namespace WebAPI.Controllers
 {
@@ -28,6 +32,10 @@ namespace WebAPI.Controllers
     public class BookingController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
+        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        CommonFunc baseVerify { get; set; }
+
         [HttpPost]
         public Dictionary<string, object> DoBooking(Dictionary<string, object> value)
         {
@@ -48,7 +56,7 @@ namespace WebAPI.Controllers
             OAPI_Booking outputApi = null;
     
             Token token = null;
-            CommonFunc baseVerify = new CommonFunc();
+            baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository=new StationAndCarRepository(connetStr);
             ProjectRepository projectRepository = new ProjectRepository(connetStr);
@@ -186,6 +194,12 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+            #region 檢查信用卡是否綁卡
+
+            if(flag) 
+                flag = CheckCard(IDNO, ref errCode);                
+
+            #endregion
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -304,6 +318,50 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
+        }
+
+        /// <summary>
+        /// 是否有綁定信用卡
+        /// </summary>
+        /// <param name="IDNO">身分證號</param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns></returns>
+        private bool CheckCard(string IDNO, ref string errCode)
+        {
+            bool flag = false;
+
+            //送台新查詢
+            TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+            PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+            {
+                ApiVer = ApiVerOther,
+                ApposId = TaishinAPPOS,
+                RequestParams = new GetCreditCardListRequestParamasData()
+                {
+                    MemberId = IDNO,
+                },
+                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+            };
+            WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+            flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+
+            if (flag)
+            {
+                int Len = wsOutput.ResponseParams.ResultData.Count;
+                if (Len > 0)
+                {
+                    string CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                    if (!string.IsNullOrWhiteSpace(CardToken))
+                        flag = true;
+                }
+            }
+
+            if (!flag)
+                errCode = "ERR730";
+
+            return flag;
         }
     }
 }
