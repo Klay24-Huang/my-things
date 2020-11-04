@@ -135,7 +135,7 @@ namespace WebAPI.Controllers
                             {
                                 CarBrend = lstData[0].CarBrend,
                                 CarType = lstData[0].CarType,
-                                CarTypeName = lstData[0].CarTypeName,
+                                CarTypeName = lstData[0].CarBrend + ' ' + lstData[0].CarTypeName,
                                 CarTypePic = lstData[0].CarTypePic,
                                 Insurance = 1,
                                 InsurancePerHour = 20,
@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
                                     {
                                         CarBrend = lstData[i].CarBrend,
                                         CarType = lstData[i].CarType,
-                                        CarTypeName = lstData[i].CarTypeName,
+                                        CarTypeName = lstData[i].CarBrend + ' ' + lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
                                         Insurance = 1,
                                         InsurancePerHour = 20,
