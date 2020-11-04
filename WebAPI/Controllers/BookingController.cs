@@ -23,6 +23,7 @@ using OtherService;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.output.Taishin;
+using System.Data;
 
 namespace WebAPI.Controllers
 {
@@ -76,6 +77,7 @@ namespace WebAPI.Controllers
             int price = 0, InsurancePurePrice=0;
             int InsurancePerHours = 0;
             string IDNO = "";
+            string CarTypeCode = "";
             
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             BillCommon billCommon = new BillCommon();
@@ -120,6 +122,7 @@ namespace WebAPI.Controllers
                 }
                 ProjType = Convert.ToInt16(obj.PROJTYPE);
                 PayMode = Convert.ToInt16(obj.PayMode);
+                CarTypeCode = apiInput.CarType;
                 if (ProjType > 0)
                 {
                     if (string.IsNullOrWhiteSpace(apiInput.CarNo)) //路邊及機車
@@ -173,34 +176,10 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                //20201103 ADD BY ADAM REASON.取得安心服務每小時價格
-                /*
-                if (flag)
-                {
-                    string GetInsurancePriceName = new ObjType().GetSPName(ObjType.SPType.GetInsurancePrice);
-                    SPInput_GetInsurancePrice spGetInsurancePrice = new SPInput_GetInsurancePrice()
-                    {
-                        IDNO = IDNO,
-                        CarType = CarType,
-                        LogID = LogID
-                    };
-                    SPOutput_GetInsurancePrice spOut = new SPOutput_GetInsurancePrice();
-                    SQLHelper<SPInput_GetInsurancePrice, SPOutput_GetInsurancePrice> sqlHelp = new SQLHelper<SPInput_GetInsurancePrice, SPOutput_GetInsurancePrice>(connetStr);
-                    flag = sqlHelp.ExecuteSPNonQuery(GetInsurancePriceName, spGetInsurancePrice, ref spOut, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag)
-                    {
-                        InsurancePerHours =int.Parse(spOut.InsurancePerHours.ToString());
-                    }
-                }*/
+
             }
             #endregion
-            #region 檢查信用卡是否綁卡
-
-            if(flag) 
-                flag = CheckCard(IDNO, ref errCode);                
-
-            #endregion
+            
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -221,6 +200,34 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+            //20201103 ADD BY ADAM REASON.取得安心服務每小時價格
+            if (flag)
+            {
+                string GetInsurancePriceName = new ObjType().GetSPName(ObjType.SPType.GetInsurancePrice);
+                SPInput_GetInsurancePrice spGetInsurancePrice = new SPInput_GetInsurancePrice()
+                {
+                    IDNO = IDNO,
+                    CarType = CarTypeCode,
+                    LogID = LogID
+                };
+                List<SPOutput_GetInsurancePrice> re = new List<SPOutput_GetInsurancePrice>();
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_GetInsurancePrice, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetInsurancePrice, SPOutput_Base>(connetStr);
+                DataSet ds = new DataSet();
+
+                flag = sqlHelp.ExeuteSP(GetInsurancePriceName, spGetInsurancePrice, ref spOut, ref re, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag && re.Count > 0)
+                {
+                    InsurancePerHours = int.Parse(re[0].InsurancePerHours.ToString());
+                }
+            }
+            #region 檢查信用卡是否綁卡
+
+            if (flag)
+                flag = CheckCard(IDNO, ref errCode);
+
+            #endregion
             if (flag)
             {
                 //判斷專案限制及取得專案設定

@@ -85,5 +85,14 @@ namespace Domain.SP.Output.Project
         /// 是否可租 Y/N
         /// </summary>
         public string IsRent { get; set; }
+
+        /// <summary>
+        /// 是否可以申辦安心服務
+        /// </summary>
+        public int Insurance { set; get; }
+        /// <summary>
+        /// 安心服務計價
+        /// </summary>
+        public int InsurancePerHours { set; get; }
     }
 }

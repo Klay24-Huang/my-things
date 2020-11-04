@@ -46,7 +46,6 @@
 CREATE PROCEDURE [dbo].[usp_SetMotorStatus]
 	@CID					VARCHAR(10),
 	@CmdType				VARCHAR(50),
-	@CmdStatus				INT,
 	@LogID					BIGINT,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -83,7 +82,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 			IF @Error=0
 			BEGIN
-				--BEGIN TRAN
+				BEGIN TRAN
 				SET @hasData=0
 				SELECT @hasData=COUNT(CID) FROM TB_CarStatus WITH(NOLOCK) WHERE CID=@CID
 				IF @hasData > 0
@@ -96,6 +95,16 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 					IF @CmdType='SwitchPowerOff'
 					BEGIN
 						UPDATE TB_CarStatus SET ACCStatus=0 WHERE CID=@CID
+						COMMIT TRAN
+					END
+					IF @CmdType='OpenSet'
+					BEGIN
+						UPDATE TB_CarStatus SET devicePut_Down=1 WHERE CID=@CID
+						COMMIT TRAN
+					END
+					IF @CmdType='SetBatteryCap'
+					BEGIN
+						UPDATE TB_CarStatus SET deviceBat_Cover=CASE deviceBat_Cover WHEN 0 THEN 1 ELSE 0 END WHERE CID=@CID
 						COMMIT TRAN
 					END
 				END
