@@ -357,6 +357,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                flag = false;
                 int Len = wsOutput.ResponseParams.ResultData.Count;
                 if (Len > 0)
                 {
