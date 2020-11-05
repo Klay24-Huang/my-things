@@ -127,7 +127,7 @@ function showLogin(IsSuccess, message,UserID) {
                                                                     localStorage.removeItem("MangerList");
                                                                 }
                                                                 localStorage.setItem("MangerList", JSON.stringify(data.Data.ManagerList))
-                                                                 window.location.href = "../CarDataInfo/CarDashBoard";
+                                                                GetCityData();
                                                             });
                                                         } else {
 
@@ -212,6 +212,104 @@ function showLogin(IsSuccess, message,UserID) {
             icon: 'error'
         });
     }
+}
+function GetCityData() {
+    ShowLoading("開始載入縣市資料");
+    // window.location.href = "../CarDataInfo/CarDashBoard";
+    //載入車輛
+    var site = jsHost + "CityList";
+    $.ajax({
+        url: site,
+        type: 'GET',
+        data: '{}',
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: "載入縣市資料：" + data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    var MangerList = localStorage.getItem("CityList");
+                    if (typeof MangerList !== 'undefined' && MangerList !== null) {
+                        localStorage.removeItem("CityList");
+                    }
+                    localStorage.setItem("CityList", JSON.stringify(data.Data.CityObj))
+                    GetAreaData();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                }).then(function (value) {
+                    window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "載入縣市資料發生錯誤",
+                icon: 'error'
+            });
+        }
+    });
+
+}
+function GetAreaData() {
+    var site = jsHost + "AreaList";
+    ShowLoading("開始載入行政區資料");
+
+    $.ajax({
+        url: site,
+        type: 'GET',
+        data: 'CityId=0',
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: "載入縣市資料：" + data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    var MangerList = localStorage.getItem("AreaList");
+                    if (typeof MangerList !== 'undefined' && MangerList !== null) {
+                        localStorage.removeItem("AreaList");
+                    }
+                    localStorage.setItem("AreaList", JSON.stringify(data.Data.ZipObj))
+                    window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                }).then(function (value) {
+                    window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "載入行政區資料發生錯誤",
+                icon: 'error'
+            });
+        }
+    });
 }
 /**
 * 禁止輸入非數字

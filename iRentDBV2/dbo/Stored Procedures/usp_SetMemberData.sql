@@ -193,10 +193,15 @@ BEGIN TRY
 				BEGIN
 					SET @AuditKind=2;
 				END
+		
 			SET @hasData=0;
 			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
-			IF @hasData=0
+			IF @hasData>0
 			BEGIN
+				DELETE FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
+			END
+			--IF @hasData=0
+			--BEGIN
 					INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
 												[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
 												[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
@@ -206,13 +211,13 @@ BEGIN TRY
 							[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
 							[CARRIERID],[NPOBAN],@AuditKind,0,0  
 				   FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-			END
-			ELSE
-			BEGIN
-				UPDATE TB_MemberDataOfAutdit
-				SET [AuditKind]=@AuditKind,[HasAudit]=0
-				WHERE MEMIDNO=@IDNO;
-			END
+			--END
+			--ELSE
+			--BEGIN
+			--	UPDATE TB_MemberDataOfAutdit
+			--	SET [AuditKind]=@AuditKind,[HasAudit]=0
+			--	WHERE MEMIDNO=@IDNO;
+			--END
 		END
 	END
 	--寫入錯誤訊息

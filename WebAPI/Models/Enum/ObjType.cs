@@ -407,6 +407,14 @@ namespace WebAPI.Models.Enum
                 /// 更新加盟業者
                 /// </summary>
                 BE_UPDOperator,
+                /// <summary>
+                /// 處理審核照片
+                /// </summary>
+                BE_HandleAuditImage,
+                /// <summary>
+                /// 處理審核資料
+                /// </summary>
+                BE_HandleAudit
             #endregion
 
         }
@@ -732,6 +740,12 @@ namespace WebAPI.Models.Enum
                 #endregion
                 case SPType.BE_UPDOperator:
                     SPName = "usp_BE_UPDOperator";
+                    break;
+                case SPType.BE_HandleAuditImage:
+                    SPName = "usp_BE_HandleAuditImage";
+                    break;
+                case SPType.BE_HandleAudit:
+                    SPName = "usp_BE_HandleAudit";
                     break;
 
             }

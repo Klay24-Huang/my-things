@@ -50,6 +50,8 @@
     <Compile Include="MemberData\StatusData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_Audit.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_AuditImage.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BeforeBookingStart.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingStart.cs" />
@@ -203,6 +205,11 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditCrentials.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditDetail.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
     <Compile Include="TB\BackEnd\BE_CarDashBoardData.cs" />
     <Compile Include="TB\BackEnd\BE_CardSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_CarEventLog.cs" />
@@ -215,6 +222,7 @@
     <Compile Include="TB\BackEnd\BE_CreateContract.cs" />
     <Compile Include="TB\BackEnd\BE_EvTimeLine.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackKindData.cs" />
+    <Compile Include="TB\BackEnd\BE_GetAuditList.cs" />
     <Compile Include="TB\BackEnd\BE_GetBookingQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarBindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetCarDetail.cs" />
@@ -281,6 +289,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR060Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR125Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR130Save.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR172Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR271Query.cs" />
@@ -321,6 +330,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR172Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270QueryData.cs" />

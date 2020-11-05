@@ -1,20 +1,43 @@
 ﻿
-@model IEnumerable<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>
+@model IEnumerable<Domain.TB.BackEnd.BE_GetAuditList>
 
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
-    string AuditMode = (ViewData["AuditMode"] == null) ? "0" : ViewData["AuditMode"].ToString();
-    string AuditType = (ViewData["AuditType"] == null) ? "0" : ViewData["AuditType"].ToString();
-    string AuditReuslt = (ViewData["AuditReuslt"] == null) ? "0" : ViewData["AuditReuslt"].ToString();
+    string AuditMode = (ViewData["AuditMode"] == null) ? "-1" : ViewData["AuditMode"].ToString();
+    string AuditType = (ViewData["AuditType"] == null) ? "-1" : ViewData["AuditType"].ToString();
+    string AuditReuslt = (ViewData["AuditReuslt"] == null) ? "-1" : ViewData["AuditReuslt"].ToString();
     string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string UserName = (ViewData["UserName"] == null) ? "" : ViewData["UserName"].ToString();
+    string IDNOSuff = (ViewData["IDNOSuff"] == null) ? "" : ViewData["IDNOSuff"].ToString();
+    string[] AuditReusltCheck = { "", "", "" };
+    string[] AuditTypeCheck = { "", "", "" };
+    if (AuditReuslt != "" && AuditReuslt != "-1")
+    {
+        AuditReusltCheck[Convert.ToInt32(AuditReuslt)] = " checked";
+    }
+    if (AuditType != "" && AuditType != "-1")
+    {
+        AuditTypeCheck[Convert.ToInt32(AuditType)] = " checked";
+    }
+    string[] AuditModeCheck = { "", "", "" };
+    if (AuditMode != "" && AuditMode != "-1")
+    {
+        if (AuditMode != "0")
+        {
+            AuditModeCheck[Convert.ToInt32(AuditMode)] = " checked";
+        }
+        else
+        {
+            AuditModeCheck[2] = " checked";
+        }
 
+    }
     int ResultLen = -1;
-    List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData> lstData = null;
+    List<Domain.TB.BackEnd.BE_GetAuditList> lstData = null;
     if (Model != null)
     {
-        lstData = new List<Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR330QueryData>();
+        lstData = new List<Domain.TB.BackEnd.BE_GetAuditList>();
         lstData = Model.ToList();
         ResultLen = lstData.Count;
     }
@@ -46,9 +69,9 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
-                                    <option value="0"></option>
-                                    <option value="1">申請加入</option>
-                                    <option value="2">變更身份</option>
+                                    <option value="-1"></option>
+                                    <option value="1" @(AuditModeCheck[1])>申請加入</option>
+                                    <option value="0" @(AuditModeCheck[2])>變更身份</option>
                                 </select>
                             </div>
                         </div>
@@ -62,9 +85,10 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" name="AuditType" id="AuditType" value="@AuditType">
-                                    <option value="0"></option>
-                                    <option value="1">未處理</option>
-                                    <option value="2">已處理</option>
+                                    <option value="-1"></option>
+                                    <option value="0">未處理</option>
+                                    <option value="1">已處理(未通過)</option>
+                                    <option value="2">已處理(己通過)</option>
                                 </select>
                             </div>
                         </div>
@@ -128,9 +152,9 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" name="AuditReuslt" id="AuditReuslt" value="@AuditReuslt">
-                                    <option value="0"></option>
-                                    <option value="1">未通過</option>
-                                    <option value="2">已通過</option>
+                                    <option value="-1"></option>
+                                    <option value="1" @(AuditReusltCheck[1])>未通過</option>
+                                    <option value="2" @(AuditReusltCheck[1])>已通過</option>
                                 </select>
                             </div>
                         </div>
@@ -170,10 +194,11 @@
                             </div>
                             @for (int i = 0; i < 10; i++)
                             {
+                                string IsCheck = (IDNOSuff == "") ? "" : (IDNOSuff.IndexOf(i.ToString()) >= 0) ? " checked" : "";
                                 <div class="col-md-1">
 
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="IDNO@(i)" name="IDNOSuff" value="@(i)">
+                                        <input class="form-check-input" type="checkbox" id="IDNO@(i)" name="IDNOSuff" value="@(i)" @(IsCheck)>
                                         <label class="form-check-label" for="IDNO@(i)">@(i)</label>
                                     </div>
 
@@ -206,65 +231,88 @@
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
             查詢結果
         </div>
-        </div>
     </div>
-    <!--輸出表格-->
-    <div class="container mt-4">
-        <table class="table bg-white footable" data-filter="#filter" id="list">
-            <thead class="text-white bg-primary">
-                <tr>
-                    <th data-sort="false">
+</div>
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false">
 
-                    </th>
-                    <th scope="col">申請日期</th>
-                    <th scope="col">姓名</th>
-                    <th scope="col">身份證字號</th>
-                    <th scope="col">姓別</th>
-                    <th scope="col">處理區分</th>
-                    <th scope="col">審核結果</th>
-                    <th scope="col">審核</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (ResultLen == 0)
-                {
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            查無結果
-                        </td>
-                    </tr>
-                }
-                else
-                {
-                    for (int i = 0; i < ResultLen; i++)
-                    {
-                        <tr>
-                            <td data-sort="false">
-                            </td>
-                            <td scope="col">@(lstData[i].IRENTORDNO)</td>
-                            <td scope="col">@(lstData[i].ORDNO)</td>
-                            <td scope="col">@(lstData[i].SPAYMENTTYPE)</td>
-                            <td scope="col">@(lstData[i].POLNO)</td>
-                            <td scope="col">@(lstData[i].DUEAMT)</td>
-                            <td scope="col">@(lstData[i].PAIDAMT)</td>
-                        </tr>
-                    }
-
-                }
-
-            </tbody>
-            <tfoot class="hide-if-no-paging">
+                </th>
+                <th scope="col">申請日期</th>
+                <th scope="col">姓名</th>
+                <th scope="col">身份證字號</th>
+                <th scope="col">姓別</th>
+                <th scope="col">處理區分</th>
+                <th scope="col">審核結果</th>
+                <th scope="col">審核</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
                 <tr>
                     <td colspan="8" class="text-center">
-                        <ul class="pagination"></ul>
+                        查無結果
                     </td>
                 </tr>
-            </tfoot>
-        </table>
-    </div>
-    <!--輸出表格結束-->
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false">
+                        </td>
+                        <td scope="col">@(Convert.ToDateTime(lstData[i].ApplyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td scope="col">@(lstData[i].MEMCNAME)</td>
+                        <td scope="col">@(lstData[i].MEMIDNO)</td>
+                        <td scope="col">@((lstData[i].SEX == "1") ? "男" : "女")</td>
+                        <td scope="col">
+                            @{
+                                string AuditStr = "未處理";
+                                string AuditResultStr = "";
+                            }
+                            @if (lstData[i].HasAudit != "0")
+                            {
+                                AuditStr = "已處理";
+                                if (lstData[i].HasAudit == "1")
+                                {
+                                    AuditResultStr = "未通過";
+                                }
+                                else
+                                {
+                                    AuditResultStr = "已通過";
+                                }
+                            }
+                            @(AuditStr)
+                        </td>
+                        <td scope="col">@(AuditResultStr)</td>
+                        <td scope="col"><button name="btnAudit_@(i)" id="btnAudit_@(i)" onclick="GoDetail('@(lstData[i].MEMIDNO)')" class="btn btn-outline-info">審核</button></td>
+                    </tr>
+                }
 
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="8" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<!--輸出表格結束-->
+@using (Html.BeginForm("AuditDetail", "MemberManage", FormMethod.Post, new { id = "frmAuditDetail", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    <input type="hidden" name="AuditIDNO" id="AuditIDNO" value="" />
+}
     <script>
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+        var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+            var ResultDataLen = '@(ResultLen)';
     </script>

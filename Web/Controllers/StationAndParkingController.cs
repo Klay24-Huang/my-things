@@ -36,13 +36,13 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult StationInfoSetting(string StationID,int NotMach)
+        public ActionResult StationInfoSetting(string StationID,int? NotMach)
         {
             ViewData["StationID"] = StationID;
-            ViewData["NotMuch"] = NotMach;
+            ViewData["NotMuch"] = (NotMach.HasValue)?"1":"0";
             List<BE_GetPartOfStationInfo> lstData = null;
             StationAndCarRepository repository = new StationAndCarRepository(connetStr);
-            lstData = repository.GetPartOfStation(StationID, (NotMach == 1));
+            lstData = repository.GetPartOfStation(StationID, NotMach.HasValue);
             return View(lstData);
         }
         /// <summary>
@@ -59,6 +59,15 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult StationInfoMaintain()
         {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult StationInfoMaintain(string MaintainStationID)
+        {
+            if (string.IsNullOrWhiteSpace(MaintainStationID))
+            {
+                RedirectToAction("StationInfoAdd");
+            }
             return View();
         }
         /// <summary>

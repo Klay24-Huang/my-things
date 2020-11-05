@@ -72,5 +72,252 @@ namespace Reposotory.Implement
             lstMember = GetObjList<BE_SameMobileData>(ref flag, ref lstError, SQL, para, term);
             return lstMember;
         }
+        /// <summary>
+        /// 取得相同手機號碼
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="TEL"></param>
+        /// <returns></returns>
+        public List<BE_SameMobileData> GetSameMobile(string IDNO,string TEL)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_SameMobileData> lstMember = null;
+            SqlParameter[] para = new SqlParameter[5];
+            int nowCount = 0;
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetSameMobile ";
+            if (false == string.IsNullOrWhiteSpace(IDNO) && false == string.IsNullOrWhiteSpace(TEL))
+            {
+                term += " IDNO<>@IDNO AND  MEMTEL=@MEMTEL";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@MEMTEL", SqlDbType.VarChar, 20);
+                para[nowCount].Value = TEL;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+            }
+            SQL += " ORDER BY MEMTEL ASC";
+            lstMember = GetObjList<BE_SameMobileData>(ref flag, ref lstError, SQL, para, term);
+            return lstMember;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AuditMode"></param>
+        /// <param name="AuditType"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="AuditReuslt"></param>
+        /// <param name="UserName"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="IDNOSuff"></param>
+        /// <returns></returns>
+        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetAuditList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+            string SQL = " SELECT * FROM VW_GetAuditList ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(UserName))
+            {
+                if (term != "") { term += " AND "; }
+                term += " MEMCNAME=@UserName";
+                para[nowCount] = new SqlParameter("@UserName", SqlDbType.NVarChar, 20);
+                para[nowCount].Value = UserName;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (false == string.IsNullOrWhiteSpace(IDNOSuff))
+            {
+                if (term != "") { term += " AND "; }
+                term += string.Format(" IDNOSUFF IN ({0}) ",IDNOSuff);
+
+            }
+            if (AuditMode>-1)
+            {
+                if (term != "") { term += " AND "; }
+                term += " IsNew =@IsNew ";
+                para[nowCount] = new SqlParameter("@IsNew", SqlDbType.TinyInt);
+                para[nowCount].Value = AuditMode;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (AuditType > -1)
+            {
+                if (term != "") { term += " AND "; }
+                term += " HasAudit =@HasAudit";
+                para[nowCount] = new SqlParameter("@HasAudit", SqlDbType.TinyInt);
+                para[nowCount].Value = AuditType;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (string.IsNullOrEmpty(StartDate) == false)
+            {
+                if (string.IsNullOrEmpty(EndDate) == false)
+                {
+                    term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = StartDate;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = EndDate;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                }
+                else
+                {
+                    term2 = " AND ApplyDate = @SD";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = StartDate;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(EndDate) == false)
+                {
+                    term2 = " AND ApplyDate = @ED";
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = EndDate;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            if ("" != term2)
+            {
+                SQL += term2;
+            }
+
+            lstAudits = GetObjList<BE_GetAuditList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+        /// <summary>
+        /// 取得待審核資料
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <returns></returns>
+        public BE_AuditDetail GetAuditDetail(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditDetail> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+            string SQL = " SELECT * FROM VW_GetAuditDetail ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_AuditDetail>(ref flag, ref lstError, SQL, para, term);
+            if (lstAudits != null)
+            {
+                if (lstAudits.Count > 0)
+                {
+                    obj = new BE_AuditDetail();
+                    obj = lstAudits[0];
+                }
+            }
+            return obj;
+        }
+        public List<BE_AuditImage> GetAuditImage(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditImage> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+            string SQL = " SELECT * FROM VW_GetAuditImage ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
+    
+            return lstAudits;
+        }
+        /// <summary>
+        /// 取得審核歷史
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <returns></returns>
+        public List<BE_AuditHistory> GetAuditHistory(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditHistory> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+            string SQL = " SELECT * FROM VW_GetAuditHistory ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_AuditHistory>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
     }
 }

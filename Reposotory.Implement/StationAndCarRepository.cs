@@ -794,7 +794,7 @@ namespace Reposotory.Implement
                 {
                     term2 = " AND SD >= @ED AND  ED <= @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = SD;
+                    para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }

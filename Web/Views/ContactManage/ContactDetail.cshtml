@@ -283,7 +283,7 @@
                             </div>
                             <div class="col-md-3">
 
-                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="~/Contact/returnCar/@(obj.Data.OrderNo)">HTML</button>
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.location.href='~/Contact/returnCar/@(obj.Data.OrderNo)'">HTML</button>
                             </div>
                         </div>
                     </div>
@@ -303,7 +303,7 @@
                                 實際取車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss")))
+                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>
@@ -338,7 +338,7 @@
                                 實際還車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss")))
+                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>

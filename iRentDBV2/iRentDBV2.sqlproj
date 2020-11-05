@@ -62,6 +62,7 @@
     <Folder Include="dbo\Stored Procedures\" />
     <Folder Include="dbo\Views\" />
     <Folder Include="dbo\User Defined Types\" />
+    <Folder Include="dbo\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\TB_Token.sql" />
@@ -326,6 +327,13 @@
     <Build Include="dbo\Stored Procedures\usp_BE_HandleHiEasyRentRetry.sql" />
     <Build Include="dbo\Views\VW_InsBookingControl.sql" />
     <Build Include="dbo\Views\VW_BE_GetPartOfStationList.sql" />
+    <Build Include="dbo\Views\VW_GetAuditList.sql" />
+    <Build Include="dbo\Views\VW_GetAuditDetail.sql" />
+    <Build Include="dbo\Views\VW_GetAuditImage.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleAuditImage.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleAudit.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HandleAuditImageData.sql" />
+    <Build Include="dbo\Views\VW_GetAuditHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

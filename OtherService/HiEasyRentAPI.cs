@@ -39,6 +39,7 @@ namespace OtherService
         protected string NPR320QueryURL; //點數兌換
         protected string NPR350CheckURL;
         protected string MonthlyRentURL; //月租訂閱
+        protected string NPR172QueryURL; //查詢黑名單
         protected string connetStr;
         bool disposed = false;
         /// <summary>
@@ -64,6 +65,7 @@ namespace OtherService
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
             NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
             MonthlyRentURL = (ConfigurationManager.AppSettings.Get("MonthlyRentURL") == null) ? "" : ConfigurationManager.AppSettings.Get("MonthlyRentURL").ToString();
+            NPR172QueryURL = (ConfigurationManager.AppSettings.Get("NPR172QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR172QueryURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -813,6 +815,94 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 172查詢黑名單
+        public bool NPR172Query(string IDNO, ref WebAPIOutput_NPR172Query output)
+        {
+            bool flag = true;
+            WebAPIInput_NPR172Query input = new WebAPIInput_NPR172Query()
+            {
+                sig = GenerateSig(),
+                user_id = userid
+            };
+            output = DoNPR172Query(input).Result;
+            if (output.Result)
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 兌換點數
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<WebAPIOutput_NPR172Query> DoNPR172Query(WebAPIInput_NPR172Query input)
+        {
+            WebAPIOutput_NPR172Query output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR172QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR172Query>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR172Query()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR172Query",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR172QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
+        #region 出還車相關
         #region ETAG010查詢費用(合約)
         public bool ETAG010Send(string IRENTORDNO, string RNTDATETIME, ref WebAPIOutput_ETAG010 output)
         {
@@ -992,6 +1082,7 @@ namespace OtherService
         #region 130
         #endregion
         #region 136
+        #endregion
         #endregion
     }
 }

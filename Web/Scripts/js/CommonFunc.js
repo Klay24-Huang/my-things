@@ -285,6 +285,49 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
 
     });
 }
+function DoAjaxAfterGoBack(obj, API, FailMessage) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    history.back();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
 /**
  * 執行完將API回傳的資料丟入callback函式內
  * @param {any} obj
@@ -336,6 +379,83 @@ function DoAjaxAfterCallBack(obj, API, FailMessage,CallBack) {
     });
 }
 
+function SetCity(obj) {
+    var CityList = localStorage.getItem("CityList");
+    obj.empty();
+    if (CheckStorageIsNull(CityList)) {
+        CityList = JSON.parse(CityList);
+    }
+    obj.append($('<option>', { value: 0, text:"請選擇縣市" }));
+    if (CityList.length > 0) {
+        var CityLen = CityList.length;
+        for (var i = 0; i < CityLen; i++) {
+            console.log(CityList[i].CityName);
+            obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
+        }
+        obj.val(0);
+    }
+}
+/**
+ * 
+ * @param {any} obj                   目標
+ * @param {any} selectValue           選擇的資料
+ * @param {any} triggerObj            trigger的物件
+ * @param {any} triggerObjSelectValue trigger後物件預設選擇的值
+ */
+function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
+    var CityList = localStorage.getItem("CityList");
+    var AreaList = localStorage.getItem("AreaList");
+    console.log(CityList);
+    obj.empty();
+    if (CheckStorageIsNull(CityList)) {
+        CityList = JSON.parse(CityList);
+    }
+    if (CheckStorageIsNull(AreaList)) {
+        AreaList = JSON.parse(AreaList);
+    }
+    if (CityList.length > 0) {
+        var CityLen = CityList.length;
+        for (var i = 0; i < CityLen; i++) {
+            console.log(CityList[i].CityName);
+            obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
+        }
+        obj.val(selectValue);
+    }
+    triggerObj.empty();
+    if (AreaList.length > 0) {
+        
+        var tmpArea = AreaList.filter(function (Area) { return Area.CityID == selectValue });
+        var tmpAreaLen = tmpArea.length;
+        if (tmpAreaLen > 0) {
+           
+            for (var i = 0; i < tmpAreaLen; i++) {
+                console.log(tmpArea[i].AreaName);
+                triggerObj.append($('<option>', { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName }));
+            }
+            triggerObj.val(triggerObjSelectValue);
+        }
+    }
+
+}
+function SetArea(obj, SelectValue) {
+    var AreaList = localStorage.getItem("AreaList");
+    obj.empty();
+    if (CheckStorageIsNull(AreaList)) {
+        AreaList = JSON.parse(AreaList);
+    }
+    if (AreaList.length > 0) {
+
+        var tmpArea = AreaList.filter(function (Area) { return Area.CityID == SelectValue });
+        var tmpAreaLen = tmpArea.length;
+        if (tmpAreaLen > 0) {
+
+            for (var i = 0; i < tmpAreaLen; i++) {
+                console.log(tmpArea[i].AreaName);
+                obj.append($('<option>', { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName }));
+            }
+        }
+    }
+}
 /* autocomplete使用*/
 /**
  * 據點autocomplete

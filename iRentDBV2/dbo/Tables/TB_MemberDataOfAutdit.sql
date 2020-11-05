@@ -22,6 +22,7 @@
     [HasAudit]       TINYINT         DEFAULT(0) NOT NULL,
     [IsNew]          TINYINT         DEFAULT(0) NOT NULL,
     [MKTime] DATETIME  DEFAULT(dateadd(hour,(8),getdate())) NOT NULL,
+    [UPDTime] DATETIME NULL, 
     CONSTRAINT [PK_TB_MemberDataOfAutdit] PRIMARY KEY ([AuditID])
 
 )
@@ -96,7 +97,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'帳號(身�
 
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'有無審核過（0:否;1:有)',
+    @value = N'有無審核過（0:否;1:有(未通過);2:有(通過))',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
@@ -121,3 +122,13 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_MemberDataOfAutdit',
     @level2type = N'COLUMN',
     @level2name = N'IsNew'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'上次審核時間',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberDataOfAutdit',
+    @level2type = N'COLUMN',
+    @level2name = N'UPDTime'
+GO
