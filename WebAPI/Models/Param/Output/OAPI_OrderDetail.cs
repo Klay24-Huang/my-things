@@ -166,5 +166,15 @@
         /// 結束時間
         /// </summary>
         public string EndTime { get; set; }
+
+        /// <summary>
+        /// 里程
+        /// </summary>
+        public float Millage { get; set; }
+
+        /// <summary>
+        /// 據點區域
+        /// </summary>
+        public string CarOfArea { get; set; }
     }
 }

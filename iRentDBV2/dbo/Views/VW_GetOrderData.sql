@@ -68,6 +68,7 @@ SELECT OrderMain.[order_number]
 	  ,ISNULL(CarStatus.deviceRDistance,'') AS RemainingMilage
 	  ,CarStatus.Latitude AS CarLatitude
 	  ,CarStatus.Longitude AS CarLongitude
+	  ,CarStatus.Millage
 	  ,Station.Content AS [Content]
 	  ,Station.Latitude
 	  ,Station.Longitude
