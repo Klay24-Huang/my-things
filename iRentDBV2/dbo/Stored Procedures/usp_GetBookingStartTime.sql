@@ -64,7 +64,7 @@ DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
-DECLARE @hasData TINYINT;
+DECLARE @hasData BIGINT;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
