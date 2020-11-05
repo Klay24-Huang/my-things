@@ -518,4 +518,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OrderNo" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f090ca81-f612-497d-ae69-a4ad291caed6" ChangeDateTime="11/01/2020 12:54:30">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingInsuranceOfUser].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingInsuranceOfUser]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IDNO" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="569bc5b5-0c03-4816-ad03-4deccaa456a6" ChangeDateTime="11/01/2020 12:59:47">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingInsuranceOfUser].[CriticalEvent]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingInsuranceOfUser]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CriticalEventCount" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c02bcab6-0d12-4747-a5b8-08f621843370" ChangeDateTime="11/01/2020 13:08:48">
+    <Property Name="ElementName" Value="[dbo].[TB_BookingInsuranceOfUserHIS].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_BookingInsuranceOfUserHIS]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HisID" />
+  </Operation>
 </Operations>

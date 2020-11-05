@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.WebAPI.output.rootAPI
 {
@@ -24,6 +20,11 @@ namespace Domain.WebAPI.output.rootAPI
         /// 專案名稱
         /// </summary>
         public string ProjName { set; get; }
+
+        /// <summary>
+        /// 優惠專案描述
+        /// </summary>
+        public string ProDesc { get; set; }
 
         /// <summary>
         /// 車子品牌
@@ -53,7 +54,6 @@ namespace Domain.WebAPI.output.rootAPI
         /// 業者評分
         /// </summary>
         public Single OperatorScore { set; get; }
-
 
         /// <summary>
         /// 是否可加購安心服務

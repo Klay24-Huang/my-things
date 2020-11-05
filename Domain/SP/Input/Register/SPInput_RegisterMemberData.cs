@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Register
 {
@@ -14,38 +10,46 @@ namespace Domain.SP.Input.Register
         /// <summary>
         /// 身份證
         /// </summary>
-        public string IDNO     {set;get;}
+        public string IDNO { get; set; }
+
         /// <summary>
         /// 裝置ID
         /// </summary>
-        public string DeviceID {set;get;}
+        public string DeviceID { get; set; }
+
         /// <summary>
         /// 姓名
         /// </summary>
-        public string MEMCNAME {set;get;}
+        public string MEMCNAME { get; set; }
+
         /// <summary>
         /// 生日
         /// </summary>
-        public DateTime MEMBIRTH {set;get;}
+        public DateTime MEMBIRTH { get; set; }
+
         /// <summary>
         /// 行政區ID
         /// </summary>
-        public int MEMCITY  {set;get;}
+        public int MEMCITY { get; set; }
+
         /// <summary>
         /// 地址
         /// </summary>
-        public string MEMADDR  {set;get;}
+        public string MEMADDR { get; set; }
+
         /// <summary>
         /// EMAIL
         /// </summary>
-        public string MEMEMAIL {set;get;}
+        public string MEMEMAIL { get; set; }
+
         /// <summary>
-        /// 簽名檔
+        /// 簽名檔檔案名稱
         /// </summary>
-        public string Signture {set;get;}
+        public string FileName { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public Int64 LogID { set; get; }
+        public Int64 LogID { get; set; }
     }
 }

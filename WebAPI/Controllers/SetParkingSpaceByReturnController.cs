@@ -164,6 +164,7 @@ namespace WebAPI.Controllers
                         {
                             //flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpaceImage, FileName, "carpic");
                             flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpacePic[i].ParkingSpaceFile, FileName, "carpic");
+                            apiInput.ParkingSpacePic[i].ParkingSpaceFile = FileName;//base64轉檔名存入db
                         }
                         catch (Exception ex)
                         {

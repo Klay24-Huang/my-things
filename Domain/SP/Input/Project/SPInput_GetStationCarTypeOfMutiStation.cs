@@ -24,6 +24,10 @@ namespace Domain.SP.Input.Project
         /// 車型群組代碼
         /// </summary>
         public string CarType { get; set; }
+        /// <summary>
+        /// 客戶代碼
+        /// </summary>
+        public string IDNO { set; get; }
         public Int64 LogID { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Project;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.SP.Output.Project;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
@@ -59,6 +60,7 @@ namespace WebAPI.Controllers
             DateTime SDate = DateTime.Now.AddHours(-1);
             DateTime EDate = DateTime.Now;
             int QueryMode = 0;
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -141,19 +143,30 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
+            //20201103 ADD BY ADAM REASON.TOKEN判斷修改
             //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
+            if(flag && Access_Token_string.Split(' ').Length >= 2)
+            {
+                //string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    //Token = Access_Token
+                    Token = Access_Token_string.Split(' ')[1].ToString()
+                };
+                //SPOutput_Base spOut = new SPOutput_Base();
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                //SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
@@ -161,13 +174,14 @@ namespace WebAPI.Controllers
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
                 List<StationAndProjectAndCarTypeData> lstData = new List<StationAndProjectAndCarTypeData>();
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-
+                
                 SPInput_GetStationCarTypeOfMutiStation spInput = new SPInput_GetStationCarTypeOfMutiStation()
                 {
                     StationIDs = apiInput.StationID,
                     SD = SDate,
                     ED = EDate,
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
+                    IDNO = IDNO,
                     LogID = LogID
                 };
 
@@ -211,13 +225,14 @@ namespace WebAPI.Controllers
                                 CarType = lstData[0].CarType,
                                 CarTypeName = lstData[0].CarTypeName,
                                 CarTypePic = lstData[0].CarTypePic,
-                                Insurance = 1,
-                                InsurancePerHour = 20,
+                                Insurance = lstData[0].Insurance,
+                                InsurancePerHour = lstData[0].InsurancePerHours,
                                 IsMinimum = 1,
                                 Operator = lstData[0].Operator,
                                 OperatorScore = lstData[0].OperatorScore,
                                 ProjID = lstData[0].PROJID,
                                 ProjName = lstData[0].PRONAME,
+                                ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
                                 //Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                                 Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
@@ -247,13 +262,14 @@ namespace WebAPI.Controllers
                                         CarType = lstData[i].CarType,
                                         CarTypeName = lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
-                                        Insurance = 1,
-                                        InsurancePerHour = 20,
+                                        Insurance = lstData[i].Insurance,
+                                        InsurancePerHour = lstData[i].InsurancePerHours,
                                         IsMinimum = isMin,
                                         Operator = lstData[i].Operator,
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
@@ -294,13 +310,14 @@ namespace WebAPI.Controllers
                                         CarType = lstData[i].CarType,
                                         CarTypeName = lstData[i].CarTypeName,
                                         CarTypePic = lstData[i].CarTypePic,
-                                        Insurance = 1,
-                                        InsurancePerHour = 20,
+                                        Insurance = lstData[i].Insurance,
+                                        InsurancePerHour = lstData[i].InsurancePerHours,
                                         IsMinimum = isMin,
                                         Operator = lstData[i].Operator,
                                         OperatorScore = lstData[i].OperatorScore,
                                         ProjID = lstData[i].PROJID,
                                         ProjName = lstData[i].PRONAME,
+                                        ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
@@ -313,7 +330,6 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-
                     }
                 }
 

@@ -58,8 +58,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion, apiInput.MEMADDR, apiInput.Signture };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion, apiInput.MEMADDR };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
@@ -116,26 +116,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            #region upload to azure
-            if (flag)
-            {
-                if (apiInput.Signture != "")
-                {
-                  
-                        try
-                        {
-                            FileName = string.Format("{0}_Sign_{1}.png", apiInput.IDNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
-                            flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.Signture, FileName, "credential");
-                        }
-                        catch (Exception ex)
-                        {
-                            flag = false;
-                            errCode = "ERR226";
-                        }
 
-                }
-            }
-            #endregion
             #region TB
             if (flag)
             {
@@ -149,7 +130,6 @@ namespace WebAPI.Controllers
                     MEMBIRTH = Birth,
                     MEMCITY = apiInput.AreaID,
                     MEMADDR = apiInput.MEMADDR,
-                    Signture = apiInput.Signture,
                     MEMHTEL = apiInput.MEMHTEL,
                     MEMCOMTEL = apiInput.MEMCOMTEL,
                     MEMCONTRACT = apiInput.MEMCONTRACT,
