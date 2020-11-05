@@ -256,6 +256,7 @@
     <Compile Include="TB\GetFeedBackKindData.cs" />
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
+    <Compile Include="TB\iRentManagerStation.cs" />
     <Compile Include="TB\iRentStationData.cs" />
     <Compile Include="TB\LoveCodeListData.cs" />
     <Compile Include="TB\Mochi\SyncMachiParkId.cs" />

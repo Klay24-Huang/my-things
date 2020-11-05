@@ -237,6 +237,24 @@ namespace Reposotory.Implement
             lstZip = GetObjList<ZipCodeData>(ref flag, ref lstError, SQL, para, term);
             return lstZip;
         }
+        public List<iRentManagerStation> GetAllManageStation()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<iRentManagerStation> lstManagerStation = null;
+            int nowCount = 0;
+            string SQL = "SELECT [StationID],[StationName] FROM [TB_ManagerStation] ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+         
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+            SQL += " ORDER BY StationID ASC";
+            lstManagerStation = GetObjList<iRentManagerStation>(ref flag, ref lstError, SQL, para, term);
+            return lstManagerStation;
+        }
         public UPDList GetUpdList()
         {
             bool flag = false;

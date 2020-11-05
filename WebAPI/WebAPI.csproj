@@ -166,6 +166,7 @@
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
+    <Compile Include="Controllers\BE_GetManagerStationController.cs" />
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
@@ -455,6 +456,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetServerTime.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />

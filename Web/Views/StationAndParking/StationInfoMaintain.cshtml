@@ -132,7 +132,7 @@
                             經度
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="Longitude" id="Longitude" TextMode="Number" step="0.000001" min="120" max="123" value="" />
+                            <input class="form-control" type="number" name="Longitude" id="Longitude" TextMode="Number" step="0.000001" min="120" max="123" value="" />
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                             緯度
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="Latitude" id="Latitude" TextMode="Number" step="0.000001" min="22" max="26" value="" />
+                            <input class="form-control" type="number" name="Latitude" id="Latitude" TextMode="Number" step="0.000001" min="22" max="26" value="" />
                         </div>
                     </div>
                 </div>
@@ -236,8 +236,16 @@
                             上傳照片
                         </div>
                         <div class="col-md-8">
-
-                            <input type="file" class="jfilestyle" accept=".jpg,.png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限100kb以內
+                            <input type="hidden" name="fileName1" id="fileName1" value="" />
+                            <input type="hidden" name="fileName2" id="fileName2" value="" />
+                            <input type="hidden" name="fileName3" id="fileName3" value="" />
+                            <input type="hidden" name="fileName4" id="fileName4" value="" />
+                            <input type="hidden" name="fileData1" id="fileData1" value="" />
+                            <input type="hidden" name="fileData2" id="fileData2" value="" />
+                            <input type="hidden" name="fileData3" id="fileData3" value="" />
+                            <input type="hidden" name="fileData4" id="fileData4" value="" />
+                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限100kb以內
+                            <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
                         </div>
                     </div>
                 </div>
@@ -266,8 +274,9 @@
                             共同出車庫位
                         </div>
                         <div class="col-md-3">
-                            <select class="form-control" id="City" name="City">
+                            <select class="form-control" id="StationPick" name="StationPick">
                                 <option value="X088">汽車X088</option>
+                                <option value="X066">機車X066</option>
 
                             </select>
                         </div>
@@ -371,7 +380,7 @@
                             車位數
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="ParkingNum" id="ParkingNum" TextMode="Number" min="0" step="1" />
+                            <input class="form-control" type="number" name="ParkingNum" id="ParkingNum" TextMode="Number" min="0" step="1" />
                         </div>
                     </div>
                 </div>
@@ -383,7 +392,7 @@
                             實際上線數
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OnlineNum" id="OnlineNum" TextMode="Number" min="0" step="1" />
+                            <input class="form-control" type="number" name="OnlineNum" id="OnlineNum" TextMode="Number" min="0" step="1" />
                         </div>
                     </div>
                 </div>

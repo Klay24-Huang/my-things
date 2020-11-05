@@ -3,6 +3,7 @@
 	[iRentStationInfoID] INT NOT NULL IDENTITY, 
     [StationID] VARCHAR(10) NOT NULL DEFAULT '',
     [StationPic] VARCHAR(MAX) NOT NULL DEFAULT '', 
+    [Sort] TINYINT NOT NULL DEFAULT 0,
     [PicDescription] NVARCHAR(400) NOT NULL DEFAULT N'', 
     [use_flag] [tinyint] NOT NULL DEFAULT (1),
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
@@ -59,3 +60,11 @@ GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'最近一次修改時間' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_iRentStationInfo', @level2type=N'COLUMN',@level2name=N'UPDTime'
 GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'排序',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_iRentStationInfo',
+    @level2type = N'COLUMN',
+    @level2name = N'Sort'

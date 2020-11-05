@@ -5,9 +5,11 @@
     [BlockName]   NVARCHAR (50)  DEFAULT ('') NOT NULL,
     [BlockType]   TINYINT        DEFAULT ((0)) NOT NULL,
     [PolygonMode] TINYINT        DEFAULT ((0)) NOT NULL,
-    [Longitude]          VARCHAR (MAX)  DEFAULT ('') NOT NULL,
-    [Latitude]          VARCHAR (MAX)  DEFAULT ('') NOT NULL,
+    [Longitude]   VARCHAR (MAX)  DEFAULT ('') NOT NULL,
+    [Latitude]    VARCHAR (MAX)  DEFAULT ('') NOT NULL,
     [MAPColor]    CHAR (6)       DEFAULT ('FF0000') NOT NULL,
+    [StartDate]   DATETIME         DEFAULT  (DATEADD(HOUR,8,GETDATE())) NOT NULL,
+    [EndDate]     DATETIME           DEFAULT  '2099-12-31 23:59:59' NOT NULL,
     [use_flag]    TINYINT        DEFAULT ((0)) NOT NULL,
     [MKTime]      DATETIME       DEFAULT  (DATEADD(HOUR,8,GETDATE())) NOT NULL,
     [UPDTime]     DATETIME       NULL, 
@@ -127,3 +129,22 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
 GO
 
 CREATE INDEX [IX_TB_Polygon_Search] ON [dbo].[TB_Polygon] ([StationID], [use_flag], [PolygonMode])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'有效日（起）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Polygon',
+    @level2type = N'COLUMN',
+    @level2name = N'StartDate'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'有效日期（迄）',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Polygon',
+    @level2type = N'COLUMN',
+    @level2name = N'EndDate'

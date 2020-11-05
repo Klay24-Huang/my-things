@@ -334,6 +334,8 @@
     <Build Include="dbo\Stored Procedures\usp_BE_HandleAudit.sql" />
     <Build Include="dbo\Stored Procedures\usp_HandleAuditImageData.sql" />
     <Build Include="dbo\Views\VW_GetAuditHistory.sql" />
+    <Build Include="dbo\Views\VW_BE_GetiRentStation.sql" />
+    <Build Include="dbo\Views\VW_BE_GetiRentStationInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

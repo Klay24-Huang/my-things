@@ -248,7 +248,8 @@ function GetCityData() {
                     text: data.ErrorMessage,
                     icon: 'error'
                 }).then(function (value) {
-                    window.location.href = "../CarDataInfo/CarDashBoard";
+                    //window.location.href = "../CarDataInfo/CarDashBoard";
+                    GetAreaData();
                 });
             }
         },
@@ -280,7 +281,7 @@ function GetAreaData() {
             if (data.Result == "1") {
                 swal({
                     title: 'SUCCESS',
-                    text: "載入縣市資料：" + data.ErrorMessage,
+                    text: "載入行政區資料：" + data.ErrorMessage,
                     icon: 'success'
                 }).then(function (value) {
                     var MangerList = localStorage.getItem("AreaList");
@@ -288,6 +289,56 @@ function GetAreaData() {
                         localStorage.removeItem("AreaList");
                     }
                     localStorage.setItem("AreaList", JSON.stringify(data.Data.ZipObj))
+                    GetManagerStationData();
+                  //  window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                }).then(function (value) {
+                    GetManagerStationData();
+                    //window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "載入行政區資料發生錯誤",
+                icon: 'error'
+            });
+        }
+    });
+}
+function GetManagerStationData() {
+    var site = jsHost + "BE_GetManagerStation";
+    ShowLoading("開始載入管轄據點資料");
+
+    $.ajax({
+        url: site,
+        type: 'GET',
+        data: 'CityId=0',
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: "管轄據點資料：" + data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    var MangerList = localStorage.getItem("ManagerStationList");
+                    if (typeof MangerList !== 'undefined' && MangerList !== null) {
+                        localStorage.removeItem("ManagerStationList");
+                    }
+                    localStorage.setItem("ManagerStationList", JSON.stringify(data.Data.ManagerStationObj))
                     window.location.href = "../CarDataInfo/CarDashBoard";
                 });
             } else {
@@ -305,7 +356,7 @@ function GetAreaData() {
             $.busyLoadFull("hide");
             swal({
                 title: 'Fail',
-                text: "載入行政區資料發生錯誤",
+                text: "載入管轄據點資料發生錯誤",
                 icon: 'error'
             });
         }
