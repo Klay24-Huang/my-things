@@ -52,11 +52,6 @@ namespace WebAPI.Models.Param.Input
         public string MEMADDR { get; set; }
 
         /// <summary>
-        /// 電子簽名（Base64)
-        /// </summary>
-        public string Signture { get; set; }
-
-        /// <summary>
         /// 連絡電話(住家)
         /// </summary>
         public string MEMHTEL { get; set; }

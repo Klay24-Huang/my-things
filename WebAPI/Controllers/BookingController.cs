@@ -4,6 +4,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
+using Domain.SP.Input.Bill;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -17,6 +18,12 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.SP.Output.Bill;
+using OtherService;
+using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
+using Domain.WebAPI.Input.Taishin;
+using Domain.WebAPI.output.Taishin;
+using System.Data;
 
 namespace WebAPI.Controllers
 {
@@ -26,6 +33,10 @@ namespace WebAPI.Controllers
     public class BookingController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
+        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        CommonFunc baseVerify { get; set; }
+
         [HttpPost]
         public Dictionary<string, object> DoBooking(Dictionary<string, object> value)
         {
@@ -46,7 +57,7 @@ namespace WebAPI.Controllers
             OAPI_Booking outputApi = null;
     
             Token token = null;
-            CommonFunc baseVerify = new CommonFunc();
+            baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository=new StationAndCarRepository(connetStr);
             ProjectRepository projectRepository = new ProjectRepository(connetStr);
@@ -64,7 +75,9 @@ namespace WebAPI.Controllers
             int AnyRentDefaultPickTime = 30;
             int MotorRentDefaultPickTime = 30;
             int price = 0, InsurancePurePrice=0;
+            int InsurancePerHours = 0;
             string IDNO = "";
+            string CarTypeCode = "";
             
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             BillCommon billCommon = new BillCommon();
@@ -109,6 +122,7 @@ namespace WebAPI.Controllers
                 }
                 ProjType = Convert.ToInt16(obj.PROJTYPE);
                 PayMode = Convert.ToInt16(obj.PayMode);
+                CarTypeCode = apiInput.CarType;
                 if (ProjType > 0)
                 {
                     if (string.IsNullOrWhiteSpace(apiInput.CarNo)) //路邊及機車
@@ -161,9 +175,11 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-              
+
+
             }
             #endregion
+            
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -184,6 +200,34 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+            //20201103 ADD BY ADAM REASON.取得安心服務每小時價格
+            if (flag)
+            {
+                string GetInsurancePriceName = new ObjType().GetSPName(ObjType.SPType.GetInsurancePrice);
+                SPInput_GetInsurancePrice spGetInsurancePrice = new SPInput_GetInsurancePrice()
+                {
+                    IDNO = IDNO,
+                    CarType = CarTypeCode,
+                    LogID = LogID
+                };
+                List<SPOutput_GetInsurancePrice> re = new List<SPOutput_GetInsurancePrice>();
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_GetInsurancePrice, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetInsurancePrice, SPOutput_Base>(connetStr);
+                DataSet ds = new DataSet();
+
+                flag = sqlHelp.ExeuteSP(GetInsurancePriceName, spGetInsurancePrice, ref spOut, ref re, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag && re.Count > 0)
+                {
+                    InsurancePerHours = int.Parse(re[0].InsurancePerHours.ToString());
+                }
+            }
+            #region 檢查信用卡是否綁卡
+
+            if (flag)
+                flag = CheckCard(IDNO, ref errCode);
+
+            #endregion
             if (flag)
             {
                 //判斷專案限制及取得專案設定
@@ -201,7 +245,9 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
+                //InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
+                //20201103 ADD BY SS ADAM REASON.計算安心服務價格
+                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePerHours*10 , InsurancePerHours*10, lstHoliday)) : 0;
                 //計算初始租金
                 if (ProjType < 4)
                 {
@@ -280,6 +326,51 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
+        }
+
+        /// <summary>
+        /// 是否有綁定信用卡
+        /// </summary>
+        /// <param name="IDNO">身分證號</param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns></returns>
+        private bool CheckCard(string IDNO, ref string errCode)
+        {
+            bool flag = false;
+
+            //送台新查詢
+            TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+            PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+            {
+                ApiVer = ApiVerOther,
+                ApposId = TaishinAPPOS,
+                RequestParams = new GetCreditCardListRequestParamasData()
+                {
+                    MemberId = IDNO,
+                },
+                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+            };
+            WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+            flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+
+            if (flag)
+            {
+                flag = false;
+                int Len = wsOutput.ResponseParams.ResultData.Count;
+                if (Len > 0)
+                {
+                    string CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                    if (!string.IsNullOrWhiteSpace(CardToken))
+                        flag = true;
+                }
+            }
+
+            if (!flag)
+                errCode = "ERR730";
+
+            return flag;
         }
     }
 }

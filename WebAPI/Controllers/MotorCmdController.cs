@@ -1,7 +1,9 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.SP.Input.Booking;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Common;
+using Domain.SP.Output;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
 using Domain.TB;
@@ -62,7 +64,6 @@ namespace WebAPI.Controllers
             int IsCens = 0;
             DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
-  
             #endregion
             #region 防呆
 
@@ -182,10 +183,13 @@ namespace WebAPI.Controllers
                         requestId = input.requestId;
                         string method = CommandType;
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+
+                        /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus
                         if (flag)
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
+                        */
                         if (flag)
                         {
                             info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);
@@ -207,13 +211,14 @@ namespace WebAPI.Controllers
                             {
 
                                 case 1: //2:開啟電源
+                                    /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus
                                     if (info.ACCStatus == 1)
                                     {
                                         flag = false;
                                         errCode = "ERR217";
 
                                     }
-                                    else
+                                    else*/
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
@@ -221,12 +226,13 @@ namespace WebAPI.Controllers
                                   
                                     break;
                                 case 2: //3:關閉電源
+                                    /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus
                                     if (info.ACCStatus == 0)
                                     {
                                         flag = false;
                                         errCode = "ERR218";
                                     }
-                                    else
+                                    else*/
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOff);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOff;
@@ -235,12 +241,13 @@ namespace WebAPI.Controllers
                                     break;
 
                                 case 3: //6:開啟坐墊
+                                    /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus
                                     if (info.devicePut_Down == 1)
                                     {
                                         flag = false;
                                         errCode = "ERR219";
                                     }
-                                    else
+                                    else*/
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.OpenSet);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.OpenSet;
@@ -255,21 +262,39 @@ namespace WebAPI.Controllers
                             if (flag)
                             {
                                  input = new WSInput_Base<Params>()
-                                {
+                                 {
                                     command = true,
                                     method = CommandType,
                                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                     _params = new Params()
 
-                                };
-                                method = CommandType;
-                                requestId = input.requestId;
-                                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                                 };
+                                 method = CommandType;
+                                 requestId = input.requestId;
+                                 flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                                 //20201020 MARK BY JERRY 無連續動作，可以先不執行等待
                                 //if (flag)
                                 //{
                                 //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                 //}
+
+                                // 20201029 ADD BY ADAM REASON. 儲存指令結果，後續還是看ReportNow
+                                if (flag)
+                                {
+                                    SPInput_SetMotorStatus spInput2 = new SPInput_SetMotorStatus()
+                                    {
+                                        CID = CID,
+                                        CmdType = CommandType,
+                                        LogID = LogID
+                                    };
+                                    string SPName2 = new ObjType().GetSPName(ObjType.SPType.SetMotorStatus);
+                                    SPOutput_Base spOutBase = new SPOutput_Base();
+                                    SQLHelper<SPInput_SetMotorStatus, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_SetMotorStatus, SPOutput_Base>(connetStr);
+                                    flag = sqlHelp2.ExecuteSPNonQuery(SPName2, spInput2, ref spOutBase, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, spOutBase.Error, spOutBase.ErrorCode, ref lstError, ref errCode);
+
+
+                                }
                             }
                         }
                       

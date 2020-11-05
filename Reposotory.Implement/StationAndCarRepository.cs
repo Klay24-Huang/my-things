@@ -583,16 +583,11 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeData> lstStation = null;
             int nowCount = 0;
-            #region 改前SQL保留 
-            //string SQL = "SELECT PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat, PayMode ";
-            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            //SQL += " WHERE CarNo=@CarNo AND SPCLOCK='Z' AND use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
-            //SQL += "ORDER BY PROJID ASC ";
-            #endregion
+
             string SQL = @"
             SELECT VW.PROJID,
                    VW.PRONAME,
+                   VW.PRODESC,
                    VW.Price,
                    VW.PRICE_H,
                    VW.CarBrend,
@@ -647,18 +642,12 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectAndCarTypeDataForMotor> lstStation = null;
             int nowCount = 0;
-            #region 原SQL保留
-            //string SQL = "SELECT DISTINCT VW.PROJID,PRONAME,[CarBrend],[CarTypeGroupCode] AS CarType,[CarTypeName],[CarTypeImg] As CarTypePic,OperatorICon AS Operator,Score As OperatorScore,Seat ,PriceByMinutes.[BaseMinutes],PriceByMinutes.[BaseMinutesPrice] AS BasePrice ,PriceByMinutes.[Price] AS PerMinutesPrice ,PriceByMinutes.[MaxPrice] ";
-            //SQL += " FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW ";
-            //SQL += " INNER JOIN  TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID  ";
-            //SQL += " INNER JOIN  TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1 ";
-            //SQL += " WHERE Car.CarNo=@CarNo AND SPCLOCK='Z' AND VW.use_flag=1  "; //AND ((PRSTDT BETWEEN @SD AND @ED) AND (PRENDT BETWEEN @SD AND @ED))
-            //SQL += "ORDER BY PROJID ASC ";
-            #endregion
+
             string SQL = @"
             SELECT DISTINCT 
                    VW.PROJID,
 		           VW.PRONAME,
+                   VW.PRODESC,
 		           VW.CarBrend,
 		           VW.CarTypeGroupCode AS CarType,
 		           VW.CarTypeName,

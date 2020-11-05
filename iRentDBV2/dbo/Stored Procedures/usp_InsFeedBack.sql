@@ -131,7 +131,10 @@ SET @PIC4='';
 			IF @Mode<2
 			BEGIN
 			    SET @hasData=0
-				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status<=3 AND cancel_status=0 AND booking_status<3);
+				
+				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo 
+					AND ((@Mode=0 AND car_mgt_status<=3 AND cancel_status=0 AND booking_status<3) 
+						OR (@Mode=1 AND car_mgt_status >= 16 AND cancel_status=0));
 				IF @hasData=0
 				BEGIN
 				    SET @Error=1;

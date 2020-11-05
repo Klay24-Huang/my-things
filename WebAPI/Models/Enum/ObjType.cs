@@ -296,6 +296,16 @@ namespace WebAPI.Models.Enum
             /// 月租訂閱
             /// </summary>
             MonthlySubscription,
+            /// <summary>
+            /// 更新車輛狀態
+            /// 20201101 ADD BY ADAM
+            /// </summary>
+            SetMotorStatus,
+            /// <summary>
+            /// 取得安心服務價格
+            /// 20201103 ADD BY ADAM
+            /// </summary>
+            GetInsurancePrice,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -644,6 +654,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.MonthlySubscription:
                     SPName = "usp_MonthRent_I01";
+                    break;
+                case SPType.SetMotorStatus:   //20201101 ADD BY ADAM REASON.增加直接寫入車機狀態
+                    SPName = "usp_SetMotorStatus";
+                    break;
+                case SPType.GetInsurancePrice:  //20201103 ADD BY ADAM REASON.
+                    SPName = "usp_GetInsurancePrice";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.TB
 {
@@ -24,6 +20,12 @@ namespace Domain.TB
         /// 專案名稱
         /// </summary>
         public string PRONAME { set; get; }
+
+        /// <summary>
+        /// 優惠專案描述
+        /// </summary>
+        public string PRODESC { get; set; }
+
         /// <summary>
         /// 專案平日價
         /// </summary>
@@ -56,7 +58,7 @@ namespace Domain.TB
         /// 業者評分
         /// </summary>
         public Single OperatorScore { set; get; }
-     
+
         /// <summary>
         ///座位數
         /// </summary>

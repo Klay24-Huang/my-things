@@ -92,6 +92,7 @@
     <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />
     <Compile Include="SP\Input\Battle\SPInput_GetKey.cs" />
     <Compile Include="SP\Input\Battle\SPInput_MaintainBase.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetInsurancePrice.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="SP\Input\Car\SPInput_EnforceReturnCar.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
+    <Compile Include="SP\Input\Car\SPInput_SetMotorStatus.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
@@ -173,6 +175,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
+    <Compile Include="SP\Output\Bill\SPOutput_GetInsurancePrice.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BeforeBookingStart.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_Booking.cs" />

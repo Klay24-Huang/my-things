@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.TB
 {
@@ -16,6 +12,12 @@ namespace Domain.TB
         /// 專案名稱
         /// </summary>
         public string PRONAME { set; get; }
+
+        /// <summary>
+        /// 優惠專案描述
+        /// </summary>
+        public string PRODESC { get; set; }
+
         /// <summary>
         /// 專案平日價
         /// </summary>
@@ -83,5 +85,13 @@ namespace Domain.TB
         /// 是否可租 Y/N
         /// </summary>
         public string IsRent { get; set; }
+        /// <summary>
+        /// 是否可用安心服務
+        /// </summary>
+        public int Insurance { set; get; }
+        /// <summary>
+        /// 安心服務每小時計價
+        /// </summary>
+        public int InsurancePerHours { set; get; }
     }
 }

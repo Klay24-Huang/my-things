@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -49,19 +46,20 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
-            DateTime Birth=DateTime.Now;
+            DateTime Birth = DateTime.Now;
             string Contentjson = "";
+            string FileName = "";
             #endregion
             #region 防呆
-            flag = baseVerify.baseCheck(value,ref Contentjson, ref errCode, funName);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_RegisterMemberData>(Contentjson);
+                apiInput = JsonConvert.DeserializeObject<IAPI_RegisterMemberData>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion,apiInput.MEMADDR,apiInput.MEMEMAIL,apiInput.Signture };
+                string[] checkList = { apiInput.IDNO, apiInput.MEMCNAME, apiInput.MEMBIRTH, apiInput.DeviceID, apiInput.APPVersion, apiInput.MEMADDR, apiInput.MEMEMAIL, apiInput.Signture };
                 string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -119,22 +117,36 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
+            #region Azure Storage
+            if (flag)
+            {
+                try
+                {
+                    FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.Signture, FileName, "credential");
+                }
+                catch (Exception ex)
+                {
+                    flag = false;
+                    errCode = "ERR226";
+                }
+            }
+            #endregion
             #region TB
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.RegisterMemberData);
                 SPInput_RegisterMemberData spInput = new SPInput_RegisterMemberData()
                 {
-                    LogID = LogID,
                     IDNO = apiInput.IDNO,
                     DeviceID = apiInput.DeviceID,
-                    MEMADDR = apiInput.MEMADDR,
-                    MEMCITY = apiInput.AreaID,
                     MEMCNAME = apiInput.MEMCNAME,
+                    MEMBIRTH = Birth,
+                    MEMCITY = apiInput.AreaID,
+                    MEMADDR = apiInput.MEMADDR,
                     MEMEMAIL = apiInput.MEMEMAIL,
-                    Signture = apiInput.Signture,
-                    MEMBIRTH = Birth
+                    FileName = FileName,
+                    LogID = LogID,
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_RegisterMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_RegisterMemberData, SPOutput_Base>(connetStr);
@@ -152,8 +164,6 @@ namespace WebAPI.Controllers
 
                 // flag = Task.Run(() => send.DoSendMail(Title, Body, apiInput.MEMEMAIL)).Result;
                 flag = send.DoSendMail(Title, Body, apiInput.MEMEMAIL);
-
-
             }
 
             #endregion

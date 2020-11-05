@@ -59,6 +59,7 @@ DECLARE @hasData TINYINT;
 DECLARE @order_number INT;
 DECLARE @MEMIDNO VARCHAR(10);
 DECLARE @ProjType VARCHAR(5);
+DECLARE @NowTime	DATETIME;
 
 /*初始設定*/
 SET @Error=0;
@@ -76,6 +77,7 @@ SET @CarNo=ISNULL (@CarNo,'');
 SET @order_number=0;
 SET @MEMIDNO='';
 SET @ProjType='';
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
 	IF @CarNo=''
@@ -91,6 +93,8 @@ BEGIN TRY
 		SELECT @MEMIDNO=IDNO,@ProjType=ProjType FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@order_number;
 
 		UPDATE TB_OrderMain SET car_mgt_status=16,booking_status=5 WHERE order_number=@order_number;
+
+		UPDATE TB_OrderDetail SET final_stop_time=@NowTime WHERE order_number=@order_number;
 
 		UPDATE TB_Car SET NowOrderNo=0,LastOrderNo=@order_number,available=1 WHERE CarNo=@CarNo;
 
