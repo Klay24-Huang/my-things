@@ -1,4 +1,67 @@
-﻿
+﻿@model Domain.TB.BackEnd.BE_StationDetailCombind
+@{
+    string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
+    string stationContainer = (System.Configuration.ConfigurationManager.AppSettings["stationContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["stationContainer"].ToString();
+    string ImgURL = StorageBaseURL + stationContainer + "/";
+    Domain.TB.BackEnd.BE_StationDetailCombind obj = null;
+
+    int CityID = 0;
+    int AreaID = 0;
+    string PIC1 = "", PIC2 = "", PIC3 = "", PIC4 = "";
+    string PIC1Descript = "", PIC2Descript = "", PIC3Descript = "", PIC4Descript = "";
+    if (Model != null)
+    {
+        obj = Model;
+        CityID = obj.detail.CityID;
+        AreaID = obj.detail.AreaID;
+        if (obj.StationImage != null)
+        {
+            if (obj.StationImage.Count > 0)
+            {
+                int Index = -1;
+                Index = obj.StationImage.FindIndex(delegate (Domain.TB.BackEnd.BE_GetiRentStationInfo station)
+                {
+                    return station.Sort == 1;
+                });
+                if (Index > -1)
+                {
+                    PIC1 = obj.StationImage[Index].StationPic;
+                    PIC1Descript = obj.StationImage[Index].PicDescription;
+                }
+                Index = -1;
+                Index = obj.StationImage.FindIndex(delegate (Domain.TB.BackEnd.BE_GetiRentStationInfo station)
+                {
+                    return station.Sort == 2;
+                });
+                if (Index > -1)
+                {
+                    PIC2 = obj.StationImage[Index].StationPic;
+                    PIC2Descript = obj.StationImage[Index].PicDescription;
+                }
+                Index = -1;
+                Index = obj.StationImage.FindIndex(delegate (Domain.TB.BackEnd.BE_GetiRentStationInfo station)
+                {
+                    return station.Sort == 3;
+                });
+                if (Index > -1)
+                {
+                    PIC3 = obj.StationImage[Index].StationPic;
+                    PIC3Descript = obj.StationImage[Index].PicDescription;
+                }
+                Index = -1;
+                Index = obj.StationImage.FindIndex(delegate (Domain.TB.BackEnd.BE_GetiRentStationInfo station)
+                {
+                    return station.Sort == 4;
+                });
+                if (Index > -1)
+                {
+                    PIC4 = obj.StationImage[Index].StationPic;
+                    PIC4Descript = obj.StationImage[Index].PicDescription;
+                }
+            }
+        }
+    }
+}
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
@@ -7,6 +70,7 @@
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
+
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
@@ -18,6 +82,7 @@
                                 <option value="-1"></option>
                                 <option value="0">同站租還</option>
                                 <option value="3">路邊租還</option>
+                                <option value="4">機車租還</option>
 
                             </select>
                         </div>
@@ -28,10 +93,22 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            據點代碼
+                           路邊（含機車）租還車輛顯示名稱
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationID" id="StationID" value="" />
+                           <input type="text" class="form-control" name="showAreaName" id="showAreaName" value="@(obj.detail.Area)" />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            *據點代碼
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="StationID" id="StationID" value="@(obj.detail.StationID)" readonly />
 
                         </div>
                     </div>
@@ -42,10 +119,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            據點名稱
+                            *據點名稱
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationName" id="StationName" value="" />
+                            <input class="form-control" type="text" name="StationName" id="StationName" value="@(obj.detail.StationName)" />
 
                         </div>
                     </div>
@@ -58,7 +135,7 @@
                             統一編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="UniCode" id="UniCode" value="" />
+                            <input class="form-control" type="text" name="UniCode" id="UniCode" value="@(obj.detail.UNICode)" />
 
                         </div>
                     </div>
@@ -68,10 +145,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            管轄據點
+                            *管轄據點
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="ManageStationID" id="ManageStationID" value="" /> X011~X093
+                            <input class="form-control" type="text" name="ManageStationID" id="ManageStationID" value="@(obj.detail.ManageStationID)" /> X011~X093
                         </div>
                     </div>
                 </div>
@@ -92,7 +169,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            據點地址
+                            *據點地址
                         </div>
                         <div class="col-md-2">
                             <select class="form-control" id="City" name="City">
@@ -106,7 +183,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <input class="form-control" type="text" name="Addr" id="Addr" value="" />
+                            <input class="form-control" type="text" name="Addr" id="Addr" value="@(obj.detail.ADDR)" />
                         </div>
 
 
@@ -117,10 +194,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            聯絡電話
+                            *聯絡電話
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="TEL" id="TEL" value="" />
+                            <input class="form-control" type="text" name="TEL" id="TEL" value="@(obj.detail.Tel)" />
                         </div>
                     </div>
                 </div>
@@ -129,10 +206,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            經度
+                            *經度
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="number" name="Longitude" id="Longitude" TextMode="Number" step="0.000001" min="120" max="123" value="" />
+                            <input class="form-control" type="number" name="Longitude" id="Longitude" TextMode="Number" step="0.000001" min="120" max="123" value="@(obj.detail.Longitude)" />
                         </div>
                     </div>
                 </div>
@@ -141,10 +218,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            緯度
+                            *緯度
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="number" name="Latitude" id="Latitude" TextMode="Number" step="0.000001" min="22" max="26" value="" />
+                            <input class="form-control" type="number" name="Latitude" id="Latitude" TextMode="Number" step="0.000001" min="22" max="26" value="@(obj.detail.Latitude)" />
                         </div>
                     </div>
                 </div>
@@ -153,10 +230,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            據點描述(內部註記)
+                            *據點描述(內部註記)
                         </div>
                         <div class="col-md-3">
-                            <textarea class="form-control" name="in_description" id="in_description"></textarea>
+                            <textarea class="form-control" name="in_description" id="in_description">@(obj.detail.Content)</textarea>
                         </div>
                     </div>
                 </div>
@@ -165,10 +242,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            據點描述(app顯示)
+                            *據點描述(app顯示)
                         </div>
                         <div class="col-md-3">
-                            <textarea class="form-control" name="show_description" id="show_description"></textarea>
+                            <textarea class="form-control" name="show_description" id="show_description">@(obj.detail.ContentForAPP)</textarea>
                         </div>
                     </div>
                 </div>
@@ -181,16 +258,16 @@
                         </div>
                         <div class="col-md-1">
 
-                            <img src="" id="PIC1" name="PIC1" class="img-thumbnail" />
+                            <img src="@((PIC1=="")?"":ImgURL+PIC1)" id="PIC1" name="PIC1" class="img-thumbnail" />
                         </div>
                         <div class="col-md-1">
-                            <img src="" id="PIC2" name="PIC2" class="img-thumbnail" />
+                            <img src="@((PIC2=="")?"":ImgURL+PIC2)" id="PIC2" name="PIC2" class="img-thumbnail" />
                         </div>
                         <div class="col-md-1">
-                            <img src="" id="PIC3" name="PIC3" class="img-thumbnail" />
+                            <img src="@((PIC3=="")?"":ImgURL+PIC3)" id="PIC3" name="PIC3" class="img-thumbnail" />
                         </div>
                         <div class="col-md-1">
-                            <img src="" id="PIC4" name="PIC4" class="img-thumbnail" />
+                            <img src="@((PIC4=="")?"":ImgURL+PIC4)" id="PIC4" name="PIC4" class="img-thumbnail" />
 
                         </div>
                     </div>
@@ -223,9 +300,9 @@
                             照片說明
 
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-6">
 
-                            <input class="form-control" type="text" name="pic_descript" id="pic_descript" value="" />
+                            <textarea class="form-control" cols="50" name="pic_descript" id="pic_descript"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -236,14 +313,18 @@
                             上傳照片
                         </div>
                         <div class="col-md-8">
-                            <input type="hidden" name="fileName1" id="fileName1" value="" />
-                            <input type="hidden" name="fileName2" id="fileName2" value="" />
-                            <input type="hidden" name="fileName3" id="fileName3" value="" />
-                            <input type="hidden" name="fileName4" id="fileName4" value="" />
-                            <input type="hidden" name="fileData1" id="fileData1" value="" />
-                            <input type="hidden" name="fileData2" id="fileData2" value="" />
-                            <input type="hidden" name="fileData3" id="fileData3" value="" />
-                            <input type="hidden" name="fileData4" id="fileData4" value="" />
+                            <input type="hidden" name="fileName1"     id="fileName1" value="@(PIC1)" />
+                            <input type="hidden" name="fileName2"     id="fileName2" value="@(PIC2)" />
+                            <input type="hidden" name="fileName3"     id="fileName3" value="@(PIC3)" />
+                            <input type="hidden" name="fileName4"     id="fileName4" value="@(PIC4)" />
+                            <input type="hidden" name="fileData1"     id="fileData1" value="" />
+                            <input type="hidden" name="fileData2"     id="fileData2" value="" />
+                            <input type="hidden" name="fileData3"     id="fileData3" value="" />
+                            <input type="hidden" name="fileData4"     id="fileData4" value="" />
+                            <input type="hidden" name="fileDescript1" id="fileDescript1" value="@(PIC1Descript)" />
+                            <input type="hidden" name="fileDescript2" id="fileDescript2" value="@(PIC2Descript)" />
+                            <input type="hidden" name="fileDescript3" id="fileDescript3" value="@(PIC3Descript)" />
+                            <input type="hidden" name="fileDescript4" id="fileDescript4" value="@(PIC4Descript)" />
                             <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限100kb以內
                             <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
                         </div>
@@ -258,7 +339,7 @@
                         </div>
                         <div class="col-md-1">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="IsRequired" name="IsRequired" value="1">
+                                <input class="form-check-input" type="checkbox" id="IsRequired" name="IsRequired" value="1" @((obj.detail.IsRequiredForReturn == 1) ? " checked" : "")>
                                 <label class="form-check-label" for="IsRequired">
 
                                 </label>
@@ -271,7 +352,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            共同出車庫位
+                            *共同出車庫位
                         </div>
                         <div class="col-md-3">
                             <select class="form-control" id="StationPick" name="StationPick">
@@ -290,10 +371,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            財務部門代碼
+                            *財務部門代碼
                         </div>
                         <div class="col-md-3">
-                            <textarea class="form-control" name="FCode" id="FCode"></textarea>
+                            <input type="text" class="form-control" name="FCode" id="FCode" value="@(obj.detail.FCODE)">
                         </div>
                     </div>
                 </div>
@@ -302,12 +383,12 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            有效起日
+                            *有效起日
                         </div>
                         <div class="col-md-3">
                             <!-- datepicker -->
                             <div class="custom-datepicker">
-                                <input class="datePicker form-control" type="text" id="SDate" name="SDate" readonly="false">
+                                <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@(obj.detail.SDate.ToString("yyyy-MM-dd"))" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -332,13 +413,13 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            有效迄日
+                            *有效迄日
                         </div>
 
                         <div class="col-md-3">
                             <!-- datepicker with time -->
                             <div class="custom-datepicker">
-                                <input class="dateTimePicker form-control" type="text" id="EDate" name="EDate" readonly="false">
+                                <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@(obj.detail.EDate.ToString("yyyy-MM-dd"))" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -367,7 +448,8 @@
                         <div class="col-md-3">
 
 
-                            <button type="button" id="btnMap" name="btnMap" class="btn btn-primary">MAP</button>
+                            <button type="button" id="btnMap" name="btnMap"  class="btn btn-primary">MAP</button>
+                            <span>@((obj.StationPolygon==null)?"未設定電子柵欄":"")</span>
 
                         </div>
                     </div>
@@ -380,7 +462,7 @@
                             車位數
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="number" name="ParkingNum" id="ParkingNum" TextMode="Number" min="0" step="1" />
+                            <input class="form-control" type="number" name="ParkingNum" id="ParkingNum" TextMode="Number" min="0" step="1" value="@(obj.detail.AllowParkingNum)" />
                         </div>
                     </div>
                 </div>
@@ -392,7 +474,7 @@
                             實際上線數
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="number" name="OnlineNum" id="OnlineNum" TextMode="Number" min="0" step="1" />
+                            <input class="form-control" type="number" name="OnlineNum" id="OnlineNum" TextMode="Number" min="0" step="1" value="@(obj.detail.NowOnlineNum)" />
                         </div>
                     </div>
                 </div>
@@ -404,8 +486,8 @@
                             <input type="hidden" name="Mode" id="Mode" value="0" />
                             <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
 
-                            <button type="submit" id="btnSend" name="btnSend" class="btn btn-primary">儲存</button>
-                            <button type="button" id="btnCancel" name="btnCancel" class="btn btn-secondary">取消</button>
+                            <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">儲存</button>
+                            <button type="button" id="btnCancel" name="btnCancel" class="btn btn-secondary" onclick="history.back();">取消</button>
                         </div>
                     </div>
                 </div>
@@ -414,3 +496,32 @@
     </div>
     <!--end card-->
 </div>
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog " data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" />
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @using (Html.BeginForm("PolygonMaintain", "StationAndParking", FormMethod.Post, new { id = "frmPolygon", @class = "form-horizontal", enctype = "multipart/form-data" }))
+    {
+        <input type="hidden" name="pStationID" id="pStationID" value="@(obj.detail.StationID)" />
+    }
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var CityID = '@(CityID)';
+    var AreaID = '@(AreaID)';
+    var Account = '@((Session["Account"]==null)?"":Session["Account"].ToString())';
+    var StationType = '@(obj.detail.IsNormalStation)'
+    var StationPick = '@(obj.detail.CommonLendStation)'
+    var ManagerStationID='@(obj.detail.ManageStationID)'
+</script>
+

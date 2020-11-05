@@ -432,7 +432,56 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
                 console.log(tmpArea[i].AreaName);
                 triggerObj.append($('<option>', { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName }));
             }
-            triggerObj.val(triggerObjSelectValue);
+            if (triggerObjSelectValue != "" && triggerObjSelectValue != "0") {
+                triggerObj.val(triggerObjSelectValue);
+            }
+           
+        }
+    }
+
+}
+function SetCityHasSelectedhaveZipCode(obj, selectValue, triggerObj, triggerObjSelectValue,zipObj) {
+    var CityList = localStorage.getItem("CityList");
+    var AreaList = localStorage.getItem("AreaList");
+    var ZipCode = "";
+    console.log(CityList);
+    obj.empty();
+    if (CheckStorageIsNull(CityList)) {
+        CityList = JSON.parse(CityList);
+    }
+    if (CheckStorageIsNull(AreaList)) {
+        AreaList = JSON.parse(AreaList);
+    }
+    if (CityList.length > 0) {
+        var CityLen = CityList.length;
+        for (var i = 0; i < CityLen; i++) {
+            console.log(CityList[i].CityName);
+            obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
+        }
+        obj.val(selectValue);
+    }
+    triggerObj.empty();
+    if (AreaList.length > 0) {
+
+        var tmpArea = AreaList.filter(function (Area) { return Area.CityID == selectValue });
+        var tmpAreaLen = tmpArea.length;
+        if (tmpAreaLen > 0) {
+
+            for (var i = 0; i < tmpAreaLen; i++) {
+                console.log(tmpArea[i].AreaName);
+                var option = $("<option>", { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName + "(" + tmpArea[i].ZIPCode + ")" });
+                option.attr("data-zip", tmpArea[i].ZIPCode);
+                triggerObj.append(option);
+                if (triggerObjSelectValue == tmpArea[i].AreaID) {
+                    ZipCode = tmpArea[i].ZIPCode;
+                }
+            }
+            if (triggerObjSelectValue != "" && triggerObjSelectValue!="0") {
+                triggerObj.val(triggerObjSelectValue);
+                
+                zipObj.val(ZipCode);
+            }
+           
         }
     }
 
@@ -455,6 +504,44 @@ function SetArea(obj, SelectValue) {
             }
         }
     }
+}
+function SetAreaHasZip(obj, SelectValue,zipObj) {
+    var AreaList = localStorage.getItem("AreaList");
+    var ZipCode = "";
+    obj.empty();
+    if (CheckStorageIsNull(AreaList)) {
+        AreaList = JSON.parse(AreaList);
+    }
+    if (AreaList.length > 0) {
+
+        var tmpArea = AreaList.filter(function (Area) { return Area.CityID == SelectValue });
+        var tmpAreaLen = tmpArea.length;
+        if (tmpAreaLen > 0) {
+
+            for (var i = 0; i < tmpAreaLen; i++) {
+                console.log(tmpArea[i].AreaName);
+
+                var option = $("<option>", { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName });
+                option.data("zip", tmpArea[i].ZIPCode);
+             
+                obj.append(option);
+                if (SelectValue == tmpArea[i].AreaID) {
+                    ZipCode = tmpArea[i].ZIPCode;
+                }
+              //  obj.attr("data-zipcode", tmpArea[i].ZIPCode);
+            }
+        }
+        if (SelectValue != "") {
+            obj.val(SelectValue);
+            
+            zipObj.val(ZipCode);
+        }
+      
+
+    }
+}
+function SetZipCode(obj, SelectedValue) {
+    obj.val(SelectedValue);
 }
 /* autocomplete使用*/
 /**
@@ -484,6 +571,35 @@ function SetStation(obj,showNameObj) {
                 obj.val(contactData[0]);
 
                 showNameObj.html(data[0]);
+                return false;
+            }
+        });
+
+    }
+
+}
+function SetStationByText(obj, showNameObj) {
+    var StationList = localStorage.getItem("StationList");
+    if (CheckStorageIsNull(StationList)) {
+        StationList = JSON.parse(StationList)
+    }
+    if (StationList.length > 0) {
+
+        var Station = new Array();
+        var StationLen = StationList.length;
+        for (var i = 0; i < StationLen; i++) {
+            Station.push(StationList[i].StationName + "(" + StationList[i].StationID + ")");
+        }
+        obj.autocomplete({
+            source: Station,
+            minLength: 1,
+            matchCase: true,
+            select: function (event, ui) {
+                var data = ui.item.value.split("(");
+                var contactData = data[1].split(")");
+                obj.val(contactData[0]);
+
+                showNameObj.val(data[0]);
                 return false;
             }
         });
@@ -547,6 +663,38 @@ function SetManagerStationNoShowName(obj) {
         });
 
     }
+
+}
+function SetManagerStationHasValue(obj,selectedValue) {
+    var StationList = localStorage.getItem("ManagerStationList");
+    if (CheckStorageIsNull(StationList)) {
+        StationList = JSON.parse(StationList)
+    }
+    if (StationList.length > 0) {
+
+        var Station = new Array();
+        var StationLen = StationList.length;
+        for (var i = 0; i < StationLen; i++) {
+            Station.push(StationList[i].StationName + "(" + StationList[i].StationID + ")");
+        }
+        obj.autocomplete({
+            source: Station,
+            minLength: 1,
+            matchCase: true,
+            select: function (event, ui) {
+                var data = ui.item.value.split("(");
+                var contactData = data[1].split(")");
+                obj.val(contactData[0]);
+
+
+                return false;
+            }
+        });
+        if (selectedValue != "") {
+            obj.val(selectedValue);
+        }
+    }
+    
 
 }
 /**
@@ -617,4 +765,19 @@ function pad(number, length) {
 
     return str;
 
+}
+function clearFileInput(id) {
+    var oldInput = document.getElementById(id);
+
+    var newInput = document.createElement("input");
+
+    newInput.type = "file";
+    newInput.id = oldInput.id;
+    newInput.name = oldInput.name;
+    newInput.className = oldInput.className;
+    newInput.style.cssText = oldInput.style.cssText;
+    newInput.accept = oldInput.accept;
+    // TODO: copy any other relevant attributes 
+
+    oldInput.parentNode.replaceChild(newInput, oldInput);
 }

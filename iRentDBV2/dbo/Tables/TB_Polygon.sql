@@ -29,7 +29,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2name = N'BlockName'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'電子欄柵類型',
+    @value = N'電子欄柵類型：0:可還車;1:可還車中的不可還車;2:優惠',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
@@ -38,7 +38,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2name = N'BlockType'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'電子欄位模式',
+    @value = N'電子柵欄模式，0:優惠的取車;1:優惠的還車',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
@@ -128,7 +128,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2name = NULL
 GO
 
-CREATE INDEX [IX_TB_Polygon_Search] ON [dbo].[TB_Polygon] ([StationID], [use_flag], [PolygonMode])
+CREATE INDEX [IX_TB_Polygon_Search] ON [dbo].[TB_Polygon] ([StationID], [use_flag], [PolygonMode],[BlockType])
 
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',

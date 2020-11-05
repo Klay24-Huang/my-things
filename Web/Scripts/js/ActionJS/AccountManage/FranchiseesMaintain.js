@@ -302,7 +302,7 @@ function init() {
 
             swal({
                 title: 'Fail',
-                text: "僅允許匯入xlsx或xls格式",
+                text: "僅允許png格式",
                 icon: 'error'
             }).then(function (value) {
 

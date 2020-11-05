@@ -64,17 +64,29 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult StationInfoMaintain(string MaintainStationID)
         {
+            BE_StationDetailCombind Data = null;
             if (string.IsNullOrWhiteSpace(MaintainStationID))
             {
                 RedirectToAction("StationInfoAdd");
             }
-            return View();
+            else
+            {
+                StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+                Data = new BE_StationDetailCombind()
+                {
+                    detail = repository.GetStationData(MaintainStationID),
+                    StationImage = repository.GetStationInfo(MaintainStationID),
+                    StationPolygon = repository.GetStationPolygon(MaintainStationID)
+                };
+            }
+            return View(Data);
         }
         /// <summary>
         /// 電子柵欄
         /// </summary>
         /// <returns></returns>
-        public ActionResult PolygonMaintain()
+        [HttpPost]
+        public ActionResult PolygonMaintain(string pStationID)
         {
             return View();
         }

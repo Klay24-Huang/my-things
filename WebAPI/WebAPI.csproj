@@ -178,6 +178,7 @@
     <Compile Include="Controllers\BE_HandleFeedBackOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
+    <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
@@ -309,6 +310,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleExtendCar.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SentCardSetting.cs" />
