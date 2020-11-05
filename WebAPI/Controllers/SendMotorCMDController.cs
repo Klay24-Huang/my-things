@@ -157,6 +157,10 @@ namespace WebAPI.Controllers
                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetBatteryCap);
                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SetBatteryCap;
                         break;
+                    case 99: //99:ReportNow
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        break;
                 }
                 if (apiInput.CmdType == 0)
                 {
