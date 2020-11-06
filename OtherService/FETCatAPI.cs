@@ -151,6 +151,7 @@ namespace OtherService
                 nowCount++;
             }
             //20201028車機無回應時設定為成功，以狀態檔為主
+            //現階段因為遠傳車機因素先讓他暫時
             waitFlag = true;
             if (waitFlag == false)
             {
@@ -162,8 +163,10 @@ namespace OtherService
 
             }
             else
-                errCode = "";
-
+            {
+                errCode = "000000";
+            }
+            
             return waitFlag;
         }
         private async Task<Boolean> doSendCMD(string input, string URL, SPInput_InsSendCMD spInput)

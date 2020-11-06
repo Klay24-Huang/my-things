@@ -76,6 +76,7 @@ namespace OtherService
         public async Task<WebAPIOutput_Base> DoBindSend(WebAPIInput_Bind input)
         {
             string Site = BaseURL + GetCardPage;
+            Site = @"https://irentv2-testapp-api.azurewebsites.net/api/TestTaishiBU";
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -187,6 +188,7 @@ namespace OtherService
         public async Task<WebAPIOutput_GetCreditCardList> DoGetCreditCardListSend(WebAPIInput_GetCreditCardList input)
         {
             string Site = BaseURL + GetCreditCardList;
+            Site = @"https://irentv2-testapp-api.azurewebsites.net/api/TestTaishiBQ";
             WebAPIOutput_GetCreditCardList output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;

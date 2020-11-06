@@ -57,6 +57,7 @@ SELECT OrderMain.[order_number]
 	  ,VW.PRICE_H
 	  ,VW.CarBrend
 	  ,VW.CarTypeName
+	  ,VW.CarTypeGroupCode
 	  ,VW.CarTypeImg
 	  ,VW.Seat
 	  ,ISNULL(PriceByMinutes.BaseMinutes	 ,0) AS BaseMinutes

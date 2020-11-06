@@ -223,10 +223,10 @@ namespace WebAPI.Controllers
                 }
             }
             #region 檢查信用卡是否綁卡
-
+            /*  暫時取消  等待台新IP加入後再打開
             if (flag)
                 flag = CheckCard(IDNO, ref errCode);
-
+            */
             #endregion
             if (flag)
             {
