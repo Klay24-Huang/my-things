@@ -162,7 +162,7 @@ namespace OtherService
 
             }
             else
-                errCode = "";
+                errCode = "000000";
 
             return waitFlag;
         }
