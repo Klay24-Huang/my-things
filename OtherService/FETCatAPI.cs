@@ -156,12 +156,14 @@ namespace OtherService
             {
                 if (errCode != "ERR167")
                 {
-              //      flag = false;
+                    //      flag = false;
                     errCode = "ERR166";
                 }
 
             }
-            
+            else
+                errCode = "";
+
             return waitFlag;
         }
         private async Task<Boolean> doSendCMD(string input, string URL, SPInput_InsSendCMD spInput)
