@@ -966,11 +966,11 @@ namespace Reposotory.Implement
         /// </summary>
         /// <param name="StationID"></param>
         /// <returns></returns>
-        public List<BE_BE_GetPolygonData> GetStationPolygon(string StationID)
+        public List<BE_GetPolygonData> GetStationPolygon(string StationID)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_BE_GetPolygonData> lstStation = null;
+            List<BE_GetPolygonData> lstStation = null;
             string SQL = " SELECT * FROM VW_BE_GetPolygonData ";
 
 
@@ -996,7 +996,40 @@ namespace Reposotory.Implement
 
             SQL += "  ORDER BY BLOCK_ID ASC";
 
-            lstStation = GetObjList<BE_BE_GetPolygonData>(ref flag, ref lstError, SQL, para, term);
+            lstStation = GetObjList<BE_GetPolygonData>(ref flag, ref lstError, SQL, para, term);
+            return lstStation;
+        }
+        public List<BE_GetPolygonCombindData> GetStationPolygonCombind(string StationID)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetPolygonCombindData> lstStation = null;
+            string SQL = " SELECT * FROM VW_BE_GetPolygonCombindData ";
+
+
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            string term2 = "";
+            int nowCount = 0;
+            if (StationID != "")
+            {
+                term = "  StationID=@StationID ";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+
+            SQL += "  ORDER BY BLOCK_ID ASC";
+
+            lstStation = GetObjList<BE_GetPolygonCombindData>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
 

@@ -1,9 +1,352 @@
-﻿<div class="container mt-4">
-    <div class="position-relative">
-        <div class="mapPolygons position-absolute" id="polygonData">
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetPolygonCombindData>
+@{
+
+    List<Domain.TB.BackEnd.BE_GetPolygonCombindData> Data = null;
+    List<Domain.TB.BackEnd.BE_GetPolygonCombindData> ActiveData = null;
+    List<Domain.TB.BackEnd.BE_GetPolygonCombindData> RejectData = null;
+    int hasData = 0;
+    int ActiveLen = 0;
+    int RejectLen = 0;
+    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+    if (Model != null)
+    {
+        Data = Model.ToList();
+        ActiveData = Data.FindAll(delegate (Domain.TB.BackEnd.BE_GetPolygonCombindData p)
+        {
+            return p.BlockType == "0";
+        });
+        if (ActiveData != null)
+        {
+            ActiveLen = ActiveData.Count();
+        }
+        RejectData = Data.FindAll(delegate (Domain.TB.BackEnd.BE_GetPolygonCombindData p)
+        {
+            return p.BlockType == "1";
+        });
+        if (RejectData != null)
+        {
+            RejectLen = RejectData.Count();
+        }
+
+    }
+}
+@if (Data != null || StationID != "")
+{
+
+    <!--card start-->
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                電子柵欄設定
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#divReturn">可還車區域</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#divNotReturn">不可還車區域</a>
+                </li>
+
+            </ul>
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+                                    @*<button class="btn btn-primary" name="btnSave" id="btnSave">全部儲存</button>*@
+                                    <button class="btn btn-outline-secondary" name="btnBack" id="btnBack" onclick="history.back()">離開</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content container">
+        <div class="tab-pane active" id="divReturn" name="divReturn">
+
+            <!--card start-->
+            <div class="card">
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *據點代碼
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="StationID" id="StationID" value="@(StationID)" readonly />
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *電子柵名稱
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="BlockName" id="BlockName" value="@((ActiveLen>0)?ActiveData[0].BlockName:"")" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *顏色
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" value="@((ActiveLen>0)?ActiveData[0].MAPColor:"")" name="border-color" class="pick-a-color form-control" id="MAPColor" dirname="MAPColor" readonly>
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *有效起日
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@((ActiveLen>0)?ActiveData[0].StartDate.ToString("yyyy-MM-dd"):"")" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *有效迄日
+                                </div>
+
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@((ActiveLen>0)?ActiveData[0].EndDate.ToString():"")" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary" name="btnAddNew" id="btnAddNew">增加區域</button>
+                                    <input type="hidden" name="ActiveID" id="ActiveID" value="@((ActiveLen>0)?ActiveData[0].BLOCK_ID:0)" />
+                                    <button class="btn btn-primary" name="btnSaveActive" id="btnSaveActive">儲存可還車區</button>
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
 
         </div>
-        <div id='map'></div>
-    </div>
 
-</div>
+        <div class=" tab-pane fade" id="divNotReturn" name="divNotReturn">
+
+            <!--card start-->
+            <div class="card">
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *據點代碼
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="RStationID" id="RStationID" value="@(StationID)" readonly />
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *電子柵名稱
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="RBlockName" id="RBlockName" value="@((RejectLen>0)?RejectData[0].BlockName:"")" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *顏色
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" value="@((RejectLen>0)?RejectData[0].MAPColor:"")" name="border-color" class="pick-a-color form-control" id="RMAPColor" dirname="RMAPColor" readonly>
+
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *有效起日
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="RSDate" name="RSDate" value="@((RejectLen>0)?RejectData[0].StartDate.ToString("yyyy-MM-dd"):"")" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    *有效迄日
+                                </div>
+
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="REDate" name="REDate" value="@((RejectLen>0)?RejectData[0].EndDate.ToString("yyyy-MM-dd"):"")" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary" name="btnAddNewReject" id="btnAddNewReject">增加區域</button>
+                                    <button class="btn btn-primary" name="btnSaveReject" id="btnSaveReject">儲存不可還車區</button>
+                              
+                                    <input type="hidden" name="RejectID" id="RejectID" value="@((RejectLen>0)?RejectData[0].BLOCK_ID:0)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="container">
+        <div class="position-relative">
+            <div class="mapPolygons position-absolute" id="polygonData">
+
+            </div>
+            <div id='map'></div>
+        </div>
+        <input type="hidden" name="Mode" id="Mode" value="0" />
+    </div>
+    <input type="hidden" name="RejectLat" id="RejectLat" value="@((RejectLen>0)?RejectData[0].PolygonLatitude:"")" />
+    <input type="hidden" name="RejectLng" id="RejectLng" value="@((RejectLen>0)?RejectData[0].PolygonLongitude:"")" />
+    <input type="hidden" name="ActiveLat" id="ActiveLat" value="@((ActiveLen>0)?ActiveData[0].PolygonLatitude:"")" />
+    <input type="hidden" name="ActiveLng" id="ActiveLng" value="@((ActiveLen>0)?ActiveData[0].PolygonLongitude:"")" />
+
+
+
+    <script>
+    var lat = '@(Data[0].Latitude)';
+    var lng = '@(Data[0].Longitude)';
+    var Account = '@((Session["Account"]==null)?"":Session["Account"].ToString())';
+        var ActiveMAPColor = '#@((ActiveLen>0)?ActiveData[0].MAPColor:"0000ff")';
+        var RejectMAPColor = '#@((RejectLen > 0)? RejectData[0].MAPColor:"ff0000")';
+    var MAPColor = '#@(Data[0].MAPColor)';
+    </script>
+
+}
+else
+{
+    <script>
+        hsitory.back();
+    </script>
+}

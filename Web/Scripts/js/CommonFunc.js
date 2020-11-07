@@ -517,20 +517,24 @@ function SetAreaHasZip(obj, SelectValue,zipObj) {
         var tmpArea = AreaList.filter(function (Area) { return Area.CityID == SelectValue });
         var tmpAreaLen = tmpArea.length;
         if (tmpAreaLen > 0) {
-
+            if (SelectValue == "" || SelectValue == "0") {
+                SelectValue = tmpArea[0].AreaID;
+            }
             for (var i = 0; i < tmpAreaLen; i++) {
                 console.log(tmpArea[i].AreaName);
 
-                var option = $("<option>", { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName });
-                option.data("zip", tmpArea[i].ZIPCode);
+                var option = $("<option>", { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName + "(" + tmpArea[i].ZIPCode + ")" });
+                option.data("data-zip", tmpArea[i].ZIPCode);
              
                 obj.append(option);
+            
                 if (SelectValue == tmpArea[i].AreaID) {
                     ZipCode = tmpArea[i].ZIPCode;
                 }
               //  obj.attr("data-zipcode", tmpArea[i].ZIPCode);
             }
         }
+        console.log("ZipCode=" + ZipCode);
         if (SelectValue != "") {
             obj.val(SelectValue);
             

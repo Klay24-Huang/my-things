@@ -539,4 +539,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HisID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7a61dcbe-3a5a-48d0-9ad4-4708580109f8" ChangeDateTime="11/07/2020 08:59:39">
+    <Property Name="ElementName" Value="[dbo].[TB_PolygonHistory].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_PolygonHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PolygonHistoryID" />
+  </Operation>
 </Operations>

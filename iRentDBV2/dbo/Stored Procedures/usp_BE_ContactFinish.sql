@@ -48,6 +48,7 @@ CREATE PROCEDURE [dbo].[usp_BE_ContactFinish]
 	@OrderNo                BIGINT                ,
 	@UserID                 NVARCHAR(10)          ,
 	@transaction_no         NVARCHAR(100)         , --金流交易序號，免付費使用Free
+	@ReturnDate             DATETIME              , --強還時間
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -129,7 +130,7 @@ SET @ParkingSpace='';
 					IF @transaction_no='Free'
 					BEGIN
 						UPDATE TB_OrderDetail
-						SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
+						SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1,final_stop_time=@ReturnDate
 						WHERE order_number=@OrderNo;
 					END
 					ELSE

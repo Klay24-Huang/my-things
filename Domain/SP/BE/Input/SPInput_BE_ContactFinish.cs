@@ -22,6 +22,10 @@ namespace Domain.SP.BE.Input
         /// 金流交易序號
         /// </summary>
         public string transaction_no { set; get; }
+        /// <summary>
+        /// 強還時間
+        /// </summary>
+        public DateTime ReturnDate { set; get; }
 
     }
 }

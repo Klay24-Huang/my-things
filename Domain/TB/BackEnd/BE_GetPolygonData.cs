@@ -9,7 +9,7 @@ namespace Domain.TB.BackEnd
     /// <summary>
     /// 後台電子柵欄資料
     /// </summary>
-    public class BE_BE_GetPolygonData
+    public class BE_GetPolygonData
     {
         /// <summary>
         /// PK

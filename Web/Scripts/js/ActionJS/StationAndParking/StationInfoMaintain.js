@@ -17,7 +17,7 @@
         }
     }
     $("#City").on("change", function () {
-        SetAreaHasZip($("#Area"), $(this).val())
+        SetAreaHasZip($("#Area"), $(this).val(), $("#ZipCode"))
     })
     $("#Area").on("change", function () {
         var ZipCode = $("#Area option:selected").text().split("(")[1].replace(")", "")
@@ -27,7 +27,7 @@
         console.log($(this).val());
         if ($(this).val() != "-1") {
             $("#fileImport").prop("disabled","");
-            $("#fileImport").val($("#fileName" + $(this).val()).val());
+          //  $("#fileImport").val($("#fileName" + $(this).val()).val());
             $("#pic_descript").val($("#fileDescript" + $(this).val()).val());
             $("#pic_descript").prop("disabled", "");
             clearFileInput("fileImport");
@@ -38,6 +38,10 @@
             clearFileInput("fileImport");
         }
     });
+    $("#btnMap").on("click", function () {
+     
+        $("#frmPolygon").submit();
+    })
     $("#btnUpload").on("click", function () {
         var sort = $("#sort").val();
         console.log(sort);
@@ -205,7 +209,7 @@
             obj.StationType = StationType;
             obj.StationID = StationID;
             obj.StationName = StationName;
-            obj.ManagerStationID = ManagerStationID;
+            obj.ManagerStationID = ManageStationID;
             obj.UniCode = UniCode;
             obj.CityID = City;
             obj.AreaID = Area;
@@ -235,7 +239,7 @@
             obj.fileDescript2=$("#fileDescript2").val();
             obj.fileDescript3=$("#fileDescript3").val();
             obj.fileDescript4 = $("#fileDescript4").val();
-            SendObj.UserID = Account;
+            obj.UserID = Account;
             obj.Mode = 1;
             DoAjaxAfterGoBack(obj,"BE_HandleStation","修改據點發生錯誤")
         } else {
@@ -258,7 +262,7 @@ function handleFiles(file, id) {
             console.log(new Date(file[0].lastModified).toLocaleDateString() + " " + new Date(file[0].lastModified).toLocaleTimeString());
             var reader = new FileReader();
             var fileSize = Math.round(file[0].size / 1024 / 1024);
-            inPicSize = fileSize;
+           // inPicSize = fileSize;
             reader.onload = function (e) {
                 console.log("call reader.onload ");
                 /* $('#show-incarPic').attr('src', e.target.result);

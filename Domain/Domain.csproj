@@ -70,6 +70,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_HandleChargeParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleExtendCar.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleMasterCard.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandlePolygon.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarBindData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarData.cs" />
@@ -214,7 +215,7 @@
     <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
-    <Compile Include="TB\BackEnd\BE_BE_GetPolygonData.cs" />
+    <Compile Include="TB\BackEnd\BE_GetPolygonData.cs" />
     <Compile Include="TB\BackEnd\BE_CarDashBoardData.cs" />
     <Compile Include="TB\BackEnd\BE_CardSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_CarEventLog.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="TB\BackEnd\BE_GetOrderQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetPartOfCarDataSettingData.cs" />
     <Compile Include="TB\BackEnd\BE_GetPartOfStationInfo.cs" />
+    <Compile Include="TB\BackEnd\BE_GetPolygonCombindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetStationInfo.cs" />
     <Compile Include="TB\BackEnd\BE_HoildayData.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />

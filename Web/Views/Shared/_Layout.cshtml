@@ -13,6 +13,18 @@
             ControllerStrName = "據點管理";
             ActionStrName = "據點資訊設定";
             break;
+        case "StationInfoAdd":
+            ControllerStrName = "據點管理";
+            ActionStrName = "新增據點";
+            break;
+        case "StationInfoMaintain":
+            ControllerStrName = "據點管理";
+            ActionStrName = "據點維護";
+            break;
+        case "PolygonMaintain":
+            ControllerStrName = "據點管理";
+            ActionStrName = "電子柵欄設定";
+            break;
         case "TransParkingSetting":
             ControllerStrName = "據點管理";
             ActionStrName = "調度停車場資訊設定";
@@ -200,6 +212,9 @@
                 <link href="~/assets/EvTimeLine/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css">
             }
             break;
+        case "PolygonMaintain":
+            <link href="~/Content/css/pick-a-color-1.2.3.min.css" rel="stylesheet">
+            break;
 
     }
 </head>
@@ -262,13 +277,13 @@
             </svg>
             @ActionStrName
             @if (actionName == "ViewCarDetail")
-            {
+        {
                 @("/ 車輛基本資料")
-                }
-                else if (actionName == "ContactDetail" || actionName== "ContactMotorDetail")
-                {
+            }
+            else if (actionName == "ContactDetail" || actionName == "ContactMotorDetail")
+            {
                 @("/ 合約明細")
-                }
+            }
         </p>
 
     </div>
@@ -497,6 +512,11 @@
                     <script src="~/assets/EvTimeLine/EvTrack.js"></script>
                 }
                 break;
+            case "PolygonMaintain":
+                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVquooZC9O0F84LwJ-FRL3LzVmP_ExJ5M&libraries=drawing"></script>
+                <script src="~/Scripts/js/tinycolor-0.9.15.min.js"></script>
+                <script src="~/Scripts/js/pick-a-color.js"></script>
+                break;
         }
     }
     <script>
@@ -511,5 +531,6 @@
         );
     </script>
     <script src="@Html.Raw(PageScriptName)"></script>
+
 </body>
 </html>

@@ -178,6 +178,7 @@
     <Compile Include="Controllers\BE_HandleFeedBackOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
+    <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
@@ -319,6 +320,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBindCreditCard.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDOperator.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_HandlePolygon.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />

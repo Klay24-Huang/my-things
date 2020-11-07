@@ -267,7 +267,6 @@
     <Build Include="dbo\Tables\TB_tmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_INSTmpFeedBackPIC.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsFeedBack.sql" />
-    <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ImportCarBindData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleCarBindData.sql" />
     <Build Include="dbo\Tables\TB_MasterCard.sql" />
@@ -343,6 +342,9 @@
     <Build Include="dbo\Views\VW_BE_GetiRentStationInfo.sql" />
     <Build Include="dbo\Views\VW_BE_GetPolygonData.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleStation.sql" />
+    <Build Include="dbo\Views\VW_BE_GetPolygonCombindData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandlePolygon.sql" />
+    <Build Include="dbo\Tables\TB_PolygonHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

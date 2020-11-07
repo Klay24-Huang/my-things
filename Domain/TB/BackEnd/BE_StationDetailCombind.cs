@@ -19,6 +19,6 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 電子柵欄
         /// </summary>
-        public List<BE_BE_GetPolygonData> StationPolygon { set; get; }
+        public List<BE_GetPolygonData> StationPolygon { set; get; }
     }
 }

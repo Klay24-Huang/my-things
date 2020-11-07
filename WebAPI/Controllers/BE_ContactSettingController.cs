@@ -296,7 +296,8 @@ namespace WebAPI.Controllers
                                             LogID = LogID,
                                             OrderNo = tmpOrder,
                                            UserID=apiInput.UserID,
-                                            transaction_no = ""
+                                            transaction_no = "",
+                                             ReturnDate= ReturnDate
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
@@ -327,7 +328,8 @@ namespace WebAPI.Controllers
                                                 LogID = LogID,
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
-                                                transaction_no = ""
+                                                transaction_no = "",
+                                                 ReturnDate= ReturnDate
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();

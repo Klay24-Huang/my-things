@@ -85,9 +85,21 @@ namespace Web.Controllers
         /// 電子柵欄
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+    
         public ActionResult PolygonMaintain(string pStationID)
         {
+            if (!string.IsNullOrWhiteSpace(pStationID))
+            {
+                List<BE_GetPolygonCombindData> lstData = null;
+                StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+                lstData = repository.GetStationPolygonCombind(pStationID);
+                ViewData["StationID"] = pStationID;
+                return View(lstData);
+            }
+            else
+            {
+                RedirectToAction("Login");
+            }
             return View();
         }
         /// <summary>

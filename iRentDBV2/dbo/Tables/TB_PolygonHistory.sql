@@ -1,7 +1,8 @@
-﻿CREATE TABLE [dbo].[TB_Polygon]
+﻿CREATE TABLE [dbo].[TB_PolygonHistory]
 (
-	[BLOCK_ID]    INT           IDENTITY (1, 1) NOT NULL,
-    [StationID]   VARCHAR(10)    DEFAULT ('') NOT NULL,
+	[PolygonHistoryID] INT NOT NULL IDENTITY, 
+    [BLOCK_ID]    INT            NOT NULL,
+	[StationID]   VARCHAR(10)    DEFAULT ('') NOT NULL,
     [BlockName]   NVARCHAR (50)  DEFAULT ('') NOT NULL,
     [BlockType]   TINYINT        DEFAULT ((0)) NOT NULL,
     [PolygonMode] TINYINT        DEFAULT ((0)) NOT NULL,
@@ -12,19 +13,18 @@
     [EndDate]     DATETIME       DEFAULT  '2099-12-31 23:59:59' NOT NULL,
     [use_flag]    TINYINT        DEFAULT ((0)) NOT NULL,
     [MKTime]      DATETIME       DEFAULT  (DATEADD(HOUR,8,GETDATE())) NOT NULL,
-    [UPDTime]     DATETIME       NULL, 
+    [UPDTime]      DATETIME       DEFAULT  (DATEADD(HOUR,8,GETDATE())) NOT NULL,
     [ADD_User] VARCHAR(50) NOT NULL DEFAULT '', 
     [UPD_User] VARCHAR(50) NOT NULL DEFAULT '', 
-    CONSTRAINT [PK_TB_Polygon] PRIMARY KEY ([BLOCK_ID]),
+    CONSTRAINT [PK_TB_PolygonHistory] PRIMARY KEY ([PolygonHistoryID]) 
 )
-
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'名稱',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'BlockName'
 GO
@@ -33,7 +33,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'BlockType'
 GO
@@ -42,7 +42,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'PolygonMode'
 GO
@@ -51,7 +51,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'Longitude'
 GO
@@ -60,7 +60,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'Latitude'
 GO
@@ -69,7 +69,7 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'MAPColor'
 GO
@@ -78,65 +78,62 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'use_flag'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'建立時冒',
+    @value = N'此筆於TB_Polygon建立時間',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'MKTime'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'更新時間',
+    @value = N'寫入記錄的時間（TB_Polygon更新時間)',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'UPDTime'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'建立者',
+    @value = N'此筆於TB_Polygon的建立者',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'ADD_User'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'修改者',
+    @value = N'此筆於TB_Polygon的修改者',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'UPD_User'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'電子欄欄',
+    @value = N'電子柵欄記錄檔',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = NULL,
     @level2name = NULL
 GO
 
-CREATE INDEX [IX_TB_Polygon_Search] ON [dbo].[TB_Polygon] ([StationID], [use_flag], [PolygonMode],[BlockType])
-
-GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'有效日（起）',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'StartDate'
 GO
@@ -145,6 +142,20 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_Polygon',
+    @level1name = N'TB_PolygonHistory',
     @level2type = N'COLUMN',
     @level2name = N'EndDate'
+
+GO
+
+CREATE INDEX [IX_TB_PolygonHistory_Search] ON [dbo].[TB_PolygonHistory] ([StationID],[MKTime],[BLOCK_ID])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'於TB_Polygon的pk',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_PolygonHistory',
+    @level2type = N'COLUMN',
+    @level2name = N'BLOCK_ID'

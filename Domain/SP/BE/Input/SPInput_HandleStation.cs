@@ -23,7 +23,7 @@ namespace Domain.SP.BE.Input
         public string in_description { get; set; }
         public string show_description { get; set; }
         public int IsRequired { get; set; }
-        public int StationPick { get; set; }
+        public string StationPick { get; set; }
         public string FCode { get; set; }
         public DateTime SDate { get; set; }
         public DateTime EDate { get; set; }

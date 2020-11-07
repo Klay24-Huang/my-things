@@ -428,7 +428,11 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 處理審核資料
                 /// </summary>
-                BE_HandleAudit
+                BE_HandleAudit,
+                /// <summary>
+                /// 設定電子柵欄
+                /// </summary>
+                BE_HandlePolygon
             #endregion
 
         }
@@ -760,7 +764,7 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_CheckOperator:
                     SPName = "usp_BE_CheckOperator";
                     break;
-                #endregion
+               
                 case SPType.BE_UPDOperator:
                     SPName = "usp_BE_UPDOperator";
                     break;
@@ -770,7 +774,10 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_HandleAudit:
                     SPName = "usp_BE_HandleAudit";
                     break;
-
+                case SPType.BE_HandlePolygon:
+                    SPName = "usp_BE_HandlePolygon";
+                    break;
+                    #endregion
             }
             return SPName;
         }

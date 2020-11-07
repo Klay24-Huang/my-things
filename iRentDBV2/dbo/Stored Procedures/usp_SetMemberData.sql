@@ -45,22 +45,22 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SetMemberData]
-	@IDNO                   VARCHAR(10)           , --εΈ³θ(θΊ«δ»½θ­
-	@DeviceID               VARCHAR(128)          , --ζ©ηΆΌ
-	@MEMCNAME				NVARCHAR(10)          , --ε§“ε
-	@MEMBIRTH               DATETIME              , --ζ—¥
-	@MEMCITY                INT                   , --θ΅ζ”Ώ€id
-	@MEMADDR                NVARCHAR(500)		  , --°ε
-	@MEMHTEL				VARCHAR(20)			  , --µ΅»θ©±(δ½ε®¶)
-	@MEMCOMTEL				VARCHAR(20)			  , --¬εΈ»θ©±
-	@MEMCONTRACT			NVARCHAR(10)		  , --η·ζ€¥ι€µ΅δΊ
-	@MEMCONTEL				VARCHAR(20)			  , --η·ζ€¥ι€µ΅δΊΊι›»θ©
-	@MEMMSG					VARCHAR(1)			  , --ζ΄»εε„ª θ―ι€η¥
+	@IDNO                   VARCHAR(10)           , 
+	@DeviceID               VARCHAR(128)          , 
+	@MEMCNAME				NVARCHAR(10)          , 
+	@MEMBIRTH               DATETIME              , 
+	@MEMCITY                INT                   , 
+	@MEMADDR                NVARCHAR(500)		  , 
+	@MEMHTEL				VARCHAR(20)			  , 
+	@MEMCOMTEL				VARCHAR(20)			  , 
+	@MEMCONTRACT			NVARCHAR(10)		  , 
+	@MEMCONTEL				VARCHAR(20)			  , 
+	@MEMMSG					VARCHAR(1)			  , 
 	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--ε‚³―θª¤δ»ΆΌ
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--ε‚³―θª¤θ¨ζ―
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--ε‚³sqlExceptionδ»ΆΌ
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--ε‚³sqlExceptionθ¨ζ―
+	@ErrorCode 				VARCHAR(6)		OUTPUT,	
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -76,7 +76,6 @@ DECLARE @OMEMADDR                NVARCHAR(500)
 DECLARE @OSignture		        VARCHAR(8000)   
 DECLARE @OMEMHTEL				VARCHAR(20)		
 DECLARE @AuditKind              TINYINT;
-/*εθ¨­ε*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
@@ -128,7 +127,6 @@ BEGIN TRY
 			END
 		END
 	END
-	--εΊζªδΏ®ζ”Ήηθ³‡ζ
 	IF @Error=0
 	BEGIN
 		SELECT @OMEMCNAME=ISNULL(MEMCNAME,''),
@@ -156,8 +154,6 @@ BEGIN TRY
 			U_SYSDT=@NowTime
 		WHERE MEMIDNO=@IDNO;
 	END
-
-	--ε―©ζ Έ„ε¤
 	IF @Error=0
 	BEGIN
 		IF @MEMCNAME<>@OMEMCNAME OR @MEMBIRTH<>@OMEMBIRTH OR @MEMCITY<>@OMEMCITY OR @MEMADDR<>@OMEMADDR 
@@ -177,8 +173,7 @@ BEGIN TRY
 			BEGIN
 				DELETE FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
 			END
-			--IF @hasData=0
-			--BEGIN
+
 			INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
 											  [MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
 											  [MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
@@ -188,16 +183,8 @@ BEGIN TRY
 					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
 					[CARRIERID],[NPOBAN],@AuditKind,0,0  
 			FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-			--END
-			--ELSE
-			--BEGIN
-			--	UPDATE TB_MemberDataOfAutdit
-			--	SET [AuditKind]=@AuditKind,[HasAudit]=0
-			--	WHERE MEMIDNO=@IDNO;
-			--END
-	END
 
-	--ε―«ε…¥―θª¤θ¨ζ―
+	END
 	IF @Error=1
 	BEGIN
 		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
@@ -207,7 +194,7 @@ END TRY
 BEGIN CATCH
 	SET @Error=-1;
 	SET @ErrorCode='ERR999';
-	SET @ErrorMsg='‘θε―«ι―θª¤θ;
+	SET @ErrorMsg='¨t²Ξµo¥Ν²§±`';
 	SET @SQLExceptionCode=ERROR_NUMBER();
 	SET @SQLExceptionMsg=ERROR_MESSAGE();
 	IF @@TRANCOUNT > 0
@@ -220,6 +207,7 @@ BEGIN CATCH
 	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
 	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
+
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetMemberData';
