@@ -785,3 +785,11 @@ function clearFileInput(id) {
 
     oldInput.parentNode.replaceChild(newInput, oldInput);
 }
+
+
+//20201109 ADD BY JERRY 增加下拉欄位設值的共同處理
+function setPostbackValue() {
+    $('select').each(function (i, obj) {
+        $(obj).val($(obj).attr('value'));
+    });
+}
