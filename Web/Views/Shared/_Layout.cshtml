@@ -100,6 +100,10 @@
             break;
         #endregion
         #region 後臺管理
+        case "AuthAndPay":
+            ControllerStrName = "後臺管理";
+            ActionStrName = "強制刷卡取款";
+            break;
         case "ArrearQuery":
             ControllerStrName = "後臺管理";
             ActionStrName = "欠費查詢";
@@ -111,6 +115,10 @@
         case "UnBindCreditCard":
             ControllerStrName = "後臺管理";
             ActionStrName = "信用卡解綁";
+            break;
+        case "ResendToHieasyrent":
+            ControllerStrName = "後臺管理";
+            ActionStrName = "短租補傳";
             break;
         #endregion
         #region 合約管理
@@ -308,7 +316,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="~/StationAndParking/StationInfoSetting">據點資訊設定</a>
                                 <a class="dropdown-item" href="~/StationAndParking/TransParkingSetting">調度停車場資訊設定</a>
-                                <a class="dropdown-item" href="~/StationAndParking/ChargeParkingSetting">停車便利付停車設定</a>
+                                <a class="dropdown-item" href="~/StationAndParking/ChargeParkingSetting">停車便利付停車場設定</a>
                             </div>
                         </li>
                         <!-- 車輛管理 -->
