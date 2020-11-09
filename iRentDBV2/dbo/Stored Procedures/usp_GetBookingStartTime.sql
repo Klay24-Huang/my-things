@@ -64,7 +64,7 @@ DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
-DECLARE @hasData TINYINT;
+DECLARE @hasData BIGINT;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
@@ -129,11 +129,19 @@ SET @Token    =ISNULL (@Token    ,'');
 		 BEGIN
 		    BEGIN TRAN
 			  SET @hasData=0;
-			  SELECT @hasData=OrderMain.order_number,@SD=final_start_time,@ED=stop_time,@CarNo=OrderMain.CarNo,@CarType=CarType,@ProjID=ProjID 
+			  SELECT @hasData=OrderMain.order_number,@SD=final_start_time,@ED=stop_time,@CarNo=OrderMain.CarNo,@CarType=CarType,@ProjID= OrderMain.ProjID 
 			  FROM TB_OrderMain AS OrderMain 
+			  JOIN TB_Project AS pr ON pr.PROJID = OrderMain.ProjID --eason 2020-11-06
 			  LEFT JOIN TB_CarInfo AS CarInfo ON CarInfo.CarNo=OrderMain.CarNo 
 			  LEFT JOIN TB_OrderDetail AS OrderDetail ON OrderMain.order_number=OrderDetail.order_number
-			  WHERE booking_status<=3 AND (car_mgt_status>=4 AND car_mgt_status<15) AND cancel_status<3 AND OrderMain.order_number=@OrderNo AND OrderMain.IDNO=@IDNO;
+			  --WHERE booking_status<=3 AND (car_mgt_status>=4 AND car_mgt_status<15) AND cancel_status<3 AND OrderMain.order_number=@OrderNo AND OrderMain.IDNO=@IDNO;
+			  WHERE booking_status <=  ( --eason 2020-11-06
+			     CASE WHEN  pr.PROJTYPE in (0) THEN 3 --同站可延長再延長
+				 WHEN pr.PROJTYPE in (3,4) THEN 2 --路邊,機車不可延長
+				 ELSE booking_status END
+			  )				  
+			  AND (car_mgt_status>=4 AND car_mgt_status<15) AND cancel_status<3 AND OrderMain.order_number=@OrderNo AND OrderMain.IDNO=@IDNO
+ 			  			  
 			  IF @hasData=0
 			  BEGIN
 			    SET @Error=1;

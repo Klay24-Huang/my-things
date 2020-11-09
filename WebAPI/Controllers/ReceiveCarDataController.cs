@@ -73,10 +73,10 @@ namespace WebAPI.Controllers
                 if (value["para"].ToString().IndexOf("method") > -1)
                 {
                     DataType = 2;//一般的命令
-                    if (value["para"].ToString().IndexOf("extDeviceData4") > -1) //取得萬用卡或顧客卡
-                    {
-                        DataType = 3;
-                    }
+                    //if (value["para"].ToString().IndexOf("extDeviceData4") > -1) //取得萬用卡或顧客卡
+                    //{
+                    //    DataType = 3;
+                    //}
 
                 }
                 else
