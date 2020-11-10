@@ -28,6 +28,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 
 namespace WebAPI.Controllers
 {
@@ -187,7 +188,7 @@ namespace WebAPI.Controllers
                     IsCens = spOut.IsCens;
                     IsMotor = spOut.IsMotor;
                     List<ErrorInfo> lstCarError = new List<ErrorInfo>();
-                    lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(CID.ToUpper(), ref lstCarError);
+                    lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(IDNO, ref lstCarError);
                 }
                 //開始對車機做動作
                 if (flag)
@@ -484,7 +485,8 @@ namespace WebAPI.Controllers
                 //送短租, 先pendding
                 if (flag)
                 {
-
+                    //預約的資料，似乎走排程比較好
+                    //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
                 }
                 #endregion
 
