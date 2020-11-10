@@ -197,7 +197,35 @@ namespace WebAPI.Controllers
 
                 var spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
                 if (spList != null && spList.Count > 0)
-                    lstData = JsonConvert.DeserializeObject<List<StationAndProjectAndCarTypeData>>(JsonConvert.SerializeObject(spList));
+                {
+                    lstData = (from a in spList
+                               select new StationAndProjectAndCarTypeData
+                               {
+                                   ADDR = a.ADDR,
+                                   CarBrend = a.CarBrend,
+                                   CarOfArea = a.CarOfArea,
+                                   CarType = a.CarType,
+                                   CarTypeName = a.CarTypeName,
+                                   CarTypePic = a.CarTypePic,
+                                   Content = a.Content,
+                                   Insurance = a.Insurance,
+                                   InsurancePerHours = a.InsurancePerHours,
+                                   IsRent = a.IsRent,
+                                   Latitude = a.Latitude,
+                                   Longitude = a.Longitude,
+                                   Operator = a.Operator,
+                                   OperatorScore = a.OperatorScore,
+                                   PayMode = a.PayMode,
+                                   Price = a.PriceBill, //租金改抓sp
+                                   PRICE_H = a.PRICE_H, //目前用不到
+                                   PRODESC = a.PRODESC,
+                                   PROJID = a.PROJID,
+                                   PRONAME = a.PRONAME,
+                                   Seat = a.Seat,
+                                   StationID = a.StationID,
+                                   StationName = a.StationName                                   
+                               }).ToList();
+                }
 
                 if (flag)
                 {
@@ -235,7 +263,8 @@ namespace WebAPI.Controllers
                                 ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
                                 //Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
-                                Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
+                                //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
+                                Price = lstData[0].Price,
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
@@ -253,7 +282,8 @@ namespace WebAPI.Controllers
                                   });
                                 if (index < 0)
                                 {
-                                    int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    int tmpBill = lstData[i].Price;
                                     int isMin = 0;
                                     ProjectObj tmpObj = new ProjectObj()
                                     {
@@ -296,7 +326,8 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    int tmpBill = lstData[i].Price;
                                     int isMin = 0;
                                     if (tmpBill < lstTmpData[index].Minimum)
                                     {

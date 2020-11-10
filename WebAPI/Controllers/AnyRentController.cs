@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -81,19 +83,30 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
+            //20201109 ADD BY ADAM REASON.TOKEN判斷修改
             //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
+            if(flag && Access_Token_string.Split(' ').Length >= 2)
+            {
+                //string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    //Token = Access_Token
+                    Token = Access_Token_string.Split(' ')[1].ToString()
+                };
+                //SPOutput_Base spOut = new SPOutput_Base();
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                //SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
@@ -101,11 +114,13 @@ namespace WebAPI.Controllers
                 List<AnyRentObj> AllCars = new List<AnyRentObj>();
                 if (apiInput.ShowALL == 1)
                 {
-                    AllCars = _repository.GetAllAnyRent();
+                    //AllCars = _repository.GetAllAnyRent();
+                    AllCars = _repository.GetAllAnyRent(IDNO);
                 }
                 else
                 {
-                    AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    //AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    AllCars = _repository.GetAllAnyRent(IDNO, apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
                 }
 
                 OAnyRentAPI = new OAPI_AnyRent()

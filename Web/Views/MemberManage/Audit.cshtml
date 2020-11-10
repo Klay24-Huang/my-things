@@ -25,11 +25,13 @@
     {
         if (AuditMode != "0")
         {
-            AuditModeCheck[Convert.ToInt32(AuditMode)] = " checked";
+            //AuditModeCheck[Convert.ToInt32(AuditMode)] = " checked";
+            AuditModeCheck[Convert.ToInt32(AuditMode)] = " selected";
         }
         else
         {
-            AuditModeCheck[2] = " checked";
+            //AuditModeCheck[2] = " checked";
+            AuditModeCheck[2] = " selected";
         }
 
     }
@@ -68,7 +70,7 @@
                                 處理項目
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
+                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode" >
                                     <option value="-1"></option>
                                     <option value="1" @(AuditModeCheck[1])>申請加入</option>
                                     <option value="0" @(AuditModeCheck[2])>變更身份</option>

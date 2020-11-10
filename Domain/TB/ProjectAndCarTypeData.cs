@@ -76,5 +76,13 @@ namespace Domain.TB
         /// 其他備註
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 是否使用安心服務
+        /// </summary>
+        public int Insurance { set; get; }
+        /// <summary>
+        /// 安心服務每小時費用
+        /// </summary>
+        public int InsurancePerHours { set; get; }
     }
 }

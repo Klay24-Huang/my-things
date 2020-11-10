@@ -17,7 +17,10 @@ namespace Domain.SP.Output.Project
         /// 優惠專案描述
         /// </summary>
         public string PRODESC { get; set; }
-
+        /// <summary>
+        /// 計算運算後租金
+        /// </summary>
+        public int PriceBill { get; set; }
         /// <summary>
         /// 專案平日價
         /// </summary>

@@ -39,11 +39,11 @@
 
 function showLogin(IsSuccess, message,UserID) {
     if (IsSuccess == 1) {
-        swal({
-            title: 'SUCCESS',
-            text: message,
-            icon: 'success'
-        }).then(function (value) {
+        //swal({
+        //    title: 'SUCCESS',
+        //    text: message,
+        //    icon: 'success'
+        //}).then(function (value) {
             ShowLoading("開始載入據點資料");
 
             //console.log("UserID:" + UserID);
@@ -66,11 +66,11 @@ function showLogin(IsSuccess, message,UserID) {
                         $.busyLoadFull("hide");
 
                         if (data.Result == "1") {
-                            swal({
-                                title: 'SUCCESS',
-                                text: "載入據點："+data.ErrorMessage,
-                                icon: 'success'
-                            }).then(function (value) {
+                            //swal({
+                            //    title: 'SUCCESS',
+                            //    text: "載入據點："+data.ErrorMessage,
+                            //    icon: 'success'
+                            //}).then(function (value) {
                                 var StationList = localStorage.getItem("StationList");
                               if (typeof StationList !== 'undefined' && StationList !== null) {
                                     localStorage.removeItem("StationList");
@@ -92,11 +92,11 @@ function showLogin(IsSuccess, message,UserID) {
                                         $.busyLoadFull("hide");
 
                                         if (data.Result == "1") {
-                                            swal({
-                                                title: 'SUCCESS',
-                                                text: "載入車輛：" + data.ErrorMessage,
-                                                icon: 'success'
-                                            }).then(function (value) {
+                                            //swal({
+                                            //    title: 'SUCCESS',
+                                            //    text: "載入車輛：" + data.ErrorMessage,
+                                            //    icon: 'success'
+                                            //}).then(function (value) {
                                                 var CarList = localStorage.getItem("CarList");
                                                 if (typeof CarList !== 'undefined' && CarList !== null) {
                                                     localStorage.removeItem("CarList");
@@ -117,18 +117,18 @@ function showLogin(IsSuccess, message,UserID) {
                                                         $.busyLoadFull("hide");
 
                                                         if (data.Result == "1") {
-                                                            swal({
-                                                                title: 'SUCCESS',
-                                                                text: "載入帳號：" + data.ErrorMessage,
-                                                                icon: 'success'
-                                                            }).then(function (value) {
+                                                            //swal({
+                                                            //    title: 'SUCCESS',
+                                                            //    text: "載入帳號：" + data.ErrorMessage,
+                                                            //    icon: 'success'
+                                                            //}).then(function (value) {
                                                                 var MangerList = localStorage.getItem("MangerList");
                                                                 if (typeof MangerList !== 'undefined' && MangerList !== null) {
                                                                     localStorage.removeItem("MangerList");
                                                                 }
                                                                 localStorage.setItem("MangerList", JSON.stringify(data.Data.ManagerList))
                                                                 GetCityData();
-                                                            });
+                                                            //});
                                                         } else {
 
                                                             swal({
@@ -150,7 +150,7 @@ function showLogin(IsSuccess, message,UserID) {
                                                     }
 
                                                 });
-                                            });
+                                            //});
                                         } else {
 
                                             swal({
@@ -172,7 +172,7 @@ function showLogin(IsSuccess, message,UserID) {
                                     }
 
                                 });
-                            });
+                            //});
                         } else {
 
                             swal({
@@ -204,7 +204,7 @@ function showLogin(IsSuccess, message,UserID) {
                 });
             }
          //   window.location.href = "../CarDataInfo/CarDashBoard";
-        });
+        //});
     } else {
         swal({
             title: 'Fail',
@@ -229,18 +229,18 @@ function GetCityData() {
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                swal({
-                    title: 'SUCCESS',
-                    text: "載入縣市資料：" + data.ErrorMessage,
-                    icon: 'success'
-                }).then(function (value) {
+                //swal({
+                //    title: 'SUCCESS',
+                //    text: "載入縣市資料：" + data.ErrorMessage,
+                //    icon: 'success'
+                //}).then(function (value) {
                     var MangerList = localStorage.getItem("CityList");
                     if (typeof MangerList !== 'undefined' && MangerList !== null) {
                         localStorage.removeItem("CityList");
                     }
                     localStorage.setItem("CityList", JSON.stringify(data.Data.CityObj))
                     GetAreaData();
-                });
+                //});
             } else {
 
                 swal({
@@ -279,11 +279,11 @@ function GetAreaData() {
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                swal({
-                    title: 'SUCCESS',
-                    text: "載入行政區資料：" + data.ErrorMessage,
-                    icon: 'success'
-                }).then(function (value) {
+                //swal({
+                //    title: 'SUCCESS',
+                //    text: "載入行政區資料：" + data.ErrorMessage,
+                //    icon: 'success'
+                //}).then(function (value) {
                     var MangerList = localStorage.getItem("AreaList");
                     if (typeof MangerList !== 'undefined' && MangerList !== null) {
                         localStorage.removeItem("AreaList");
@@ -291,7 +291,7 @@ function GetAreaData() {
                     localStorage.setItem("AreaList", JSON.stringify(data.Data.ZipObj))
                     GetManagerStationData();
                   //  window.location.href = "../CarDataInfo/CarDashBoard";
-                });
+                //});
             } else {
 
                 swal({
@@ -329,18 +329,18 @@ function GetManagerStationData() {
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                swal({
-                    title: 'SUCCESS',
-                    text: "管轄據點資料：" + data.ErrorMessage,
-                    icon: 'success'
-                }).then(function (value) {
+                //swal({
+                //    title: 'SUCCESS',
+                //    text: "管轄據點資料：" + data.ErrorMessage,
+                //    icon: 'success'
+                //}).then(function (value) {
                     var MangerList = localStorage.getItem("ManagerStationList");
                     if (typeof MangerList !== 'undefined' && MangerList !== null) {
                         localStorage.removeItem("ManagerStationList");
                     }
                     localStorage.setItem("ManagerStationList", JSON.stringify(data.Data.ManagerStationObj))
                     window.location.href = "../CarDataInfo/CarDashBoard";
-                });
+                //});
             } else {
 
                 swal({

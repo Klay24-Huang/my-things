@@ -128,7 +128,7 @@
                             <td scope="col">@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkingID)" id="Latitude_@(lstData[i].ParkingID)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
                             <td scope="col">@lstData[i].Longitude<input type="text" TextMode="Number" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkingID)" id="Longitude_@(lstData[i].ParkingID)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
                             <td scope="col">
-                                <a onclick="detailMap(@lstData[i].Latitude,@lstData[i].Longitude)">
+                                <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
                                         <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
                                         <g transform="translate(6.135)">
