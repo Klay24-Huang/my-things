@@ -613,7 +613,7 @@ namespace Reposotory.Implement
         /// <param name="SDate"></param>
         /// <param name="EDate"></param>
         /// <returns></returns>
-        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string CarNo, DateTime SDate, DateTime EDate)
+        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string IDNO,string CarNo, DateTime SDate, DateTime EDate)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -636,13 +636,19 @@ namespace Reposotory.Implement
                    VW.PayMode,
                    irs.Content,
                    irs.Area As CarOfArea,
-                   VW.StationID
+                   VW.StationID,
+                    Insurance = CASE WHEN @IDNO='' THEN 0 ELSE 1 END,
+                    InsurancePerHours
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
+            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y'
+            LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
+              AND ISNULL(BIOU.IDNO,'') = CASE WHEN @IDNO='' THEN ISNULL(BIOU.IDNO,'') ELSE @IDNO END
+              AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -650,6 +656,10 @@ namespace Reposotory.Implement
             {
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
                 para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 10);
+                para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
                 //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);

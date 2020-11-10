@@ -172,7 +172,11 @@ BEGIN TRY
 						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
             WHERE IDNO=@IDNO AND cancel_status=0
 			AND (car_mgt_status<16    --排除已還車的
-				OR (car_mgt_status=16 AND final_stop_time is not null AND DATEADD(mi,15,final_stop_time) > @NowTime))	--還車後15分鐘內
+				--針對汽車已還車在15分鐘內的
+				OR (car_mgt_status=16 AND final_stop_time is not null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType<>'4')
+				--針對機車已還車在15分鐘內尚未做一次性開門申請
+				OR (car_mgt_status=16 AND final_stop_time is not null AND start_door_time IS null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType='4')
+				)	--還車後15分鐘內
             AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
             ORDER BY start_time ASC 
 			

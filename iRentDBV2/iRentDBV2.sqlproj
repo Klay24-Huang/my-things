@@ -346,6 +346,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_HandlePolygon.sql" />
     <Build Include="dbo\Tables\TB_PolygonHistory.sql" />
     <Build Include="dbo\User Defined Types\TY_calPay.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
     <Build Include="dbo\User Defined Types\TY_CalSpread.sql" />
   </ItemGroup>
   <ItemGroup>

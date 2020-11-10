@@ -994,7 +994,7 @@ namespace OtherService
         }
         #endregion
         #region 060
-        public bool NPR06Save(WebAPIInput_NPR060Save input, ref WebAPIOutput_NPR060Save output)
+        public bool NPR060Save(WebAPIInput_NPR060Save input, ref WebAPIOutput_NPR060Save output)
         {
             bool flag = false;
 
