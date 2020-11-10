@@ -149,10 +149,20 @@ namespace WebAPI.Controllers
                         MotorDataInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MotorData>(Contentjson);
                         SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.HandleCarStatusByMotor);
 
+                        var device2TBA = 0.0;
+                        var device3TBA = 0.0;
+                        var deviceLBA = 0.0;
+                        var deviceMBA = 0.0;
+                        var deviceRBA = 0.0;
+                        double.TryParse(MotorDataInput.device2TBA, out device2TBA);
+                        double.TryParse(MotorDataInput.device3TBA, out device3TBA);
+                        double.TryParse(MotorDataInput.deviceLBA, out deviceLBA);
+                        double.TryParse(MotorDataInput.deviceMBA, out deviceMBA);
+                        double.TryParse(MotorDataInput.deviceRBA, out deviceRBA);
                         SPInput_CarStatusByMotor SPMRepsonseInput = new SPInput_CarStatusByMotor()
                         {
-                            device2TBA = MotorDataInput.device2TBA,
-                            device3TBA = MotorDataInput.device3TBA,
+                            device2TBA = device2TBA,
+                            device3TBA = device3TBA,
                             deviceALT = MotorDataInput.deviceALT,
                             deviceBat_Cover = MotorDataInput.deviceBat_Cover,
                             deviceBLE_BroadCast = MotorDataInput.deviceBLE_BroadCast,
@@ -167,19 +177,19 @@ namespace WebAPI.Controllers
                             deviceHard_ACC = MotorDataInput.deviceHard_ACC,
                             deviceiSpeed = MotorDataInput.deviceiSpeed,
                             deviceiVOL = MotorDataInput.deviceiVOL,
-                            deviceLBA = MotorDataInput.deviceLBA,
+                            deviceLBA = deviceLBA,
                             deviceLBAA = MotorDataInput.deviceLBAA,
                             deviceLBAT_Hi = MotorDataInput.deviceLBAT_Hi,
                             deviceLBAT_Lo = MotorDataInput.deviceLBAT_Lo,
                             deviceLowVoltage = MotorDataInput.deviceLowVoltage,
-                            deviceMBA = MotorDataInput.deviceMBA,
+                            deviceMBA = deviceMBA,
                             deviceMBAA = MotorDataInput.deviceMBAA,
                             deviceMBAT_Hi = MotorDataInput.deviceMBAT_Hi,
                             deviceMBAT_Lo = MotorDataInput.deviceMBAT_Lo,
                             devicePut_Down = MotorDataInput.devicePut_Down,
                             devicePwr_Mode = MotorDataInput.devicePwr_Mode,
                             devicePwr_Relay = MotorDataInput.devicePwr_Relay,
-                            deviceRBA = MotorDataInput.deviceRBA,
+                            deviceRBA = deviceRBA,
                             deviceRBAA = MotorDataInput.deviceRBAA,
                             deviceRBAT_Hi = MotorDataInput.deviceRBAT_Hi,
                             deviceRBAT_Lo = MotorDataInput.deviceRBAT_Lo,

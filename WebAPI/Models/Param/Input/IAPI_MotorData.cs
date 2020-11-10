@@ -32,19 +32,19 @@ namespace WebAPI.Models.Param.Input
         public double deviceCourse { get; set; }
         public int deviceRPM { get; set; }
         public int deviceiSpeed { get; set; }
-        public double device2TBA { get; set; }
-        public double device3TBA { get; set; }
+        public string device2TBA { get; set; }
+        public string device3TBA { get; set; }
         public string deviceRSOC { get; set; }
         public string deviceRDistance { get; set; }
-        public double deviceMBA { get; set; }
+        public string deviceMBA { get; set; }
         public double deviceMBAA { get; set; }
         public double deviceMBAT_Hi { get; set; }
         public double deviceMBAT_Lo { get; set; }
-        public double deviceRBA { get; set; }
+        public string deviceRBA { get; set; }
         public double deviceRBAA { get; set; }
         public double deviceRBAT_Hi { get; set; }
         public double deviceRBAT_Lo { get; set; }
-        public double deviceLBA { get; set; }
+        public string deviceLBA { get; set; }
         public double deviceLBAA { get; set; }
         public double deviceLBAT_Hi { get; set; }
         public double deviceLBAT_Lo { get; set; }
