@@ -38,6 +38,10 @@ namespace Domain.SP.Output.Car
         /// </summary>
         public int Price_H { get; set; }
         /// <summary>
+        /// 計算後租金
+        /// </summary>
+        public int Price { get; set; }
+        /// <summary>
         ///座位數
         /// </summary>
         public int Seat { set; get; }
