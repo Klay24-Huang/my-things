@@ -86,6 +86,7 @@ SET @hasData=0;
 					,OperatorScore  = O.Score				--分數
 					,Price_N		= P.PROPRICE_N			--平日
 					,Price_H		= P.PROPRICE_H			--假日
+					,Price          = dbo.TY_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
 					,Seat			= E.Seat				--座椅數
 			FROM (SELECT nowStationID,CarType FROM TB_Car WITH(NOLOCK) WHERE nowStationID=@StationID AND available<2) C
 			JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
@@ -116,6 +117,7 @@ SET @hasData=0;
 					,OperatorScore  = O.Score				--分數
 					,Price_N		= P.PROPRICE_N			--平日
 					,Price_H		= P.PROPRICE_H			--假日
+					,Price          = dbo.TY_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
 					,Seat			= E.Seat				--座椅數
 			FROM (SELECT nowStationID,CarType FROM TB_Car WITH(NOLOCK) WHERE nowStationID=@StationID AND available<2) C
 			JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
@@ -155,5 +157,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarType';
 GO
-
-
