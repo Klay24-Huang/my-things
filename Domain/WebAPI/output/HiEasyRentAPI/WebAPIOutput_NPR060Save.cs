@@ -19,7 +19,7 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 回覆訊息
         /// </summary>
         public string Message { set; get; }
-        public WebAPIOutput_NPR060SaveData Data { set; get; }
+        public WebAPIOutput_NPR060SaveData[] Data { set; get; }
     
     }
     public class WebAPIOutput_NPR060SaveData

@@ -19,7 +19,7 @@
                             訂單編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="(H)[0-9]{1,7}" value="" />
                         </div>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
+                            <button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</button>
 
                         </div>
                     </div>
@@ -473,9 +473,9 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">計算更改後結果</button>
-                            <button type="submit" class="btn btn-primary">重置</button>
-                            <button type="submit" class="btn btn-primary">送出處理</button>
+                            <button type="button" name="btnCal" id="btnCal" class="btn btn-primary">計算更改後結果</button>
+                            <button type="button" name="btnReset" id="btnReset" class="btn btn-primary">重置</button>
+                            <button type="button" name="btnSave" id="btnSave" class="btn btn-primary">送出處理</button>
 
                         </div>
                     </div>

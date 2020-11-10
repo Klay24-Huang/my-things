@@ -1,1 +1,241 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_Operator>
+@{
+
+    List<Domain.TB.BackEnd.BE_Operator> lstData = null;
+    string FuncGroupID = (ViewData["FuncGroupID"] == null) ? "" : ViewData["FuncGroupID"].ToString();
+    string FuncGroupName = (ViewData["FuncGroupName"] == null) ? "" : ViewData["FuncGroupName"].ToString();
+    string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
+    string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
+    int ResultLen = -1;
+    if (Mode == "Edit")
+    {
+        if (Model != null)
+        {
+            lstData = Model.ToList();
+            ResultLen = lstData.Count;
+        }
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            加盟業者維護
+        </div>
+
+        @using (Html.BeginForm("FuncGroupMaintain", "AccountManage", FormMethod.Post, new { id = "FuncGroupMaintainMaintain", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理區分
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Action("GetHandleList", "CommonObj")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                功能群組編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control input_alphanumeric" type="text" name="FuncGroupID" id="FuncGroupID" maxlength="10" value="@FuncGroupID" />
+
+                            </div>
+                            <div class="col-md-2">
+                                限英數字
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                功能群組名稱名稱
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="FuncGroupName" id="FuncGroupName" value="@FuncGroupName" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                有效起迄日
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@SDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker with time -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@EDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="len" name="len" value="@(ResultLen)" />
+                                <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</Button>
+                                <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+
+    <!--end card-->
+</div>
+
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="panelResult" name="panelResult">
+    <table class="table bg-white table-striped bg-white mt-4 " data-paging="true">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort="false"></th>
+                <th scope="col">ID</th>
+                <th scope="col">功能群組編號(ID)</th>
+                <th scope="col">功能群組名稱</th>
+                <th scope="col">有效起迄日(起)</th>
+                <th scope="col">有效起迄日(迄)</th>
+                <th scope="col">修改</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                if (ResultLen == 0)
+                {
+                    <tr>
+                        <td colspan="8">查無結果</td>
+                    </tr>
+                }
+                else if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].OperatorID)" id="PK_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorID)" /></td>
+                            <td scope="col">@lstData[i].OperatorAccount <input type="text" name="FuncGroupID_@(lstData[i].OperatorID)" id="FuncGroupID_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorAccount)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].OperatorName<input type="text" name="FuncGroupName_@(lstData[i].OperatorID)" id="FuncGroupName_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorName)" class="form-control" style="display:none" /></td>
+                            <td scope="col">
+                                @lstData[i].StartDate.ToString("yyyy-MM-dd")
+
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].OperatorID)" name="StartDate_@(lstData[i].OperatorID)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                </div>
+
+                            </td>
+                            <td scope="col">
+                                @lstData[i].EndDate.ToString("yyyy-MM-dd")
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].OperatorID)" name="EndDate_@(lstData[i].OperatorID)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+
+                                </div>
+                            </td>
+                            <td scope="col">
+                                <Button type="button" id="btnEdit_@(lstData[i].OperatorID)" name="btnEdit_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" data-OldIcon="@(lstData[i].OperatorICon)" onclick="DoEdit('@(lstData[i].OperatorID)');">修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].OperatorID)" name="btnSave_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].OperatorID)');">儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].OperatorID)" name="btnReset_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].OperatorID)');">取消</Button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+
+                }
+            }
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<!--輸出表格結束-->
+<!-- Modal HTML embedded directly into document -->
+<!--  using bootstrap -->
+
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="tmpENVPIC" name="tmpENVPIC" src="" class="img-thumbnail" />
+                <p id="PicInfo" name="PicInfo"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--javascript 初始-->
+<script>
+    var Mode = '@Mode';
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var ResultDataLen = '@(ResultLen)';
+</script>
+

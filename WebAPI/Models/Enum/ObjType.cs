@@ -432,7 +432,15 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 設定電子柵欄
                 /// </summary>
-                BE_HandlePolygon
+                BE_HandlePolygon,
+                /// <summary>
+                /// 短租補傳
+                /// </summary>
+                BE_HandleHiEasyRentRetry,
+                /// <summary>
+                /// 儲存060執行結果
+                /// </summary>
+                BE_BookingControlSuccess
             #endregion
 
         }
@@ -776,6 +784,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandlePolygon:
                     SPName = "usp_BE_HandlePolygon";
+                    break;
+                case SPType.BE_HandleHiEasyRentRetry:
+                    SPName = "usp_BE_HandleHiEasyRentRetry";
+                    break;
+                case SPType.BE_BookingControlSuccess:
+                    SPName = "usp_BE_BookingControlSuccess";
                     break;
                     #endregion
             }

@@ -3,7 +3,11 @@
 	 [Account]   VARCHAR (50)  DEFAULT ('') NOT NULL,
     [UserName]  NVARCHAR (50) DEFAULT (N'') NOT NULL,
     [UserPwd]   VARCHAR(50)   DEFAULT ('') NOT NULL,
-    [UserGroup] VARCHAR (20)  DEFAULT ('') NOT NULL,
+    [Operator] INT DEFAULT (0) NOT NULL,
+    [UserGroup] varchar(50) NOT NULL,
+    [UserGroupID] INT  DEFAULT 0 NOT NULL,
+     [SD] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
+    [ED] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59', 
     [ClientIP]  VARCHAR (256) DEFAULT ('') NOT NULL,
     [MKTime]    DATETIME      DEFAULT (getdate()) NOT NULL,
     [UPDTime]   DATETIME      NULL,
@@ -11,7 +15,7 @@
 );
 GO
 CREATE NONCLUSTERED INDEX [IX_TB_Manager_Search]
-    ON [dbo].[TB_Manager]([UserGroup] ASC);
+    ON [dbo].[TB_Manager]([UserGroupID] ASC);
 
 
 GO
@@ -27,7 +31,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'登入ip', 
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'群組', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Manager', @level2type = N'COLUMN', @level2name = N'UserGroup';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'群組', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Manager', @level2type = N'COLUMN', @level2name = 'UserGroupID';
 
 
 GO
@@ -51,3 +55,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_Manager',
     @level2type = N'COLUMN',
     @level2name = N'UserPwd'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'業者id',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Manager',
+    @level2type = N'COLUMN',
+    @level2name = N'Operator'

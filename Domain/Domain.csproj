@@ -54,6 +54,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_AuditImage.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BeforeBookingStart.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_BookingControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingStart.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_CalFinalPrice.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ChangeCar.cs" />
@@ -82,8 +83,10 @@
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPD_CardNo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleHiEasyRentRetry.cs" />
     <Compile Include="SP\BE\Input\SPInput_HandleStation.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
+    <Compile Include="SP\BE\Output\SPOutput_BE_HandleHiEasyRentRetry.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_BeforeBookingStart.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_ChangeCar.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_CheckCarStatusByReturn.cs" />
@@ -215,6 +218,7 @@
     <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
+    <Compile Include="TB\BackEnd\BE_BookingControl.cs" />
     <Compile Include="TB\BackEnd\BE_GetPolygonData.cs" />
     <Compile Include="TB\BackEnd\BE_CarDashBoardData.cs" />
     <Compile Include="TB\BackEnd\BE_CardSettingData.cs" />

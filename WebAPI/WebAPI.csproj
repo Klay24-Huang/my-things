@@ -167,6 +167,7 @@
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
     <Compile Include="Controllers\BE_GetManagerStationController.cs" />
+    <Compile Include="Controllers\BE_GetOrderModifyInfoController.cs" />
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
@@ -305,6 +306,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarSetting.cs" />
@@ -313,6 +315,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SentCardSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SetCarMemo.cs" />

@@ -1,4 +1,6 @@
-﻿using Domain.SP.Input.OtherService.Common;
+﻿using Domain.SP.BE.Input;
+using Domain.SP.Input.OtherService.Common;
+using Domain.SP.Output;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
@@ -998,7 +1000,8 @@ namespace OtherService
         {
             bool flag = false;
 
-
+            input.user_id = userid;
+            input.sig = GenerateSig();
 
             output = DoNPR060Save(input).Result;
             if (output.Result)
@@ -1015,6 +1018,8 @@ namespace OtherService
         private async Task<WebAPIOutput_NPR060Save> DoNPR060Save(WebAPIInput_NPR060Save input)
         {
             WebAPIOutput_NPR060Save output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR060SaveURL);
@@ -1042,6 +1047,11 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_NPR060Save>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                            ORDNO = output.Data[0].ORDNO;
+                        }
                     }
 
                 }
@@ -1071,6 +1081,7 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
             }
 
 
