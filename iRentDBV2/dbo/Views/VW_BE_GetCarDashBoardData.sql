@@ -36,9 +36,12 @@
       ,ISNULL(CarStatus.[UPDTime],'') AS LastUpdate
 	  ,ISNULL(CarTypData.isMoto,IIF(LEN(CarStatus.CID)>4,0,IIF(SUBSTRING(CarStatus.CID,1,1)='B',1,0))) AS isMoto
 	  ,ISNULL(CarInfo.IsCens,IIF(LEN(CarStatus.CID)>4,1,0)) AS IsCens
-
-  FROM TB_CarStatus AS CarStatus
-  LEFT JOIN TB_Car AS Car WITH(NOLOCK) ON Car.CarNo=CarStatus.CarNo
+	  
+  --FROM TB_CarStatus AS CarStatus
+  --LEFT JOIN TB_Car AS Car WITH(NOLOCK) ON Car.CarNo=CarStatus.CarNo
+  --20201110 UPD BY JERRY 修改查詢邏輯，改以車輛檔為主
+  FROM TB_Car AS Car WITH(NOLOCK)
+  LEFT JOIN TB_CarStatus AS CarStatus WITH(NOLOCK) ON Car.CarNo=CarStatus.CarNo
   LEFT JOIN TB_CarType AS CarTypData ON CarTypData.CarType=Car.CarType
   LEFT JOIN TB_CarInfo AS CarInfo ON CarInfo.CarNo=CarStatus.CarNo
   LEFT JOIN TB_CarMachine AS CarMachine WITH(NOLOCK) ON CarMachine.MachineNo=CarStatus.CID
