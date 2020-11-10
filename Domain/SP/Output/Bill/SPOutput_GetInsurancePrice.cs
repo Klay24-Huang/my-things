@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Output.Bill
 {
-    public class SPOutput_GetInsurancePrice : SPOutput_Base
+    public class SPOutput_GetInsurancePrice 
     {
         /// <summary>
         /// 安心服務級距

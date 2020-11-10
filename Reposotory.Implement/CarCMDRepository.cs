@@ -98,7 +98,7 @@ namespace Reposotory.Implement
         /// <param name="CID">車機編號</param>
         /// <param name="NowDate">讀卡判斷時間</param>
         /// <returns></returns>
-        public bool CheckHasReadCard(string CID,string NowDate)
+        public bool CheckHasReadCard(string CID,string NowDate,ref string CardNo)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -129,6 +129,7 @@ namespace Reposotory.Implement
                 {
                     if (lstReadCard[0].CardNo != "")
                     {
+                        CardNo = lstReadCard[0].CardNo;
                         flag = true;
                     }
                 }

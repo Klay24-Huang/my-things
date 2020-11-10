@@ -115,7 +115,7 @@ namespace WebAPI.Controllers
             #region 第二段防呆
             if (flag)
             {
-                if((CarMachineType==0 && apiInput.CmdType > 14) || (CarMachineType==1 && apiInput.CmdType<15))
+                if((CarMachineType==0 && apiInput.CmdType > 14 && apiInput.CmdType != 99) || (CarMachineType==1 && apiInput.CmdType<15))
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -208,6 +208,10 @@ namespace WebAPI.Controllers
                         case 14:
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
+                            break;
+                        case 99: //99:ReportNow
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                             break;
                     }
                      if(apiInput.CmdType==2 )

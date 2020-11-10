@@ -44,7 +44,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BookingController";
+            string funName = "ReadCardController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_ReadCard apiInput = null;
@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
+            string CardNo = "";
             string IDNO = "";
 
             #endregion
@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
                     while (NowCount < 60)
                     {
                         Thread.Sleep(1000);
-                         ReadFlag = new CarCMDRepository(connetStr).CheckHasReadCard(spOut.CID, NowTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                         ReadFlag = new CarCMDRepository(connetStr).CheckHasReadCard(spOut.CID, NowTime.ToString("yyyy-MM-dd HH:mm:ss"),ref CardNo);
                         if (ReadFlag)
                         {
                             outputApi.HasBind = 1;
@@ -187,16 +187,19 @@ namespace WebAPI.Controllers
                     }
                     if (ReadFlag)
                     {
+                        string SPName2 = new ObjType().GetSPName(ObjType.SPType.BindUUCard);
                         SPInput_BindUUCard SPBindInput = new SPInput_BindUUCard()
                         {
-                            OrderNo = tmpOrder,
                             IDNO = IDNO,
-                            LogID = LogID,
-                            Token = Access_Token
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            CardNo = CardNo,
+                            LogID = LogID
+                            
                         };
                         SPOutput_Base SPBindOutput = new SPOutput_Base();
                         SQLHelper<SPInput_BindUUCard, SPOutput_Base> sqlBindHelp = new SQLHelper<SPInput_BindUUCard, SPOutput_Base>(connetStr);
-                        flag = sqlBindHelp.ExecuteSPNonQuery(SPName, SPBindInput, ref SPBindOutput, ref lstError);
+                        flag = sqlBindHelp.ExecuteSPNonQuery(SPName2, SPBindInput, ref SPBindOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                     }
                 }

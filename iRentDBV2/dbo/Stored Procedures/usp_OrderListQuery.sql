@@ -110,7 +110,7 @@ BEGIN TRY
 			
 			SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content            --據點相關
                 ,OperatorName,OperatorICon,Score                                                    --營運商相關
-                ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor            --車子相關, 20201006 eason ADD CarNo,IsMotor
+                ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)            --車子相關, 20201006 eason ADD CarNo,IsMotor
                 ,device3TBA,RemainingMilage                                                            --機車電力相關
                 ,ProjType,PRONAME--,PRICE,PRICE_H                                                    --專案基本資料
                 ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE                                                --平日每小時價 20201003 ADD BY ADAM
