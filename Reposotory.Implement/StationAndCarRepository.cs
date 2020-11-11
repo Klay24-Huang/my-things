@@ -796,7 +796,7 @@ namespace Reposotory.Implement
             {
                 if (term != "") { term += " AND "; }
                 term += "  CarNo=@CarNo";
-                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
                 para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
