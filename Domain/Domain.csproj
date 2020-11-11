@@ -99,6 +99,7 @@
     <Compile Include="SP\Input\Battle\SPInput_MaintainBase.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetInsurancePrice.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BindUUCard.cs" />

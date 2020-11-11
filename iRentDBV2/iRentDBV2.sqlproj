@@ -359,6 +359,7 @@
     <Build Include="dbo\Tables\TB_UserGroup.sql" />
     <Build Include="dbo\User Defined Types\FN_calPay.sql" />
     <Build Include="dbo\User Defined Types\FN_CalSpread.sql" />
+    <Build Include="usp_GetProjectPriceBase.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
