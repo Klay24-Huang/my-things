@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.TB.BackEnd
 {
-    public class BE_MenuList
+    public class BE_MenuCombindConsistPower
     {
         /// <summary>
         /// 父選單pk
@@ -20,6 +20,17 @@ namespace Domain.TB.BackEnd
         /// 父選單排序
         /// </summary>
         public string Sort { set; get; }
+        /// <summary>
+        /// 父選單代碼
+        /// </summary>
+        public string MenuCode { set; get; }
+        /// <summary>
+        /// 子選單列表
+        /// </summary>
+        public List<BE_SubMenuConsistPower> lstSubMenu { set; get; }
+    }
+    public class BE_SubMenuConsistPower
+    {
         /// <summary>
         /// 子選單代碼
         /// </summary>
@@ -51,6 +62,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 權限id
         /// </summary>
-       public int OperationPowerGroupId { set; get; }
+        public int OperationPowerGroupId { set; get; }
+        public List<BE_PowerListCombind> lstPowerFunc { set; get; }
     }
 }

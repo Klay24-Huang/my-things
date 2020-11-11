@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,18 +16,18 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 【後台】修改使用者群組
+    /// 【後台】功能權限設定
     /// </summary>
-    public class BE_UPDUserGroupController : ApiController
+    public class BE_HandleFuncMaintainController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
-        /// 【後台】修改使用者群組
+        /// 【後台】功能權限設定
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoBE_UPDUserGroup(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_HandleFuncMaintain(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -38,16 +39,16 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_UPDUserGroupController";
+            string funName = "BE_HandleFuncMaintainController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_UPDUserGroup apiInput = null;
+            IAPI_BE_HandleFuncMaintain apiInput = null;
             NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime StartDate = DateTime.Now, EndDate = DateTime.Now;
-            string IDNO = "";           bool isGuest = true;
+            string IDNO = ""; bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
 
@@ -57,50 +58,25 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UPDUserGroup>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleFuncMaintain>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.UserGroupID, apiInput.UserGroupName };
-                string[] errList = { "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.FuncGroupID,apiInput.Mode };
+                string[] errList = { "ERR900", "ERR900","ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
 
-             
                 if (flag)
                 {
-                    if (false == DateTime.TryParseExact(apiInput.StartDate, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out StartDate))
-                    {
-                        flag = false;
-                        errCode = "ERR241";
-                    }
-                    if (false == DateTime.TryParseExact(apiInput.EndDate, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out EndDate))
-                    {
-                        flag = false;
-                        errCode = "ERR243";
-                    }
-                    if (flag)
-                    {
-                        if (StartDate > EndDate)
-                        {
-                            flag = false;
-                            errCode = "ERR267";
-                        }
-                    }
-                }
-                if (flag)
-                {
-                    if (apiInput.OperatorID < 1)
+                    if (apiInput.Power.Count < 1)
                     {
                         flag = false;
                         errCode = "ERR900";
                     }
-                    if (apiInput.SEQNO < 1)
-                    {
-                        flag = false;
-                        errCode = "ERR900";
-                    }
+                    
+        
                 }
             }
             #endregion
@@ -110,21 +86,18 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_UPDUserGroup);
-                SPInput_BE_UPDUserGroup spInput = new SPInput_BE_UPDUserGroup()
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleFunc);
+                SPInput_BE_HandleFunc spInput = new SPInput_BE_HandleFunc()
                 {
                     LogID = LogID,
                     UserID = apiInput.UserID,
-                    EndDate = EndDate,
-                    StartDate = StartDate,
-                    SEQNO=apiInput.SEQNO,
-                     UserGroupID=apiInput.UserGroupID,
-                      UserGroupName=apiInput.UserGroupName,
-                    OperatorID = apiInput.OperatorID
+                     FuncGroupID=Convert.ToInt32(apiInput.FuncGroupID),
+                      Mode=apiInput.Mode,
+                       Power=JsonConvert.SerializeObject(apiInput.Power)
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_BE_UPDUserGroup, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_UPDUserGroup, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_BE_HandleFunc, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleFunc, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 

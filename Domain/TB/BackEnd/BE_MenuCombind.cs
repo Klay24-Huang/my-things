@@ -62,6 +62,6 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 權限id
         /// </summary>
-        public string OperationPowerGroupId { set; get; }
+        public int OperationPowerGroupId { set; get; }
     }
 }

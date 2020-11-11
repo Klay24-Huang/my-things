@@ -430,6 +430,10 @@ namespace WebAPI.Models.Enum
                 /// </summary>
                 BE_CheckFuncGroup,
                 /// <summary>
+                /// 新增/修改功能權限
+                /// </summary>
+                BE_HandleFunc,
+                /// <summary>
                 /// 判斷使用者群組編號是否存在
                 /// </summary>
                 BE_CheckUserGroup,
@@ -795,6 +799,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_UPDFuncGroup:
                     SPName = "usp_BE_UPDFuncGroup";
+                    break;
+                case SPType.BE_HandleFunc:
+                    SPName = "usp_BE_HandleFunc";
                     break;
                 case SPType.BE_UPDUserGroup:
                     SPName = "usp_BE_UPDUserGroup";

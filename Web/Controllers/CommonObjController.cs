@@ -66,8 +66,9 @@ namespace Web.Controllers
         {
             CarStatusCommon CarRepository = new CarStatusCommon(connetStr);
             bool showAll = false;
-            var MachineNoList = CarRepository.GetCarMachineUnBind();
             ViewData["Operator"] = SEQNO;
+            var MachineNoList = CarRepository.GetCarMachineUnBind();
+            
             return View(MachineNoList);
         }
         [ChildActionOnly]
@@ -78,6 +79,19 @@ namespace Web.Controllers
         
             ViewData["Operator"] = SEQNO;
             return View(lstOperators);
+        }
+        [ChildActionOnly]
+        public ActionResult GetPowerList()
+        {
+            List<BE_MenuCombindConsistPower> lstData = new CommonRepository(connetStr).GetMenuListConsistPower();
+            return View(lstData);
+        }
+        [ChildActionOnly]
+        public ActionResult GetFuncGroup(int SEQNO)
+        {
+            ViewData["FuncGroup"] = SEQNO;
+            List<BE_GetFuncGroup> lstData = new AccountManageRepository(connetStr).GetFuncGroup("", "", "", "");
+            return View(lstData);
         }
 
     }

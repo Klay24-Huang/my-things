@@ -634,6 +634,8 @@
     <Content Include="Views\ContactManage\ContactDetail.cshtml" />
     <Content Include="Views\ContactManage\ContactMotorDetail.cshtml" />
     <Content Include="Views\CommonObj\GetOperatorList.cshtml" />
+    <Content Include="Views\CommonObj\GetPowerList.cshtml" />
+    <Content Include="Views\CommonObj\GetFuncGroup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

@@ -180,6 +180,7 @@
     <Compile Include="Controllers\BE_HandleFeedBackKindController.cs" />
     <Compile Include="Controllers\BE_HandleFeedBackOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleFuncGroupController.cs" />
+    <Compile Include="Controllers\BE_HandleFuncMaintainController.cs" />
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Controllers\BE_HandleUserGroupController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
+    <Compile Include="Controllers\BE_QueryFuncController.cs" />
     <Compile Include="Controllers\BE_ReSendToHiEasyRentController.cs" />
     <Compile Include="Controllers\BE_SentCardSettingController.cs" />
     <Compile Include="Controllers\BE_SetCarMemoController.cs" />
@@ -322,11 +324,13 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleExtendCar.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleFuncMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFunc.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SentCardSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_SetCarMemo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UnBind.cs" />

@@ -373,7 +373,7 @@ namespace Reposotory.Implement
             List<BE_MenuList> lstMenu = null;
             List<BE_MenuCombind> lstData = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT * FROM VW_GetMenuList ORDER BY [Sort] ASC,SubMenuSort asc  ";
+            string SQL = "SELECT * FROM VW_GetMenuList WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstMenu = GetObjList<BE_MenuList>(ref flag, ref lstError, SQL, para, term);
@@ -454,6 +454,175 @@ namespace Reposotory.Implement
                     }
                 }
                 
+            }
+
+            return lstData;
+        }
+        public List<BE_MenuCombindConsistPower> GetMenuListConsistPower()
+        {
+            bool flag = false;
+            List<BE_MenuList> lstMenu = null;
+            List<BE_PowerListCombind> lstPower = GetMenuPowerList();
+            List<BE_MenuCombindConsistPower> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT * FROM VW_GetMenuList WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstMenu = GetObjList<BE_MenuList>(ref flag, ref lstError, SQL, para, term);
+            if (lstMenu != null)
+            {
+                lstData = new List<BE_MenuCombindConsistPower>();
+                int len = lstMenu.Count;
+                if (len > 0)
+                {
+                    BE_MenuCombindConsistPower first = new BE_MenuCombindConsistPower()
+                    {
+                        MenuId = lstMenu[0].MenuId,
+                        MenuCode = lstMenu[0].SubMenuCode.Substring(0, 1),
+                        MenuName = lstMenu[0].MenuName,
+                        Sort = lstMenu[0].Sort,
+                        lstSubMenu = new List<BE_SubMenuConsistPower>()
+
+                    };
+                    first.lstSubMenu.Add(
+                        new BE_SubMenuConsistPower()
+                        {
+                            isNewWindow = lstMenu[0].isNewWindow,
+                            SubMenuCode = lstMenu[0].SubMenuCode,
+                            MenuAction = lstMenu[0].MenuAction,
+                            MenuController = lstMenu[0].MenuController,
+                            OperationPowerGroupId = lstMenu[0].OperationPowerGroupId,
+                            SubMenuName = lstMenu[0].SubMenuName,
+                            SubMenuSort = lstMenu[0].SubMenuSort,
+                            lstPowerFunc = lstPower.FindAll(delegate (BE_PowerListCombind sp) { return sp.OperationPowerGroupId == lstMenu[0].OperationPowerGroupId; })
+                        }
+                    );
+                    lstData.Add(first);
+                    for (int i = 1; i < len; i++)
+                    {
+                        int index = lstData.FindIndex(delegate (BE_MenuCombindConsistPower t)
+                        {
+                            return t.MenuId == lstMenu[i].MenuId;
+                        });
+                        if (index > -1)
+                        {
+                            lstData[index].lstSubMenu.Add(
+                             new BE_SubMenuConsistPower()
+                             {
+                                 isNewWindow = lstMenu[i].isNewWindow,
+                                 SubMenuCode = lstMenu[i].SubMenuCode,
+                                 MenuAction = lstMenu[i].MenuAction,
+                                 MenuController = lstMenu[i].MenuController,
+                                 OperationPowerGroupId = lstMenu[i].OperationPowerGroupId,
+                                 SubMenuName = lstMenu[i].SubMenuName,
+                                 SubMenuSort = lstMenu[i].SubMenuSort,
+                                 lstPowerFunc = lstPower.FindAll(delegate (BE_PowerListCombind sp) { return sp.OperationPowerGroupId == lstMenu[0].OperationPowerGroupId; })
+                             }
+                         );
+                        }
+                        else
+                        {
+                            BE_MenuCombindConsistPower tmp = new BE_MenuCombindConsistPower()
+                            {
+                                MenuId = lstMenu[i].MenuId,
+                                MenuCode = lstMenu[i].SubMenuCode.Substring(0, 1),
+                                MenuName = lstMenu[i].MenuName,
+                                Sort = lstMenu[i].Sort,
+                                lstSubMenu = new List<BE_SubMenuConsistPower>()
+
+                            };
+                            tmp.lstSubMenu.Add(
+                                new BE_SubMenuConsistPower()
+                                {
+                                    isNewWindow = lstMenu[i].isNewWindow,
+                                    SubMenuCode = lstMenu[i].SubMenuCode,
+                                    MenuAction = lstMenu[i].MenuAction,
+                                    MenuController = lstMenu[i].MenuController,
+                                    OperationPowerGroupId = lstMenu[i].OperationPowerGroupId,
+                                    SubMenuName = lstMenu[i].SubMenuName,
+                                    SubMenuSort = lstMenu[i].SubMenuSort,
+                                    lstPowerFunc = lstPower.FindAll(delegate (BE_PowerListCombind sp) { return sp.OperationPowerGroupId == lstMenu[0].OperationPowerGroupId; })
+                                }
+                            );
+                            lstData.Add(tmp);
+                        }
+                    }
+                }
+
+            }
+
+            return lstData;
+        }
+        /// <summary>
+        /// 選單功能權限
+        /// </summary>
+        /// <returns></returns>
+        public List<BE_PowerListCombind> GetMenuPowerList()
+        {
+            bool flag = false;
+            List<BE_PowerList> lstPower = null;
+            List<BE_PowerListCombind> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT * FROM VW_GetDefPowerList WHERE OperationPowerGroupId>0  ORDER BY [OperationPowerGroupId] ASC,OperationPowerID asc  ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstPower = GetObjList<BE_PowerList>(ref flag, ref lstError, SQL, para, term);
+            if (lstPower != null)
+            {
+                lstData = new List<BE_PowerListCombind>();
+                int len = lstPower.Count;
+                if (len > 0)
+                {
+                    BE_PowerListCombind first = new BE_PowerListCombind()
+                    {
+                        OperationPowerGroupId = lstPower[0].OperationPowerGroupId,
+                        lstPowerFunc = new List<BE_PowerListCombindSubData>()
+
+                    };
+                    first.lstPowerFunc.Add(
+                        new BE_PowerListCombindSubData()
+                        {
+                             Code = lstPower[0].Code,
+                            OPName = lstPower[0].OPName
+                        }
+                    );
+                    lstData.Add(first);
+                    for (int i = 1; i < len; i++)
+                    {
+                        int index = lstData.FindIndex(delegate (BE_PowerListCombind t)
+                        {
+                            return t.OperationPowerGroupId == lstPower[i].OperationPowerGroupId;
+                        });
+                        if (index > -1)
+                        {
+                            lstData[index].lstPowerFunc.Add(
+                             new BE_PowerListCombindSubData()
+                             {
+                                 Code = lstPower[i].Code,
+                                 OPName = lstPower[i].OPName
+                             }
+                         );
+                        }
+                        else
+                        {
+                            BE_PowerListCombind tmp = new BE_PowerListCombind()
+                            {
+                                OperationPowerGroupId = lstPower[i].OperationPowerGroupId,
+                                lstPowerFunc = new List<BE_PowerListCombindSubData>()
+
+                            };
+                            tmp.lstPowerFunc.Add(
+                                new BE_PowerListCombindSubData()
+                                {
+                                    Code = lstPower[i].Code,
+                                    OPName = lstPower[i].OPName
+                                }
+                            );
+                            lstData.Add(tmp);
+                        }
+                    }
+                }
+
             }
 
             return lstData;

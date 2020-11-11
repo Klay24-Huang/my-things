@@ -72,6 +72,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleChargeParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleExtendCar.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleFunc.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleMasterCard.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandlePolygon.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCardData.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
+    <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
     <Compile Include="TB\BackEnd\BE_Operator.cs" />
     <Compile Include="TB\BackEnd\BE_OrderDataCombind.cs" />

@@ -630,4 +630,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="isNewWindow" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7f1de459-6bd4-416c-a9b8-14b5973fd94f" ChangeDateTime="11/11/2020 09:15:54">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncGroupPower].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncGroupPower]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FuncGroupPowerID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4d9eab52-2150-471c-bf0d-06c8ea9b0f6d" ChangeDateTime="11/11/2020 09:29:11">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncGroupPower].[FuncGroupID  ]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncGroupPower]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FuncGroupID" />
+  </Operation>
 </Operations>

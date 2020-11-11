@@ -180,7 +180,7 @@ namespace WebAPI.Controllers
                                 
                             };
                             WebAPIOutput_NPR060Save output = new WebAPIOutput_NPR060Save();
-                            flag = WebAPI.NPR06Save(input, ref output);
+                            flag = WebAPI.NPR060Save(input, ref output);
                             if (output.Result == false)
                             {
                                 flag = false;

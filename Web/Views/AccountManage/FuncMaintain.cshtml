@@ -1,1 +1,103 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetFuncGroup>
+@{
+
+    List<Domain.TB.BackEnd.BE_GetFuncGroup> lstData = null;
+    string FuncGroupID = (ViewData["FuncGroupID"] == null) ? "" : ViewData["FuncGroupID"].ToString();
+    string FuncGroupName = (ViewData["FuncGroupName"] == null) ? "" : ViewData["FuncGroupName"].ToString();
+    string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
+    string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
+    int SEQNO= ((ViewData["FuncGroup"] == null) ? 0 : Convert.ToInt32(ViewData["FuncGroup"].ToString()));
+    int ResultLen = -1;
+    if (Mode == "Edit")
+    {
+        if (Model != null)
+        {
+            lstData = Model.ToList();
+            ResultLen = lstData.Count;
+        }
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            功能(程式)維護
+        </div>
+
+        @using (Html.BeginForm("FuncGroupMaintain", "AccountManage", FormMethod.Post, new { id = "FuncGroupMaintainMaintain", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+    <ul class="list-group list-group-flush">
+        <!--每一個li是一項查詢條件-->
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        處理區分
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Action("GetHandleList", "CommonObj")
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        功能群組
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Action("GetFuncGroup", "CommonObj", new { SEQNO = SEQNO })
+
+                    </div>
+               
+
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        權限設定
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <Button type="button" id="btnSet" name="btnSet" class="btn btn-primary">全選</Button>
+                        </div>
+                        <div class="row">
+                            @Html.Action("GetPowerList", "CommonObj")
+                        </div>
+                    </div>
+                    </div>
+                </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3 offset-md-2">
+                        <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                        <input type="hidden" id="len" name="len" value="@(ResultLen)" />
+                        <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</Button>
+                        <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+        }
+    </div>
+
+    <!--end card-->
+</div>
+
+<!--查詢介面結束-->
+<script>
+    var Mode = '@Mode';
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var ResultDataLen = '@(ResultLen)';
+</script>

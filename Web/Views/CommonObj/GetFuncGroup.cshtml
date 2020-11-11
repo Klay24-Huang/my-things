@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetFuncGroup>
+
+@{
+    Layout = null;
+    List<SelectListItem> list = new List<SelectListItem>();
+    int SEQNO = ((ViewData["FuncGroup"] == null) ? 0 : Convert.ToInt32(ViewData["FuncGroup"].ToString()));
+}
+@if (Model != null)
+{
+    if (SEQNO == 0)
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "", Selected=true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "" });
+    }
+
+}
+@foreach (var funcGroup in Model) {
+        if (funcGroup.SEQNO == SEQNO)
+        {
+            list.Add(new SelectListItem() { Text = funcGroup.FuncGroupName, Value = funcGroup.SEQNO.ToString(), Selected = true  });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = funcGroup.FuncGroupName, Value = funcGroup.SEQNO.ToString() });
+    }
+
+}
+
+@Html.DropDownList("ddlFuncGroup", list, new { Class = "form-control" })
