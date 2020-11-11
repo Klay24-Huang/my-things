@@ -102,6 +102,11 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
                 //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //訪客機制BYPASS
+                if (spOut.ErrorCode=="ERR101")
+                {
+                    flag = true;
+                }
                 if (flag)
                 {
                     IDNO = spOut.IDNO;
