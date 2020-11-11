@@ -28,15 +28,14 @@ $(document).ready(function () {
                 init();
                 break;
             case "Add":
-                $("#fileImport").prop("disabled", "");
+             
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("儲存");
 
                 break;
             case "Edit":
-                $("#fileImport").prop("disabled", "disabled");
-                // $("#ParkingName").val("");
+          
 
                 $("#btnSend").show();
                 $("#btnReset").show();
@@ -60,7 +59,7 @@ $(document).ready(function () {
         var StartDate = $("#StartDate").val();
         var EndDate = $("#EndDate").val();
 
-        var checkList = [Operator, OperatorName, StartDate, EndDate];
+        var checkList = [FuncGroupID, FuncGroupName, StartDate, EndDate];
         var errMsgList = ["功能群組編號未填", "功能群組名稱未填", "有效日期（起）未填", "有效日期（迄）未填"];
         var len = checkList.length;
         if (Mode == "Add") {
@@ -144,12 +143,45 @@ $(document).ready(function () {
             ShowSuccessMessage("新增成功");
         } else {
             if (errorMsg != "") {
-                ShowFailMessage(errMsg);
+                ShowFailMessage(errorMsg);
             }
         }
     }
 })
 
+$(document).on('keyup', '.input_alphanumeric', function (e) {
+    let k = e.keyCode;
+    console.log(k);
+    let str = String.fromCharCode(k);
+    console.log(str);
+    if (!(str.match(/[0-9a-zA-Z]/) || e.shiftKey || (37 <= k && k <= 40) || k === 8 || k === 46)) {
+        console.log("false");
+        return false;
+    }
+});
+$(document).on('keydown', '.input_alphanumeric', function (e) {
+    let k = e.keyCode;
+    console.log(k);
+    let str = String.fromCharCode(k);
+    console.log(str);
+    if (!(str.match(/[0-9a-zA-Z]/) || e.shiftKey || (37 <= k && k <= 40) || k === 8 || k === 46)) {
+        console.log("false");
+        return false;
+    }
+});
+$(document).on('keypress', '.input_alphanumeric', function (e) {
+    let k = e.keyCode;
+    console.log(k);
+    let str = String.fromCharCode(k);
+    console.log(str);
+    if (!(str.match(/[0-9a-zA-Z]/) || e.shiftKey || (37 <= k && k <= 40) || k === 8 || k === 46)) {
+        console.log("false");
+        return false;
+    }
+});
+$(document).on('change', '.input_alphanumeric', function () {
+    this.value = this.value.replace(/[^0-9a-zA-Z]+/i, '');
+});
 function DoEdit(Id) {
     var OldIcon = $("#btnEdit_" + Id).attr('data-OldIcon');
     if (NowEditID > 0) {
@@ -183,7 +215,6 @@ function DoEdit(Id) {
     $("#FuncGroupName_" + Id).show();
     $("#StartDate_" + Id).show();
     $("#EndDate_" + Id).show();
-    $("#OperatorICon_" + Id).val("").prop("disabled", "");
 
     $("#btnReset_" + Id).show();
     $("#btnSave_" + Id).show();
@@ -207,20 +238,19 @@ function DoReset(Id) {
     EndDate = "";
 }
 function DoSave(Id) {
-    var OldIcon = $("#btnEdit_" + Id).attr('data-OldIcon');
-    OldOperatorICon = OldIcon;
-    Operator = $("#OperatorAccount_" + Id).val();
-    OperatorName = $("#OperatorName_" + Id).val();
+    var SEQNO = Id;
+    FuncGroupID = $("#FuncGroupID_" + Id).val();
+    FuncGroupName = $("#FuncGroupName_" + Id).val();
     StartDate = $("#StartDate_" + Id).val();
     EndDate = $("#EndDate_" + Id).val();
-    var FileStr = $("#hidPic").val();
+
     var Account = $("#Account").val();
 
     var flag = true;
     var errMsg = "";
     ShowLoading("資料處理中");
-    var checkList = [Operator, OperatorName, StartDate, EndDate];
-    var errMsgList = ["加盟業者編號未填", "加盟業者名稱未填", "有效日期（起）未填", "有效日期（迄）未填"];
+    var checkList = [FuncGroupID, FuncGroupName, StartDate, EndDate];
+    var errMsgList = ["功能群組編號未填", "功能群組名稱未填", "有效日期（起）未填", "有效日期（迄）未填"];
     var len = checkList.length;
     for (var i = 0; i < len; i++) {
         if (checkList[i] == "") {
@@ -238,14 +268,13 @@ function DoSave(Id) {
     if (flag) {
         var obj = new Object();
         obj.UserID = Account;
-        obj.OperatorID = Id;
-        obj.OperatorAccount = Operator;
-        obj.OperatorName = OperatorName;
+        obj.SEQNO = SEQNO;
+        obj.FuncGroupID = FuncGroupID;
+        obj.FuncGroupName = FuncGroupName;
         obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
         obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
-        obj.OperatorICon = FileStr;
-        obj.OldOperatorIcon = OldOperatorICon;
-        DoAjaxAfterReload(obj, "BE_UPDOperator", "修改加盟業者發生錯誤");
+
+        DoAjaxAfterReload(obj, "BE_UPDFuncGroup", "修改功能群組發生錯誤");
     }
 
 }

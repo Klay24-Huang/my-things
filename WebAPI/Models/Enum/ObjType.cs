@@ -422,6 +422,22 @@ namespace WebAPI.Models.Enum
                 /// </summary>
                 BE_UPDOperator,
                 /// <summary>
+                /// 更新功能群組
+                /// </summary>
+                BE_UPDFuncGroup,
+                /// <summary>
+                /// 判斷功能群組編號是否存在
+                /// </summary>
+                BE_CheckFuncGroup,
+                /// <summary>
+                /// 判斷使用者群組編號是否存在
+                /// </summary>
+                BE_CheckUserGroup,
+                /// <summary>
+                /// 更新使用者群組
+                /// </summary>
+                BE_UPDUserGroup,
+                /// <summary>
                 /// 處理審核照片
                 /// </summary>
                 BE_HandleAuditImage,
@@ -440,7 +456,8 @@ namespace WebAPI.Models.Enum
                 /// <summary>
                 /// 儲存060執行結果
                 /// </summary>
-                BE_BookingControlSuccess
+                BE_BookingControlSuccess,
+
             #endregion
 
         }
@@ -776,6 +793,12 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_UPDOperator:
                     SPName = "usp_BE_UPDOperator";
                     break;
+                case SPType.BE_UPDFuncGroup:
+                    SPName = "usp_BE_UPDFuncGroup";
+                    break;
+                case SPType.BE_UPDUserGroup:
+                    SPName = "usp_BE_UPDUserGroup";
+                    break;
                 case SPType.BE_HandleAuditImage:
                     SPName = "usp_BE_HandleAuditImage";
                     break;
@@ -791,6 +814,13 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_BookingControlSuccess:
                     SPName = "usp_BE_BookingControlSuccess";
                     break;
+                case SPType.BE_CheckFuncGroup:
+                    SPName = "usp_BE_CheckFuncGroup";
+                    break;
+                case SPType.BE_CheckUserGroup:
+                    SPName = "usp_BE_CheckUserGroup";
+                    break;
+
                     #endregion
             }
             return SPName;

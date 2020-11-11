@@ -21,7 +21,18 @@ namespace Reposotory.Implement
         {
             this.ConnectionString = ConnStr;
         }
-
+        public List<BE_Operator> GetOperatorsALL()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_Operator> lstOperators = null;
+            string SQL = "SELECT   [OperatorID],[OperatorAccount],[OperatorName],[StartDate],[EndDate] FROM [TB_OperatorBase] WHERE DATEADD(HOUR,8,GETDATE()) BETWEEN StartDate AND EndDate ORDER BY OperatorID ASC";
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            int nowCount = 0;
+            lstOperators = GetObjList<BE_Operator>(ref flag, ref lstError, SQL, para, term);
+            return lstOperators;
+        }
         public List<BE_Operator> GetOperators(string OperatorAccount, string OperatorName, string StartDate, string EndDate)
         {
             bool flag = false;

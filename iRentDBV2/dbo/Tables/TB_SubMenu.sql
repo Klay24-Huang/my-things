@@ -1,98 +1,99 @@
-﻿CREATE TABLE [dbo].[TB_FuncGroup]
+﻿CREATE TABLE [dbo].[TB_SubMenu]
 (
-    [SEQNO]       INT NOT NULL IDENTITY,
-	[FuncGroupID] VARCHAR(50) NOT NULL, 
-    [FuncGroupName] NVARCHAR(50) NOT NULL DEFAULT N'', 
-    [StartDate] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
-    [EndDate] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59', 
-    [A_USERID] VARCHAR (10)  DEFAULT 'SYS',
-    [A_SYSDT]  DATETIME      DEFAULT DATEADD(HOUR,8,GETDATE()),
-    [U_USERID] VARCHAR (10)  DEFAULT 'SYS',
-    [U_SYSDT]  DATETIME      DEFAULT DATEADD(HOUR,8,GETDATE()),
-    CONSTRAINT [PK_TB_FuncGroup] PRIMARY KEY (SEQNO) 
+	[SubMenuID] INT NOT NULL IDENTITY, 
+    [SubMenuCode] NVARCHAR(50) NOT NULL DEFAULT N'', 
+    [SubMenuName] NVARCHAR(50) NOT NULL DEFAULT N'', 
+    [MenuController] VARCHAR(100) NOT NULL DEFAULT '', 
+    [MenuAction] VARCHAR(100) NOT NULL DEFAULT '', 
+    [RootMenuID] INT NOT NULL DEFAULT 0, 
+    [isNewWindow] TINYINT NOT NULL DEFAULT 0,
+    [OperationPowerGroupId] int not null default 1,
+    [Sort] INT NOT NULL DEFAULT 0, 
+    CONSTRAINT [PK_TB_SubMenu] PRIMARY KEY ([SubMenuID]) 
 )
 
+GO
+
+CREATE INDEX [IX_TB_SubMenu_Search] ON [dbo].[TB_SubMenu] ([RootMenuID], [Sort])
+
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'子選單',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = NULL,
+    @level2name = NULL
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'子選單代碼',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'SubMenuCode'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'子選單名稱',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'SubMenuName'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'子選單Controller，對應mvc controller',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'MenuController'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'子選單action，對應mvc action',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'MenuAction'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'父選單id，TB_MenuRoot PK',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'RootMenuID'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'是否開新視窗(0:否;1:是;2:內頁)',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'isNewWindow'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'排序，升冪',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_SubMenu',
+    @level2type = N'COLUMN',
+    @level2name = N'Sort'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'功能群組',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = NULL,
-    @level2name = NULL
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'功能群組編號',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
+    @level1name = N'TB_SubMenu',
     @level2type = N'COLUMN',
-    @level2name = N'FuncGroupID'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'功能群組名稱',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = N'FuncGroupName'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'起日',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = 'StartDate'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'迄日',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = 'EndDate'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'建立者',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = N'A_USERID'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'修改者',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = N'U_USERID'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'建立時間',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = N'A_SYSDT'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'修改時間',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_FuncGroup',
-    @level2type = N'COLUMN',
-    @level2name = N'U_SYSDT'
-GO
-
-CREATE INDEX [IX_TB_FuncGroup_Search] ON [dbo].[TB_FuncGroup] ([EndDate], [StartDate], [FuncGroupID], [FuncGroupName])
+    @level2name = N'OperationPowerGroupId'

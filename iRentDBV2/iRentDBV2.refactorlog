@@ -588,4 +588,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="UserGroupID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b1dd5afa-ff2b-4b76-884e-4c5aa2fcee67" ChangeDateTime="11/10/2020 01:31:53">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncGroup].[SD]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StartDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7571984f-3f48-4769-b8f5-939d842523a0" ChangeDateTime="11/10/2020 01:32:00">
+    <Property Name="ElementName" Value="[dbo].[TB_FuncGroup].[ED]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_FuncGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EndDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="72446ca8-4beb-4fec-8500-22ce1d0322ae" ChangeDateTime="11/10/2020 06:33:57">
+    <Property Name="ElementName" Value="[dbo].[TB_UserGroup].[SD]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_UserGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StartDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1a1fc3b1-705b-4df3-8193-46817904ef87" ChangeDateTime="11/10/2020 06:34:04">
+    <Property Name="ElementName" Value="[dbo].[TB_UserGroup].[ED]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_UserGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EndDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="366c5248-a3b8-40e1-9d8a-3662dbec49be" ChangeDateTime="11/10/2020 09:51:12">
+    <Property Name="ElementName" Value="[dbo].[TB_SubMenu].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_SubMenu]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubMenuID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ca95741b-b1d9-44a7-b1eb-24c86a03d402" ChangeDateTime="11/10/2020 09:52:39">
+    <Property Name="ElementName" Value="[dbo].[TB_SubMenu].[isNewWindows]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_SubMenu]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="isNewWindow" />
+  </Operation>
 </Operations>

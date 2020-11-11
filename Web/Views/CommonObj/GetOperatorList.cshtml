@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_Operator>
+
+@{
+    Layout = null;
+    List<SelectListItem> list = new List<SelectListItem>();
+    int OperatorID = ((ViewData["Operator"] == null) ? 0 : Convert.ToInt32(ViewData["Operator"].ToString()));
+}
+@if (Model != null)
+{
+    list.Add(new SelectListItem() { Text = "請選擇", Value = "" });
+}
+@foreach (var Operator in Model)
+{
+    list.Add(new SelectListItem() { Text = Operator.OperatorName, Value = Operator.OperatorID.ToString() });
+}
+
+@Html.DropDownList("ddlOperator", list, new { Class = "form-control" })

@@ -38,7 +38,7 @@
       ,[NPOBAN]
       ,[NOCAMT]
   FROM [dbo].[TB_BookingControl]
-                                                            GO
+GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_BE_GetBookingControlData';
 GO
 EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_BE_GetBookingControlData';

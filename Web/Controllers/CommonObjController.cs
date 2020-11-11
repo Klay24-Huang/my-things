@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Domain.Common.BackEnd;
 using Microsoft.Ajax.Utilities;
 using Reposotory.Implement;
+using Domain.TB.BackEnd;
 
 namespace Web.Controllers
 {
@@ -66,8 +67,17 @@ namespace Web.Controllers
             CarStatusCommon CarRepository = new CarStatusCommon(connetStr);
             bool showAll = false;
             var MachineNoList = CarRepository.GetCarMachineUnBind();
-            ViewData["CarMachineNo"] = SEQNO;
+            ViewData["Operator"] = SEQNO;
             return View(MachineNoList);
+        }
+        [ChildActionOnly]
+        public ActionResult GetOperatorList(int SEQNO)
+        {
+            List<BE_Operator> lstOperators = new OperatorRepository(connetStr).GetOperatorsALL();
+            bool showAll = false;
+        
+            ViewData["Operator"] = SEQNO;
+            return View(lstOperators);
         }
 
     }

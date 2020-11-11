@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountManageRepository.cs" />
     <Compile Include="BackEnd\StationRepository.cs" />
     <Compile Include="BaseRepository.cs" />
     <Compile Include="CarCardCommonRepository.cs" />

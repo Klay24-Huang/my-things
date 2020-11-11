@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.TB;
+using Domain.TB.BackEnd;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -361,6 +362,101 @@ namespace Reposotory.Implement
 
             return lstHoliday;
 
+        }
+        /// <summary>
+        /// 取出選單列表
+        /// </summary>
+        /// <returns></returns>
+        public List<BE_MenuCombind> GetMenuList()
+        {
+            bool flag = false;
+            List<BE_MenuList> lstMenu = null;
+            List<BE_MenuCombind> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT * FROM VW_GetMenuList ORDER BY [Sort] ASC,SubMenuSort asc  ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstMenu = GetObjList<BE_MenuList>(ref flag, ref lstError, SQL, para, term);
+            if (lstMenu != null)
+            {
+                lstData = new List<BE_MenuCombind>();
+                int len = lstMenu.Count;
+                if (len > 0)
+                {
+                    BE_MenuCombind first = new BE_MenuCombind()
+                    {
+                        MenuId = lstMenu[0].MenuId,
+                        MenuCode = lstMenu[0].SubMenuCode.Substring(0, 1),
+                        MenuName = lstMenu[0].MenuName,
+                        Sort = lstMenu[0].Sort,
+                        lstSubMenu = new List<BE_SubMenu>()
+                             
+                    };
+                    first.lstSubMenu.Add(
+                        new BE_SubMenu()
+                        {
+                            isNewWindow = lstMenu[0].isNewWindow,
+                            SubMenuCode = lstMenu[0].SubMenuCode,
+                            MenuAction = lstMenu[0].MenuAction,
+                            MenuController = lstMenu[0].MenuController,
+                            OperationPowerGroupId = lstMenu[0].OperationPowerGroupId,
+                            SubMenuName = lstMenu[0].SubMenuName,
+                            SubMenuSort = lstMenu[0].SubMenuSort
+                        }
+                    );
+                    lstData.Add(first);
+                    for (int i = 1; i < len; i++)
+                    {
+                        int index = lstData.FindIndex(delegate (BE_MenuCombind t)
+                        {
+                            return t.MenuId == lstMenu[i].MenuId;
+                        });
+                        if (index > -1)
+                        {
+                            lstData[index].lstSubMenu.Add(
+                             new BE_SubMenu()
+                             {
+                                 isNewWindow = lstMenu[i].isNewWindow,
+                                 SubMenuCode = lstMenu[i].SubMenuCode,
+                                 MenuAction = lstMenu[i].MenuAction,
+                                 MenuController = lstMenu[i].MenuController,
+                                 OperationPowerGroupId = lstMenu[i].OperationPowerGroupId,
+                                 SubMenuName = lstMenu[i].SubMenuName,
+                                 SubMenuSort = lstMenu[i].SubMenuSort
+                             }
+                         );
+                        }
+                        else
+                        {
+                            BE_MenuCombind tmp = new BE_MenuCombind()
+                            {
+                                MenuId = lstMenu[i].MenuId,
+                                MenuCode = lstMenu[i].SubMenuCode.Substring(0, 1),
+                                MenuName = lstMenu[i].MenuName,
+                                Sort = lstMenu[i].Sort,
+                                lstSubMenu = new List<BE_SubMenu>()
+
+                            };
+                            tmp.lstSubMenu.Add(
+                                new BE_SubMenu()
+                                {
+                                    isNewWindow = lstMenu[i].isNewWindow,
+                                    SubMenuCode = lstMenu[i].SubMenuCode,
+                                    MenuAction = lstMenu[i].MenuAction,
+                                    MenuController = lstMenu[i].MenuController,
+                                    OperationPowerGroupId = lstMenu[i].OperationPowerGroupId,
+                                    SubMenuName = lstMenu[i].SubMenuName,
+                                    SubMenuSort = lstMenu[i].SubMenuSort
+                                }
+                            );
+                            lstData.Add(tmp);
+                        }
+                    }
+                }
+                
+            }
+
+            return lstData;
         }
 
     }

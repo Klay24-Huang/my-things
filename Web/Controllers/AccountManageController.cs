@@ -118,6 +118,75 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult FuncGroupMaintain(string ddlObj,string FuncGroupID,string FuncGroupName,string StartDate,string EndDate)
+        {
+            string errorLine = "";
+            string errorMsg = "";
+            string Mode = ddlObj;
+            bool flag = true;
+            string errCode = "";
+            AccountManageRepository repository = new AccountManageRepository(connetStr);
+            List<BE_GetFuncGroup> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+            ViewData["Mode"] = ddlObj;
+            ViewData["FuncGroupID"] = FuncGroupID;
+            ViewData["FuncGroupName"] = FuncGroupName;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            if (Mode == "Add")
+            {
+                CommonFunc baseVerify = new CommonFunc();
+                string spName = new ObjType().GetSPName(ObjType.SPType.InsFuncGroup);
+                SPInput_BE_InsFuncGroup spInput = new SPInput_BE_InsFuncGroup()
+                {
+
+                    UserID = UserId,
+                    EndDate = Convert.ToDateTime(EndDate + " 23:59:59"),
+                    StartDate = Convert.ToDateTime(StartDate + " 00:00:00"),
+                     FuncGroupID=FuncGroupID,
+                      FuncGroupName=FuncGroupName
+
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_InsFuncGroup, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_InsFuncGroup, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (false == flag)
+                {
+                    errorMsg = baseVerify.GetErrorMsg(errCode);
+                }
+            
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                    lstData = repository.GetFuncGroup("","","","");
+                }
+                else
+                {
+                    ViewData["errorMsg"] = errorMsg;
+                    ViewData["errorLine"] = errorLine.ToString();
+                }
+               
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(StartDate))
+                {
+                    StartDate = StartDate + " 00:00:00";
+                }
+                if (!string.IsNullOrEmpty(EndDate))
+                {
+                    EndDate = EndDate + " 23:59:59";
+                }
+                lstData = repository.GetFuncGroup(FuncGroupID, FuncGroupName, StartDate, EndDate);
+            }
+            return View(lstData);
+
+        }
         /// <summary>
         /// 功能維護
         /// </summary>
@@ -133,6 +202,79 @@ namespace Web.Controllers
         public ActionResult UserGroupMaintain()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult UserGroupMaintain(string ddlObj, string ddlOperator, string UserGroupID, string UserGroupName, string StartDate, string EndDate)
+        {
+            string errorLine = "";
+            string errorMsg = "";
+            string Mode = ddlObj;
+            int OperatorID = (ddlOperator == "") ? 0 : Convert.ToInt32(ddlOperator);
+            bool flag = true;
+            string errCode = "";
+            AccountManageRepository repository = new AccountManageRepository(connetStr);
+            List<BE_UserGroup> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+            ViewData["Mode"] = ddlObj;
+            ViewData["UserGroupID"] = UserGroupID;
+            ViewData["UserGroupName"] = UserGroupName;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["OperatorID"] = OperatorID;
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            if (Mode == "Add")
+            {
+                CommonFunc baseVerify = new CommonFunc();
+                string spName = new ObjType().GetSPName(ObjType.SPType.InsUserGroup);
+                SPInput_BE_InsUserGroup spInput = new SPInput_BE_InsUserGroup()
+                {
+
+                    UserID = UserId,
+                    EndDate = Convert.ToDateTime(EndDate + " 23:59:59"),
+                    StartDate = Convert.ToDateTime(StartDate + " 00:00:00"),
+                    LogID=0,
+                     OperatorID=OperatorID,
+                      UserGroupID=UserGroupID,
+                       UserGroupName=UserGroupName
+
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_InsUserGroup, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_InsUserGroup, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (false == flag)
+                {
+                    errorMsg = baseVerify.GetErrorMsg(errCode);
+                }
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                    lstData = repository.GetUserGroup("", "",0, "", "");
+                }
+                else
+                {
+                    ViewData["errorMsg"] = errorMsg;
+                    ViewData["errorLine"] = errorLine.ToString();
+                }
+
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(StartDate))
+                {
+                    StartDate = StartDate + " 00:00:00";
+                }
+                if (!string.IsNullOrEmpty(EndDate))
+                {
+                    EndDate = EndDate + " 23:59:59";
+                }
+                lstData = repository.GetUserGroup(UserGroupID, UserGroupName,OperatorID, StartDate, EndDate);
+            }
+            return View(lstData);
+       
         }
         /// <summary>
         /// 使用者維護

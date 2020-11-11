@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Domain.TB.BackEnd.BE_Operator>
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetFuncGroup>
 @{
 
-    List<Domain.TB.BackEnd.BE_Operator> lstData = null;
+    List<Domain.TB.BackEnd.BE_GetFuncGroup> lstData = null;
     string FuncGroupID = (ViewData["FuncGroupID"] == null) ? "" : ViewData["FuncGroupID"].ToString();
     string FuncGroupName = (ViewData["FuncGroupName"] == null) ? "" : ViewData["FuncGroupName"].ToString();
     string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
@@ -22,7 +22,7 @@
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            加盟業者維護
+            功能群組維護
         </div>
 
         @using (Html.BeginForm("FuncGroupMaintain", "AccountManage", FormMethod.Post, new { id = "FuncGroupMaintainMaintain", @class = "form-horizontal", enctype = "multipart/form-data" }))
@@ -62,7 +62,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                功能群組名稱名稱
+                                功能群組名稱
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control" type="text" name="FuncGroupName" id="FuncGroupName" value="@FuncGroupName" />
@@ -161,7 +161,7 @@
                 if (ResultLen == 0)
                 {
                     <tr>
-                        <td colspan="8">查無結果</td>
+                        <td colspan="7">查無結果</td>
                     </tr>
                 }
                 else if (ResultLen > 0)
@@ -170,14 +170,14 @@
                     {
                         <tr>
                             <td></td>
-                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].OperatorID)" id="PK_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorID)" /></td>
-                            <td scope="col">@lstData[i].OperatorAccount <input type="text" name="FuncGroupID_@(lstData[i].OperatorID)" id="FuncGroupID_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorAccount)" class="form-control" style="display:none" /></td>
-                            <td scope="col">@lstData[i].OperatorName<input type="text" name="FuncGroupName_@(lstData[i].OperatorID)" id="FuncGroupName_@(lstData[i].OperatorID)" value="@(lstData[i].OperatorName)" class="form-control" style="display:none" /></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].SEQNO)" id="PK_@(lstData[i].SEQNO)" value="@(lstData[i].SEQNO)" /></td>
+                            <td scope="col">@lstData[i].FuncGroupID <input type="text" name="FuncGroupID_@(lstData[i].SEQNO)" id="FuncGroupID_@(lstData[i].SEQNO)" value="@(lstData[i].FuncGroupID)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].FuncGroupName<input type="text" name="FuncGroupName_@(lstData[i].SEQNO)" id="FuncGroupName_@(lstData[i].SEQNO)" value="@(lstData[i].FuncGroupName)" class="form-control" style="display:none" /></td>
                             <td scope="col">
                                 @lstData[i].StartDate.ToString("yyyy-MM-dd")
 
                                 <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].OperatorID)" name="StartDate_@(lstData[i].OperatorID)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].SEQNO)" name="StartDate_@(lstData[i].SEQNO)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
 
                                 </div>
 
@@ -185,14 +185,14 @@
                             <td scope="col">
                                 @lstData[i].EndDate.ToString("yyyy-MM-dd")
                                 <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].OperatorID)" name="EndDate_@(lstData[i].OperatorID)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].SEQNO)" name="EndDate_@(lstData[i].SEQNO)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
 
                                 </div>
                             </td>
                             <td scope="col">
-                                <Button type="button" id="btnEdit_@(lstData[i].OperatorID)" name="btnEdit_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" data-OldIcon="@(lstData[i].OperatorICon)" onclick="DoEdit('@(lstData[i].OperatorID)');">修改</Button>
-                                <Button type="button" id="btnSave_@(lstData[i].OperatorID)" name="btnSave_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].OperatorID)');">儲存</Button>
-                                <Button type="button" id="btnReset_@(lstData[i].OperatorID)" name="btnReset_@(lstData[i].OperatorID)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].OperatorID)');">取消</Button>
+                                <Button type="button" id="btnEdit_@(lstData[i].SEQNO)" name="btnEdit_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" data-OldIcon="@(lstData[i].SEQNO)" onclick="DoEdit('@(lstData[i].SEQNO)');">修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].SEQNO)" name="btnSave_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQNO)');">儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].SEQNO)" name="btnReset_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQNO)');">取消</Button>
                             </td>
                         </tr>
                     }
@@ -205,7 +205,7 @@
         </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
-                <td colspan="5" class="text-center">
+                <td colspan="7" class="text-center">
                     <ul class="pagination"></ul>
                 </td>
             </tr>

@@ -46,6 +46,14 @@ namespace Web.Models.Enum
             /// 加盟業者維護（寫入）
             /// </summary>
             InsOperator,
+            /// <summary>
+            /// 功能群組維護（寫入）
+            /// </summary>
+            InsFuncGroup,
+            /// <summary>
+            /// 使用者群組維護（寫入）
+            /// </summary>
+            InsUserGroup,
         }
         public string GetSPName(ObjType.SPType type)
         {
@@ -75,6 +83,12 @@ namespace Web.Models.Enum
                     break;
                 case SPType.InsOperator:
                     SPName = "usp_BE_InsOperator";
+                    break;
+                case SPType.InsFuncGroup:
+                    SPName = "usp_BE_InsFuncGroup";
+                    break;
+                case SPType.InsUserGroup:
+                    SPName = "usp_BE_InsUserGroup";
                     break;
             }
             return SPName;
