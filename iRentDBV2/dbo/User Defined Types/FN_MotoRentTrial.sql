@@ -21,6 +21,9 @@ BEGIN
    if @SD is null or @ED is null or  @ProjID = '' or @CarType = ''
       return -1
 
+   if @ED < @SD
+      return -1
+
    declare @TotalMinutes int = DATEDIFF(minute, @SD, @ED) --總分鐘數
 
    declare @BaseMinutes int = 0
