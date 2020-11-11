@@ -3,7 +3,7 @@
 -- Create Date: 2020-11-09
 -- Description: 租金試算
 -- =============================================
-CREATE FUNCTION [dbo].[TY_CalSpread]
+CREATE FUNCTION [dbo].[FN_CalSpread]
 (
     @SD datetime, --預計取車時間
 	@ED datetime, --預計還車時間
@@ -44,15 +44,15 @@ BEGIN
 		begin
 		    declare @iSD datetime = dateadd(HOUR, @counter*24, @SD)			
 			declare @str_iSD varchar(20) = convert(varchar, @iSD, 112) 
-			set @totalPay += dbo.TY_calPay(0, 24, @Price, @PriceH, @str_iSD)
+			set @totalPay += dbo.FN_calPay(0, 24, @Price, @PriceH, @str_iSD)
 			set @counter  = @counter  + 1
 		end
 
 		if @tHours > 0
-		   set @totalPay += dbo.TY_calPay(0, @tHours, @Price, @PriceH, @str_DaySD)
+		   set @totalPay += dbo.FN_calPay(0, @tHours, @Price, @PriceH, @str_DaySD)
         
 		if @totalMinutes > 0
-		   set @totalPay += dbo.TY_calPay(@totalMinutes,0, @Price, @PriceH, @str_DaySD)
+		   set @totalPay += dbo.FN_calPay(@totalMinutes,0, @Price, @PriceH, @str_DaySD)
 	end
 	else if @Day = 0
 	begin
@@ -64,7 +64,7 @@ BEGIN
 			if @diffTotalHours > 1
 			begin
 			   if convert(date, @SD) = convert(date, @ED)
-			      set @totalPay = dbo.TY_calPay(@diffTotalMinus, @diffTotalHours, @Price, @PriceH, @str_SD)
+			      set @totalPay = dbo.FN_calPay(@diffTotalMinus, @diffTotalHours, @Price, @PriceH, @str_SD)
                else
 			   begin
 			      declare @ttSD datetime = (dateadd(DAY,(1),@SD))			 
@@ -81,36 +81,36 @@ BEGIN
 				  if @totalEDMinute >= @tmp
 				  begin
 				     set @totalEDMinute -= @tmp
-					 set @totalPay += dbo.TY_calPay(0, @totalSDHours + 1, @Price, @PriceH, @str_SD)
-					 set @totalPay += dbo.TY_calPay(@totalEDMinute, @totalEDHours, @Price, @PriceH, @str_ED)
+					 set @totalPay += dbo.FN_calPay(0, @totalSDHours + 1, @Price, @PriceH, @str_SD)
+					 set @totalPay += dbo.FN_calPay(@totalEDMinute, @totalEDHours, @Price, @PriceH, @str_ED)
 				  end
 				  else
 				  begin
 				     set @totalEDMinute = @totalEDMinute + 60 -@tmp
 					 set @totalEDHours -= 1
-					 set @totalPay += dbo.TY_calPay(0, @totalSDHours+1, @Price, @PriceH, @str_SD)
-					 set @totalPay += dbo.TY_calPay(@totalEDMinute, @totalEDHours, @Price, @PriceH, @str_ED)
+					 set @totalPay += dbo.FN_calPay(0, @totalSDHours+1, @Price, @PriceH, @str_SD)
+					 set @totalPay += dbo.FN_calPay(@totalEDMinute, @totalEDHours, @Price, @PriceH, @str_ED)
 				  end
 			   end
 			end
 			else if @diffTotalHours = 1 and @diffTotalMinus = 0
 			begin
-			   set @totalPay += dbo.TY_calPay(0, 1, @Price, @PriceH, @str_SD)
+			   set @totalPay += dbo.FN_calPay(0, 1, @Price, @PriceH, @str_SD)
 			end
 			else if @diffTotalHours = 1 and @diffTotalMinus > 0
 			begin
-			   set @totalPay += dbo.TY_calPay(0,1,@Price, @PriceH, @str_SD)
-			   set @totalPay += dbo.TY_calPay(@diffTotalMinus, 0, @Price, @PriceH, @str_ED)
+			   set @totalPay += dbo.FN_calPay(0,1,@Price, @PriceH, @str_SD)
+			   set @totalPay += dbo.FN_calPay(@diffTotalMinus, 0, @Price, @PriceH, @str_ED)
 			end
 			else if @diffTotalHours < 1
 			begin
-			   set @totalPay+= dbo.TY_calPay(0,1,@Price,@PriceH,@str_SD)
+			   set @totalPay+= dbo.FN_calPay(0,1,@Price,@PriceH,@str_SD)
 			end
 	     end
 		 else	   
 		 begin
 		    -- 大於十小時，小於1天
-		    set @totalPay = dbo.TY_calPay(@totalMinutes, @tHours, @Price, @PriceH, @str_SD)
+		    set @totalPay = dbo.FN_calPay(@totalMinutes, @tHours, @Price, @PriceH, @str_SD)
          end
 	end
 

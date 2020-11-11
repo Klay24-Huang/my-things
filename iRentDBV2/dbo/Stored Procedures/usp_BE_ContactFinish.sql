@@ -136,7 +136,9 @@ SET @ParkingSpace='';
 					ELSE
 					BEGIN
 						UPDATE TB_OrderDetail
-						SET [already_return_car]=1,[already_payment]=1
+						--SET [already_return_car]=1,[already_payment]=1
+						--20201110 UPD BY JERRY 不管何種狀態都要更新final_stop_time
+						SET [already_return_car]=1,[already_payment]=1,final_stop_time=@ReturnDate
 						WHERE order_number=@OrderNo;
 					END
 					--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理

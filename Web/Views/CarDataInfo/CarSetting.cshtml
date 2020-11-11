@@ -126,16 +126,16 @@
                     <tr>
                         <td></td>
                         <td scope="row">@((i+1).ToString())</td>
-                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col">@(lstData[i].CarNo.Trim())</td>
                         <td scope="col">
                             @(string.Format("{0}({1})",lstData[i].StationName,lstData[i].StationID))
-                            <input type="text" name="Station_@(lstData[i].CarNo)" id="Station_@(lstData[i].CarNo)" value="@lstData[i].StationID" class="form-control" style="display:none" />
+                            <input type="text" name="Station_@(lstData[i].CarNo.Trim())" id="Station_@(lstData[i].CarNo.Trim())" value="@lstData[i].StationID" class="form-control" style="display:none" />
                         </td>
 
                         <td scope="col">
-                            <Button type="button" id="btnEdit_@(lstData[i].CarNo)" name="btnEdit_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].CarNo)');>修改</Button>
-                            <Button type="button" id="btnSave_@(lstData[i].CarNo)" name="btnSave_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].CarNo)');>儲存</Button>
-                            <Button type="button" id="btnReset_@(lstData[i].CarNo)" name="btnReset_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].CarNo)');>取消</Button>
+                            <Button type="button" id="btnEdit_@(lstData[i].CarNo.Trim())" name="btnEdit_@(lstData[i].CarNo.Trim())" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].CarNo.Trim())')">修改</Button>
+                            <Button type="button" id="btnSave_@(lstData[i].CarNo.Trim())" name="btnSave_@(lstData[i].CarNo.Trim())" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].CarNo.Trim())')">儲存</Button>
+                            <Button type="button" id="btnReset_@(lstData[i].CarNo.Trim())" name="btnReset_@(lstData[i].CarNo.Trim())" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].CarNo.Trim())')">取消</Button>
                         </td>
                     </tr>
                 }

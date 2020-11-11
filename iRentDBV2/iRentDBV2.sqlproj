@@ -348,9 +348,7 @@
     <Build Include="dbo\Views\VW_BE_GetOrderModifyInfo.sql" />
     <Build Include="dbo\Tables\TB_OrderModifyLog.sql" />
     <Build Include="dbo\Views\VW_BE_InsBookingControl.sql" />
-    <Build Include="dbo\User Defined Types\TY_calPay.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
-    <Build Include="dbo\User Defined Types\TY_CalSpread.sql" />
     <Build Include="dbo\Views\VW_BE_GetLandControl.sql" />
     <Build Include="dbo\Tables\TB_Trade.sql" />
     <Build Include="dbo\Views\VW_BE_GetReturnControl.sql" />
@@ -361,6 +359,8 @@
     <Build Include="dbo\Tables\TB_UserGroup.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CheckFuncGroup.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_CheckUserGroup.sql" />
+    <Build Include="dbo\User Defined Types\FN_calPay.sql" />
+    <Build Include="dbo\User Defined Types\FN_CalSpread.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsFuncGroup.sql" />
     <Build Include="dbo\Views\VW_BE_GetFuncGroup.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_UPDFuncGroup.sql" />
