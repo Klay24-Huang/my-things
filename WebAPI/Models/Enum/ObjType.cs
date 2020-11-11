@@ -306,6 +306,10 @@ namespace WebAPI.Models.Enum
             /// 20201103 ADD BY ADAM
             /// </summary>
             GetInsurancePrice,
+            /// <summary>
+            /// 
+            /// </summary>
+            BookingControl,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -459,7 +463,6 @@ namespace WebAPI.Models.Enum
                 BE_BookingControlSuccess,
 
             #endregion
-
         }
         /// <summary>
         /// 取出SPName
@@ -648,7 +651,6 @@ namespace WebAPI.Models.Enum
                 case SPType.CheckCanOpenDoor:
                     SPName = "usp_CheckCanOpenDoor";
                     break;
-
                 case SPType.InsOpenDoorCode:
                     SPName = "usp_InsOpenDoorCode";
                     break;
@@ -693,6 +695,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetInsurancePrice:  //20201103 ADD BY ADAM REASON.
                     SPName = "usp_GetInsurancePrice";
+                    break;
+                case SPType.BookingControl:
+                    SPName = "usp_BookingControl";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
