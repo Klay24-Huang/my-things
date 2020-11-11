@@ -3,7 +3,7 @@
 -- Create Date: 2020-11-09
 -- Description: 計算租金
 -- =============================================
-CREATE FUNCTION [dbo].[TY_calPay]
+CREATE FUNCTION [dbo].[FN_calPay]
 (
     @mins int, --分
 	@hours float, --時
@@ -39,7 +39,7 @@ BEGIN
     where h.HolidayDate = @DateStr 
 	and h.use_flag = 1
 
-	if @HolidayIndex >= 0
+	if @HolidayIndex > 0
 	begin
 	  set @tmpPay = @hours * (@PriceH/10)
 	  if @tmpPay > @PriceH

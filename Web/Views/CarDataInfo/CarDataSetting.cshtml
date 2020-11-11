@@ -167,12 +167,12 @@
                                 <input type="text" name="Memo_@(lstData[i].CarNo)" id="Memo_@(lstData[i].CarNo)" value="@lstData[i].Memo" class="form-control" style="display:none" />
                             </td>
                             <td scope="col">
-                                <Button type="button" id="btnShow_@(lstData[i].CarNo)" name="btnShow_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick=ShowDetail('@(lstData[i].CarNo)');>基本資料</Button>
-                                <Button type="button" id="btnSettingOnline_@(lstData[i].CarNo)" name="btnSettingOnline_@(lstData[i].CarNo)" class="btn btn-outline-secondary" @(HasDisabled) onclick=SetOnline('@(lstData[i].CarNo)',@(Cmd));>@(SettingOnline)</Button>
+                                <Button type="button" id="btnShow_@(lstData[i].CarNo)" name="btnShow_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick="ShowDetail('@(lstData[i].CarNo)')">基本資料</Button>
+                                <Button type="button" id="btnSettingOnline_@(lstData[i].CarNo)" name="btnSettingOnline_@(lstData[i].CarNo)" class="btn btn-outline-secondary" @(HasDisabled) onclick="SetOnline('@(lstData[i].CarNo)',@(Cmd))">@(SettingOnline)</Button>
                                 <!--設定備註用-->
-                                <Button type="button" id="btnEdit_@(lstData[i].CarNo)" name="btnEdit_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].CarNo)');>設定備註</Button>
-                                <Button type="button" id="btnSave_@(lstData[i].CarNo)" name="btnSave_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].CarNo)');>儲存</Button>
-                                <Button type="button" id="btnReset_@(lstData[i].CarNo)" name="btnReset_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].CarNo)');>取消</Button>
+                                <Button type="button" id="btnEdit_@(lstData[i].CarNo)" name="btnEdit_@(lstData[i].CarNo)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].CarNo)')">設定備註</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].CarNo)" name="btnSave_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].CarNo)')">儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].CarNo)" name="btnReset_@(lstData[i].CarNo)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].CarNo)')">取消</Button>
                                 <!--設定備註用結束-->
                             </td>
                         </tr>
