@@ -118,6 +118,12 @@ namespace WebAPI.Controllers
                             projectRepository = new ProjectRepository(connetStr);
                             obj = projectRepository.GetProjectInfo(apiInput.ProjID);
 
+                            if (obj != null)
+                            {
+                                PayMode = obj.PayMode;
+                                ProjType = obj.PROJTYPE;
+                            }
+
                             if (string.IsNullOrWhiteSpace(apiInput.CarType) && string.IsNullOrWhiteSpace(apiInput.CarNo))
                             {
                                 errCode = "ERR900";
@@ -135,8 +141,6 @@ namespace WebAPI.Controllers
                             {
                                 if (obj != null)
                                 {
-                                    PayMode = obj.PayMode;
-                                    ProjType = obj.PROJTYPE;
                                     if (ProjType == 0)
                                     {
                                         QueryMode = 0;
@@ -232,10 +236,11 @@ namespace WebAPI.Controllers
                         //if (priceBase != null)
                         if (priceBase.Count > 0)
                         {
+                            int InsurancePer10Hours = priceBase[0].InsurancePerHours * 10;
                             outputApi = new OAPI_GetEstimate()
                             {
                                 CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, lstHoliday)),
-                                InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0,
+                                InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, lstHoliday)) : 0,
                                 InsurancePerHour = priceBase[0].InsurancePerHours,
                                 MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
                                 MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)

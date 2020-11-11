@@ -222,6 +222,7 @@ namespace WebAPI.Controllers
                                    OperatorScore = a.OperatorScore,
                                    PayMode = a.PayMode,
                                    Price = a.PriceBill, //租金改抓sp
+                                   Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
                                    PRICE_H = a.PRICE_H, //目前用不到
                                    PRODESC = a.PRODESC,
                                    PROJID = a.PROJID,
@@ -270,7 +271,7 @@ namespace WebAPI.Controllers
                                 //Bill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                                 //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday)),
                                 Price = lstData[0].Price,
-                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
+                                WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price_W / 10 : lstData[0].Price_W,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = "",
@@ -308,7 +309,7 @@ namespace WebAPI.Controllers
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
-                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price_W / 10 : lstData[i].Price_W,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
@@ -357,7 +358,7 @@ namespace WebAPI.Controllers
                                         Seat = lstData[i].Seat,
                                         //Bill = tmpBill,
                                         Price = tmpBill,
-                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
+                                        WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price_W / 10 : lstData[i].Price_W,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
