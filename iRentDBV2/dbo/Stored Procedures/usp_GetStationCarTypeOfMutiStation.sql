@@ -294,7 +294,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				LEFT JOIN TB_MilageSetting MS WITH(NOLOCK) ON MS.ProjID=P.PROJID AND MS.use_flag=1 AND @NowTime BETWEEN MS.SDate AND MS.EDate
 				--LEFT JOIN (SELECT CarNo FROM #TB_OrderMain GROUP BY CarNo) T ON C.CarNo=T.CarNo
 				WHERE 1=1
-				AND D.CarTypeName = CASE WHEN @CarType<>'' THEN @CarType ELSE D.CarTypeName END
+				AND E.CarTypeGroupCode = CASE WHEN @CarType<>'' THEN @CarType ELSE E.CarTypeGroupCode END
 				AND SPCLOCK='Z'
 				ORDER BY StationID,Price,IsRent DESC
 
