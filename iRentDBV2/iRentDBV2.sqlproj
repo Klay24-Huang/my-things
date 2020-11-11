@@ -370,6 +370,7 @@
     <Build Include="dbo\Tables\TB_SubMenu.sql" />
     <Build Include="dbo\Views\VW_GetMenuList.sql" />
     <Build Include="dbo\Views\VW_GetDefPowerList.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentTrial.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
