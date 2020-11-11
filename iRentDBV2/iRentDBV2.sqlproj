@@ -371,6 +371,7 @@
     <Build Include="dbo\Views\VW_GetMenuList.sql" />
     <Build Include="dbo\Views\VW_GetDefPowerList.sql" />
     <Build Include="dbo\User Defined Types\FN_MotoRentTrial.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BookingControl.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetCarStatus.sql" />
   </ItemGroup>
   <ItemGroup>

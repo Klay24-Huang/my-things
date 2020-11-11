@@ -2,6 +2,7 @@
 using Domain.Common;
 using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
@@ -54,22 +55,17 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             MotorInfo info = new MotorInfo();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
             string CID = "";
             string deviceToken = "";
             int IsMotor = 0;
             int IsCens = 0;
             double mil = 0;
-            DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -101,11 +97,9 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -125,7 +119,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -178,7 +171,6 @@ namespace WebAPI.Controllers
                         method = CommandType,
                         requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                         _params = new Params()
-
                     };
                     requestId = input.requestId;
                     string method = CommandType;
@@ -187,7 +179,7 @@ namespace WebAPI.Controllers
                     {
                         flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                     }
-                    
+
                     if (flag)
                     {
                         info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
@@ -213,6 +205,21 @@ namespace WebAPI.Controllers
                     flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                     baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                     #endregion
+                    if (flag)
+                    {
+                        string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                        SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            LogID = LogID
+                        };
+                        SPOutput_Base SPBookingControlOutput = new SPOutput_Base();
+                        SQLHelper<SPInput_BookingControl, SPOutput_Base> SQLBookingControlHelp = new SQLHelper<SPInput_BookingControl, SPOutput_Base>(connetStr);
+                        flag = SQLBookingControlHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingControlOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPBookingControlOutput, ref lstError, ref errCode);
+                    }
                     #region 設定租約
                     if (flag)
                     {
@@ -226,7 +233,6 @@ namespace WebAPI.Controllers
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                 _params = new BLECode()
-
                             };
                             RentInput._params.BLE_Code = IDNO.Substring(0, 9);
                             requestId = RentInput.requestId;
@@ -235,7 +241,6 @@ namespace WebAPI.Controllers
                             if (flag)
                             {
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-
                             }
 
                             if (flag)
@@ -248,20 +253,15 @@ namespace WebAPI.Controllers
                                     outputApi.BLEDEVICEID = ble.BLE_Device;
                                     outputApi.BLEDEVICEPWD = ble.BLE_PWD;
                                 }
-
                             }
                         }
-                      
                     }
                     #endregion
-                    
                 }
-
             }
             #region 寫取車照片到azure
             if (flag)
             {
-
                 OtherRepository otherRepository = new OtherRepository(connetStr);
                 List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
                 int PICLen = lstCarPIC.Count;
@@ -282,12 +282,12 @@ namespace WebAPI.Controllers
                         flag = true; //先bypass，之後補傳再刪
                     }
                 }
-
             }
             #endregion
             #endregion
+
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

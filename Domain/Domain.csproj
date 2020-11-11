@@ -161,6 +161,7 @@
     <Compile Include="SP\Input\Register\SPInput_ReSendEMail.cs" />
     <Compile Include="SP\Input\Register\SPInput_UploadCredentials.cs" />
     <Compile Include="SP\Input\Register\SPInput_VerifyEMail.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_BookingControl.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
