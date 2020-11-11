@@ -48,6 +48,7 @@ CREATE PROCEDURE [dbo].[usp_InsReceiveCMD]
 	@method					VARCHAR(50) , 
 	@CmdReply				VARCHAR(20) ,
 	@receiveRawData         VARCHAR(1000),
+	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -58,7 +59,6 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @LogID   BIGINT;
 DECLARE @CID	VARCHAR(10);
 DECLARE @deviceToken	VARCHAR(512);
 DECLARE @extDeviceData5 VARCHAR(128);
@@ -83,7 +83,6 @@ SET @extDeviceData5 = '';
 SET @extDeviceData6 = '';
 SET @receiveRawData	 =ISNULL(@receiveRawData	,'');
 SET @CmdReply	 =ISNULL(@CmdReply	,'');
-SET @LogID=0;
 
 		BEGIN TRY
 		 IF @requestId='' OR @method='' OR @CmdReply=''
