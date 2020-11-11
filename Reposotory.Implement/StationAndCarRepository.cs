@@ -637,18 +637,23 @@ namespace Reposotory.Implement
                    irs.Content,
                    irs.Area As CarOfArea,
                    VW.StationID,
-                    Insurance = CASE WHEN @IDNO='' THEN 0 ELSE 1 END,
-                    InsurancePerHours
+                    Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
+                    InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+            JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
+			JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
-            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y'
-            LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel
+            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3
+            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel
+            LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
-              AND ISNULL(BIOU.IDNO,'') = CASE WHEN @IDNO='' THEN ISNULL(BIOU.IDNO,'') ELSE @IDNO END
-              AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
+
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
