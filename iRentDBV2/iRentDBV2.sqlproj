@@ -374,6 +374,7 @@
     <Build Include="dbo\Stored Procedures\usp_GetInsurancePrice.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetProjectPriceBase.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMotorStatus.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentCompute.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
