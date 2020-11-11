@@ -128,12 +128,12 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
             string term2 = "";
-            string SQL = " SELECT * FROM VW_GetAuditList ";
+            string SQL = " SELECT * FROM VW_GetAuditList WITH(NOLOCK) ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
             {
                 if (term != "") { term += " AND "; }
-                term += " MEMIDNO=@IDNO";
+                term += " MEMIDNO=IDNO";
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;

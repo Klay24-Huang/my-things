@@ -611,6 +611,7 @@
     <Content Include="Views\Report\ParkingCheckInQuery.cshtml" />
     <Content Include="Views\Report\ChargeParkingDetailQuery.cshtml" />
     <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
+    <None Include="Properties\PublishProfiles\iRentV2-BackEnd - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
     <Content Include="Views\Home\ChangePWD.cshtml" />
     <Content Include="Views\CommonObj\GetCarHiddenList.cshtml" />

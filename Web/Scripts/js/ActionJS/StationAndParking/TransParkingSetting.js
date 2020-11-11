@@ -66,6 +66,7 @@ $(document).ready(function () {
         }
     }
 
+    setPostbackValue();
 });
 function DoReset(Id) {
     if (NowEditID > 0) {

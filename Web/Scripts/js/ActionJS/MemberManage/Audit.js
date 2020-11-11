@@ -9,6 +9,8 @@
             }
         });
     }
+
+    setPostbackValue();
 });
 function GoDetail(IDNO) {
     ShowLoading("資料讀取車…");

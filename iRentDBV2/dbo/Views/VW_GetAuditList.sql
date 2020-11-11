@@ -1,7 +1,7 @@
 ﻿CREATE VIEW [dbo].[VW_GetAuditList]
 	AS 
 	  SELECT MKTime AS ApplyDate,MEMCNAME,MEMIDNO,SUBSTRING(MEMIDNO,2,1) AS SEX,AuditKind,HasAudit,IsNew,SUBSTRING(MEMIDNO,10,1) AS IDNOSUFF
-  FROM [TB_MemberDataOfAutdit]
+  FROM [TB_MemberDataOfAutdit] WITH(NOLOCK)
   GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetAuditList';
 GO

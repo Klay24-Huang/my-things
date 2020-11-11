@@ -44,7 +44,8 @@ SELECT Car.CarNo,
        op.Score,
        cg.CarTypeImg,
        cg.Seat,
-       Station.Area
+       Station.Area,
+       cg.CarTypeGroupCode      --20201109 ADD BY ADAM REASON.
 FROM dbo.TB_CarStatus AS CarStatus WITH (NOLOCK)
 INNER JOIN dbo.TB_Car AS Car WITH (NOLOCK) ON Car.CarNo = CarStatus.CarNo
 INNER JOIN dbo.TB_OperatorBase AS op WITH (NOLOCK) ON op.OperatorID = Car.Operator

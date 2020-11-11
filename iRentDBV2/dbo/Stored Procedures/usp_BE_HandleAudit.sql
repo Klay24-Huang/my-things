@@ -41,6 +41,7 @@
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
 ** 2020/11/4 上午 06:14:18    |  Eric|          First Release
+** 2020/11/9 下午 16:25:18    |  Jerry|          通過審核@isReject設定為0
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_HandleAudit]
@@ -119,10 +120,17 @@ SET @UserID    =ISNULL (@UserID    ,'');
 			BEGIN
 				SET @isReject=1;
 			END
+			--20201109 UPD BY JERRY 通過審核@isReject設定為0
+			ELSE
+			BEGIN
+				SET @isReject=0;
+			END
 			DECLARE @AuditKind TINYINT;
 			DECLARE @AuditID BIGINT;
 			SET @AuditKind=0;
-			SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO ORDER BY AuditID DESC
+			--SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO ORDER BY AuditID DESC
+			--20201109 UPD BY JERRY 只取未審核的資料
+			SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY AuditID DESC
 			INSERT INTO TB_AuditHistory([IDNO],[AuditUser],[AuditDate],[HandleItem],[HandleType],[IsReject],[RejectReason],	[RejectExplain])VALUES(@IDNO,@UserID,@NowTime,@IsNew,@AuditKind,@isReject,@NotAuditReason,@RejectReason);
 
 		 	IF @AuditStatus=1 --審核通過

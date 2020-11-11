@@ -177,7 +177,8 @@ namespace WebAPI.Controllers
                                            Operator = a.Operator,
                                            OperatorScore = a.OperatorScore,
                                            Seat = a.Seat,
-                                           Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, a.Price_N, a.Price_H, lstHoliday))
+                                           //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, a.Price_N, a.Price_H, lstHoliday))
+                                           Price = a.Price
                                        }).ToList();
                     }
                 }
@@ -201,7 +202,8 @@ namespace WebAPI.Controllers
                                     Operator = lstData[i].Operator,
                                     OperatorScore = lstData[i].OperatorScore,
                                     Seat = lstData[i].Seat,
-                                    Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price_N, lstData[i].Price_H, lstHoliday))
+                                    //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price_N, lstData[i].Price_H, lstHoliday))
+                                    Price = lstData[i].Price
                                 };
                                 iRentStations.Add(obj);
                             }

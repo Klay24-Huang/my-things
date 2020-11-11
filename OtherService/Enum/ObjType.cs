@@ -39,6 +39,8 @@ namespace OtherService.Enum
              /// </summary>
              HandleCarStatusByMotor,
             BE_HandleCarMachineData,
+            CheckTokenOnlyToken,
+            CheckTokenReturnID,
         }
         /// <summary>
         /// 取出SPName

@@ -87,37 +87,36 @@ SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
 
-	BEGIN TRY     
+	BEGIN TRY
+		IF @StationIDs IS NULL OR @StationIDs = ''
+		BEGIN
+			SET @Error=1
+			SET @ErrorMsg = 'StationIDs必填'
+		END
 
-	   IF @StationIDs IS NULL OR @StationIDs = ''
-	   BEGIN
-		   SET @Error=1
-		   SET @ErrorMsg = 'StationIDs必填'
-	   END
+		IF @SD IS NULL 
+		BEGIN
+			SET @Error=1
+			SET @ErrorMsg = 'SD必填'
+		END
 
-	   IF @SD IS NULL 
-	   BEGIN
-		   SET @Error=1
-		   SET @ErrorMsg = 'SD必填'
-	   END
+		IF @ED IS NULL 
+		BEGIN
+			SET @Error=1
+			SET @ErrorMsg = 'ED必填'
+		END
 
-	   IF @ED IS NULL 
-	   BEGIN
-		   SET @Error=1
-		   SET @ErrorMsg = 'ED必填'
-	   END
+		IF @LogID IS NULL OR @LogID = ''
+		BEGIN
+			SET @Error=1
+			SET @ErrorMsg = 'LogID必填'
+		END
 
-	   IF @LogID IS NULL OR @LogID = ''
-	   BEGIN
-		   SET @Error=1
-		   SET @ErrorMsg = 'LogID必填'
-	   END
-
-	   DECLARE @tb_StationID TABLE (StationID varchar(max))
-	   DECLARE @tb_StationID_Count int = 0
-	   IF @Error = 0
-	   BEGIN
-	        DECLARE @returnList TABLE ([Name] [nvarchar] (max))
+		DECLARE @tb_StationID TABLE (StationID varchar(max))
+		DECLARE @tb_StationID_Count int = 0
+		IF @Error = 0
+		BEGIN
+			DECLARE @returnList TABLE ([Name] [nvarchar] (max))
 			DECLARE @stringToSplit VARCHAR(MAX) = @StationIDs		
 			DECLARE @name NVARCHAR(max)
 			DECLARE @pos INT
@@ -147,11 +146,11 @@ SET @hasData=0;
 				SET @Error=1
 				SET @ErrorMsg = 'StationIDs至少要有1筆'
 			END
-	   END 
+		END 
 
-	   SET @CarType = ISNULL(@CarType,'')
+		SET @CarType = ISNULL(@CarType,'')
 
-        --查詢
+		--查詢
 		IF @Error = 0
 		BEGIN
 		   BEGIN
@@ -249,8 +248,10 @@ SET @hasData=0;
 				SELECT  DISTINCT StationID		= C.nowStationID
 						,PROJID					= P.PROJID
 						,PRONAME				= P.PRONAME
+						,PRODESC				= P.PRODESC
 						,Price					= P.PROPRICE_N			--平日
 						,Price_H				= P.PROPRICE_H			--假日
+						,PriceBill              = dbo.TY_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
 						,CarBrend				= D.CarBrend
 						,CarType				= E.CarTypeGroupCode
 						,CarTypeName			= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
@@ -293,14 +294,14 @@ SET @hasData=0;
 
 				DROP TABLE #TB_OrderMain
 				DROP TABLE #BookingList
-		   END
-        END
+			END
+		END
 
 		--寫入錯誤訊息
 		IF @Error=1
 		BEGIN
 			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 		END
 	END TRY
 	BEGIN CATCH
@@ -316,8 +317,8 @@ SET @hasData=0;
         END
         SET @IsSystem=1;
         SET @ErrorType=4;
-                INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-                VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 	END CATCH
 RETURN @Error
 

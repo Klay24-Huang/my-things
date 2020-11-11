@@ -348,6 +348,9 @@
     <Build Include="dbo\Views\VW_BE_GetOrderModifyInfo.sql" />
     <Build Include="dbo\Tables\TB_OrderModifyLog.sql" />
     <Build Include="dbo\Views\VW_BE_InsBookingControl.sql" />
+    <Build Include="dbo\User Defined Types\TY_calPay.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberData.sql" />
+    <Build Include="dbo\User Defined Types\TY_CalSpread.sql" />
     <Build Include="dbo\Views\VW_BE_GetLandControl.sql" />
     <Build Include="dbo\Tables\TB_Trade.sql" />
     <Build Include="dbo\Views\VW_BE_GetReturnControl.sql" />

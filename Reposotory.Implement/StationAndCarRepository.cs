@@ -154,18 +154,36 @@ namespace Reposotory.Implement
         /// <summary>
         /// 取得所有車輛
         /// </summary>
+        /// /// <param name="IDNO">客戶代碼</param> 20201109 ADD BY ADAM
         /// <returns></returns>
-        public List<AnyRentObj> GetAllAnyRent()
+        public List<AnyRentObj> GetAllAnyRent(string IDNO)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
+            //20201109 ADD BY ADAM REASON.補上安心服務
             string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
-            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
-            SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID ";
-            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
+            //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
+            SQL += (IDNO == "" ? " 0" : " 1" ) + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            if (IDNO.Length > 0)
+            {
+                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+            }
+            SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
+            if (IDNO == "")
+            {
+                SQL += " AND II.InsuranceLevel=3 ";
+            }
+            else
+            {
+                SQL += " AND IDNO='" + IDNO + "' ";
+            }
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -175,11 +193,12 @@ namespace Reposotory.Implement
         /// <summary>
         /// 取出方圓車輛
         /// </summary>
+        /// <param name="IDNO">客戶代碼</param> 20201109 ADD BY ADAM
         /// <param name="lat">緯度</param>
         /// <param name="lng">經度</param>
         /// <param name="radius">半徑（單位公里）</param>
         /// <returns></returns>
-        public List<AnyRentObj> GetAllAnyRent(double lat, double lng, double radius)
+        public List<AnyRentObj> GetAllAnyRent(string IDNO,double lat, double lng, double radius)
         {
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
@@ -190,11 +209,28 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
+            //20201109 ADD BY ADAM REASON.補上安心服務
             string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
-            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
-            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID ";
-            SQL += " FROM [VW_GetAllAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
+            //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
+            SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
+            SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            if (IDNO.Length > 0)
+            {
+                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+            }
+            SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
+            if (IDNO == "")
+            {
+                SQL += " AND II.InsuranceLevel=3 ";
+            }
+            else
+            {
+                SQL += " AND IDNO='" + IDNO + "' ";
+            }
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -577,7 +613,7 @@ namespace Reposotory.Implement
         /// <param name="SDate"></param>
         /// <param name="EDate"></param>
         /// <returns></returns>
-        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string CarNo, DateTime SDate, DateTime EDate)
+        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string IDNO,string CarNo, DateTime SDate, DateTime EDate)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -600,13 +636,19 @@ namespace Reposotory.Implement
                    VW.PayMode,
                    irs.Content,
                    irs.Area As CarOfArea,
-                   VW.StationID
+                   VW.StationID,
+                    Insurance = CASE WHEN @IDNO='' THEN 0 ELSE 1 END,
+                    InsurancePerHours
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
+            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y'
+            LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
+              AND ISNULL(BIOU.IDNO,'') = CASE WHEN @IDNO='' THEN ISNULL(BIOU.IDNO,'') ELSE @IDNO END
+              AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -614,6 +656,10 @@ namespace Reposotory.Implement
             {
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
                 para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 10);
+                para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
                 //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
