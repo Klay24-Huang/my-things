@@ -74,6 +74,7 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
+DECLARE @TotalHours FLOAT;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -86,6 +87,7 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
+SET @NowTime = DATEADD(hour,8,GETDATE())
 
 	BEGIN TRY
 		IF @StationIDs IS NULL OR @StationIDs = ''
@@ -149,6 +151,9 @@ SET @hasData=0;
 		END 
 
 		SET @CarType = ISNULL(@CarType,'')
+
+		--計算預估時數
+		SELECT @TotalHours = dbo.FN_CalHours(@SD,@ED)
 
 		--查詢
 		IF @Error = 0
@@ -252,13 +257,15 @@ SET @hasData=0;
 						,Price					= P.PROPRICE_N			--平日
 						,Price_H				= P.PROPRICE_H			--假日
 						,PriceBill              = dbo.FN_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
+												+ (@TotalHours * ISNULL(MS.MilageBase,0)*20)
+												+ (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END)
 						,CarBrend				= D.CarBrend
 						,CarType				= E.CarTypeGroupCode
 						,CarTypeName			= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
-						,CarTypePic				= E.CarTypeImg			--車輛ICON對照
-						,Operator				= O.OperatorICon		--運營商ICON
-						,OperatorScore			= O.Score				--分數
-						,Seat					= E.Seat				--座椅數
+						,CarTypePic				= E.CarTypeImg					--車輛ICON對照
+						,Operator				= O.OperatorICon				--運營商ICON
+						,OperatorScore			= O.Score						--分數
+						,Seat					= E.Seat						--座椅數
 						,ADDR					= ISNULL(I.ADDR,'')				--據點位置
 						,StationName			= ISNULL(I.Location,'')			--據點名稱
 						,Longitude				= ISNULL(I.Longitude,0)
@@ -284,6 +291,7 @@ SET @hasData=0;
 							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
 							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
 				LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=E.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+				LEFT JOIN TB_MilageSetting MS WITH(NOLOCK) ON MS.ProjID=P.PROJID AND MS.use_flag=1 AND @NowTime BETWEEN MS.SDate AND MS.EDate
 				--LEFT JOIN (SELECT CarNo FROM #TB_OrderMain GROUP BY CarNo) T ON C.CarNo=T.CarNo
 				WHERE 1=1
 				AND D.CarTypeName = CASE WHEN @CarType<>'' THEN @CarType ELSE D.CarTypeName END
