@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -13,7 +14,10 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using Domain.SP.Input.Bill;
+using Domain.SP.Output.Bill;
 using WebCommon;
+using System.Data;
 
 namespace WebAPI.Controllers
 {
@@ -45,6 +49,7 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ProjectPriceBase> priceBase = new List<ProjectPriceBase>();
             StationAndCarRepository _repository;
             ProjectRepository projectRepository;
             Int16 APPKind = 2;
@@ -56,6 +61,7 @@ namespace WebAPI.Controllers
             int QueryMode = 0;
             int PayMode = 0;
             int ProjType = 0;
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -154,20 +160,44 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
+            //20201109 ADD BY ADAM REASON.TOKEN判斷修改
             //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
+            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            {
+                /*
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
 
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
+                    LogID = LogID,
+                    Token = Access_Token
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                */
+
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    Token = Access_Token_string.Split(' ')[1].ToString()
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //
+                if (spOut.ErrorCode == "ERR101")
+                {
+                    flag = true;
+                }
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
@@ -179,19 +209,39 @@ namespace WebAPI.Controllers
                 if (QueryMode == 0 || (QueryMode == 1 && ProjType == 3))
                 {
 
-                    ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
-
-                    if (priceBase != null)
+                    //ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
+                    //20201110 ADD BY ADAM REASON.改為sp處理
+                    SPInput_GetProjectPriceBase spInput = new SPInput_GetProjectPriceBase()
                     {
-                        outputApi = new OAPI_GetEstimate()
+                        ProjID = apiInput.ProjID,
+                        CarNo = apiInput.CarNo,
+                        CarType = apiInput.CarType,
+                        ProjType = ProjType,
+                        IDNO = IDNO,
+                        LogID = LogID
+                    };
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.GetProjectPriceBase);
+                    SPOutput_Base spOutBase = new SPOutput_Base();
+                    SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base>(connetStr);
+                    DataSet ds = new DataSet();
+                    flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref priceBase, ref ds, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        //if (priceBase != null)
+                        if (priceBase.Count > 0)
                         {
-                            CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday)),
-                            InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0,
-                            InsurancePerHour = 20,
-                            MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
-                            MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
-                        };
-                        outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
+                            outputApi = new OAPI_GetEstimate()
+                            {
+                                CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, lstHoliday)),
+                                InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0,
+                                InsurancePerHour = priceBase[0].InsurancePerHours,
+                                MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
+                                MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
+                            };
+                            outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
+                        }
                     }
                 }
                 else

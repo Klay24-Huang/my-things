@@ -314,6 +314,10 @@ namespace WebAPI.Models.Enum
             /// 
             /// </summary>
             BookingControl,
+            /// 取得專案基本價格
+            /// 20201110 ADD BY ADAM
+            /// </summary>
+            GetProjectPriceBase,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -702,6 +706,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetInsurancePrice:  //20201103 ADD BY ADAM REASON.
                     SPName = "usp_GetInsurancePrice";
+                    break;
+                case SPType.GetProjectPriceBase:    //20201110 ADD BY ADAM 
+                    SPName = "usp_GetProjectPriceBase";
                     break;
                 case SPType.BookingControl:
                     SPName = "usp_BookingControl";

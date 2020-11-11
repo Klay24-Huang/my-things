@@ -362,6 +362,7 @@
     <Build Include="dbo\User Defined Types\FN_calPay.sql" />
     <Build Include="dbo\User Defined Types\FN_CalSpread.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsFuncGroup.sql" />
+    <Build Include="usp_GetProjectPriceBase.sql" />
     <Build Include="dbo\Views\VW_BE_GetFuncGroup.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_UPDFuncGroup.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_InsUserGroup.sql" />
