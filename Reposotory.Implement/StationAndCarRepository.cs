@@ -169,21 +169,18 @@ namespace Reposotory.Implement
             SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
             SQL += (IDNO == "" ? " 0" : " 1" ) + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
-            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
             if (IDNO.Length > 0)
             {
-                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                SQL += " LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours ";
+                SQL += "    FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK) ";
+                SQL += "    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO='" + IDNO + "' AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel ";
+                SQL += "    WHERE II.useflg='Y') K ON vw.CarTypeGroupCode=K.CarTypeGroupCode ";
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            if (IDNO == "")
-            {
-                SQL += " AND II.InsuranceLevel=3 ";
-            }
-            else
-            {
-                SQL += " AND IDNO='" + IDNO + "' ";
-            }
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -216,21 +213,18 @@ namespace Reposotory.Implement
             SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
             SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
-            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
             if (IDNO.Length > 0)
             {
-                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                SQL += " LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours ";
+                SQL += "    FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK) ";
+                SQL += "    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO='" + IDNO + "' AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel ";
+                SQL += "    WHERE II.useflg='Y') K ON vw.CarTypeGroupCode=K.CarTypeGroupCode ";
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            if (IDNO == "")
-            {
-                SQL += " AND II.InsuranceLevel=3 ";
-            }
-            else
-            {
-                SQL += " AND IDNO='" + IDNO + "' ";
-            }
 
             SqlParameter[] para = new SqlParameter[2];
 
