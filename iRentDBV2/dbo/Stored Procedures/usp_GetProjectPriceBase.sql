@@ -96,13 +96,17 @@ BEGIN TRY
 		SELECT TOP 1  ProjID,PRICE,PRICE_H  ,II.InsurancePerHours
 		FROM VW_GetFullProjectCollectionOfCarTypeGroup  AS VW
 		LEFT JOIN #TB_Car AS Car WITH(NOLOCK) ON Car.CarType=VW.CarType AND Car.nowStationID=VW.StationID
-		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode
-		LEFT JOIN TB_BookingInsuranceOfUser BOU WITH(NOLOCK) ON BOU.InsuranceLevel=II.InsuranceLevel
+		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.InsuranceLevel=3
+		LEFT JOIN TB_BookingInsuranceOfUser BOU WITH(NOLOCK) ON BOU.InsuranceLevel=II.InsuranceLevel 
+		LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+							WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
 		WHERE VW.SPCLOCK='Z' 
-		AND ISNULL(CarNo,'') = CASE WHEN @CarNo<>'' AND @ProjType<>0 THEN @CarNo ELSE ISNULL(CarNo,'') END
-		AND VW.CarTypeGroupCode=CASE WHEN @CarType<>'' AND @ProjType=0 THEN @CarType ELSE VW.CarTypeGroupCode END
-		AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
-		AND ISNULL(BOU.IDNO,'')=CASE WHEN @IDNO='' THEN ISNULL(BOU.IDNO,'') ELSE @IDNO END
+		AND ISNULL(CarNo,'') = CASE WHEN @CarNo<>'' THEN @CarNo ELSE ISNULL(CarNo,'') END
+		AND VW.CarTypeGroupCode=CASE WHEN @CarType<>'' THEN @CarType ELSE VW.CarTypeGroupCode END
+		--AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
+		--AND ISNULL(BOU.IDNO,'')=CASE WHEN @IDNO='' THEN ISNULL(BOU.IDNO,'') ELSE @IDNO END
 		ORDER BY PRICE DESC
 
 		DROP TABLE #TB_Car
