@@ -28,6 +28,10 @@ namespace Domain.SP.Input.Project
         /// 客戶代碼
         /// </summary>
         public string IDNO { set; get; }
+        /// <summary>
+        /// 是否使用安心服務
+        /// </summary>
+        public int Insurance { set; get; }
         public Int64 LogID { get; set; }
     }
 }

@@ -190,6 +190,7 @@ namespace WebAPI.Controllers
                     ED = EDate,
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
                     IDNO = IDNO,
+                    Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
                     LogID = LogID
                 };
 
