@@ -134,7 +134,7 @@ namespace WebAPI.Controllers
                                 deviceOBDstatus = VehicleInput.deviceOBDstatus,
                                 devicePowerONStatus = VehicleInput.devicePowerONStatus,
                                 deviceSecurityStatus = VehicleInput.deviceSecurityStatus,
-                                deviceSpeed = VehicleInput.deviceSpeed,
+                                deviceSpeed = Convert.ToInt32(VehicleInput.deviceSpeed),
                                 deviceType = 0,
                                 deviceVolt = VehicleInput.deviceVolt,
                                 extDeviceData3 = VehicleInput.extDeviceData3,
@@ -219,7 +219,7 @@ namespace WebAPI.Controllers
                                 deviceLongitude = MotorDataInput.deviceLongitude,
                                 deviceMillage = MotorDataInput.deviceMillage,
 
-                                deviceSpeed = MotorDataInput.deviceSpeed,
+                                deviceSpeed = Convert.ToInt32(MotorDataInput.deviceSpeed),
                                 deviceType = 1,
                                 deviceVolt = MotorDataInput.deviceVolt,
 
@@ -257,6 +257,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR999";
                     errMsg = "";
+                    logger.Trace(value["para"].ToString());
                     logger.Error(ex.Message);
                 }
             }
