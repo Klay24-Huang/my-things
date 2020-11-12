@@ -27,5 +27,6 @@ namespace Domain.SP.Input.OtherService.FET
         /// raw data
         /// </summary>
         public string receiveRawData { set; get; }
-}
+        public Int64 LogID { set; get; }
+    }
 }

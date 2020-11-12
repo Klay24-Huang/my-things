@@ -226,6 +226,7 @@
     <Compile Include="Controllers\EDI_STATIONController.cs" />
     <Compile Include="Controllers\EnforceReturnCarController.cs" />
     <Compile Include="Controllers\EventInfoController.cs" />
+    <Compile Include="Controllers\GetCarStatusController.cs" />
     <Compile Include="Controllers\GetMemberStatusController.cs" />
     <Compile Include="Controllers\FeedBackController.cs" />
     <Compile Include="Controllers\GetFeedBackKindDescriptController.cs" />
@@ -389,6 +390,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCancelOrderList.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetCarStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
@@ -467,6 +469,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCarStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />

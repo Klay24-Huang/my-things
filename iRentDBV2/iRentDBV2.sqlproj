@@ -334,8 +334,6 @@
     <Build Include="dbo\Tables\TB_InsuraceInfo.sql" />
     <Build Include="dbo\Tables\TB_BookingInsuranceOfUser.sql" />
     <Build Include="dbo\Tables\TB_BookingInsuranceOfUserHIS.sql" />
-    <Build Include="usp_SetMotorStatus.sql" />
-    <Build Include="usp_GetInsurancePrice.sql" />
     <Build Include="dbo\Stored Procedures\usp_HandleAuditImageData.sql" />
     <Build Include="dbo\Views\VW_GetAuditHistory.sql" />
     <Build Include="dbo\Views\VW_BE_GetiRentStation.sql" />
