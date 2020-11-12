@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> doVerifyEMail(Dictionary<string, object> value)
         {
             //20201030 NLog紀錄傳入資料
-            logger.Trace(value["para"].ToString());
+            //logger.Trace(value["para"].ToString());
 
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -93,156 +93,171 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                SPOutput_Base spout = new SPOutput_Base();
-                switch (DataType)
+                try
                 {
-                    case 0://寫入汽車定時回報
-                        VehicleInput= Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CarData>(Contentjson);
-                        if (string.IsNullOrWhiteSpace(VehicleInput.extDeviceData7)==false)//讀卡
-                        {
-                            SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.InsReadCard);
-                            SPInput_InsReadCard SPInsReadCard = new SPInput_InsReadCard()
+                    SPOutput_Base spout = new SPOutput_Base();
+                    switch (DataType)
+                    {
+                        case 0://寫入汽車定時回報
+                            VehicleInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CarData>(Contentjson);
+                            if (string.IsNullOrWhiteSpace(VehicleInput.extDeviceData7) == false)//讀卡
                             {
-                                CardNo = VehicleInput.extDeviceData7.Split(',')[1],
-                                CID = VehicleInput.deviceCID.ToUpper(),
-                                GPSTime = Convert.ToDateTime(VehicleInput.deviceGPSTime).AddHours(8),
-                                Status = VehicleInput.extDeviceData7.Split(',')[0],
+                                SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.InsReadCard);
+                                SPInput_InsReadCard SPInsReadCard = new SPInput_InsReadCard()
+                                {
+                                    CardNo = VehicleInput.extDeviceData7.Split(',')[1],
+                                    CID = VehicleInput.deviceCID.ToUpper(),
+                                    GPSTime = Convert.ToDateTime(VehicleInput.deviceGPSTime).AddHours(8),
+                                    Status = VehicleInput.extDeviceData7.Split(',')[0],
+                                    LogID = LogID
+                                };
+                                SQLHelper<SPInput_InsReadCard, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsReadCard, SPOutput_Base>(connetStr);
+                                flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInsReadCard, ref spout, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
+                            }
+                            SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.HandleCarStatus);
+
+                            SPInput_CarStatus SPRepsonseInput = new SPInput_CarStatus()
+                            {
+                                devcieCentralLockStatus = VehicleInput.devcieCentralLockStatus,
+                                deviceACCStatus = VehicleInput.deviceACCStatus,
+                                deviceCID = VehicleInput.deviceCID.ToUpper(),
+                                deviceDoorStatus = VehicleInput.deviceDoorStatus,
+                                deviceGPRSStatus = VehicleInput.deviceGPRSStatus,
+                                deviceGPSStatus = VehicleInput.deviceGPSStatus,
+                                deviceGPSTime = Convert.ToDateTime(VehicleInput.deviceGPSTime).AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"),
+                                deviceIndoorLightStatus = VehicleInput.deviceIndoorLightStatus,
+                                deviceLatitude = VehicleInput.deviceLatitude,
+                                deviceLockStatus = VehicleInput.deviceLockStatus,
+                                deviceLongitude = VehicleInput.deviceLongitude,
+                                deviceMillage = VehicleInput.deviceMillage,
+                                deviceOBDstatus = VehicleInput.deviceOBDstatus,
+                                devicePowerONStatus = VehicleInput.devicePowerONStatus,
+                                deviceSecurityStatus = VehicleInput.deviceSecurityStatus,
+                                deviceSpeed = VehicleInput.deviceSpeed,
+                                deviceType = 0,
+                                deviceVolt = VehicleInput.deviceVolt,
+                                extDeviceData3 = VehicleInput.extDeviceData3,
+                                extDeviceData4 = VehicleInput.extDeviceData4,
+                                extDeviceData7 = VehicleInput.extDeviceData7,
+                                extDeviceData2 = VehicleInput.extDeviceData2,
+                                extDeviceStatus1 = VehicleInput.extDeviceStatus1,
+                                extDeviceStatus2 = VehicleInput.extDeviceStatus2,
                                 LogID = LogID
                             };
-                            SQLHelper<SPInput_InsReadCard, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsReadCard, SPOutput_Base>(connetStr);
-                            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInsReadCard, ref spout, ref lstError);
-                        }
-                        SPName= new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.HandleCarStatus);
-                      
-                        SPInput_CarStatus SPRepsonseInput = new SPInput_CarStatus()
-                        {
-                            devcieCentralLockStatus = VehicleInput.devcieCentralLockStatus,
-                            deviceACCStatus = VehicleInput.deviceACCStatus,
-                            deviceCID = VehicleInput.deviceCID.ToUpper(),
-                            deviceDoorStatus = VehicleInput.deviceDoorStatus,
-                            deviceGPRSStatus = VehicleInput.deviceGPRSStatus,
-                            deviceGPSStatus = VehicleInput.deviceGPSStatus,
-                            deviceGPSTime = Convert.ToDateTime(VehicleInput.deviceGPSTime).AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"),
-                            deviceIndoorLightStatus = VehicleInput.deviceIndoorLightStatus,
-                            deviceLatitude = VehicleInput.deviceLatitude,
-                            deviceLockStatus = VehicleInput.deviceLockStatus,
-                            deviceLongitude = VehicleInput.deviceLongitude,
-                            deviceMillage = VehicleInput.deviceMillage,
-                            deviceOBDstatus = VehicleInput.deviceOBDstatus,
-                            devicePowerONStatus = VehicleInput.devicePowerONStatus,
-                            deviceSecurityStatus = VehicleInput.deviceSecurityStatus,
-                            deviceSpeed = VehicleInput.deviceSpeed,
-                            deviceType = 0,
-                            deviceVolt = VehicleInput.deviceVolt,
-                            extDeviceData3 = VehicleInput.extDeviceData3,
-                            extDeviceData4 = VehicleInput.extDeviceData4,
-                            extDeviceData7 = VehicleInput.extDeviceData7,
-                            extDeviceData2 = VehicleInput.extDeviceData2,
-                            extDeviceStatus1 = VehicleInput.extDeviceStatus1,
-                            extDeviceStatus2 = VehicleInput.extDeviceStatus2,
-                            LogID = LogID
-                        };
-                        SQLHelper<SPInput_CarStatus, SPOutput_Base> SQLRepsonseHelp = new SQLHelper<SPInput_CarStatus, SPOutput_Base>(connetStr);
-                        flag = SQLRepsonseHelp.ExecuteSPNonQuery(SPName, SPRepsonseInput, ref spout, ref lstError);
-                        break;
-                    case 1:
-                        MotorDataInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MotorData>(Contentjson);
-                        SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.HandleCarStatusByMotor);
+                            SQLHelper<SPInput_CarStatus, SPOutput_Base> SQLRepsonseHelp = new SQLHelper<SPInput_CarStatus, SPOutput_Base>(connetStr);
+                            flag = SQLRepsonseHelp.ExecuteSPNonQuery(SPName, SPRepsonseInput, ref spout, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
+                            break;
+                        case 1:
+                            MotorDataInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MotorData>(Contentjson);
+                            SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.HandleCarStatusByMotor);
 
-                        var device2TBA = 0.0;
-                        var device3TBA = 0.0;
-                        var deviceLBA = 0.0;
-                        var deviceMBA = 0.0;
-                        var deviceRBA = 0.0;
-                        double.TryParse(MotorDataInput.device2TBA, out device2TBA);
-                        double.TryParse(MotorDataInput.device3TBA, out device3TBA);
-                        double.TryParse(MotorDataInput.deviceLBA, out deviceLBA);
-                        double.TryParse(MotorDataInput.deviceMBA, out deviceMBA);
-                        double.TryParse(MotorDataInput.deviceRBA, out deviceRBA);
-                        SPInput_CarStatusByMotor SPMRepsonseInput = new SPInput_CarStatusByMotor()
-                        {
-                            device2TBA = device2TBA,
-                            device3TBA = device3TBA,
-                            deviceALT = MotorDataInput.deviceALT,
-                            deviceBat_Cover = MotorDataInput.deviceBat_Cover,
-                            deviceBLE_BroadCast = MotorDataInput.deviceBLE_BroadCast,
-                            deviceBLE_Login = MotorDataInput.deviceBLE_Login,
-                            deviceCourse = MotorDataInput.deviceCourse,
-                            deviceCur = MotorDataInput.deviceCur,
-                            deviceEMG_Break = MotorDataInput.deviceEMG_Break,
-                            deviceErr = MotorDataInput.deviceErr,
-                            deviceGx = MotorDataInput.deviceGx,
-                            deviceGy = MotorDataInput.deviceGy,
-                            deviceGz = MotorDataInput.deviceGz,
-                            deviceHard_ACC = MotorDataInput.deviceHard_ACC,
-                            deviceiSpeed = MotorDataInput.deviceiSpeed,
-                            deviceiVOL = MotorDataInput.deviceiVOL,
-                            deviceLBA = deviceLBA,
-                            deviceLBAA = MotorDataInput.deviceLBAA,
-                            deviceLBAT_Hi = MotorDataInput.deviceLBAT_Hi,
-                            deviceLBAT_Lo = MotorDataInput.deviceLBAT_Lo,
-                            deviceLowVoltage = MotorDataInput.deviceLowVoltage,
-                            deviceMBA = deviceMBA,
-                            deviceMBAA = MotorDataInput.deviceMBAA,
-                            deviceMBAT_Hi = MotorDataInput.deviceMBAT_Hi,
-                            deviceMBAT_Lo = MotorDataInput.deviceMBAT_Lo,
-                            devicePut_Down = MotorDataInput.devicePut_Down,
-                            devicePwr_Mode = MotorDataInput.devicePwr_Mode,
-                            devicePwr_Relay = MotorDataInput.devicePwr_Relay,
-                            deviceRBA = deviceRBA,
-                            deviceRBAA = MotorDataInput.deviceRBAA,
-                            deviceRBAT_Hi = MotorDataInput.deviceRBAT_Hi,
-                            deviceRBAT_Lo = MotorDataInput.deviceRBAT_Lo,
-                            deviceRDistance = MotorDataInput.deviceRDistance,
-                            deviceReversing = MotorDataInput.deviceReversing,
-                            deviceRPM = MotorDataInput.deviceRPM,
-                            deviceRSOC = MotorDataInput.deviceRSOC,
-                            deviceSharp_Turn = MotorDataInput.deviceSharp_Turn,
-                            deviceStart_OK = MotorDataInput.deviceStart_OK,
-                            deviceTMP = MotorDataInput.deviceTMP,
-                            deviceTPS = MotorDataInput.deviceTPS,
-                            extDeviceData5 = MotorDataInput.extDeviceData5,
-                            extDeviceData6 = MotorDataInput.extDeviceData6,
-                            deviceACCStatus = MotorDataInput.deviceACCStatus,
-                            deviceCID = MotorDataInput.deviceCID.ToUpper(),
+                            var device2TBA = 0.0;
+                            var device3TBA = 0.0;
+                            var deviceLBA = 0.0;
+                            var deviceMBA = 0.0;
+                            var deviceRBA = 0.0;
+                            double.TryParse(MotorDataInput.device2TBA, out device2TBA);
+                            double.TryParse(MotorDataInput.device3TBA, out device3TBA);
+                            double.TryParse(MotorDataInput.deviceLBA, out deviceLBA);
+                            double.TryParse(MotorDataInput.deviceMBA, out deviceMBA);
+                            double.TryParse(MotorDataInput.deviceRBA, out deviceRBA);
+                            SPInput_CarStatusByMotor SPMRepsonseInput = new SPInput_CarStatusByMotor()
+                            {
+                                device2TBA = device2TBA,
+                                device3TBA = device3TBA,
+                                deviceALT = MotorDataInput.deviceALT,
+                                deviceBat_Cover = MotorDataInput.deviceBat_Cover,
+                                deviceBLE_BroadCast = MotorDataInput.deviceBLE_BroadCast,
+                                deviceBLE_Login = MotorDataInput.deviceBLE_Login,
+                                deviceCourse = MotorDataInput.deviceCourse,
+                                deviceCur = MotorDataInput.deviceCur,
+                                deviceEMG_Break = MotorDataInput.deviceEMG_Break,
+                                deviceErr = MotorDataInput.deviceErr,
+                                deviceGx = MotorDataInput.deviceGx,
+                                deviceGy = MotorDataInput.deviceGy,
+                                deviceGz = MotorDataInput.deviceGz,
+                                deviceHard_ACC = MotorDataInput.deviceHard_ACC,
+                                deviceiSpeed = MotorDataInput.deviceiSpeed,
+                                deviceiVOL = MotorDataInput.deviceiVOL,
+                                deviceLBA = deviceLBA,
+                                deviceLBAA = MotorDataInput.deviceLBAA,
+                                deviceLBAT_Hi = MotorDataInput.deviceLBAT_Hi,
+                                deviceLBAT_Lo = MotorDataInput.deviceLBAT_Lo,
+                                deviceLowVoltage = MotorDataInput.deviceLowVoltage,
+                                deviceMBA = deviceMBA,
+                                deviceMBAA = MotorDataInput.deviceMBAA,
+                                deviceMBAT_Hi = MotorDataInput.deviceMBAT_Hi,
+                                deviceMBAT_Lo = MotorDataInput.deviceMBAT_Lo,
+                                devicePut_Down = MotorDataInput.devicePut_Down,
+                                devicePwr_Mode = MotorDataInput.devicePwr_Mode,
+                                devicePwr_Relay = MotorDataInput.devicePwr_Relay,
+                                deviceRBA = deviceRBA,
+                                deviceRBAA = MotorDataInput.deviceRBAA,
+                                deviceRBAT_Hi = MotorDataInput.deviceRBAT_Hi,
+                                deviceRBAT_Lo = MotorDataInput.deviceRBAT_Lo,
+                                deviceRDistance = MotorDataInput.deviceRDistance,
+                                deviceReversing = MotorDataInput.deviceReversing,
+                                deviceRPM = MotorDataInput.deviceRPM,
+                                deviceRSOC = MotorDataInput.deviceRSOC,
+                                deviceSharp_Turn = MotorDataInput.deviceSharp_Turn,
+                                deviceStart_OK = MotorDataInput.deviceStart_OK,
+                                deviceTMP = MotorDataInput.deviceTMP,
+                                deviceTPS = MotorDataInput.deviceTPS,
+                                extDeviceData5 = MotorDataInput.extDeviceData5,
+                                extDeviceData6 = MotorDataInput.extDeviceData6,
+                                deviceACCStatus = MotorDataInput.deviceACCStatus,
+                                deviceCID = MotorDataInput.deviceCID.ToUpper(),
 
-                            deviceGPRSStatus = MotorDataInput.deviceGPRSStatus,
-                            deviceGPSStatus = MotorDataInput.deviceGPSStatus,
-                            deviceGPSTime = Convert.ToDateTime(MotorDataInput.deviceGPSTime).AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"),
+                                deviceGPRSStatus = MotorDataInput.deviceGPRSStatus,
+                                deviceGPSStatus = MotorDataInput.deviceGPSStatus,
+                                deviceGPSTime = Convert.ToDateTime(MotorDataInput.deviceGPSTime).AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"),
 
-                            deviceLatitude = MotorDataInput.deviceLatitude,
+                                deviceLatitude = MotorDataInput.deviceLatitude,
 
-                            deviceLongitude = MotorDataInput.deviceLongitude,
-                            deviceMillage = MotorDataInput.deviceMillage,
+                                deviceLongitude = MotorDataInput.deviceLongitude,
+                                deviceMillage = MotorDataInput.deviceMillage,
 
-                            deviceSpeed = MotorDataInput.deviceSpeed,
-                            deviceType = 1,
-                            deviceVolt = MotorDataInput.deviceVolt,
+                                deviceSpeed = MotorDataInput.deviceSpeed,
+                                deviceType = 1,
+                                deviceVolt = MotorDataInput.deviceVolt,
 
-                            extDeviceData2 = MotorDataInput.extDeviceData2,
-                            extDeviceStatus1 = MotorDataInput.extDeviceStatus1,
+                                extDeviceData2 = MotorDataInput.extDeviceData2,
+                                extDeviceStatus1 = MotorDataInput.extDeviceStatus1,
 
-                            LogID = LogID
-                        };
-                        SQLHelper<SPInput_CarStatusByMotor, SPOutput_Base> SQLMRepsonseHelp = new SQLHelper<SPInput_CarStatusByMotor, SPOutput_Base>(connetStr);
-                        flag = SQLMRepsonseHelp.ExecuteSPNonQuery(SPName, SPMRepsonseInput, ref spout, ref lstError);
-                        break;
-                
-                    case 2:
-                        SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.InsReceiveCMD);
-                        CMDBase = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_ReceiveCMDBase>(Contentjson);
-                        SPInput_InsReceiveCMD spInput = new SPInput_InsReceiveCMD()
-                        {
-                            CmdReply = CMDBase.CmdReply,
-                            method = CMDBase.method,
-                            requestId = CMDBase.requestId??CMDBase.id,
-                            receiveRawData = Contentjson
-                        };
-                       
-                        SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base>(connetStr);
-                        flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
-                        break;
+                                LogID = LogID
+                            };
+                            SQLHelper<SPInput_CarStatusByMotor, SPOutput_Base> SQLMRepsonseHelp = new SQLHelper<SPInput_CarStatusByMotor, SPOutput_Base>(connetStr);
+                            flag = SQLMRepsonseHelp.ExecuteSPNonQuery(SPName, SPMRepsonseInput, ref spout, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
+                            break;
 
+                        case 2:
+                            SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.InsReceiveCMD);
+                            CMDBase = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_ReceiveCMDBase>(Contentjson);
+                            SPInput_InsReceiveCMD spInput = new SPInput_InsReceiveCMD()
+                            {
+                                CmdReply = CMDBase.CmdReply,
+                                method = CMDBase.method,
+                                requestId = CMDBase.requestId ?? CMDBase.id,
+                                receiveRawData = Contentjson,
+                                LogID = LogID
+                            };
+
+                            SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base>(connetStr);
+                            flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
+                            break;
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    flag = false;
+                    errCode = "ERR999";
+                    errMsg = "";
+                    logger.Error(ex.Message);
                 }
             }
             #endregion

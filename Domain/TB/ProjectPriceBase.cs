@@ -21,5 +21,10 @@ namespace Domain.TB
         /// 專案假日價
         /// </summary>
         public int PRICE_H { set; get; }
+        /// <summary>
+        /// 安心服務每小時價格
+        /// 20201110 ADD BY ADAM
+        /// </summary>
+        public int InsurancePerHours { set; get; }
     }
 }

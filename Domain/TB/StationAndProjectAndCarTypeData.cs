@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Domain.TB
 {
@@ -12,16 +13,19 @@ namespace Domain.TB
         /// 專案名稱
         /// </summary>
         public string PRONAME { set; get; }
-
         /// <summary>
         /// 優惠專案描述
         /// </summary>
         public string PRODESC { get; set; }
-
+        
+        /// <summary>
+        /// 預估金額
+        /// </summary>
+        public int Price { set; get; }
         /// <summary>
         /// 專案平日價
         /// </summary>
-        public int Price { set; get; }
+        public int Price_W { set; get; }
         /// <summary>
         /// 專案假日價
         /// </summary>

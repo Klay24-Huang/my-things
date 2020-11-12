@@ -79,7 +79,7 @@ SET @hasData=0;
 		BEGIN
 			--先串車在串車型
 			SELECT  DISTINCT CarBrend										--廠牌
-					,CarType		= D.CarTypeName							--車型
+					,CarType		= E.CarTypeGroupCode					--車型
 					,CarTypeName	= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
 					,CarTypePic		= E.CarTypeImg			--車輛ICON對照
 					,Operator		= O.OperatorICon		--運營商ICON
@@ -110,7 +110,7 @@ SET @hasData=0;
 		BEGIN
 			--先串車在串車型
 			SELECT  DISTINCT CarBrend										--廠牌
-					,CarType		= D.CarTypeName							--車型
+					,CarType		= E.CarTypeGroupCode					--車型
 					,CarTypeName	= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
 					,CarTypePic		= E.CarTypeImg			--車輛ICON對照
 					,Operator		= O.OperatorICon		--運營商ICON

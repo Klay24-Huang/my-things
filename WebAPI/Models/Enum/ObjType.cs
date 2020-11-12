@@ -285,6 +285,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMotorStatus,
             /// <summary>
+            /// 取得汽車狀態
+            /// </summary>
+            GetCarStatus,
+            /// <summary>
             /// 欠費查詢
             /// </summary>
             GetArrearsQuery,
@@ -306,6 +310,14 @@ namespace WebAPI.Models.Enum
             /// 20201103 ADD BY ADAM
             /// </summary>
             GetInsurancePrice,
+            /// <summary>
+            /// 
+            /// </summary>
+            BookingControl,
+            /// 取得專案基本價格
+            /// 20201110 ADD BY ADAM
+            /// </summary>
+            GetProjectPriceBase,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -463,7 +475,6 @@ namespace WebAPI.Models.Enum
                 BE_BookingControlSuccess,
 
             #endregion
-
         }
         /// <summary>
         /// 取出SPName
@@ -652,7 +663,6 @@ namespace WebAPI.Models.Enum
                 case SPType.CheckCanOpenDoor:
                     SPName = "usp_CheckCanOpenDoor";
                     break;
-
                 case SPType.InsOpenDoorCode:
                     SPName = "usp_InsOpenDoorCode";
                     break;
@@ -683,6 +693,9 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMotorStatus:     //取得車輛狀態
                     SPName = "usp_GetMotorStatus";
                     break;
+                case SPType.GetCarStatus:      //取得汽車狀態
+                    SPName = "usp_GetCarStatus";
+                    break;
                 case SPType.GetArrearsQuery:
                     SPName = "usp_ArrearsQuery_U1";//欠費查詢
                     break;
@@ -697,6 +710,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetInsurancePrice:  //20201103 ADD BY ADAM REASON.
                     SPName = "usp_GetInsurancePrice";
+                    break;
+                case SPType.GetProjectPriceBase:    //20201110 ADD BY ADAM 
+                    SPName = "usp_GetProjectPriceBase";
+                    break;
+                case SPType.BookingControl:
+                    SPName = "usp_BookingControl";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

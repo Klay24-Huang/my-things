@@ -334,8 +334,6 @@
     <Build Include="dbo\Tables\TB_InsuraceInfo.sql" />
     <Build Include="dbo\Tables\TB_BookingInsuranceOfUser.sql" />
     <Build Include="dbo\Tables\TB_BookingInsuranceOfUserHIS.sql" />
-    <Build Include="usp_SetMotorStatus.sql" />
-    <Build Include="usp_GetInsurancePrice.sql" />
     <Build Include="dbo\Stored Procedures\usp_HandleAuditImageData.sql" />
     <Build Include="dbo\Views\VW_GetAuditHistory.sql" />
     <Build Include="dbo\Views\VW_BE_GetiRentStation.sql" />
@@ -372,6 +370,14 @@
     <Build Include="dbo\Views\VW_GetDefPowerList.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_HandleFunc.sql" />
     <Build Include="dbo\Tables\TB_FuncGroupPower.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentTrial.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BookingControl.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetCarStatus.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetInsurancePrice.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetProjectPriceBase.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMotorStatus.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentCompute.sql" />
+    <Build Include="dbo\User Defined Types\FN_CalHours.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

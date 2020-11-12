@@ -117,11 +117,11 @@ function SyncData() {
                 $.busyLoadFull("hide");
 
                 if (data.Result == "1") {
-                    swal({
-                        title: 'SUCCESS',
-                        text: data.ErrorMessage,
-                        icon: 'success'
-                    }).then(function (value) {
+                    //swal({
+                    //    title: 'SUCCESS',
+                    //    text: data.ErrorMessage,
+                    //    icon: 'success'
+                    //}).then(function (value) {
                         console.log(data.Data.holidays.length)
                         if (false == isNaN(data.Data.holidays.length)) {
                             var len = data.Data.holidays.length
@@ -133,7 +133,7 @@ function SyncData() {
                         }
 
                         disabledLoading();
-                    });
+                    //});
                 } else {
 
                     swal({

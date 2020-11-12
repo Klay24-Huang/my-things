@@ -169,21 +169,18 @@ namespace Reposotory.Implement
             SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
             SQL += (IDNO == "" ? " 0" : " 1" ) + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
-            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
             if (IDNO.Length > 0)
             {
-                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                SQL += " LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours ";
+                SQL += "    FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK) ";
+                SQL += "    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO='" + IDNO + "' AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel ";
+                SQL += "    WHERE II.useflg='Y') K ON vw.CarTypeGroupCode=K.CarTypeGroupCode ";
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            if (IDNO == "")
-            {
-                SQL += " AND II.InsuranceLevel=3 ";
-            }
-            else
-            {
-                SQL += " AND IDNO='" + IDNO + "' ";
-            }
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -216,21 +213,18 @@ namespace Reposotory.Implement
             SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
             SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
-            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' ";
+            SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
             if (IDNO.Length > 0)
             {
-                SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
+                SQL += " LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours ";
+                SQL += "    FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK) ";
+                SQL += "    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO='" + IDNO + "' AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel ";
+                SQL += "    WHERE II.useflg='Y') K ON vw.CarTypeGroupCode=K.CarTypeGroupCode ";
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            if (IDNO == "")
-            {
-                SQL += " AND II.InsuranceLevel=3 ";
-            }
-            else
-            {
-                SQL += " AND IDNO='" + IDNO + "' ";
-            }
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -637,18 +631,23 @@ namespace Reposotory.Implement
                    irs.Content,
                    irs.Area As CarOfArea,
                    VW.StationID,
-                    Insurance = CASE WHEN @IDNO='' THEN 0 ELSE 1 END,
-                    InsurancePerHours
+                    Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
+                    InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
+            JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
+			JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
-            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y'
-            LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel
+            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3
+            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel
+            LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
-              AND ISNULL(BIOU.IDNO,'') = CASE WHEN @IDNO='' THEN ISNULL(BIOU.IDNO,'') ELSE @IDNO END
-              AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
+
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -796,7 +795,7 @@ namespace Reposotory.Implement
             {
                 if (term != "") { term += " AND "; }
                 term += "  CarNo=@CarNo";
-                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
                 para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
