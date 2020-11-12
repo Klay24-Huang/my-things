@@ -301,5 +301,33 @@ namespace Domain.TB.BackEnd
         /// 車麻吉費用
         /// </summary>
         public int MachiFee { set; get; }
+        /// <summary>
+        /// 引擎(車身)號碼
+        /// </summary>
+        public string EngineNO { set; get; }
+        /// <summary>
+        /// 顏色
+        /// </summary>
+        public string CarColor { set; get; }
+        /// <summary>
+        /// 廠牌
+        /// </summary>
+        public string CarBrend { set; get; }
+        /// <summary>
+        /// 出生日期
+        /// </summary>
+        public DateTime MEMBIRTH { set; get; }
+        /// <summary>
+        /// 出生日期
+        /// </summary>
+        public string CityName { set; get; }
+        /// <summary>
+        /// 出生日期
+        /// </summary>
+        public string AreaName { set; get; }
+        /// <summary>
+        /// 出生日期
+        /// </summary>
+        public string MEMADDR { set; get; }
     }
 }
