@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿
+$(document).ready(function () {
     var func = $("#funcName").val();
     var funcList;
     if (func != "") {
@@ -33,7 +34,7 @@
                 init();
                 break;
             case "Add":
-
+                $("#liPower").show();
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("儲存");
@@ -41,7 +42,7 @@
                 break;
             case "Edit":
 
-
+                $("#liPower").hide();
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("查詢");
@@ -62,7 +63,7 @@
             errMsg = "請選擇功能群組";
         }
         if (flag) {
-            if (Mode == "Add") {
+            if (Mode == "Add" || (Mode=="Edit" && $(this).text()=="修改後儲存")) {
 
                 var realDataArray = new Array();
                 var Len = funcList.length;
@@ -121,15 +122,17 @@
                     obj.FuncGroupID = FuncGroupID;
                     obj.Power = realDataArray;
                     obj.Mode = Mode;
-                    DoAjaxAfterReload(obj,"BE_HandleFuncMaintain","新增權限發生錯誤")
+                    DoAjaxAfterReload(obj,"BE_HandleFuncMaintain","新增/修改權限發生錯誤")
 
                 }
                 console.log(realDataArray);
             } else if (Mode == "Edit") {
+
                 var obj = new Object();
                 obj.UserID = Account;
                 obj.FuncGroupID = FuncGroupID;
-                DoAjax(obj, "BE_QueryFunc", "查詢權限發生錯誤");
+              //  DoAjax(obj, "BE_QueryFunc", "查詢權限發生錯誤");
+                DoAjaxAfterCallBack(obj, "BE_QueryFunc", "查詢權限發生錯誤", SetMaintain);
             }
  
         } else {
@@ -139,8 +142,27 @@
     })
 
 })
-
+function SetMaintain(data) {
+    console.log("call back")
+    $("#liPower").show();
+    $("#btnSend").text("修改後儲存");
+    console.log(data);
+    var RootLen = data.Power.length;
+    console.log(RootLen);
+    for (var i = 0; i < RootLen; i++) {
+        var SubLen = data.Power[i].PowerList.length;
+        for (var j = 0; j < SubLen; j++) {
+            var objName = data.Power[i].MenuCode + "_" + data.Power[i].SubMenuCode + "_" + data.Power[i].PowerList[j].Code;
+            console.log(objName);
+            if (parseInt(data.Power[i].PowerList[j].hasPower) == 1) {
+                $("#" + objName).prop("checked", "checked");
+            }
+           
+        }
+    }
+}
 function init() {
+    $("#liPower").hide();
     $("#btnReview").hide();
     $("#btnSend").hide();
     $("#btnReset").hide();

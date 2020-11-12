@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Domain.TB.BackEnd;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,6 +11,7 @@ using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
+using WebAPI.Models.Param.BackEnd.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -42,7 +45,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BE_QueryFunc apiInput = null;
-            NullOutput apiOutput = null;
+            OAPI_BE_GetFuncPower apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -74,9 +77,15 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-
-                
-
+                BE_GetFuncPower obj = new AccountManageRepository(connetStr).GetFuncPower(Convert.ToInt32(apiInput.FuncGroupID));
+                if (obj != null)
+                {
+                    apiOutput = new OAPI_BE_GetFuncPower()
+                    {
+                        Power = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Power>>(obj.FuncGroupPower)
+                    };
+                    
+                }
             }
             #endregion
 

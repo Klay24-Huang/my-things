@@ -356,6 +356,7 @@ function DoAjaxAfterCallBack(obj, API, FailMessage,CallBack) {
                     text: data.ErrorMessage,
                     icon: 'success'
                 }).then(function (value) {
+                    console.log(data.Data);
                     CallBack(data.Data);
                 });
             } else {

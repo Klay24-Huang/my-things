@@ -182,5 +182,50 @@ namespace Reposotory.Implement
 
             return lstUserGroup;
         }
+        public BE_GetFuncPower GetFuncPower(int FuncGroupID)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetFuncPower> lstFuncGroup = null;
+
+            BE_GetFuncPower obj = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT * FROM VW_BE_GetFuncPower ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+  
+            if (FuncGroupID > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " FuncGroupID =@FuncGroupID";
+                para[nowCount] = new SqlParameter("@FuncGroupID", SqlDbType.Int);
+                para[nowCount].Value = FuncGroupID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+      
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY FuncGroupID DESC;";
+
+            }
+
+            lstFuncGroup = GetObjList<BE_GetFuncPower>(ref flag, ref lstError, SQL, para, term);
+            if (lstFuncGroup != null)
+            {
+                if (lstFuncGroup.Count > 0)
+                {
+                    obj = lstFuncGroup[0];
+                }
+            }
+
+            return obj;
+        }
     }
 }

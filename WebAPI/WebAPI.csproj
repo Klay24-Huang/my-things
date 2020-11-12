@@ -343,6 +343,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetFuncPower.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetManagerList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
