@@ -1,10 +1,19 @@
 ﻿$(function () {
     $("#divReturnDate").hide();
-    $("#type").on("change", function(){
+    $("#type").on("change", function () {
+        var fp = document.querySelector("#StartDate")._flatpickr;
+
         if ($(this).val() == "1") {
             $("#divReturnDate").show();
+
+            //console.log($.format.date(new Date(), 'yyyy-MM-dd HH:mm'));
+            fp.setDate(new Date());
+            $("#StartDate").val($.format.date(new Date(), 'yyyy-MM-dd HH:mm'));
         } else {
             $("#divReturnDate").hide();
+
+            //console.log($("#StartDate").val());
+            $("#StartDate").val('');
         }
     })
     $("#btnSend").on("click", function () {

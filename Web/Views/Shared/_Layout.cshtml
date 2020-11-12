@@ -398,7 +398,7 @@
                                 <a class="dropdown-item" href="~/ContactManage/ContactMaintainByDiscount">時數折抵</a>
                                 <a class="dropdown-item" href="~/ContactManage/ContactExtend">強制延長用車</a>
                                 <a class="dropdown-item" href="~/ContactManage/ContactBooking">人工新增預約</a>
-                                <a class="dropdown-item" href="~/ContactManage/ContactSetting">強制取還車(作廢)</a>
+                                <a class="dropdown-item" href="~/ContactManage/ContactSetting">強制取還車</a>
                             </div>
                         </li>
                         <!-- 後臺管理 -->
@@ -523,6 +523,7 @@
     @{
         switch (actionName)
         {
+            case "ContactSetting":
             case "CarTimelineQuery":
                 <script src="~/Scripts/js/jquery-dateFormat.js"></script>
                 <script src="~/Scripts/js/moment-with-locales.min.js"></script>
