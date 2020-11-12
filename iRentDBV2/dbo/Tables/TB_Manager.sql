@@ -1,15 +1,19 @@
 ﻿CREATE TABLE [dbo].[TB_Manager]
 (
-	 [Account]   VARCHAR (50)  DEFAULT ('') NOT NULL,
+    [SEQNO]     INT IDENTITY           ,
+	[Account]   VARCHAR (50)  DEFAULT ('') NOT NULL,
     [UserName]  NVARCHAR (50) DEFAULT (N'') NOT NULL,
     [UserPwd]   VARCHAR(50)   DEFAULT ('') NOT NULL,
     [Operator] INT DEFAULT (0) NOT NULL,
     [UserGroup] varchar(50) NOT NULL,
     [UserGroupID] INT  DEFAULT 0 NOT NULL,
-     [SD] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
-    [ED] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59', 
+    [PowerList] VARCHAR(MAX) DEFAULT '' NOT NULL,
+    [StartDate] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
+    [EndDate] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59', 
     [ClientIP]  VARCHAR (256) DEFAULT ('') NOT NULL,
-    [MKTime]    DATETIME      DEFAULT (getdate()) NOT NULL,
+    [AddUser]   VARCHAR (50)  DEFAULT('SYS') NOT NULL,
+    [UPDUser]   VARCHAR(50)   DEFAULT('SYS') NOT NULL,
+    [MKTime]    DATETIME      DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
     [UPDTime]   DATETIME      NULL,
     CONSTRAINT [PK_TB_Manager1] PRIMARY KEY CLUSTERED ([Account] ASC)
 );
@@ -64,3 +68,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_Manager',
     @level2type = N'COLUMN',
     @level2name = N'Operator'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'權限',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_Manager',
+    @level2type = N'COLUMN',
+    @level2name = N'PowerList'

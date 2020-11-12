@@ -47,6 +47,7 @@ CREATE PROCEDURE [dbo].[usp_BE_UPDUserGroup]
 	@SEQNO      			BIGINT                ,
 	@UserGroupID            VARCHAR(60)           ,
 	@UserGroupName          NVARCHAR(60)		  ,
+	@FuncGroupID            INT                   ,
 	@OperatorID             INT					  ,
 	@StartDate              DATETIME              ,
 	@EndDate                DATETIME              ,
@@ -80,12 +81,13 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @UserGroupID    =ISNULL (@UserGroupID    ,'');
 SET @UserGroupName  =ISNULL (@UserGroupName    ,'');
 SET @OperatorID     =ISNULL (@OperatorID    ,0);
+SET @FuncGroupID    =ISNULL(@FuncGroupID,0);
 SET @StartDate      =ISNULL(@StartDate      ,'1911-01-01 00:00:00');
 SET @EndDate        =ISNULL(@EndDate        ,'1911-01-01 00:00:00');
 SET @UserID         =ISNULL(@UserID         ,'');
 SET @SEQNO=ISNULL(@SEQNO,0);
 		BEGIN TRY
-		 IF @UserGroupID='' OR @UserGroupName='' OR @OperatorID=0  OR @UserID='' OR @SEQNO=0 OR @StartDate='1911-01-01 00:00:00' OR @EndDate='1911-01-01 00:00:00'
+		 IF @UserGroupID='' OR @UserGroupName='' OR @OperatorID=0  OR @UserID='' OR @SEQNO=0 OR @FuncGroupID=0 OR @StartDate='1911-01-01 00:00:00' OR @EndDate='1911-01-01 00:00:00'
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
@@ -112,7 +114,7 @@ SET @SEQNO=ISNULL(@SEQNO,0);
 				ELSE
 				BEGIN
 					UPDATE TB_UserGroup
-					SET UserGroupID=@UserGroupID,UserGroupName=@UserGroupName,OperatorID=@OperatorID,StartDate=@StartDate,EndDate=@EndDate,U_USERID=@UserID,U_SYSDT=@NowTime
+					SET UserGroupID=@UserGroupID,UserGroupName=@UserGroupName,OperatorID=@OperatorID,StartDate=@StartDate,EndDate=@EndDate, FuncGroupID=@FuncGroupID, U_USERID=@UserID,U_SYSDT=@NowTime
 					WHERE USEQNO=@SEQNO
 					
 				END

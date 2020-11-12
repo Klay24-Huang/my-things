@@ -22,6 +22,10 @@ namespace Domain.SP.BE.Input
         /// </summary>
         public string UserGroupName { set; get; }
         /// <summary>
+        /// 功能群組id
+        /// </summary>
+        public int FuncGroupID { set; get; }
+        /// <summary>
         /// 業者別
         /// </summary>
         public int OperatorID { set; get; }

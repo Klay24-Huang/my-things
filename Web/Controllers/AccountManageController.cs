@@ -204,12 +204,13 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult UserGroupMaintain(string ddlObj, string ddlOperator, string UserGroupID, string UserGroupName, string StartDate, string EndDate)
+        public ActionResult UserGroupMaintain(string ddlObj, string ddlOperator,string ddlFuncGroup, string UserGroupID, string UserGroupName, string StartDate, string EndDate)
         {
             string errorLine = "";
             string errorMsg = "";
             string Mode = ddlObj;
             int OperatorID = (ddlOperator == "") ? 0 : Convert.ToInt32(ddlOperator);
+            int FuncGroupID = (ddlFuncGroup == "") ? 0 : Convert.ToInt32(ddlFuncGroup);
             bool flag = true;
             string errCode = "";
             AccountManageRepository repository = new AccountManageRepository(connetStr);
@@ -224,6 +225,7 @@ namespace Web.Controllers
             ViewData["OperatorID"] = OperatorID;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
+            ViewData["FuncGroupID"] = FuncGroupID;
             if (Mode == "Add")
             {
                 CommonFunc baseVerify = new CommonFunc();
@@ -237,7 +239,8 @@ namespace Web.Controllers
                     LogID=0,
                      OperatorID=OperatorID,
                       UserGroupID=UserGroupID,
-                       UserGroupName=UserGroupName
+                       UserGroupName=UserGroupName,
+                        FuncGroupID= FuncGroupID
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
@@ -252,7 +255,7 @@ namespace Web.Controllers
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
-                    lstData = repository.GetUserGroup("", "",0, "", "");
+                    lstData = repository.GetUserGroup("", "",0, "", "",0);
                 }
                 else
                 {
@@ -271,7 +274,7 @@ namespace Web.Controllers
                 {
                     EndDate = EndDate + " 23:59:59";
                 }
-                lstData = repository.GetUserGroup(UserGroupID, UserGroupName,OperatorID, StartDate, EndDate);
+                lstData = repository.GetUserGroup(UserGroupID, UserGroupName,OperatorID, StartDate, EndDate,FuncGroupID);
             }
             return View(lstData);
        
@@ -282,6 +285,20 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult UserMaintain()
         {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult UserMaintain(FormCollection collection)
+        {
+            ViewData["OperatorID"] = (collection["ddlOperator"] == null) ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString());
+            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+            ViewData["Mode"] = collection["ddlObj"];
+            ViewData["UserGroup"] = (collection["ddlUserGroup"] == null) ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString());
+            ViewData["UserAccount"] = collection["UserAccount"];
+            ViewData["StartDate"] = collection["StartDate"]; ;
+            ViewData["EndDate"] = collection["EndDate"]; ;
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
             return View();
         }
 

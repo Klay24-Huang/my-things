@@ -81,7 +81,41 @@ namespace Web.Controllers
             return View(lstOperators);
         }
         [ChildActionOnly]
+        public ActionResult GetUserGroupList(int SEQNO,int OperatorID)
+        {
+
+            List<BE_UserGroup> lstUserGroup = null;
+            if (OperatorID > 0)
+            {
+                lstUserGroup = new AccountManageRepository(connetStr).GetUserGroup("", "", OperatorID, "", "",0);
+            }
+            else
+            {
+                lstUserGroup = new AccountManageRepository(connetStr).GetUserGroup("", "", 0, "", "",0);
+            }
+           
+            bool showAll = false;
+
+            ViewData["UserGroup"] = SEQNO;
+            return View(lstUserGroup);
+        }
+        //[ChildActionOnly]
+        //public ActionResult GetUserGroupList(int SEQNO)
+        //{
+        //    List<BE_UserGroup> lstUserGroup = new AccountManageRepository(connetStr).GetUserGroup("","",0,"","");
+        //    bool showAll = false;
+
+        //    ViewData["UserGroup"] = SEQNO;
+        //    return View(lstUserGroup);
+        //}
+        [ChildActionOnly]
         public ActionResult GetPowerList()
+        {
+            List<BE_MenuCombindConsistPower> lstData = new CommonRepository(connetStr).GetMenuListConsistPower();
+            return View(lstData);
+        }
+        [ChildActionOnly]
+        public ActionResult GetDisablePowerList()
         {
             List<BE_MenuCombindConsistPower> lstData = new CommonRepository(connetStr).GetMenuListConsistPower();
             return View(lstData);

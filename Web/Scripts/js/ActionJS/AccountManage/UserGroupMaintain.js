@@ -2,6 +2,7 @@
 var UserGroupID = "";
 var UserGroupName = "";
 var OperatorID = "";
+var FuncGroupID = "";
 var StartDate = "";
 var EndDate = "";
 $(document).ready(function () {
@@ -60,11 +61,12 @@ $(document).ready(function () {
         var UserGroupID = $("#UserGroupID").val();
         var UserGroupName = $("#UserGroupName").val();
         var Operator = $("#ddlOperator").val();
+        var FuncGroup = $("#ddlFuncGroup").val();
         var StartDate = $("#StartDate").val();
         var EndDate = $("#EndDate").val();
 
-        var checkList = [UserGroupID, UserGroupName, Operator, StartDate, EndDate];
-        var errMsgList = ["使用者群組編號未填", "使用者群組名稱未填","業者別", "有效日期（起）未填", "有效日期（迄）未填"];
+        var checkList = [UserGroupID, UserGroupName, Operator, FuncGroup, StartDate, EndDate];
+        var errMsgList = ["使用者群組編號未填", "使用者群組名稱未填", "業者別未填", "功能群組未填", "有效日期（起）未填", "有效日期（迄）未填"];
         var len = checkList.length;
         if (Mode == "Add") {
 
@@ -139,6 +141,7 @@ $(document).ready(function () {
         $("#ddlObj").val(Mode);
         $("#ddlObj").trigger("change");
         $("#ddlOperator").val(tmpOperatorID)
+        $("#ddlFuncGroup").val(tmpFuncGroupID)
     }
     if (ResultDataLen > -1) {
         $("#panelResult").show();
@@ -197,6 +200,7 @@ function DoEdit(Id) {
         $("#StartDate_" + NowEditID).val(StartDate).hide();
         $("#EndDate_" + NowEditID).val(EndDate).hide();
         $("#OperatorName_" + NowEditID).empty().hide();
+        $("#FuncGroupName_" + NowEditID).empty().hide();
         $("#btnReset_" + NowEditID).hide();
         $("#btnSave_" + NowEditID).hide();
         $("#btnEdit_" + NowEditID).show();
@@ -215,6 +219,7 @@ function DoEdit(Id) {
     UserGroupID = $("#UserGroupID_" + Id).val();
     UserGroupName = $("#UserGroupName_" + Id).val();
     OperatorID = $("#OperatorID_" + Id).val();
+    FuncGroupID = $("#FuncGroupID_" + Id).val();
     StartDate = $("#StartDate_" + Id).val();
     EndDate = $("#EndDate_" + Id).val();
 
@@ -224,6 +229,8 @@ function DoEdit(Id) {
     $("#OperatorName_" + Id).empty();
     $("#ddlOperator").find('option').clone().appendTo('#OperatorName_' + Id);
     $("#OperatorName_" + Id).val(OperatorID).show();
+    $("#ddlFuncGroup").find('option').clone().appendTo('#FuncGroupName_' + Id);
+    $("#FuncGroupName_" + Id).val(FuncGroupID).show();
     $("#StartDate_" + Id).show();
     $("#EndDate_" + Id).show();
 
@@ -236,6 +243,7 @@ function DoReset(Id) {
     $("#UserGroupID_" + Id).val(UserGroupID).hide();
     $("#UserGroupName_" + Id).val(UserGroupName).hide();
     $("#OperatorName_" + Id).empty().hide();
+    $("#FuncGroupName_" + Id).empty().hide();
     $("#StartDate_" + Id).val(StartDate).hide();
     $("#EndDate_" + Id).val(EndDate).hide();
     $("#btnReset_" + Id).hide();
@@ -253,7 +261,8 @@ function DoSave(Id) {
     var USEQNO = Id;
     UserGroupID = $("#UserGroupID_" + Id).val();
     UserGroupName = $("#UserGroupName_" + Id).val();
-    OperatorID =$("#OperatorName_" + Id).val();
+    OperatorID = $("#OperatorName_" + Id).val();
+    FuncGroupID = $("#FuncGroupName_" + Id).val();
     StartDate = $("#StartDate_" + Id).val();
     EndDate = $("#EndDate_" + Id).val();
 
@@ -262,8 +271,8 @@ function DoSave(Id) {
     var flag = true;
     var errMsg = "";
     ShowLoading("資料處理中");
-    var checkList = [UserGroupID, UserGroupName, OperatorID, StartDate, EndDate];
-    var errMsgList = ["使用者群組編號未填", "使用者群組名稱未填","業者別未選擇", "有效日期（起）未填", "有效日期（迄）未填"];
+    var checkList = [UserGroupID, UserGroupName, OperatorID, FuncGroupID, StartDate, EndDate];
+    var errMsgList = ["使用者群組編號未填", "使用者群組名稱未填","業者別未選擇","功能群組未選擇", "有效日期（起）未填", "有效日期（迄）未填"];
     var len = checkList.length;
     for (var i = 0; i < len; i++) {
         if (checkList[i] == "") {
@@ -279,6 +288,12 @@ function DoSave(Id) {
         }
     }
     if (flag) {
+        if (FuncGroupID == "") {
+            flag = false;
+            errMsg = "功能群組未選擇";
+        }
+    }
+    if (flag) {
         if (StartDate > EndDate) {
             flag = false;
             errMsg = "起始日期大於結束日期";
@@ -290,6 +305,7 @@ function DoSave(Id) {
         obj.SEQNO = USEQNO;
         obj.UserGroupID = UserGroupID;
         obj.OperatorID = OperatorID;
+        obj.FuncGroupID = FuncGroupID;
         obj.UserGroupName = UserGroupName;
         obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
         obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");

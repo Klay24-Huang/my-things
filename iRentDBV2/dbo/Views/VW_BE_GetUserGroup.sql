@@ -7,8 +7,12 @@
       ,UserGroup.[StartDate]
       ,UserGroup.[EndDate]
       ,Operator.OperatorName
+      ,UserGroup.FuncGroupID
+      ,Func.FuncGroupName
+
   FROM [TB_UserGroup] AS UserGroup
   LEFT JOIN TB_OperatorBase AS Operator ON Operator.OperatorID=UserGroup.OperatorID
+  LEFT JOIN TB_FuncGroup AS Func ON Func.SEQNO=UserGroup.FuncGroupID
                                                               GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_BE_GetUserGroup';
 GO

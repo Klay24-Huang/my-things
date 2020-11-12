@@ -186,10 +186,14 @@
 
     }
     string PageScriptName =  string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
-    if (Session["User"] == null)
+    if (controllName != "Contact")
     {
-        Response.Redirect("~/Home/Login");
+        if (Session["User"] == null)
+        {
+            Response.Redirect("~/Home/Login");
+        }
     }
+
     }
 <!DOCTYPE html>
 <html lang="zh-tw">

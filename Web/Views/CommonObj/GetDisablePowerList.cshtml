@@ -1,0 +1,56 @@
+﻿
+@model IEnumerable<Domain.TB.BackEnd.BE_MenuCombindConsistPower>
+@{
+    Layout = null;
+    List<string> funcName = new List<string>();
+}
+<div class="row mb-4">
+
+    @foreach (var item in Model)
+    {
+
+        <div class="col-12">
+            <div class="card">
+                <div class="bg-light" id="menu_@(item.MenuCode)">
+                    <button class="btn btn-link accordion_btn collapsed" type="button" data-toggle="collapse" data-target="#menu_@(item.MenuCode)_SubMenu" aria-expanded="false" aria-controls="menu_@(item.MenuCode)">
+                        @item.MenuName
+                    </button>
+                </div>
+                <div id="menu_@(item.MenuCode)_SubMenu" class="collapse bg-light" aria-labelledby="menu_@(item.MenuCode)_SubMenu" data-parent="#menu_@(item.MenuCode)">
+                    <!--aria-labelledby="about_q1"-->
+                    <div class="card-body">
+                        @{
+                            int subMenuLen = item.lstSubMenu.Count;
+                            for (int i = 0; i < subMenuLen; i++)
+                            {
+                                int powerLen = item.lstSubMenu[i].lstPowerFunc.Count;
+                                <div class="row">
+                                    <div class="col-4">@(item.lstSubMenu[i].SubMenuName) </div>
+                                    <div class="col-6 d-flex power">
+                                        @for (int j = 0; j < powerLen; j++)
+                                        {
+                                            int pp = item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc.Count();
+                                            for (int k = 0; k < pp; k++)
+                                            {
+                                                <div class="form-check ">
+                                                    <label class="form-check-label" for="@(string.Format("{0}_{1}_{2}",item.MenuCode,item.lstSubMenu[i].SubMenuCode,item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].Code))">
+                                                        @(item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].OPName)
+                                                    </label>
+                                                    <input class="form-check-input" disabled type="checkbox" name="@(item.lstSubMenu[i].SubMenuCode)" id="@(string.Format("{0}_{1}_{2}",item.MenuCode,item.lstSubMenu[i].SubMenuCode,item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].Code))" value="@(item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].Code)" data-func="@(string.Format("{0}_{1}_{2}",item.MenuCode,item.lstSubMenu[i].SubMenuCode,item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].Code))">
+                                                </div>
+                                                funcName.Add(string.Format("{0}_{1}_{2}", item.MenuCode, item.lstSubMenu[i].SubMenuCode, item.lstSubMenu[i].lstPowerFunc[j].lstPowerFunc[k].Code));
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <input type="hidden" name="funcName" id="funcName" value="@( Newtonsoft.Json.JsonConvert.SerializeObject(funcName))" />
+</div>
+
+

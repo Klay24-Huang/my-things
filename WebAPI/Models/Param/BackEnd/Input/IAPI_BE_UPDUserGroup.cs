@@ -19,6 +19,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 使用者群組名稱
         /// </summary>
         public string UserGroupName { set; get; }
+        public int FuncGroupID { set; get; }
         /// <summary>
         /// 業者別
         /// </summary>

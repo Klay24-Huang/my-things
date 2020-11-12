@@ -7,11 +7,27 @@
 }
 @if (Model != null)
 {
-    list.Add(new SelectListItem() { Text = "請選擇", Value = "" });
+    if(OperatorID==0)
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "",Selected=true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "" });
+    }
+
 }
 @foreach (var Operator in Model)
 {
-    list.Add(new SelectListItem() { Text = Operator.OperatorName, Value = Operator.OperatorID.ToString() });
+    if (Operator.OperatorID == OperatorID)
+    {
+        list.Add(new SelectListItem() { Text = Operator.OperatorName, Value = Operator.OperatorID.ToString(),Selected=true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = Operator.OperatorName, Value = Operator.OperatorID.ToString() });
+    }
+
 }
 
 @Html.DropDownList("ddlOperator", list, new { Class = "form-control" })

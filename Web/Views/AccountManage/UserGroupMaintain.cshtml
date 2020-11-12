@@ -5,7 +5,8 @@
     List<Domain.TB.BackEnd.BE_UserGroup> lstData = null;
     string UserGroupID = (ViewData["UserGroupID"] == null) ? "" : ViewData["UserGroupID"].ToString();
     string UserGroupName = (ViewData["UserGroupName"] == null) ? "" : ViewData["UserGroupName"].ToString();
-    string OperatorID = (ViewData["OperatorID"] == null) ? "" : ((ViewData["OperatorID"].ToString()=="0")?"": ViewData["OperatorID"].ToString());
+    int  OperatorID = (ViewData["OperatorID"] == null) ? 0 : ((ViewData["OperatorID"].ToString()=="0")?0: Convert.ToInt32(ViewData["OperatorID"].ToString()));
+    int FuncGroupID = (ViewData["FuncGroupID"] == null) ? 0 : ((ViewData["FuncGroupID"].ToString() == "0") ? 0 : Convert.ToInt32(ViewData["FuncGroupID"].ToString()));
     string SEQNO = (ViewData["SEQNO"] == null) ? "" : ViewData["SEQNO"].ToString();
     string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
@@ -51,12 +52,26 @@
                         業者別
                     </div>
                     <div class="col-md-3">
-                        @Html.Action("GetOperatorList", "CommonObj", new { SEQNO = 0 })
+                        @Html.Action("GetOperatorList", "CommonObj", new { SEQNO = OperatorID })
                     </div>
                 </div>
             </div>
         </li>
-      
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        功能群組
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Action("GetFuncGroup", "CommonObj", new { SEQNO = FuncGroupID })
+
+                    </div>
+
+
+                </div>
+            </div>
+        </li>
         <li class="list-group-item">
             <div class="container-fluid">
                 <div class="row">
@@ -165,6 +180,7 @@
                 <th data-sort="false"></th>
                 <th scope="col">ID</th>
                 <th scope="col">業者別</th>
+                <th scope="col">功能群組</th>
                 <th scope="col">使用者群組編號(ID)</th>
                 <th scope="col">使用者群組名稱</th>
                 <th scope="col">有效起迄日(起)</th>
@@ -178,7 +194,7 @@
                 if (ResultLen == 0)
                 {
                     <tr>
-                        <td colspan="8">查無結果</td>
+                        <td colspan="9">查無結果</td>
                     </tr>
                 }
                 else if (ResultLen > 0)
@@ -188,7 +204,8 @@
         <tr>
             <td></td>
             <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].USEQNO)" id="PK_@(lstData[i].USEQNO)" value="@(lstData[i].USEQNO)" /></td>
-            <td scope="col">@lstData[i].OperatorName<select class="form-control" style="display:none;" name="OperatorName_@(lstData[i].USEQNO)" id="OperatorName_@(lstData[i].USEQNO)"></select><input type="hidden" name="OperatorName_@(lstData[i].USEQNO)" id="OperatorName_@(lstData[i].USEQNO)" value="@(lstData[i].OperatorID)" /></td>
+            <td scope="col">@lstData[i].OperatorName<select class="form-control" style="display:none;" name="OperatorName_@(lstData[i].USEQNO)" id="OperatorName_@(lstData[i].USEQNO)"></select><input type="hidden" name="OperatorID_@(lstData[i].USEQNO)" id="OperatorID_@(lstData[i].USEQNO)" value="@(lstData[i].OperatorID)" /></td>
+            <td scope="col">@lstData[i].FuncGroupName<select class="form-control" style="display:none;" name="FuncGroupNamee_@(lstData[i].USEQNO)" id="FuncGroupName_@(lstData[i].USEQNO)"></select><input type="hidden" name="FuncGroupID_@(lstData[i].USEQNO)" id="OperatorID_@(lstData[i].USEQNO)" value="@(lstData[i].FuncGroupID)" /></td>
             <td scope="col">@lstData[i].UserGroupID <input type="text" name="UserGroupID_@(lstData[i].USEQNO)" id="UserGroupID_@(lstData[i].USEQNO)" value="@(lstData[i].UserGroupID)" class="form-control" style="display:none" /></td>
             <td scope="col">@lstData[i].UserGroupName<input type="text" name="UserGroupName_@(lstData[i].USEQNO)" id="UserGroupName_@(lstData[i].USEQNO)" value="@(lstData[i].UserGroupName)" class="form-control" style="display:none" /></td>
 
@@ -224,7 +241,7 @@
         </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
-                <td colspan="8" class="text-center">
+                <td colspan="9" class="text-center">
                     <ul class="pagination"></ul>
                 </td>
             </tr>
@@ -258,5 +275,6 @@
     var ResultDataLen = '@(ResultLen)';
     var SEQNO = '@SEQNO';
     var tmpOperatorID = '@OperatorID';
+    var tmpFuncGroupID = '@FuncGroupID';
 </script>
 

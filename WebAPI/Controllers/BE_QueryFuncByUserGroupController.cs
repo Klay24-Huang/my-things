@@ -14,13 +14,13 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 【後台】查詢功能權限
+    /// 【後台】用使用者群組查詢對應的功能權限
     /// </summary>
-    public class BE_QueryFuncController : ApiController
+    public class BE_QueryFuncByUserGroupController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
-        /// 【後台】功能權限設定
+        /// 【後台】用使用者群組查詢對應的功能權限
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -37,10 +37,10 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_QueryFuncController";
+            string funName = "BE_QueryFuncByUserGroupController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_QueryFunc apiInput = null;
+            IAPI_BE_QueryFuncByUserGroup apiInput = null;
             OAPI_BE_GetFuncPower apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -56,12 +56,12 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_QueryFunc>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_QueryFuncByUserGroup>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.FuncGroupID};
+                string[] checkList = { apiInput.UserID, apiInput.UserGroupID };
                 string[] errList = { "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -73,14 +73,14 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                BE_GetFuncPower obj = new AccountManageRepository(connetStr).GetFuncPower(Convert.ToInt32(apiInput.FuncGroupID));
+                BE_GetFuncPower obj = new AccountManageRepository(connetStr).GetFuncPowerByUserGroupID(Convert.ToInt32(apiInput.UserGroupID));
                 if (obj != null)
                 {
                     apiOutput = new OAPI_BE_GetFuncPower()
                     {
                         Power = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Power>>(obj.FuncGroupPower)
                     };
-                    
+
                 }
             }
             #endregion

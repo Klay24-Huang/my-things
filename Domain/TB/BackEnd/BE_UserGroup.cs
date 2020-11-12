@@ -18,5 +18,11 @@ namespace Domain.TB.BackEnd
             public DateTime StartDate      {set;get;}  //datetime
             public DateTime EndDate        {set;get;}  //datetime
             public string OperatorName   {set;get;}  //nvarchar
+        /// <summary>
+        /// 對應TB_FuncGroup的pk (SEQNO)
+        /// </summary>
+        public int FuncGroupID { set; get; }
+
+        public string FuncGroupName { set; get; }
     }
 }

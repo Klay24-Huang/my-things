@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_UserGroup>
+
+@{
+    Layout = null;
+    List<SelectListItem> list = new List<SelectListItem>();
+    int USEQNO = ((ViewData["UserGroup"] == null) ? 0 : Convert.ToInt32(ViewData["UserGroup"].ToString()));
+}
+@if (Model != null)
+{
+    if (USEQNO == 0)
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "0" ,Selected=true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "0" });
+    }
+
+}
+@foreach (var UserGroup in Model)
+{
+    if (USEQNO == UserGroup.USEQNO)
+    {
+        list.Add(new SelectListItem() { Text = UserGroup.UserGroupName, Value = UserGroup.USEQNO.ToString(),Selected=true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = UserGroup.UserGroupName, Value = UserGroup.USEQNO.ToString() });
+    }
+
+}
+
+@Html.DropDownList("ddlUserGroup", list, new { Class = "form-control" })

@@ -442,6 +442,10 @@ namespace WebAPI.Models.Enum
                 /// </summary>
                 BE_UPDUserGroup,
                 /// <summary>
+                /// 新增/修改使用者
+                /// </summary>
+                BE_HandleUserMaintain,
+                /// <summary>
                 /// 處理審核照片
                 /// </summary>
                 BE_HandleAuditImage,
@@ -805,6 +809,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_UPDUserGroup:
                     SPName = "usp_BE_UPDUserGroup";
+                    break;
+                case SPType.BE_HandleUserMaintain:
+                    SPName = "usp_BE_HandleUserMaintain";
                     break;
                 case SPType.BE_HandleAuditImage:
                     SPName = "usp_BE_HandleAuditImage";

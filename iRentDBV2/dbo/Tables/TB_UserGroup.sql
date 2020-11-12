@@ -3,6 +3,7 @@
 	[USEQNO] INT NOT NULL IDENTITY, 
     [UserGroupID] VARCHAR(50) NOT NULL DEFAULT '', 
     [UserGroupName] NVARCHAR(50) NOT NULL DEFAULT N'', 
+    [FuncGroupID] INT NOT NULL DEFAULT 0,
     [OperatorID] INT NOT NULL DEFAULT 0,
     [StartDate] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
     [EndDate] DATETIME NOT NULL DEFAULT '2099-12-31 23:59:59', 
@@ -67,3 +68,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_UserGroup',
     @level2type = N'COLUMN',
     @level2name = N'OperatorID'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'預設的功能群組id',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_UserGroup',
+    @level2type = N'COLUMN',
+    @level2name = N'FuncGroupID'

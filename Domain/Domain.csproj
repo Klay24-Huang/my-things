@@ -76,6 +76,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_HandleMasterCard.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandlePolygon.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleUserMaintain.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarBindData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarMachineData.cs" />
