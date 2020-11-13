@@ -62,6 +62,7 @@ CREATE PROCEDURE [dbo].[usp_GetStationCarTypeOfMutiStation]
 	@ED                     DATETIME              , --迄日
 	@CarType                VARCHAR(10)           , --車型群組代碼
 	@IDNO					VARCHAR(10)			  , --會員代碼
+	@Insurance				TINYINT				  , --是否計算安心服務
 	@LogID                  BIGINT                , --               ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -258,7 +259,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Price_H				= P.PROPRICE_H			--假日
 						,PriceBill              = dbo.FN_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
 												+ (@TotalHours * ISNULL(MS.MilageBase,0)*20)
-												+ (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END)
+												+ CASE WHEN @Insurance=1 THEN (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END) ELSE 0 END
 						,CarBrend				= D.CarBrend
 						,CarType				= E.CarTypeGroupCode
 						,CarTypeName			= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型

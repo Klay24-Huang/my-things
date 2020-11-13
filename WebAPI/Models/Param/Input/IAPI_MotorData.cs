@@ -24,7 +24,7 @@ namespace WebAPI.Models.Param.Input
         public int deviceGPSStatus { get; set; }
         public int deviceGPRSStatus { get; set; }
         public string deviceGPSTime { get; set; }
-        public int deviceSpeed { get; set; }
+        public double deviceSpeed { get; set; }
         public double deviceVolt { get; set; }
         public double deviceLatitude { get; set; }
         public double deviceLongitude { get; set; }

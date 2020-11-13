@@ -38,5 +38,9 @@ namespace WebAPI.Models.Param.Input
         /// 半徑
         /// </summary>
         public double? Radius { set; get; }
+        /// <summary>
+        /// 是否使用安心服務
+        /// </summary>
+        public int Insurance { set; get; }
     }
 }

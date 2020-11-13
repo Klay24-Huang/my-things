@@ -1,9 +1,9 @@
-﻿@model Domain.TB.BackEnd.BE_CreateContract
+﻿@model Domain.TB.BackEnd.BE_OrderDataCombind
 @{
     string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
     string CarContainer = (System.Configuration.ConfigurationManager.AppSettings["CarContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["CarContainer"].ToString();
     string ImgURL = StorageBaseURL + CarContainer + "/";
-    Domain.TB.BackEnd.BE_CreateContract obj = null;
+    Domain.TB.BackEnd.BE_OrderDetailData obj = null;
     string OrderKind = ""; //訂單類型
     string OrderModify = "";
     string[] InvoiceKind = { "", "捐贈", "二聯式發票以email寄送，中獎另行通知", "三聯式發票，請至官網查詢下載", "手機條碼載具", "自然人憑證載具" };
@@ -12,7 +12,7 @@
     int ReturnLen = 0;
     if (Model != null)
     {
-        obj = Model;
+        obj = Model.Data;
   
 
     }
@@ -120,7 +120,7 @@
                         <div class="row no-gutters border border-secondary border-bottom-0">
                             <div class="col-12 p-1">
                                 <label class="table-label">承租人聯絡地址</label>
-                                <p>@(string.Format("{0}{1}{2}",obj.CityName,obj.AreaName,obj.MEMADDR)</p>
+                                <p>@(string.Format("{0}{1}{2}",obj.CityName,obj.AreaName,obj.MEMADDR))</p>
                             </div>
                         </div>
                         <div class="row no-gutters border border-secondary border-bottom-0">
