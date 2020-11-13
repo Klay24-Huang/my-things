@@ -4,11 +4,9 @@ using Domain.SP.Output;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 
@@ -22,8 +20,8 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string key = ConfigurationManager.AppSettings["apikey"].ToString();
         private string salt = ConfigurationManager.AppSettings["salt"].ToString();
-        [HttpPost]
-        public Dictionary<string, object> doVerifyEMail(Dictionary<string, object> value)
+        [HttpGet]
+        public Dictionary<string, object> doVerifyEMail(string VerifyCode)
         {
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -34,33 +32,24 @@ namespace WebAPI.Controllers
             string funName = "VerifyEMailController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_VerifyEMail apiInput = null;
             OAPI_Login CheckAccountAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string IDNO="", EMail="";
-            Int16 APPKind = 2;
-            string Contentjson = "";
+            string IDNO = "";
+            string EMail = "";
             #endregion
             #region 防呆
-
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_VerifyEMail>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(string.Format("VerifyCode={0}", VerifyCode), ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.VerifyCode };
-                string[] errList = { "ERR900" };
-                //1.判斷必填
-                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
                 {
-                    //2.判斷格式
-                    string Source = new AESEncrypt().doDecrypt(key, salt, apiInput.VerifyCode);
+                    //解碼
+                    string Source = new AESEncrypt().doDecrypt(key, salt, VerifyCode);
                     if (Source != "")
                     {
                         IDNO = Source.Split('⊙')[0];
@@ -72,7 +61,6 @@ namespace WebAPI.Controllers
                         errCode = "ERR140";
                     }
                 }
-           
             }
             #endregion
             #region TB
@@ -81,9 +69,9 @@ namespace WebAPI.Controllers
                 string spName = new ObjType().GetSPName(ObjType.SPType.VerifyEMail);
                 SPInput_VerifyEMail spInput = new SPInput_VerifyEMail()
                 {
-                    LogID = LogID,
                     IDNO = IDNO,
-                    EMAIL=EMail
+                    EMAIL = EMail,
+                    LogID = LogID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_VerifyEMail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_VerifyEMail, SPOutput_Base>(connetStr);
@@ -102,6 +90,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-
     }
 }
