@@ -301,7 +301,7 @@ namespace Reposotory.Implement
                 term += (term == "") ? "" : " AND ";
                 term += " Account like @Account ";
                 para[nowCount] = new SqlParameter("@Account", SqlDbType.VarChar, 60);
-                para[nowCount].Value = "%" + UserGroupID + "%";
+                para[nowCount].Value = "%" + Account + "%";
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }

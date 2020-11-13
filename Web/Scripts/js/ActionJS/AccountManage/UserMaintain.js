@@ -1,4 +1,13 @@
 ﻿var funcList;
+var NowEditID = 0;
+var OperatorID = "";
+var UserGroupID = "";
+var UserName = "";
+var UserAccount = "";
+var UserPWD = "";
+var StartDate = "";
+var EndDate = "";
+
 $(document).ready(function () {
 
     var func = $("#funcName").val();
@@ -24,9 +33,11 @@ $(document).ready(function () {
         $("#ddlObj").trigger("change");
         if (Mode == "Add") {
             $("#btnSend").text("儲存");
+            $("#UserPWD").prop("disabled", "");
             $("#btnReview").show();
         } else if(Mode=="Edit") {
             $("#btnSend").text("查詢");
+            $("#UserPWD").prop("disabled", "disabled");
             $("#btnReview").hide();
         }
     }
@@ -77,6 +88,7 @@ $(document).ready(function () {
             var Mode = $("#ddlObj").val();
             if (Mode == "Edit") {
                 $("#justSearch").val(1)
+                $("#UserPWD").prop("disabled", "disabled");
             }
                
             $("#frmUserMaintain").submit();
@@ -133,7 +145,9 @@ $(document).ready(function () {
                     }
                 }
                 var obj = new Object();
+                obj.SEQNO = 0;
                 obj.UserID = Account;
+                obj.Operator = OperatorID;
                 obj.UserGroupID = UserGroupID;
                 obj.Power = GetPower();
                 obj.UserAccount = UserAccount;
@@ -182,6 +196,173 @@ $(document).ready(function () {
     })
 
 })
+function DoEdit(Id) {
+   
+    if (NowEditID > 0) {
+        //先還原前一個
+        /*
+         var NowEditID = 0;
+         
+        var OperatorID = "";
+        var UserGroupID = "";
+        var UserName = "";
+        var UserAccount = "";
+        var UserPWD = "";
+        var StartDate = "";
+        var EndDate = "";
+         */
+        $("#UserAccount_" + NowEditID).val(UserAccount).hide();
+        $("#UserName_" + NowEditID).val(UserName).hide();
+        $("#UserPWD_" + NowEditID).val("").hide();
+        $("#UserGroupName_" + NowEditID).empty().hide();
+        $("#OperatorName_" + NowEditID).empty().hide();
+        $("#OperatorName_" + NowEditID).unbind("change");
+
+        $("#StartDate_" + NowEditID).val(StartDate).hide();
+        $("#EndDate_" + NowEditID).val(EndDate).hide();
+        $("#btnReset_" + NowEditID).hide();
+        $("#btnSave_" + NowEditID).hide();
+        $("#btnEdit_" + NowEditID).show();
+
+    }
+
+    NowEditID = Id;
+    UserAccount = $("#UserAccount_" + Id).val();
+    UserName = $("#UserName_" + Id).val();
+    UserPWD = $("#UserPWD_" + Id).val();
+    UserGroupID = $("#UserGroupID_" + Id).val();
+    OperatorID = $("#OperatorID_" + Id).val();
+    StartDate = $("#StartDate_" + Id).val();
+    EndDate = $("#EndDate_" + Id).val();
+
+    $("#UserAccount_" + Id).show();
+    $("#UserName_" + Id).show();
+    $("#UserPWD_" + Id).show();
+    $("#UserGroupName_" + Id).show();
+    $("#OperatorName_" + Id).show();
+    $("#ddlOperator").find('option').clone().appendTo('#OperatorName_' + Id);
+    $("#OperatorName_" + Id).val(OperatorID);
+    $("#OperatorName_" + Id).on("change", function () {
+        if ($(this).val() != "0" && $(this).val() != "") {
+            var Account = $("#Account").val();
+            // var Id = $(this).attr("id").val().split("_")[1];
+            $("#UserGroupName_" + NowEditID).empty();
+            var obj = new Object();
+            obj.UserID = Account;
+            obj.OperatorID = $(this).val();
+            obj.UserGroupID = $("#UserGroupID_" + NowEditID).val();
+            obj.NowID = NowEditID;
+            DoAjaxAfterCallBack(obj, "BE_GetUserGroupByOperator","查詢使用者群組發生錯誤", SetUserGroupData);
+        } else {
+            $("#UserGroupName_" + NowEditID).empty();
+        }
+    });
+    $("#OperatorName_" + Id).val(UserGroupID);
+    $("#OperatorName_" + Id).trigger("click");
+
+    $("#StartDate_" + Id).show();
+    $("#EndDate_" + Id).show();
+
+    $("#btnReset_" + Id).show();
+    $("#btnSave_" + Id).show();
+    $("#btnEdit_" + Id).hide();
+}
+function SetUserGroupData(data) {
+    console.log(data);
+    var len = data.UserGroup.length;
+    for (var i = 0; i < len; i++) {
+        optText = data.UserGroup[i].UserGroupName;
+        optValue = data.UserGroup[i].USEQNO;
+        $('#UserGroupName_'+data.NowID).append(`<option value="${optValue}">${optText}</option>`);
+    }
+    $('#UserGroupName_' + data.NowID).val(data.UserGroupID);
+   /*
+     optText = 'New elemenet';
+        optValue = 'newElement';
+        $('#selectId').append(`<option value="${optValue}">${optText}</option>`);
+    */
+}
+function DoReset(Id) {
+
+    $("#UserAccount_" + Id).val(UserAccount).hide();
+    $("#UserName_" + Id).val(UserName).hide();
+    $("#UserPWD_" + Id).val("").hide();
+    $("#UserGroupName_" + Id).val(UserGroupID).hide();
+    $("#OperatorName_" + Id).val(OperatorID).hide();
+    $("#StartDate_" + Id).val(StartDate).hide();
+    $("#EndDate_" + Id).val(EndDate).hide();
+
+    $("#btnReset_" + Id).hide();
+    $("#btnSave_" + Id).hide();
+    $("#btnEdit_" + Id).show();
+     NowEditID = 0;
+     OperatorID = "";
+     UserGroupID = "";
+     UserName = "";
+     UserAccount = "";
+     UserPWD = "";
+     StartDate = "";
+     EndDate = "";
+}
+function DoSave(Id) {
+    UserAccount = $("#UserAccount_" + Id).val();
+    UserName = $("#UserName_" + Id).val();
+    UserPWD = $("#UserPWD_" + Id).val();
+    UserGroupID = $("#UserGroupName_" + Id).val();
+    OperatorID = $("#OperatorName_" + Id).val();
+    StartDate = $("#StartDate_" + Id).val();
+    EndDate = $("#EndDate_" + Id).val();
+    var Account = $("#Account").val();
+
+    var flag = true;
+    var errMsg = "";
+
+    ShowLoading("資料處理中");
+    var checkList = [OperatorID, UserGroupID, UserAccount, UserName,  StartDate, EndDate];
+    var errMsgList = ["業者別未選擇", "使用者群組未選擇", "員工編號未填", "員工姓名未填",  "有效日期（起）未填", "有效日期（迄）未填"];
+
+    var len = checkList.length;
+    for (var i = 0; i < len; i++) {
+        if (checkList[i] == "") {
+            flag = false;
+            errMsg = errMsgList[i];
+            break;
+        }
+    }
+    if (flag) {
+        if (StartDate > EndDate) {
+            flag = false;
+            errMsg = "起始日期大於結束日期";
+        }
+    }
+    if (flag) {
+        if (!CheckStorageIsNull(OperatorID)) {
+            OperatorID = $("#OperatorID_" + Id).val();
+        }
+        if (!CheckStorageIsNull(UserGroupID)) {
+            UserGroupID = $("#UserGroupID_" + Id).val();
+        }
+    }
+    if (flag) {
+  
+        var obj = new Object();
+        obj.SEQNO = Id;
+        obj.UserID = Account;
+        obj.UserGroupID = UserGroupID;
+        obj.Power = GetPower();
+        obj.UserAccount = UserAccount;
+        obj.Operator = OperatorID;
+        obj.UserName = UserName;
+        obj.UserPWD = UserPWD;
+        obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
+        obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
+        obj.Mode = Mode;
+        DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "修改使用者者發生錯誤");
+    } else {
+        disabledLoading(errMsg)
+    }
+
+}
 function showPower(data) {
     var dataList = JSON.parse(data);
     $(".form-check-input").each(function () {

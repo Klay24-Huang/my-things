@@ -242,7 +242,7 @@
         <tr>
             <td></td>
             <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].SEQNO)" id="PK_@(lstData[i].SEQNO)" value="@(lstData[i].SEQNO)" /></td>
-            <td scope="col">@lstData[i].Account <input type="text" name="Account_@(lstData[i].SEQNO)" id="Account_@(lstData[i].SEQNO)" value="@(lstData[i].Account)" class="form-control" style="display:none" /></td>
+            <td scope="col">@lstData[i].Account <input type="text" name="UserAccount_@(lstData[i].SEQNO)" id="UserAccount_@(lstData[i].SEQNO)" value="@(lstData[i].Account)" class="form-control" style="display:none" /></td>
             <td scope="col">@lstData[i].UserName<input type="text" name="UserName_@(lstData[i].SEQNO)" id="UserName_@(lstData[i].SEQNO)" value="@(lstData[i].UserName)" class="form-control" style="display:none" /></td>
             <td scope="col">**********<input type="text" name="UserPWD_@(lstData[i].SEQNO)" id="UserPWD_@(lstData[i].SEQNO)" value="" class="form-control" style="display:none" placeholder="不修改密碼請勿輸入" /></td>
             <td scope="col">@(lstData[i].UserGroupName)<select class="form-control" style="display:none;" name="UserGroupName_@(lstData[i].SEQNO)" id="UserGroupName_@(lstData[i].SEQNO)"></select><input type="hidden" name="UserGroupID_@(lstData[i].SEQNO)" id="UserGroupID_@(lstData[i].SEQNO)" value="@(lstData[i].UserGroupID)" /></td>
