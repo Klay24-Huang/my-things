@@ -14,9 +14,9 @@
 
     $('.btn-clear').click(function () {
         setTimeout(function () {
-            $('#AuditMode').val('');
+            $('form input').val('');
             $('.form-check-input').attr('checked', false);
-        },300);
+        },200);
     });
 });
 function GoDetail(IDNO) {
