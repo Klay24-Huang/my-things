@@ -43,6 +43,7 @@ namespace Web.Controllers
             ViewData["EndDate"] = EndDate;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
+           
             if (Mode == "Add")
             {
                 CommonFunc baseVerify = new CommonFunc();
@@ -299,7 +300,22 @@ namespace Web.Controllers
             ViewData["EndDate"] = collection["EndDate"]; ;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            return View();
+            ViewData["UserPWD"]= collection["UserPWD"];
+            string Mode = ViewData["Mode"].ToString();
+            int justSearch = Convert.ToInt32(collection["justSearch"]);
+            string Account= (string.IsNullOrEmpty(collection["UserAccount"]))?"": collection["UserAccount"].ToString();
+            List<BE_GetUserData> lstData = null;
+            if(Mode=="Edit" && justSearch == 0)
+            {
+
+               // lstData=new AccountManageRepository(connetStr).GetUserData()
+                return View(lstData);
+            }
+            else
+            {
+                return View(lstData);
+            }
+          
         }
 
 

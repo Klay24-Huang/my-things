@@ -281,5 +281,99 @@ namespace Reposotory.Implement
 
             return obj;
         }
+        //BE_GetUserData
+        public List<BE_GetUserData> GetUserData(string Account,string UserName,int UserGroupID,  int OperatorID, string StartDate, string EndDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetUserData> lstUser = null;
+
+
+            int nowCount = 0;
+            string SQL = "SELECT * FROM VW_BE_GetUserData ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (!string.IsNullOrEmpty(Account))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " Account like @Account ";
+                para[nowCount] = new SqlParameter("@Account", SqlDbType.VarChar, 60);
+                para[nowCount].Value = "%" + UserGroupID + "%";
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (!string.IsNullOrEmpty(UserName))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " UserName like @UserName";
+                para[nowCount] = new SqlParameter("@UserName", SqlDbType.NVarChar, 60);
+                para[nowCount].Value = string.Format("%{0}%", UserName);
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (OperatorID > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " Operator =@OperatorID";
+                para[nowCount] = new SqlParameter("@OperatorID", SqlDbType.Int);
+                para[nowCount].Value = OperatorID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (UserGroupID > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " UserGroupID =@UserGroupID";
+                para[nowCount] = new SqlParameter("@UserGroupID", SqlDbType.Int);
+                para[nowCount].Value = UserGroupID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (!string.IsNullOrEmpty(StartDate) && !string.IsNullOrEmpty(EndDate))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " ((StartDate BETWEEN @StartDate AND @EndDate) AND (EndDate BETWEEN @StartDate AND @EndDate)) ";
+                para[nowCount] = new SqlParameter("@StartDate", SqlDbType.DateTime);
+                para[nowCount].Value = StartDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@EndDate", SqlDbType.DateTime);
+                para[nowCount].Value = EndDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+            }
+            else if (!string.IsNullOrEmpty(StartDate) && string.IsNullOrEmpty(EndDate))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " ((@StartDate BETWEEN StartDate AND EndDate) ) ";
+                para[nowCount] = new SqlParameter("@StartDate", SqlDbType.DateTime);
+                para[nowCount].Value = StartDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            else if (string.IsNullOrEmpty(StartDate) && !string.IsNullOrEmpty(EndDate))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " ((@EndDate BETWEEN StartDate AND EndDate) ) ";
+                para[nowCount] = new SqlParameter("@EndDate", SqlDbType.DateTime);
+                para[nowCount].Value = EndDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY SEQNO DESC;";
+
+            }
+
+            lstUser = GetObjList<BE_GetUserData>(ref flag, ref lstError, SQL, para, term);
+
+
+            return lstUser;
+        }
     }
 }

@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetFuncGroup>
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetUserData>
 @{
 
-    List<Domain.TB.BackEnd.BE_GetFuncGroup> lstData = null;
+    List<Domain.TB.BackEnd.BE_GetUserData> lstData = null;
     string FuncGroupID = (ViewData["FuncGroupID"] == null) ? "" : ViewData["FuncGroupID"].ToString();
     string FuncGroupName = (ViewData["FuncGroupName"] == null) ? "" : ViewData["FuncGroupName"].ToString();
     string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
@@ -195,6 +195,7 @@
                     <div class="col-md-3 offset-md-2">
                         <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                         <input type="hidden" id="len" name="len" value="@(ResultLen)" />
+                        <input type="hidden" id="justSearch" name="justSearch" value="" />
                         <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">查詢</Button>
                         <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
                     </div>

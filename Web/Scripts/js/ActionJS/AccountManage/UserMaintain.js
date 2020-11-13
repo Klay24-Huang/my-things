@@ -44,13 +44,14 @@ $(document).ready(function () {
                 break;
             case "Add":
                 $("#liPower").hide();
+                $("#UserPWD").prop("disabled", "");
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("儲存");
 
                 break;
             case "Edit":
-
+                $("#UserPWD").prop("disabled", "disabled");
                 $("#liPower").hide();
                 $("#btnSend").show();
                 $("#btnReset").show();
@@ -64,6 +65,11 @@ $(document).ready(function () {
         var value = $(this).val();
         $("#ddlUserGroup").empty();
         if (value != "") {
+            var Mode = $("#ddlObj").val();
+            if (Mode == "Edit") {
+                $("#justSearch").val(1)
+            }
+               
             $("#frmUserMaintain").submit();
         }
     })
@@ -101,22 +107,22 @@ $(document).ready(function () {
         var checkList = [OperatorID, UserGroupID, UserAccount, UserName, UserPWD, StartDate, EndDate];
         var errMsgList = ["業者別未選擇", "使用者群組未選擇", "員工編號未填", "員工姓名未填", "密碼未填", "有效日期（起）未填", "有效日期（迄）未填"];
         var len = checkList.length;
-        for (var i = 0; i < len; i++) {
-            if (checkList[i] == "") {
-                flag = false;
-                errMsg = errMsgList[i];
-                break;
-            }
-        }
-        if (flag) {
-            if (StartDate > EndDate) {
-                flag = false;
-                errMsg = "起始日期大於結束日期";
-            }
-        }
+    
         if (flag) {
             if (Mode == "Add") {
-
+                for (var i = 0; i < len; i++) {
+                    if (checkList[i] == "") {
+                        flag = false;
+                        errMsg = errMsgList[i];
+                        break;
+                    }
+                }
+                if (flag) {
+                    if (StartDate > EndDate) {
+                        flag = false;
+                        errMsg = "起始日期大於結束日期";
+                    }
+                }
                 var obj = new Object();
                 obj.UserID = Account;
                 obj.UserGroupID = UserGroupID;
@@ -128,8 +134,36 @@ $(document).ready(function () {
                 obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
                 obj.Mode = Mode;
                 DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "新增/修改權限發生錯誤")
+            } else {
+                var hasTerm = false;
+                for (var i = 0; i < len; i++) {
+                    if (checkList[i] != "") {
+                        hasTerm=true
+                        break;
+                    }
+                }
+                if (hasTerm == false) {
+                    flag = false;
+                    errMsg = "至少要有一個搜尋條件";
+                }
+                if (flag) {
+                    if (StartDate != "" && EndDate != "") {
+                        if (StartDate > EndDate) {
+                            flag = false;
+                            errMsg = "起始日期大於結束日期";
+                        }
+                    }
+                   
+                }
+                if (flag) {
+                    $("#justSearch").val(0)
+                    $("#frmUserMaintain").submit();
+                } else {
+                    disabledLoading(errMsg);
+                }
             }
         } else {
+
             disabledLoading(errMsg);
         }
        

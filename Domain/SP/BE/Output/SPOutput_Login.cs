@@ -17,5 +17,9 @@ namespace Domain.SP.BE.Output
         /// 群組
         /// </summary>
         public string UserGroup{set;get;}
+        /// <summary>
+        /// 權限
+        /// </summary>
+        public string PowerList { set; get; }
     }
 }

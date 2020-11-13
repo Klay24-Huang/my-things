@@ -257,6 +257,7 @@
     <Compile Include="TB\BackEnd\BE_GetPartOfStationInfo.cs" />
     <Compile Include="TB\BackEnd\BE_GetPolygonCombindData.cs" />
     <Compile Include="TB\BackEnd\BE_GetStationInfo.cs" />
+    <Compile Include="TB\BackEnd\BE_GetUserData.cs" />
     <Compile Include="TB\BackEnd\BE_HoildayData.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCardData.cs" />

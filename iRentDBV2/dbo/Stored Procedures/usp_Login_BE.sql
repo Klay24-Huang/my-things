@@ -49,6 +49,7 @@ CREATE PROCEDURE [dbo].[usp_Login_BE]
 	@ClientIP               VARCHAR(64)           ,
 	@UserName               NVARCHAR(50)    OUTPUT,
 	@UserGroup              VARCHAR(20)     OUTPUT,
+	@PowerList              VARCHAR(MAX)    OUTPUT,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -66,6 +67,7 @@ DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
+DECLARE @SEQNO INT;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -84,6 +86,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @Account    =ISNULL (@Account    ,'');
 SET @UserPwd=ISNULL (@UserPwd,'');
 SET @ClientIP    =ISNULL (@ClientIP    ,'');
+SET @SEQNO=0;
 
 		BEGIN TRY
 	
@@ -109,7 +112,11 @@ SET @ClientIP    =ISNULL (@ClientIP    ,'');
 			   SET UPDTime=@NowTime,ClientIP=@ClientIP
 			   WHERE  Account=@Account;
 
-			   SELECT @UserName=UserName,@UserGroup=UserGroup FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd);
+			   SELECT @UserName=ISNULL(UserName,''),@UserGroup=ISNULL(UserGroupID,0),@SEQNO=ISNULL(SEQNO,0) FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd) AND (@NowTime Between StartDate AND EndDate);
+			   IF @SEQNO>0
+			   BEGIN
+					SELECT @PowerList=PowerList FROM VW_BE_GetUserData WHERE SEQNO=@SEQNO
+			   END
 			END
 		 END
 		--寫入錯誤訊息
