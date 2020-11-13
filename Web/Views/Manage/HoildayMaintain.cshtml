@@ -77,7 +77,7 @@
                                         <label class="form-check-label" for="chkHoilday_@dayStr">
                                             @(j.ToString().PadLeft(2, '0'))
                                         </label>
-                                        <input class="form-check-input" type="checkbox" name="chkHoilday" id="chkHoilday_@dayStr" value="@dayStr" data-Hoilday="@((dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.Saturday) ? "1" : "0")">
+                                        <input class="form-check-input" type="checkbox" name="chkHoilday" id="chkHoilday_@dayStr" value="@dayStr" data-Hoilday="@((dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Friday) ? "1" : "0")">
                                     </div>
 
                                 }
