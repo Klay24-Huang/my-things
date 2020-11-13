@@ -103,7 +103,7 @@
         }
 
     });
-    $("#fileImport").on("change", function () {
+    $('body').on("change", "#fileImport",function () {
         var file = this.files[0];
         var flag = true;
         var errMsg = "";
@@ -111,6 +111,7 @@
             var fileName = file.name;
             var fileSize = file.size;
             console.log(fileSize);
+            $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
             var extName = "";
             if (CheckStorageIsNull(ext)) {
@@ -118,10 +119,10 @@
                 console.log(extName.toUpperCase())
             }
             if (flag) {
-                if (fileSize > 102400) {
+                if (fileSize > 1024000) {
                     swal({
                         title: 'Fail',
-                        text: "僅允許100K",
+                        text: "僅允許1000K",
                         icon: 'error'
                     }).then(function (value) {
 
@@ -129,11 +130,11 @@
                     });
                 }
             }
-            if (extName.toUpperCase() != "PNG") {
+            if (extName.toUpperCase() != "PNG" && extName.toUpperCase() != "JPG" && extName.toUpperCase() != "JEPG") {
 
                 swal({
                     title: 'Fail',
-                    text: "僅允許png格式",
+                    text: "僅允許png,jpg格式",
                     icon: 'error'
                 }).then(function (value) {
 
@@ -248,7 +249,7 @@
 
     });
 });
-
+var inPicSize = 0;
 //圖片處理
 function handleFiles(file, id) {
     console.log("call handleFiles");
@@ -262,7 +263,7 @@ function handleFiles(file, id) {
             console.log(new Date(file[0].lastModified).toLocaleDateString() + " " + new Date(file[0].lastModified).toLocaleTimeString());
             var reader = new FileReader();
             var fileSize = Math.round(file[0].size / 1024 / 1024);
-           // inPicSize = fileSize;
+            inPicSize = fileSize;
             reader.onload = function (e) {
                 console.log("call reader.onload ");
                 /* $('#show-incarPic').attr('src', e.target.result);
