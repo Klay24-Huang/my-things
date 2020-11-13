@@ -263,10 +263,10 @@
                         <div class="col-md-1">
                             <img src="@((PIC2=="")?"":ImgURL+PIC2)" id="PIC2" name="PIC2" class="img-thumbnail" />
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-1" style="display:none;">
                             <img src="@((PIC3=="")?"":ImgURL+PIC3)" id="PIC3" name="PIC3" class="img-thumbnail" />
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-1" style="display:none;">
                             <img src="@((PIC4=="")?"":ImgURL+PIC4)" id="PIC4" name="PIC4" class="img-thumbnail" />
 
                         </div>
@@ -285,8 +285,8 @@
                                 <option value="-1"></option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
+                                <!--<option value="3">3</option>
+                                <option value="4">4</option>-->
                             </select>
                         </div>
                     </div>
@@ -325,7 +325,7 @@
                             <input type="hidden" name="fileDescript2" id="fileDescript2" value="@(PIC2Descript)" />
                             <input type="hidden" name="fileDescript3" id="fileDescript3" value="@(PIC3Descript)" />
                             <input type="hidden" name="fileDescript4" id="fileDescript4" value="@(PIC4Descript)" />
-                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限100kb以內
+                            <input type="file" class="jfilestyle" accept=".png,.jpg,.jpeg" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限1000KB以內
                             <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
                         </div>
                     </div>
