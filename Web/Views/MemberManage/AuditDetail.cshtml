@@ -190,11 +190,47 @@
                                 <div class="col-md-2">
                                     iRent會員狀態
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-10">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") readonly>
                                         <label class="form-check-label" for="NoRegister">
                                             尚未申請
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.AuditKind == 1 || obj.detail.AuditKind == 2) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待上傳證件照片
+                                        </label>
+                                    </div>
+                                    <!--<div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定付款方式
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定發票開立
+                                        </label>
+                                    </div>-->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="0" @((obj.detail.HasAudit == 0) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核中
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == 1) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核失敗
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="2" @((obj.detail.HasAudit == 2) ? " checked" : "") readonly>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核成功
                                         </label>
                                     </div>
                                 </div>
