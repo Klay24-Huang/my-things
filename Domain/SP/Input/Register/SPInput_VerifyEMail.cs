@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Register
 {
@@ -20,6 +16,7 @@ namespace Domain.SP.Input.Register
         /// EMAIL
         /// </summary>
         public string EMAIL { set; get; }
+
         /// <summary>
         /// 
         /// </summary>

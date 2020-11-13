@@ -159,8 +159,18 @@ namespace WebAPI.Controllers
             {
                 SendMail send = new SendMail();
                 string Source = new AESEncrypt().doEncrypt(key, salt, apiInput.IDNO + "⊙" + apiInput.MEMEMAIL);
-                string Title = "iRent會員電子信箱認證通知信", Body = "";
-                Body = "驗證碼：" + Source;
+                string Title = "iRent會員電子信箱認證通知信";
+
+                string url = "https://irentv2-app-api.irent-ase.p.azurewebsites.net/api/VerifyEMail?VerifyCode=" + Source;
+
+                string Body =
+                    "<img src='https://verify.irent-ase.p.azurewebsites.net/images/irent.png'>" +
+                    "<p>親愛的會員您好：</p>" +
+                    "<p>請點擊下方連結完成電子信箱認證</p>" +
+                    "<p><a href='" + url + "'>請按這裡</a></p>" +
+                    "<p>不是您本人嗎?請直接忽略或刪除此信件，</p>" +
+                    "<p>如有問題請撥打客服專線0800-024-550，謝謝！</p>" +
+                    "<img src='https://verify.irent-ase.p.azurewebsites.net/images/hims_logo.png' width='300'>";
 
                 // flag = Task.Run(() => send.DoSendMail(Title, Body, apiInput.MEMEMAIL)).Result;
                 flag = send.DoSendMail(Title, Body, apiInput.MEMEMAIL);
