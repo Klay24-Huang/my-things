@@ -18,6 +18,11 @@
             $('.form-check-input').attr('checked', false);
         },200);
     });
+    setTimeout(function () {
+        if ($.trim($('AuditMode').val()) != '') {
+            $('.btn-submit').click();
+        }
+    }, 500);
 });
 function GoDetail(IDNO) {
     ShowLoading("資料讀取車…");
