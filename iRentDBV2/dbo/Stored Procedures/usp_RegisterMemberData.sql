@@ -77,9 +77,9 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
-SET @MEMCNAME    =ISNULL (@MEMCNAME    ,'');
+SET @MEMCNAME=ISNULL (@MEMCNAME,'');
 SET @MEMBIRTH=ISNULL(@MEMBIRTH,'');
 SET @MEMCITY =ISNULL(@MEMCITY ,0);
 SET @MEMADDR =ISNULL(@MEMADDR ,'');
@@ -116,7 +116,9 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		UPDATE TB_MemberData
-		SET MEMADDR=@MEMADDR,MEMBIRTH=@MEMBIRTH,MEMCITY=@MEMCITY,MEMCNAME=@MEMCNAME,MEMEMAIL=@MEMEMAIL,IrFlag=1
+		SET IrFlag=1,
+			U_USERID=@IDNO,
+			U_SYSDT=@NowTime
 		WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
@@ -159,47 +161,56 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
-			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
-			IF @hasData>0
-			BEGIN
-				DELETE FROM TB_MemberDataOfAutdit WHERE [MEMIDNO]=@IDNO;
-			END
-		
-				INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
-													[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
-													[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-													[CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
-				SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
-						[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
-						[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-						[CARRIERID],[NPOBAN],2,0,1  
-			   FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-		
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND HasAudit=1;
+		IF @hasData=1
+		BEGIN
+			INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+											  [MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+											  [MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+											  [CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
+			SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
+					[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
+					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
+					[CARRIERID],[NPOBAN],2,0,1  
+			FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+		END
+		ELSE
+		BEGIN
+			UPDATE [TB_MemberDataOfAutdit]
+			SET MEMADDR=@MEMADDR,
+				MEMBIRTH=@MEMBIRTH,
+				MEMCITY=@MEMCITY,
+				MEMCNAME=@MEMCNAME,
+				MEMEMAIL=@MEMEMAIL,
+				UPDTime=@NowTime
+			WHERE MEMIDNO=@IDNO;
+		END
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_RegisterMemberData';

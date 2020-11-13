@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -51,7 +49,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -60,8 +57,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO,apiInput.Mobile, apiInput.DeviceID, apiInput.APPVersion };
-                string[] errList = { "ERR900",  "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.IDNO, apiInput.Mobile, apiInput.DeviceID, apiInput.APPVersion };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
@@ -117,21 +114,19 @@ namespace WebAPI.Controllers
                 WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
                 string Message = string.Format("您的驗證碼是：{0}", VerifyCode);
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
-               
             }
             #endregion
             #region TB
             if (flag)
             {
-                
                 string spName = new ObjType().GetSPName(ObjType.SPType.Register_Step1);
                 SPInput_Register_Step1 spInput = new SPInput_Register_Step1()
                 {
                     LogID = LogID,
                     IDNO = apiInput.IDNO,
-                     Mobile=apiInput.Mobile,
-                      DeviceID=apiInput.DeviceID,
-                       VerifyCode=VerifyCode
+                    Mobile = apiInput.Mobile,
+                    DeviceID = apiInput.DeviceID,
+                    VerifyCode = VerifyCode
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_Register_Step1, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_Register_Step1, SPOutput_Base>(connetStr);
@@ -140,7 +135,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
