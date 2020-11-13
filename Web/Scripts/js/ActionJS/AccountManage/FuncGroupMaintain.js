@@ -275,6 +275,8 @@ function DoSave(Id) {
         obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
 
         DoAjaxAfterReload(obj, "BE_UPDFuncGroup", "修改功能群組發生錯誤");
+    } else {
+        disabledLoading(errMsg);
     }
 
 }

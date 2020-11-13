@@ -107,12 +107,21 @@ namespace WebAPI.Controllers
                 }
                 if (flag)
                 {
+                    if(apiInput.Mode=="Add" && apiInput.UserPWD == "")
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
+                }
+                if (flag)
+                {
                     if (apiInput.Power.Count>0)
                     {
                         PowerStr = JsonConvert.SerializeObject(apiInput.Power);
                     }
 
                 }
+
             }
             #endregion
 

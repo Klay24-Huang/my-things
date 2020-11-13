@@ -15,10 +15,10 @@ $(document).ready(function () {
         $("#ddlObj").trigger("change");
         if (Mode == "Add") {
             $("#btnSend").text("儲存");
-            $("#liPower").hide();
+            $("#btnReview").show();
         } else if(Mode=="Edit") {
             $("#btnSend").text("查詢");
-            $("#liPower").hide();
+            $("#btnReview").hide();
         }
     }
     $("#btnSet").on("click", function () {
@@ -93,24 +93,46 @@ $(document).ready(function () {
         var UserName = $("#UserName").val();
         var StartDate = $("#StartDate").val();
         var EndDate = $("#EndDate").val();
+        var UserPWD = $("#UserPWD").val();
         var flag = true;
         var errMsg = "";
         var hasClick = false;
-        if (Mode == "Add") {
-
-            var obj = new Object();
-            obj.UserID = Account;
-            obj.UserGroupID = UserGroupID;
-            obj.Power = GetPower();
-            obj.UserAccount = UserAccount;
-            obj.UserName = UserName;
-            obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
-            obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
-            obj.Mode = Mode;
-            DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "新增/修改權限發生錯誤")
-        } else {
-
+        ShowLoading("資料處理中");
+        var checkList = [OperatorID, UserGroupID, UserAccount, UserName, UserPWD, StartDate, EndDate];
+        var errMsgList = ["業者別未選擇", "使用者群組未選擇", "員工編號未填", "員工姓名未填", "密碼未填", "有效日期（起）未填", "有效日期（迄）未填"];
+        var len = checkList.length;
+        for (var i = 0; i < len; i++) {
+            if (checkList[i] == "") {
+                flag = false;
+                errMsg = errMsgList[i];
+                break;
+            }
         }
+        if (flag) {
+            if (StartDate > EndDate) {
+                flag = false;
+                errMsg = "起始日期大於結束日期";
+            }
+        }
+        if (flag) {
+            if (Mode == "Add") {
+
+                var obj = new Object();
+                obj.UserID = Account;
+                obj.UserGroupID = UserGroupID;
+                obj.Power = GetPower();
+                obj.UserAccount = UserAccount;
+                obj.UserName = UserName;
+                obj.UserPWD = UserPWD;
+                obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
+                obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
+                obj.Mode = Mode;
+                DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "新增/修改權限發生錯誤")
+            }
+        } else {
+            disabledLoading(errMsg);
+        }
+       
                
 
 
@@ -119,7 +141,7 @@ $(document).ready(function () {
 })
 function SetMaintain(data) {
     console.log("call back")
-    $("#liPower").show();
+    $("#btnReview").show();
     //$("#btnSend").text("修改後儲存");
     console.log(data);
     var RootLen = data.Power.length;
@@ -190,7 +212,7 @@ function GetPower() {
     }
 }
 function init() {
-    $("#liPower").hide();
+    $("#btnReview").hide();
     $("#btnReview").hide();
     $("#btnSend").hide();
     $("#btnReset").hide();

@@ -8,6 +8,7 @@
     string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     string UserName= (ViewData["UserName"] == null) ? "" : ViewData["UserName"].ToString();
+    string UserPWD=(ViewData["UserPWD"]==null)?"" : ViewData["UserPWD"].ToString();
     string UserAccount = (ViewData["UserAccount"] == null) ? "" : ViewData["UserAccount"].ToString();
     int SEQNO = ((ViewData["UserGroup"] == null) ? 0 : Convert.ToInt32(ViewData["UserGroup"].ToString()));
     int OperatorID = ((ViewData["OperatorID"] == null) ? 0 : Convert.ToInt32(ViewData["OperatorID"].ToString()));
@@ -66,7 +67,7 @@
                         使用者群組
                     </div>
                     <div class="col-md-3">
-                        @Html.Action("GetUserGroupList", "CommonObj", new { SEQNO = SEQNO, OperatorID= OperatorID })
+                        @Html.Action("GetUserGroupList", "CommonObj", new { SEQNO = SEQNO, OperatorID = OperatorID })
 
                     </div>
 
@@ -95,6 +96,19 @@
                     </div>
                     <div class="col-md-3">
                         <input class="form-control" type="text" name="UserName" id="UserName" value="@UserName" />
+
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        密碼
+                    </div>
+                    <div class="col-md-3">
+                        <input class="form-control" type="text" name="UserPWD" id="UserPWD" value="@UserPWD" />
 
                     </div>
                 </div>
@@ -155,7 +169,8 @@
                     <div class="col-md-2">
                         權限設定
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-2"> <button type="button" data-toggle="modal" data-target="#surrounding_modal" id="btnReview" class="btn btn-primary">檢視權限</button></div>
+                    @*<div class="col-md-8">
                         <div class="row">
                             <Button type="button" id="btnSet" name="btnSet" class="btn btn-primary">全選</Button>
                         </div>
@@ -170,7 +185,7 @@
                             }
 
                         </div>
-                    </div>
+                    </div>*@
                 </div>
             </div>
         </li>
@@ -192,11 +207,35 @@
 
     <!--end card-->
 </div>
-
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                @if (hasPower)
+                {
+                    @Html.Action("GetPowerList", "CommonObj")
+                }
+                else
+                {
+                    @Html.Action("GetDisablePowerList", "CommonObj")
+                }
+            </div>
+            <div class="modal-footer">
+                @if (hasPower)
+                {
+                   <Button type="button" id="btnSet" name="btnSet" class="btn btn-primary">全選</Button>
+                }
+                
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!--查詢介面結束-->
 <script>
     var Mode = '@Mode';
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
     var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
     var ResultDataLen = '@(ResultLen)';
+    
 </script>
