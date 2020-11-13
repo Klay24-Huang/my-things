@@ -16,7 +16,7 @@ namespace Domain.SP.BE.Output
         /// <summary>
         /// 群組
         /// </summary>
-        public string UserGroup{set;get;}
+        public string UserGroup{set;get; }
         /// <summary>
         /// 權限
         /// </summary>
