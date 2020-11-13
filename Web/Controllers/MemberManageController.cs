@@ -96,7 +96,7 @@ namespace Web.Controllers
             {
 
                 Data.Images = new BE_AuditCrentials();
-                for(int i = 1; i < 11; i++)
+                for(int i = 1; i <= 11; i++)
                 {
 
                     int index = lstAudits.FindIndex(delegate (BE_AuditImage image)
