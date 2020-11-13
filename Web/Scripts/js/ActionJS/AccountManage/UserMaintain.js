@@ -7,7 +7,16 @@ $(document).ready(function () {
         funcList = JSON.parse(func);
         console.log(funcList);
     }
-
+    var hasData = parseInt($("#len").val());
+    if (hasData > 0) {
+        $('.table').footable({
+            "paging": {
+                "enabled": true,
+                "limit": 3,
+                "size": 20
+            }
+        });
+    }
     if (Mode == "") {
         init();
     } else {
@@ -173,6 +182,27 @@ $(document).ready(function () {
     })
 
 })
+function showPower(data) {
+    var dataList = JSON.parse(data);
+    $(".form-check-input").each(function () {
+        $(this).prop("checked", "");
+    })
+    var RootLen = dataList.length;
+    console.log(RootLen);
+    for (var i = 0; i < RootLen; i++) {
+        var SubLen = dataList[i].PowerList.length;
+        for (var j = 0; j < SubLen; j++) {
+            var objName = dataList[i].MenuCode + "_" + dataList[i].SubMenuCode + "_" + dataList[i].PowerList[j].Code;
+            console.log(objName);
+            if (parseInt(dataList[i].PowerList[j].hasPower) == 1) {
+                $("#" + objName).prop("checked", "checked");
+            }
+
+        }
+    }
+    console.log(dataList);
+    $("#btnReview").trigger("click");
+}
 function SetMaintain(data) {
     console.log("call back")
     $("#btnReview").show();

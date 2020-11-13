@@ -296,7 +296,8 @@ namespace Web.Controllers
             ViewData["Mode"] = collection["ddlObj"];
             ViewData["UserGroup"] = (collection["ddlUserGroup"] == null) ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString());
             ViewData["UserAccount"] = collection["UserAccount"];
-            ViewData["StartDate"] = collection["StartDate"]; ;
+            ViewData["UserName"] = collection["UserName"];
+            ViewData["StartDate"] = collection["StartDate"]; 
             ViewData["EndDate"] = collection["EndDate"]; ;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
@@ -304,11 +305,17 @@ namespace Web.Controllers
             string Mode = ViewData["Mode"].ToString();
             int justSearch = Convert.ToInt32(collection["justSearch"]);
             string Account= (string.IsNullOrEmpty(collection["UserAccount"]))?"": collection["UserAccount"].ToString();
+            string UserName = (string.IsNullOrEmpty(collection["UserName"])) ? "" : collection["UserName"].ToString();
+            int UserGroup= (string.IsNullOrEmpty(collection["ddlUserGroup"]) || collection["ddlUserGroup"]=="") ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString());
+            int OperatorID = (string.IsNullOrEmpty(collection["ddlOperator"]) || collection["ddlOperator"] == "") ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString());
+            string StartDate= (string.IsNullOrEmpty(collection["StartDate"])) ? "" : collection["StartDate"].ToString();
+            string EndDate = (string.IsNullOrEmpty(collection["EndDate"])) ? "" : collection["EndDate"].ToString();
+
             List<BE_GetUserData> lstData = null;
             if(Mode=="Edit" && justSearch == 0)
             {
 
-               // lstData=new AccountManageRepository(connetStr).GetUserData()
+                lstData = new AccountManageRepository(connetStr).GetUserData(Account, UserName, UserGroup, OperatorID, StartDate, EndDate);
                 return View(lstData);
             }
             else
