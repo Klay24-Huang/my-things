@@ -109,7 +109,7 @@ SET @ClientIP    =ISNULL (@ClientIP    ,'');
 			   SET UPDTime=@NowTime,ClientIP=@ClientIP
 			   WHERE  Account=@Account;
 
-			   SELECT @UserName=UserName,@UserGroup=UserGroup FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd);
+			   SELECT @UserName=UserName,@UserGroup=UserGroupID FROM TB_Manager WHERE  Account=@Account  AND UserPwd=HASHBYTES('sha1',@UserPwd);
 			END
 		 END
 		--寫入錯誤訊息
