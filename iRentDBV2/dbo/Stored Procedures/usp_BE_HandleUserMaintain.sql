@@ -130,7 +130,7 @@ SET @SEQNO      =ISNULL(@SEQNO,0);
 				SELECT @hasData=COUNT(1) FROM TB_Manager WHERE Account=@UserAccount AND UserGroupID=@UserGroupID;
 				IF @hasData=0
 				BEGIN
-					INSERT INTO TB_Manager(Account,UserPwd,UserGroup,UserGroupID,Operator,StartDate,EndDate,PowerList,AddUser)VALUES(@UserAccount,HASHBYTES('sha1',@UserPwd),'',@UserGroupID,@Operator,@StartDate,@EndDate,@tmpPowerStr,@UserID);
+					INSERT INTO TB_Manager(Account,UserPwd,UserName,UserGroup,UserGroupID,Operator,StartDate,EndDate,PowerList,AddUser)VALUES(@UserAccount,HASHBYTES('sha1',@UserPwd),@UserName,'',@UserGroupID,@Operator,@StartDate,@EndDate,@tmpPowerStr,@UserID);
 				END
 				ELSE
 				BEGIN
@@ -155,13 +155,13 @@ SET @SEQNO      =ISNULL(@SEQNO,0);
 							IF @UserPWD<>''
 							BEGIN
 								UPDATE TB_Manager
-								SET Account=@UserAccount,UserPwd=HASHBYTES('sha1',@UserPwd),UserGroupID=@UserGroupID,Operator=@Operator,StartDate=@StartDate,EndDate=@EndDate,PowerList=@tmpPowerStr,UPDTime=@NowTime,UPDUser=@UserID
+								SET Account=@UserAccount,UserPwd=HASHBYTES('sha1',@UserPwd),UserGroupID=@UserGroupID,Operator=@Operator,StartDate=@StartDate,EndDate=@EndDate,PowerList=@tmpPowerStr,UPDTime=@NowTime,UPDUser=@UserID,UserName=@UserName
 								WHERE SEQNO=@SEQNO
 							END
 							ELSE
 							BEGIN
 								UPDATE TB_Manager
-								SET Account=@UserAccount,UserGroupID=@UserGroupID,Operator=@Operator,StartDate=@StartDate,EndDate=@EndDate,PowerList=@tmpPowerStr,UPDTime=@NowTime,UPDUser=@UserID
+								SET Account=@UserAccount,UserGroupID=@UserGroupID,Operator=@Operator,StartDate=@StartDate,EndDate=@EndDate,PowerList=@tmpPowerStr,UPDTime=@NowTime,UPDUser=@UserID,UserName=@UserName
 								WHERE SEQNO=@SEQNO
 							END
 						END

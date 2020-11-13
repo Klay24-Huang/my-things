@@ -16,6 +16,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
         public string UserName { set; get; }
         public string StartDate { set; get; }
         public string EndDate { set; get; }
+
         public List<Power> Power { get; set; }
 
     }

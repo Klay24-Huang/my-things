@@ -104,8 +104,8 @@ $(document).ready(function () {
             obj.Power = GetPower();
             obj.UserAccount = UserAccount;
             obj.UserName = UserName;
-            obj.StartDate = StartDate;
-            obj.EndDate = EndDate;
+            obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
+            obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
             obj.Mode = Mode;
             DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "新增/修改權限發生錯誤")
         } else {
