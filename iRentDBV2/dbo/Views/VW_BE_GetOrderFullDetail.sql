@@ -24,9 +24,19 @@
 	   ,ISNULL(OrderOtherFee.[ParkingFee]       ,0) AS [ParkingFee],ISNULL(OrderOtherFee.[ParkingFeeRemark] ,'') AS [ParkingFeeRemark],ISNULL(OrderOtherFee.[DraggingFee]      ,0) AS [DraggingFee]      
 	   ,ISNULL(OrderOtherFee.[DraggingFeeRemark],'') AS [DraggingFeeRemark],ISNULL(OrderOtherFee.[OtherFee]         ,0) AS [OtherFee],ISNULL(OrderOtherFee.[OtherFeeRemark]   ,'') AS [OtherFeeRemark]   
 	   ,ISNULL((SELECT Amount FROM TB_OrderParkingFeeByMachi AS Machi WITH(NOLOCK) WHERE Machi.OrderNo=OrderMain.order_number),0) AS MachiFee
+	   --20201112 ADD BY JERRY 增加缺漏欄位
+	   ,ISNULL(CarDetail.EngineNO,'') AS EngineNO
+	   ,ISNULL(CarDetail.CarColor,'') AS CarColor
+	   ,ISNULL(CarDetail.CarBrend,'') AS CarBrend
+	   ,ISNULL(MemberData.MEMBIRTH,'') AS MEMBIRTH
+	   ,ISNULL(City.CityName ,'') AS CityName
+	   ,ISNULL(AreaZip.AreaName ,'') AS AreaName
+	   ,ISNULL(MemberData.MEMADDR,'') AS MEMADDR
   FROM [dbo].[TB_OrderMain] AS OrderMain
   LEFT JOIN TB_OrderDetail AS Detail ON Detail.order_number=OrderMain.order_number
   LEFT JOIN TB_MemberData AS MemberData ON MemberData.MEMIDNO=OrderMain.IDNO
+  LEFT JOIN TB_AreaZip AS AreaZip ON MemberData.MEMCITY=AreaZip.AreaID 
+  LEFT JOIN TB_City AS City ON AreaZip.CityID=City.CityID
   LEFT JOIN VW_GetCarDetail AS CarDetail ON CarDetail.CarNo=OrderMain.CarNo
   LEFT JOIN TB_Project AS Project ON Project.PROJID=OrderMain.ProjID
   LEFT JOIN TB_PayMoney AS PayMoney ON PayMoney.OrderNo=OrderMain.order_number

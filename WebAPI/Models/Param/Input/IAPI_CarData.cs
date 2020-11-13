@@ -31,7 +31,7 @@ namespace WebAPI.Models.Param.Input
         public string deviceLockStatus { get; set; }
         public int deviceIndoorLightStatus { get; set; }
         public int deviceSecurityStatus { get; set; }
-        public int deviceSpeed { get; set; }
+        public double deviceSpeed { get; set; }
         public double deviceVolt { get; set; }
         public double deviceLatitude { get; set; }
         public double deviceLongitude { get; set; }

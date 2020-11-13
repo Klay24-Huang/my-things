@@ -133,6 +133,9 @@ namespace WebAPI.Controllers
                 if (spOut.ErrorCode == "ERR101")
                 {
                     flag = true;
+                    spOut.ErrorCode = "";
+                    spOut.Error = 0;
+                    errCode = "000000";
                 }
                 if (flag)
                 {

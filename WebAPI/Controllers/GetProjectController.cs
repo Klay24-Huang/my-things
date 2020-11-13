@@ -166,6 +166,9 @@ namespace WebAPI.Controllers
                 if (spOut.ErrorCode == "ERR101")
                 {
                     flag = true;
+                    spOut.ErrorCode = "";
+                    spOut.Error = 0;
+                    errCode = "000000";
                 }
                 if (flag)
                 {
@@ -187,6 +190,7 @@ namespace WebAPI.Controllers
                     ED = EDate,
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
                     IDNO = IDNO,
+                    Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
                     LogID = LogID
                 };
 
