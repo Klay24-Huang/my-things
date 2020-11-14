@@ -115,6 +115,7 @@ BEGIN TRY
 					SET IsVerify=1 
 					WHERE VerifyCodeID=@VerifyCodeID;
 
+					--確認無待審資料
 					SELECT @hasData=Count(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND MEMTEL=@MOBILE AND HasAudit=0;
 					IF @hasData=0
 					BEGIN
@@ -123,12 +124,21 @@ BEGIN TRY
 					END
 					ELSE
 					BEGIN
-						UPDATE [TB_MemberData] 
-						SET MEMTEL=@MOBILE,
-							HasCheckMobile=1,
-							U_USERID=@IDNO,
-							U_SYSDT=@NowTime
-						WHERE MEMIDNO=@IDNO;
+						IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO)
+						BEGIN
+							UPDATE [TB_MemberData] 
+							SET MEMTEL=@MOBILE,
+								HasCheckMobile=1,
+								U_USERID=@IDNO,
+								U_SYSDT=@NowTime
+							WHERE MEMIDNO=@IDNO;
+						END
+						ELSE
+						BEGIN
+							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_USERID,A_SYSDT)
+							VALUES(@IDNO,@MOBILE,1,@IDNO,@NowTime);
+
+						END
 					END
 				END
 				ELSE

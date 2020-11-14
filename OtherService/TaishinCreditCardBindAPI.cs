@@ -29,6 +29,7 @@ namespace OtherService
         private string DeleteCreditCardAuth = ConfigurationManager.AppSettings["DeleteCreditCardAuth"].ToString();  //刪除綁卡
         private string GetCreditCardList = ConfigurationManager.AppSettings["GetCreditCardList"].ToString();        //取得綁卡列表
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
+        private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();               //Azure Api URL
         #region 取得綁卡網址
         /// <summary>
         /// 取得綁卡網址
@@ -76,7 +77,7 @@ namespace OtherService
         public async Task<WebAPIOutput_Base> DoBindSend(WebAPIInput_Bind input)
         {
             string Site = BaseURL + GetCardPage;
-            Site = @"https://irentv2-testapp-api.azurewebsites.net/api/TestTaishiBU";
+            Site = AzureAPIBaseURL + @"api/TestTaishiBU";
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -188,7 +189,7 @@ namespace OtherService
         public async Task<WebAPIOutput_GetCreditCardList> DoGetCreditCardListSend(WebAPIInput_GetCreditCardList input)
         {
             string Site = BaseURL + GetCreditCardList;
-            Site = @"https://irentv2-testapp-api.azurewebsites.net/api/TestTaishiBQ";
+            Site = AzureAPIBaseURL + @"api/TestTaishiBQ";
             WebAPIOutput_GetCreditCardList output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -218,6 +219,16 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_GetCreditCardList>(responseStr);
+
+                        //錯誤檢核
+                        if (output.RtnCode != "1000")
+                        {
+                            output = new WebAPIOutput_GetCreditCardList()
+                            {
+                                RtnCode = "0",
+                                RtnMessage = output.RtnMessage
+                            };
+                        }
                     }
 
                 }

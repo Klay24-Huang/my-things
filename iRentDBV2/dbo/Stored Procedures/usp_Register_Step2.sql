@@ -58,6 +58,7 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
+DECLARE @NowTime DATETIME;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -73,6 +74,7 @@ SET @hasData=0;
 SET @IDNO    =ISNULL (@IDNO    ,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @PWD=ISNULL(@PWD,'')
+SET @NowTime = DATEADD(hour,8,GETDATE())
 
 		BEGIN TRY
 		 IF @DeviceID='' OR @IDNO=''  OR @PWD=''
@@ -83,11 +85,35 @@ SET @PWD=ISNULL(@PWD,'')
 		 
 		 IF @Error=0
 		 BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
-			   SET @Error=1;
-			   SET @ErrorCode='ERR133';
+
+				SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+
+				IF @hasData=0
+				BEGIN
+					SET @Error=1;
+					SET @ErrorCode='ERR133';
+				END
+				ELSE
+				BEGIN
+					INSERT INTO TB_MemberData
+					(
+						[A_PRGID], [A_USERID], [A_SYSDT], [U_PRGID], [U_USERID], [U_SYSDT],
+						[MEMIDNO], [MEMCNAME], [MEMPWD], [MEMTEL], [MEMHTEL], [MEMBIRTH], 
+						[MEMCOUNTRY], [MEMCITY], [MEMADDR], [MEMEMAIL], [MEMCOMTEL], 
+						[MEMCONTRACT], [MEMCONTEL], [MEMMSG], [CARDNO], [UNIMNO], 
+						[MEMSENDCD], [CARRIERID], [NPOBAN], [IrFlag], [HasCheckMobile]
+					)
+					SELECT @LogID,@IDNO,@NowTime,@LogID,@IDNO,@NowTime,
+						[MEMIDNO], [MEMCNAME], @PWD, [MEMTEL], [MEMHTEL], [MEMBIRTH], 
+						[MEMCOUNTRY], [MEMCITY], [MEMADDR], [MEMEMAIL], [MEMCOMTEL], 
+						[MEMCONTRACT], [MEMCONTEL], [MEMMSG], [CARDNO], [UNIMNO], 
+						[MEMSENDCD], [CARRIERID], [NPOBAN], 0, [HasCheckMobile]
+					FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+
+				END
 			END
 			ELSE
 			BEGIN

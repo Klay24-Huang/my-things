@@ -176,7 +176,9 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(EndDate) == false)
                 {
-                    term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
+                    //term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
+                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+                    term2 = " AND ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -187,7 +189,9 @@ namespace Reposotory.Implement
                 }
                 else
                 {
-                    term2 = " AND ApplyDate = @SD";
+                    //term2 = " AND ApplyDate = @SD";
+                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+                    term2 = " AND " + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -198,7 +202,9 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(EndDate) == false)
                 {
-                    term2 = " AND ApplyDate = @ED";
+                    //term2 = " AND ApplyDate = @ED";
+                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+                    term2 = " AND " + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = EndDate;
                     para[nowCount].Direction = ParameterDirection.Input;
