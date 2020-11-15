@@ -225,7 +225,7 @@ namespace OtherService
                         {
                             output = new WebAPIOutput_GetCreditCardList()
                             {
-                                RtnCode = "0",
+                                RtnCode = "ERR601",
                                 RtnMessage = output.RtnMessage
                             };
                         }

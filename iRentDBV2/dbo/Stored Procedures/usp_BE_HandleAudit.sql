@@ -81,6 +81,8 @@ DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
 DECLARE @isReject TINYINT;
 DECLARE @RentType TINYINT;
+DECLARE @MEMCNAME NVARCHAR(10);
+DECLARE @EMAIL VARCHAR(200);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -130,7 +132,11 @@ SET @UserID    =ISNULL (@UserID    ,'');
 			SET @AuditKind=0;
 			--SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO ORDER BY AuditID DESC
 			--20201109 UPD BY JERRY 只取未審核的資料
-			SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY AuditID DESC
+			--SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY AuditID DESC
+			--20201114 ADD BY ADAM 補上漏的資料
+			SELECT TOP 1 @AuditKind=AuditKind,@AuditID=AuditID
+			,@MEMCNAME=MEMCNAME,@EMAIL=MEMEMAIL
+			FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY AuditID DESC
 			INSERT INTO TB_AuditHistory([IDNO],[AuditUser],[AuditDate],[HandleItem],[HandleType],[IsReject],[RejectReason],	[RejectExplain])VALUES(@IDNO,@UserID,@NowTime,@IsNew,@AuditKind,@isReject,@NotAuditReason,@RejectReason);
 
 		 	IF @AuditStatus=1 --審核通過
@@ -150,6 +156,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 				
 				UPDATE TB_MemberData
 				SET [Audit]=1,RentType=@RentType,MEMBIRTH=@Birth,UNIMNO=@UniCode,U_USERID=@UserID,U_SYSDT=@NowTime ,MEMADDR=@Addr,MEMCITY=@Area,MEMSENDCD=@InvoiceType,MEMTEL=@Mobile
+				,MEMCNAME=@MEMCNAME,MEMEMAIL=@EMAIL	--20201114 ADD BY ADAM 補上漏的資料
 				WHERE MEMIDNO=@IDNO;
 				UPDATE TB_MemberDataOfAutdit
 				SET HasAudit=2
