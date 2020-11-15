@@ -131,9 +131,18 @@ SET @Token    =ISNULL (@Token    ,'');
 				  ,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
 				  ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
 				  ,already_lend_car,IsReturnCar,CarNo,final_price,start_mile,end_mile
+				  ,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END
+				  ,VW.Insurance				--是否有安心服務
 			FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 			LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
-		     WHERE IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0
+			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
+			LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+							WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
+			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+			
+		     WHERE VW.IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0
 			ORDER BY start_time ASC 
 		 END
 		--寫入錯誤訊息
