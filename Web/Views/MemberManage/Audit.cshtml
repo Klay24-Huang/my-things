@@ -72,8 +72,8 @@
                             <div class="col-md-3">
                                 <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode" >
                                     <option value="-1"></option>
-                                    <option value="1" @(AuditModeCheck[1])>申請加入</option>
-                                    <option value="0" @(AuditModeCheck[2])>變更身份</option>
+                                    <option value="1">申請加入</option>
+                                    <option value="0">變更身份</option>
                                 </select>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -214,8 +214,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <button type="submit" class="btn btn-info">查詢</button>
-                                <button type="reset" class="btn btn-outline-secondary">清除</button>
+                                <button type="submit" class="btn btn-info btn-submit">查詢</button>
+                                <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>

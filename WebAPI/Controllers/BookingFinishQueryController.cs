@@ -157,6 +157,7 @@ namespace WebAPI.Controllers
                                 UniCode = orderFinishDataLists[i].UniCode,
                                 TotalRentTime = baseVerify.DateDiff(orderFinishDataLists[i].final_stop_time, orderFinishDataLists[i].final_start_time),
                                 CarNo = orderFinishDataLists[i].CarNo.Replace(" ", ""),
+                                IsMotor = orderFinishDataLists[i].ProjType == 4 ? 1 : 0     //增加IsMotor
                             };
                             outputApi.OrderFinishObjs.Add(obj);
                         }

@@ -133,7 +133,7 @@ namespace Reposotory.Implement
             if (false == string.IsNullOrWhiteSpace(IDNO))
             {
                 if (term != "") { term += " AND "; }
-                term += " MEMIDNO=IDNO";
+                term += " MEMIDNO=@IDNO";
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;

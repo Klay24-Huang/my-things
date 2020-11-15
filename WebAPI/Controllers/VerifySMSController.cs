@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -50,7 +48,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -81,7 +78,7 @@ namespace WebAPI.Controllers
                         flag = Int16.TryParse(apiInput.Mode.Value.ToString(), out Mode);
                         if (flag)
                         {
-                            if(Mode<0 || Mode > 2)
+                            if (Mode < 0 || Mode > 2)
                             {
                                 flag = false;
                                 errCode = "ERR144";
@@ -128,7 +125,6 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-
                 string spName = new ObjType().GetSPName(ObjType.SPType.CheckVerifyCode);
                 SPInput_CheckVerifyCode spInput = new SPInput_CheckVerifyCode()
                 {
@@ -146,7 +142,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

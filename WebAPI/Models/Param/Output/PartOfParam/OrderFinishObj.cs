@@ -55,5 +55,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string CarTypePic { set; get; }
 
+        /// <summary>
+        /// 是否為機車 1:是 0:否
+        /// </summary>
+        public int IsMotor { set; get; }
+
     }
 }

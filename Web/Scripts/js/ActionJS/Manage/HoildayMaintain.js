@@ -57,9 +57,10 @@
             contentType: 'application/json',
             dataType: 'json',           //'application/json',
             success: function (data) {
+                console.log(data);
                 $.busyLoadFull("hide");
 
-                if (data.Result == "1") {
+                if (data.ErrorMessage == "Success") {
                     swal({
                         title: 'SUCCESS',
                         text: data.ErrorMessage,

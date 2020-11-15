@@ -59,6 +59,8 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
+DECLARE @NowDate Datetime;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -69,78 +71,87 @@ SET @FunName='usp_Register_step1';
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @NowDate=DATEADD(Hour,8,getdate());
+SET @IDNO=ISNULL (@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
-SET @Mobile  =ISNULL (@Mobile,'');
-		BEGIN TRY
-		 IF @DeviceID='' OR @IDNO='' OR @Mobile=''
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		 IF @Error=0
-		 BEGIN
-			--再次確認身份證是否存在
-			BEGIN TRAN
-				SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND MEMPWD='' AND IrFlag>-1;
-				IF @hasData=0
-				BEGIN
-					SET @hasData=0
-					SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-					IF @hasData=0
-					BEGIN
-					   INSERT INTO TB_MemberData(MEMIDNO,MEMTEL)VALUES(@IDNO,@Mobile);
-					  
-					END
-					ELSE
-					BEGIN
-						UPDATE TB_MemberData SET MEMTEL=@Mobile WHERE MEMIDNO=@IDNO;
-						
-					END
+SET @Mobile=ISNULL (@Mobile,'');
 
-					SET @hasData=0
-					SELECT  @hasData=COUNT(1) FROM TB_VerifyCode WHERE IDNO=@IDNO  AND Mode=0;
-					IF @hasData=0
-					BEGIN
-						INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)VALUES(@IDNO,@Mobile,0,@VerifyCode,DATEADD(MINUTE,15,DATEADD(HOUR,8,GETDATE())));
-					END
-					ELSE
-					BEGIN
-						UPDATE TB_VerifyCode SET Mobile=@Mobile,VerifyNum=@VerifyCode,IsVerify=0,DeadLine=DATEADD(MINUTE,15,DATEADD(HOUR,8,GETDATE())),SendTime=DATEADD(HOUR,8,GETDATE()) WHERE IDNO=@IDNO AND Mode=0;
-					END
-				 COMMIT TRAN;
-				END
-				ELSE
-				BEGIN
-				    SET @Error=1;
-				    SET @ErrorCode='ERR130';
-					COMMIT TRAN;
-				END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+BEGIN TRY
+	IF @DeviceID='' OR @IDNO='' OR @Mobile=''
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+		 
+	IF @Error=0
+	BEGIN
+		--再次確認身份證是否存在
+		BEGIN TRAN
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND MEMPWD='' AND IrFlag>-1;
+		IF @hasData=0
+		BEGIN
+			SET @hasData=0
+			--有未審核通過的資料就更新，沒有才INSERT
+			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO AND HasAudit=0;
+			IF @hasData=0
 			BEGIN
-			  INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				INSERT INTO TB_MemberDataOfAutdit(MEMIDNO,MEMTEL,HasAudit,IsNew,MKTime)
+				VALUES(@IDNO,@Mobile,0,1,@NowDate);
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				UPDATE TB_MemberDataOfAutdit SET MEMTEL=@Mobile WHERE MEMIDNO=@IDNO;
 			END
-			SET @IsSystem=1;
-			     SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+
+			SET @hasData=0
+			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=0;
+			IF @hasData=0
+			BEGIN
+				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
+				VALUES(@IDNO,@Mobile,0,@VerifyCode,DATEADD(MINUTE,15,@NowDate));
+			END
+			ELSE
+			BEGIN
+				UPDATE TB_VerifyCode 
+				SET Mobile=@Mobile,
+					VerifyNum=@VerifyCode,
+					IsVerify=0,
+					DeadLine=DATEADD(MINUTE,15,@NowDate),
+					SendTime=@NowDate
+				WHERE IDNO=@IDNO AND Mode=0;
+			END
+			COMMIT TRAN;
+		END
+		ELSE
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR130';
+			COMMIT TRAN;
+		END
+	END
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_step1';
