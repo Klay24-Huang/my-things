@@ -1,9 +1,4 @@
 ﻿
-
-@{
-    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
-    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
-}
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
@@ -32,8 +27,8 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-
+                            <button type="button" name="btnQuery" id="btnQuery" class="btn btn-primary">查詢</button>
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                         </div>
                     </div>
                 </div>
@@ -44,7 +39,7 @@
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
-<div class="container mt-4">
+<div class="container mt-4" id="panelResult">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">

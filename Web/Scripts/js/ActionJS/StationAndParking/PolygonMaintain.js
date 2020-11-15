@@ -1,7 +1,7 @@
 ﻿
 
 var has = $("#havePolygon").val();
-var myLatLng = { lat: parseInt(lat), lng: parseInt(lng) };
+var myLatLng = { lat: parseFloat(lat), lng: parseFloat(lng) };
 var Color = '#e8e8e8';
 var polyLayersId = [];
 var polyLayers = [];

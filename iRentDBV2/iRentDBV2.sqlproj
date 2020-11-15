@@ -378,6 +378,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetInsurancePrice.sql" />
     <Build Include="dbo\Views\VW_BE_GetUserData.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMotorStatus.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetOrderInfoBeforeModify.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_LandControlSuccess.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

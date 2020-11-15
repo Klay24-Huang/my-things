@@ -116,7 +116,21 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-
+                string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModify);
+                SPOutput_BE_GetOrderInfoBeforeModify spOut = new SPOutput_BE_GetOrderInfoBeforeModify();
+                SPInput_BE_GetOrderInfoBeforeModify spInput = new SPInput_BE_GetOrderInfoBeforeModify()
+                {
+                   UserID=apiInput.UserID,
+                    LogID = LogID,
+                    OrderNo = tmpOrder
+                };
+              
+                SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify> sqlHelp = new SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify>(connetStr);
+                //flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                List<BE_GetFullOrderData> OrderDataLists = new List<BE_GetFullOrderData>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref OrderDataLists, ref ds, ref lstError);
+                new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
             }
             #endregion

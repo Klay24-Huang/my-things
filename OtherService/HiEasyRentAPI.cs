@@ -1089,6 +1089,97 @@ namespace OtherService
         }
         #endregion
         #region 125
+           public bool NPR125Save(WebAPIInput_NPR125Save input, ref WebAPIOutput_NPR125Save output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoNPR125Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 點數查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR125Save> DoNPR125Save(WebAPIInput_NPR125Save input)
+        {
+            WebAPIOutput_NPR125Save output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR125SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR125Save>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                        
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR125Save()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR125Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR125SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+
+            return output;
+        }
         #endregion
         #region 130
         #endregion

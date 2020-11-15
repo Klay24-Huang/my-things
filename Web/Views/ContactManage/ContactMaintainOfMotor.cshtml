@@ -1,7 +1,4 @@
-﻿@{
-    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
-    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
-}
+﻿
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
@@ -26,12 +23,13 @@
 
 
 
+
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">查詢</button>
-
+                            <button type="button" name="btnQuery" id="btnQuery" class="btn btn-primary">查詢</button>
+                            <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                         </div>
                     </div>
                 </div>
@@ -42,7 +40,7 @@
 </div>
 <!--查詢介面結束-->
 <!--輸出表格-->
-<div class="container mt-4">
+<div class="container mt-4" id="panelResult">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
@@ -152,7 +150,7 @@
                             我是合約編號
                         </div>
                         <div class="col-md-3">
-                           
+
                             <div class="custom-datepicker">
                                 <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
@@ -180,15 +178,15 @@
                         <div class="col-md-2">
                             租金
                         </div>
-                  
-                            <div class="col-md-2">
-                                我是合約編號
-                            </div>
-                            <div class="col-md-4">
-                                <input class="form-control" type="text" name="pure_price_input" id="pure_price_input" value="" readonly />
-                            </div>
-                           
-                      
+
+                        <div class="col-md-2">
+                            我是合約編號
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" name="pure_price_input" id="pure_price_input" value="" readonly />
+                        </div>
+
+
                     </div>
                 </div>
             </li>
@@ -324,7 +322,7 @@
                         <div class="col-md-2">
                             我是合約編號
                         </div>
-                        
+
                     </div>
                 </div>
             </li>
@@ -376,7 +374,7 @@
 
         </ul>
         <div class="card-header bg-secondary text-white">
-          新增待繳費用
+            新增待繳費用
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->

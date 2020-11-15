@@ -470,13 +470,21 @@ namespace WebAPI.Models.Enum
                 /// </summary>
                 BE_HandlePolygon,
                 /// <summary>
+                /// 取得合約修改前資料
+                /// </summary>
+                BE_GetOrderInfoBeforeModify,
+                /// <summary>
                 /// 短租補傳
                 /// </summary>
-                BE_HandleHiEasyRentRetry,
+            BE_HandleHiEasyRentRetry,
                 /// <summary>
                 /// 儲存060執行結果
                 /// </summary>
                 BE_BookingControlSuccess,
+            /// <summary>
+            /// 儲存125執行結果
+            /// </summary>            
+            BE_LandControlSuccess,
 
             #endregion
         }
@@ -841,11 +849,17 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_HandlePolygon:
                     SPName = "usp_BE_HandlePolygon";
                     break;
+                case SPType.BE_GetOrderInfoBeforeModify:
+                    SPName = "usp_BE_GetOrderInfoBeforeModify";
+                    break;
                 case SPType.BE_HandleHiEasyRentRetry:
                     SPName = "usp_BE_HandleHiEasyRentRetry";
                     break;
                 case SPType.BE_BookingControlSuccess:
                     SPName = "usp_BE_BookingControlSuccess";
+                    break;
+                case SPType.BE_LandControlSuccess:
+                    SPName = "usp_BE_LandControlSuccess";
                     break;
                 case SPType.BE_CheckFuncGroup:
                     SPName = "usp_BE_CheckFuncGroup";

@@ -1,8 +1,7 @@
 ﻿CREATE VIEW [dbo].[VW_BE_GetLandControl]
 	AS 
 	SELECT          BookingControl.PROCD, BookingControl.ORDNO, BookingControl.order_number AS IRENTORDNO, 
-                            BookingControl.ODCUSTID AS CUSTID, BookingControl.ODCUSTNM AS CUSTNM, REPLACE(UserInfo.MEMBIRTH, '-', 
-                            '') AS BIRTH, BookingControl.CARTYPE, BookingControl.CARNO, BookingControl.TSEQNO, 
+                            BookingControl.ODCUSTID AS CUSTID, BookingControl.ODCUSTNM AS CUSTNM, ISNULL(CONVERT(VARCHAR(8),UserInfo.MEMBIRTH, 112), '')  AS BIRTH, BookingControl.CARTYPE, BookingControl.CARNO, BookingControl.TSEQNO, 
                             ISNULL(CONVERT(VARCHAR(8), BookingDetail.final_start_time, 112), '') AS GIVEDATE, 
                             ISNULL(REPLACE(CONVERT(VARCHAR(5), BookingDetail.final_start_time, 8), ':', ''), '') AS GIVETIME, 
                             BookingControl.RENTDAY AS RENTDAYS, ISNULL(BookingDetail.start_mile, 0) AS GIVEKM, 

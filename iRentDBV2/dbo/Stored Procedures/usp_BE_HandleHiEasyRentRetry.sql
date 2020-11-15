@@ -132,8 +132,8 @@ SET @ReturnMode=0;
                                                               ,[TSEQNO],[CARRIERID],[NPOBAN])
 						      SELECT  [order_number],[ODCUSTID],[ODCUSTNM],[TEL1],[TEL2],[TEL3]
 						      		,[ODDATE],[GIVEDATE],[GIVETIME],[RNTDATE],[RNTTIME],[CarType]
-						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【'+CONVERT(VARCHAR(20),@OrderNo)+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END AS RPRICE,Price
-						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO]) as UNIMNO
+						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【H'+REPLICATE('0',7-LEN(CONVERT(VARCHAR(20),@OrderNo)))+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END ,Price
+						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO])
 						      		,[TSEQNO],CARRIERID,NPOBAN
 						      FROM VW_BE_InsBookingControl
 						      WHERE order_number=@OrderNo;	
@@ -161,9 +161,8 @@ SET @ReturnMode=0;
                                                               ,[TSEQNO],[CARRIERID],[NPOBAN])
 						      SELECT  [order_number],[ODCUSTID],[ODCUSTNM],[TEL1],[TEL2],[TEL3]
 						      		,[ODDATE],[GIVEDATE],[GIVETIME],[RNTDATE],[RNTTIME],[CarType]
-						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【'+CONVERT(VARCHAR(20),@OrderNo)+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END AS RPRICE,Price
-						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO]) as UNIMNO
-						      		,[TSEQNO],CARRIERID,NPOBAN
+						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【H'+REPLICATE('0',7-LEN(CONVERT(VARCHAR(20),@OrderNo)))+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END ,Price
+						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO]),[TSEQNO],CARRIERID,NPOBAN
 						      FROM VW_BE_InsBookingControl
 						      WHERE order_number=@OrderNo;	
 						SET @ReturnMode=1;
@@ -184,10 +183,10 @@ SET @ReturnMode=0;
 						BEGIN
 							  INSERT INTO TB_lendCarControl([PROCD],[ORDNO],[IRENTORDNO],[CUSTID],[CUSTNM],[BIRTH],[CUSTTYPE],[ODCUSTID],[CARTYPE],[CARNO],[TSEQNO],[GIVEDATE],[GIVETIME]
                           ,[RENTDAYS],[GIVEKM],[OUTBRNHCD],[RNTDATE],[RNTTIME],[RNTKM],[INBRNHCD],[RPRICE],[RINSU],[DISRATE],[OVERHOURS],[OVERAMT2],[RNTAMT]
-                          ,[RENTAMT],[LOSSAMT2],[PROJID],[REMARK],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN])
+                          ,[RENTAMT],[LOSSAMT2],[PROJID],[REMARK],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN],isRetry)
 							SELECT      [PROCD],[ORDNO],[IRENTORDNO],[CUSTID],[CUSTNM],ISNULL([BIRTH],''),1,'',[CARTYPE],[CARNO],[TSEQNO],[GIVEDATE],[GIVETIME]
 										 ,[RENTDAYS],[GIVEKM],[OUTBRNHCD],[RNTDATE],[RNTTIME],CEILING([GIVEKM]),[INBRNHCD],[RPRICE],[RINSU],0,[OVERHOURS],[OVERAMT2],0
-							           ,0,[LOSSAMT2],[PROJID],[XID],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN]
+							           ,0,[LOSSAMT2],[PROJID],[XID],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN],1
 							FROM VW_BE_GetLandControl
 							WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo;
 							SET @ReturnMode=2;
@@ -223,8 +222,8 @@ SET @ReturnMode=0;
                                                               ,[TSEQNO],[CARRIERID],[NPOBAN])
 						      SELECT  [order_number],[ODCUSTID],[ODCUSTNM],[TEL1],[TEL2],[TEL3]
 						      		,[ODDATE],[GIVEDATE],[GIVETIME],[RNTDATE],[RNTTIME],[CarType]
-						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【'+CONVERT(VARCHAR(20),@OrderNo)+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END AS RPRICE,Price
-						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO]) as UNIMNO
+						      		,[CARNO],[OUTBRNH],[INBRNH],[ORDAMT],N'iRent單號【H'+REPLICATE('0',7-LEN(CONVERT(VARCHAR(20),@OrderNo)))+'】',CASE @isHoilday WHEN 0 THEN [WeekdayPrice] WHEN 1 THEN [HoildayPrice] END ,Price
+						      		,[PROJTYPE], [INVKIND]  ,[INVTITLE],IIF(INVKIND=1,'',[UNIMNO])
 						      		,[TSEQNO],CARRIERID,NPOBAN
 						      FROM VW_BE_InsBookingControl
 						      WHERE order_number=@OrderNo;	
@@ -246,10 +245,10 @@ SET @ReturnMode=0;
 						BEGIN
 							  INSERT INTO TB_lendCarControl([PROCD],[ORDNO],[IRENTORDNO],[CUSTID],[CUSTNM],[BIRTH],[CUSTTYPE],[ODCUSTID],[CARTYPE],[CARNO],[TSEQNO],[GIVEDATE],[GIVETIME]
                           ,[RENTDAYS],[GIVEKM],[OUTBRNHCD],[RNTDATE],[RNTTIME],[RNTKM],[INBRNHCD],[RPRICE],[RINSU],[DISRATE],[OVERHOURS],[OVERAMT2],[RNTAMT]
-                          ,[RENTAMT],[LOSSAMT2],[PROJID],[REMARK],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN])
+                          ,[RENTAMT],[LOSSAMT2],[PROJID],[REMARK],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN],isRetry)
 							SELECT      [PROCD],[ORDNO],[IRENTORDNO],[CUSTID],[CUSTNM],[BIRTH],1,'',[CARTYPE],[CARNO],[TSEQNO],[GIVEDATE],[GIVETIME]
 										 ,[RENTDAYS],[GIVEKM],[OUTBRNHCD],[RNTDATE],[RNTTIME],CEILING([GIVEKM]),[INBRNHCD],[RPRICE],[RINSU],0,[OVERHOURS],[OVERAMT2],0
-							           ,0,[LOSSAMT2],[PROJID],[XID],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN]
+							           ,0,[LOSSAMT2],[PROJID],[XID],[INVKIND],[UNIMNO],[INVTITLE],[INVADDR],[CARRIERID],[NPOBAN],1
 							FROM VW_BE_GetLandControl
 							WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo;
 							SET @ReturnMode=2;
@@ -273,7 +272,7 @@ SET @ReturnMode=0;
 					    				   ,RNTKM,INBRNHCD,RPRICE	    
 					    				   ,RINSU,DISRATE,OVERHOURS,OVERAMT2,RNTAMT,RENTAMT,LOSSAMT2,PROJID,REMARK	    
 					    				   ,INVKIND,UNIMNO,INVTITLE,INVADDR,GIFT,CARDNO,AUTHCODE,[CARRIERID],[NPOBAN]
-										   ,NOCAMT
+										   ,NOCAMT,isRetry
 					    	)
 				      
                          SELECT PROCD,ORDNO,IRENTORDNO,CUSTID,CUSTNM,BIRTH,CUSTTYPE,ODCUSTID,CARTYPE,CARNO,TSEQNO	  
@@ -282,7 +281,7 @@ SET @ReturnMode=0;
                          	  ,RINSU,DISRATE,OVERHOURS, OVERAMT2,RNTAMT, RENTAMT, LOSSAMT2,PROJID, REMARK
                          	  ,INVKIND,UNIMNO,INVTITLE,INVADDR,GIFT	
 							  , CARDNO, AUTHCODE
-							  ,[CARRIERID],[NPOBAN],NOCAMT
+							  ,[CARRIERID],[NPOBAN],NOCAMT,1
                          FROM VW_BE_GetReturnControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo
 									SET @ReturnMode=3;
 								END
