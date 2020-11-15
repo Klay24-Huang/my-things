@@ -24,6 +24,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
+using WebAPI.Models.Param.BackEnd.Output;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -58,7 +59,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BE_GetOrderModifyInfo apiInput = null;
-            NullOutput apiOutput = null;
+            OAPI_BE_GetOrderModifyInfo apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -131,6 +132,26 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref OrderDataLists, ref ds, ref lstError);
                 new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    apiOutput = new OAPI_BE_GetOrderModifyInfo()
+                    {
+                        ModifyLog = new ModifyInfo()
+                        {
+                            hasModify = spOut.hasModify,
+                            ModifyTime = spOut.ModifyTime,
+                            ModifyUserID = spOut.ModifyUserID
+                        },
+                        OrderData = new BE_GetFullOrderData()
+                    };
+                    if (OrderDataLists != null)
+                    {
+                        if (OrderDataLists.Count > 0)
+                        {
+                            apiOutput.OrderData = OrderDataLists[0];
+                        }
+                    }
+                }
 
             }
             #endregion

@@ -353,6 +353,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetFuncPower.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetManagerList.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />

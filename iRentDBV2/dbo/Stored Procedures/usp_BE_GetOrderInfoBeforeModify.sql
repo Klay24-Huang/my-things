@@ -109,9 +109,13 @@ SET @UserID    =ISNULL (@UserID    ,'');
 				END
 				ELSE
 				BEGIN
+					SET @hasData=0;
 					SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND car_mgt_status = 16 AND booking_status = 5 AND cancel_status = 0;
-					SET @Error=1;
-					SET @ErrorCode='ERR755';	--未完成還車
+					IF @hasData=0
+					BEGIN
+						SET @Error=1;
+						SET @ErrorCode='ERR755';	--未完成還車
+					END
 				END
 		 END
 		 IF @Error=0
