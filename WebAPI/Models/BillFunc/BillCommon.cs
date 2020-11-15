@@ -145,11 +145,11 @@ namespace WebAPI.Models.BillFunc
             CalDayHourMin(SD, ED, ref Days, ref Hours, ref Minutes);
             if (MilageBase < 0)
             {
-                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + Minutes) * baseMil) * MilageDef));
+                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + (Minutes < 60 ? 1 : (Minutes/60))) * baseMil) * MilageDef));
             }
             else
             {
-                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + Minutes) * baseMil) * MilageBase));
+                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + (Minutes < 60 ? 1 : (Minutes / 60))) * baseMil) * MilageBase));
             }
             return MilagePrice;
         }

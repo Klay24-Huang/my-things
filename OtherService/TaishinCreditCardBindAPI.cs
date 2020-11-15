@@ -77,7 +77,7 @@ namespace OtherService
         public async Task<WebAPIOutput_Base> DoBindSend(WebAPIInput_Bind input)
         {
             string Site = BaseURL + GetCardPage;
-            Site = AzureAPIBaseURL + @"api/TestTaishiBU";
+            //Site = AzureAPIBaseURL + @"api/TestTaishiBU";
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -107,6 +107,16 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_Base>(responseStr);
+
+                        //錯誤檢核
+                        if (output.RtnCode != "1000")
+                        {
+                            output = new WebAPIOutput_Base()
+                            {
+                                RtnCode = "ERR600",
+                                RtnMessage = output.RtnMessage
+                            };
+                        }
                     }
 
                 }
@@ -189,7 +199,7 @@ namespace OtherService
         public async Task<WebAPIOutput_GetCreditCardList> DoGetCreditCardListSend(WebAPIInput_GetCreditCardList input)
         {
             string Site = BaseURL + GetCreditCardList;
-            Site = AzureAPIBaseURL + @"api/TestTaishiBQ";
+            //Site = AzureAPIBaseURL + @"api/TestTaishiBQ";
             WebAPIOutput_GetCreditCardList output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
