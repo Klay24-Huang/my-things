@@ -380,6 +380,7 @@
     <Build Include="dbo\Stored Procedures\usp_SetMotorStatus.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetOrderInfoBeforeModify.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_LandControlSuccess.sql" />
+    <Build Include="dbo\Views\VW_BE_GetOrderModifyInfoNew.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

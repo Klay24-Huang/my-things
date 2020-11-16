@@ -156,6 +156,7 @@
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
+    <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
     <Compile Include="Controllers\BE_CarScheduleTimeLogController.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ChangeCar.cs" />
@@ -347,6 +349,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDUserGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_HandlePolygon.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />

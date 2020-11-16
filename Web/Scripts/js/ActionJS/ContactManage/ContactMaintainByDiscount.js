@@ -1,4 +1,6 @@
 ﻿var finalPrice = 0;
+var Max_Motor_Pointer = 0;
+var Max_Car_Pointer = 0;
 $(document).ready(function () {
     $("#panelResult").hide();
     $("#btnQuery").on("click", function () {
@@ -92,8 +94,20 @@ function SetData(data) {
         $("#spn_finalPrice").html(OrderObj.FinalPrice);
         $("#final_price_input").val(OrderObj.FinalPrice);
       
-
-
+        ShowLoading("可用點數查詢中…");
+        var Account = $("#Account").val();
+        var obj = new Object();
+        obj.UserID = Account;
+        obj.IDNO = OrderObj.IDNO;
+        DoAjaxAfterCallBackWithOutMessage(obj, "BE_BonusQuery", "查詢可用點數資料發生錯誤", SetPointer);
+            
     }
     
+}
+function SetPointer(data) {
+    console.log(data)
+    Max_Motor_Pointer = parseInt(data.Data.TotalMotorLASTPOINT);
+    $("#gift_point_moto_input").prop("readonly", "");
+    $("#gift_point_moto_input").prop("max", Max_Motor_Pointer); 
+
 }
