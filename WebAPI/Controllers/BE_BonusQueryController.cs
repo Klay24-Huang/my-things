@@ -72,6 +72,11 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR900";
                 }
+                if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
                 if (flag)
                 {
                     //2.判斷格式
@@ -79,6 +84,27 @@ namespace WebAPI.Controllers
                     if (false == flag)
                     {
                         errCode = "ERR103";
+                    }
+                }
+                if (flag)
+                {
+                    if (apiInput.OrderNo.IndexOf("H") < 0)
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
+                    if (flag)
+                    {
+                        flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                        if (flag)
+                        {
+                            if (tmpOrder <= 0)
+                            {
+                                flag = false;
+                                errCode = "ERR900";
+                            }
+
+                        }
                     }
                 }
 

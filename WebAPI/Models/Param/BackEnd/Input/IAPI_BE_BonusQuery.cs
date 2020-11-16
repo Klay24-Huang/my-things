@@ -11,5 +11,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 帳號
         /// </summary>
         public string IDNO { set; get; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public string OrderNo { set; get; }
     }
 }
