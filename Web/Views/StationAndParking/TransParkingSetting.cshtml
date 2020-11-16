@@ -30,8 +30,8 @@
                             <div class="col-md-2">
                                 處理項目
                             </div>
-                            <div class="col-md-3">
-                                @Html.Action("GetHandleList", "CommonObj");
+                            <div class="col-md-3" >
+                                @Html.Action("GetHandleList", "CommonObj")
                             </div>
                         </div>
                     </div>
@@ -77,6 +77,7 @@
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+                                <input type="hidden" id="modeData" name="modeData" value="@(Mode)" />
                                 <Button type="button" id="btnSend" name="btnSend" class="btn btn-primary">確定</Button>
                                 <Button type="button" id="btnReset" name="btnReset" class="btn btn-outline-secondary">取消</Button>
                             </div>
