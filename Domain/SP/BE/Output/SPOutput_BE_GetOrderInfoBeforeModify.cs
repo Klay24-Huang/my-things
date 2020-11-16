@@ -12,5 +12,8 @@ namespace Domain.SP.BE.Output
         public Int16 hasModify   {set;get;}
         public string ModifyTime  {set;get;}
         public string ModifyUserID{set;get;}
+        public string LastStartTime { set; get; }
+        public string LastStopTime { set; get; }
+        public int LastEndMile { set; get; }
     }
 }

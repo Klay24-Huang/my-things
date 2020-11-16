@@ -136,12 +136,19 @@ namespace WebAPI.Controllers
                 {
                     apiOutput = new OAPI_BE_GetOrderModifyInfo()
                     {
+                         LastOrderData=new LastOrderInfo()
+                         {
+                              LastEndMile=spOut.LastEndMile,
+                               LastStartTime=spOut.LastStartTime,
+                                LastStopTime=spOut.LastStopTime
+                         },
                         ModifyLog = new ModifyInfo()
                         {
                             hasModify = spOut.hasModify,
                             ModifyTime = spOut.ModifyTime,
                             ModifyUserID = spOut.ModifyUserID
                         },
+                        
                         OrderData = new BE_GetFullOrderData()
                     };
                     if (OrderDataLists != null)
@@ -149,6 +156,7 @@ namespace WebAPI.Controllers
                         if (OrderDataLists.Count > 0)
                         {
                             apiOutput.OrderData = OrderDataLists[0];
+                            
                         }
                     }
                 }

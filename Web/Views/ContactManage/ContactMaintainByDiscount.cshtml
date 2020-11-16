@@ -54,7 +54,7 @@
                             合約編號
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_OrderNo">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                             會員帳號
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_IDNO">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                             會員姓名
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_UserName">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                             訂單專案
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_PRONAME">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                             前筆實際還車時間
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_LastStopTime">無</span>
                         </div>
                     </div>
                 </div>
@@ -114,11 +114,11 @@
                             實際取車時間
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_FS">我是合約編號</span>
                         </div>
                         <div class="col-md-3">
                             <div class="custom-datepicker">
-                                <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" readonly="false">
+                                <input class="dateTimePicker form-control" type="text" id="StartDate" name="StartDate" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -145,12 +145,12 @@
                             實際還車時間
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_FE">我是合約編號</span>
                         </div>
                         <div class="col-md-3">
 
                             <div class="custom-datepicker">
-                                <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false">
+                                <input class="dateTimePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -178,7 +178,7 @@
                         </div>
 
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_CarRent">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="pure_price_input" id="pure_price_input" value="" readonly />
@@ -195,7 +195,7 @@
                             一日租金
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_OneDay">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -204,10 +204,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
-                            時數折抵
+                            時數折抵(汽車)
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_gift">0</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="gift_point_input" id="gift_point_input" value="" readonly />
@@ -219,10 +219,25 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2">
+                            時數折抵(機車)
+                        </div>
+                        <div class="col-md-2">
+                            <span id="spn_gift_moto">0</span>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" name="gift_point_moto_input" id="gift_point_moto_input" value="" readonly />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
                             前筆還車里程
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_LastMile">無</span>
                         </div>
                     </div>
                 </div>
@@ -234,7 +249,7 @@
                             取車里程
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_StartMile">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="start_mile_input" id="start_mile_input" value="" readonly />
@@ -249,7 +264,7 @@
                             還車里程
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_StopMile">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="end_mile_input" id="end_mile_input" value="" readonly />
@@ -264,7 +279,7 @@
                             里程費用
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_Mileage">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -276,7 +291,7 @@
                             逾時費用
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_finePrice">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="fine_price_input" id="fine_price_input" value="" readonly />
@@ -291,7 +306,7 @@
                             eTag費用
                         </div>
                         <div class="col-md-3">
-                            <span>我是合約編號</span>
+                            <span id="spn_eTag">我是合約編號</span>
                         </div>
                     </div>
                 </div>
@@ -303,7 +318,7 @@
                             結算金額
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_finalPrice">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="final_price_input" id="final_price_input" value="" readonly />
@@ -318,7 +333,7 @@
                             已付金額
                         </div>
                         <div class="col-md-2">
-                            我是合約編號
+                            <span id="spn_payPrice">我是合約編號</span>
                         </div>
 
                     </div>
@@ -372,10 +387,10 @@
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-3 offset-md-2">
-                            <button type="submit" class="btn btn-primary">計算更改後結果</button>
-                            <button type="submit" class="btn btn-primary">重置</button>
-                            <button type="submit" class="btn btn-primary">送出處理</button>
+                        <div class="col-md-10 offset-md-2">
+                            <button type="button" id="btnCal" class="btn btn-primary">計算更改後結果</button>
+                            <button type="button" id="btnReset" class="btn btn-primary">重置</button>
+                            <button type="button" id="btnSave" class="btn btn-primary">送出處理</button>
 
                         </div>
                     </div>

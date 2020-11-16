@@ -328,6 +328,7 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
 
     });
 }
+
 /**
  * 執行完將API回傳的資料丟入callback函式內
  * @param {any} obj
@@ -359,6 +360,43 @@ function DoAjaxAfterCallBack(obj, API, FailMessage,CallBack) {
                     console.log(data.Data);
                     CallBack(data.Data);
                 });
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
+function DoAjaxAfterCallBackWithOutMessage(obj, API, FailMessage, CallBack) {
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var site = jsHost + API;
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+               CallBack(data);
             } else {
 
                 swal({
@@ -770,6 +808,21 @@ function pad(number, length) {
 
     return str;
 
+}
+Date.prototype.Format = function (fmt) {
+    var o = {
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+        "H+": this.getHours(), //小时 
+        "m+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
 }
 function clearFileInput(id) {
     var oldInput = document.getElementById(id);

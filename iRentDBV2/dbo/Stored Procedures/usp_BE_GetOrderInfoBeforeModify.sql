@@ -48,8 +48,11 @@ CREATE PROCEDURE [dbo].[usp_BE_GetOrderInfoBeforeModify]
 	@UserID                 NVARCHAR(10)          , --使用者
 	@LogID                  BIGINT                ,
 	@hasModify              TINYINT         OUTPUT, --是否有修改過(0:否;1:是)
-	@ModifyTime             VARCHAR(10)     OUTPUT, --上次修改時間
+	@ModifyTime             VARCHAR(20)     OUTPUT, --上次修改時間
 	@ModifyUserID           NVARCHAR(10)    OUTPUT, --上次修改者
+	@LastStartTime			VARCHAR(20)		OUTPUT,
+	@LastStopTime			VARCHAR(20)		OUTPUT,
+	@LastEndMile			INT             OUTPUT,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -65,10 +68,11 @@ DECLARE @NowTime DATETIME;
 DECLARE @CarNo   VARCHAR(10);
 DECLARE @ProjID  VARCHAR(10);
 DECLARE @ProjType TINYINT;
-DECLARE @LastStartTime DATETIME;
+/*DECLARE @LastStartTime DATETIME;
 DECLARE @LastStopTime  DATETIME;
+DECLARE @LastEndMile   INT;*/
 DECLARE @StopTime      DATETIME;
-DECLARE @LastEndMile   INT;
+
 
 /*初始設定*/
 SET @Error=0;
@@ -148,15 +152,17 @@ SET @UserID    =ISNULL (@UserID    ,'');
 				SELECT @CarNo=CarNo FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
 				SELECT @StopTime=final_stop_time FROM TB_OrderDetail  WITH(NOLOCK) WHERE order_number=@OrderNo;
 
-				SELECT TOP 1 @LastStartTime=ISNULL(final_start_time,'1911-01-01 00:00:00'),@LastStopTime=ISNULL(final_stop_time,'1911-01-01 00:00:00'),@LastEndMile=ISNULL(detail.end_mile,0)
+				SELECT TOP 1 @LastStartTime=IIF(ISNULL(final_start_time,'')='','',CONVERT(VARCHAR(20),final_start_time,120)),@LastStopTime=IIF(ISNULL(final_stop_time,'')='','',CONVERT(VARCHAR(20),final_stop_time,120)),@LastEndMile=ISNULL(detail.end_mile,0)
 				FROM TB_OrderMain main JOIN TB_OrderDetail detail on main.order_number = detail.order_number
 				WHERE car_mgt_status = 16 and booking_status = 5 and cancel_status = 0 and ProjID != '' and CarNo = @CarNo and main.order_number != @OrderNo and final_stop_time < @StopTime  ORDER BY start_time DESC
 		 END
 		 --取出上次修改時間及修改者
 		 IF @Error=0	
 		 BEGIN
-			SELECT TOP 1 @hasData=ISNULL(modifyId,0),@ModifyUserID=U_USERID,@ModifyTime=IIF(ISNULL(U_SYSDT,'')='','',REPLACE(CONVERT(VARCHAR(10),U_SYSDT,112),'-','')) FROM TB_OrderModifyLog WITH(NOLOCK) WHERE order_number=@OrderNo ORDER BY modifyId DESC
+			SELECT TOP 1 @hasData=ISNULL(modifyId,0),@ModifyUserID=U_USERID,@ModifyTime=IIF(ISNULL(U_SYSDT,'')='','',CONVERT(VARCHAR(20),U_SYSDT,120)) FROM TB_OrderModifyLog WITH(NOLOCK) WHERE order_number=@OrderNo ORDER BY modifyId DESC
 		 END
+
+
 		 IF @Error=0
 		 BEGIN
 			SELECT * FROM VW_BE_GetOrderFullDetail WITH(NOLOCK) WHERE OrderNo=@OrderNo;
