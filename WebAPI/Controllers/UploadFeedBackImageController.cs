@@ -51,16 +51,18 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             bool CheckFlag = true;
             string IDNO = "";
-
+            string PIC1 = string.Empty; //照片1檔案名稱
+            string PIC2 = string.Empty; //照片2檔案名稱
+            string PIC3 = string.Empty; //照片3檔案名稱
+            string PIC4 = string.Empty; //照片4檔案名稱
             #endregion
             #region 防呆
             Dictionary<string, object> value = new Dictionary<string, object>();
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
 
             if (flag)
             {
@@ -124,7 +126,6 @@ namespace WebAPI.Controllers
                                     flag = false;
                                     errCode = "ERR900";
                                 }
-
                             }
                         }
                     }
@@ -162,130 +163,213 @@ namespace WebAPI.Controllers
                 }
             }
 
+            //if (flag)
+            //{
+            //    FeedBackImage[] carImages = apiInput.FeedBack.ToArray();
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base>(connetStr);
+            //    List<FeedBackImageData> CarImgDataLists = new List<FeedBackImageData>();
+            //    DataSet ds = new DataSet();
+            //    //for (int i = 0; i < carImages.Length; i++)
+            //    //{
+            //    //    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
+            //    //    {
+            //    //        IDNO = IDNO,
+            //    //        LogID = LogID,
+            //    //        Token = Access_Token,
+            //    //        FeedBackFile = carImages[i].FeedBackFile,
+            //    //        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
+            //    //        OrderNo = tmpOrder
+            //    //    };
+            //    //    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
+            //    //    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
+            //    //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            //    //    if (flag == false)
+            //    //    {
+            //    //        break;
+            //    //    }
+            //    //}
+
+            //    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
+            //    object[] objparms = new object[carImages.Length == 0 ? 1 : carImages.Length];
+            //    if (carImages.Length > 0)
+            //    {
+            //        for (int i = 0; i < carImages.Length; i++)
+            //        {
+            //            objparms[i] = new
+            //            {
+            //                CarImageType = carImages[i].SEQNO,
+            //                CarImage = carImages[i].FeedBackFile
+            //            };
+            //        }
+            //    }
+            //    else
+            //    {
+            //        objparms[0] = new
+            //        {
+            //            CarImageType = 0,
+            //            CarImage = ""
+            //        };
+            //    }
+
+            //    object[][] parms1 = {
+            //            new object[] {
+            //                IDNO,
+            //                tmpOrder,
+            //                apiInput.CarDesc,
+            //                Access_Token,
+            //                LogID
+            //        },
+            //            objparms
+            //        };
+
+            //    DataSet ds1 = null;
+            //    string returnMessage = "";
+            //    string messageLevel = "";
+            //    string messageType = "";
+
+            //    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+            //    //logger.Trace(JsonConvert.SerializeObject(ds1));
+            //    if (ds1.Tables.Count == 0)
+            //    {
+            //        flag = false;
+            //        errCode = "ERR999";
+            //        errMsg = returnMessage;
+            //    }
+            //    else
+            //    {
+            //        if (ds1.Tables.Count == 1)
+            //        {
+            //            baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+            //        }
+            //        else
+            //        {
+            //            if (ds1.Tables[1].Rows.Count > 0)
+            //            {
+            //                for (int i = 0; i < ds1.Tables[1].Rows.Count; i++)
+            //                {
+            //                    CarImgDataLists.Add(new FeedBackImageData
+            //                    {
+            //                        SEQNO = Convert.ToInt32(ds1.Tables[1].Rows[i]["SEQNO"]),
+            //                        HasUpload = Convert.ToInt32(ds1.Tables[1].Rows[i]["HasUpload"])
+            //                    });
+            //                }
+            //            }
+            //        }
+            //    }
+            //    ds1.Dispose();
+
+            //    if (flag)
+            //    {
+            //        outputApi.FeedBackImageObj = new List<FeedBackImageData>();
+            //        for (int i = 1; i < 5; i++)
+            //        {
+            //            FeedBackImageData obj = new FeedBackImageData()
+            //            {
+            //                SEQNO = i,
+            //                HasUpload = 0
+            //            };
+            //            int Index = CarImgDataLists.FindIndex(delegate (FeedBackImageData cardata)
+            //            {
+            //                return cardata.SEQNO == i;
+            //            });
+            //            if (Index > -1)
+            //            {
+            //                obj.HasUpload = 1;
+            //            }
+            //            outputApi.FeedBackImageObj.Add(obj);
+            //        }
+            //    }
+            //}
+
+            // 取車照片直接上傳Azure
             if (flag)
             {
                 FeedBackImage[] carImages = apiInput.FeedBack.ToArray();
+                foreach (var image in carImages)
+                {
+                    try
+                    {
+                        string FileName = string.Format("{0}_PIC{1}_{2}.png", apiInput.OrderNo, image.SEQNO, DateTime.Now.ToString("yyyyMMddHHmmss"));
+                        flag = new AzureStorageHandle().UploadFileToAzureStorage(image.FeedBackFile, FileName, "feedbackpic");
+
+                        switch (image.SEQNO)
+                        {
+                            case 1:
+                                PIC1 = FileName;
+                                break;
+                            case 2:
+                                PIC2 = FileName;
+                                break;
+                            case 3:
+                                PIC3 = FileName;
+                                break;
+                            case 4:
+                                PIC4 = FileName;
+                                break;
+                        }
+                    }
+                    catch
+                    {
+                        flag = false;
+                        errCode = "ERR228";
+                    }
+                }
+            }
+
+            if (flag)
+            {
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_UploadFeedBackImage, SPOutput_Base>(connetStr);
-                List<FeedBackImageData> CarImgDataLists = new List<FeedBackImageData>();
-                DataSet ds = new DataSet();
-                //for (int i = 0; i < carImages.Length; i++)
-                //{
+                SQLHelper<SPInput_InsFeedBack, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsFeedBack, SPOutput_Base>(connetStr);
 
-                //    SPInput_UploadFeedBackImage spInput = new SPInput_UploadFeedBackImage()
-                //    {
-                //        IDNO = IDNO,
-                //        LogID = LogID,
-                //        Token = Access_Token,
-                //        FeedBackFile = carImages[i].FeedBackFile,
-                //        SEQNO = Convert.ToInt16(carImages[i].SEQNO),
-                //        OrderNo = tmpOrder
-                //    };
-                //    string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
-                //    flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref CarImgDataLists, ref ds, ref lstError);
-                //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //    if (flag == false)
-                //    {
-                //        break;
-                //    }
-                //}
-
-                string SPName = new ObjType().GetSPName(ObjType.SPType.UploadFeedBackImage);
-                object[] objparms = new object[carImages.Length == 0 ? 1 : carImages.Length];
-                if (carImages.Length > 0)
+                SPInput_InsFeedBack spInput = new SPInput_InsFeedBack()
                 {
-                    for (int i = 0; i < carImages.Length; i++)
-                    {
-                        objparms[i] = new
-                        {
-                            CarImageType = carImages[i].SEQNO,
-                            CarImage = carImages[i].FeedBackFile
-                        };
-                    }
-                }
-                else
-                {
-                    objparms[0] = new
-                    {
-                        CarImageType = 0,
-                        CarImage = ""
-                    };
-                }
+                    IDNO = IDNO,
+                    OrderNo = tmpOrder,
+                    Mode = 0,
+                    FeedBackKind = "",
+                    Descript = apiInput.CarDesc,
+                    Star = 0,
+                    Token = Access_Token,
+                    LogID = LogID,
+                    PIC1 = PIC1,
+                    PIC2 = PIC2,
+                    PIC3 = PIC3,
+                    PIC4 = PIC4
+                };
+                string SPName = new ObjType().GetSPName(ObjType.SPType.InsFeedBack);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            }
 
-                object[][] parms1 = {
-                        new object[] {
-                            IDNO,
-                            tmpOrder,
-                            apiInput.CarDesc,
-                            Access_Token,
-                            LogID
-                    },
-                        objparms
-                    };
+            if (flag)
+            {
+                outputApi.FeedBackImageObj = new List<FeedBackImageData>();
 
-                DataSet ds1 = null;
-                string returnMessage = "";
-                string messageLevel = "";
-                string messageType = "";
+                FeedBackImageData obj1 = new FeedBackImageData() { SEQNO = 1, HasUpload = 0 };
+                FeedBackImageData obj2 = new FeedBackImageData() { SEQNO = 2, HasUpload = 0 };
+                FeedBackImageData obj3 = new FeedBackImageData() { SEQNO = 3, HasUpload = 0 };
+                FeedBackImageData obj4 = new FeedBackImageData() { SEQNO = 4, HasUpload = 0 };
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                if (!string.IsNullOrWhiteSpace(PIC1))
+                    obj1.HasUpload = 1;
+                if (!string.IsNullOrWhiteSpace(PIC2))
+                    obj2.HasUpload = 1;
+                if (!string.IsNullOrWhiteSpace(PIC3))
+                    obj3.HasUpload = 1;
+                if (!string.IsNullOrWhiteSpace(PIC4))
+                    obj4.HasUpload = 1;
 
-                //logger.Trace(JsonConvert.SerializeObject(ds1));
-                if (ds1.Tables.Count == 0)
-                {
-                    flag = false;
-                    errCode = "ERR999";
-                    errMsg = returnMessage;
-                }
-                else
-                {
-                    if (ds1.Tables.Count == 1)
-                    {
-                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-                    }
-                    else
-                    {
-                        if (ds1.Tables[1].Rows.Count > 0)
-                        {
-                            for (int i = 0; i < ds1.Tables[1].Rows.Count; i++)
-                            {
-                                CarImgDataLists.Add(new FeedBackImageData
-                                {
-                                    SEQNO = Convert.ToInt32(ds1.Tables[1].Rows[i]["SEQNO"]),
-                                    HasUpload = Convert.ToInt32(ds1.Tables[1].Rows[i]["HasUpload"])
-                                });
-                            }
-                        }
-                    }
-                }
-                ds1.Dispose();
-
-                if (flag)
-                {
-                    outputApi.FeedBackImageObj = new List<FeedBackImageData>();
-                    for (int i = 1; i < 5; i++)
-                    {
-                        FeedBackImageData obj = new FeedBackImageData()
-                        {
-                            SEQNO = i,
-                            HasUpload = 0
-                        };
-                        int Index = CarImgDataLists.FindIndex(delegate (FeedBackImageData cardata)
-                        {
-                            return cardata.SEQNO == i;
-                        });
-                        if (Index > -1)
-                        {
-                            obj.HasUpload = 1;
-                        }
-                        outputApi.FeedBackImageObj.Add(obj);
-                    }
-                }
+                outputApi.FeedBackImageObj.Add(obj1);
+                outputApi.FeedBackImageObj.Add(obj2);
+                outputApi.FeedBackImageObj.Add(obj3);
+                outputApi.FeedBackImageObj.Add(obj4);
             }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

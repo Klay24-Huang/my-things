@@ -44,14 +44,18 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_InsFeedBack]
-	@IDNO                   VARCHAR(10)           ,
-	@OrderNo                BIGINT                ,
-	@Mode					INT					  ,
-	@Star					INT					  ,
-	@FeedBackKind           VARCHAR(1024)         ,
-	@Descript               NVARCHAR(500)         ,
-	@Token                  VARCHAR(1024)         ,
-	@LogID                  BIGINT                ,
+	@IDNO                   VARCHAR(10)				,--帳號
+	@OrderNo                BIGINT					,--訂單編號
+	@Mode					INT						,--來源：0:取車;1:還車;2:關於iRent
+	@FeedBackKind           VARCHAR(1024)			,--回饋類別
+	@Descript               NVARCHAR(500)			,--回饋內容
+	@Star					INT						,--星星數，當mode=1時才有意義
+	@Token                  VARCHAR(1024)			,
+	@LogID                  BIGINT					,
+	@PIC1					VARCHAR(100)			,--照片1檔案名稱
+	@PIC2					VARCHAR(100)			,--照片2檔案名稱
+	@PIC3					VARCHAR(100)			,--照片3檔案名稱
+	@PIC4					VARCHAR(100)			,--照片4檔案名稱
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -66,10 +70,6 @@ DECLARE @NowTime DATETIME;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
-DECLARE @PIC1 NVARCHAR(100);
-DECLARE @PIC2 NVARCHAR(100);
-DECLARE @PIC3 NVARCHAR(100);
-DECLARE @PIC4 NVARCHAR(100);
 
 /*初始設定*/
 SET @Error=0;
@@ -86,116 +86,146 @@ SET @car_mgt_status=0;
 SET @cancel_status =0;
 SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
-SET @Token    =ISNULL (@Token    ,'');
+SET @Token=ISNULL (@Token,'');
 SET @Descript=ISNULL(@Descript,'');
 SET @Mode=ISNULL(@Mode,-1);
 SET @Star=ISNULL(@Star,-1);
-SET @PIC1='';
-SET @PIC2='';
-SET @PIC3='';
-SET @PIC4='';
+SET @PIC1=ISNULL(@PIC1,'');
+SET @PIC2=ISNULL(@PIC2,'');
+SET @PIC3=ISNULL(@PIC3,'');
+SET @PIC4=ISNULL(@PIC4,'');
 
-		BEGIN TRY
-
+BEGIN TRY
+	IF @Token='' OR @IDNO=''  OR @OrderNo=0 OR @Descript='' OR @Mode=-1 OR @Star=-1
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @Token='' OR @IDNO=''  OR @OrderNo=0 OR @Descript='' OR @Mode=-1 OR @Star=-1
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
+		END
+	END
+
+	IF @Error=0
+	BEGIN
+		IF @Mode<2
+		BEGIN
+			SET @hasData=0
+			SELECT @hasData=COUNT(order_number) 
+			FROM TB_OrderMain 
+			WHERE IDNO=@IDNO AND order_number=@OrderNo 
+			AND ((@Mode=0 AND car_mgt_status<=4 AND cancel_status=0 AND booking_status<3) 
+				 OR 
+				 (@Mode=1 AND car_mgt_status >= 16 AND cancel_status=0)
+				);
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR223';
+			END
 			ELSE
 			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
+				SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status
+				FROM TB_OrderMain
+				WHERE order_number=@OrderNo;
+				IF @Mode=0 AND @car_mgt_status>4
 				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
-		 END
-		 IF @Error=0
-		 BEGIN
-			IF @Mode<2
-			BEGIN
-			    SET @hasData=0
-				
-				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo 
-					AND ((@Mode=0 AND car_mgt_status<=3 AND cancel_status=0 AND booking_status<3) 
-						OR (@Mode=1 AND car_mgt_status >= 16 AND cancel_status=0));
-				IF @hasData=0
-				BEGIN
-				    SET @Error=1;
-				    SET @ErrorCode='ERR223';
+					SET @Error=1;
+					SET @ErrorCode='ERR224';
 				END
 				ELSE
 				BEGIN
-					        SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status
-							FROM TB_OrderMain
-							WHERE order_number=@OrderNo;
-							IF @Mode=0 AND @car_mgt_status>4
-							BEGIN
-							  SET @Error=1;
-							  SET @ErrorCode='ERR224';
-							END
-							ELSE
-							BEGIN
-								IF @Mode=1 AND @car_mgt_status<16
-								BEGIN
-									  SET @Error=1;
-										SET @ErrorCode='ERR225';
-								END
-							END
+					IF @Mode=1 AND @car_mgt_status<16
+					BEGIN
+						SET @Error=1;
+						SET @ErrorCode='ERR225';
+					END
 				END
 			END
-		 END
-		 IF @Error=0
-		 BEGIN
-				IF @Mode=0
-				BEGIN
-					  SELECT  @PIC1=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=1 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-					  SELECT  @PIC2=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=2 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-					  SELECT  @PIC3=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=3 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-					  SELECT  @PIC4=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=4 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-				END
-				INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
+		END
+	END
 
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+	IF @Error=0
+	BEGIN
+		--IF @Mode=0
+		--BEGIN
+		--	SELECT  @PIC1=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=1 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+		--	SELECT  @PIC2=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=2 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+		--	SELECT  @PIC3=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=3 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+		--	SELECT  @PIC4=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=4 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
+		--END
+		IF @Mode=0
+		BEGIN
+			SET @hasData=0
+			SELECT @hasData=COUNT(OrderNo) FROM [TB_FeedBack] WHERE IDNO=@IDNO AND OrderNo=@OrderNo AND mode=@Mode;
+			IF @hasData=0
 			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)
+				VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				UPDATE [TB_FeedBack]
+				SET descript=@Descript,
+					PIC1=@PIC1,
+					PIC2=@PIC2,
+					PIC3=@PIC3,
+					PIC4=@PIC4,
+					UPDTime=@NowTime
+				WHERE IDNO=@IDNO
+				AND OrderNo=@OrderNo
+				AND mode=@Mode
 			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+		ELSE
+		BEGIN
+			INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)
+			VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
+		END
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsFeedBack';
