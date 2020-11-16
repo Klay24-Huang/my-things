@@ -87,12 +87,13 @@ SET @hasData=0;
 						;WITH tmp AS(
 							SELECT p.PolygonMode, p.Longitude, p.Latitude FROM TB_Polygon p
 							WHERE p.use_flag=1
+							AND BlockType=0		--排掉不可還車
 							AND p.StationID in ('X0R4','X0U4','X0SR','X1V4') --汽車：台中(X0R4)、台南(X0U4)、北區(X0SR)、高雄(預定X1V4)    	
 						)
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC					
-						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
+						SELECT @Longs = ISNULL(@Longs + '⊙','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + '⊙','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE IF @IsMotor = 1 --機車
@@ -100,12 +101,13 @@ SET @hasData=0;
 						;WITH tmp AS(
 							SELECT p.PolygonMode, p.Longitude, p.Latitude FROM TB_Polygon p
 							WHERE p.use_flag=1
+							AND BlockType=0		--排掉不可還車
 							AND p.StationID in ('X0WR','X1JT','X1KY','X1KZ','X1ZZ') --機車：北北桃(X0WR)、台南(X1JT)、台中(X1KY)、高雄(X1KZ)、宜蘭(X1ZZ)"   	
 						)
 						INSERT INTO @tb_Polygon
 						SELECT t.Longitude, t.Latitude FROM tmp  t order by t.PolygonMode ASC	
-						SELECT @Longs = ISNULL(@Longs + ',','') + p.Longitude FROM @tb_Polygon p
-						SELECT @Lats = ISNULL(@Lats + ',','') + p.Latitude FROM @tb_Polygon p
+						SELECT @Longs = ISNULL(@Longs + '⊙','') + p.Longitude FROM @tb_Polygon p
+						SELECT @Lats = ISNULL(@Lats + '⊙','') + p.Latitude FROM @tb_Polygon p
 						SELECT 0[PolygonMode], @Longs[Longitude], @Lats[Latitude]
                     END
                     ELSE

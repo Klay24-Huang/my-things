@@ -4,6 +4,7 @@
 	[MEMIDNO]        VARCHAR (10)    DEFAULT ('') NOT NULL,
     [MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
     [MEMTEL]         VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [MEMHTEL]        VARCHAR (20)    DEFAULT ('') NOT NULL,
     [MEMBIRTH]       DATETIME        NULL,
     [MEMCOUNTRY]     INT             DEFAULT ((0)) NOT NULL,
     [MEMCITY]        INT             DEFAULT ((0)) NOT NULL,
@@ -89,6 +90,11 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'聯絡電�
 
 
 GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'聯絡電話(住家)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'MEMHTEL';
+
+
+GO
+
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'姓名', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'MEMCNAME';
 
 

@@ -92,7 +92,7 @@ BEGIN TRY
 		BEGIN
 			SET @hasData=0
 			--有未審核通過的資料就更新，沒有才INSERT
-			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO AND HasAudit=0;
+			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO --AND HasAudit=0;		--20201114 ADD BY ADAM REASON.改為待審只有一筆
 			IF @hasData=0
 			BEGIN
 				INSERT INTO TB_MemberDataOfAutdit(MEMIDNO,MEMTEL,HasAudit,IsNew,MKTime)

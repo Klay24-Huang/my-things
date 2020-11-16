@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -201,6 +203,28 @@ namespace WebAPI.Controllers
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
+            //會員審核簡訊傳送
+            if (apiInput.SendMessage==1)
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
+                string Message = "";
+                if (apiInput.AuditStatus == 1)
+                {
+                    Message = string.Format("iRent會員通知：" +
+                        "已收到您上傳的資料，" +
+                        "並成功變更「iRent共享機車會員」身分(此變更自{0}起)", DateTime.Today.ToString("YYYY/MM/DD"));
+                }
+                else
+                {
+                    Message = string.Format("iRent會員通知：" +
+                        "很抱歉，" +
+                        "您申請變更「iRent共享汽機車會員」身分審核" +
+                        "({0})未通過，" +
+                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.NotAuditReason);
+                }
+                flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
+            }
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;

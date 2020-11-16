@@ -127,6 +127,12 @@ namespace WebAPI.Controllers
                         apiOutput.BindListObj.Add(obj);
                     }
                 }
+                else
+                {
+                    errCode = wsOutput.RtnCode;
+                    errMsg = wsOutput.RtnMessage;
+                    
+                }
             }
             
             #endregion

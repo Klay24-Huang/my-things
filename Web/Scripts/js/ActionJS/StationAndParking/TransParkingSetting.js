@@ -5,6 +5,7 @@ var Latitude = 0.0;
 var Longitude = 0.0;
 var OpenTime = "";
 var CloseTime = "";
+var Mode = "";
 $(document).ready(function () {
    
     $("#exampleDownload").on("click", function () {
@@ -13,7 +14,7 @@ $(document).ready(function () {
     init();
 
     $("#ddlObj").on("change", function () {
-        var Mode = $(this).val();
+        Mode = $(this).val();
         console.log("Mode=" + Mode);
         switch (Mode) {
             case "":
@@ -47,10 +48,12 @@ $(document).ready(function () {
     $("#btnReset").on("click", function () {
         init();
     })
+    Mode = $('#modeData').val();
     if (Mode != '') {
-        $("#ddlObj").val(Mode);
-        $("#ddlObj").trigger("change");
-      
+        setTimeout(function () {
+            $("#ddlObj").val(Mode);
+            $("#ddlObj").trigger("change");
+        },300);
     }
     if (ResultDataLen > -1) {
         $("#panelResult").show();

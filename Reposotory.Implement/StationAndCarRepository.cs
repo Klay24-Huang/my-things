@@ -163,7 +163,7 @@ namespace Reposotory.Implement
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
             //20201109 ADD BY ADAM REASON.補上安心服務
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
+            string SQL = "SELECT [CarNo],[CarType]=vw.CarTypeGroupCode,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
             //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
@@ -207,7 +207,7 @@ namespace Reposotory.Implement
             List<AnyRentObj> lstCar = null;
             int nowCount = 0;
             //20201109 ADD BY ADAM REASON.補上安心服務
-            string SQL = "SELECT [CarNo],[CarType],CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
+            string SQL = "SELECT [CarNo],[CarType]=vw.CarTypeGroupCode,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
             //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
