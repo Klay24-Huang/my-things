@@ -8,14 +8,12 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -33,7 +31,6 @@ namespace WebAPI.Controllers
         /// <param name="apiInput"></param>
         /// <returns></returns>
         [HttpPost]
-        //public Dictionary<string, object> DoUploadCarImage(Dictionary<string, object> value)
         public Dictionary<string, object> DoFeedBack(Dictionary<string, object> value)
         {
             #region 初始宣告
@@ -55,15 +52,12 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
             string FeedBackKindStr = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -95,23 +89,21 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
+            //if (flag)
+            //{
+            //    if (string.IsNullOrWhiteSpace(apiInput.Descript))
+            //    {
+            //        flag = false;
+            //        errCode = "ERR900";
+            //    }
+            //}
             if (flag)
             {
-                if (string.IsNullOrWhiteSpace(apiInput.Descript))
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
-            if (flag)
-            {
-                if(apiInput.Mode<0 || apiInput.Mode > 1)
+                if (apiInput.Mode < 0 || apiInput.Mode > 1)
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -126,7 +118,7 @@ namespace WebAPI.Controllers
                             if (FeedBackKindLen > 0)
                             {
                                 FeedBackKindStr = apiInput.FeedBackKind[0].ToString();
-                                
+
                                 for (int i = 0; i < FeedBackKindLen; i++)
                                 {
                                     FeedBackKindStr += string.Format(",{0}", apiInput.FeedBackKind[i]);
@@ -165,7 +157,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -186,7 +177,7 @@ namespace WebAPI.Controllers
                     OtherRepository otherRepository = new OtherRepository(connetStr);
                     List<FeedBackPIC> lstFeedBackPIC = otherRepository.GetFeedBackPIC(tmpOrder);
                     int PICLen = lstFeedBackPIC.Count;
-                    for(int i = 0; i < PICLen; i++)
+                    for (int i = 0; i < PICLen; i++)
                     {
                         try
                         {
@@ -194,9 +185,10 @@ namespace WebAPI.Controllers
                             flag = new AzureStorageHandle().UploadFileToAzureStorage(lstFeedBackPIC[i].FeedBackFile, FileName, "feedbackpic");
                             if (flag)
                             {
-                                bool DelFlag=otherRepository.HandleTempFeedBackPIC(lstFeedBackPIC[i].FeedBackPICID,FileName); //更新為azure的檔名
+                                bool DelFlag = otherRepository.HandleTempFeedBackPIC(lstFeedBackPIC[i].FeedBackPICID, FileName); //更新為azure的檔名
                             }
-                        }catch(Exception ex)
+                        }
+                        catch (Exception ex)
                         {
                             flag = true; //先bypass，之後補傳再刪
                         }
@@ -206,27 +198,23 @@ namespace WebAPI.Controllers
             #endregion
             if (flag)
             {
-               
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_InsFeedBack, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsFeedBack, SPOutput_Base>(connetStr);
 
-
-                    SPInput_InsFeedBack spInput = new SPInput_InsFeedBack()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        Token = Access_Token,
-                         Descript=apiInput.Descript,
-                          FeedBackKind= FeedBackKindStr,
-                           Mode=apiInput.Mode,
-                            Star=apiInput.Star,
-                        OrderNo = tmpOrder
-                    };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.InsFeedBack);
-                    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut,ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-
-
+                SPInput_InsFeedBack spInput = new SPInput_InsFeedBack()
+                {
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    Token = Access_Token,
+                    Descript = apiInput.Descript,
+                    FeedBackKind = FeedBackKindStr,
+                    Mode = apiInput.Mode,
+                    Star = apiInput.Star,
+                    OrderNo = tmpOrder
+                };
+                string SPName = new ObjType().GetSPName(ObjType.SPType.InsFeedBack);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
             #region 寫入錯誤Log
