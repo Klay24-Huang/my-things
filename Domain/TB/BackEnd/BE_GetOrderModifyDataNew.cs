@@ -122,5 +122,17 @@ namespace Domain.TB.BackEnd
         /// 已付金額
         /// </summary>
         public int Paid { set; get; }
+        public int CarDispatch       {set;get;}
+        public string DispatchRemark    {set;get;}
+        public int CleanFee          {set;get;}
+        public string CleanFeeRemark    {set;get;}
+        public int DestroyFee        {set;get;}
+        public string DestroyFeeRemark  {set;get;}
+        public int OtherParkingFee   {set;get;}
+        public string ParkingFeeRemark  {set;get;}
+        public int DraggingFee       {set;get;}
+        public string DraggingFeeRemark {set;get;}
+        public int OtherFee          {set;get;}
+        public string OtherFeeRemark { set; get; }
     }
 }
