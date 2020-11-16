@@ -228,6 +228,7 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
+    <Compile Include="TB\BackEnd\BE_APILog.cs" />
     <Compile Include="TB\BackEnd\BE_AuditCrentials.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetail.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />
