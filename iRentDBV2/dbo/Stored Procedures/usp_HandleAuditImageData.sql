@@ -101,6 +101,22 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 			BEGIN
 				IF @Image<>''
 				BEGIN
+					--20201113 ADD BY ADAM REASON.不管怎麼樣先更新資料
+					UPDATE TB_Credentials
+					SET  ID_1=CASE WHEN @ImageType=1 THEN 2 ELSE ID_1 END
+						,ID_2=CASE WHEN @ImageType=2 THEN 2 ELSE ID_2 END
+						,CarDriver_1=CASE WHEN @ImageType=3 THEN 2 ELSE CarDriver_1 END
+						,CarDriver_2=CASE WHEN @ImageType=4 THEN 2 ELSE CarDriver_2 END
+						,MotorDriver_1=CASE WHEN @ImageType=5 THEN 2 ELSE MotorDriver_1 END
+						,MotorDriver_2=CASE WHEN @ImageType=6 THEN 2 ELSE MotorDriver_2 END
+						,Self_1=CASE WHEN @ImageType=7 THEN 2 ELSE Self_1 END
+						,Other_1=CASE WHEN @ImageType=8 THEN 2 ELSE Other_1 END
+						,Law_Agent=CASE WHEN @ImageType=9 THEN 2 ELSE Law_Agent END
+						,Business_1=CASE WHEN @ImageType=10 THEN 2 ELSE Business_1 END
+						,Signture=CASE WHEN @ImageType=11 THEN 2 ELSE Signture END
+						,UPDTime=@NowTime
+					WHERE IDNO=@IDNO
+
 					--更新證件主檔
 					SELECT @hasData=COUNT(1) FROM TB_CrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=@ImageType;
 					IF @hasData=0
@@ -116,6 +132,7 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 							SET CrentialsFile=@Image,UPDTime=@NowTime
 							WHERE IDNO=@IDNO AND CrentialsType=@ImageType;
 
+							/*
 							IF @ImageType=1
 							BEGIN
 								UPDATE TB_Credentials 
@@ -170,7 +187,7 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 								SET Law_Agent=2,UPDTime=@NowTime
 								WHERE IDNO=@IDNO;
 							END
-							ELSE IF @ImageType=1
+							ELSE IF @ImageType=10
 							BEGIN
 								UPDATE TB_Credentials 
 								SET Business_1=2,UPDTime=@NowTime
@@ -181,7 +198,7 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 								UPDATE TB_Credentials 
 								SET Signture=2,UPDTime=@NowTime
 								WHERE IDNO=@IDNO;
-							END
+							END */
 						END
 					END
 					--寫入照片審核歷程
@@ -269,7 +286,7 @@ SET @IDNO    =ISNULL (@IDNO    ,'');
 					SET Law_Agent=-1,UPDTime=@NowTime
 					WHERE IDNO=@IDNO;
 				END
-				ELSE IF @ImageType=1
+				ELSE IF @ImageType=10
 				BEGIN
 					UPDATE TB_Credentials 
 					SET Business_1=-1,UPDTime=@NowTime

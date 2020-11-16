@@ -70,6 +70,7 @@ namespace WebAPI.Controllers
             DateTime NowTime = DateTime.Now;
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
+            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限6小時)
             int days = 0; int hours = 0; int mins = 0; //以分計費總時數
             int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
@@ -79,6 +80,7 @@ namespace WebAPI.Controllers
             BillCommon billCommon = new BillCommon();
             List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
             bool UseMonthMode = false;  //false:無月租;true:有月租
+            int InsurancePerHours = 0;  //安心服務每小時價
             #endregion
 
             #region 防呆
@@ -222,6 +224,7 @@ namespace WebAPI.Controllers
                         TotalRentMinutes = ((days * 10) + hours) * 60 + mins; //未逾時的總時數
                         billCommon.CalDayHourMin(ED, FED, ref FineDays, ref FineHours, ref FineMins);
                         TotalFineRentMinutes = ((FineDays * 10) + FineHours) * 60 + FineMins; //逾時的總時數
+                        TotalFineInsuranceMinutes = ((FineDays * 6) + FineHours) * 60 + FineMins;  //逾時的安心服務總計(一日上限6小時)
                     }
                     else
                     {
@@ -596,6 +599,27 @@ namespace WebAPI.Controllers
                             }
                             CarRentPrice -= DiscountPrice;
                         }
+                        //安心服務
+                        InsurancePerHours = OrderDataLists[0].Insurance == 1 ? Convert.ToInt32(OrderDataLists[0].InsurancePerHours) : 0;
+                        if (InsurancePerHours > 0)
+                        {
+                            //基消1小時，之後每半小時計價
+                            if (TotalRentMinutes < 60)
+                            {
+                                outputApi.Rent.InsurancePurePrice = InsurancePerHours;
+                            }
+                            else
+                            {
+                                outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((TotalRentMinutes / 30.0) * InsurancePerHours / 2)));
+                            }
+
+                            //逾時安心服務計算
+                            if (TotalFineRentMinutes > 0)
+                            {
+                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((TotalFineInsuranceMinutes / 30.0) * InsurancePerHours / 2)));
+                            }
+                        }
+
                         outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                         outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit <= 0) ? Mildef : OrderDataLists[0].MilageUnit;

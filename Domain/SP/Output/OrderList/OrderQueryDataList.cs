@@ -188,9 +188,13 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int init_price { set; get; }
         /// <summary>
-        /// 預估每小時安心保險費用
+        /// 是否可以使用安心服務
         /// </summary>
         public int Insurance { set; get; }
+        /// <summary>
+        /// 每小時安心保險費用
+        /// </summary>
+        public int InsurancePerHours { set; get; }
         /// <summary>
         /// 預估安心保險費用
         /// </summary>

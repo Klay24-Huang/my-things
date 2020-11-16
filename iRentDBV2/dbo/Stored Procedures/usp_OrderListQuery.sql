@@ -126,8 +126,10 @@ BEGIN TRY
                 ,final_stop_time
                 ,stop_pick_time
                 ,stop_time
-                ,init_price,Insurance
-                ,InsurancePurePrice
+                ,init_price
+				,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END		--安心服務
+				,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
+                ,VW.InsurancePurePrice
                 ,init_TransDiscount
                 ,car_mgt_status
                 ,booking_status
@@ -162,6 +164,14 @@ BEGIN TRY
 				,Area
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+
+			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
+			LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+						FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+						LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
+						WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
+			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i1 WITH(NOLOCK) WHERE use_flag=1) AS I1 ON lend_place=I1.StationID AND I1.SEQ=1
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
@@ -170,7 +180,7 @@ BEGIN TRY
 						FROM TB_iRentStationInfo i3 WITH(NOLOCK) WHERE use_flag=1) AS I3 ON lend_place=I3.StationID AND I3.SEQ=3
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
-            WHERE IDNO=@IDNO AND cancel_status=0
+            WHERE VW.IDNO=@IDNO AND cancel_status=0
 			AND (car_mgt_status<16    --排除已還車的
 				--針對汽車已還車在15分鐘內的
 				OR (car_mgt_status=16 AND final_stop_time is not null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType<>'4')

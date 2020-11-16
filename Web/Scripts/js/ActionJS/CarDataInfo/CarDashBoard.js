@@ -60,6 +60,27 @@
             }
         });
     }
+    var gotoBrnhcd = function (Brnhcd) {
+        $('#StationID').val(Brnhcd);
+        setTimeout(function () {
+            $("#btnSearch").click();
+        }, 300);
+    };
+    $("#btnSearch_X0WR").on("click", function () {
+        gotoBrnhcd('X0WR');
+    });
+    $("#btnSearch_X1JT").on("click", function () {
+        gotoBrnhcd('X1JT');
+    });
+    $("#btnSearch_X1KX").on("click", function () {
+        gotoBrnhcd('X1KX');
+    });
+    $("#btnSearch_X1KZ").on("click", function () {
+        gotoBrnhcd('X1KZ');
+    });
+    $("#btnSearch_X1KY").on("click", function () {
+        gotoBrnhcd('X1KY');
+    });
     $("#btnSearch").on("click", function () {
         ShowLoading("資料處理中...");
         var flag = true;
@@ -67,13 +88,13 @@
         var CarNo = $("#CarNo").val();
         var StationID = $("#StationID").val();
         var ShowType = $("input[name=ShowType]:checked").val();
-      
 
-        if (false==CheckIsUndefined(ShowType)) {
+
+        if (false == CheckIsUndefined(ShowType)) {
             flag = false;
-            message="請選擇顯示方式"
+            message = "請選擇顯示方式"
         }
-     
+
         if (flag) {
             var obj = new Object();
             var terms = new Array();
@@ -91,7 +112,7 @@
             disabledLoadingAndShowAlert(message);
         }
         return false;
-    })
+    });
 
 
 });
@@ -146,7 +167,12 @@ function SendMotoCmd(CID, deviceToken, Action) {
 
     });
 }
-function SendCarCmd(CID, deviceToken, Action, IsCens) {
+function SendCarCmd2(CID, deviceToken, Action, IsCens, IsCens2) {
+    SendCarCmd(CID, deviceToken, Action, IsCens, function () {
+        SendCarCmd(CID, deviceToken, Action, IsCens2);
+    });
+}
+function SendCarCmd(CID, deviceToken, Action, IsCens,callback) {
     ShowLoading("發送命令…"); 
     var Account = $("#Account").val();
     var obj = new Object();
@@ -171,13 +197,17 @@ function SendCarCmd(CID, deviceToken, Action, IsCens) {
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                swal({
-                    title: 'SUCCESS',
-                    text: data.ErrorMessage,
-                    icon: 'success'
-                }).then(function (value) {
-                    window.location.reload();
-                });
+                if (callback) {
+                    callback();
+                } else {
+                    swal({
+                        title: 'SUCCESS',
+                        text: data.ErrorMessage,
+                        icon: 'success'
+                    }).then(function (value) {
+                        window.location.reload();
+                    });
+                }
             } else {
 
                 swal({

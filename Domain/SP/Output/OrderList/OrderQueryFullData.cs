@@ -219,7 +219,10 @@ namespace Domain.SP.Output.OrderList
         /// 結束里程
         /// </summary>
         public float end_mile { set; get; }
-
+        /// <summary>
+        /// 安心服務每小時價
+        /// </summary>
+        public float InsurancePerHours { set; get; }
         #endregion
     }
 }

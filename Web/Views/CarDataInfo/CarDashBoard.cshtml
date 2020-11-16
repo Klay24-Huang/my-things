@@ -96,7 +96,13 @@
                         <div class="col-md-3">
                             <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
                             <span class="form-inline" id="StationName" name="StationName"></span>
-
+                        </div>
+                        <div class="col-md-7">
+                            <button type="button" id="btnSearch_X0WR" name="btnSearch_X0WR" class="btn btn-primary">雙北【機車】</button>
+                            <button type="button" id="btnSearch_X1JT" name="btnSearch_X1JT" class="btn btn-primary">台南【機車】</button>
+                            <button type="button" id="btnSearch_X1KX" name="btnSearch_X1KX" class="btn btn-primary">桃園【機車】</button>
+                            <button type="button" id="btnSearch_X1KZ" name="btnSearch_X1KZ" class="btn btn-primary">高雄【機車】</button>
+                            <button type="button" id="btnSearch_X1KY" name="btnSearch_X1KY" class="btn btn-primary">台中【機車】</button>
                         </div>
                     </div>
                 </div>
@@ -257,35 +263,35 @@
                         </td>
                         <td>
                             <!-- add text-danger to control font color -->
-                            <span class="icon-8 @((lstMotoData[i].GPRSStatus==1)?" text-danger":"")"></span>
-                            <span class="icon-9 @((lstMotoData[i].BroadCast==1)?" text-danger":"")"></span>
+                            <span data-toggle="tooltip" title="GPS通信" class="icon-8 @((lstMotoData[i].GPRSStatus==1)?" text-danger":"")"></span>
+                            <span data-toggle="tooltip" title="藍芽" class="icon-9 @((lstMotoData[i].BroadCast==1)?" text-danger":"")"></span>
                         </td>
                         <td>
                             <!-- add text-danger to control font color -->
-                            <span class="icon-1 @((lstMotoData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstMotoData[i].Latitude,@lstMotoData[i].Longitude)"></span>
-                            <span class="icon-4  @((lstMotoData[i].TBA2<30)?" text-danger":"")"></span>@(Convert.ToInt32(lstMotoData[i].TBA2))
-                            <span class="icon-7  text-cyan"></span>@(Convert.ToInt32(lstMotoData[i].LBA))
+                            <span data-toggle="tooltip" title="地圖" class="icon-1 @((lstMotoData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstMotoData[i].Longitude,@lstMotoData[i].Latitude)"></span>
+                            <span data-toggle="tooltip" title="低電量(2TBA)@(lstMotoData[i].TBA2)" class="icon-4  @((lstMotoData[i].TBA2<30)?" text-danger":"")"></span>@(Convert.ToInt32(lstMotoData[i].TBA2))
+                            <span data-toggle="tooltip" title="左電池" class="icon-7  text-cyan"></span>@(Convert.ToInt32(lstMotoData[i].LBA))
                             <br>
-                            <span class="icon-2 @((lstMotoData[i].ACCStatus==1)?" text-danger":"")"></span>
-                            <span class="icon-5 @((lstMotoData[i].TBA3<30)?" text-danger":"")"></span>@(Convert.ToInt32(lstData[i].TBA3))
-                            <span class="icon-7 text-cyan"></span>@(Convert.ToInt32(lstMotoData[i].RBA))
+                            <span data-toggle="tooltip" title="發動" class="icon-2 @((lstMotoData[i].ACCStatus==1)?" text-danger":"")"></span>
+                            <span data-toggle="tooltip" title="低電量(3TBA)@(lstMotoData[i].TBA3)" class="icon-5 @((lstMotoData[i].TBA3<30)?" text-danger":"")"></span>@(Convert.ToInt32(lstData[i].TBA3))
+                            <span data-toggle="tooltip" title="右電池" class="icon-7 text-cyan"></span>@(Convert.ToInt32(lstMotoData[i].RBA))
                             <br>
-                            <span class="icon-3 @((lstMotoData[i].BatCover==1)?" text-danger":"")"></span>
-                            <span class="icon-6 text-danger"></span>@(Convert.ToInt32(lstMotoData[i].MBA))
+                            <span data-toggle="tooltip" title="電源蓋" class="icon-3 @((lstMotoData[i].BatCover==1)?" text-danger":"")"></span>
+                            <span data-toggle="tooltip" title="MBA" class="icon-6 text-danger"></span>@(Convert.ToInt32(lstMotoData[i].MBA))
                             <br>
                         </td>
                         <td>
                             @(lstMotoData[i].Speed)/@(lstMotoData[i].Millage)
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 2)">發動</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 2,0)">發動</button>
                             <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 3)">熄火</button>
                             <br>
                             @*<button type="button" class="btn btn-outline-secondary mb-2">key on</button>*@
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 2)">key on</button>
                             <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 6)">開坐墊</button>
                             <br>
                             <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 7)">開/關電池架</button>
-
                         </td>
                         <td>
                             <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 5)">頭燈</button>
@@ -371,31 +377,31 @@
                     </td>
                     <td>
                         <!-- add text-danger to control font color -->
-                        <span class="icon-2 @((lstCarData[i].ACCStatus==1)?" text-danger":"")"></span>
-                        <span class="icon-8  @((lstCarData[i].GPRSStatus==1)?" text-danger":"")"></span>
-                        <span class="icon-10 @((lstCarData[i].OBDStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="OBD" class="icon-2 @((lstCarData[i].ACCStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="GPS通信" class="icon-8 @((lstCarData[i].GPRSStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="GPRS通信" class="icon-10 @((lstCarData[i].OBDStatus==1)?" text-danger":"")"></span>
                     </td>
                     <td>
                         <!-- add text-danger to control font color -->
-                        <span class="icon-1 @((lstCarData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstCarData[i].Latitude,@lstCarData[i].Longitude)"></span>
-                        <span class="icon-13 @((lstCarData[i].Volt<12)?" text-danger":"")"></span>
-                        <span class="icon-2"></span>
+                        <span data-toggle="tooltip" title="地圖" class="icon-1 @((lstCarData[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstCarData[i].Longitude,@lstCarData[i].Latitude)"></span>
+                        <span data-toggle="tooltip" title="12V電瓶告警" class="icon-13 @((lstCarData[i].Volt<12)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="電源" class="icon-2"></span>
                         <br>
-                        <span class="icon-11 @((lstCarData[i].PowerOnStatus==1)?" text-danger":"")"></span>
-                        <span class="icon-14 @((lstCarData[i].IndoorLightStatus==1)?" text-danger":"")"></span>
-                        <span class="icon-16 @((lstCarData[i].DoorStatus==1)?" text-danger":"") "></span>
+                        <span data-toggle="tooltip" title="引擎" class="icon-11 @((lstCarData[i].PowerOnStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="大燈" class="icon-14 @((lstCarData[i].IndoorLightStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="車門" class="icon-16 @((lstCarData[i].DoorStatus==1)?" text-danger":"") "></span>
                         <br>
                         @if (lstCarData[i].SecurityStatus == 1)
                         {
-                            <span class="icon-12 "></span>
+                            <span data-toggle="tooltip" title="防盜鎖" class="icon-12 "></span>
                         }
                         else
                         {
-                            <span class="icon-15  text-danger"></span>
+                            <span data-toggle="tooltip" title="中控鎖" class="icon-15  text-danger"></span>
                         }
 
 
-                        <span class="icon-17 @((lstCarData[i].CentralLockStatus==0)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="iButton" class="icon-17 @((lstCarData[i].CentralLockStatus==0)?" text-danger":"")"></span>
                         <br>
                     </td>
                     <td>

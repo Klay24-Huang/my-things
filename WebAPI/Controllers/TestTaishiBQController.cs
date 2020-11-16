@@ -7,12 +7,13 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Web.Http;
+using NLog;
 
 namespace WebAPI.Controllers
 {
     public class TestTaishiBQController : ApiController
     {
-
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string GetCreditCardList = ConfigurationManager.AppSettings["GetCreditCardList"].ToString();        //取得綁卡列表
         /// <summary>
@@ -48,6 +49,7 @@ namespace WebAPI.Controllers
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
+                        logger.Debug(responseStr);
                         //RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_GetCreditCardList>(responseStr);
                     }
@@ -57,7 +59,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-
+                logger.Error(ex.Message);
             }
             return output;
             //return JsonConvert.SerializeObject(output);
