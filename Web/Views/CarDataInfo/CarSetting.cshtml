@@ -107,7 +107,7 @@
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4">
-    <table class="table bg-white table-striped bg-white mt-4 " data-paging="true">
+    <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
@@ -115,7 +115,6 @@
                 <th scope="col">車號</th>
                 <th scope="col">據點</th>
                 <th scope="col">編輯</th>
-
             </tr>
         </thead>
         <tbody>
@@ -125,13 +124,12 @@
                 {
                     <tr>
                         <td></td>
-                        <td scope="row">@((i+1).ToString())</td>
+                        <td scope="row">@((i + 1).ToString())</td>
                         <td scope="col">@(lstData[i].CarNo.Trim())</td>
                         <td scope="col">
-                            @(string.Format("{0}({1})",lstData[i].StationName,lstData[i].StationID))
+                            @(string.Format("{0}({1})", lstData[i].StationName, lstData[i].StationID))
                             <input type="text" name="Station_@(lstData[i].CarNo.Trim())" id="Station_@(lstData[i].CarNo.Trim())" value="@lstData[i].StationID" class="form-control" style="display:none" />
                         </td>
-
                         <td scope="col">
                             <Button type="button" id="btnEdit_@(lstData[i].CarNo.Trim())" name="btnEdit_@(lstData[i].CarNo.Trim())" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].CarNo.Trim())')">修改</Button>
                             <Button type="button" id="btnSave_@(lstData[i].CarNo.Trim())" name="btnSave_@(lstData[i].CarNo.Trim())" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].CarNo.Trim())')">儲存</Button>
@@ -148,6 +146,13 @@
                 </tr>
             }
         </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!--輸出表格結束-->
