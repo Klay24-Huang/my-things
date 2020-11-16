@@ -1,7 +1,10 @@
-﻿using Domain.WebAPI.output.HiEasyRentAPI;
+﻿using Domain.TB.BackEnd;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -15,10 +18,11 @@ namespace Web.Controllers
     /// </summary>
     public class ManageController : Controller
     {
-      /// <summary>
-      /// 強制刷卡取款
-      /// </summary>
-      /// <returns></returns>
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        /// <summary>
+        /// 強制刷卡取款
+        /// </summary>
+        /// <returns></returns>
         public ActionResult AuthAndPay()
         {
             return View();
@@ -138,6 +142,26 @@ namespace Web.Controllers
         public ActionResult ResendToHieasyrent()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 查詢APILog
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult APILogQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult APILogQuery(string IPAddress, string StartDate, string EndDate)
+        {
+            ViewData["IPAddress"] = IPAddress;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            List<BE_APILog> lstData = null;
+            APILogRepository repository = new APILogRepository(connetStr);
+            lstData = repository.GetAPILog(IPAddress, StartDate+" 00:00:00.000", EndDate + " 23:59:59.999");
+            return View(lstData);
         }
     }
 }

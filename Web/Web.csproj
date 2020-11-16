@@ -342,6 +342,7 @@
     <Content Include="Scripts\js\ActionJS\Login.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ArrearQuery.js" />
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
+    <Content Include="Scripts\js\ActionJS\Manage\APILogQuery.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildayMaintain.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCard.js" />
@@ -480,7 +481,9 @@
     <Content Include="Scripts\plugin\footable-bootstrap\js\footable.js" />
     <Content Include="Scripts\plugin\footable-bootstrap\js\footable.min.js" />
     <Content Include="Scripts\plugin\sweetalert\dist\sweetalert.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -638,6 +641,7 @@
     <Content Include="Views\CommonObj\GetFuncGroup.cshtml" />
     <Content Include="Views\CommonObj\GetUserGroupList.cshtml" />
     <Content Include="Views\CommonObj\GetDisablePowerList.cshtml" />
+    <Content Include="Views\Manage\APILogQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
