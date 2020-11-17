@@ -69,6 +69,7 @@ CREATE PROCEDURE [dbo].[usp_HandleCarStatusByCar]
     @extDeviceData3				VARCHAR(512),			--汽車專用，iButton編號
     @extDeviceData4				VARCHAR(512),			--卡號
     @extDeviceData7				VARCHAR(512)		  , --
+	@deviceName					VARCHAR(50),
 	@LogID						BIGINT                ,
 	@ErrorCode 					VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  					NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -116,12 +117,12 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
 										,[LockStatus],[IndoorLightStatus],[SecurityStatus],[Speed],[Volt]
 										,[Latitude],[Longitude],[Millage],[extDeviceStatus1],[extDeviceStatus2]
-										,[extDeviceData2],[extDeviceData3],[extDeviceData4]
+										,[extDeviceData2],[extDeviceData3],[extDeviceData4],[deviceName]
 								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus,@deviceGPSTime
 										,@deviceOBDstatus,@deviceGPRSStatus,@devicePowerONStatus,@devcieCentralLockStatus,@deviceDoorStatus
 										,@deviceLockStatus,@deviceIndoorLightStatus,@deviceSecurityStatus,@deviceSpeed,@deviceVolt
 										,@deviceLatitude,@deviceLongitude,@deviceMillage,@extDeviceStatus1,@extDeviceStatus2
-										,@extDeviceData2,@extDeviceData3,@extDeviceData4
+										,@extDeviceData2,@extDeviceData3,@extDeviceData4,@deviceName
 								)
 			END
 			ELSE
@@ -150,6 +151,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						 [extDeviceData2]=@extDeviceData2,
 						 [extDeviceData3]=CASE WHEN @extDeviceData3 IS NOT NULL THEN @extDeviceData3 ELSE extDeviceData3 END,
 						 [extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
+						 [deviceName]=@deviceName,
 						 UPDTime=@NowTime
 					WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 				END
@@ -158,12 +160,12 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
 										,[LockStatus],[IndoorLightStatus],[SecurityStatus],[Speed],[Volt]
 										,[Latitude],[Longitude],[Millage],[extDeviceStatus1],[extDeviceStatus2]
-										,[extDeviceData2],[extDeviceData3],[extDeviceData4]
+										,[extDeviceData2],[extDeviceData3],[extDeviceData4],[deviceName]
 								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus,@deviceGPSTime
 										,@deviceOBDstatus,@deviceGPRSStatus,@devicePowerONStatus,@devcieCentralLockStatus,@deviceDoorStatus
 										,@deviceLockStatus,@deviceIndoorLightStatus,@deviceSecurityStatus,@deviceSpeed,@deviceVolt
 										,@deviceLatitude,@deviceLongitude,@deviceMillage,@extDeviceStatus1,@extDeviceStatus2
-										,@extDeviceData2,@extDeviceData3,@extDeviceData4
+										,@extDeviceData2,@extDeviceData3,@extDeviceData4,@deviceName
 								)
 		END
 		 

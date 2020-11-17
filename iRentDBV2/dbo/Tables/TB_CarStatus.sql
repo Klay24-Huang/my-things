@@ -68,6 +68,7 @@
 	[extDeviceData5]   VARCHAR(128) NULL,
 	[extDeviceData6]   VARCHAR(256) NULL,
 	[extDeviceData7]   VARCHAR(512) NULL,
+    [deviceName]       VARCHAR(50) NULL,
     [WriteTime] DATETIME NULL ,
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
 	[UPDTime] [datetime] NULL, 
@@ -703,6 +704,15 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_CarStatus',
     @level2type = N'COLUMN',
     @level2name = N'extDeviceData6'
+GO
+EXEC sp_addextendedproperty @name=N'MS_Description', 
+    @value=N'裝置名稱，預設為車號' , 
+    @level0type=N'SCHEMA',
+    @level0name=N'dbo', 
+    @level1type=N'TABLE',
+    @level1name=N'TB_CarStatus', 
+    @level2type=N'COLUMN',
+    @level2name=N'deviceName'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'刷卡機回傳資訊， “OK或NG,卡號”',
