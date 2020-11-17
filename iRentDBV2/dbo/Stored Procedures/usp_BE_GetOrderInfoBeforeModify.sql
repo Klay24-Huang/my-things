@@ -165,7 +165,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 
 		 IF @Error=0
 		 BEGIN
-			SELECT * FROM VW_BE_GetOrderFullDetail WITH(NOLOCK) WHERE OrderNo=@OrderNo;
+			SELECT * FROM VW_BE_GetOrderModifyInfoNew WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

@@ -463,6 +463,38 @@ namespace Reposotory.Implement
 
             return tmp;
         }
+        public BE_GetOrderModifyDataNew GetModifyData(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetOrderModifyDataNew> lstOrderData = null;
+            string SQL = "SELECT *  FROM VW_BE_GetOrderModifyInfoNew  WITH (NOLOCK) ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            int nowCount = 0;
+            if (OrderNo>0)
+            {
+                term = "  OrderNo = @OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + "  ";
+            }
+
+            lstOrderData = GetObjList<BE_GetOrderModifyDataNew>(ref flag, ref lstError, SQL, para, term);
+            BE_GetOrderModifyDataNew tmp = null;
+            if (lstOrderData.Count > 0)
+            {
+                tmp = lstOrderData[0];
+            }
+
+            return tmp;
+        }
 
     }
 }

@@ -1,8 +1,14 @@
 ﻿var finalPrice = 0;
 var Max_Motor_Pointer = 0;
 var Max_Car_Pointer = 0;
+var ModifyObj;
+var OrderObj;
+var BonusObj;
+var LastOrderObj;
+var hasReCal = false;
 $(document).ready(function () {
     $("#panelResult").hide();
+    $("#btnCal").hide();
     $("#btnQuery").on("click", function () {
         var OrderNo = $("#OrderNo").val();
 
@@ -45,18 +51,72 @@ $(document).ready(function () {
             disabledLoadingAndShowAlert(errMsg);
         }
     });
+    $("#btnCal").on("click", function () {
+        ShowLoading("計算中…");
+        if (CheckStorageIsNull(OrderObj)) {
+            var Account = $("#Account").val();
+            var MotorPoint = $("#gift_point_moto_input").val();
+            var CarPoint = $("#gift_point_input").val();
+            if (MotorPoint == "") {
+                $("#gift_point_moto_input").val("0");
+                MotorPoint = 0;
+            }
+            if (CarPoint == "") {
+                $("#gift_point_input").val("0");
+                CarPoint = 0;
+            }
+            var obj = new Object();
+            obj.UserID = Account;
+            obj.OrderNo = "H" + pad(OrderObj.OrderNo, 7);
+            obj.ProjType = OrderObj.PROJTYPE
+            if (OrderObj.PROJTYPE == 4) {
+                obj.CarPoint = CarPoint;
+                obj.MotorPoint = MotorPoint
+            
+            } else {
+                obj.CarPoint = $("#gift_point_select").val();
+                obj.MotorPoint = 0;
+            }
+            DoAjaxAfterCallBackWithOutMessage(obj, "BE_ReCalculateByDiscount", "重新計算發生錯誤", SetCalData);
+        } else {
+            disabledLoadingAndShowAlert("請重新取得資料");
+        }
+
+    });
+    $("#UseStatus").on("change", function () {
+        if ($(this).val() == "3") {
+            $("#remark_input").prop("readonly", "");
+        } else {
+            $("#remark_input").prop("readonly", "readonly");
+        }
+    });
+    $("#btnSave").on("click", function () {
+        ShowLoading("資料儲存中…");
+        if (hasReCal) {
+
+        } else {
+            disabledLoadingAndShowAlert("請先修改後按下重新計算");
+        }
+    });
 
 });
-
+function SetCalData(data) {
+    console.log(data);
+    $("#final_amt").val(data.Data.DiffFinalPrice);
+    $("#final_price_input").val(data.Data.NewFinalPrice);
+    $("#pure_price_input").val(data.Data.RentPrice);
+    hasReCal = true;
+}
 function SetData(data) {
     console.log(data);
-    var ModifyObj = data.Data.ModifyLog;
+     ModifyObj = data.Data.ModifyLog;
     var errMsg = "";
     if (ModifyObj.hasModify != 0) {
         errMsg = "此訂單於【" + ModifyObj.ModifyTime + "】，由【" + ModifyObj.ModifyUserID + "】修改過";
     }
-    var OrderObj = data.Data.OrderData;
-    var LastOrderObj = data.Data.LastOrderData;
+     OrderObj = data.Data.OrderData;
+     LastOrderObj = data.Data.LastOrderData;
+     BonusObj = data.Data.Bonus;
     if (LastOrderObj.LastStopTime != "") {
         $("#spn_LastStopTime").html(LastOrderObj.LastStopTime);
     }
@@ -66,7 +126,7 @@ function SetData(data) {
         var FE = new Date(OrderObj.FS).Format("yyyy-MM-dd HH:mm:ss")
         var FineTime = new Date(OrderObj.FineTime).Format("yyyy-MM-dd HH:mm:ss")
         $("#panelResult").show();
-        $("#spn_OrderNo").html("H" +pad(OrderObj.OrderNo,7))
+        $("#spn_OrderNo").html("H" + pad(OrderObj.OrderNo, 7))
         $("#spn_IDNO").html(OrderObj.IDNO)
         $("#spn_UserName").html(OrderObj.UserName)
         $("#spn_PRONAME").html(OrderObj.PRONAME)
@@ -74,8 +134,8 @@ function SetData(data) {
         $("#spn_FE").html(FE)
         $("#StartDate").val(FS)
         $("#EndDate").val(FE)
-        $("#spn_CarRent").html(OrderObj.CarRent);
-        $("#pure_price_input").val(OrderObj.CarRent);
+        $("#spn_CarRent").html(OrderObj.pure_price);
+        $("#pure_price_input").val(OrderObj.pure_price);
 
         finalPrice = OrderObj.FinalPrice;
         if (LastOrderObj.LastStopTime != "") {
@@ -83,24 +143,54 @@ function SetData(data) {
         }
         $("#spn_gift").html(OrderObj.CarPoint);
         $("#spn_moto_gift").html(OrderObj.MotorPoint);
-        $("#spn_StartMile").html(OrderObj.StartMile);
-        $("#start_mile_input").val(OrderObj.StartMile)
-        $("#spn_StopMile").html(OrderObj.StartMile);
-        $("#end_mile_input").val(OrderObj.StartMile);
-        $("#spn_Mileage").html(OrderObj.Mileage);
-        $("#spn_finePrice").html(OrderObj.FinePrice);
-        $("#fine_price_input").val(OrderObj.FinePrice)
+        $("#spn_StartMile").html(OrderObj.SM);
+        $("#start_mile_input").val(OrderObj.SM)
+        $("#spn_StopMile").html(OrderObj.EM);
+        $("#end_mile_input").val(OrderObj.EM);
+        $("#spn_Mileage").html(OrderObj.mileage_price);
+        $("#spn_finePrice").html(OrderObj.fine_price);
+        $("#fine_price_input").val(OrderObj.fine_price)
         $("#spn_eTag").html(OrderObj.eTag);
-        $("#spn_finalPrice").html(OrderObj.FinalPrice);
-        $("#final_price_input").val(OrderObj.FinalPrice);
-      
-        ShowLoading("可用點數查詢中…");
-        var Account = $("#Account").val();
-        var obj = new Object();
-        obj.UserID = Account;
-        obj.IDNO = OrderObj.IDNO;
-        DoAjaxAfterCallBackWithOutMessage(obj, "BE_BonusQuery", "查詢可用點數資料發生錯誤", SetPointer);
-            
+        $("#spn_finalPrice").html(OrderObj.final_price);
+        $("#final_price_input").val(OrderObj.final_price);
+        $("#spn_payPrice").html(OrderObj.Paid)
+
+        if (OrderObj.PROJTYPE == 4) {
+            $("#gift_point_input").prop("placeholder", "與機車點數合計最多只能使用" + BonusObj.CanUseTotalCarPoint).val(OrderObj.CarPoint);
+            $("#gift_point_select").empty().hide();
+            $("#gift_point_moto_input").prop("placeholder", "與機車點數合計最多只能使用" + BonusObj.CanUseTotalCarPoint).val(OrderObj.MotorPoint);
+            $("#gift_point_moto_input").prop("disabled", "");
+            $("#gift_point_input").prop("disabled", "").show();
+        } else {
+            $("#gift_point_moto_input").prop("disabled", "disabled");
+            $("#gift_point_input").hide();
+            $("#gift_point_select").empty().show();
+            for (var i = 0; i <= BonusObj.CanUseTotalCarPoint; i += 30) {
+
+                $("#gift_point_select").append(`<option value="${i}">${i}</option>`);
+            }
+            $("#gift_point_select").val(OrderObj.CarPoint)
+
+        }
+
+        if (OrderObj.PROJTYPE == 4) {
+            if (data.Data.IsHoliday == 0) {
+                $("#spn_OneDay").html(OrderObj.MaxPrice);
+            } else {
+                $("#spn_OneDay").html(OrderObj.MaxPriceH);
+            }
+        } else {
+            if (data.Data.IsHoliday == 0) {
+                $("#spn_OneDay").html(OrderObj.WeekdayPrice);
+            } else {
+                $("#spn_OneDay").html(OrderObj.HoildayPrice);
+            }
+        }
+
+        $("#btnCal").show();
+
+    } else {
+        $("#btnCal").hide();
     }
     
 }

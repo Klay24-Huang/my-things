@@ -2,12 +2,15 @@
 	AS
 SELECT Main.[order_number] AS OrderNo
       ,[IDNO]
+	  ,ISNULL(UserInfo.MEMCNAME,'') AS UserName
       ,Main.[CarNo]
       ,Main.[ProjID]
 	  ,Project.PRONAME
 	  ,Project.PROJTYPE
+	 ,IIF(ISNULL(Main.stop_time ,'')='','',CONVERT(VARCHAR(20),Main.stop_time ,120)) AS ED
 	  ,IIF(ISNULL(Detail.final_start_time ,'')='','',CONVERT(VARCHAR(20),Detail.final_start_time ,120)) AS FS
 	  ,IIF(ISNULL(Detail.final_stop_time ,'')='','',CONVERT(VARCHAR(20),Detail.final_stop_time ,120)) AS FE
+	   ,IIF(ISNULL(Main.fine_Time ,'')='','',CONVERT(VARCHAR(20),Main.fine_Time ,120)) AS FT
 	  ,Detail.start_mile AS SM
 	  ,Detail.end_mile AS EM
 	  ,Detail.mileage_price
@@ -21,6 +24,9 @@ SELECT Main.[order_number] AS OrderNo
 	  ,Detail.Insurance_price
       ,Detail.trade_status
 	  ,Detail.transaction_no
+	  ,Detail.Etag AS eTag
+	  ,Detail.gift_point AS CarPoint
+	  ,Detail.gift_motor_point AS MotorPoint
 	  ,CarInfo.HoildayPrice
 	  ,CarInfo.HoildayPriceByMinutes
 	  ,CarInfo.WeekdayPrice
@@ -47,6 +53,7 @@ SELECT Main.[order_number] AS OrderNo
   LEFT JOIN TB_PriceByMinutes AS PriceMinutes ON PriceMinutes.ProjID=Main.ProjID AND PriceMinutes.CARTYPE=CarInfo.CarType
   LEFT JOIN TB_Trade AS Trade ON Trade.SOrderNum=Main.order_number AND Trade.IsSuccess=1
   LEFT JOIN TB_OrderOtherFee AS OtherFee ON OtherFee.OrderNo=Main.order_number
+  LEFT JOIN TB_MemberData AS UserInfo ON UserInfo.MEMIDNO=Main.IDNO
 
                                 GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_BE_GetOrderModifyInfoNew';

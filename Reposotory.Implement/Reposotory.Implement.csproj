@@ -46,6 +46,7 @@
     <Compile Include="BaseRepository.cs" />
     <Compile Include="CarCardCommonRepository.cs" />
     <Compile Include="CarCMDRepository.cs" />
+    <Compile Include="CarRepository.cs" />
     <Compile Include="CarStatusCommon.cs" />
     <Compile Include="CommonRepository.cs" />
     <Compile Include="ContactRepository.cs" />

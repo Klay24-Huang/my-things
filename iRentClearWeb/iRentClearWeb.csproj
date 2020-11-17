@@ -871,6 +871,10 @@
       <Project>{a30a71dc-72ca-4bd3-8b02-00c7a9b336c4}</Project>
       <Name>Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OtherService\OtherService.csproj">
+      <Project>{c7b92ef2-f283-4135-8309-fd1a30b4ed38}</Project>
+      <Name>OtherService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reposotory.Implement\Reposotory.Implement.csproj">
       <Project>{ec8cf1d8-b569-4b3f-9c8e-4ab95622961c}</Project>
       <Name>Reposotory.Implement</Name>

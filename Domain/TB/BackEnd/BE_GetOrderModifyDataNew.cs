@@ -17,6 +17,10 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string IDNO                      {set;get;}
         /// <summary>
+        /// 使用者姓名
+        /// </summary>
+        public string UserName { set; get; }
+        /// <summary>
         /// 車號
         /// </summary>
         public string CarNo                     {set;get;}
@@ -33,6 +37,11 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public int PROJTYPE                  {set;get;}
         /// <summary>
+        /// 預計還車時間
+        /// </summary>
+        public string ED { set; get; }
+  
+        /// <summary>
         /// 實際取車時間
         /// </summary>
         public string FS                        {set;get;}
@@ -40,6 +49,10 @@ namespace Domain.TB.BackEnd
         /// 實際還車時間
         /// </summary>
         public string FE                        {set;get;}
+        /// <summary>
+        /// 實際逾時時間
+        /// </summary>
+        public string FT { set; get; }
         /// <summary>
         /// 取車里程
         /// </summary>
@@ -94,6 +107,9 @@ namespace Domain.TB.BackEnd
         /// 刷卡單號
         /// </summary>
         public string transaction_no            {set;get;}
+        public int eTag { set; get; }
+        public int CarPoint { set; get; }
+        public int MotorPoint { set; get; }
         /// <summary>
         /// 假日價（汽車）
         /// </summary>
