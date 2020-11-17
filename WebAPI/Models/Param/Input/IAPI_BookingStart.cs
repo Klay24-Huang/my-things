@@ -22,5 +22,10 @@ namespace WebAPI.Models.Param.Input
         /// SKB的token
         /// </summary>
         public string SKBToken { set; get; }
+
+        /// <summary>
+        /// 加購安心服務(0:否;1:有)
+        /// </summary>
+        public int Insurance { get; set; }
     }
 }
