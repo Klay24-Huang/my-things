@@ -129,3 +129,7 @@ function ReBook(OrderNo) {
 
     });
 }
+
+function setStation(StationID) {
+    $('#StationID').val(StationID);
+}

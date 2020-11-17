@@ -7,8 +7,8 @@
 
     int CityID = 0;
     int AreaID = 0;
-    string PIC1 = "", PIC2 = "", PIC3 = "", PIC4 = "";
-    string PIC1Descript = "", PIC2Descript = "", PIC3Descript = "", PIC4Descript = "";
+    string PIC1 = "", PIC2 = "", PIC3 = "", PIC4 = "", PIC5 = "";
+    string PIC1Descript = "", PIC2Descript = "", PIC3Descript = "", PIC4Descript = "", PIC5Descript = "";
     if (Model != null)
     {
         obj = Model;
@@ -57,6 +57,16 @@
                 {
                     PIC4 = obj.StationImage[Index].StationPic;
                     PIC4Descript = obj.StationImage[Index].PicDescription;
+                }
+                Index = -1;
+                Index = obj.StationImage.FindIndex(delegate (Domain.TB.BackEnd.BE_GetiRentStationInfo station)
+                {
+                    return station.Sort == 5;
+                });
+                if (Index > -1)
+                {
+                    PIC5 = obj.StationImage[Index].StationPic;
+                    PIC5Descript = obj.StationImage[Index].PicDescription;
                 }
             }
         }
@@ -257,18 +267,19 @@
                             據點說明照片上傳
                         </div>
                         <div class="col-md-1">
-
                             <img src="@((PIC1=="")?"":ImgURL+PIC1)" id="PIC1" name="PIC1" class="img-thumbnail" />
                         </div>
                         <div class="col-md-1">
                             <img src="@((PIC2=="")?"":ImgURL+PIC2)" id="PIC2" name="PIC2" class="img-thumbnail" />
                         </div>
-                        <div class="col-md-1" style="display:none;">
+                        <div class="col-md-1">
                             <img src="@((PIC3=="")?"":ImgURL+PIC3)" id="PIC3" name="PIC3" class="img-thumbnail" />
                         </div>
-                        <div class="col-md-1" style="display:none;">
+                        <div class="col-md-1">
                             <img src="@((PIC4=="")?"":ImgURL+PIC4)" id="PIC4" name="PIC4" class="img-thumbnail" />
-
+                        </div>
+                        <div class="col-md-1">
+                            <img src="@((PIC5=="")?"":ImgURL+PIC5)" id="PIC5" name="PIC5" class="img-thumbnail" />
                         </div>
                     </div>
                     <div class="row">
@@ -285,8 +296,9 @@
                                 <option value="-1"></option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
-                                <!--<option value="3">3</option>
-                                <option value="4">4</option>-->
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
                             </select>
                         </div>
                     </div>
@@ -313,18 +325,21 @@
                             上傳照片
                         </div>
                         <div class="col-md-8">
-                            <input type="hidden" name="fileName1"     id="fileName1" value="@(PIC1)" />
-                            <input type="hidden" name="fileName2"     id="fileName2" value="@(PIC2)" />
-                            <input type="hidden" name="fileName3"     id="fileName3" value="@(PIC3)" />
-                            <input type="hidden" name="fileName4"     id="fileName4" value="@(PIC4)" />
-                            <input type="hidden" name="fileData1"     id="fileData1" value="" />
-                            <input type="hidden" name="fileData2"     id="fileData2" value="" />
-                            <input type="hidden" name="fileData3"     id="fileData3" value="" />
-                            <input type="hidden" name="fileData4"     id="fileData4" value="" />
+                            <input type="hidden" name="fileName1" id="fileName1" value="@(PIC1)" />
+                            <input type="hidden" name="fileName2" id="fileName2" value="@(PIC2)" />
+                            <input type="hidden" name="fileName3" id="fileName3" value="@(PIC3)" />
+                            <input type="hidden" name="fileName4" id="fileName4" value="@(PIC4)" />
+                            <input type="hidden" name="fileName5" id="fileName4" value="@(PIC5)" />
+                            <input type="hidden" name="fileData1" id="fileData1" value="" />
+                            <input type="hidden" name="fileData2" id="fileData2" value="" />
+                            <input type="hidden" name="fileData3" id="fileData3" value="" />
+                            <input type="hidden" name="fileData4" id="fileData4" value="" />
+                            <input type="hidden" name="fileData5" id="fileData5" value="" />
                             <input type="hidden" name="fileDescript1" id="fileDescript1" value="@(PIC1Descript)" />
                             <input type="hidden" name="fileDescript2" id="fileDescript2" value="@(PIC2Descript)" />
                             <input type="hidden" name="fileDescript3" id="fileDescript3" value="@(PIC3Descript)" />
                             <input type="hidden" name="fileDescript4" id="fileDescript4" value="@(PIC4Descript)" />
+                            <input type="hidden" name="fileDescript5" id="fileDescript5" value="@(PIC5Descript)" />
                             <input type="file" class="jfilestyle" accept=".png,.jpg,.jpeg" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputId="fileImportName" data-inputSize="" data-text="選擇檔案">限1000KB以內
                             <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
                         </div>

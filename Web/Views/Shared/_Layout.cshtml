@@ -100,6 +100,10 @@
             break;
         #endregion
         #region 後臺管理
+        case "APILogQuery":
+            ControllerStrName = "系統管理";
+            ActionStrName = "API Log 查詢";
+            break;
         case "AuthAndPay":
             ControllerStrName = "後臺管理";
             ActionStrName = "強制刷卡取款";
@@ -400,6 +404,7 @@
                                 後臺管理
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="~/Manage/APILogQuery">API Log 查詢</a>
                                 <a class="dropdown-item" href="~/Manage/AuthAndPay">強制刷卡取款</a>
                                 <a class="dropdown-item" href="~/Manage/ArrearQuery">欠費查詢</a>
                                 <a class="dropdown-item" href="~/Manage/HoildayMaintain">平假日維護</a>

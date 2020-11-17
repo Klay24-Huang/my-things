@@ -58,6 +58,7 @@
     <Compile Include="MonthlyRentRepository.cs" />
     <Compile Include="OperatorRepository.cs" />
     <Compile Include="OtherRepository.cs" />
+    <Compile Include="APILogRepository.cs" />
     <Compile Include="ParkingRepository.cs" />
     <Compile Include="ProjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
