@@ -98,7 +98,7 @@ SET @PIC3=ISNULL(@PIC3,'');
 SET @PIC4=ISNULL(@PIC4,'');
 
 BEGIN TRY
-	IF @Token='' OR @IDNO=''  OR @OrderNo=0 OR @Descript='' OR @Mode=-1 OR @Star=-1
+	IF @Token='' OR @IDNO='' OR @OrderNo=0 OR @Mode=-1 OR @Star=-1
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
