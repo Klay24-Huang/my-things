@@ -68,36 +68,45 @@
         }
     })
     $("#PIC1").on("click", function () {
-        console.log("aaa");
+        //console.log("aaa");
         if ($(this).attr("src") != "") {
-            console.log($(this).attr("src"));
+            //console.log($(this).attr("src"));
             $("#tmpENVPIC").attr("src",$(this).attr("src"));
             $("#surrounding_modal").modal();
         }
     
     });
     $("#PIC2").on("click", function () {
-        console.log("aaa");
+        //console.log("aaa");
         if ($(this).attr("src") != "") {
-            console.log($(this).attr("src"));
+            //console.log($(this).attr("src"));
             $("#tmpENVPIC").attr("src", $(this).attr("src"));
             $("#surrounding_modal").modal();
         }
 
     });
     $("#PIC3").on("click", function () {
-        console.log("aaa");
+        //console.log("aaa");
         if ($(this).attr("src") != "") {
-            console.log($(this).attr("src"));
+            //console.log($(this).attr("src"));
             $("#tmpENVPIC").attr("src", $(this).attr("src"));
             $("#surrounding_modal").modal();
         }
 
     });
     $("#PIC4").on("click", function () {
-        console.log("aaa");
+        //console.log("aaa");
         if ($(this).attr("src") != "") {
-            console.log($(this).attr("src"));
+            //console.log($(this).attr("src"));
+            $("#tmpENVPIC").attr("src", $(this).attr("src"));
+            $("#surrounding_modal").modal();
+        }
+
+    });
+    $("#PIC5").on("click", function () {
+        //console.log("aaa");
+        if ($(this).attr("src") != "") {
+            //console.log($(this).attr("src"));
             $("#tmpENVPIC").attr("src", $(this).attr("src"));
             $("#surrounding_modal").modal();
         }
@@ -231,15 +240,18 @@
             obj.fileName1=$("#fileName1").val();
             obj.fileName2=$("#fileName2").val();
             obj.fileName3=$("#fileName3").val();
-            obj.fileName4=$("#fileName4").val();
+            obj.fileName4 = $("#fileName4").val();
+            obj.fileName5 = $("#fileName5").val();
             obj.fileData1=$("#fileData1").val();
             obj.fileData2=$("#fileData2").val();
             obj.fileData3=$("#fileData3").val();
-            obj.fileData4=$("#fileData4").val();
+            obj.fileData4 = $("#fileData4").val();
+            obj.fileData5 = $("#fileData5").val();
             obj.fileDescript1=$("#fileDescript1").val();
             obj.fileDescript2=$("#fileDescript2").val();
             obj.fileDescript3=$("#fileDescript3").val();
             obj.fileDescript4 = $("#fileDescript4").val();
+            obj.fileDescript5 = $("#fileDescript5").val();
             obj.UserID = Account;
             obj.Mode = 1;
             DoAjaxAfterGoBack(obj,"BE_HandleStation","修改據點發生錯誤")
