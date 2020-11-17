@@ -32,14 +32,17 @@ namespace WebAPI.Models.Param.BackEnd.Input
         public string fileName2 { get; set; }
         public string fileName3 { get; set; }
         public string fileName4 { get; set; }
+        public string fileName5 { get; set; }
         public string fileData1 { get; set; }
         public string fileData2 { get; set; }
         public string fileData3 { get; set; }
         public string fileData4 { get; set; }
+        public string fileData5 { get; set; }
         public string fileDescript1 { get; set; }
         public string fileDescript2 { get; set; }
         public string fileDescript3 { get; set; }
         public string fileDescript4 { get; set; }
+        public string fileDescript5 { get; set; }
         public int Mode { get; set; }
     }
 }

@@ -223,11 +223,13 @@
     <Compile Include="SP\Output\Rent\SPOutput_CheckOpenDoorCode.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetCarStatusBeforeOpenDoorFinish.cs" />
+    <Compile Include="SP\Output\Rent\SPOut_InsFeedBack.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
+    <Compile Include="TB\BackEnd\BE_APILog.cs" />
     <Compile Include="TB\BackEnd\BE_AuditCrentials.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetail.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />

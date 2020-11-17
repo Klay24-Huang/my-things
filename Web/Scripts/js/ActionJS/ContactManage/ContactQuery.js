@@ -30,3 +30,6 @@ function ViewDetail(OrderNo, Mode) {
     $("#showDetail").submit()
     console.log(OrderNo);
 }
+function setStation(StationID) {
+    $('#StationID').val(StationID);
+}

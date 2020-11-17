@@ -139,7 +139,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (StationID != "")
+            if (StationID != "" && StationID != "all")
             {
                 term += (term == "") ? "" : " AND ";
                 term += " StationID=@StationID";
@@ -153,13 +153,13 @@ namespace Reposotory.Implement
                 term += (term == "") ? "" : " AND ";
                 term += " CarNo=@CarNo";
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
-                para[nowCount].Value = StationID;
+                para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (string.IsNullOrEmpty(SD) == false)
+            if (string.IsNullOrEmpty(SD) == false && SD!="")
             {
-                if (string.IsNullOrEmpty(ED) == false)
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
                     term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
@@ -181,11 +181,11 @@ namespace Reposotory.Implement
             }
             else
             {
-                if (string.IsNullOrEmpty(ED) == false)
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
                     term2 = " AND SD >= @ED AND  ED <= @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = SD;
+                    para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
@@ -265,13 +265,13 @@ namespace Reposotory.Implement
                 term += (term == "") ? "" : " AND ";
                 term += " CarNo=@CarNo";
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
-                para[nowCount].Value = StationID;
+                para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (string.IsNullOrEmpty(SD) == false)
+            if (string.IsNullOrEmpty(SD) == false && SD!="")
             {
-                if (string.IsNullOrEmpty(ED) == false)
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
                     term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
@@ -293,11 +293,11 @@ namespace Reposotory.Implement
             }
             else
             {
-                if (string.IsNullOrEmpty(ED) == false)
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
                     term2 = " AND SD >= @ED AND  ED <= @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = SD;
+                    para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }

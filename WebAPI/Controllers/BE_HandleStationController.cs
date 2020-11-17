@@ -123,6 +123,15 @@ namespace WebAPI.Controllers
                         apiInput.fileName4 = FileName;
                     }
                 }
+                if (apiInput.fileData5 != "")
+                {
+                    string FileName = string.Format("{0}_5_{1}.png", apiInput.StationID, DateTime.Today.ToString("yyyyMMddHHmmss"));
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.fileData5, FileName, stationContainer);
+                    if (flag)
+                    {
+                        apiInput.fileName5 = FileName;
+                    }
+                }
             }
             #endregion
             #region TB
@@ -147,10 +156,12 @@ namespace WebAPI.Controllers
                     fileDescript2 = apiInput.fileDescript2,
                     fileDescript3 = apiInput.fileDescript3,
                     fileDescript4 = apiInput.fileDescript4,
+                    fileDescript5 = apiInput.fileDescript5,
                     fileName1 = apiInput.fileName1,
                     fileName2 = apiInput.fileName2,
                     fileName3 = apiInput.fileName3,
                     fileName4 = apiInput.fileName4,
+                    fileName5 = apiInput.fileName5,
                     in_description = apiInput.in_description,
                     IsRequired = apiInput.IsRequired,
                     ManagerStationID = apiInput.ManagerStationID,
