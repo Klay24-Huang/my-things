@@ -1,0 +1,77 @@
+﻿body { padding-top: 102px; font-family:'微軟正黑體'; font-size:15px;}
+		.top-bar ul li a{color: #fff;}
+		.top-bar ul li.active{background-color: rgba(0,0,0,0.8);}
+		.top-bar2 {background-color: #999;text-shadow: 0 1px 0 #999; border: 1px solid #999;}
+		.top-bar2 ul li a{box-shadow: 1px 0 0 #777;}
+		.top-bar2 ul li.active { background-color: rgba(0,0,0,0.5);}
+		.custom-header{
+			text-align: center;
+			padding: 3px;
+			background: #555;
+			color: #fff;
+		}
+		.well{
+			padding: 6px;
+		}
+		.well li {
+			font-size: 14px;
+			line-height: 24px;
+		}
+		.accordion .accordion-group:last-child .accordion-toggle{border-radius: 0 0 5px 5px;}
+		.accordion .accordion-group:last-child .accordion-body{border-radius: 0 0 0 0;}
+		.table-bordered.table {font-family:'微軟正黑體';font-size:15px;}
+		.table-bordered.table th {background-color: #aaa; color:#fff}
+		.table-bordered.table .save, .cancel {display:none}
+            
+		@media only screen and (min-width: 1025px)
+		{
+			.table tbody td:first-child {padding-left:20px}
+		}
+		@media only screen and (max-width: 1024px)
+		 {
+			.table-bordered.table {font-family:'微軟正黑體';font-size:14px;}
+			/* Force table to not be like tables anymore */
+			.table-bordered.table table, thead, tbody, th, td, tr {
+				display: block;
+			}
+
+			/* Hide table headers (but not display: none;, for accessibility) */
+			.table-bordered.table thead tr {
+				position: absolute;
+				top: -9999px;
+				left: -9999px;
+			}
+
+
+			.table-bordered.table tr { border: 1px solid #ccc; }
+
+			.table-bordered.table td {
+				/* Behave  like a "row" */
+				border: none;
+				border-bottom: 1px solid #eee;
+				position: relative;
+				padding-left: 40%;
+			}
+
+			.table-bordered.table td:before {
+				/* Now like a table header */
+				position: absolute;
+				/* Top/left values mimic padding */
+				top: 6px;
+				left: 6px;
+				/*width: 25%;*/
+				padding-right: 10px;
+				white-space: nowrap;
+			}
+
+			/*
+			Label the data
+			*/
+			#table1 td:nth-of-type(1):before { content: "門號"; }
+			#table1 td:nth-of-type(2):before { content: "車機機碼"; }
+			#table1 td:nth-of-type(3):before { content: "編輯"; }
+
+			#table2 td:nth-of-type(1):before { content: "車號"; }
+			#table2 td:nth-of-type(2):before { content: "車機機碼"; }
+			#table2 td:nth-of-type(3):before { content: "編輯"; }
+		}

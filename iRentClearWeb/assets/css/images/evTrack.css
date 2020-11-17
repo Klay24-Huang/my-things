@@ -1,0 +1,140 @@
+﻿body { width:100%;background-color:#eee; }
+	.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus{
+		color: #fff;
+		background-color: red;
+	}
+	a{
+		color:red;
+        background-color:#eee;
+	}
+	.table{
+		margin-bottom: 0px;
+	}
+	.table-striped thead th:first-child, .table thead th:first-child, .data-table thead th:first-child{
+		padding-left: 10px;
+	}
+	.well{
+		padding: 10px;
+	}
+	.iframe-container{
+		width: 100%;
+	}
+	.iframe-container > *{
+		display: block;
+		position: absolute;
+		top: 42px;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		height: -webkit-calc(100% - 42px);
+		height: -moz-calc(100% - 42px);
+		height: calc(100% - 42px);
+		width: 100%;
+	}
+	.cabinet-left .cabinet-drawer:nth-child(1) .cabinet-knob,
+	.cabinet-left .cabinet-drawer:nth-child(1) .cabinet-knob2,
+	.cabinet-right .cabinet-drawer:nth-child(1) .cabinet-knob {
+	  top: 42px;
+	}
+	.open{
+		z-index:999;
+		cursor:pointer;
+	}
+	.table-hover tbody tr.info td{
+		cursor:pointer;
+	}
+	.table-hover tbody tr.info:hover>td{
+		background-color:#efefef
+	}
+	.table-hover tbody tr.active td{
+		background-color:#ddd
+	}
+.table-hover thead tr:nth-child(even){background: gray}
+ .table-hover tbody tr:nth-child(even) {background: gray}
+.table-hover tbody tr:nth-child(odd) {background: #FFF}
+    .span4{
+        width:300px;
+        height:30px;
+    }
+@media only screen and (max-width: 1024px) {
+    .table-hover.table {
+        font-family: '微軟正黑體';
+        font-size: 12px;
+    }
+        /* Force table to not be like tables anymore */
+        .table-hover.table table, thead, tbody, th, td, tr {
+            display: block;
+        }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        .table-hover.table thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        .table-hover.table tr {
+            border: 1px solid #ccc;
+        }
+
+        .table-hover.table td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 30%;
+        }
+
+            .table-hover.table td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 6px;
+                left: 6px;
+                width: 25%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+
+            /*
+		Label the data
+		*/
+            .table-hover.table td:nth-of-type(1):before {
+                content: "序號";
+            }
+
+            .table-hover.table td:nth-of-type(2):before {
+                content: "車牌";
+            }
+
+            .table-hover.table td:nth-of-type(3):before {
+                content: "車機狀態";
+            }
+
+            .table-hover.table td:nth-of-type(4):before {
+                content: "營運狀態";
+            }
+
+            .table-hover.table td:nth-of-type(5):before {
+                content: "衛星狀態";
+            }
+
+            .table-hover.table td:nth-of-type(6):before {
+                content: "速度";
+            }
+
+            .table-hover.table td:nth-of-type(7):before {
+                content: "回報位置";
+            }
+
+            .table-hover.table td:nth-of-type(8):before {
+                content: "景點";
+            }
+
+            .table-hover.table td:nth-of-type(9):before {
+                content: "回報時間";
+            }
+}

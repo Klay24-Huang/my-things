@@ -1,0 +1,270 @@
+﻿html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body{
+    margin:0;
+    padding:0;
+}
+.container-fluid-fix {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.map-container {
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    position: relative;
+    height: 0;
+}
+
+    .map-container iframe {
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+    }
+.iframe-rwd {
+    /*  position: relative;
+    padding-bottom: 10px;
+    padding-top: 30px;
+    height: 800px;
+    overflow: hidden;
+    */
+    background: red;
+    display: block;
+    position: absolute;
+    height: auto;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+}
+
+    .iframe-rwd iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .anyCar{
+        position:relative;
+        top:0;
+    }
+.normalCar {
+    position: relative;
+    top: 0;
+}
+.moto {
+    position: relative;
+    top: 0;
+}
+.list{
+    position: relative;
+    top: 0;
+}
+.icon-settings {
+    background-image: url("../img/set.png");
+    background-repeat: no-repeat;
+    display: inline-block;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 5px;
+}
+.location {
+    position: relative;
+    top: 0;
+}
+.fixedBox {
+    z-index: 10;
+    width: 100px;
+    height: 100px;
+    position: fixed;
+    /* left: 0px; */
+    right: -1%;
+    top: 40%;
+    background: transparent;
+}
+    .fixedBox  img{
+        max-width:50px;
+        max-height:50px;
+    }
+    .fixedContent {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+.listFixedBox {
+    z-index: 10;
+    width: 100%;
+    height: 100px;
+    display: inline-flex;
+    text-align: center;
+    background: transparent;
+    /*   position: fixed;
+        margin-bottom:5%;*/
+}
+
+    .listFixedBox div {
+        width: 25%;
+    }
+
+    .listFixedBox button {
+        width: 100%;
+    }
+
+    .listFixedBox img {
+        max-width: 50px;
+        max-height: 50px;
+        min-height: 50px;
+    }
+.labels{
+    top:0px;
+}
+.listIcon{
+
+}
+.listIcon img{
+    max-height:50px;
+    max-width:50px;
+}
+h1{
+    margin-left:15px;
+    font-size:32px;
+    margin-top:15px;
+    margin-bottom:15px;
+    color:#212121;
+}
+#wrapper{
+    position:absolute;
+    z-index:1;
+    top:0;
+    bottom:48px;
+    overflow:auto;
+}
+#wrapper p{
+    margin:15px;
+}
+.tab-bar{
+    width:100%;
+    height:48px;
+    position:absolute;
+    z-index:2;
+    bottom:0;
+    left:0;
+}
+.navbar{
+    padding: 0;
+}
+.navbar ul {
+    padding: 0 0 0 0;
+    width: 100%;
+    margin: 0 0 0 0;
+}
+.navbar li {
+    float: left;
+    width: 25%;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    background-color: #eceff1;
+    position: relative;
+    list-style: none;
+}
+.navbar li:first-child {
+    border-right: none;
+}
+.navbar a {
+    padding: 5px 0;
+    display: block;
+    text-align: center;
+    color: #263238;
+    text-decoration: none;
+}
+.navbar li .category-name {
+    font-size: 12px;
+    padding-top: 5px;
+    display: block;
+}
+.cleanBadge {
+    color: #fafafa;
+    border: 1px solid #fafafa;
+    display: block;
+    font-size: 14px;
+    width: 2em;
+    height: 2em;
+    line-height: 2;
+    -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+    background: #EA7A7A;
+    position: absolute;
+    right: 0;
+    top: -1em;
+    text-align: center;
+}
+/*1440*/
+@media only screen and (max-width:1440px) {
+}
+/*1366*/
+@media only screen and (max-width:1366px) {
+}
+@media only screen and (min-width:960px) and (max-width:1200px) {
+}
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+}
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+
+}
+@media only screen and (max-width: 479px) {
+    .fixedBox {
+        z-index: 10;
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        /* left: 0px; */
+        right: -5%;
+        top: 40%;
+        background: transparent;
+    }
+
+    .fixedBox img {
+            max-width: 50px;
+            max-height: 50px;
+            
+    }
+    .listFixedBox {
+        z-index: 10;
+        width: 100%;
+        height: 100px;
+        display: inline-flex;
+        text-align: center;
+        background: transparent;
+     /*   position: fixed;
+        margin-bottom:5%;*/
+    }
+    .listFixedBox div{
+        width:25%;
+    }
+    .listFixedBox button{
+        width:100%;
+    }
+
+        .listFixedBox img {
+            max-width: 50px;
+            max-height: 50px;
+            min-height: 50px;
+        }
+    .fixedContent {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}

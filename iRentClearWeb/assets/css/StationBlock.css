@@ -1,0 +1,11 @@
+﻿		body { padding-top: 102px; font-family:'微軟正黑體'; font-size:15px;}
+		.table-bordered.table {font-family:'微軟正黑體';font-size:15px;}
+		.table-bordered.table th {background-color: #aaa; color:#fff}
+		.form-horizontal .control-label { padding-top: 0px;}
+		.map { margin: 0; padding: 0; height: 700px; border-radius: 0 0 5px 5px; overflow: hidden; box-sizing: content-box;-webkit-overflow-scrolling: touch; }
+		.top-bar+.well, .accordion .accordion-heading+.accordion-body {overflow: inherit;}
+		.well .form-actions {padding-bottom: 20px;}
+		.btn {line-height: 22px;}
+		.well li {font-size: 1em;}
+		#cancel {display:none;}
+		#save {display:none;}
