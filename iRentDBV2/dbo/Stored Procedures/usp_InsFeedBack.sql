@@ -166,41 +166,32 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
-		--IF @Mode=0
-		--BEGIN
-		--	SELECT  @PIC1=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=1 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-		--	SELECT  @PIC2=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=2 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-		--	SELECT  @PIC3=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=3 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-		--	SELECT  @PIC4=ISNULL(FeedBackFile,'') FROM [TB_tmpFeedBackPIC] WHERE SEQNO=4 AND LEN(FeedBackFile)<=100 AND OrderNo=@OrderNo;
-		--END
-		IF @Mode=0
-		BEGIN
-			SET @hasData=0
-			SELECT @hasData=COUNT(OrderNo) FROM [TB_FeedBack] WHERE IDNO=@IDNO AND OrderNo=@OrderNo AND mode=@Mode;
-			IF @hasData=0
-			BEGIN
-				INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)
-				VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
-			END
-			ELSE
-			BEGIN
-				UPDATE [TB_FeedBack]
-				SET descript=@Descript,
-					PIC1=@PIC1,
-					PIC2=@PIC2,
-					PIC3=@PIC3,
-					PIC4=@PIC4,
-					UPDTime=@NowTime
-				WHERE IDNO=@IDNO
-				AND OrderNo=@OrderNo
-				AND mode=@Mode
-			END
-		END
-		ELSE
+		SET @hasData=0
+		SELECT @hasData=COUNT(OrderNo) FROM [TB_FeedBack] WITH(NOLOCK) WHERE IDNO=@IDNO AND OrderNo=@OrderNo AND mode=@Mode;
+		IF @hasData=0
 		BEGIN
 			INSERT INTO TB_FeedBack(IDNO,OrderNo,mode,FeedBackKind,descript,star,PIC1,PIC2,PIC3,PIC4)
 			VALUES(@IDNO,@OrderNo,@Mode,@FeedBackKind,@Descript,@Star,@PIC1,@PIC2,@PIC3,@PIC4);
 		END
+		ELSE
+		BEGIN
+			UPDATE [TB_FeedBack]
+			SET FeedBackKind=@FeedBackKind, 
+				descript=@Descript,
+				star=@Star,
+				PIC1=@PIC1,
+				PIC2=@PIC2,
+				PIC3=@PIC3,
+				PIC4=@PIC4,
+				UPDTime=@NowTime
+			WHERE IDNO=@IDNO
+			AND OrderNo=@OrderNo
+			AND mode=@Mode
+		END
+
+		SELECT [PIC1],[PIC2],[PIC3],[PIC4] 
+		FROM [dbo].[TB_FeedBack] WITH(NOLOCK) 
+		WHERE IDNO=@IDNO and OrderNo=@OrderNo and mode=@Mode
 	END
 
 	--寫入錯誤訊息

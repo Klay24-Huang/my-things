@@ -3,6 +3,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.SP.Output.Rent;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -322,7 +323,6 @@ namespace WebAPI.Controllers
             {
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_InsFeedBack, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsFeedBack, SPOutput_Base>(connetStr);
-
                 SPInput_InsFeedBack spInput = new SPInput_InsFeedBack()
                 {
                     IDNO = IDNO,
@@ -339,32 +339,37 @@ namespace WebAPI.Controllers
                     PIC4 = PIC4
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.InsFeedBack);
-                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                List<SPOut_InsFeedBack> ListOut = new List<SPOut_InsFeedBack>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-            }
 
-            if (flag)
-            {
-                outputApi.FeedBackImageObj = new List<FeedBackImageData>();
+                if (flag)
+                {
+                    outputApi.FeedBackImageObj = new List<FeedBackImageData>();
 
-                FeedBackImageData obj1 = new FeedBackImageData() { SEQNO = 1, HasUpload = 0 };
-                FeedBackImageData obj2 = new FeedBackImageData() { SEQNO = 2, HasUpload = 0 };
-                FeedBackImageData obj3 = new FeedBackImageData() { SEQNO = 3, HasUpload = 0 };
-                FeedBackImageData obj4 = new FeedBackImageData() { SEQNO = 4, HasUpload = 0 };
+                    FeedBackImageData obj1 = new FeedBackImageData() { SEQNO = 1, HasUpload = 0 };
+                    FeedBackImageData obj2 = new FeedBackImageData() { SEQNO = 2, HasUpload = 0 };
+                    FeedBackImageData obj3 = new FeedBackImageData() { SEQNO = 3, HasUpload = 0 };
+                    FeedBackImageData obj4 = new FeedBackImageData() { SEQNO = 4, HasUpload = 0 };
 
-                if (!string.IsNullOrWhiteSpace(PIC1))
-                    obj1.HasUpload = 1;
-                if (!string.IsNullOrWhiteSpace(PIC2))
-                    obj2.HasUpload = 1;
-                if (!string.IsNullOrWhiteSpace(PIC3))
-                    obj3.HasUpload = 1;
-                if (!string.IsNullOrWhiteSpace(PIC4))
-                    obj4.HasUpload = 1;
+                    if (ListOut != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(ListOut[0].PIC1))
+                            obj1.HasUpload = 1;
+                        if (!string.IsNullOrWhiteSpace(ListOut[0].PIC2))
+                            obj2.HasUpload = 1;
+                        if (!string.IsNullOrWhiteSpace(ListOut[0].PIC3))
+                            obj3.HasUpload = 1;
+                        if (!string.IsNullOrWhiteSpace(ListOut[0].PIC4))
+                            obj4.HasUpload = 1;
+                    }
 
-                outputApi.FeedBackImageObj.Add(obj1);
-                outputApi.FeedBackImageObj.Add(obj2);
-                outputApi.FeedBackImageObj.Add(obj3);
-                outputApi.FeedBackImageObj.Add(obj4);
+                    outputApi.FeedBackImageObj.Add(obj1);
+                    outputApi.FeedBackImageObj.Add(obj2);
+                    outputApi.FeedBackImageObj.Add(obj3);
+                    outputApi.FeedBackImageObj.Add(obj4);
+                }
             }
             #endregion
 
