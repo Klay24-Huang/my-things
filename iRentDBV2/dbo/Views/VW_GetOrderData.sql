@@ -47,6 +47,8 @@ SELECT OrderMain.[order_number]
 	  ,Car.available AS IsReturnCar
 	  ,Car.NowOrderNo	--20201026 ADD BY ADAM
 	  ,CarInfo.IsMotor --20201006 - eason
+	  ,CarInfo.WeekdayPrice --20201006 - eason
+	  ,CarInfo.HoildayPrice	--20201006 - eason  
 	  ,Operator.OperatorID
 	  ,Operator.OperatorName
 	  ,Operator.OperatorICon
