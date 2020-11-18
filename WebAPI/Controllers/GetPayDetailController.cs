@@ -567,14 +567,20 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            int n_price = OrderDataLists[0].PRICE * 10;
+                            int h_price = OrderDataLists[0].PRICE_H * 10;
+                            int inPrice = new BillCommon().CarRentCompute(SD, ED, n_price, h_price, 10, lstHoliday);
+                            CarRentPrice = inPrice;
                             if (hasFine)
                             {
-                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                                //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                                int overPrice = new BillCommon().CarRentCompute(ED, FED, 2200, 2200, 6, lstHoliday);
+                                CarRentPrice += overPrice;
                             }
-                            else
-                            {
-                                CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                            }
+                            //else
+                            //{
+                            //    CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                            //}
                         }
                         if (Discount > 0)
                         {
