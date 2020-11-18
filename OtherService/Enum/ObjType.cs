@@ -41,6 +41,14 @@ namespace OtherService.Enum
             BE_HandleCarMachineData,
             CheckTokenOnlyToken,
             CheckTokenReturnID,
+            /// <summary>
+            /// 寫入刷卡資料
+            /// </summary>
+            InsTrade,
+            /// <summary>
+            /// 更新刷卡結果
+            /// </summary>
+            UpdTrade
         }
         /// <summary>
         /// 取出SPName
@@ -73,7 +81,12 @@ namespace OtherService.Enum
                 case SPType.HandleCarStatusByMotor:
                     SPName = "usp_HandleCarStatusByMotor";
                     break;
-
+                case SPType.InsTrade:
+                    SPName = "usp_InsTrade";
+                    break;
+                case SPType.UpdTrade:
+                    SPName = "usp_UpdTrade";
+                    break;
 
 
             }

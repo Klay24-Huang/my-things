@@ -1,4 +1,5 @@
 ﻿using Domain.SP.Input.OtherService.Common;
+using Domain.SP.Input.OtherService.Taishin;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
@@ -390,7 +391,7 @@ namespace OtherService
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
             string checksum = GenerateSign(ori);
-
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
             WebAPIInput_Auth Input = new WebAPIInput_Auth()
             {
                 ApiVer = wsInput.ApiVer,
@@ -401,20 +402,46 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
                 
             };
-
-
-            output = DoCreditCardAuthSend(Input).Result;
-            if (output.RtnCode == "1000")
+            string[] tmp;
+            Int64 tmpOrder = 0;
+            int creditType = 99;
+            if (Input.RequestParams.MerchantTradeNo.IndexOf('F') > -1)
             {
-                //if (output.Data == null)
-                //{
-                //    flag = false;
-                //}
-            }
-            else
+                tmp = Input.RequestParams.MerchantTradeNo.Split('F');
+                tmpOrder = Convert.ToInt64(tmp[0]);
+                creditType = 0;
+            }else if(Input.RequestParams.MerchantTradeNo.IndexOf('P') > -1)
             {
-                flag = false;
+                tmp = Input.RequestParams.MerchantTradeNo.Split('P');
+                tmpOrder = Convert.ToInt64(tmp[0]);
+                creditType = 1;
             }
+            SPInput_InsTrade SPInput = new SPInput_InsTrade()
+            {
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,
+                OrderNo = tmpOrder,
+                CreditType = creditType,
+                LogID = 0,
+                MerchantTradeNo = Input.RequestParams.MerchantTradeNo
+
+            };
+            new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
+            if (flag)
+            {
+                output = DoCreditCardAuthSend(Input).Result;
+                if (output.RtnCode == "1000")
+                {
+                    //if (output.Data == null)
+                    //{
+                    //    flag = false;
+                    //}
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+          
             return flag;
         }
         /// <summary>
@@ -424,6 +451,7 @@ namespace OtherService
         /// <returns></returns>
         public async Task<WebAPIOutput_Auth> DoCreditCardAuthSend(WebAPIInput_Auth input)
         {
+           
             string Site = ECBaseURL + Auth;
             WebAPIOutput_Auth output = null;
             DateTime MKTime = DateTime.Now;
@@ -482,7 +510,60 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+                #region 更新刷卡結果
+                string[] tmp;
+                Int64 tmpOrder = 0;
+                int creditType = 99;
+                if (input.RequestParams.MerchantTradeNo.IndexOf('F') > -1)
+                {
+                    tmp = input.RequestParams.MerchantTradeNo.Split('F');
+                    tmpOrder = Convert.ToInt64(tmp[0]);
+                    creditType = 0;
+                }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf('P') > -1)
+                {
+                    tmp = input.RequestParams.MerchantTradeNo.Split('P');
+                    tmpOrder = Convert.ToInt64(tmp[0]);
+                    creditType = 1;
+                }
+                SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
+                {
+                    LogID = 0,
+                    OrderNo = tmpOrder,
+                    MerchantTradeNo = input.RequestParams.MerchantTradeNo
+                };
+                if (output.RtnCode == "0")
+                {
+                    UpdInput.IsSuccess = -2;
+                }
+                else
+                {
+                    if (output.RtnCode == "1000")
+                    {
+                        DateTime process;
+                        DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate+ output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
+                        UpdInput.IsSuccess = 1;
+                        UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
+                        UpdInput.process_date = process;
+                        UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.PayAmount) / 100;
+                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
+                        UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
+                        UpdInput.RetCode = output.RtnCode;
+                        UpdInput.RetMsg = output.RtnMessage;
+                        UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
+                    }
+                    else
+                    {
+                        UpdInput.IsSuccess = -2;
+                        UpdInput.RetCode = output.RtnCode;
+                        UpdInput.RetMsg = output.RtnMessage;
+                    }
+                    new WebAPILogCommon().UpdCreditAuthData(UpdInput, ref flag, ref errCode, ref lstError);
+                }
+                #endregion
             }
+
 
 
             return output;

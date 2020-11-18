@@ -39,7 +39,7 @@ namespace OtherService
         protected string ETAG010QueryURL; //ETAG查詢
         protected string EinvBizURL;     //手機條碼檢核
         protected string NPR320QueryURL; //點數兌換
-        protected string NPR350CheckURL;
+        protected string NPR350CheckURL; //合約查詢
         protected string MonthlyRentURL; //月租訂閱
         protected string NPR172QueryURL; //查詢黑名單
         protected string connetStr;
@@ -63,6 +63,7 @@ namespace OtherService
             NPR370CheckURL = (ConfigurationManager.AppSettings.Get("NPR370CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370CheckURL").ToString();
             NPR370SaveURL = (ConfigurationManager.AppSettings.Get("NPR370SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370SaveURL").ToString();
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
+            NPR350CheckURL = (ConfigurationManager.AppSettings.Get("NPR350CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR350CheckURL").ToString();
             ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
             NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
@@ -1182,6 +1183,99 @@ namespace OtherService
         }
         #endregion
         #region 130
+        #endregion
+        #region NPR350查詢合約狀態
+        public bool NPR350Check(WebAPIInput_NPR350Check input, ref WebAPIOutput_NPR350Check output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoNPR350Check(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 點數查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR350Check> DoNPR350Check(WebAPIInput_NPR350Check input)
+        {
+            WebAPIOutput_NPR350Check output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR350CheckURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR350Check>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR350Check()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR350Check",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR350CheckURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+
+            return output;
+        }
         #endregion
         #region 136
         #endregion

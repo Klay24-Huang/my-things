@@ -1,23 +1,19 @@
 ﻿CREATE TABLE [dbo].[TB_Trade]
 (
 	[TradeID]          BIGINT         IDENTITY (1, 1) NOT NULL,
-    [SOrderNum]        VARCHAR (20)   DEFAULT ('') NOT NULL,
+    [OrderNo]        BIGINT   DEFAULT 0 NOT NULL,
     [MerchantTradeNo]  VARCHAR (30)   DEFAULT ('') NOT NULL,
     [CreditType]       TINYINT        DEFAULT ((0)) NOT NULL,
     [MerchantMemberID] VARCHAR (10)   DEFAULT ('') NOT NULL,
-    [RtnCode]          INT            DEFAULT ((-1)) NOT NULL,
-    [RtnMsg]           NVARCHAR (400) DEFAULT (N'') NOT NULL,
-    [TaishinTradeNo]    VARCHAR (20)   DEFAULT ('') NOT NULL,
-    [gwsr]             INT            DEFAULT ((-1)) NOT NULL,
-    [Card6No]          VARCHAR (6)    DEFAULT ('') NOT NULL,
-    [Card4No]          VARCHAR (4)    DEFAULT ('') NOT NULL,
-    [BindingDate]      DATETIME       NULL,
+    [RetCode]          VARCHAR(10)            DEFAULT ((-1)) NOT NULL,
+    [RetMsg]           NVARCHAR (400) DEFAULT (N'') NOT NULL,
+    [TaishinTradeNo]    VARCHAR (50)   DEFAULT ('') NOT NULL,
+    [CardNumber]          VARCHAR (20)    DEFAULT ('') NOT NULL,
     [process_date]     DATETIME       NULL,
-    [auth_code]        VARCHAR (10)   DEFAULT ('') NOT NULL,
     [AUTHAMT]          INT            DEFAULT ((0)) NOT NULL,
     [amount]           INT            NOT NULL,
-    [eci]              INT            DEFAULT ((-1)) NOT NULL,
-    [IsSuccess]        TINYINT        DEFAULT ((0)) NOT NULL,
+    [AuthIdResp]              INT            DEFAULT ((-1)) NOT NULL,
+    [IsSuccess]        INT        DEFAULT ((0)) NOT NULL,
     [MKTime]           DATETIME       DEFAULT (DATEADD(HOUR,8,getdate())) NOT NULL,
     [UPDTime]          DATETIME       NULL, 
     CONSTRAINT [PK_TB_Trade] PRIMARY KEY ([TradeID]),
@@ -25,7 +21,7 @@
 GO
 CREATE NONCLUSTERED INDEX [IX_INSAllPayForLand]
     ON [dbo].TB_Trade([CreditType] ASC, [TaishinTradeNo] ASC)
-    INCLUDE([SOrderNum]);
+    INCLUDE([OrderNo]);
 
 
 GO
@@ -36,12 +32,12 @@ CREATE NONCLUSTERED INDEX [IX_CreditUpdate]
 GO
 CREATE NONCLUSTERED INDEX [IX_SearchForWS134]
     ON [dbo].TB_Trade([CreditType] ASC, [IsSuccess] ASC, [TaishinTradeNo] ASC)
-    INCLUDE([SOrderNum], [AUTHAMT]);
+    INCLUDE([OrderNo], [AUTHAMT]);
 
 
 GO
 CREATE NONCLUSTERED INDEX [IX_TB_TradeForAllPay_201705_Search]
-    ON [dbo].TB_Trade([SOrderNum] ASC, [CreditType] ASC, [MerchantTradeNo] ASC, [MerchantMemberID] ASC, [RtnCode] ASC, [IsSuccess] ASC);
+    ON [dbo].TB_Trade([OrderNo] ASC, [CreditType] ASC, [MerchantTradeNo] ASC, [MerchantMemberID] ASC, [RetCode] ASC, [IsSuccess] ASC);
 
 
 GO
@@ -57,7 +53,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否成�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'3D(VBV) 回傳值，(eci=5,6,2,1 代表該筆交易不可否認)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'eci';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'3D(VBV) 回傳值，(eci=5,6,2,1 代表該筆交易不可否認)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = 'AuthIdResp';
 
 
 GO
@@ -69,7 +65,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權金�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'auth_code';
+
 
 
 GO
@@ -77,19 +73,19 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'處理時�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'綁定時間，綁定及修改綁定才會有值', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'BindingDate';
 
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'卡號未四碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'Card4No';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'卡號前六碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'Card6No';
+
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權交易單號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'gwsr';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'卡號前六碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = 'CardNumber';
+
+
+GO
+
 
 
 GO
@@ -97,11 +93,11 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'台新交�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易訊息', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'RtnMsg';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易訊息', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = 'RetMsg';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易狀態：1:成功，其餘失敗', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'RtnCode';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易狀態：1:成功，其餘失敗', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = 'RetCode';
 
 
 GO
@@ -109,7 +105,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'身份證',
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易類型：0:註冊;1:取車;2:延長用車;3:還車;4:ETag補繳;5:綁定;6:更改CardID', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'CreditType';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'交易類型：0:租金;1:etag補繳;2:補繳;3:直接取款', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'CreditType';
 
 
 GO
@@ -117,5 +113,9 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'送出的�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'原始訂單編號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'SOrderNum';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'原始訂單編號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = 'OrderNo';
 
+
+GO
+
+CREATE INDEX [IX_TB_Trade_SearchForUpd] ON [dbo].[TB_Trade] ([OrderNo], [MerchantTradeNo])

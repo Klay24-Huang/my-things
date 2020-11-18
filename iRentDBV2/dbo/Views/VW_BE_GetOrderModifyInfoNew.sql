@@ -51,7 +51,7 @@ SELECT Main.[order_number] AS OrderNo
   INNER JOIN TB_CarInfo AS CarInfo ON CarInfo.CarNo=Main.CarNo
   LEFT JOIN TB_Project AS Project ON Project.PROJID=Main.ProjID 
   LEFT JOIN TB_PriceByMinutes AS PriceMinutes ON PriceMinutes.ProjID=Main.ProjID AND PriceMinutes.CARTYPE=CarInfo.CarType
-  LEFT JOIN TB_Trade AS Trade ON Trade.SOrderNum=Main.order_number AND Trade.IsSuccess=1
+  LEFT JOIN TB_Trade AS Trade ON Trade.OrderNo=Main.order_number AND Trade.IsSuccess=1
   LEFT JOIN TB_OrderOtherFee AS OtherFee ON OtherFee.OrderNo=Main.order_number
   LEFT JOIN TB_MemberData AS UserInfo ON UserInfo.MEMIDNO=Main.IDNO
 

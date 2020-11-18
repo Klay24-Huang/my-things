@@ -153,6 +153,8 @@
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNotificationList.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
     <Compile Include="WebAPI\Input\Mochi\WebAPIInput_MochiLogin.cs" />
     <Compile Include="WebAPI\Input\Param\BLECode.cs" />
     <Compile Include="WebAPI\Input\Param\ClientCardNoObj.cs" />
@@ -387,6 +390,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR271QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR320Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR330QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR350Check.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Check.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370CheckData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Save.cs" />

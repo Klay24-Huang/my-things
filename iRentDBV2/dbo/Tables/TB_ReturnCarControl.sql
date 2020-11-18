@@ -35,15 +35,18 @@
     [INVTITLE]   NVARCHAR (50) DEFAULT ('') NOT NULL,
     [INVADDR]    NVARCHAR (80) DEFAULT ('') NOT NULL,
     [GIFT]       INT           DEFAULT ((0)) NOT NULL,
+    [GIFT_MOTO]  INT           DEFAULT (0) NOT NULL,
     [CARDNO]     VARCHAR (20)  DEFAULT ('') NOT NULL,
+    [PAYAMT]     INT           DEFAULT (0) NOT NULL,
     [AUTHCODE]   VARCHAR (30)  DEFAULT ('') NOT NULL,
-    [MKTime]     DATETIME       DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
-    [UPDTime]    DATETIME      NULL,
     [isRetry]    TINYINT       DEFAULT ((0)) NOT NULL,
     [RetryTimes] TINYINT       DEFAULT ((0)) NOT NULL,
     [CARRIERID]  VARCHAR (100) NULL,
     [NPOBAN]     VARCHAR (100) NULL,
-    [NOCAMT] INT NOT NULL DEFAULT 0, 
+    [NOCAMT]     INT NOT NULL DEFAULT 0, 
+    [PARKINGAMT2] INT          DEFAULT (0) NOT NULL,
+    [MKTime]     DATETIME       DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
+    [UPDTime]    DATETIME      NULL,
     CONSTRAINT [PK_TB_ReturnCarControl] PRIMARY KEY CLUSTERED ([IRENTORDNO] ASC)
 );
 
@@ -61,3 +64,12 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level1name = N'TB_ReturnCarControl',
     @level2type = NULL,
     @level2name = NULL
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'代收停車費',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_ReturnCarControl',
+    @level2type = N'COLUMN',
+    @level2name = N'PARKINGAMT2'

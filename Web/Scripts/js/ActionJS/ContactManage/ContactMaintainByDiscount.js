@@ -91,9 +91,64 @@ $(document).ready(function () {
         }
     });
     $("#btnSave").on("click", function () {
+        var flag = true;
+        var errMsg = "";
+
         ShowLoading("資料儲存中…");
         if (hasReCal) {
+            var UseStatus = $("#UseStatus").val();
+            var Remark = $("#remark_input").val();
 
+            if (UseStatus == "-1") {
+                flag = false;
+                errMsg = "請選擇修改原因";
+            } else {
+                if (UseStatus == "3" && Remark == "") {
+                    flag = false;
+                    errMsg = "請輸入備註";
+                }
+            }
+
+            if (flag) {
+                var MotorPoint = $("#gift_point_moto_input").val();
+                var CarPoint = $("#gift_point_input").val();
+                if (MotorPoint == "") {
+                    $("#gift_point_moto_input").val("0");
+                    MotorPoint = 0;
+                }
+                if (CarPoint == "") {
+                    $("#gift_point_input").val("0");
+                    CarPoint = 0;
+                }
+                var diffPrice = $("#final_amt").val();
+                var finalPrice = $("#final_price_input").val();
+                var Account = $("#Account").val();
+                var obj = new Object();
+                obj.UserID = Account;
+                obj.OrderNo = "H" + pad(OrderObj.OrderNo, 7);
+                obj.ProjType = OrderObj.PROJTYPE
+                obj.DiffPrice = diffPrice;
+                obj.FinalPrice = finalPrice
+                if (OrderObj.PROJTYPE == 4) {
+                    obj.CarPoint = CarPoint;
+                    obj.MotorPoint = MotorPoint
+
+                } else {
+                    obj.CarPoint = $("#gift_point_select").val();
+                    obj.MotorPoint = 0;
+                }
+                obj.UseStatus = UseStatus;
+                if (CheckIsUndefined(Remark)) {
+                    obj.Remark = Remark
+                }
+
+                DoAjaxAfterReload(obj, "BE_HandleOrderModifyByDiscount", "修改資料發生錯誤");
+            } else {
+                disabledLoadingAndShowAlert(errMsg);
+            }
+           
+
+         
         } else {
             disabledLoadingAndShowAlert("請先修改後按下重新計算");
         }

@@ -1,4 +1,5 @@
 ﻿using Domain.SP.Input.OtherService.Common;
+using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Output;
 using OtherService.Enum;
 using System;
@@ -38,6 +39,41 @@ namespace OtherService.Common
                 }
             }
 
+        }
+        /// <summary>
+        /// 寫入刷卡
+        /// </summary>
+        public void InsCreditAuthData(SPInput_InsTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTrade, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+        }
+        /// <summary>
+        /// 更新刷卡結果
+        /// </summary>
+        /// <param name="flag"></param>
+        public void UpdCreditAuthData(SPInput_UpdTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_UpdTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_UpdTrade, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.UpdTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
         }
     }
 }
