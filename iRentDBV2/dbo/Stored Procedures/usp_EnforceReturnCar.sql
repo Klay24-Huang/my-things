@@ -96,7 +96,7 @@ BEGIN TRY
 
 		UPDATE TB_OrderDetail SET final_stop_time=@NowTime WHERE order_number=@order_number;
 
-		UPDATE TB_Car SET NowOrderNo=0,LastOrderNo=@order_number,available=1 WHERE CarNo=@CarNo;
+		UPDATE TB_Car SET NowOrderNo=0,LastOrderNo=@order_number,available=1,UPDTime=@NowTime WHERE CarNo=@CarNo;
 
 		UPDATE TB_BookingStatusOfUser 
 		SET MotorRentBookingNowCount=CASE WHEN @ProjType=4 THEN 0 ELSE MotorRentBookingNowCount END
