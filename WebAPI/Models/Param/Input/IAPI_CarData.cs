@@ -45,5 +45,6 @@ namespace WebAPI.Models.Param.Input
         /// 讀卡
         /// </summary>
         public string extDeviceData7 { get; set; }
+        public string deviceName { get; set; }
     }
 }

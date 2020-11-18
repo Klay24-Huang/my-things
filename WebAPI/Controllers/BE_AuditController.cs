@@ -211,9 +211,20 @@ namespace WebAPI.Controllers
                 string Message = "";
                 if (apiInput.AuditStatus == 1)
                 {
-                    Message = string.Format("iRent會員通知：" +
-                        "已收到您上傳的資料，" +
-                        "並成功變更「iRent共享機車會員」身分(此變更自{0}起)", DateTime.Today.ToString("YYYY/MM/DD"));
+                    if (apiInput.IsNew == 1)
+                    {
+                        Message = "iRent審核通過：" +
+                            "您已成功成為iRent會員，" +
+                            "快前往體驗最方便的共享汽機車服務吧！" +
+                            "新手上路前，完成小學堂教學及測驗即可拿免費時數：https://bit.ly/3pAeK9R";
+                    }
+                    else
+                    {
+                        Message = string.Format("iRent會員通知：" +
+                            "已收到您上傳的資料，" +
+                            "並成功變更「iRent共享汽機車會員」身分(此變更自{0}起)。" +
+                            "租車前完成小學堂教學及測驗即可拿免費時數：https://bit.ly/3pAeK9R", DateTime.Today.ToString("yyyy/MM/dd"));
+                    }
                 }
                 else
                 {

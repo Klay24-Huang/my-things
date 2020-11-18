@@ -198,7 +198,8 @@ namespace WebAPI.Controllers
                         OrderNo = tmpOrder,
                         Token = Access_Token,
                         NowMileage = Convert.ToSingle(mil),
-                        StopTime = ""
+                        StopTime = "",
+                        Insurance = 0
                     };
                     SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
                     SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);

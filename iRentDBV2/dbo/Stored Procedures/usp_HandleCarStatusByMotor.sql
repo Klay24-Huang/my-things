@@ -98,6 +98,7 @@ CREATE PROCEDURE [dbo].[usp_HandleCarStatusByMotor]
     @extDeviceStatus1   INT, --
     @extDeviceData5 VARCHAR(128),--
     @extDeviceData6 VARCHAR(256),--
+	@deviceName	VARCHAR(50),
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -159,7 +160,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 										,[deviceALT],[deviceGx],[deviceGy],[deviceGz],[deviceBLE_Login]
 										,[deviceBLE_BroadCast],[devicePwr_Mode],[deviceReversing],[devicePut_Down],[devicePwr_Relay]
 										,[deviceStart_OK],[deviceHard_ACC],[deviceEMG_Break],[deviceSharp_Turn],[deviceBat_Cover]
-										,[deviceLowVoltage],[extDeviceStatus1],[extDeviceData5],[extDeviceData6]
+										,[deviceLowVoltage],[extDeviceStatus1],[extDeviceData5],[extDeviceData6],[deviceName]
 								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus
 								       ,@deviceGPSTime,@deviceGPRSStatus,@deviceSpeed,@deviceVolt,@deviceLatitude
 									   ,@deviceLongitude,@deviceMillage,@deviceCourse,@deviceRPM,@device2TBA
@@ -170,7 +171,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 									   ,@deviceALT,@deviceGx,@deviceGy,@deviceGz,@deviceBLE_Login
 									   ,@deviceBLE_BroadCast,@devicePwr_Mode,@deviceReversing,@devicePut_Down,@devicePwr_Relay
 									   ,@deviceStart_OK,@deviceHard_ACC,@deviceEMG_Break,@deviceSharp_Turn,@deviceBat_Cover
-									   ,@deviceLowVoltage,@extDeviceStatus1,@extDeviceData5,@extDeviceData6
+									   ,@deviceLowVoltage,@extDeviceStatus1,@extDeviceData5,@extDeviceData6,@deviceName
 								)
 			END
 			ELSE
@@ -226,8 +227,9 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						 [deviceSharp_Turn]=@deviceSharp_Turn,
 						 [deviceBat_Cover]=@deviceBat_Cover,
 						 [deviceLowVoltage]=@deviceLowVoltage,
-						 [extDeviceStatus1]=@extDeviceStatus1
+						 [extDeviceStatus1]=@extDeviceStatus1,
 						--,[extDeviceData5]=@extDeviceData5,[extDeviceData6]=@extDeviceData6	--ReportNow不會回傳[extDeviceData5],[extDeviceData6]，所以不作更新
+						 [deviceName]=@deviceName
 						,UPDTime=@NowTime
 					WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 				END
@@ -242,7 +244,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 										,[deviceALT],[deviceGx],[deviceGy],[deviceGz],[deviceBLE_Login]
 										,[deviceBLE_BroadCast],[devicePwr_Mode],[deviceReversing],[devicePut_Down],[devicePwr_Relay]
 										,[deviceStart_OK],[deviceHard_ACC],[deviceEMG_Break],[deviceSharp_Turn],[deviceBat_Cover]
-										,[deviceLowVoltage],[extDeviceStatus1],[extDeviceData5],[extDeviceData6]
+										,[deviceLowVoltage],[extDeviceStatus1],[extDeviceData5],[extDeviceData6],[deviceName]
 								)VALUES(@CarNo,@deviceCID,@deviceType,@deviceACCStatus,@deviceGPSStatus
 								       ,@deviceGPSTime,@deviceGPRSStatus,@deviceSpeed,@deviceVolt,@deviceLatitude
 									   ,@deviceLongitude,@deviceMillage,@deviceCourse,@deviceRPM,@device2TBA
@@ -253,7 +255,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 									   ,@deviceALT,@deviceGx,@deviceGy,@deviceGz,@deviceBLE_Login
 									   ,@deviceBLE_BroadCast,@devicePwr_Mode,@deviceReversing,@devicePut_Down,@devicePwr_Relay
 									   ,@deviceStart_OK,@deviceHard_ACC,@deviceEMG_Break,@deviceSharp_Turn,@deviceBat_Cover
-									   ,@deviceLowVoltage,@extDeviceStatus1,@extDeviceData5,@extDeviceData6
+									   ,@deviceLowVoltage,@extDeviceStatus1,@extDeviceData5,@extDeviceData6,@deviceName
 								)
 		END
 		 

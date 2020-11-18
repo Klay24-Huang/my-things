@@ -300,7 +300,7 @@ namespace OtherService
             WebAPIOutput_NPR271Query output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR270QueryURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR271QueryURL);
             request.Method = "POST";
             request.ContentType = "application/json";
             try

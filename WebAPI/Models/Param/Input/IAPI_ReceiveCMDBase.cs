@@ -24,7 +24,5 @@ namespace WebAPI.Models.Param.Input
         /// 方法
         /// </summary>
         public string method { get; set; }
-
-        public string id { get; set; }
     }
 }

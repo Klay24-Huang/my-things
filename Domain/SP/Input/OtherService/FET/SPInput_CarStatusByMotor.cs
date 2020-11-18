@@ -66,6 +66,7 @@ namespace Domain.SP.Input.OtherService.FET
         public string extDeviceData2 { get; set; }
         public string extDeviceData5 { set; get; }
         public string extDeviceData6 { set; get; }
+        public string deviceName { get; set; }
         public Int64 LogID { set; get; }
     }
 }

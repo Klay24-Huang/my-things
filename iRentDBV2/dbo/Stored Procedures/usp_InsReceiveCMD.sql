@@ -99,16 +99,15 @@ SET @CmdReply	 =ISNULL(@CmdReply	,'');
 			--method=[SetMotorcycleRent]，需更新[TB_CarStatus]的[extDeviceData5],[extDeviceData6]
 			IF @method = 'SetMotorcycleRent'
 			BEGIN
-				BEGIN TRY
-				SELECT @extDeviceData5 = extDeviceData5, @extDeviceData6 = extDeviceData6
-				FROM OPENJSON(@receiveRawData)
-				  WITH (
-					extDeviceData5 VARCHAR(128) '$.extDeviceData5',
-					extDeviceData6 VARCHAR(256) '$.extDeviceData6'
-				);
-				END TRY
-				BEGIN CATCH
-				END CATCH
+				IF ISJSON(@receiveRawData) > 0
+				BEGIN
+					SELECT @extDeviceData5 = extDeviceData5, @extDeviceData6 = extDeviceData6
+					FROM OPENJSON(@receiveRawData)
+					  WITH (
+						extDeviceData5 VARCHAR(128) '$.extDeviceData5',
+						extDeviceData6 VARCHAR(256) '$.extDeviceData6'
+					);
+				END
 				UPDATE TB_CarStatus
 				SET extDeviceData5 = @extDeviceData5, extDeviceData6 = @extDeviceData6
 				WHERE CID = @CID

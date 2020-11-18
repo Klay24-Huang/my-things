@@ -17,10 +17,12 @@ namespace CreditCardWeb.Controllers
         /// <summary>
         /// 綁定卡片成功
         /// </summary>
+        [HttpGet]
         public ActionResult BindSuccess()
         {
             return View();
         }
+        [HttpPost]
         public ActionResult BindSuccess(FormCollection collection)
         {
             string LogPath = "~/Content/CreditCardBindLog";
