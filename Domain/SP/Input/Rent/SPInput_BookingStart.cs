@@ -32,5 +32,10 @@ namespace Domain.SP.Input.Rent
         /// 執行的api log
         /// </summary>
         public Int64 LogID { set; get; }
+
+        /// <summary>
+        /// 加購安心服務(0:否;1:有)
+        /// </summary>
+        public int Insurance { get; set; }
     }
 }

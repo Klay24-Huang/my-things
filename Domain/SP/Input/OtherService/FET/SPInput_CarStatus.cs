@@ -43,6 +43,7 @@ namespace Domain.SP.Input.OtherService.FET
         /// 讀卡
         /// </summary>
         public string extDeviceData7 { get; set; }
+        public string deviceName { get; set; }
         public Int64 LogID { set; get; }
     }
 }

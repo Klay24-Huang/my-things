@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
                                 Seat = OrderDataLists[i].Seat,
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
-                                InsurancePerHour = OrderDataLists[i].Insurance,
+                                InsurancePerHour = OrderDataLists[i].InsurancePerHours,
                                 Operator = OrderDataLists[i].OperatorICon,
                                 OperatorScore = OrderDataLists[i].Score,
                                 OrderNo = string.Format("H{0}", OrderDataLists[i].order_number.ToString().PadLeft(7, '0')),
@@ -214,7 +214,7 @@ namespace WebAPI.Controllers
                                 obj.MotorBasePriceObj = new Domain.TB.MotorBillBase()
                                 {
                                     BaseMinutes = OrderDataLists[i].BaseMinutes,
-                                    BasePrice = OrderDataLists[i].BaseMinutes,
+                                    BasePrice = OrderDataLists[i].BaseMinutesPrice,
                                     MaxPrice = OrderDataLists[i].MaxPrice,
                                     PerMinutesPrice = OrderDataLists[i].MinuteOfPrice
                                 };
@@ -235,7 +235,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -247,7 +247,7 @@ namespace WebAPI.Controllers
         }
 
         #region 取得訂單狀態
-        private int GetOrderStatus(int car_mgt_status,int booking_status,int already_lend_car,int isReturn,DateTime? stop_time)
+        private int GetOrderStatus(int car_mgt_status, int booking_status, int already_lend_car, int isReturn, DateTime? stop_time)
         {
             int OrderStatus = 0;
             if (car_mgt_status < 4)
@@ -255,12 +255,13 @@ namespace WebAPI.Controllers
                 if (already_lend_car == 0 && isReturn < 1)
                 {
                     OrderStatus = -1;
-                }else if (isReturn == 1)
+                }
+                else if (isReturn == 1)
                 {
                     OrderStatus = 0;
                 }
             }
-            else if(car_mgt_status>=4 && car_mgt_status<11)
+            else if (car_mgt_status >= 4 && car_mgt_status < 11)
             {
                 OrderStatus = 1;
                 if (booking_status > 0)
@@ -289,9 +290,8 @@ namespace WebAPI.Controllers
                 {
                     OrderStatus = 5;
                 }
-           
             }
-        
+
             return OrderStatus;
         }
         #endregion

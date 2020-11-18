@@ -151,7 +151,7 @@ namespace WebAPI.Controllers
                                 BonusHistoryData objPoint = new BonusHistoryData()
                                 {
                                     GIFTPOINT = wsOutput.Data[i].GIFTPOINT.ToString(),
-                                    USEDATE = wsOutput.Data[i].PROCDT,
+                                    USEDATE = Convert.ToDateTime(wsOutput.Data[i].PROCDT).ToString("yyyy-MM-dd HH:mm:ss"),
                                     MEMO = wsOutput.Data[i].MEMO
 
                                 };

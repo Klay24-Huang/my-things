@@ -69,6 +69,7 @@
 	[extDeviceData5]   VARCHAR(128) NULL,
 	[extDeviceData6]   VARCHAR(256) NULL,
 	[extDeviceData7]   VARCHAR(512) NULL, 
+	[deviceName]	   VARCHAR(50) NULL,
 		[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
     CONSTRAINT [PK_TB_CarRawData] PRIMARY KEY ([RawDataID]),
 )
