@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
                                 Seat = OrderDataLists[i].Seat,
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
-                                InsurancePerHour = OrderDataLists[i].Insurance,
+                                InsurancePerHour = OrderDataLists[i].InsurancePerHours,
                                 Operator = OrderDataLists[i].OperatorICon,
                                 OperatorScore = OrderDataLists[i].Score,
                                 OrderNo = string.Format("H{0}", OrderDataLists[i].order_number.ToString().PadLeft(7, '0')),
