@@ -41,6 +41,7 @@
     [AUTHCODE]   VARCHAR (30)  DEFAULT ('') NOT NULL,
     [isRetry]    TINYINT       DEFAULT ((0)) NOT NULL,
     [RetryTimes] TINYINT       DEFAULT ((0)) NOT NULL,
+    [eTag]       INT           DEFAULT (0) NOT NULL,
     [CARRIERID]  VARCHAR (100) NULL,
     [NPOBAN]     VARCHAR (100) NULL,
     [NOCAMT]     INT NOT NULL DEFAULT 0, 

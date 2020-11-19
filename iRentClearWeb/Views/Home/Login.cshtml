@@ -1,0 +1,117 @@
+﻿@model iRentClearWeb.Models.UserAccount
+
+@{
+    Layout = null;
+    Dictionary<string, object> style = new Dictionary<string, object>();
+    style.Add("class", "form-signin form-horizontal");
+    style.Add("autocomplete", false);
+
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <link rel="shortcut icon" href="assets/img/favicon.ico" />
+    <meta charset="utf-8">
+    <title>iRent整備人員系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Styles -->
+    <link href='~/assets/css/chosen.css' rel='stylesheet' tyle="text/css">
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/theme/avocado.css" rel="stylesheet" type="text/css" id="theme-style">
+    <link href="~/assets/css/prism.css" rel="stylesheet/less" type="text/css">
+    <link href='~/assets/css/fullcalendar.css' rel='stylesheet' tyle="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,600,300' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body {
+            padding-top: 160px;
+            background: url(../assets/img/index.jpg) center center fixed no-repeat;
+        }
+
+        .top-bar h3 {
+            font-family: "微軟正黑體";
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 30px;
+            padding-bottom: 30px;
+            text-align: center;
+            font-family: "微軟正黑體";
+        }
+    </style>
+    <link href="~/assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- JavaScript/jQuery, Pre-DOM -->
+    <script src="~/assets/js/jquery/1.9.1/jquery.min.js"></script>
+    <script src="~/assets/js/charts/excanvas.min.js"></script>
+    <script src="~/assets/js/charts/jquery.flot.js"></script>
+    <script src="~/assets/js/jquery.jpanelmenu.min.js"></script>
+    <script src="~/assets/js/jquery.cookie.js"></script>
+    <script src="~/assets/js/avocado-custom-predom.js"></script>
+
+    <!-- HTML5, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+    <div class="container">
+        @using (Html.BeginForm("Login", "Home", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-signin form-horizontal" }))
+        {
+            <div class="top-bar">
+                <h3>iRent整備人員登入</h3>
+            </div>
+            <div class="well no-padding">
+
+                <div class="control-group">
+                    <label class="control-label" for="inputName"><i class="icon-user"></i></label>
+                    <div class="controls">
+                        @*<input type="text" class="input-block-level" id="inputName" placeholder="帳號">*@
+                        @Html.TextBoxFor(m => m.Account, new { @class = "input-block-level", placeholder = "帳號" })@Html.ValidationMessageFor(m => m.Account)
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputUsername"><i class="icon-key"></i></label>
+                    <div class="controls">
+                        @*<input type="password" class="input-block-level" id="inputUsername" placeholder="密碼">*@
+                        @Html.PasswordFor(m => m.Password, new { @class = "input-block-level", placeholder = "密碼" }) @Html.ValidationMessageFor(m => m.Password)
+                    </div>
+                </div>
+
+                <div class="padding" style="text-align:center">
+                    <button class="btn btn-primary" type="submit">登入</button>
+                </div>
+            </div>
+
+
+        }
+    </div>
+</body>
+<!-- Javascript
+    ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src='~/assets/js/jquery.hotkeys.js'></script>
+<script src='~/assets/js/calendar/fullcalendar.min.js'></script>
+<script src="~/assets/js/jquery-ui-1.10.2.custom.min.js"></script>
+<script src="~/assets/js/jquery.pajinate.js"></script>
+<script src="~/assets/js/jquery.prism.min.js"></script>
+<script src="~/assets/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/charts/jquery.flot.time.js"></script>
+<script src="~/assets/js/charts/jquery.flot.pie.js"></script>
+<script src="~/assets/js/charts/jquery.flot.resize.js"></script>
+<script src="~/assets/js/bootstrap/bootstrap.min.js"></script>
+<script src="~/assets/js/bootstrap/bootstrap-wysiwyg.js"></script>
+<script src="~/assets/js/bootstrap/bootstrap-typeahead.js"></script>
+<script src="~/assets/js/jquery.easing.min.js"></script>
+<script src="~/assets/js/jquery.chosen.min.js"></script>
+<script src="~/assets/js/avocado-custom.js"></script>
+
+
+<!-- Mirrored from lycaste.co/projects/avocadopanel/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 27 Jul 2016 07:40:50 GMT -->
+</html>

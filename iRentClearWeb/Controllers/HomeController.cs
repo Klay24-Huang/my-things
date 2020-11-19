@@ -188,6 +188,7 @@ namespace iRentClearWeb.Controllers
         /// <param name="ReturnUrl">使用者原本Request的Url</param>
         /// <returns></returns>
         [AllowAnonymous]
+
         public ActionResult Login(string ReturnUrl)
         {
             //ReturnUrl字串是使用者在未登入情況下要求的的Url

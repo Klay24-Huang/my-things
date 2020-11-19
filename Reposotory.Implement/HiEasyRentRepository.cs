@@ -100,5 +100,47 @@ namespace Reposotory.Implement
 
             return obj;
         }
+        public BE_ReturnControl GetReturnControl(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ReturnControl> lstOrder = null;
+            BE_ReturnControl obj = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT * FROM VW_BE_GetReturnControl ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " IRENTORDNO=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY IRENTORDNO ASC;";
+
+            }
+
+            lstOrder = GetObjList<BE_ReturnControl>(ref flag, ref lstError, SQL, para, term);
+            if (lstOrder != null)
+            {
+                if (lstOrder.Count > 0)
+                {
+                    obj = lstOrder[0];
+                }
+            }
+
+            return obj;
+        }
     }
 }

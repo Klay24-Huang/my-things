@@ -381,6 +381,9 @@
     <Build Include="dbo\Stored Procedures\usp_BE_GetOrderInfoBeforeModify.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_LandControlSuccess.sql" />
     <Build Include="dbo\Views\VW_BE_GetOrderModifyInfoNew.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsOrderModifyLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsTrade.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UPDTrade.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

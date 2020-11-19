@@ -1,0 +1,225 @@
+﻿@*@{
+        string Account = "";
+        string UserName = "";
+        if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+        {
+            Response.Redirect("~/Home/Login");
+        }
+        else
+        {
+            Account = Session["Account"].ToString();
+            UserName = Session["UserName"].ToString();
+        }
+    }*@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iRent整備人員</title>
+
+    <!--Template based on URL below-->
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/starter-template/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="~/assets/css/font.css" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/pages/floating-label.css" />
+    <link href="~/assets/css/all.css" rel="stylesheet">
+    <link href="~/assets/css/sweetalert.css" rel="stylesheet">
+    @*<link href="~/assets/plugins/footable/css/footable.core.css" rel="stylesheet" />*@
+    @*<link href="~/assets/plugins/footable-bootstrap.latest/css/footable.bootstrap.css" rel="stylesheet">*@
+    <link href="~/assets/plugins/footable-components.latest/css/footable.core.bootstrap.css" rel="stylesheet">
+    <link href="~/assets/plugins/footable-components.latest/css/footable.paging.css" rel="stylesheet">
+    <link href="~/assets/plugins/footable-components.latest/css/footable.sorting.css" rel="stylesheet">
+    <link href="~/assets/plugins/footable-components.latest/css/footable.filtering.css" rel="stylesheet">
+
+    <link href="~/assets/css/footable-page.css" rel="stylesheet">
+    <!--  <link href="~/assets/plugins/datatable-master/css/datatable-bootstrap.css" media="screen" />-->
+    <link href="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.css" rel="stylesheet">
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    @{
+        string actionName = ViewContext.RouteData.Values["action"].ToString();
+    }
+
+    <link rel="stylesheet" href="~/assets/css/index.css" />
+
+    @if (actionName == "Booking")
+    {
+        <link href="~/assets/css/style.css" rel="stylesheet">
+        <link href="~/assets/css/colors/default.css" id="theme" rel="stylesheet">
+        <link href="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+        <link href="~/assets/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+        <link href="~/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+        <link href="~/assets/plugins/pages/floating-label.css" rel="stylesheet">
+        <link href="~/assets/css/booking.css" rel="stylesheet">
+    }
+    <link rel="icon" href="~/assets/img/favicon.ico" type="image/x-icon" />
+
+    <link rel="shortcut icon" href="~/assets/img/favicon.ico" type="image/x-icon" />
+    <style>
+        li.footable-page {
+            display: none;
+        }
+
+            li.footable-page.visible {
+                display: inline;
+            }
+    </style>
+
+</head>
+<body>
+
+    <!--  <div>
+          <nav class="nav  navbar-default bg-dark navbar-fixed-top" id="navbar-spy">
+              <div class="container-fluid">
+                  <div class="navbar-header">
+                      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                      </button>
+                      <a class="navbar-brand" href="#">iRent維護人員</a>
+                  </div>
+                  <div class="collapse navbar-collapse" id="myNavbar">
+                      <ul class="nav navbar-nav">
+                          <li><a href="#home">Home</a></li>
+                          <li><a href="#menu1">Page 1</a></li>
+                          <li><a href="#menu2">Page 2</a></li>
+                      </ul>
+                  </div>
+              </div>
+          </nav>
+
+      </div>-->
+    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <a class="navbar-brand" href="#">iRent Clear Car</a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+         </button>
+
+         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+             <ul class="navbar-nav mr-auto">
+                 <li class="nav-item active">
+                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link" href="#">Link</a>
+                 </li>
+                 <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                         Dropdown
+                     </a>
+                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                         <a class="dropdown-item" href="#">Action</a>
+                         <a class="dropdown-item" href="#">Another action</a>
+                         <div class="dropdown-divider"></div>
+                         <a class="dropdown-item" href="#">Something else here</a>
+                     </div>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link disabled" href="#">Disabled</a>
+                 </li>
+             </ul>
+             <form class="form-inline my-2 my-lg-0">
+                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+             </form>
+         </div>
+     </nav>-->
+    <!--Main Navigation-->
+    <div class="container-fluid-fix body-content">
+        @RenderBody()
+
+    </div>
+    <nav class="navbar fixed-bottom navbar-light bg-light">
+        <ul>
+            @if (actionName == "Index")
+            {
+                <li><a href="~/Home/Map"><i class="fas fa-map-marked-alt"></i><span class="category-name">地圖</span></a></li>
+            }
+            else
+            {
+                <li><a href="~/Home/Index"><i class="fas fa-home"></i><span class="category-name">車輛列表</span></a></li>
+            }
+
+            <li><a href="~/Home/BookingList"><i class="fas fa-list"></i><span class="category-name">預約列表</span></a></li>
+            <li><a href="~/Home/SettingStation"><i class="fa fa-gear"></i><span class="category-name">設定&報表下載</span></a></li>
+            <li><a href="~/Home/Logout"><i class="fa fa-key fa-rotate-270"></i><span class="category-name">登出</span></a></li>
+        </ul>
+    </nav>
+
+
+    @*@Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")*@
+
+    <script src="~/assets/js/jquery/1.9.1/jquery-1.9.1.js"></script>
+
+    @if (actionName == "Map")
+    {
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBio-E7uXMlPAbXaXXvJ5_TC8ZFMVj7PM">
+        </script>
+        <script src="~/assets/js/clearMap.js"></script>
+        //&callback=initMap
+
+    }
+    @if (actionName == "Index")
+    {
+        <script src="~/assets/plugins/moment/moment.js"></script>
+        <script src="~/assets/plugins/footable-components.latest/js/footable.core.js"></script>
+        <script src="~/assets/plugins/footable-components.latest/js/footable.paging.js"></script>
+        <script src="~/assets/plugins/footable-components.latest/js/footable.sorting.js"></script>
+        <script src="~/assets/plugins/footable-components.latest/js/footable.filtering.js"></script>
+
+        @*<script src="~/assets/plugins/footable/js/footable.all.min.js"></script>*@
+        @*<script src="~/assets/plugins/footable-bootstrap.latest/js/footable.js"></script>*@
+        <!--  <script src="~/assets/plugins/datatable-master/js/datatable.jquery.js"></script>-->
+        <script src="~/assets/js/index.js"></script>
+    }
+    @if (actionName == "Booking")
+    {
+        <!-- Plugin JavaScript -->
+        <script src="~/assets/plugins/moment/moment.js"></script>
+        <script src="~/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+        <!-- Date range Plugin JavaScript -->
+        <script src="~/assets/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+        <script src="~/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+        <script src="~/assets/js/jquery.blockUI.2.6.1.js"></script>
+        <script src="~/assets/js/Booking.js"></script>
+    }
+    @if (actionName == "BookingList")
+    {
+        <script src="~/assets/js/jquery.blockUI.2.6.1.js"></script>
+        <script src="~/assets/plugins/footable-bootstrap.latest/js/footable.js"></script>
+        <!-- <script src="~/assets/plugins/datatable-master/js/datatable.jquery.js"></script> -->
+
+        <script src="~/assets/js/BookingList.js"></script>
+
+    }
+    @if (actionName == "SettingStation")
+    {
+
+        <script src="~/assets/js/SettingStation.js"></script>
+    }
+    <script src="~/assets/js/sweetalert.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.js"></script>
+    @RenderSection("scripts", required: false)
+    <div style="display: none !important;">
+        <img id="imgBusy" name="imgBusy" src="~/assets/img/loading_icon.gif" />
+    </div>
+</body>
+<script language="javascript">
+    function goMap(type) {
+        if (type == 1) {
+
+                localStorage.setItem('nowMode', "location");
+
+        }
+
+       // window.location.href = "http://113.196.107.238/iRent_CarClear/Home/Index";
+    }
+</script>
+</html>

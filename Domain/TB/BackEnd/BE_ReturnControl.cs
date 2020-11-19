@@ -50,5 +50,6 @@ namespace Domain.TB.BackEnd
         public string NPOBAN    {set;get;}
         public int PARKINGAMT2 { set; get; }
         public string NOCAMT { set; get; }
+        public int eTag { set; get; }
     }
 }

@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "地圖頁";
+    Layout = "~/Views/_Layout.cshtml";
+    string Account = "";
+    string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+        UserName = Session["UserName"].ToString();
+    }
+}
+@using (Html.BeginForm("Booking", "Home", FormMethod.Post, new { id = "frmBooking", @class = "form-horizontal" }))
+{
+    <div id="wrapper" class="container-fluid fixedContent">
+
+        <!--Google map-->
+        <div id="map" class="iframe-rwd">
+
+        </div>
+
+        <div class="fixedBox" id="fixedBox">
+            <div id="list" class="list"><span id="btnList" class="btn" style="background-color:transparent"><img src="~/assets/img/icon 2_list.png" alt="路邊租還" /></span></div>
+            <div id="location" class="location"><span id="btnLocation" class="btn" style="background-color:transparent"><img src="~/assets/img/location.png" alt="路邊租還" /></span></div>
+            <div id="normalCar" class="normalCar"><span id="btnNormal" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_btn_rentcar_pressed.png" alt="同站租還" /></span></div>
+            <div id="anyCar" class="anyCar"><span id="btnAny" class="btn" style="background-color:transparent"><img src="~/assets/img/icon_carr.png" alt="路邊租還" /></span></div>
+            <div id="moto" class="moto"><span id="btnMoto" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_btn_rentmoto_pressed.png" alt="機車" /></span></div>
+            <div id="maintenance" class="moto"><span id="btnMaintenance" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_maintain.png" alt="保養" /></span></div>
+        </div>
+    </div>
+    @Html.Hidden("CarNo")
+    @Html.Hidden("BookingStart")
+    @Html.Hidden("BookingEnd")
+    @Html.Hidden("Account", Session["Account"])
+}
+

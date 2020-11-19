@@ -272,7 +272,108 @@ namespace WebAPI.Controllers
                     }
                     else if(retryMode == 3) //130
                     {
+                        BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
+                        if (obj != null)
+                        {
+                            WebAPIInput_NPR130Save input = new WebAPIInput_NPR130Save()
+                            {
+                                BIRTH = obj.BIRTH,
+                                CARNO = obj.CARNO,
+                                CARRIERID = obj.CARRIERID,
+                                CARTYPE = obj.CARTYPE,
+                                CUSTID = obj.CUSTID,
+                                CUSTNM = obj.CUSTNM,
+                                CUSTTYPE = "1",
+                                DISRATE = "1",
+                                GIVEDATE = obj.GIVEDATE,
+                                GIVEKM = obj.GIVEKM.ToString(),
+                                GIVETIME = obj.GIVETIME,
+                                
+                                INVADDR = obj.INVADDR,
+                                INVKIND = obj.INVKIND.ToString(),
+                                INVTITLE = obj.INVTITLE,
+                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                                LOSSAMT2 = obj.LOSSAMT2.ToString(),
+                                NOCAMT = obj.NOCAMT.ToString(),
+                                NPOBAN = obj.NPOBAN,
+                                ODCUSTID = obj.CUSTID,
+                                ORDNO = obj.ORDNO,
+                                OUTBRNHCD = obj.OUTBRNHCD,
+                                OVERAMT2 = obj.OVERAMT2.ToString(),
+                                OVERHOURS = obj.OVERHOURS.ToString(),
+                                PROCD = obj.PROCD,
+                                PROJID = obj.PROJID,
+                                REMARK = obj.REMARK,
+                                RENTAMT = obj.RENTAMT.ToString(),
+                                RENTDAYS = obj.RENTDAYS.ToString(),
+                                RINSU = "0",
+                                RNTAMT = obj.RPRICE.ToString(),
+                                RNTDATE = obj.RNTDATE,
+                                RNTKM = obj.GIVEKM.ToString(),
+                                RNTTIME = obj.RNTTIME,
+                                RPRICE = obj.RPRICE.ToString(),
+                                TSEQNO = obj.TSEQNO,
+                                UNIMNO = obj.UNIMNO,
+                                AUTHCODE=obj.AUTHCODE,
+                                CARDNO=obj.CARDNO,
+                                GIFT=obj.GIFT,
+                                GIFT_MOTO=obj.GIFT_MOTO,
+                                PAYAMT=obj.PAYAMT.ToString(),
+                                INBRNHCD=obj.OUTBRNHCD,
+                              
+                            };
+                            if (obj.PAYAMT > 0)
+                            {
+                                if (obj.eTag > 0)
+                                {
+                                    input.tbPaymentDetail = new PaymentDetail[2];
+                                    input.tbPaymentDetail[0] = new PaymentDetail()
+                                    {
+                                        PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        PAYTYPE = "1",
+                                        PAYMENTTYPE = "1",
+                                        PAYMEMO = "租金",
+                                        PORDNO = obj.REMARK
+                                    };
+                                    input.tbPaymentDetail[1] = new PaymentDetail()
+                                    {
+                                        PAYAMT = ( obj.eTag).ToString(),
+                                        PAYTYPE = "2",
+                                        PAYMENTTYPE = "1",
+                                        PAYMEMO = "eTag",
+                                        PORDNO = obj.REMARK
+                                    };
+                                }
+                                else
+                                {
+                                    input.tbPaymentDetail = new PaymentDetail[1];
+                                    input.tbPaymentDetail[0] = new PaymentDetail()
+                                    {
+                                        PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        PAYTYPE = "1",
+                                        PAYMENTTYPE = "1",
+                                        PAYMEMO = "租金",
+                                        PORDNO = obj.REMARK
+                                    };
+                                }
+                              
+                            }
+                            WebAPIOutput_NPR125Save output = new WebAPIOutput_NPR125Save();
+                            flag = WebAPI.NPR130Save(input, ref output);
+                            if (flag)
+                            {
+                                if (output.Result == false)
+                                {
+                                    flag = false;
+                                    errCode = "ERR";
+                                    errMsg = output.Message;
 
+                                }
+
+
+                                bool saveFlag = DoSave130Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
+                            }
+                        }
                     }
                 }
 
@@ -309,6 +410,23 @@ namespace WebAPI.Controllers
 
         }
         private bool DoSave125Data(Int64 OrderNo,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        {
+            bool flag = true;
+            string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);
+            SPInput_BE_LandControlSuccess spInput = new SPInput_BE_LandControlSuccess()
+            {
+                IsSuccess = IsSuccess,
+                LogID = LogID,
+                OrderNo = OrderNo
+            };
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_BE_LandControlSuccess, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_LandControlSuccess, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+            new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            return flag;
+
+        }
+        private bool DoSave130Data(Int64 OrderNo, Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);

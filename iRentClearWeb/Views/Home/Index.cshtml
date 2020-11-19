@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "列表";
+    Layout = "~/Views/_Layout.cshtml";
+    string Account = "";
+    string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+        UserName = Session["UserName"].ToString();
+    }
+}
+<!--Main layout-->
+<!--  <main class=" m-0 p-0"> -->
+@using (Html.BeginForm("Booking", "Home", FormMethod.Post, new { id = "frmBooking", @class = "form-horizontal" }))
+{
+    <div id="wrapper" class="container-fluid fixedContent">
+
+
+        <div id="divlist">
+            <div class="listFixedBox" id="listFixedBox">
+
+
+                <div id="location1" class="location"><span id="btnLocation1" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_location.png" alt="路邊租還" /></span></div>
+                <div id="normalCar1" class="normalCar"><span id="btnNormal1" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_btn_rentcar_pressed.png" alt="同站租還" /></span></div>
+                <div id="anyCar1" class="anyCar"><span id="btnAny1" class="btn" style="background-color:transparent"><img src="~/assets/img/icon_carr.png" alt="路邊租還" /></span></div>
+                <div id="moto1" class="moto"><span id="btnMoto1" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_btn_rentmoto_pressed.png" alt="機車" /></span></div>
+                <div id="maintenance" class="moto"><span id="btnMaintenance" class="btn" style="background-color:transparent"><img src="~/assets/img/irent_icon 2_maintain.png" alt="保養" /></span></div>
+            </div>
+            <div class="container">
+                <!--start add search-->
+                <!--   <div class="m-t-40">
+                       <div class="d-flex">
+                           <div class="mr-auto">
+                               <div class="form-group">
+
+                               </div>
+                           </div>
+                           <div class="ml-auto">
+                               <div class="form-group">
+                                   <input id="demo-input-search2" type="text" placeholder="搜尋" autocomplete="off">
+                                   <input type="button" class="btn btn-danger" id="btnSearch" value="Search" name="btnSearch" onclick="doSearch();" ontouchend="doSearch()">
+                               </div>
+                           </div>
+                       </div>
+                   </div>-->
+                <!--end add search-->
+                <table id="myDataTalbe" name="myDataTalbe" class="table footable footable-paging-center footable-filtering footable-hide" data-show-toggle="false" data-expand-first="false" data-paging="true" data-filterable="true" data-sorting="true" data-page-navigation=".pagination" data-page-size="5" data-limit-navigation="5">
+                    <thead>
+                        <!--必填-->
+
+                        <tr>
+
+                            <th>車號</th>
+                            <th data-breakpoints="xs sm">據點</th>
+                            <th data-breakpoints="xs sm">狀態</th>
+                            <th data-type="number" data-sort-value="dayValue">天數</th>
+                            <th data-type="number" data-sort-value="timeValue">次數</th>
+                            <th data-breakpoints="xs sm">告警</th>
+                            <th data-breakpoints="xs sm">三天以上未租</th>
+                            <th data-breakpoints="xs sm">定期保養</th>
+                            <th>預約</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="carDetailBody" name="carDetailBody"></tbody>
+                    <!--    <tfoot class="hide-if-no-paging">
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <ul class="pagination"></ul>
+                            </td>
+                        </tr>
+                    </tfoot>-->
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+    @Html.Hidden("CarNo")
+    @Html.Hidden("BookingStart")
+    @Html.Hidden("BookingEnd")
+    @Html.Hidden("Account", Session["Account"])
+}
+<!--</main>-->
+<!--Main layout-->

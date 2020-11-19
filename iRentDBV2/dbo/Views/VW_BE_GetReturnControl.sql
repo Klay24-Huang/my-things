@@ -8,7 +8,7 @@
 							  ,ISNULL(Trade.CardNumber,'') AS CARDNO,IIF(ISNULL(Trade.AuthIdResp,0)=0,'',CONVERT(VARCHAR(20),Trade.AuthIdResp)) AS   AUTHCODE
 							  ,LendCarControl.[CARRIERID],LendCarControl.[NPOBAN]
 							  ,BookingDetail.Insurance_price AS NOCAMT,ISNULL(Trade.AUTHAMT,0) AS PAYAMT
-							  ,ISNULL(Machi.Amount,0) AS PARKINGAMT2
+							  ,ISNULL(Machi.Amount,0) AS PARKINGAMT2,ISNULL(BookingDetail.Etag,0) AS eTag
                          FROM TB_lendCarControl AS LendCarControl
                          LEFT JOIN TB_OrderDetail AS BookingDetail ON BookingDetail.order_number=LendCarControl.IRENTORDNO
                          LEFT JOIN TB_Trade AS Trade ON Trade.MerchantTradeNo =BookingDetail.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=BookingDetail.order_number
