@@ -7,7 +7,7 @@
     [U_SYSDT]        DATETIME        DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
     [MEMIDNO]        VARCHAR (10)    DEFAULT ('') NOT NULL,
     [MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
-    [MEMPWD]         VARCHAR (50)    DEFAULT ('') NOT NULL,
+    [MEMPWD]         VARCHAR (100)    DEFAULT ('') NOT NULL,    
     [MEMTEL]         VARCHAR (20)    DEFAULT ('') NOT NULL,
     [MEMHTEL]        VARCHAR (20)    DEFAULT ('') NOT NULL,
     [MEMBIRTH]       DATETIME        NULL,
@@ -33,6 +33,7 @@
     [IrFlag]         INT             DEFAULT ((-1)) NOT NULL,
     [PayMode]        TINYINT         DEFAULT ((0)) NOT NULL,
     [RentType]       TINYINT         DEFAULT ((0)) NOT NULL,
+    [PushREGID] BIGINT        DEFAULT(0) NOT NULL,
     CONSTRAINT [PK_TB_MemberData] PRIMARY KEY CLUSTERED ([MEMIDNO] ASC)
 );
 
@@ -173,7 +174,10 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'新增者�
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'由哪個程式新增，對應TB_APILIST PK', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'A_PRGID';
 
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'推播註冊流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'PushREGID';
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'會員資料表', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData';
+
 

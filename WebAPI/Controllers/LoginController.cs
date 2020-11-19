@@ -114,7 +114,8 @@ namespace WebAPI.Controllers
                     MEMIDNO = apiInput.IDNO,
                     PWD = apiInput.PWD,
                     Rxpires_in = Rxpires_in,
-                    Refrash_Rxpires_in = Refrash_Rxpires_in
+                    Refrash_Rxpires_in = Refrash_Rxpires_in,
+                    PushREGID = 0      //20201118 ADD BY ADAM REASON.push token傳入等 app改好再上
                 };
                 SPOutput_MemberLogin SPOutputMemberLogin = new SPOutput_MemberLogin();
                 SQLHelper<SPInput_MemberLogin, SPOutput_MemberLogin> sqlHelp = new SQLHelper<SPInput_MemberLogin, SPOutput_MemberLogin>(connetStr);

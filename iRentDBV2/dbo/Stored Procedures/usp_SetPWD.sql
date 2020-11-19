@@ -46,7 +46,7 @@
 CREATE PROCEDURE [dbo].[usp_SetPWD]
 	@IDNO                   VARCHAR(10)           ,
 	@DeviceID               VARCHAR(128)          ,
-	@PWD                    VARCHAR(50)           ,
+	@PWD                    VARCHAR(100)           ,		--20201118 ADD BY ADAM REASON.
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息

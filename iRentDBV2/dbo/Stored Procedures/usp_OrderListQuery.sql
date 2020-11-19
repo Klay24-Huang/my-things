@@ -139,7 +139,7 @@ BEGIN TRY
                 ,already_lend_car
                 ,IsReturnCar
 				--20201026 ADD BY ADAM REASON.增加AppStatus
-				,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1             --1:尚未到取車時間(取車時間半小時前)
+                ,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1             --1:尚未到取車時間(取車時間半小時前)
                                   WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
                                        AND VW.NowOrderNo>0 AND car_mgt_status=0 THEN 2                                  --2:立即換車(取車前半小時，前車尚未完成還車)
 								  WHEN car_mgt_status=0 AND @NowTime > VW.stop_pick_time THEN 9							--9:未取車
@@ -151,9 +151,9 @@ BEGIN TRY
 										AND car_mgt_status >0	THEN 5													--5:操作車輛(取車後) 取車時間改實際取車時間
                                   WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) < @NowTime THEN 6                 --6:操作車輛(準備還車)-
 								  WHEN car_mgt_status<=11 AND stop_time < @NowTime THEN 6
-								  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) > @NowTime THEN 7			--7:物品遺漏(再開一次車門)
-								  WHEN car_mgt_status=16 
-										AND start_door_time is not null AND end_door_time is null THEN 8				--8:鎖門並還車(一次性開門申請後)
+								  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) > @NowTime 
+										AND OD.nowStatus=0 THEN 7							--7:物品遺漏(再開一次車門)
+								  WHEN car_mgt_status=16 AND OD.nowStatus=1 THEN 8	--8:鎖門並還車(一次性開門申請後)
                                   ELSE 0 END
 				,StationPic1 = i1.StationPic
 				,StationPic2 = i2.StationPic
@@ -171,6 +171,7 @@ BEGIN TRY
 						LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
 						WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+			
 
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i1 WITH(NOLOCK) WHERE use_flag=1) AS I1 ON lend_place=I1.StationID AND I1.SEQ=1
@@ -180,15 +181,19 @@ BEGIN TRY
 						FROM TB_iRentStationInfo i3 WITH(NOLOCK) WHERE use_flag=1) AS I3 ON lend_place=I3.StationID AND I3.SEQ=3
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
+			LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
             WHERE VW.IDNO=@IDNO AND cancel_status=0
-			AND (car_mgt_status<16    --排除已還車的
-				--針對汽車已還車在15分鐘內的
-				OR (car_mgt_status=16 AND final_stop_time is not null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType<>'4')
+            AND (car_mgt_status<16    --排除已還車的
+				--針對汽機車已還車在15分鐘內的
+				OR (car_mgt_status=16 AND final_stop_time is not null AND OD.nowStatus<2 AND DATEADD(mi,15,final_stop_time) > @NowTime)
 				--針對機車已還車在15分鐘內尚未做一次性開門申請
-				OR (car_mgt_status=16 AND final_stop_time is not null AND start_door_time IS null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType='4')
+				--OR (car_mgt_status=16 AND final_stop_time is not null AND OD.OpenDoorID IS null AND DATEADD(mi,15,final_stop_time) > @NowTime AND VW.ProjType='4')
+				
 				)	--還車後15分鐘內
             AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
+
             ORDER BY start_time ASC 
+			
 			
 		END
 
