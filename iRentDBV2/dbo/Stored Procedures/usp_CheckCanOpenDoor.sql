@@ -137,7 +137,7 @@ SET @Mobile='';
 				SELECT @Mobile=MEMTEL FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 				SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID,@IsCens=IsCens,@IsMotor=IsMotor FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo;
 
-				IF @ProjType<4	-- 專案類型：0:同站;3:路邊;4:機車
+				IF @ProjType=4	-- 專案類型：0:同站;3:路邊;4:機車
 				BEGIN
 					UPDATE TB_OpenDoor
 					SET IsVerify=1,UPDTime=@NowTime,nowStatus=2
