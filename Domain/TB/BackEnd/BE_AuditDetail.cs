@@ -77,5 +77,9 @@ namespace Domain.TB.BackEnd
         /// 前一次審核者
         /// </summary>
         public string LastOpt { set; get; }
+        public string RentType { set; get; }
+        public string SPECSTATUS { set; get; }
+        public string SPSD { set; get; }
+        public string SPED { set; get; }
     }
 }

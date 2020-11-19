@@ -212,6 +212,8 @@ $(function () {
             console.log(errmsg);
         }
     });
+
+    setPostbackValue();
 })
 function ShowPIC(site) {
     if (site != "") {

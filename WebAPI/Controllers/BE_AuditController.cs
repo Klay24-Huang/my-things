@@ -228,11 +228,21 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    Message = string.Format("iRent會員通知：" +
+                    if (apiInput.IsNew == 1)
+                    {
+                        Message = string.Format("iRent審核未通過：" +
+                            "您尚未通過iRent會員申請，" +
+                            "原因為({0}，請登入App重新操作，" +
+                            "如有疑問請洽客服0800-024-550", apiInput.NotAuditReason == "" ? apiInput.RejectReason : apiInput.NotAuditReason);
+                    }
+                    else
+                    {
+                        Message = string.Format("iRent會員通知：" +
                         "很抱歉，" +
                         "您申請變更「iRent共享汽機車會員」身分審核" +
                         "({0})未通過，" +
-                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.NotAuditReason);
+                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.NotAuditReason == "" ? apiInput.RejectReason : apiInput.NotAuditReason);
+                    }
                 }
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
@@ -248,7 +258,8 @@ namespace WebAPI.Controllers
         }
         private string CheckNeedChangeName(int OldType,int NewType,string OldFileName)
         {
-            string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1" };
+            //string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
+            string[] suff = { "", "ID_1", "ID_2", "Car_1", "Car_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
             string fileName = OldFileName.Replace(suff[OldType],suff[NewType]);
             bool flag = new AzureStorageHandle().RenameFromAzureStorage(fileName, OldFileName, credentialContainer);
             return fileName;
