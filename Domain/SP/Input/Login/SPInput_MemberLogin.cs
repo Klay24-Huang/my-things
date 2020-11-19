@@ -45,6 +45,9 @@ namespace Domain.SP.Input.Login
         /// 此api呼叫的log id 對應TB_APILOG PK
         /// </summary>
         public Int64 LogID { set; get; }
-
+        /// <summary>
+        /// 推播註冊流水號 20201118 ADD BY ADAM REASON.增加推播註冊流水號傳入
+        /// </summary>
+        public int PushREGID { set; get; }
     }
 }

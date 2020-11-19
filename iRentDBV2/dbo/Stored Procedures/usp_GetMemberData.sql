@@ -105,44 +105,97 @@ BEGIN TRY
 	--1.取得資料
 	IF @Error=0
 	BEGIN
-		SELECT   [MEMIDNO]
-				--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
-				,[MEMCNAME]
-				,[MEMTEL]
-				,[MEMHTEL]
-				,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
-				--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
-				,[MEMCITY] AS MEMAREAID
-				,[MEMADDR]
-				,[MEMEMAIL]
-				,[MEMCOMTEL]
-				,[MEMCONTRACT]
-				,[MEMCONTEL]
-				,[MEMMSG]
-				,[CARDNO]
-				,[UNIMNO]
-				,[MEMSENDCD]
-				,[CARRIERID]
-				,[NPOBAN]
-				,[HasCheckMobile]
-				,[NeedChangePWD]
-				,[HasBindSocial]
-				,[IrFlag]
-				,[PayMode]
-				,[HasVaildEMail]
-				,[Audit]
-				,[RentType]
-				,Case When [ID_1]>0 And [ID_2]>0 Then B.ID_1 Else 0 End ID_pic
-				,Case When [CarDriver_1]>0 And [CarDriver_2]>0 Then B.CarDriver_1 Else 0 End DD_pic
-				,Case When [MotorDriver_1]>0 And [MotorDriver_2]>0 Then B.MotorDriver_1 Else 0 End MOTOR_pic
-				,ISNULL([Self_1],0) As AA_pic 
-				,ISNULL([Law_Agent],0) As F01_pic
-				,ISNULL([Signture],0) AS Signture_pic
-				,ISNULL(CrentialsFile,'') AS SigntureCode
-		FROM TB_MemberData A WITH(NOLOCK)
-		Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
-		LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
-		WHERE A.MEMIDNO=@IDNO
+		--抓最後一筆
+		SELECT TOP 1 * INTO #TB_MemberDataOfAudit FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY MKTime DESC
+
+		--尚未通過審核，先從待審資料區取出
+		IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND IrFlag=0)
+		BEGIN
+			SELECT   [MEMIDNO] = A.MEMIDNO
+					--,[MEMPWD]	--20201024 ADD BY ADAM REASON.安全考量移除
+					,[MEMCNAME] = ISNULL(AA.MEMCNAME,'')
+					,[MEMTEL] = ISNULL(AA.MEMTEL,'')
+					,[MEMHTEL] = ISNULL(AA.MEMHTEL,'')
+					,[MEMBIRTH] = CASE WHEN AA.MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),AA.MEMBIRTH,120) END
+					--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
+					,[MEMAREAID] = ISNULL(AA.MEMCITY,0)
+					,[MEMADDR] = ISNULL(AA.MEMADDR,'')
+					,[MEMEMAIL] = ISNULL(AA.MEMEMAIL,'')
+					,[MEMCOMTEL] = ISNULL(AA.MEMCOMTEL,'')
+					,[MEMCONTRACT] = ISNULL(AA.MEMCONTRACT,'')
+					,[MEMCONTEL] = ISNULL(AA.MEMCONTEL,'')
+					,[MEMMSG] = ISNULL(AA.MEMMSG,'')
+					,[CARDNO] = ISNULL(AA.CARDNO,'')
+					,[UNIMNO] = ISNULL(AA.UNIMNO,'')
+					,[MEMSENDCD] = ISNULL(AA.MEMSENDCD,'')
+					,[CARRIERID] = ISNULL(AA.CARRIERID,'')
+					,[NPOBAN] = ISNULL(AA.NPOBAN,'')
+					,[HasCheckMobile]
+					,[NeedChangePWD] 
+					,[HasBindSocial]
+					,[IrFlag]
+					,[PayMode]
+					,[HasVaildEMail]
+					,[Audit]
+					,[RentType]
+					,Case When [ID_1]=1 And [ID_2] =1 Then B.ID_1 Else 0 End ID_pic
+					,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then B.CarDriver_1 Else 0 End DD_pic
+					,Case When [MotorDriver_1]=1 And [MotorDriver_2]=1 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,ISNULL([Self_1],0) As AA_pic 
+					,ISNULL([Law_Agent],0) As F01_pic
+					--,0 as Signture_pic
+					,ISNULL([Signture],0) AS Signture_pic
+					--,'' as SigntureCode
+					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
+			FROM TB_MemberData A WITH(NOLOCK)
+			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+			LEFT JOIN #TB_MemberDataOfAudit AA WITH(NOLOCK) ON A.MEMIDNO=AA.MEMIDNO
+			WHERE A.MEMIDNO=@IDNO
+		END
+		ELSE
+		BEGIN
+			SELECT   [MEMIDNO]
+					--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
+					,[MEMCNAME]
+					,[MEMTEL]
+					,[MEMHTEL]
+					,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
+					--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
+					,[MEMCITY] AS MEMAREAID
+					,[MEMADDR]
+					,[MEMEMAIL]
+					,[MEMCOMTEL]
+					,[MEMCONTRACT]
+					,[MEMCONTEL]
+					,[MEMMSG]
+					,[CARDNO]
+					,[UNIMNO]
+					,[MEMSENDCD]
+					,[CARRIERID]
+					,[NPOBAN]
+					,[HasCheckMobile]
+					,[NeedChangePWD]
+					,[HasBindSocial]
+					,[IrFlag]
+					,[PayMode]
+					,[HasVaildEMail]
+					,[Audit]
+					,[RentType]
+					,Case When [ID_1]>0 And [ID_2]>0 Then B.ID_1 Else 0 End ID_pic
+					,Case When [CarDriver_1]>0 And [CarDriver_2]>0 Then B.CarDriver_1 Else 0 End DD_pic
+					,Case When [MotorDriver_1]>0 And [MotorDriver_2]>0 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,ISNULL([Self_1],0) As AA_pic 
+					,ISNULL([Law_Agent],0) As F01_pic
+					,ISNULL([Signture],0) AS Signture_pic
+					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
+			FROM TB_MemberData A WITH(NOLOCK)
+			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+			WHERE A.MEMIDNO=@IDNO
+		END
+
+		DROP TABLE #TB_MemberDataOfAudit
 	END
 		
 	--寫入錯誤訊息

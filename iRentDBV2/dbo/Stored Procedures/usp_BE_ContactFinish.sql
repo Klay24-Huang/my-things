@@ -87,122 +87,163 @@ SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
-SET @UserID    =ISNULL (@UserID    ,'');
+SET @UserID=ISNULL (@UserID,'');
 SET @ParkingSpace='';
 
-		BEGIN TRY
-		
-		 
-		 IF @UserID='' OR @IDNO=''  OR @OrderNo=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
+BEGIN TRY
+	IF @UserID='' OR @IDNO=''  OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 
-		 IF @Error=0
-		 BEGIN
-		            SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
-					FROM TB_OrderMain
-					WHERE order_number=@OrderNo;
+	IF @Error=0
+	BEGIN
+		BEGIN TRAN
+		SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+		FROM TB_OrderMain
+		WHERE order_number=@OrderNo;
 
-					SELECT @hasData=COUNT(1) FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
-					IF @hasData>0
-					BEGIN
-					   INSERT INTO [dbo].[TB_ParkingSpace]([OrderNo],[ParkingImage],[ParkingSpace])
-					   SELECT [OrderNo],[ParkingImage],[ParkingSpace] FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+		SELECT @hasData=COUNT(1) FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+		IF @hasData>0
+		BEGIN
+			INSERT INTO [dbo].[TB_ParkingSpace]([OrderNo],[ParkingImage],[ParkingSpace])
+			SELECT [OrderNo],[ParkingImage],[ParkingSpace] FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
 
-					   DELETE FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
-					   SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WHERE OrderNo=@OrderNo;
-					END
+			DELETE FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
+			SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WHERE OrderNo=@OrderNo;
+		END
 
-					--寫入歷程
-					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+		--寫入歷程
+		INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+		VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 					
-					--更新訂單主檔
-					UPDATE TB_OrderMain
-					SET booking_status=5,car_mgt_status=16,modified_status=2
-					WHERE order_number=@OrderNo;
+		--更新訂單主檔
+		UPDATE TB_OrderMain
+		SET booking_status=5,
+			car_mgt_status=16,
+			modified_status=2
+		WHERE order_number=@OrderNo;
 					
-					--更新訂單明細
-					IF @transaction_no='Free'
-					BEGIN
-						UPDATE TB_OrderDetail
-						SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1,final_stop_time=@ReturnDate
-						WHERE order_number=@OrderNo;
-					END
-					ELSE
-					BEGIN
-						UPDATE TB_OrderDetail
-						--SET [already_return_car]=1,[already_payment]=1
-						--20201110 UPD BY JERRY 不管何種狀態都要更新final_stop_time
-						SET [already_return_car]=1,[already_payment]=1,final_stop_time=@ReturnDate
-						WHERE order_number=@OrderNo;
-					END
-					--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
-					--更新個人訂單控制
-					IF @ProjType=4
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser]
-						SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
-						WHERE IDNO=@IDNO;
+		--更新訂單明細
+		IF @transaction_no='Free'
+		BEGIN
+			UPDATE TB_OrderDetail
+			SET transaction_no=@transaction_no,
+				trade_status=1,
+				[already_return_car]=1,
+				[already_payment]=1,
+				final_stop_time=@ReturnDate
+			WHERE order_number=@OrderNo;
+		END
+		ELSE
+		BEGIN
+			UPDATE TB_OrderDetail
+			--SET [already_return_car]=1,[already_payment]=1
+			--20201110 UPD BY JERRY 不管何種狀態都要更新final_stop_time
+			SET [already_return_car]=1,
+				[already_payment]=1,
+				final_stop_time=@ReturnDate
+			WHERE order_number=@OrderNo;
+		END
+		--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
+		--更新個人訂單控制
+		IF @ProjType=4
+		BEGIN
+			UPDATE [TB_BookingStatusOfUser]
+			SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,
+				RentNowActiveType=5,
+				NowActiveOrderNum=0,
+				[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1,
+				UPDTime=@NowTime
+			WHERE IDNO=@IDNO;
 
-						INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
-						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WHERE CarNo=@CarNo;
-
-					END
-					ELSE IF @ProjType=0
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser]
-						SET [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[NormalRentBookingFinishCount]=[NormalRentBookingFinishCount]+1
-						WHERE IDNO=@IDNO;
-					END
-					ELSE
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser]
-						SET [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[AnyRentBookingFinishCount]=[AnyRentBookingFinishCount]+1
-						WHERE IDNO=@IDNO;
-					END
-
-					--更新車輛
-					UPDATE TB_Car
-					SET [NowOrderNo]=0,[LastOrderNo]=@OrderNo,available=1
-					WHERE CarNo=@CarNo;
-					--寫入歷程
-					SET @Descript=N'後台強還，完成還車';
-					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-
-					--寫入一次性開門的deadline
-					--INSERT INTO TB_OpenDoor(OrderNo,DeadLine)VALUES(@OrderNo,DATEADD(MINUTE,15,@NowTime));
-
-					
-
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM [TB_OrderDataByMotor] WHERE OrderNo=@OrderNo;
+			IF @hasData=0
 			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
+				SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA 
+				FROM TB_CarStatus WHERE CarNo=@CarNo;
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+				UPDATE TB_OrderDataByMotor
+				SET R_LBA=deviceLBA,
+					R_RBA=deviceRBA,
+					R_TBA=device3TBA,
+					R_MBA=deviceMBA,
+					R_lon=Longitude,
+					R_lat=Latitude,
+					UPDTime=@NowTime
+				FROM TB_CarStatus 
+				WHERE OrderNo=@OrderNo;
+			END		
+		END
+		ELSE IF @ProjType=0
+		BEGIN
+			UPDATE [TB_BookingStatusOfUser]
+			SET [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,
+				RentNowActiveType=5,NowActiveOrderNum=0,
+				[NormalRentBookingFinishCount]=[NormalRentBookingFinishCount]+1,
+				UPDTime=@NowTime
+			WHERE IDNO=@IDNO;
+		END
+		ELSE
+		BEGIN
+			UPDATE [TB_BookingStatusOfUser]
+			SET [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,
+				RentNowActiveType=5,
+				NowActiveOrderNum=0,
+				[AnyRentBookingFinishCount]=[AnyRentBookingFinishCount]+1,
+				UPDTime=@NowTime
+			WHERE IDNO=@IDNO;
+		END
+
+		--更新車輛
+		UPDATE TB_Car
+		SET [NowOrderNo]=0,
+			[LastOrderNo]=@OrderNo,
+			available=1,
+			UPDTime=@NowTime
+		WHERE CarNo=@CarNo;
+
+		--寫入歷程
+		SET @Descript=N'後台強還，完成還車';
+		INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+		VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
+		--寫入一次性開門的deadline
+		--INSERT INTO TB_OpenDoor(OrderNo,DeadLine)VALUES(@OrderNo,DATEADD(MINUTE,15,@NowTime));
+
+		COMMIT TRAN;
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_ContactFinish';

@@ -181,7 +181,7 @@ namespace Reposotory.Implement
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE())";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 4 AND cancel_status = 0 AND booking_status<5) ";
+            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5) ";
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -226,7 +226,7 @@ namespace Reposotory.Implement
             }
             SQL += " WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 4 AND cancel_status = 0 AND booking_status<5) ";
+            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5) ";
             SqlParameter[] para = new SqlParameter[2];
 
             for (int j = 0; j < 4; j++)
@@ -318,7 +318,7 @@ namespace Reposotory.Implement
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 4 AND cancel_status = 0 AND booking_status<5) ";
+            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstCar = GetObjList<MotorRentObj>(ref flag, ref lstError, SQL, para, term);
@@ -349,7 +349,7 @@ namespace Reposotory.Implement
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device2TBA>=30 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
-            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 4 AND cancel_status = 0 AND booking_status<5) ";
+            SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5) ";
 
             SqlParameter[] para = new SqlParameter[2];
 
