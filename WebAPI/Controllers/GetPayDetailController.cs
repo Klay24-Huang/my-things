@@ -574,7 +574,7 @@ namespace WebAPI.Controllers
                             if (hasFine)
                             {
                                 //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday);
+                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday,true);
                                 CarRentPrice += overPrice;
                             }
                             //else
