@@ -32,8 +32,6 @@ namespace WebAPI.Models.BillFunc
         public delegate double MinsProcess(double mins);//剩餘分轉計費分(未滿60)
         public delegate void DayMinsProcess(ref double wMins, ref double hMins);//當日分特殊邏輯
 
-        private readonly int CarBaseMinutes = 60;//汽車基本分鐘數
-
         /// <summary>
         /// 計算時間
         /// </summary>
@@ -373,6 +371,68 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 機車租金試算
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="PriceMin">每分鐘多少</param>
+        /// <param name="baseMinutes">基本分鐘數</param>
+        /// <param name="dayMaxPrice">單日計費上限</param>
+        /// <param name="disc">折扣點數</param>
+        /// <returns></returns>
+        /// <mark>2020-11-19 eason</mark>
+        public int MotoRentCompute(DateTime SD, DateTime ED, double PriceMin, int baseMinutes, double dayMaxPrice , int disc=0)
+        {
+            int re = 0;
+
+            if (disc < 0)
+                throw new Exception("折扣不可為負數");
+
+            if (disc > 0 && disc < 6)
+                disc = 6;
+
+            double dayMaxMins = dayMaxPrice/PriceMin;//單日上限分鐘 
+
+            SD = SD.AddSeconds(SD.Second * -1);
+            ED = ED.AddSeconds(ED.Second * -1);
+
+            double mins = ED.Subtract(SD).TotalMinutes;
+            double fpay = 0;
+            
+            if (mins < 24*60)
+            {
+                if (mins > dayMaxMins)
+                    fpay = dayMaxPrice;
+                else
+                    fpay = (mins - baseMinutes) * PriceMin + 10;
+
+                if (disc >= 199)
+                    return 0;
+            }
+            else
+            {
+                var result = GetRangeMins(SD, ED, baseMinutes, dayMaxMins, new List<Holiday>());
+                if(result != null)
+                {
+                    double payMins = result.Item1;
+                    fpay = payMins * PriceMin;
+                }
+            }
+
+            if(disc > 0)
+            {
+                if (disc < 199)
+                    fpay = fpay - 10 - (disc - 6) * PriceMin;
+                else
+                    fpay = (fpay - 300) - (disc - 199) * PriceMin;
+            }
+
+            fpay = fpay >= 0 ? fpay : 0;
+            re = Convert.ToInt32(Math.Round(fpay, 0, MidpointRounding.AwayFromZero));           
+            return re;
+        }
+
+        /// <summary>
         /// 租金試算-新
         /// </summary>
         /// <param name="SD">起</param>
@@ -495,7 +555,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 逾時單日時間轉計費時間
+        /// 汽車逾時單日時間轉計費時間
         /// </summary>
         /// <param name="wMins"></param>
         /// <param name="hMins"></param>
@@ -510,7 +570,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 24小時租金計算
+        /// 24小時計費分鐘數
         /// </summary>
         /// <param name="SD">起</param>
         /// <param name="ED">迄</param>
