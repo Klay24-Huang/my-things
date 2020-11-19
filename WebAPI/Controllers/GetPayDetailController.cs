@@ -498,7 +498,9 @@ namespace WebAPI.Controllers
                             billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
                         }
 
-                        outputApi.Rent.CarRental = CarRentPrice;
+                        //outputApi.Rent.CarRental = CarRentPrice;
+                        outputApi.Rent.CarRental = new BillCommon().MotoRentCompute(SD, ED, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].BaseMinutes, OrderDataLists[0].MaxPrice, apiInput.MotorDiscount);
+                       
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     }
                     else
