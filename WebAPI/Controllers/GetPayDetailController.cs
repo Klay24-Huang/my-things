@@ -211,8 +211,16 @@ namespace WebAPI.Controllers
                     ProjType = OrderDataLists[0].ProjType;
                     SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
-                    ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
-                    ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    if (OrderDataLists[0].ProjType == 0)
+                    {
+                        ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    }
+                    else
+                    {
+                        ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    }
                     FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                     FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
