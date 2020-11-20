@@ -211,14 +211,15 @@ namespace WebAPI.Controllers
                     ProjType = OrderDataLists[0].ProjType;
                     SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
-                    if (OrderDataLists[0].ProjType == 0)
+                    //機車路邊不計算預計還車時間
+                    if (OrderDataLists[0].ProjType == 4)
                     {
-                        ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
+                        ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                         ED = ED.AddSeconds(ED.Second * -1); //去秒數
                     }
                     else
                     {
-                        ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
+                        ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
                         ED = ED.AddSeconds(ED.Second * -1); //去秒數
                     }
                     FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);

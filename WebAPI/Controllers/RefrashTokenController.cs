@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
                     RefrashToken = apiInput.RefrashToken,
                     Rxpires_in = Rxpires_in,
                     Refrash_Rxpires_in = Refrash_Rxpires_in,
-                    PushREGID = 0
+                    PushREGID = apiInput.PushREGID
                 };
                 SPOutput_RefrashToken spOut = new SPOutput_RefrashToken();
                 SQLHelper<SPInput_RefrashToken, SPOutput_RefrashToken> sqlHelp = new SQLHelper<SPInput_RefrashToken, SPOutput_RefrashToken>(connetStr);
