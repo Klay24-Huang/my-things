@@ -584,7 +584,7 @@ namespace WebAPI.Models.BillFunc
             double n_allMins = 0;//總平日分鐘
             double h_allMins = 0;//總假日分鐘
 
-            if (SD == null && ED == null && SD > ED)
+            if (SD == null || ED == null)
                 throw new Exception("SD,ED不可為null");
 
             if (SD > ED)
