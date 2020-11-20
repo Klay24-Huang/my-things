@@ -58,8 +58,8 @@ $(function () {
         var SendObj = new Object();
         var Driver = new Array();
         var SPECSTATUS = $("#SPECSTATUS").val();
-        var SPSD = $("#StartDate").val();
-        var SPED = $("#EndDate").val();
+        var SPSD = $("#StartDate").val().replace(/\-/g,'');
+        var SPED = $("#EndDate").val().replace(/\-/g, '');
         var Birth = $("#Birth").val();
         var Mobile = $("#Mobile").val();
         var Addr = $("#Addr").val();
