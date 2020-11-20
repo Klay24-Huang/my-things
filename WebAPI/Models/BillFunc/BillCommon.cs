@@ -389,7 +389,7 @@ namespace WebAPI.Models.BillFunc
                 throw new Exception("折扣不可為負數");
 
             if (disc > 0 && disc < 6)
-                disc = 6;
+                throw new Exception("折扣不可低於6分鐘");
 
             double dayMaxMins = dayMaxPrice/PriceMin;//單日上限分鐘 
 
