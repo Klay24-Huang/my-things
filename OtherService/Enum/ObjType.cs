@@ -48,7 +48,11 @@ namespace OtherService.Enum
             /// <summary>
             /// 更新刷卡結果
             /// </summary>
-            UpdTrade
+            UpdTrade,
+            /// <summary>
+            /// 新增解除綁定Log
+            /// </summary>
+            InsUnBindLog
         }
         /// <summary>
         /// 取出SPName
@@ -88,6 +92,9 @@ namespace OtherService.Enum
                     SPName = "usp_UpdTrade";
                     break;
 
+                case SPType.InsUnBindLog:
+                    SPName = "usp_InsUnBindLog";
+                    break;
 
             }
             return SPName;
