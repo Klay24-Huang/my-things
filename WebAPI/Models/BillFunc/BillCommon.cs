@@ -401,7 +401,10 @@ namespace WebAPI.Models.BillFunc
             
             if (mins < 24*60)
             {
-                if (mins > dayMaxMins)
+                //先從基消判斷
+                if (mins <= 6)
+                    fpay = 10;
+                else if (mins > dayMaxMins)
                     fpay = dayMaxPrice;
                 else
                     fpay = (mins - baseMinutes) * PriceMin + 10;
@@ -711,17 +714,19 @@ namespace WebAPI.Models.BillFunc
 
                                 //後日-相對整點起
                                 var af_star = SD.AddHours(bef_xhours + 1);
+                                //var af_mins = sd10.Subtract(af_star).TotalMinutes;
                                 var af_mins = sd10.Subtract(af_star).TotalMinutes;
                                 var af_xhours = Math.Floor(af_mins / 60);
                                 var af_xmins = af_mins % 60;
 
-                                if (minsPro != null && af_mins > 0)//尾數分轉有計費分鐘
-                                    af_mins = minsPro(af_mins);
+                                //20201121 ADD BY ADAM REASON.暫時修改為af_xmins，待確認
+                                if (minsPro != null && af_xmins > 0 && af_xmins < 60)//尾數分轉有計費分鐘
+                                    af_xmins = minsPro(af_xmins);
 
                                 if (ed_isHoliday)
-                                    h_allMins += af_xhours * 60 + af_mins;
+                                    h_allMins += af_xhours * 60 + af_xmins;
                                 else
-                                    n_allMins += af_xhours * 60 + af_mins;
+                                    n_allMins += af_xhours * 60 + af_xmins;
                             }
                         }
                     }
@@ -1643,6 +1648,32 @@ namespace WebAPI.Models.BillFunc
         private bool IsInDate(DateTime dt_keyin, DateTime dt_start, DateTime dt_end)
         {
             return dt_keyin.CompareTo(dt_start) >= 0 && dt_keyin.CompareTo(dt_end) <= 0;
+        }
+        /// <summary>
+        /// 計算機車可折抵時數
+        /// </summary>
+        /// <param name="rentmins"></param>
+        /// <returns></returns>
+        public int GetMotorCanDiscountPoint(int rentmins)
+        {
+            int CanDiscountPoint = 0;
+
+            //首日最多折199分鐘
+            if (rentmins <= 199)
+            {
+                CanDiscountPoint = rentmins;
+            }
+            else if (rentmins <= 600)
+            {
+                CanDiscountPoint = 199;
+            }
+            else
+            {
+                int days = rentmins / 600;
+                CanDiscountPoint = (days - 1) * 200 + 199 + ((rentmins % 600) >= 200 ? 200 : rentmins % 600);
+            }
+
+            return CanDiscountPoint;
         }
     }
 }
