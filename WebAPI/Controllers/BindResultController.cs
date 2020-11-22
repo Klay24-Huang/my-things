@@ -69,6 +69,15 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                //寫入API Log
+                string ClientIP = baseVerify.GetClientIp(Request);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+
+            }
+
+            if (flag)
+            {
                 string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
                 SPInput_GetUnBindLog spUnBindLogInput = new SPInput_GetUnBindLog()
                 {
@@ -227,14 +236,6 @@ namespace WebAPI.Controllers
 
 
 
-            if (flag)
-            {
-                //寫入API Log
-                string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
-
-            }
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
