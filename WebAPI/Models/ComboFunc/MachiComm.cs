@@ -80,15 +80,26 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="EndDate"></param>
         /// <param name="wsOut"></param>
         /// <returns></returns>
-        public bool GetParkingBill(Int64 LogID, string CarNo,string StartDate,string EndDate, ref WebAPIOutput_QueryBillByCar wsOut)
+        public bool GetParkingBill(Int64 LogID, string CarNo,string StartDate,string EndDate,ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
         {
             bool flag = true;
             string Token = "";
             flag = GetToken(LogID, ref Token);
-        
+            ParkingBill = 0;
             if (flag)
             {
                 flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate, EndDate, ref wsOut);
+                if (wsOut != null)
+                {
+                    if (wsOut.data.Count() > 0)
+                    {
+                        int len = wsOut.data.Count();
+                        for(int i = 0; i < len; i++)
+                        {
+                            ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
+                        }
+                    }
+                }
             }
          
             return flag;
