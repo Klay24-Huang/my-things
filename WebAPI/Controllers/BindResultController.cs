@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             string funName = "BindResultController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BindResult apiInput = null;
+            BindOriRequestParams apiInput = null;
             OAPI_Base apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -62,10 +62,8 @@ namespace WebAPI.Controllers
 
            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
-            apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BindResult>(Contentjson);
-            string IDNO = apiInput.OriRequestParams.RequestParams.MemberId;
-            string OrderNo = apiInput.OriRequestParams.RequestParams.OrderNo;
-            string CardToken = "";
+            //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BindResult>(Contentjson);
+            apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<BindOriRequestParams>(Contentjson);
 
             if (flag)
             {
@@ -76,6 +74,9 @@ namespace WebAPI.Controllers
 
             }
 
+            string IDNO = apiInput.RequestParams.MemberId;
+            string OrderNo = apiInput.RequestParams.OrderNo;
+            string CardToken = "";
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
