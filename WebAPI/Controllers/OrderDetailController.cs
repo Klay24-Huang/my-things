@@ -188,7 +188,7 @@ namespace WebAPI.Controllers
                             InvoiceURL = "",
                             StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
                             EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
-                            Millage = UseMile <= 0 ? orderFinishDataLists[0].Millage : UseMile,
+                            Millage = UseMile <= 0 ? 0 : UseMile,
                             CarOfArea = orderFinishDataLists[0].Area,
                             DiscountAmount = orderFinishDataLists[0].DiscountAmount,
                             DiscountName = orderFinishDataLists[0].DiscountName
