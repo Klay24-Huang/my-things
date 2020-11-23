@@ -234,9 +234,6 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-
-
-
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
