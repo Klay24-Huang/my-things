@@ -115,7 +115,6 @@ BEGIN TRY
 		END
 		ELSE
 		BEGIN
-			
 			SET @hasData=0;
 			--判斷是否審核通過
 			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO --AND HasAudit=1;  --20201114 ADD BY ADAM REASON.改為待審只有一筆
@@ -144,7 +143,7 @@ BEGIN TRY
 
 			SET @hasData=0;
 			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=1;
-			IF @hasData > 1
+			IF @hasData >= 1
 			BEGIN
 				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
 				VALUES(@IDNO,@Mobile,0,@VerifyCode,@DeadLine);
