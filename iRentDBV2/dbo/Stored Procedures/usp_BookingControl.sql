@@ -107,6 +107,10 @@ DECLARE @EDate		DateTime;		--預約還車時間
 DECLARE @PriceN		INT;			--平日價格
 DECLARE @PriceH		INT;			--假日價格
 DECLARE @ProjType	TINYINT;		--專案類型：0:同站;3:路邊;4:機車
+DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
+		,@BIRTH			DATETIME
+		,@GIVEKM		INT
+		,@RNTKM			INT
 
 /*初始設定*/
 SET @Error=0;
@@ -127,13 +131,16 @@ SET @OrderNo=ISNULL(@OrderNo,0);
 SET @Token=ISNULL(@Token,'');
 
 BEGIN TRY
-	IF @Token='' OR @IDNO='' OR @OrderNo=0
+	--IF @Token='' OR @IDNO='' OR @OrderNo=0
+	--20201118 ADD BY ADAM 取消TOKEN檢核
+	IF @IDNO='' OR @OrderNo=0
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
 	END
 		 
 	--0.再次檢核token
+	/*
 	IF @Error=0
 	BEGIN
 		SELECT @hasData=COUNT(1) FROM TB_Token WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
@@ -153,6 +160,7 @@ BEGIN TRY
 			END
 		END
 	END
+	*/
 
 	IF @Error=0
 	BEGIN
@@ -168,16 +176,20 @@ BEGIN TRY
 				@ODCUSTNM=[MEMCNAME],
 				@TEL1=[MEMHTEL],
 				@TEL2=[MEMTEL],
-				@TEL3=[MEMCOMTEL] 
+				@TEL3=[MEMCOMTEL],
+				@BIRTH=[MEMBIRTH]
 			FROM [dbo].[TB_MemberData] WHERE [MEMIDNO]=@IDNO;
 			
 			SELECT @CarNo=[CarNo],
 				@ODDATE=convert(varchar,[booking_date],112),
+				@GIVEDATE=convert(varchar,[start_time],112),
+				@GIVETIME=SUBSTRING(REPLACE(convert(varchar,[start_time],108),':',''),1,4),
 				@RNTDATE=CONVERT(VARCHAR,[stop_time],112),
 				@RNTTIME=SUBSTRING(REPLACE(CONVERT(VARCHAR,[stop_time],108),':',''),1,4),
 				@OUTBRNH=[lend_place],
 				@INBRNH=[return_place],
 				@ORDAMT=[init_price],
+				
 				@PROJID=[ProjID],
 				@INVKIND=[bill_option],
 				@INVTITLE=[title],
@@ -190,9 +202,12 @@ BEGIN TRY
 				@ProjType=ProjType
 			FROM [dbo].[TB_OrderMain] WHERE [order_number]=@OrderNo;
 			
-			SELECT @GIVEDATE=CONVERT(VARCHAR,[final_start_time],112),
-				@GIVETIME=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
-				@RNTAMT=[pure_price]
+			
+			SELECT --@GIVEDATE=CONVERT(VARCHAR,[final_start_time],112),
+				--@GIVETIME=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
+				--@RNTAMT=[pure_price]
+				@GIVEKM = CAST(start_mile AS INT),
+				@RNTKM = CAST(end_mile AS INT)
 			FROM [dbo].[TB_OrderDetail]
 			WHERE [order_number]=@OrderNo;
 			
@@ -218,7 +233,7 @@ BEGIN TRY
 			SET @isRetry=0;
 			SET @RetryTimes=0;
 			SET @ORDNO='';
-
+			SET @IRENTORDNO = 'H' + RIGHT(REPLICATE('0', 7) + CAST(@OrderNo as VARCHAR), 7)
 			--計算租金
 			If @ProjType = 4
 			BEGIN
@@ -229,6 +244,7 @@ BEGIN TRY
 			BEGIN
 				--汽車
 				exec @ORDAMT=[dbo].[FN_CalSpread] @SDate,@EDate,@PriceN,@PriceH;
+				SET @RNTAMT=@ORDAMT
 			END
 
 			--寫資料
@@ -239,10 +255,74 @@ BEGIN TRY
 				,NOCAMT)
 			VALUES(@OrderNo,@PROCD,@ODCUSTID,@ODCUSTNM,@TEL1,@TEL2,@TEL3,@ODDATE,@GIVEDATE,@GIVETIME
 				,@RNTDATE,@RNTTIME,@CARTYPE,@CarNo,@OUTBRNH,@INBRNH,@ORDAMT,@REMARK,@PAYAMT,@RPRICE
-				,@RINV,@DISRATE,@NETRPRICE,@RNTAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
+				,@RINV,@DISRATE,@NETRPRICE,@ORDAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
 				,@INVTITLE,@UNIMNO,@TSEQNO,@ORDNO,@NowTime,@NowTime,@isRetry,@RetryTimes,@CARRIERID,@NPOBAN
 				,@NOCAMT);
 			
+			IF NOT EXISTS(SELECT * FROM TB_lendCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
+			BEGIN
+			--順便寫入出車(125必須要等060跑過產生預約編號才可以進行同步)
+			INSERT INTO TB_lendCarControl
+			(
+				  [PROCD], [ORDNO], [IRENTORDNO], [CUSTID], [CUSTNM]
+				, [BIRTH], [CUSTTYPE], [ODCUSTID], [CARTYPE], [CARNO]
+				, [TSEQNO], [GIVEDATE], [GIVETIME], [RENTDAYS], [GIVEKM]
+				, [OUTBRNHCD], [RNTDATE], [RNTTIME], [RNTKM], [INBRNHCD]
+				, [RPRICE], [RINSU], [DISRATE], [OVERHOURS], [OVERAMT2]
+				, [RNTAMT], [RENTAMT], [LOSSAMT2], [PROJID], [REMARK]
+				, [INVKIND], [UNIMNO], [INVTITLE], [INVADDR], [MKTime]
+				, [UPDTime], [isRetry], [RetryTimes], [CARRIERID], [NPOBAN], [NOCAMT]
+			)
+			SELECT @PROCD
+				  ,@ORDNO		AS ORDNO		--現階段不會有短租的預約編號
+				  ,@OrderNo		AS IRENTORDNO
+				  ,@IDNO		AS CUSTID
+				  ,@ODCUSTNM	AS CUSTNM
+
+				  ,CONVERT(VARCHAR(10),@BIRTH,120) AS BIRTH
+				  ,CASE WHEN LEN(@IDNO)=10 THEN '1' ELSE '2' END AS CUSTTYPE
+				  ,'' AS ODCUSTID
+				  ,@CARTYPE		AS CARTYPE
+				  ,@CarNo		AS CARNO
+				  
+				  ,@TSEQNO		AS TSEQNO
+				  ,@GIVEDATE	AS GIVEDATE
+				  ,@GIVETIME	AS GIVETIME
+				  ,0			AS RENTDAYS
+				  ,@GIVEKM		AS GIVEKM
+
+				  ,@OUTBRNH		AS OUTBRNHCD
+				  ,@RNTDATE		AS RNTDATE
+				  ,@RNTTIME		As RNTTIME
+				  ,@RNTKM		AS RNTKM
+				  ,@INBRNH		AS INBRNHCD
+
+				  ,@RPRICE		AS RPRICE
+				  ,@RINV		AS RINSU
+				  ,@DISRATE		AS DISRATE
+				  ,0			AS OVERHOURS
+				  ,0			AS OVERAMT2
+
+				  ,@RNTAMT		AS RNTAMT
+				  ,@RNTAMT		AS RENTAMT
+				  ,0			AS LOSSAMT2
+				  ,@PROJID		AS PROJID
+				  ,@REMARK		AS REMARK
+
+				  ,@INVKIND		AS INVKIND
+				  ,@UNIMNO		AS UNIMNO
+				  ,@INVTITLE	AS INVTITLE
+				  ,''			AS INVADDR
+				  ,@NowTime		AS MKTime
+
+				  ,@NowTime		AS UPDTIME
+				  ,0			AS IsRetry
+				  ,0			AS RetryTimes
+				  ,@CARRIERID	AS CARRIERID
+				  ,@NPOBAN		AS NPOBAN
+				  ,@NOCAMT		AS NOCAMT
+			END
+
 			COMMIT TRAN;
 		END
 		ELSE

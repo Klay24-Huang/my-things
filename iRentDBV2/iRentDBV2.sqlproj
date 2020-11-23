@@ -384,6 +384,9 @@
     <Build Include="dbo\Stored Procedures\usp_InsOrderModifyLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsTrade.sql" />
     <Build Include="dbo\Stored Procedures\usp_UPDTrade.sql" />
+    <Build Include="dbo\Functions\FN_CalRntdays.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ReturnControlSuccess.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HiEasyRetry_Q.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

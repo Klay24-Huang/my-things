@@ -1189,7 +1189,7 @@ namespace OtherService
         }
         #endregion
         #region 130
-        public bool NPR130Save(WebAPIInput_NPR130Save input, ref WebAPIOutput_NPR125Save output)
+        public bool NPR130Save(WebAPIInput_NPR130Save input, ref WebAPIOutput_NPR130Save output)
         {
             bool flag = false;
 
@@ -1208,9 +1208,9 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private async Task<WebAPIOutput_NPR125Save> DoNPR130Save(WebAPIInput_NPR130Save input)
+        private async Task<WebAPIOutput_NPR130Save> DoNPR130Save(WebAPIInput_NPR130Save input)
         {
-            WebAPIOutput_NPR125Save output = null;
+            WebAPIOutput_NPR130Save output = null;
             Int16 IsSuccess = 0;
             string ORDNO = "";
             DateTime MKTime = DateTime.Now;
@@ -1239,7 +1239,7 @@ namespace OtherService
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
-                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR125Save>(responseStr);
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR130Save>(responseStr);
                         if (output.Result)
                         {
                             IsSuccess = 1;
@@ -1252,7 +1252,7 @@ namespace OtherService
             catch (Exception ex)
             {
                 RTime = DateTime.Now;
-                output = new WebAPIOutput_NPR125Save()
+                output = new WebAPIOutput_NPR130Save()
                 {
 
                     Message = "發生異常錯誤",

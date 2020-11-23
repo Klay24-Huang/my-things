@@ -358,7 +358,7 @@ namespace WebAPI.Controllers
                                 }
                               
                             }
-                            WebAPIOutput_NPR125Save output = new WebAPIOutput_NPR125Save();
+                            WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
                             if (flag)
                             {
@@ -371,7 +371,7 @@ namespace WebAPI.Controllers
                                 }
 
 
-                                bool saveFlag = DoSave130Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
+                                bool saveFlag = DoSave130Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), output.Data[0].INVNO,output.Data[0].INDATE,output.Data[0].INVAMT, LogID, ref lstError, ref errCode);
                             }
                         }
                     }
@@ -426,18 +426,21 @@ namespace WebAPI.Controllers
             return flag;
 
         }
-        private bool DoSave130Data(Int64 OrderNo, Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        private bool DoSave130Data(Int64 OrderNo, Int16 IsSuccess, string INVNO, string INVDATE, int INVAMT, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);
-            SPInput_BE_LandControlSuccess spInput = new SPInput_BE_LandControlSuccess()
+            SPInput_BE_ReturnControlSuccess spInput = new SPInput_BE_ReturnControlSuccess()
             {
                 IsSuccess = IsSuccess,
                 LogID = LogID,
-                OrderNo = OrderNo
+                OrderNo = OrderNo,
+                INVNO = INVNO,
+                INVDATE = INVDATE,
+                INVAMT = INVAMT
             };
             SPOutput_Base spOut = new SPOutput_Base();
-            SQLHelper<SPInput_BE_LandControlSuccess, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_LandControlSuccess, SPOutput_Base>(connetStr);
+            SQLHelper<SPInput_BE_ReturnControlSuccess, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_ReturnControlSuccess, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;

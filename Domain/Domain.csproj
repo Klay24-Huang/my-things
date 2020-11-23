@@ -88,6 +88,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
@@ -385,6 +386,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR125Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR130Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR172Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
