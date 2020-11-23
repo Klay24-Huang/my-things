@@ -79,7 +79,7 @@ namespace WebAPI.Controllers
             string CardToken = "";
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetUnBindLog);
                 SPInput_GetUnBindLog spUnBindLogInput = new SPInput_GetUnBindLog()
                 {
                     IDNO = IDNO,
