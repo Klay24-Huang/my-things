@@ -588,18 +588,23 @@ namespace WebAPI.Controllers
                         {
                             int n_price = OrderDataLists[0].PRICE * 10;
                             int h_price = OrderDataLists[0].PRICE_H * 10;
-                            int inPrice = new BillCommon().CarRentCompute(SD, ED, n_price, h_price, 10, lstHoliday);
-                            CarRentPrice = inPrice;
+
                             if (hasFine)
                             {
                                 //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday,true);
+
+                                int inPrice = new BillCommon().CarRentCompute(SD, ED, n_price, h_price, 10, lstHoliday);
+                                CarRentPrice = inPrice;
+
+                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true);
                                 CarRentPrice += overPrice;
                             }
-                            //else
-                            //{
-                            //    CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                            //}
+                            else
+                            {
+                                //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                                int inPrice = new BillCommon().CarRentCompute(SD, FED, n_price, h_price, 10, lstHoliday);
+                                CarRentPrice = inPrice;
+                            }
                         }
                         if (Discount > 0)
                         {
