@@ -92,6 +92,8 @@ namespace Web.Controllers
             }
             Data.detail = new BE_AuditDetail();
             Data.detail = obj;
+            Data.detail.SPED = obj.SPED != "" ? obj.SPED.Substring(0, 4) + "-" + obj.SPED.Substring(4, 2) + "-" + obj.SPED.Substring(6, 2) : obj.SPED;
+            Data.detail.SPSD = obj.SPSD != "" ? obj.SPSD.Substring(0, 4) + "-" + obj.SPSD.Substring(4, 2) + "-" + obj.SPSD.Substring(6, 2) : obj.SPSD;
             if (lstAudits != null)
             {
 
