@@ -125,43 +125,43 @@ namespace WebAPI.Controllers
                 WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                 flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
                 int Len = wsOutput.ResponseParams.ResultData.Count;
+                if (Len > 0)
+                {
+                    int index = wsOutput.ResponseParams.ResultData.FindIndex(delegate (GetCreditCardResultData obj)
+                    {
+                        return obj.CardToken == CardToken;
+                    });
+                    if (index > -1)
+                    {
+                        hasFind = true;
+                    }
+
+                    objparms = new object[Len == 0 ? 1 : Len];
                     if (Len > 0)
                     {
-                        int index = wsOutput.ResponseParams.ResultData.FindIndex(delegate (GetCreditCardResultData obj)
+                        for (int i = 0; i < Len; i++)
                         {
-                            return obj.CardToken == CardToken;
-                        });
-                        if (index > -1)
-                        {
-                            hasFind = true;
-                        }
-
-                        objparms = new object[Len == 0 ? 1 : Len];
-                        if (Len > 0)
-                        {
-                            for (int i = 0; i < Len; i++)
+                            objparms[i] = new
                             {
-                                objparms[i] = new
-                                {
-                                    BankNo = wsOutput.ResponseParams.ResultData[i].BankNo,
-                                    CardNumber = wsOutput.ResponseParams.ResultData[i].CardNumber,
-                                    CardName = wsOutput.ResponseParams.ResultData[i].CardName,
-                                    AvailableAmount = wsOutput.ResponseParams.ResultData[i].AvailableAmount,
-                                    CardToken = wsOutput.ResponseParams.ResultData[i].CardToken
-                                };
-                            }
-                        }
-                        else
-                        {
-                            objparms[0] = new
-                            {
-                                BankNo = "",
-                                CardNumber = "",
-                                CardName = "",
-                                AvailableAmount = "",
-                                CardToken = ""
+                                BankNo = wsOutput.ResponseParams.ResultData[i].BankNo == null ? "" : wsOutput.ResponseParams.ResultData[i].BankNo,
+                                CardNumber = wsOutput.ResponseParams.ResultData[i].CardNumber,
+                                CardName = wsOutput.ResponseParams.ResultData[i].CardName,
+                                AvailableAmount = wsOutput.ResponseParams.ResultData[i].AvailableAmount == null ? "" : wsOutput.ResponseParams.ResultData[i].AvailableAmount,
+                                CardToken = wsOutput.ResponseParams.ResultData[i].CardToken
                             };
                         }
+                    }
+                    else
+                    {
+                        objparms[0] = new
+                        {
+                            BankNo = "",
+                            CardNumber = "",
+                            CardName = "",
+                            AvailableAmount = "",
+                            CardToken = ""
+                        };
+                    }
                 }
                 else
                 {
