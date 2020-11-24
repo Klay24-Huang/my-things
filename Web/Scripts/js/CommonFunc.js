@@ -444,7 +444,7 @@ function SetCity(obj) {
 function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
     var CityList = localStorage.getItem("CityList");
     var AreaList = localStorage.getItem("AreaList");
-    console.log(CityList);
+    //console.log(CityList);
     obj.empty();
     if (CheckStorageIsNull(CityList)) {
         CityList = JSON.parse(CityList);
@@ -483,7 +483,7 @@ function SetCityHasSelectedhaveZipCode(obj, selectValue, triggerObj, triggerObjS
     var CityList = localStorage.getItem("CityList");
     var AreaList = localStorage.getItem("AreaList");
     var ZipCode = "";
-    console.log(CityList);
+    //console.log(CityList);
     obj.empty();
     if (CheckStorageIsNull(CityList)) {
         CityList = JSON.parse(CityList);
@@ -494,7 +494,7 @@ function SetCityHasSelectedhaveZipCode(obj, selectValue, triggerObj, triggerObjS
     if (CityList.length > 0) {
         var CityLen = CityList.length;
         for (var i = 0; i < CityLen; i++) {
-            console.log(CityList[i].CityName);
+            //console.log(CityList[i].CityName);
             obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
         }
         obj.val(selectValue);
