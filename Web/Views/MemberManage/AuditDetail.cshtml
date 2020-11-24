@@ -129,7 +129,7 @@
         MobileLen = (obj.SameMobile == null) ? 0 : obj.SameMobile.Count();
         HistoryLen = (obj.History == null) ? 0 : obj.History.Count();
 
-        if (obj.detail.HasAudit != 0 && HistoryLen>0)
+        if (HistoryLen>0)
         {
             IsReject = obj.History[obj.History.Count - 1].IsReject.ToString();
             RejectReason = obj.History[obj.History.Count - 1].RejectReason;
