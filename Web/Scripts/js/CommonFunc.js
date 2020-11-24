@@ -455,7 +455,7 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
     if (CityList.length > 0) {
         var CityLen = CityList.length;
         for (var i = 0; i < CityLen; i++) {
-            console.log(CityList[i].CityName);
+            //console.log(CityList[i].CityName);
             obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
         }
         obj.val(selectValue);
