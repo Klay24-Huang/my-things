@@ -230,7 +230,7 @@ BEGIN TRY
 			SET @RENTDAY=0;
 			SET @EBONUS=0;
 			SET @TYPE=1;
-			SET @isRetry=0;
+			SET @isRetry=1;
 			SET @RetryTimes=0;
 			SET @ORDNO='';
 			SET @IRENTORDNO = 'H' + RIGHT(REPLICATE('0', 7) + CAST(@OrderNo as VARCHAR), 7)
@@ -316,7 +316,7 @@ BEGIN TRY
 				  ,@NowTime		AS MKTime
 
 				  ,@NowTime		AS UPDTIME
-				  ,0			AS IsRetry
+				  ,1			AS IsRetry
 				  ,0			AS RetryTimes
 				  ,@CARRIERID	AS CARRIERID
 				  ,@NPOBAN		AS NPOBAN

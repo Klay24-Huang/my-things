@@ -21,7 +21,7 @@ namespace Reposotory.Implement
             this.ConnectionString = ConnStr;
         }
         /// <summary>
-        /// 取得所有有效的停車場
+        /// 取得專案資訊
         /// </summary>
         /// <returns></returns>
         public ProjectInfo GetProjectInfo(string ProjID)

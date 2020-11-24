@@ -211,7 +211,7 @@ SET @ParkingSpace='';
 							CAST(B.end_mile AS INT),C.INBRNHCD,C.RPRICE,C.RINSU,C.DISRATE,B.fine_interval/600,
 							fine_price,final_price,pure_price,mileage_price,A.ProjID,C.REMARK,
 							C.INVKIND,C.UNIMNO,C.INVTITLE,C.INVADDR,B.gift_point,B.gift_motor_point,
-							CASRDNO='',B.already_payment,AUTHCODE='',isRetry=0,RetryTimes=0,B.Etag,
+							CASRDNO='',B.already_payment,AUTHCODE='',isRetry=1,RetryTimes=0,B.Etag,
 							C.CARRIERID,C.NPOBAN,B.Insurance_price,B.parkingFee,@NowTime,@NowTime
 						FROM TB_OrderMain A WITH(NOLOCK)
 						JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
