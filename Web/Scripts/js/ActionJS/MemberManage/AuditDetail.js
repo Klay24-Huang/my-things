@@ -36,7 +36,21 @@ $(function () {
         } else {
             $("#NotAuditReason").prop("disabled", "disabled");
         }
-    })
+    });
+
+    //20201124 UPD BY JERRY 增加載入時，欄位狀態處理
+    if ($("#AuditReject").prop("checked")) {
+        $("#NotAuditReason").prop("disabled", "");
+        setTimeout(function () {
+            console.log($('#NotAuditReason').val());
+            if ($('#NotAuditReason').val() == '其他') {
+                $("#RejectReason").prop("readonly", "");
+                $("#RejectReason").prop("disabled", "");
+            }
+        }, 300);
+    }
+
+
     for (var i = 0; i < fieldLen; i++) {
         $("input[name='" + fieldName[i] + "_AuditStatus']").on("click", function () {
             var textName = $(this).attr("name").replace("AuditStatus", "RejectReason");
