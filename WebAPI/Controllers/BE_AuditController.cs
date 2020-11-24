@@ -233,7 +233,7 @@ namespace WebAPI.Controllers
                         Message = string.Format("iRent審核未通過：" +
                             "您尚未通過iRent會員申請，" +
                             "原因為({0}，請登入App重新操作，" +
-                            "如有疑問請洽客服0800-024-550", apiInput.NotAuditReason == "" ? apiInput.RejectReason : apiInput.NotAuditReason);
+                            "如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
                     }
                     else
                     {
@@ -241,7 +241,7 @@ namespace WebAPI.Controllers
                         "很抱歉，" +
                         "您申請變更「iRent共享汽機車會員」身分審核" +
                         "({0})未通過，" +
-                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.NotAuditReason == "" ? apiInput.RejectReason : apiInput.NotAuditReason);
+                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
                     }
                 }
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
