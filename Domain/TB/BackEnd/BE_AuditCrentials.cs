@@ -40,5 +40,17 @@ namespace Domain.TB.BackEnd
         public int Other_1_IsNew { set; get; } = 2;
         public int Business_1_IsNew { set; get; } = 2;
 
+        public string ID_1_UPDTime { set; get; } = "";
+        public string ID_2_UPDTime { set; get; } = "";
+        public string Car_1_UPDTime { set; get; } = "";
+        public string Car_2_UPDTime { set; get; } = "";
+        public string Motor_1_UPDTime { set; get; } = "";
+        public string Motor_2_UPDTime { set; get; } = "";
+        public string Self_1_UPDTime { set; get; } = "";
+        public string Signture_1_UPDTime { set; get; } = "";
+        public string F01_UPDTime { set; get; } = "";
+        public string Other_1_UPDTime { set; get; } = "";
+        public string Business_1_UPDTime { set; get; } = "";
+
     }
 }

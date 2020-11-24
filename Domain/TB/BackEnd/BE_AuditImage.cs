@@ -56,5 +56,9 @@ namespace Domain.TB.BackEnd
         /// <para>1:是</para>
         /// </summary>
         public Int16 IsNew { set; get; }
+        /// <summary>
+        /// 更新時間
+        /// </summary>
+        public DateTime UPDTime { set; get; }
     }
 }
