@@ -143,6 +143,12 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
  		 END
+
+		--20201124 UPD BY Jerry	增加預估里程計算
+		IF @deviceMBA>0 or @deviceLBA>0 or @deviceRBA>0
+		SET @deviceRDistance=Round((@deviceMBA*9600+@deviceLBA*12000+@deviceRBA*12000)/(CASE @deviceMBA WHEN 0 THEN 0 ELSE 9600 END+CASE @deviceLBA WHEN 0 THEN 0 ELSE 12000 END+CASE @deviceRBA WHEN 0 THEN 0 ELSE 12000 END)*0.45,1);
+		ELSE
+		SET @deviceRDistance=0;
 		 
 		IF @Error=0
 		BEGIN
