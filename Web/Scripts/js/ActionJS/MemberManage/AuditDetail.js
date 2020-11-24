@@ -69,9 +69,11 @@ $(function () {
         var NotAuditReason = $("#NotAuditReason").val();
         var RejectReason = $("#RejectReason").val();
         var Area = $("#Area").val();
-        var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()):0
+        //var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()) : 0;
+        //20201124 UPD BY JERRY 修改發送簡訊判斷
+        var SendMessage = $("#SendMessage").prop("checked") ? 1 : 0;
         
-        console.log("AuditStatus=" + AuditStatus);
+        //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
             console.log($(this).val());
             Driver.push($(this).val());
@@ -213,6 +215,9 @@ $(function () {
         }
     });
 
+    if (MobileLen > 0) {
+        $('#btnCheckSameMobile').click();
+    }
     setPostbackValue();
 })
 function ShowPIC(site) {
