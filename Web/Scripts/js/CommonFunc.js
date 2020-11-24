@@ -468,7 +468,7 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
         if (tmpAreaLen > 0) {
            
             for (var i = 0; i < tmpAreaLen; i++) {
-                console.log(tmpArea[i].AreaName);
+                //console.log(tmpArea[i].AreaName);
                 triggerObj.append($('<option>', { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName }));
             }
             if (triggerObjSelectValue != "" && triggerObjSelectValue != "0") {
