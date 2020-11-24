@@ -646,7 +646,7 @@ namespace WebAPI.Models.BillFunc
                         var pay_xhours = Math.Floor(pay_mins / 60);
                         var pay_xmins = pay_mins % 60;
 
-                        if (minsPro != null && pay_xmins > 0)
+                        if (minsPro != null && pay_xmins > 0 && pay_xmins < 60)
                             pay_xmins = minsPro(pay_xmins);
 
                         var allPayMis = pay_xhours * 60 + pay_xmins;
@@ -673,7 +673,7 @@ namespace WebAPI.Models.BillFunc
                             double _af_xhour = Math.Floor(_af_mins / 60);//後日小時
                             double _af_xmins = _af_mins % 60;//後日分
 
-                            if (minsPro != null && _af_mins > 0)//未滿60處理
+                            if (minsPro != null && _af_xmins > 0 && _af_xmins < 60)//未滿60處理
                                 _af_xmins = minsPro(_af_xmins);
 
                             var allPayMins = _af_xhour * 60 + _af_xmins;
@@ -696,7 +696,7 @@ namespace WebAPI.Models.BillFunc
 
                             if (lastMins < 60)
                             {
-                                if (minsPro != null && lastMins > 0)
+                                if (minsPro != null && lastMins > 0 && lastMins < 60)
                                     lastMins = minsPro(lastMins);
 
                                 if (sd_isHoliday)
@@ -714,12 +714,10 @@ namespace WebAPI.Models.BillFunc
 
                                 //後日-相對整點起
                                 var af_star = SD.AddHours(bef_xhours + 1);
-                                //var af_mins = sd10.Subtract(af_star).TotalMinutes;
                                 var af_mins = sd10.Subtract(af_star).TotalMinutes;
                                 var af_xhours = Math.Floor(af_mins / 60);
                                 var af_xmins = af_mins % 60;
 
-                                //20201121 ADD BY ADAM REASON.暫時修改為af_xmins，待確認
                                 if (minsPro != null && af_xmins > 0 && af_xmins < 60)//尾數分轉有計費分鐘
                                     af_xmins = minsPro(af_xmins);
 
