@@ -73,7 +73,7 @@ SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 SET @FunName='usp_InsWebAPILog';
 SET @IsSystem=0;
-SET @NowTime=DATEADD(hour,8,GETDATE());
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @TmpWebAPIURL='';
 SET @TmpWebAPIName='';
 SET @APIID=0;
@@ -100,19 +100,21 @@ SET @UPDTime     =ISNULL(@UPDTime     ,@NowTime);
 		 END
 		 IF @Error=0
 		 BEGIN
-		     SELECT @APIID=WebAPIId,@TmpWebAPIURL=WebAPIURL,@TmpWebAPIName=WebAPIName FROM TB_WebAPIList WITH (NOLOCK) WHERE WebAPIName=@WebAPIName OR WebAPIURL=@WebAPIURL;
+		     SELECT @APIID=WebAPIId,@TmpWebAPIURL=WebAPIURL,@TmpWebAPIName=WebAPIName FROM TB_WebAPIList WITH (NOLOCK) WHERE WebAPIName=@WebAPIName;
 
 			 IF @APIID=0
 			 BEGIN
 			    SET @Error=1;
 				SET @ErrorCode='ERR908';
+				SET @SQLExceptionMsg = 'Input: @WebAPIName=' + @WebAPIName + ';' + '@WebAPIURL=' + @WebAPIURL
 			 END
 			 ELSE
 			 BEGIN
-			   IF @TmpWebAPIURL<>@WebAPIURL OR @TmpWebAPIName<>@WebAPIName
+			   IF @TmpWebAPIName<>@WebAPIName
 			   BEGIN
 			     SET @Error=1;
 				 SET @ErrorCode='ERR909';  --呼叫的url或是功能不正確
+				 SET @SQLExceptionMsg = 'Input: @WebAPIId=' + CAST(@APIID AS VARCHAR(10)) + ';' + '@WebAPIName=' + @WebAPIName + ';' + '@WebAPIURL=' + @WebAPIURL
 			   END
 	
 			 END
