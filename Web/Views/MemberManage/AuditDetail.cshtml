@@ -610,6 +610,8 @@
                                         <option value="資料需再確認">資料需再確認</option>
                                         <option value="未上傳法定代理人同意書">未上傳法定代理人同意書</option>
                                         <option value="法定代理人同意書資料異常">法定代理人同意書資料異常</option>
+                                        <option value="電子簽名請簽正楷中文">電子簽名請簽正楷中文</option>
+                                        <option value="自拍照有誤">自拍照有誤</option>
                                         <option value="其他">其他</option>
                                     </select>
                                 </div>
@@ -702,6 +704,7 @@
                                                 <div class="col-md-4">
                                                     <img id="ID_1_PIC" name="ID_1_PIC" src="@(obj.Images.ID_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.ID_1)')" />
                                                     <span>@(ID_1_str)</span>
+                                                    <span><br>@(obj.Images.ID_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="ID_1" id="ID_1">
@@ -759,6 +762,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="ID_2_PIC" name="ID_2_PIC" src="@(obj.Images.ID_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.ID_2)')" />   <span>@(ID_2_str)</span>
+                                                    <span><br>@(obj.Images.ID_2_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="ID_2" id="ID_2">
@@ -815,6 +819,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Car_1_PIC" name="Car_1_PIC" src="@(obj.Images.Car_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_1)')" />   <span>@(Car_1_str)</span>
+                                                    <span><br>@(obj.Images.Car_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Car_1" id="Car_1">
@@ -871,6 +876,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Car_2_PIC" name="Car_2_PIC" src="@(obj.Images.Car_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_2)')" />   <span>@(Car_2_str)</span>
+                                                    <span><br>@(obj.Images.Car_2_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Car_2" id="Car_2">
@@ -927,6 +933,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Motor_1_PIC" name="Motor_1_PIC" src="@(obj.Images.Motor_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_1)')" />   <span>@(Motor_1_str)</span>
+                                                    <span><br>@(obj.Images.Motor_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Motor_1" id="Motor_1">
@@ -983,6 +990,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Motor_2_PIC" name="Motor_2_PIC" src="@(obj.Images.Motor_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_2)')" />   <span>@(Motor_2_str)</span>
+                                                    <span><br>@(obj.Images.Motor_2_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Motor_2" id="Motor_2">
@@ -1039,6 +1047,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Self_1_PIC" name="Self_1_PIC" src="@(obj.Images.Self_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Self_1)')" />   <span>@(Self_1_str)</span>
+                                                    <span><br>@(obj.Images.Self_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Self_1" id="Self_1">
@@ -1095,6 +1104,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Signture_1_PIC" name="Signture_1_PIC" src="@(obj.Images.Signture_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Signture_1)')" />   <span>@(Signture_1_str)</span>
+                                                    <span><br>@(obj.Images.Signture_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Signture_1" id="Signture_1">
@@ -1151,6 +1161,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="F01_PIC" name="F01_PIC" src="@(obj.Images.F01)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.F01)')" />   <span>@(F01_str)</span>
+                                                    <span><br>@(obj.Images.F01_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="F01" id="F01">
@@ -1207,6 +1218,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Other_1_PIC" name="Other_1_PIC" src="@(obj.Images.Other_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Other_1)')" />   <span>@(Other_1_str)</span>
+                                                    <span><br>@(obj.Images.Other_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Other_1" id="Other_1">
@@ -1263,6 +1275,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <img id="Business_1_PIC" name="Business_1_PIC" src="@(obj.Images.Business_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Business_1)')" />   <span>@(Business_1_str)</span>
+                                                    <span><br>@(obj.Images.Business_1_UPDTime)</span>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <select name="Business_1" id="Business_1">
@@ -1355,11 +1368,11 @@
                                 for (int i = 0; i < HistoryLen; i++)
                                 {
                                     string HandleType = "未處理";
-                                    if (obj.History[i].HandleType <2)
+                                    if (obj.History[i].IsReject ==1)
                                     {
                                         HandleType = "已處理，審核未通過";
                                     }
-                                    else if(obj.History[i].HandleType==2)
+                                    else if(obj.History[i].IsReject !=1)
                                     {
                                         HandleType = "已處理，審核已通過";
                                     }
