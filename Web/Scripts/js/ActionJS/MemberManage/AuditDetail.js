@@ -165,9 +165,55 @@ $(function () {
                 errMsg = "請輸入手機號碼";
             }
         }
+        setData();
+        if (flag) {
+            if ($.trim(Obj.ID_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.ID_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【汽車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【汽車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【機車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【機車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Self_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【自拍照】的照片審核結果";
+            }
+            if ($.trim(Obj.F01_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【法定代理人】的照片審核結果";
+            }
+            if ($.trim(Obj.Other_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【其他證件】的照片審核結果";
+            }
+            if ($.trim(Obj.Business_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【企業用戶】的照片審核結果";
+            }
+            if ($.trim(Obj.Signture_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【簽名檔】的照片審核結果";
+            }
+        }
         if (flag) {
            
-            setData();
             SendObj.ImageData = Obj;
             SendObj.IDNO = $("#IDNO").val();
             SendObj.Driver = Driver;
@@ -195,6 +241,7 @@ $(function () {
             SendObj.MEMEMAIL = MEMEMAIL;
             SendObj.HasVaildEMail = HasVaildEMail;
             SendObj.MEMMSG = MEMMSG;
+            
 
             DoAjaxAfterGoBack(SendObj, "BE_Audit", "審核發生錯誤");
             
@@ -248,8 +295,54 @@ $(function () {
                 } 
             }
         }
+        setData();
         if (flag) {
-            setData();
+            if ($.trim(Obj.ID_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.ID_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【汽車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【汽車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【機車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【機車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Self_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【自拍照】的照片審核結果";
+            }
+            if ($.trim(Obj.F01_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【法定代理人】的照片審核結果";
+            }
+            if ($.trim(Obj.Other_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【其他證件】的照片審核結果";
+            }
+            if ($.trim(Obj.Business_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【企業用戶】的照片審核結果";
+            }
+            if ($.trim(Obj.Signture_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【簽名檔】的照片審核結果";
+            }
+        }
+        if (flag) {
             console.log(JSON.stringify(Obj));
             $("#tmpPicData").val(JSON.stringify(Obj));
             $("#picreject").val(reject);
@@ -286,8 +379,8 @@ function setData() {
 
     Obj.ID_2 = 2;
     Obj.ID_2_new = change(field[1] );
-    Obj.ID_2_Audit = fieldAudit[0] ;
-    Obj.ID_2_Reason = fieldReason[0];
+    Obj.ID_2_Audit = fieldAudit[1] ;
+    Obj.ID_2_Reason = fieldReason[1];
     Obj.ID_2_Image = $("#ID_2_PIC").attr('src');
 
     Obj.Car_1 = 3;

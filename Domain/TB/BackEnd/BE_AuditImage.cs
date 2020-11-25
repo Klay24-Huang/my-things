@@ -60,5 +60,13 @@ namespace Domain.TB.BackEnd
         /// 更新時間
         /// </summary>
         public DateTime UPDTime { set; get; }
+        /// <summary>
+        /// 審核結果
+        /// </summary>
+        public Int16 AuditResult { set; get; }
+        /// <summary>
+        /// 拒絕原因
+        /// </summary>
+        public string RejectReason { set; get; }
     }
 }
