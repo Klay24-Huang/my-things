@@ -174,7 +174,7 @@ AS
 
 		if @dayPro <> ''
 		begin
-           select top 1 @w_allmins = d.wMins, @h_allmins =  d.hMins from dbo.dayMinsProcess(@dayPro, @w_allmins,@h_allmins) d          
+           select top 1 @w_allmins = d.wMins, @h_allmins =  d.hMins from dbo.FN_dayPro(@dayPro, @w_allmins,@h_allmins) d          
 		end
 
 		insert into @re

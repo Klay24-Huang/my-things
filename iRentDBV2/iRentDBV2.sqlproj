@@ -387,7 +387,6 @@
     <Build Include="dbo\Functions\FN_CalRntdays.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ReturnControlSuccess.sql" />
     <Build Include="dbo\Stored Procedures\usp_HiEasyRetry_Q.sql" />
-    <Build Include="dbo\Functions\dayMinsProcess.sql" />
     <Build Include="dbo\Functions\FN_minsPro.sql" />
     <Build Include="dbo\Functions\FN_GetH24Mins.sql" />
     <Build Include="dbo\Functions\FN_GetRangeMins.sql" />
@@ -395,6 +394,7 @@
     <Build Include="dbo\Functions\FN_MotoRentCompute.sql" />
     <Build Include="dbo\Functions\FN_MotoRentPara.sql" />
     <Build Include="dbo\Functions\FN_MotoRentTrial.sql" />
+    <Build Include="dbo\Functions\FN_dayPro.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

@@ -3,7 +3,7 @@
 -- Create date: 2020-11-24
 -- Description:	單日時間轉計費時間(特殊)
 -- =============================================
-CREATE FUNCTION [dbo].[dayMinsProcess]
+CREATE FUNCTION [dbo].[FN_dayPro]
 (
     @funType varchar(20) = '', --carOverTime /	汽車逾時
 	@wMins int = 0,
