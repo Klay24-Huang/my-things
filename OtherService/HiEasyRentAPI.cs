@@ -26,6 +26,7 @@ namespace OtherService
         protected string userid;
         protected string apikey;
         protected string BaseURL;
+        protected string NPR013RegURL;     //新增短租會員 20201126 ADD BY ADAM
         protected string NPR060SaveURL; //060
         protected string NPR125SaveURL; //
         protected string NPR130SaveURL; //
@@ -81,6 +82,8 @@ namespace OtherService
             ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
             ETAG020QueryURL = (ConfigurationManager.AppSettings.Get("ETAG020QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG020QueryURL").ToString();
             ETAG031SaveURL = (ConfigurationManager.AppSettings.Get("ETAG031SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG031SaveURL").ToString();
+            //20201126 ADD BY ADAM REASON.新增短租會員
+            NPR013RegURL = (ConfigurationManager.AppSettings.Get("NPR013RegURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR013RegURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -1572,6 +1575,92 @@ namespace OtherService
         #endregion
         #region 136
         #endregion
+        #endregion
+        #region 會員相關
+        public bool NPR013Reg(string IDNO,string MEMCNAME, ref WebAPIOutput_NPR013Reg output)
+        {
+            bool flag = false;
+            WebAPIInput_NPR013Reg input = new WebAPIInput_NPR013Reg()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                MEMIDNO = IDNO,
+                MEMCNAME = MEMCNAME,
+                MEMPWD = "",
+                MEMCEIL = ""
+            };
+
+            output = DoNPR013Reg(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 點數查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR013Reg> DoNPR013Reg(WebAPIInput_NPR013Reg input)
+        {
+            WebAPIOutput_NPR013Reg output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR013RegURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR013Reg>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR013Reg()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR013Reg",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR013RegURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
         #endregion
     }
 }

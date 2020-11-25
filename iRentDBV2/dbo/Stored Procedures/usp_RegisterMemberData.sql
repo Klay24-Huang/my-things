@@ -53,6 +53,7 @@ CREATE PROCEDURE [dbo].[usp_RegisterMemberData]
 	@MEMEMAIL				VARCHAR(200)			,	--EMail
 	@LogID                  BIGINT					,
 	@FileName		        VARCHAR(100)			,	--簽名檔檔案名稱
+	@MEMRFNBR				INT						,	--短租會員流水號
 	@ErrorCode 				VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
@@ -120,7 +121,8 @@ BEGIN TRY
 		UPDATE TB_MemberData
 		SET IrFlag=1,
 			U_USERID=@IDNO,
-			U_SYSDT=@NowTime
+			U_SYSDT=@NowTime,
+			MEMRFNBR=@MEMRFNBR		--更新短租會員流水號
 		WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
@@ -194,6 +196,7 @@ BEGIN TRY
 				IsNew=CASE WHEN @AUDIT=1 THEN 0 ELSE 1 END
 			WHERE MEMIDNO=@IDNO;
 		END
+
 	END
 
 	--寫入錯誤訊息

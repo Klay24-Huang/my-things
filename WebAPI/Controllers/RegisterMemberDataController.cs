@@ -12,6 +12,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
 
 namespace WebAPI.Controllers
 {
@@ -49,6 +51,7 @@ namespace WebAPI.Controllers
             DateTime Birth = DateTime.Now;
             string Contentjson = "";
             string FileName = "";
+            int MEMRFNBR = 0;
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
@@ -133,6 +136,21 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
+            //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
+            if (flag)
+            {
+                WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
+                HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                flag = wsAPI.NPR013Reg(apiInput.IDNO, apiInput.MEMCNAME, ref wsOutput);
+                if (flag)
+                {
+                    if (wsOutput.Data.Length > 0)
+                    {
+                        MEMRFNBR = wsOutput.Data[0].MEMRFNBR == "" ? 0 : int.Parse(wsOutput.Data[0].MEMRFNBR);
+                    }
+                }
+            }
+
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.RegisterMemberData);
@@ -146,6 +164,7 @@ namespace WebAPI.Controllers
                     MEMADDR = apiInput.MEMADDR,
                     MEMEMAIL = apiInput.MEMEMAIL,
                     FileName = FileName,
+                    MEMRFNBR = MEMRFNBR,     //20201126 ADD BY ADAM REASON.增加短租流水號
                     LogID = LogID,
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

@@ -37,6 +37,7 @@
     [SPSD]           VARCHAR (8)     CONSTRAINT [DF_TB_MemberData_SPSD] DEFAULT ('') NOT NULL,
     [SPED]           VARCHAR (8)     CONSTRAINT [DF_TB_MemberData_SPED] DEFAULT ('') NOT NULL,
     [PushREGID]      BIGINT          CONSTRAINT [DF_TB_MemberData_PushREGID] DEFAULT ((0)) NOT NULL,
+    [MEMRFNBR] INT NOT NULL DEFAULT ((0)), 
     CONSTRAINT [PK_TB_MemberData] PRIMARY KEY CLUSTERED ([MEMIDNO] ASC)
 );
 
@@ -180,7 +181,7 @@ GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'由哪個程式新增，對應TB_APILIST PK', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'A_PRGID';
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'推播註冊流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'PushREGID';
+
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'會員資料表', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData';
@@ -203,5 +204,23 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'特殊身�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'推播註冊流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'PushREGID';
 
+
+
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'推播註冊ID',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberData',
+    @level2type = N'COLUMN',
+    @level2name = N'PushREGID'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'短租easyrent會員流水號',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MemberData',
+    @level2type = N'COLUMN',
+    @level2name = N'MEMRFNBR'
