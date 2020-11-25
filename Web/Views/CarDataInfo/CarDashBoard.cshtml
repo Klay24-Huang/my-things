@@ -45,8 +45,9 @@
                        select data).ToList();
         MotoResultLen = lstMotoData.Count();
         MotorRent = lstMotoData.Count(p => p.NowStatus == 0);
-        MotoOneHour = lstMotoData.Count(p => p.LastUpdate != "" && Convert.ToDateTime(p.LastUpdate) <= NoReponseOneHour);
-        MotoNoResponse = lstMotoData.Count(p => p.LastUpdate == "" && Convert.ToDateTime(p.LastUpdate) < NoResponse && Convert.ToDateTime(p.LastUpdate) > NoReponseOneHour);
+        MotoOneHour = lstMotoData.Count(p => p.LastUpdate != "" && Convert.ToDateTime(p.LastUpdate) <= NoReponseOneHour && Convert.ToDateTime(p.LastUpdate) >= NoResponse);
+        //MotoNoResponse = lstMotoData.Count(p => p.LastUpdate == "" && Convert.ToDateTime(p.LastUpdate) < NoResponse && Convert.ToDateTime(p.LastUpdate) > NoReponseOneHour);
+        MotoNoResponse = lstMotoData.Count(p => p.LastUpdate == "" || Convert.ToDateTime(p.LastUpdate) < NoResponse);
         TBA3Low = lstMotoData.Count(p => p.TBA3 <30);
         TBA2Low = lstMotoData.Count(p => p.TBA2 < 30);
 
@@ -93,16 +94,16 @@
                         <div class="col-md-2">
                             服務據點
                         </div>
-                        <div class="col-md-3">
-                            <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+                        <div class="col-md-10">
+                            <input class="form-control col-md-2" type="text" name="StationID" id="StationID" value="@StationID" />
                             <span class="form-inline" id="StationName" name="StationName"></span>
-                        </div>
-                        <div class="col-md-7">
+                            <button type="button" id="btnSearch_ALL" name="btnSearch_ALL" class="btn btn-warning">ALL【機車】</button>
                             <button type="button" id="btnSearch_X0WR" name="btnSearch_X0WR" class="btn btn-primary">雙北【機車】</button>
                             <button type="button" id="btnSearch_X1JT" name="btnSearch_X1JT" class="btn btn-primary">台南【機車】</button>
                             <button type="button" id="btnSearch_X1KX" name="btnSearch_X1KX" class="btn btn-primary">桃園【機車】</button>
                             <button type="button" id="btnSearch_X1KZ" name="btnSearch_X1KZ" class="btn btn-primary">高雄【機車】</button>
                             <button type="button" id="btnSearch_X1KY" name="btnSearch_X1KY" class="btn btn-primary">台中【機車】</button>
+                            <button type="button" id="btnSearch_X1ZZ" name="btnSearch_X1ZZ" class="btn btn-primary">宜蘭【機車】</button>
                         </div>
                     </div>
                 </div>
@@ -284,22 +285,23 @@
                             @(lstMotoData[i].Speed)/@(lstMotoData[i].Millage)
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 2,0)">發動</button>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 3)">熄火</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', '2','0')">發動</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 3,1)">熄火</button>
                             <br>
                             @*<button type="button" class="btn btn-outline-secondary mb-2">key on</button>*@
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 2)">key on</button>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 6)">開坐墊</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 2)">key on</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 6)">開坐墊</button>
                             <br>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 7)">開/關電池架</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 7)">開/關電池架</button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)', 5)">頭燈</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 5)">頭燈</button>
                             <br>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)',4)">喇叭</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)',4)">喇叭</button>
                         </td>
                         <td>
-                            @((lstMotoData[i].LastUpdate=="")?"無回應":Convert.ToDateTime(lstMotoData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                            @((lstMotoData[i].LastUpdate == "") ? "無回應" : Convert.ToDateTime(lstMotoData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                            <br><font style='color:red'>@((Convert.ToDateTime(lstMotoData[i].LastUpdate) <= NoReponseOneHour) ? "最近一小時無回應" : "")</font>
                         </td>
                     </tr>
                     <!--機車輸出結束-->
@@ -415,7 +417,8 @@
                         <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendCarCmd('@lstCarData[i].CID', '@lstCarData[i].deviceToken', @((lstCarData[i].IsCens==1)?15:0), @(lstCarData[i].IsCens))">尋車</button>
                     </td>
                     <td>
-                        @((lstCarData[i].LastUpdate=="")?"無回應":Convert.ToDateTime(lstCarData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                        @((lstCarData[i].LastUpdate == "") ? "無回應" : Convert.ToDateTime(lstCarData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))
+                        <br><font style='color:red'>@((Convert.ToDateTime(lstCarData[i].LastUpdate) <= NoReponseOneHour) ? "最近一小時無回應" : "")</font>
                     </td>
                 </tr>
             }
