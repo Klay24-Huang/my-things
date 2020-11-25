@@ -127,8 +127,8 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 			END
 			ELSE
 			BEGIN
-				IF @deviceOBDstatus = 1
-				BEGIN
+				--IF @deviceOBDstatus = 1
+				--BEGIN
 					UPDATE TB_CarStatus
 					SET  [ACCStatus]=@deviceACCStatus,
 						 [GPSStatus]=@deviceGPSStatus,
@@ -154,7 +154,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						 [deviceName]=@deviceName,
 						 UPDTime=@NowTime
 					WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
-				END
+				--END
 			END
 						INSERT INTO TB_CarRawData([CarNo],[CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
