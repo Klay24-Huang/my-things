@@ -27,6 +27,75 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult AuthAndPay(string IDNO)
+        {
+            ViewData["IDNO"] = IDNO;
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
+            string errCode = "";
+            List<WebAPIOutput_NPR330QueryData> lstData = null;
+            CommonFunc baseVerify = new CommonFunc();
+
+            if (IDNO != "")
+            {
+                flag = baseVerify.checkIDNO(IDNO);
+                if (flag == false)
+                {
+                    errCode = "ERR103";
+                    errorMsg = baseVerify.GetErrorMsg(errCode);
+                }
+            }
+            if (flag)
+            {
+                HiEasyRentAPI api = new HiEasyRentAPI();
+                WebAPIOutput_ArrearQuery WebAPIOutput = null;
+                flag = api.NPR330Query(IDNO, ref WebAPIOutput);
+                if (flag)
+                {
+                    if (WebAPIOutput.Result)
+                    {
+                        if (WebAPIOutput.RtnCode == "0")
+                        {
+                            lstData = new List<WebAPIOutput_NPR330QueryData>();
+                            lstData = WebAPIOutput.Data.ToList();
+                        }
+                        else
+                        {
+                            errCode = "ERR";
+                            errorMsg = WebAPIOutput.Message;
+                            flag = false;
+                        }
+
+                    }
+                    else
+                    {
+                        errCode = "ERR";
+                        errorMsg = WebAPIOutput.Message;
+                        flag = false;
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errCode = "ERR301"; 
+                }
+            }
+            if (flag)
+            {
+                ViewData["errorLine"] = "ok";
+
+            }
+            else
+            {
+                ViewData["errorMsg"] = errorMsg;
+                ViewData["errorLine"] = errCode.ToString();
+            }
+            return View(lstData);
+        }
         /// <summary>
         /// 欠費查詢
         /// </summary>

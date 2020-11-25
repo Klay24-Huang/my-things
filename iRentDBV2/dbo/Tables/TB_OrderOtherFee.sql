@@ -13,6 +13,8 @@
     [DraggingFeeRemark] NVARCHAR (100)  DEFAULT (N'') NOT NULL,
     [OtherFee]          INT             DEFAULT ((0)) NOT NULL,
     [OtherFeeRemark]    NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [ParkingFeeByMachi] INT             DEFAULT 0 NOT NULL,
+    [ParkingFeeByMachiRemark] NVARCHAR(100) DEFAULT N'' NOT NULL,
     [hasSync]           TINYINT         DEFAULT ((0)) NOT NULL,
     [AddUser]           NVARCHAR (100)  DEFAULT (N'') NOT NULL,
     [AddTime]           DATETIME        DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL, 

@@ -127,6 +127,10 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public float WeekdayPriceByMinutes     {set;get;}
         /// <summary>
+        /// 台新交易編號
+        /// </summary>
+        public string ServerOrderNo { set; get; }
+        /// <summary>
         /// 平日上限（機車）
         /// </summary>
         public int MaxPrice                  {set;get;}
@@ -150,5 +154,7 @@ namespace Domain.TB.BackEnd
         public string DraggingFeeRemark {set;get;}
         public int OtherFee          {set;get;}
         public string OtherFeeRemark { set; get; }
+        public int PARKINGAMT2 { set; get; }
+        public string PARKINGMEMO2 { set; get; }
     }
 }

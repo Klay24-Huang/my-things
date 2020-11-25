@@ -156,6 +156,7 @@
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
+    <Compile Include="Controllers\BE_AutoPayMoneyController.cs" />
     <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyByDiscountController.cs" />
+    <Compile Include="Controllers\BE_HandleOrderModifyController.cs" />
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
@@ -315,9 +317,11 @@
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\ComboFunc\ContactComm.cs" />
     <Compile Include="Models\ComboFunc\CreditAuthComm.cs" />
+    <Compile Include="Models\ComboFunc\MachiComm.cs" />
     <Compile Include="Models\ComboFunc\PointerComm.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_AutoPayMoney.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />
@@ -338,6 +342,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleExtendCar.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleFuncMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModify.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />

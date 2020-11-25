@@ -1,0 +1,25 @@
+﻿CREATE TABLE [dbo].[TB_OrderOtherFeeHistory]
+(
+	[HistoryID] INT NOT NULL IDENTITY, 
+	[OrderNo]           BIGINT         NOT NULL,
+    [CarDispatch]       INT             DEFAULT ((0)) NOT NULL,
+    [DispatchRemark]    NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [CleanFee]          INT             DEFAULT ((0)) NOT NULL,
+    [CleanFeeRemark]    NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [DestroyFee]        INT             DEFAULT ((0)) NOT NULL,
+    [DestroyFeeRemark]  NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [ParkingFee]        INT             DEFAULT ((0)) NOT NULL,
+    [ParkingFeeRemark]  NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [DraggingFee]       INT             DEFAULT ((0)) NOT NULL,
+    [DraggingFeeRemark] NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [OtherFee]          INT             DEFAULT ((0)) NOT NULL,
+    [OtherFeeRemark]    NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [ParkingFeeByMachi] INT             DEFAULT 0 NOT NULL,
+    [ParkingFeeByMachiRemark] NVARCHAR(100) DEFAULT N'' NOT NULL,
+    [hasSync]           TINYINT         DEFAULT ((0)) NOT NULL,
+    [AddUser]           NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [AddTime]           DATETIME        DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL, 
+    [UpdateUser]        NVARCHAR (100)  DEFAULT (N'') NOT NULL,
+    [UpdateTime]        DATETIME        DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL, 
+    CONSTRAINT [PK_TB_OrderOtherFeeHistory] PRIMARY KEY ([HistoryID]) 
+)

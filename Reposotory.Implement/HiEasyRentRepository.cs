@@ -142,5 +142,85 @@ namespace Reposotory.Implement
 
             return obj;
         }
+        public List<BE_NPR340Retry> GetNPR340RetryByID(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_NPR340Retry> lstNPR340 = null;
+         
+
+            int nowCount = 0;
+            string SQL = "SELECT * FROM VW_GetNPR340Retry ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (!string.IsNullOrEmpty(IDNO))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " CUSTID=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY CUSTID ASC,ServerTradeNo ASC;";
+
+            }
+
+            lstNPR340 = GetObjList<BE_NPR340Retry>(ref flag, ref lstError, SQL, para, term);
+         
+
+            return lstNPR340;
+        }
+        public BE_NPR136Retry GetNPR136RetryByOrderNo(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_NPR136Retry> lstNPR136 = null;
+            BE_NPR136Retry obj = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT * FROM VW_BE_GETNPR136Data ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (OrderNo>0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " IRENTORDNO=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term ;
+
+            }
+
+            lstNPR136 = GetObjList<BE_NPR136Retry>(ref flag, ref lstError, SQL, para, term);
+            if (lstNPR136 != null)
+            {
+                if (lstNPR136.Count > 0)
+                {
+                    obj = new BE_NPR136Retry();
+                    obj = lstNPR136[0];
+                }
+            }
+
+
+            return obj;
+        }
     }
 }

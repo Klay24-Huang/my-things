@@ -30,18 +30,26 @@ namespace OtherService
         protected string NPR125SaveURL; //
         protected string NPR130SaveURL; //
         protected string NPR136SaveURL; //
+        protected string NPR172QueryURL; //查詢黑名單
         protected string NPR260SendURL; //簡訊發送
         protected string NPR270QueryURL; //點數查詢
         protected string NPR271QueryURL; //點數歷程查詢
+        protected string NPR320QueryURL; //點數兌換
+        protected string NPR330QueryURL; //欠費查詢
+        protected string NPR340SaveURL; //欠費沖銷
+        protected string NPR350CheckURL; //合約查詢
         protected string NPR370CheckURL; //點數轉贈前檢查
         protected string NPR370SaveURL;  //進行轉贈
-        protected string NPR330QueryURL; //欠費查詢
-        protected string ETAG010QueryURL; //ETAG查詢
+    
+    
         protected string EinvBizURL;     //手機條碼檢核
-        protected string NPR320QueryURL; //點數兌換
-        protected string NPR350CheckURL; //合約查詢
+       
+        
         protected string MonthlyRentURL; //月租訂閱
-        protected string NPR172QueryURL; //查詢黑名單
+       
+        protected string ETAG010QueryURL; //ETAG查詢(合約編號)
+        protected string ETAG020QueryURL;//ETAG查詢(身份證)
+        protected string ETAG031SaveURL; //ETAG沖銷
         protected string connetStr;
         bool disposed = false;
         /// <summary>
@@ -63,12 +71,16 @@ namespace OtherService
             NPR370CheckURL = (ConfigurationManager.AppSettings.Get("NPR370CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370CheckURL").ToString();
             NPR370SaveURL = (ConfigurationManager.AppSettings.Get("NPR370SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR370SaveURL").ToString();
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
+            NPR340SaveURL = (ConfigurationManager.AppSettings.Get("NPR340SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR340SaveURL").ToString();
             NPR350CheckURL = (ConfigurationManager.AppSettings.Get("NPR350CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR350CheckURL").ToString();
-            ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
+            
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
             NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
             MonthlyRentURL = (ConfigurationManager.AppSettings.Get("MonthlyRentURL") == null) ? "" : ConfigurationManager.AppSettings.Get("MonthlyRentURL").ToString();
             NPR172QueryURL = (ConfigurationManager.AppSettings.Get("NPR172QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR172QueryURL").ToString();
+            ETAG010QueryURL = (ConfigurationManager.AppSettings.Get("ETAG010QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG010QueryURL").ToString();
+            ETAG020QueryURL = (ConfigurationManager.AppSettings.Get("ETAG020QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG020QueryURL").ToString();
+            ETAG031SaveURL = (ConfigurationManager.AppSettings.Get("ETAG031SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("ETAG031SaveURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -722,6 +734,192 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 136修改合約
+        public bool NPR136Save(WebAPIInput_NPR136Save input, ref WebAPIOutput_NPR136Save output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoNPR136Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 136修改合約
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR136Save> DoNPR136Save(WebAPIInput_NPR136Save input)
+        {
+            WebAPIOutput_NPR136Save output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR136SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR136Save>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                            //  ORDNO = output.Data[0].ORDNO;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR136Save()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR136Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR136SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+
+            return output;
+        }
+        #endregion
+        #region 340沖銷
+        public bool NPR340Save(WebAPIInput_NPR340Save input, ref WebAPIOutput_NPR340Save output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoNPR340Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 340
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR340Save> DoNPR340Save(WebAPIInput_NPR340Save input)
+        {
+            WebAPIOutput_NPR340Save output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR340SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR340Save>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                          //  ORDNO = output.Data[0].ORDNO;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR340Save()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR340Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR340SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+
+            return output;
+        }
+        #endregion
         #region 點數兌換
         /// <summary>
         /// NPR320
@@ -1189,7 +1387,7 @@ namespace OtherService
         }
         #endregion
         #region 130
-        public bool NPR130Save(WebAPIInput_NPR130Save input, ref WebAPIOutput_NPR125Save output)
+        public bool NPR130Save(WebAPIInput_NPR130Save input, ref WebAPIOutput_NPR130Save output)
         {
             bool flag = false;
 
@@ -1208,9 +1406,9 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private async Task<WebAPIOutput_NPR125Save> DoNPR130Save(WebAPIInput_NPR130Save input)
+        private async Task<WebAPIOutput_NPR130Save> DoNPR130Save(WebAPIInput_NPR130Save input)
         {
-            WebAPIOutput_NPR125Save output = null;
+            WebAPIOutput_NPR130Save output = null;
             Int16 IsSuccess = 0;
             string ORDNO = "";
             DateTime MKTime = DateTime.Now;
@@ -1239,7 +1437,7 @@ namespace OtherService
                     {
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
-                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR125Save>(responseStr);
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR130Save>(responseStr);
                         if (output.Result)
                         {
                             IsSuccess = 1;
@@ -1252,7 +1450,7 @@ namespace OtherService
             catch (Exception ex)
             {
                 RTime = DateTime.Now;
-                output = new WebAPIOutput_NPR125Save()
+                output = new WebAPIOutput_NPR130Save()
                 {
 
                     Message = "發生異常錯誤",

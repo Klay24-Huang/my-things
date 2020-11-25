@@ -99,7 +99,7 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 		 
 		 IF @IsSuccess>-1
 		 BEGIN
-			IF @OrderNo='' OR @MerchantTradeNo='' OR @RetCode='' OR @RetMsg='' OR @TaishinTradeNo='' OR @CardNumber='' OR @process_date='1911-01-01 00:00:00' OR @AUTHAMT=-1 OR @AuthIdResp=-1 OR @IsSuccess=-2
+			IF  @MerchantTradeNo='' OR @RetCode='' OR @RetMsg='' OR @TaishinTradeNo='' OR @CardNumber='' OR @process_date='1911-01-01 00:00:00' OR @AUTHAMT=-1 OR @AuthIdResp=-1 OR @IsSuccess=-2
 			BEGIN
 			  SET @Error=1;
 			  SET @ErrorCode='ERR900'
@@ -113,7 +113,7 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 		END
 		ELSE
 		BEGIN
-			IF @OrderNo='' OR @MerchantTradeNo='' 
+			IF  @MerchantTradeNo='' 
 			BEGIN
 			  SET @Error=1;
 			  SET @ErrorCode='ERR900'

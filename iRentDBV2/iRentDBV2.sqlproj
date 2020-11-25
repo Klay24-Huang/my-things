@@ -384,6 +384,28 @@
     <Build Include="dbo\Stored Procedures\usp_InsOrderModifyLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsTrade.sql" />
     <Build Include="dbo\Stored Procedures\usp_UPDTrade.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ReturnControlSuccess.sql" />
+    <Build Include="dbo\Tables\TB_NPR340.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentTrial.sql" />
+    <Build Include="dbo\User Defined Types\FN_MotoRentCompute.sql" />
+    <Build Include="dbo\User Defined Types\FN_CalHours.sql" />
+    <Build Include="dbo\Views\VW_GetNPR340Retry.sql" />
+    <Build Include="dbo\Views\VW_SYNC_GetSyncData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SYNC_BookingCancel.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HandleNPR340SaveU2.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HandleNPR340SaveU1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HandleNPR340Save.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleOrderModifyByDiscount.sql" />
+    <Build Include="dbo\Tables\TB_NPR136Save.sql" />
+    <Build Include="dbo\Views\VW_BE_BeforeNPR136GetData.sql" />
+    <Build Include="dbo\Tables\TB_NPR136SaveHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleOrderModify.sql" />
+    <Build Include="dbo\Tables\TB_OrderOtherFeeHistory.sql" />
+    <Build Include="dbo\Views\VW_BE_GETNPR136Data.sql" />
+    <Build Include="dbo\Tables\TB_TradeRefund.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_NPR136Success.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UPDTradeRefund.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsTradeRefund.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

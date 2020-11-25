@@ -31,6 +31,7 @@ SELECT Main.[order_number] AS OrderNo
 	  ,CarInfo.HoildayPriceByMinutes
 	  ,CarInfo.WeekdayPrice
 	  ,CarInfo.WeekdayPriceByMinutes
+	  ,ISNULL(Trade.TaishinTradeNo,'') AS ServerOrderNo
 	  ,ISNULL(PriceMinutes.MaxPrice,0) AS MaxPrice
 	  ,ISNULL(PriceMinutes.MaxPriceH,0) AS MaxPriceH
 	  ,ISNULL(Trade.[AUTHAMT],0) AS Paid
@@ -46,12 +47,14 @@ SELECT Main.[order_number] AS OrderNo
 	  , ISNULL(OtherFee.DraggingFeeRemark, '') AS DraggingFeeRemark
 	  , ISNULL(OtherFee.OtherFee, 0) AS OtherFee
 	  , ISNULL(OtherFee.OtherFeeRemark, '') AS OtherFeeRemark
+	   , ISNULL(OtherFee.ParkingFeeByMachi, 0) AS PARKINGAMT2
+	  , ISNULL(OtherFee.ParkingFeeByMachiRemark, '') AS PARKINGMEMO2
   FROM [dbo].[TB_OrderMain] AS Main
   INNER JOIN TB_OrderDetail AS Detail ON Main.order_number=Detail.order_number
   INNER JOIN TB_CarInfo AS CarInfo ON CarInfo.CarNo=Main.CarNo
   LEFT JOIN TB_Project AS Project ON Project.PROJID=Main.ProjID 
   LEFT JOIN TB_PriceByMinutes AS PriceMinutes ON PriceMinutes.ProjID=Main.ProjID AND PriceMinutes.CARTYPE=CarInfo.CarType
-  LEFT JOIN TB_Trade AS Trade ON Trade.OrderNo=Main.order_number AND Trade.IsSuccess=1
+  LEFT JOIN TB_Trade AS Trade ON Trade.OrderNo=Main.order_number AND Trade.MerchantTradeNo=Detail.transaction_no AND Trade.CreditType=0 AND Trade.IsSuccess=1
   LEFT JOIN TB_OrderOtherFee AS OtherFee ON OtherFee.OrderNo=Main.order_number
   LEFT JOIN TB_MemberData AS UserInfo ON UserInfo.MEMIDNO=Main.IDNO
 

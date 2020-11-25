@@ -47,6 +47,8 @@ CREATE PROCEDURE [dbo].[usp_InsTrade]
 	@OrderNo                BIGINT                , --訂單編號
 	@MerchantTradeNo		VARCHAR(30)			  ,
 	@CreditType             TINYINT               ,
+	@MemberID               VARCHAR(20)           ,
+	@CardToken              VARCHAR(128)          ,
 	@amount                 INT                   ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -79,44 +81,64 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @OrderNo    =ISNULL (@OrderNo    ,0);
 SET @MerchantTradeNo =ISNULL(@MerchantTradeNo,'');
 SET @CreditType      =ISNULL(@CreditType      ,0);
-
+SET @CardToken       =ISNULL(@CardToken,'');
 SET @amount          =ISNULL(@amount          ,0);
 
 
 		BEGIN TRY
 
-		 
-		 IF @OrderNo=0 OR @MerchantTradeNo=''  OR @amount=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
+		     IF @CreditType=0			--還車才會有訂單編號，其餘的都是認@MerchantTradeNo
+			 BEGIN
+			 	  IF @OrderNo=0 OR @MerchantTradeNo=''  OR @amount=0 OR @CardToken=''
+				  BEGIN
+				    SET @Error=1;
+				    SET @ErrorCode='ERR900'
+ 				  END
+			 END
+			 ELSE
+			 BEGIN
+				  IF @MerchantTradeNo=''  OR @amount=0 OR @CardToken='' OR @MemberID=''
+				  BEGIN
+				    SET @Error=1;
+				    SET @ErrorCode='ERR900'
+ 				  END
+			 END
+	
 		 
 		  --0.再次檢核token
 		 IF @Error=0
 		 BEGIN
-		     SELECT @hasData=COUNT(1) FROM TB_Trade WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
-			 IF @hasData=0
+		     IF @CreditType=0
 			 BEGIN
-				INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount)VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount);
+				   SELECT @MemberID=ISNULL(IDNO,'') FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
+				   SELECT @hasData=COUNT(1) FROM TB_Trade WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
+					IF @hasData=0
+					BEGIN
+						INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken)VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken);
+					END
+					ELSE
+					BEGIN
+					   SET @hasData=0;
+						SELECT @hasData=COUNT(1) FROM TB_Trade WHERE OrderNo=@OrderNo AND IsSuccess=1 AND CreditType=@CreditType;
+						IF @hasData=0
+						BEGIN
+							UPDATE TB_Trade 
+							SET  MerchantTradeNo=@MerchantTradeNo,CreditType=@CreditType,amount=@amount,CardToken=@CardToken
+							WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
+						END
+						ELSE
+						BEGIN
+							SET @Error=1;
+							SET @ErrorCode='ERR763'
+						END
+						
+					END
 			 END
 			 ELSE
 			 BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Trade WHERE OrderNo=@OrderNo AND IsSuccess=1 AND CreditType=@CreditType;
-				IF @hasData=0
-				BEGIN
-					UPDATE TB_Trade 
-					SET  MerchantTradeNo=@MerchantTradeNo,CreditType=@CreditType,amount=@amount
-					WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
-				END
-				ELSE
-				BEGIN
-					SET @Error=1;
-					SET @ErrorCode='ERR763'
-				END
-				
+				INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken)VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken);
 			 END
+		  
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

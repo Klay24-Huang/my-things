@@ -164,10 +164,14 @@ function SetCalData(data) {
 }
 function SetData(data) {
     console.log(data);
-     ModifyObj = data.Data.ModifyLog;
+
+    ModifyObj = data.Data.ModifyLog;
+    console.log("Modify");
+    console.log(ModifyObj);
     var errMsg = "";
-    if (ModifyObj.hasModify != 0) {
+    if (ModifyObj.hasModify > 0) {
         errMsg = "此訂單於【" + ModifyObj.ModifyTime + "】，由【" + ModifyObj.ModifyUserID + "】修改過";
+        ShowSuccessMessage(errMsg);
     }
      OrderObj = data.Data.OrderData;
      LastOrderObj = data.Data.LastOrderData;
@@ -178,7 +182,7 @@ function SetData(data) {
     if (CheckStorageIsNull(OrderObj)) {
         console.log(OrderObj);
         var FS = new Date(OrderObj.FS).Format("yyyy-MM-dd HH:mm:ss")
-        var FE = new Date(OrderObj.FS).Format("yyyy-MM-dd HH:mm:ss")
+        var FE = new Date(OrderObj.FE).Format("yyyy-MM-dd HH:mm:ss")
         var FineTime = new Date(OrderObj.FineTime).Format("yyyy-MM-dd HH:mm:ss")
         $("#panelResult").show();
         $("#spn_OrderNo").html("H" + pad(OrderObj.OrderNo, 7))

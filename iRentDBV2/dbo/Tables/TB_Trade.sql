@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[TB_Trade]
 (
 	[TradeID]          BIGINT         IDENTITY (1, 1) NOT NULL,
-    [OrderNo]        BIGINT   DEFAULT 0 NOT NULL,
+    [OrderNo]          BIGINT         DEFAULT(0) NOT NULL,
     [MerchantTradeNo]  VARCHAR (30)   DEFAULT ('') NOT NULL,
     [CreditType]       TINYINT        DEFAULT ((0)) NOT NULL,
     [MerchantMemberID] VARCHAR (10)   DEFAULT ('') NOT NULL,
@@ -9,6 +9,7 @@
     [RetMsg]           NVARCHAR (400) DEFAULT (N'') NOT NULL,
     [TaishinTradeNo]    VARCHAR (50)   DEFAULT ('') NOT NULL,
     [CardNumber]          VARCHAR (20)    DEFAULT ('') NOT NULL,
+    [CardToken]        VARCHAR(128)   DEFAULT('') NOT NULL,
     [process_date]     DATETIME       NULL,
     [AUTHAMT]          INT            DEFAULT ((0)) NOT NULL,
     [amount]           INT            NOT NULL,

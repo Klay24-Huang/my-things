@@ -364,11 +364,17 @@ namespace WebAPI.Models.Enum
                 /// </summary>
                 DisabledMachiPark,
             #endregion,
+            #region 短租沖銷
+            HandleNPR340Save,
+            HandleNPR340SaveU1,
+            HandleNPR340SaveU2,
+           
+            #endregion
             #region BackEnd
-                /// <summary>
-                /// 更改密碼
-                /// </summary>
-                BE_ChangePWD,
+            /// <summary>
+            /// 更改密碼
+            /// </summary>
+            BE_ChangePWD,
                 /// <summary>
                 /// 新增及修改據點
                 /// </summary>
@@ -485,6 +491,22 @@ namespace WebAPI.Models.Enum
             /// 儲存125執行結果
             /// </summary>            
             BE_LandControlSuccess,
+            /// <summary>
+            /// 儲存130執行結果
+            /// </summary>
+            BE_ReturnControlSuccess,
+            /// <summary>
+            /// 儲存執行136結果
+            /// </summary>
+            BE_NPR136Success,
+            /// <summary>
+            /// 合約修改（點數）
+            /// </summary>
+            BE_HandleOrderModifyByDiscount,
+            /// <summary>
+            /// 合約修改（汽機車整合共用）
+            /// </summary>
+            BE_HandleOrderModify,
 
             #endregion
         }
@@ -775,6 +797,17 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_disabledMachiPark";
                     break;
                 #endregion
+                #region 短租沖銷
+                case SPType.HandleNPR340Save:
+                    SPName = "usp_HandleNPR340Save";
+                    break;
+                case SPType.HandleNPR340SaveU1:
+                    SPName = "usp_HandleNPR340SaveU1";
+                    break;
+                case SPType.HandleNPR340SaveU2:
+                    SPName = "usp_HandleNPR340SaveU2";
+                    break;
+                #endregion
                 #region BackEnd
                 case SPType.BE_ChangePWD:
                     SPName = "usp_BE_ChangePWD";
@@ -852,6 +885,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_GetOrderInfoBeforeModify:
                     SPName = "usp_BE_GetOrderInfoBeforeModify";
                     break;
+                case SPType.BE_HandleOrderModify:
+                    SPName = "usp_BE_HandleOrderModify";
+                    break;
                 case SPType.BE_HandleHiEasyRentRetry:
                     SPName = "usp_BE_HandleHiEasyRentRetry";
                     break;
@@ -861,13 +897,21 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_LandControlSuccess:
                     SPName = "usp_BE_LandControlSuccess";
                     break;
+                case SPType.BE_ReturnControlSuccess:
+                    SPName = "usp_BE_ReturnControlSuccess";
+                    break;
                 case SPType.BE_CheckFuncGroup:
                     SPName = "usp_BE_CheckFuncGroup";
                     break;
                 case SPType.BE_CheckUserGroup:
                     SPName = "usp_BE_CheckUserGroup";
                     break;
-
+                case SPType.BE_HandleOrderModifyByDiscount:
+                    SPName = "usp_BE_HandleOrderModifyByDiscount";
+                    break;
+                case SPType.BE_NPR136Success:
+                    SPName = "usp_BE_NPR136Success";
+                    break;
                     #endregion
             }
             return SPName;

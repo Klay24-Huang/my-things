@@ -679,4 +679,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="OrderNo" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b60358e7-a478-4953-a24c-ddf99704e22d" ChangeDateTime="11/23/2020 07:00:32">
+    <Property Name="ElementName" Value="[dbo].[TB_NPR340].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_NPR340]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SEQNO" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1c609197-e54f-4ee1-b661-7e0a05160410" ChangeDateTime="11/23/2020 07:05:09">
+    <Property Name="ElementName" Value="[dbo].[TB_NPR340].[Merch]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_NPR340]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MerchantTradeNo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a933f642-6af1-4a2d-884f-1b2d6f773152" ChangeDateTime="11/24/2020 07:11:23">
+    <Property Name="ElementName" Value="[dbo].[TB_NPR136SaveHistory].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_NPR136SaveHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ModifyID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9698210c-1b3e-4a60-8ad1-d0f14b51f971" ChangeDateTime="11/25/2020 03:32:11">
+    <Property Name="ElementName" Value="[dbo].[TB_OrderOtherFeeHistory].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_OrderOtherFeeHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HistoryID" />
+  </Operation>
 </Operations>

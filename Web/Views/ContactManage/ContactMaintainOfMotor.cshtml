@@ -212,7 +212,8 @@
                             <span id="spn_gift">0</span>
                         </div>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" name="gift_point_input" id="gift_point_input" value="" readonly />
+                            <select class="form-control" type="text" name="gift_point_select" id="gift_point_select"></select>
+                            <input class="form-control" type="number" min="0" max="99999" name="gift_point_input" id="gift_point_input" value="" placeholder="" />
                         </div>
                     </div>
                 </div>
@@ -270,6 +271,21 @@
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="end_mile_input" id="end_mile_input" value="" readonly />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            安心服務
+                        </div>
+                        <div class="col-md-2">
+                            <span id="spn_Insurance_price">我是合約編號</span>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" name="Insurance_price_input" id="Insurance_price_input" value="" readonly />
                         </div>
                     </div>
                 </div>
@@ -477,6 +493,20 @@
                         </div>
                         <div class="col-md-3">
                             <input class="form-control" type="text" name="OtherFeeRemark_input" id="OtherFeeRemark_input" value="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            特約停車場
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="ParkingFeeByMachi_input" id="ParkingFeeByMachi_input" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            備註
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" name="ParkingFeeByMachiRemark_input" id="ParkingFeeByMachiRemark_input" value="" />
                         </div>
                     </div>
 

@@ -75,6 +75,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_HandleExtendCar.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleFunc.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleMasterCard.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandlePolygon.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleUserMaintain.cs" />
@@ -87,6 +88,9 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_NPR136Success.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
@@ -128,6 +132,9 @@
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_RefrashToken.cs" />
+    <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340Save.cs" />
+    <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
+    <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
@@ -209,6 +216,7 @@
     <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
+    <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
     <Compile Include="SP\Output\Mochi\SPOutput_GetMachiToken.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
@@ -274,6 +282,8 @@
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
+    <Compile Include="TB\BackEnd\BE_NPR136Retry.cs" />
+    <Compile Include="TB\BackEnd\BE_NPR340Retry.cs" />
     <Compile Include="TB\BackEnd\BE_Operator.cs" />
     <Compile Include="TB\BackEnd\BE_OrderDataCombind.cs" />
     <Compile Include="TB\BackEnd\BE_OrderDetailData.cs" />
@@ -339,11 +349,13 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR060Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR125Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR130Save.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR136Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR172Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR271Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR340Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
@@ -358,7 +370,9 @@
     <Compile Include="WebAPI\Input\Taishin\DirectCardAuthData.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfCreditCardAuth.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfDeleteCreditCardAuth.cs" />
+    <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfECRefund.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetCreditCardList.cs" />
+    <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetPaymentInfo.cs" />
     <Compile Include="WebAPI\Input\Taishin\GetCreditCardListRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\RequestParamsData.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\Param\AccountData.cs" />
@@ -373,7 +387,9 @@
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Base.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Bind.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_DeleteCreditCardAuth.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_EC_Refund.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetPaymentInfo.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ArrearQuery.cs" />
@@ -382,6 +398,8 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR125Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR130Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR136Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR172Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />
@@ -390,6 +408,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR271QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR320Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR330QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR340Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR350Check.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Check.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370CheckData.cs" />
@@ -438,7 +457,9 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Base.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_DirectCardAuth.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">

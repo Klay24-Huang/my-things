@@ -1,32 +1,35 @@
-﻿CREATE TABLE [dbo].[TB_MemberDataOfAutdit]
-(
-	[AuditID] BIGINT NOT NULL IDENTITY ,
-	[MEMIDNO]        VARCHAR (10)    DEFAULT ('') NOT NULL,
-    [MEMCNAME]       NVARCHAR (10)   DEFAULT (N'') NOT NULL,
-    [MEMTEL]         VARCHAR (20)    DEFAULT ('') NOT NULL,
-    [MEMHTEL]        VARCHAR (20)    DEFAULT ('') NOT NULL,
-    [MEMBIRTH]       DATETIME        NULL,
-    [MEMCOUNTRY]     INT             DEFAULT ((0)) NOT NULL,
-    [MEMCITY]        INT             DEFAULT ((0)) NOT NULL,
-    [MEMADDR]        NVARCHAR (500)  DEFAULT (N'') NOT NULL,
-    [MEMEMAIL]       VARCHAR (200)   DEFAULT (N'') NOT NULL,
-    [MEMCOMTEL] 	 varchar (20) 	 DEFAULT ('')  NOT NULL,
-	[MEMCONTRACT] 	 nvarchar (10)   DEFAULT (N'') NOT NULL,
-	[MEMCONTEL] 	 varchar (20)    DEFAULT ('')  NOT NULL,
-	[MEMMSG] 		 varchar(1)      DEFAULT ('Y') NOT NULL,
-    [CARDNO]         VARCHAR (20)    DEFAULT ('') NOT NULL,
-    [UNIMNO]         VARCHAR (10)    DEFAULT ('') NOT NULL,
-    [MEMSENDCD]      TINYINT         DEFAULT ((2)) NOT NULL,
-    [CARRIERID]      VARCHAR (20)    DEFAULT ('') NOT NULL,
-    [NPOBAN]         VARCHAR (20)    DEFAULT ('') NOT NULL, 
-    [AuditKind]      TINYINT         DEFAULT(0) NOT NULL,
-    [HasAudit]       TINYINT         DEFAULT(0) NOT NULL,
-    [IsNew]          TINYINT         DEFAULT(0) NOT NULL,
-    [MKTime] DATETIME  DEFAULT(dateadd(hour,(8),getdate())) NOT NULL,
-    [UPDTime] DATETIME NULL, 
-    CONSTRAINT [PK_TB_MemberDataOfAutdit] PRIMARY KEY ([AuditID])
+CREATE TABLE [dbo].[TB_MemberDataOfAutdit] (
+    [AuditID]     BIGINT         IDENTITY (1, 1) NOT NULL,
+    [MEMIDNO]     VARCHAR (10)   CONSTRAINT [DF__tmp_ms_xx__MEMID__563FA78C] DEFAULT ('') NOT NULL,
+    [MEMCNAME]    NVARCHAR (10)  CONSTRAINT [DF__tmp_ms_xx__MEMCN__5733CBC5] DEFAULT (N'') NOT NULL,
+    [MEMTEL]      VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__MEMTE__5827EFFE] DEFAULT ('') NOT NULL,
+    [MEMHTEL]     VARCHAR (20)   CONSTRAINT [DF_TB_MemberDataOfAutdit_MEMHTEL] DEFAULT ('') NOT NULL,
+    [MEMBIRTH]    DATETIME       NULL,
+    [MEMCOUNTRY]  INT            CONSTRAINT [DF__tmp_ms_xx__MEMCO__591C1437] DEFAULT ((0)) NOT NULL,
+    [MEMCITY]     INT            CONSTRAINT [DF__tmp_ms_xx__MEMCI__5A103870] DEFAULT ((0)) NOT NULL,
+    [MEMADDR]     NVARCHAR (500) CONSTRAINT [DF__tmp_ms_xx__MEMAD__5B045CA9] DEFAULT (N'') NOT NULL,
+    [MEMEMAIL]    VARCHAR (200)  CONSTRAINT [DF__tmp_ms_xx__MEMEM__5BF880E2] DEFAULT (N'') NOT NULL,
+    [MEMCOMTEL]   VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__MEMCO__5CECA51B] DEFAULT ('') NOT NULL,
+    [MEMCONTRACT] NVARCHAR (10)  CONSTRAINT [DF__tmp_ms_xx__MEMCO__5DE0C954] DEFAULT (N'') NOT NULL,
+    [MEMCONTEL]   VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__MEMCO__5ED4ED8D] DEFAULT ('') NOT NULL,
+    [MEMMSG]      VARCHAR (1)    CONSTRAINT [DF__tmp_ms_xx__MEMMS__5FC911C6] DEFAULT ('Y') NOT NULL,
+    [CARDNO]      VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__CARDN__60BD35FF] DEFAULT ('') NOT NULL,
+    [UNIMNO]      VARCHAR (10)   CONSTRAINT [DF__tmp_ms_xx__UNIMN__61B15A38] DEFAULT ('') NOT NULL,
+    [MEMSENDCD]   TINYINT        CONSTRAINT [DF__tmp_ms_xx__MEMSE__62A57E71] DEFAULT ((2)) NOT NULL,
+    [CARRIERID]   VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__CARRI__6399A2AA] DEFAULT ('') NOT NULL,
+    [NPOBAN]      VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__NPOBA__648DC6E3] DEFAULT ('') NOT NULL,
+    [AuditKind]   TINYINT        CONSTRAINT [DF__tmp_ms_xx__Audit__6581EB1C] DEFAULT ((0)) NOT NULL,
+    [HasAudit]    TINYINT        CONSTRAINT [DF__tmp_ms_xx__HasAu__66760F55] DEFAULT ((0)) NOT NULL,
+    [IsNew]       TINYINT        CONSTRAINT [DF__tmp_ms_xx__IsNew__676A338E] DEFAULT ((0)) NOT NULL,
+    [SPECSTATUS]  VARCHAR (2)    CONSTRAINT [DF_TB_MemberDataOfAutdit_SPECSTATUS] DEFAULT ('00') NOT NULL,
+    [SPSD]        VARCHAR (8)    CONSTRAINT [DF_TB_MemberDataOfAutdit_SPSD] DEFAULT ('') NOT NULL,
+    [SPED]        VARCHAR (8)    CONSTRAINT [DF_TB_MemberDataOfAutdit_SPED] DEFAULT ('') NOT NULL,
+    [MKTime]      DATETIME       CONSTRAINT [DF__tmp_ms_xx__MKTim__685E57C7] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
+    [UPDTime]     DATETIME       NULL,
+    CONSTRAINT [PK_TB_MemberDataOfAutdit] PRIMARY KEY CLUSTERED ([AuditID] ASC)
+);
 
-)
+
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'待審核會員資料', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit';
 GO
@@ -138,3 +141,13 @@ EXEC sp_addextendedproperty @name = N'MS_Description',
     @level2type = N'COLUMN',
     @level2name = N'UPDTime'
 GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'特殊身份有效日期(起)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'SPSD';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'特殊身份有效日期(迄)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'SPED';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'特殊身份說明', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberDataOfAutdit', @level2type = N'COLUMN', @level2name = N'SPECSTATUS';
+

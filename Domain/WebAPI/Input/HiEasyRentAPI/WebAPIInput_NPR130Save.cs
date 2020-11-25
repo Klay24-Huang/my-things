@@ -220,11 +220,11 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
             /// <summary>
             /// 支付金額
             /// </summary>
-            public string PAYAMT     {set;get;}  
+        public string PAYAMT     {set;get;}  
         /// <summary>
         /// 支付訂單編號
         /// </summary>
-            public string PORDNO     {set;get;}  
+         public string PORDNO     {set;get;}  
         /// <summary>
         /// 支付說明(ex:租金)
         /// </summary>

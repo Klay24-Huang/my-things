@@ -1,15 +1,15 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
-using Domain.SP.BE.Output;
-using Domain.TB;
+using Domain.SP.Output;
 using Domain.TB.BackEnd;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Domain.WebAPI.output.Taishin;
 using OtherService;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -17,7 +17,6 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.ComboFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
-using WebAPI.Models.Param.BackEnd.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -65,6 +64,7 @@ namespace WebAPI.Controllers
             ContactComm contact = new ContactComm();
             int NewFinalPrice = 0;
             int DiffFinalPrice = 0;
+            CreditAuthComm Credit = new CreditAuthComm();
 
             #endregion
             #region 防呆
@@ -196,17 +196,23 @@ namespace WebAPI.Controllers
                         }
                     }
                     /*判斷是否要取款或是刷退*/
-                    if (apiInput.DiffPrice == 0 || obj.Paid==0)
+                    if (apiInput.DiffPrice == 0 || obj.Paid==0 || apiInput.DiffPrice<0)
                     {
                         //直接更新
-                    }else 
+                        flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
+                        if (flag)
+                        {
+                            flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice,apiInput.UserID, ref errCode, ref lstError);
+                        }
+                    }
+                    else 
                     {
                         //查詢有無綁卡
                         if (apiInput.DiffPrice > 0) //刷退，
                         {
                             int hasBind = 0;
                             List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
-                            CreditAuthComm Credit = new CreditAuthComm();
+                    
                             flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
                             if (flag)
                             {
@@ -217,19 +223,31 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                     //flag = Credit.DoAuth(apiInput.OrderNo, apiInput.DiffPrice, lstBind[0].CardToken,3, ref errCode, ref errMsg);
+
+                                    WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                                    flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                    if (flag)
+                                    {
+                                        if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
+                                        {
+                                            WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
+                                            flag = Credit.DoCreditRefund(tmpOrder, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                        }
+                                    }
                                 }
                             }
+                            if (flag)
+                            {
+                                /*傳送短租136*/
+                                flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
+                            }
                         }
-                        else  //取款從1.0開始統一從欠款查詢中直接取款，不由此處理
-                        {
-
-                        }
+                     
                         
 
                     }
                     
-                    /*傳送短租136*/
+                 
 
 
 
@@ -249,6 +267,136 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
             #endregion
+        }
+        public bool SaveToTB(BE_GetOrderModifyDataNew obj, IAPI_BE_HandleOrderModifyByDiscount apiInput,Int64 OrderNo,Int64 LogID,ref string errCode,ref List<ErrorInfo> lstError)
+        {
+            bool flag = true;
+            string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleOrderModifyByDiscount);
+            SPInput_BE_HandleOrderModifyByDiscount spInput = new SPInput_BE_HandleOrderModifyByDiscount()
+            {
+                CarPoint = apiInput.CarPoint,
+                UserID = apiInput.UserID,
+                LogID = LogID,
+                FinalPrice = apiInput.FinalPrice,
+                MotorPoint = apiInput.MotorPoint,
+                OrderNo = OrderNo,
+                Remark = apiInput.Remark,
+                Reson = apiInput.UseStatus,
+                RNTAMT = ((obj.pure_price - apiInput.DiffPrice < 0) ? 0 : (obj.pure_price - apiInput.DiffPrice)) + obj.fine_price
+            };
+            SPOutput_Base spOut = new SPOutput_Base();
+      
+            SQLHelper<SPInput_BE_HandleOrderModifyByDiscount, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleOrderModifyByDiscount, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+            new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            return flag;
+        }
+        public bool DoSendNPR136(Int64 OrderNo,Int64 LogID,int DiffPrice,string UserID, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            bool flag = true;
+            BE_NPR136Retry obj = new HiEasyRentRepository(connetStr).GetNPR136RetryByOrderNo(OrderNo);
+            if (obj != null)
+            {
+                WebAPIInput_NPR136Save wsInput = new WebAPIInput_NPR136Save()
+                {
+                    AUTHCODE = obj.AUTHCODE,
+                    BIRTH = obj.BIRTH,
+                    CARDNO = obj.CARDNO,
+                    CARNO = obj.CARNO,
+                    CARRIERID = obj.CARRIERID,
+                    CARTYPE = obj.CARTYPE,
+                    CLEANAMT = obj.CLEANAMT,
+                    CLEANMEMO = obj.CLEANMEMO,
+                    CTRLAMT = obj.CTRLAMT,
+                    CTRLMEMO = obj.CTRLMEMO,
+                    CUSTID = obj.CUSTID,
+                    CUSTNM = obj.CUSTNM,
+                    CUSTTYPE = obj.CUSTTYPE.ToString(),
+                    DISRATE = obj.DISRATE.ToString(),
+                    EQUIPAMT = obj.EQUIPAMT,
+                    EQUIPMEMO = obj.EQUIPMEMO,
+                    GIFT = obj.GIFT.ToString(),
+                    GIFT_MOTO = obj.GIFT_MOTO.ToString(),
+                    GIVEDATE = obj.GIVEDATE,
+                    GIVEKM = obj.GIVEKM.ToString(),
+                    GIVETIME = obj.GIVETIME,
+                    INBRNHCD = obj.INBRNHCD,
+                    INVADDR = obj.INVADDR,
+                    INVKIND = obj.INVKIND,
+                    INVTITLE = obj.INVTITLE,
+                    IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                    LOSSAMT2 = obj.LOSSAMT2.ToString(),
+                    NOCAMT = obj.NOCAMT.ToString(),
+                    NPOBAN = obj.NPOBAN,
+                    ODCUSTID = obj.ODCUSTID,
+                    ORDNO = obj.ORDNO,
+                    OTHERAMT = obj.OTHERAMT,
+                    OTHERMEMO = obj.OTHERMEMO,
+                    OUTBRNHCD = obj.OUTBRNHCD,
+                    OVERAMT2 = obj.OVERAMT2.ToString(),
+                    OVERHOURS = obj.OVERHOURS.ToString(),
+                    PARKINGAMT = obj.PARKINGAMT,
+                    PARKINGAMT2 = obj.PARKINGAMT2,
+                    PARKINGMEMO = obj.PARKINGMEMO,
+                    PARKINGMEMO2 = obj.PARKINGMEMO2,
+                    PAYAMT = obj.PAYAMT.ToString(),
+                    PROCD = obj.PROCD,
+                    PROJID = obj.PROJID,
+                    REMARK = obj.REMARK,
+                    RENTAMT = obj.RENTAMT.ToString(),
+                    RENTDAYS = obj.RENTDAYS.ToString(),
+                    RINSU = obj.RINSU.ToString(),
+                    RNTAMT = obj.RNTAMT.ToString(),
+                    RNTDATE = obj.RNTDATE,
+                    RNTKM = obj.RNTKM.ToString(),
+                    RNTTIME = obj.RNTTIME,
+                    RPRICE = obj.RPRICE.ToString(),
+                    tbPaymentDetail = new List<PaymentDetail>(),
+                    TOWINGAMT = obj.TOWINGAMT,
+                    TOWINGMEMO = obj.TOWINGMEMO,
+                    TSEQNO = obj.TSEQNO,
+                    UNIMNO = obj.UNIMNO
+                };
+                WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                flag = hiEasyRentAPI.NPR136Save(wsInput, ref wsOutput);
+                if (flag)
+                {
+                    if (wsOutput.Result)
+                    {
+                        string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
+                        SPInput_BE_NPR136Success spInput = new SPInput_BE_NPR136Success()
+                        {
+                           
+                            LogID = LogID,
+                   
+                            OrderNo = OrderNo,
+                             isRetry=1,
+                              UserID= UserID
+                        };
+                        SPOutput_Base spOut = new SPOutput_Base();
+
+                        SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                        new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR767";
+                    }
+                }
+                else
+                {
+                    errCode = "ERR767";
+                }
+            }
+            else
+            {
+                flag = false;
+                errCode = "ERR766";
+            }
+            return flag;
         }
     }
 }

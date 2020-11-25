@@ -139,12 +139,12 @@ SET @UserID    =ISNULL (@UserID    ,'');
 			SET @hasData=0;
 			SELECT @hasData=COUNT(1) FROM TB_ReturnCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo;
 			--方便測試，先封印
-			/*IF @hasData=0
+			IF @hasData=0
 			BEGIN
 			   
 				SET @Error=1;
 				SET @ErrorCode='ERR757';
-			END*/
+			END
 		 END
 		 --取出此車號前一筆還車時間及里程
 		 IF @Error=0
@@ -159,7 +159,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 		 --取出上次修改時間及修改者
 		 IF @Error=0	
 		 BEGIN
-			SELECT TOP 1 @hasData=ISNULL(modifyId,0),@ModifyUserID=U_USERID,@ModifyTime=IIF(ISNULL(U_SYSDT,'')='','',CONVERT(VARCHAR(20),U_SYSDT,120)) FROM TB_OrderModifyLog WITH(NOLOCK) WHERE order_number=@OrderNo ORDER BY modifyId DESC
+			SELECT TOP 1 @hasModify=ISNULL(modifyId,0),@ModifyUserID=U_USERID,@ModifyTime=IIF(ISNULL(U_SYSDT,'')='','',CONVERT(VARCHAR(20),U_SYSDT,120)) FROM TB_OrderModifyLog WITH(NOLOCK) WHERE order_number=@OrderNo ORDER BY modifyId DESC
 		 END
 
 

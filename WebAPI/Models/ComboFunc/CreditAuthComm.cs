@@ -27,6 +27,7 @@ namespace WebAPI.Models.ComboFunc
         private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
+        private string ApiVerQ= ConfigurationManager.AppSettings["ApiVerQ"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private  TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
         private CommonFunc baseVerify = new CommonFunc();
@@ -88,7 +89,76 @@ namespace WebAPI.Models.ComboFunc
             return flag;
         }
         /// <summary>
-        /// 
+        /// 使用台新交易序號查詢該筆收費狀態
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="ServerOrderNo"></param>
+        /// <param name="errCode"></param>
+        /// <param name="errMsg"></param>
+        /// <returns></returns>
+        public bool DoCreditCardQuery(string IDNO,string ServerOrderNo,ref WebAPIOutput_GetPaymentInfo WSQueryAuthOutput, ref string errCode, ref string errMsg)
+        {
+            bool flag = true;
+            PartOfGetPaymentInfo WSCreditCardQueryInput = new PartOfGetPaymentInfo()
+            {
+                ApiVer = ApiVerQ,
+                ApposId = TaishinAPPOS,
+                RequestParams = new IGetPaymentInfoRequestParams()
+                {
+                    ServiceTradeNo = ServerOrderNo
+                },
+                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yMMddhhmmssfff"))
+            };
+         
+            flag = WebAPI.DoCreditCardAuthQuery(WSCreditCardQueryInput, ref errCode, ref WSQueryAuthOutput);
+            return flag;
+        
+        }
+        /// <summary>
+        /// 刷退
+        /// </summary>
+        /// <param name="tmpOrder"></param>
+        /// <param name="RefundAmount"></param>
+        /// <param name="Remark"></param>
+        /// <param name="CardToken"></param>
+        /// <param name="OriMerchantTradeNo"></param>
+        /// <param name="WSRefundOutput"></param>
+        /// <param name="errCode"></param>
+        /// <param name="errMsg"></param>
+        /// <returns></returns>
+        public bool DoCreditRefund(Int64 tmpOrder,int RefundAmount,string Remark,string CardToken,string OriMerchantTradeNo,ref WebAPIOutput_ECRefund WSRefundOutput,ref string errCode,ref string errMsg)
+        {
+            bool flag = true;
+            PartOfECRefund WSRefundInput = new PartOfECRefund()
+            {
+                ApiVer = ApiVerOther,
+                ApposId = TaishinAPPOS,
+                RequestParams = new EC_RefundRequestParams()
+                {
+                    TradeType = "5",
+                    CardToken = CardToken,
+                    MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                    MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                    MerchantTradeNo = string.Format("{0}{1}_{2}", tmpOrder, "R", DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    OriMerchantTradeNo = OriMerchantTradeNo,
+                    Item = new List<EC_RefundItem>(),
+                    TradeAmount = (RefundAmount * 100).ToString(),
+                    ResultUrl = BindResultURL,
+                    Remark1 = Remark,
+                    Remark2 = "",
+                    Remark3 = ""
+
+                },
+                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString()
+            };
+            flag = WebAPI.DoCreditRefund(WSRefundInput, ref errCode, ref WSRefundOutput);
+            return flag;
+        }
+        /// <summary>
+        /// 刷卡
         /// </summary>
         /// <param name="OrderNo">訂單編號/罰單編號</param>
         /// <param name="Amount">金額</param>
@@ -103,24 +173,39 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="errMsg"></param>
         /// <returns></returns>
 
-        public bool DoAuth(string OrderNo,int Amount,string CardToken,int PayType,ref string errCode, ref string errMsg)
+        public bool DoAuth(string OrderNo,int Amount,string CardToken,int PayType,ref string errCode, ref string errMsg, ref WebAPIOutput_Auth WSAuthOutput)
         {
             bool flag = true;
-            Int64 tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
+            Int64 tmpOrder = 0;
+            string TmpOrder = "";
+            if (PayType == 0)
+            {
+                tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
+            }
+            else
+            {
+                TmpOrder = OrderNo;
+            }
+           
             string PayTypeStr = "";
+            string PaySuff = "F";
             switch (PayType)
             {
                 case 0:
                     PayTypeStr = "租金";
+                    PaySuff = "F_";
                     break;
                 case 1:
                     PayTypeStr = "罰金";
+                    PaySuff = "P_";
                     break;
                 case 2:
                     PayTypeStr = "eTag";
+                    PaySuff = "E_";
                     break;
                 case 3:
                     PayTypeStr = "補繳";
+                    PaySuff = "G_";
                     break;
                 
 
@@ -147,7 +232,7 @@ namespace WebAPI.Models.ComboFunc
                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                    MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                  //  MerchantTradeNo = string.Format("{0}{1}{2}", tmpOrder, PaySuff, DateTime.Now.ToString("yMMddHHmmssf")),
                     NonRedeemAmt = Amount.ToString() + "00",
                     NonRedeemdescCode = "",
                     Remark1 = "",
@@ -157,15 +242,22 @@ namespace WebAPI.Models.ComboFunc
                     TradeAmount = Amount.ToString() + "00",
                     TradeType = "1",
                     UseRedeem = "N"
-
                 },
                 Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                 TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
 
             };
+            if (PayType == 0)
+            {
+                WSAuthInput.RequestParams.MerchantTradeNo = string.Format("{0}{1}{2}", tmpOrder, PaySuff, WSAuthInput.TimeStamp);
+            }
+            else
+            {
+                WSAuthInput.RequestParams.MerchantTradeNo = string.Format("{0}{1}{2}", TmpOrder, PaySuff, WSAuthInput.TimeStamp);
+            }
             WSAuthInput.RequestParams.Item.Add(item);
 
-            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+          
             flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
             return flag;
         }

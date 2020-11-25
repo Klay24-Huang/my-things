@@ -113,6 +113,7 @@ namespace WebAPI.Controllers
                      obj = new ContactRepository(connetStr).GetModifyData(tmpOrder);
                 BillCommon billCommon = new BillCommon();
                 int totalPointer = 0;
+                int oldTotalPointer = 0;
                     if (obj == null)
                     {
                         flag = false;
@@ -135,32 +136,46 @@ namespace WebAPI.Controllers
                         if (flag)
                         {
                             int days = 0, hours = 0, minutes = 0;
+                            
                             if (obj.PROJTYPE == 4)
                             {
+                                oldTotalPointer = obj.MotorPoint + obj.CarPoint; //舊折抵點數
                                 totalPointer = apiInput.CarPoint + apiInput.MotorPoint;
-                                billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
-                                int discount = Convert.ToInt32(Math.Round((obj.MaxPrice * days) + (obj.WeekdayPriceByMinutes * 60 * hours) + (obj.WeekdayPriceByMinutes * minutes), 0));
-                                apiOutput = new OAPI_BE_ReCalculateByDiscount()
+                            //billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
+                            //int discount = Convert.ToInt32(Math.Round((obj.MaxPrice * days) + (obj.WeekdayPriceByMinutes * 60 * hours) + (obj.WeekdayPriceByMinutes * minutes), 0));
+                            int oldPrice = calDiscountPrice(oldTotalPointer, 1, obj);
+                            int discount= calDiscountPrice(totalPointer, 1, obj);
+                            int tmpFinalPrice = obj.final_price;
+                         //   obj.pure_price += oldPrice;
+                            obj.final_price += oldPrice;
+                            apiOutput = new OAPI_BE_ReCalculateByDiscount()
                                 {
                                     RentPrice = ((obj.pure_price - discount) > 0) ? (obj.pure_price - discount) : 0,
                                     NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0,
 
                                 };
-                                apiOutput.DiffFinalPrice = obj.final_price - apiOutput.NewFinalPrice;
+                                apiOutput.DiffFinalPrice = tmpFinalPrice - apiOutput.NewFinalPrice;
                         }
                             else
                             {
-                                totalPointer = apiInput.CarPoint;
-                                billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
-                                double hour =hours+Convert.ToDouble( minutes / 60.0);
-                                int discount = (obj.WeekdayPrice * days) + Convert.ToInt32((obj.WeekdayPrice/10) * hour);
-                                apiOutput = new OAPI_BE_ReCalculateByDiscount()
+                                 oldTotalPointer = obj.CarPoint;//舊折抵點數
+                                 totalPointer = apiInput.CarPoint;
+                            //billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
+                            //double hour =hours+Convert.ToDouble( minutes / 60.0);
+                            //int discount = (obj.WeekdayPrice * days) + Convert.ToInt32((obj.WeekdayPrice/10) * hour);
+                            int oldPrice = calDiscountPrice(oldTotalPointer, 0, obj);
+                            int discount = calDiscountPrice(totalPointer, 0, obj);
+                            int tmpFinalPrice = obj.final_price;
+                          //  obj.pure_price += oldPrice;
+                            obj.final_price += oldPrice;
+                            apiOutput = new OAPI_BE_ReCalculateByDiscount()
                                 {
                                     RentPrice = ((obj.pure_price - discount) > 0) ? (obj.pure_price - discount) : 0,
                                     NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0,
 
                                 };
-                                apiOutput.DiffFinalPrice =  obj.final_price- apiOutput.NewFinalPrice;
+                                
+                                apiOutput.DiffFinalPrice = tmpFinalPrice- apiOutput.NewFinalPrice  ;
                             }
                         }
               
@@ -182,5 +197,22 @@ namespace WebAPI.Controllers
                 return objOutput;
                 #endregion
             }
+        private int calDiscountPrice(int pointer,int type, BE_GetOrderModifyDataNew obj)
+        {
+            int totalDiscountPrice = 0;
+            int days = 0, hours = 0, minutes = 0;
+            new BillCommon().CalPointerToDayHourMin(pointer, ref days, ref hours, ref minutes);
+            if (type == 0)
+            {
+                double hour = hours + Convert.ToDouble(minutes / 60.0);
+                totalDiscountPrice = (obj.WeekdayPrice * days) + Convert.ToInt32((obj.WeekdayPrice / 10) * hour);
+            }
+            else
+            {
+                totalDiscountPrice = Convert.ToInt32(Math.Round((obj.MaxPrice * days) + (obj.WeekdayPriceByMinutes * 60 * hours) + (obj.WeekdayPriceByMinutes * minutes), 0));
+            }
+            return totalDiscountPrice;
         }
+        }
+       
     }
