@@ -392,8 +392,6 @@
     <Build Include="dbo\Functions\FN_GetRangeMins.sql" />
     <Build Include="dbo\Functions\FN_CarRentCompute.sql" />
     <Build Include="dbo\Functions\FN_MotoRentCompute.sql" />
-    <Build Include="dbo\Functions\FN_MotoRentPara.sql" />
-    <Build Include="dbo\Functions\FN_MotoRentTrial.sql" />
     <Build Include="dbo\Functions\FN_dayPro.sql" />
   </ItemGroup>
   <ItemGroup>
