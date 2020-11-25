@@ -142,6 +142,12 @@ $(function () {
             }
         }
         if (flag) {
+            if (HasVaildEMail == 1 && MEMEMAIL=="") {
+                flag = false;
+                errMsg = "請輸入正確的EMAIL欄位";
+            } 
+        }
+        if (flag) {
             if (InvoiceType == "0") {
                 flag = false;
                 errMsg = "請選擇發票寄送方式";
