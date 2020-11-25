@@ -4,6 +4,7 @@ using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
 using Newtonsoft.Json;
+using NLog;
 using OtherService.Common;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace OtherService
     /// </summary>
     public class TaishinCreditCardBindAPI
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string ECBaseURL= ConfigurationManager.AppSettings["TaishinECBaseURL"].ToString();
@@ -118,6 +121,9 @@ namespace OtherService
                                 RtnMessage = output.RtnMessage
                             };
                         }
+
+                        //20201125紀錄接收資料
+                        logger.Trace(responseStr);
                     }
 
                 }
@@ -240,6 +246,9 @@ namespace OtherService
                                 RtnMessage = output.RtnMessage
                             };
                         }
+
+                        //20201125紀錄接收資料
+                        logger.Trace(responseStr);
                     }
 
                 }
@@ -351,6 +360,9 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_DeleteCreditCardAuth>(responseStr);
+
+                        //20201125紀錄接收資料
+                        logger.Trace(responseStr);
                     }
 
                 }
@@ -551,6 +563,9 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+
+                        //20201125紀錄接收資料
+                        logger.Trace(responseStr);
                     }
 
                 }

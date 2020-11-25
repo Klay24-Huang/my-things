@@ -282,6 +282,7 @@ namespace WebAPI.Controllers
                     WSInput_SetOrderStatus wsOrderInput = null;
                     WSInput_SendLock wsLockInput = null;
                     WSInput_SendCardNo SendCardInput = null;
+                    WSOutput_GetInfo wsOutputGetInfo = new WSOutput_GetInfo();
                     switch (apiInput.CmdType)
                     {
                         case 15:
@@ -499,7 +500,14 @@ namespace WebAPI.Controllers
                                 errMsg = wsOutput.ErrMsg;
                             }
                             break;
-
+                        case 100: //GetInfo
+                            flag = CensAPI.GetInfo(CENSCID, ref wsOutputGetInfo);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
                     }
                    
                 }
