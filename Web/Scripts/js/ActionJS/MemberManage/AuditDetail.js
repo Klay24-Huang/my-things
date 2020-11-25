@@ -113,14 +113,14 @@ $(function () {
             flag = false;
             errMsg = "請至少選擇一種駕照類型";
         }
-        if (flag) {
-            $('.sameMobile').each(function () {
-                if ($.trim($(this).html()) == $.trim(Mobile)) {
-                    flag = false;
-                    errMsg = "手機號碼重複，請確認手機正確性，並修改手機號碼！";
-                }
-            });
-        }
+        //if (flag) {
+        //    $('.sameMobile').each(function () {
+        //        if ($.trim($(this).html()) == $.trim(Mobile)) {
+        //            flag = false;
+        //            errMsg = "手機號碼重複，請確認手機正確性，並修改手機號碼！";
+        //        }
+        //    });
+        //}
         if (flag) {
             if (SPECSTATUS != "00") {
                 if (SPSD == "" && SPED == "") {
