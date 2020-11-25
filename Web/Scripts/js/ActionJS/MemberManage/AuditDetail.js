@@ -93,6 +93,16 @@ $(function () {
         //var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()) : 0;
         //20201124 UPD BY JERRY 修改發送簡訊判斷
         var SendMessage = $("#SendMessage").prop("checked") ? 1 : 0;
+
+
+        //20201125 UPD BY JERRY 增加欄位處理
+        var MEMHTEL = $("#MEMHTEL").val();
+        var MEMCOMTEL = $("#MEMCOMTEL").val();
+        var MEMCONTRACT = $("#MEMCONTRACT").val();
+        var MEMCONTEL = $("#MEMCONTEL").val();
+        var MEMEMAIL = $("#MEMEMAIL").val();
+        var HasVaildEMail = $("#HasVaildEMail_OK").prop("checked") ? 1 : 0;
+        var MEMMSG = $("#MEMMSG_OK").prop("checked") ? 'Y' : 'N';
         
         //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
@@ -170,6 +180,15 @@ $(function () {
             SendObj.UserID = Account;
             SendObj.SendMessage = SendMessage;
             SendObj.IsNew = IsNew;
+
+            //20201125 UPD BY JERRY 增加欄位處理
+            SendObj.MEMHTEL = MEMHTEL;
+            SendObj.MEMCOMTEL = MEMCOMTEL;
+            SendObj.MEMCONTRACT = MEMCONTRACT;
+            SendObj.MEMCONTEL = MEMCONTEL;
+            SendObj.MEMEMAIL = MEMEMAIL;
+            SendObj.HasVaildEMail = HasVaildEMail;
+            SendObj.MEMMSG = MEMMSG;
 
             DoAjaxAfterGoBack(SendObj, "BE_Audit", "審核發生錯誤");
             

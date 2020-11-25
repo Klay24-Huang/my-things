@@ -187,7 +187,14 @@ namespace WebAPI.Controllers
                     SPED = apiInput.SPED,
                     SPSD = apiInput.SPSD,
                     UniCode = apiInput.UniCode,
-                    Driver = string.Format("{0}{1}", CarRentType, MotorRentType)
+                    Driver = string.Format("{0}{1}", CarRentType, MotorRentType),
+                    MEMHTEL = apiInput.MEMHTEL,
+                    MEMCOMTEL = apiInput.MEMCOMTEL,
+                    MEMCONTRACT = apiInput.MEMCONTRACT,
+                    MEMCONTEL = apiInput.MEMCONTEL,
+                    MEMEMAIL = apiInput.MEMEMAIL,
+                    HasVaildEMail = apiInput.HasVaildEMail,
+                    MEMMSG = apiInput.MEMMSG
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
