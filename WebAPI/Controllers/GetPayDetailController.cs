@@ -289,21 +289,21 @@ namespace WebAPI.Controllers
                     //判斷輸入的點數有沒有超過總點數
                     if (ProjType == 4)
                     {
-                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)
+                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
                         {
                             flag = false;
                             errCode = "ERR205";
                         }
                         else
                         {
-                            if (Discount > (MotorPoint + CarPoint))
+                            if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
                             {
                                 flag = false;
                                 errCode = "ERR207";
                             }
                         }
 
-                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > 使用時數
+                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
                         {
                             flag = false;
                             errCode = "ERR303";
@@ -476,7 +476,6 @@ namespace WebAPI.Controllers
                         //此處換算邏輯還未寫入
                         //ActualRedeemableTimePoint 需要針對機車部分換算 機車第一天最多折抵上限199分鐘 第二天為200分鐘
                         
-
                         if (TotalPoint >= TotalRentMinutes) //可使用總點數 >= 總租車時數
                         {
                             //ActualRedeemableTimePoint = TotalRentMinutes;
@@ -484,23 +483,24 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            if ((TotalPoint - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            if ((TotalPoint - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)    //(可使用總點數-總租車時數) < 基本分鐘數
                             {
                                 //ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
                                 ActualRedeemableTimePoint = billCommon.GetMotorCanDiscountPoint(TotalRentMinutes) - OrderDataLists[0].BaseMinutes;
                             }
                         }
+
                         if (Discount >= TotalRentMinutes)   // 要折抵的點數 >= 總租車時數
                         {
                             Discount = (days * 600) + (hours * 60) + (mins);    //自動縮減
                         }
                         else
                         {
-                            int tmp = TotalRentMinutes - Discount;
-                            if (tmp < OrderDataLists[0].BaseMinutes)
-                            {
-                                Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
-                            }
+                            //int tmp = TotalRentMinutes - Discount;
+                            //if (tmp < OrderDataLists[0].BaseMinutes)
+                            //{
+                            //    Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
+                            //}
                         }
                         TotalRentMinutes -= Discount;   // 總租車時數 = 總租車時數 - 要折抵的點數
 
@@ -517,7 +517,6 @@ namespace WebAPI.Controllers
 
                         //outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.CarRental = new BillCommon().MotoRentCompute(SD, ED, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].BaseMinutes, OrderDataLists[0].MaxPrice, Discount);
-                       
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     }
                     else
