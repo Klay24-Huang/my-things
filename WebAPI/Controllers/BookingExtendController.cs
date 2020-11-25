@@ -7,15 +7,11 @@ using Domain.SP.Output.Rent;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -32,7 +28,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -40,7 +35,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BookingStartController";
+            string funName = "BookingExtendController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BookingExtend apiInput = null;
@@ -49,25 +44,15 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-    
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
 
             string IDNO = "";
-            string CID = "";
-            string deviceToken = "";
-            int IsMotor = 0;
-            int IsCens = 0;
-            double mil = 0;
-            DateTime StopTime=new DateTime();
+            DateTime StopTime = new DateTime();
             DateTime SD = new DateTime();
-
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -76,7 +61,7 @@ namespace WebAPI.Controllers
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-                string[] checkList = { apiInput.OrderNo, apiInput.ED};
+                string[] checkList = { apiInput.OrderNo, apiInput.ED };
                 string[] errList = { "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -98,7 +83,6 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
@@ -121,7 +105,6 @@ namespace WebAPI.Controllers
                             errCode = "ERR177";
                         }
                     }
-
                 }
             }
             //不開放訪客
@@ -141,7 +124,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -158,10 +140,10 @@ namespace WebAPI.Controllers
             {
                 SPInput_GetBookingStartTime spInput = new SPInput_GetBookingStartTime()
                 {
-                   OrderNo= tmpOrder,
+                    OrderNo = tmpOrder,
                     IDNO = IDNO,
-                    LogID =LogID,
-                     Token=Access_Token
+                    LogID = LogID,
+                    Token = Access_Token
                 };
                 SPOutput_GetBookingStartTime spOut = new SPOutput_GetBookingStartTime();
                 string spName = new ObjType().GetSPName(ObjType.SPType.GetBookingStartTime);
@@ -171,8 +153,6 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                   
-
                     if (StopTime.Subtract(spOut.SD).TotalDays == 7)
                     {
                         if (StopTime.Subtract(spOut.SD).TotalHours > 0 || StopTime.Subtract(spOut.SD).TotalMinutes > 0)
@@ -186,7 +166,6 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR179";
                     }
-                 
                 }
                 else
                 {
@@ -205,26 +184,24 @@ namespace WebAPI.Controllers
                 {
                     SPInput_BookingExtend spExtend = new SPInput_BookingExtend()
                     {
-
                         OrderNo = tmpOrder,
                         IDNO = IDNO,
-                        Token=Access_Token,
+                        Token = Access_Token,
                         LogID = LogID,
                         SD = SD,
                         ED = StopTime,
                         CarNo = spOut.CarNo
                     };
                     SPOutput_Base spOutExtend = new SPOutput_Base();
-                    spName= new ObjType().GetSPName(ObjType.SPType.BookingExtend);
+                    spName = new ObjType().GetSPName(ObjType.SPType.BookingExtend);
                     SQLHelper<SPInput_BookingExtend, SPOutput_Base> sqlHelpCheck = new SQLHelper<SPInput_BookingExtend, SPOutput_Base>(connetStr);
                     flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
                     baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
-                    
                 }
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

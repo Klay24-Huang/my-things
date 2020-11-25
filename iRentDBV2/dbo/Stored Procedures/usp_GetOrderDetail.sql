@@ -129,7 +129,7 @@ BEGIN TRY
 			   VW.[pure_price] ,
 			   VW.[gift_point] AS GiftPoint,
 			   VW.[gift_motor_point] As GiftMotorPoint,
-			   (Detail.monthly_workday + Detail.monthly_holiday) AS MonthlyHours ,
+			   (VW.monthly_workday + VW.monthly_holiday) AS MonthlyHours ,
 			   VW.[ProjType],
 			   VW.[final_start_time] AS StartTime,
 			   VW.[final_stop_time] AS EndTime ,
@@ -140,20 +140,22 @@ BEGIN TRY
 			   VW.[final_price] ,
 			   VW.[TransDiscount],
 			   VW.[parkingFee] ,
-			   Main.invoice_date,
-			   Main.invoice_price,
-			   Main.invoiceCode,
-			   Main.bill_option AS InvoiceType ,
-			   Main.[CARRIERID],
-			   Main.[NPOBAN],
-			   Main.unified_business_no,
+			   VW.invoice_date,
+			   VW.invoice_price,
+			   VW.invoiceCode,
+			   VW.bill_option AS InvoiceType ,
+			   VW.[CARRIERID],
+			   VW.[NPOBAN],
+			   VW.unified_business_no,
 			   ISNULL(Love.LoveName, '') AS NPOBAN_Name,
 			   VW.Millage,
-			   VW.Area
+			   VW.Area,
+			   VW.start_mile,
+			   VW.end_mile,
+			   0 AS DiscountAmount,
+			   '' As DiscountName
 		FROM [dbo].[VW_GetOrderData] AS VW
-		INNER JOIN [TB_OrderDetail] AS Detail ON Detail.order_number=VW.order_number
-		LEFT JOIN [TB_OrderMain] AS Main ON Main.order_number=VW.order_number
-		LEFT JOIN TB_LoveCode AS Love ON Love.LoveCode=Main.NPOBAN
+		LEFT JOIN TB_LoveCode AS Love ON Love.LoveCode=VW.NPOBAN
 		WHERE VW.order_number=@OrderNo;
 	END
 

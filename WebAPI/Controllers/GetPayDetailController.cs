@@ -211,8 +211,17 @@ namespace WebAPI.Controllers
                     ProjType = OrderDataLists[0].ProjType;
                     SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
-                    ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
-                    ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    //機車路邊不計算預計還車時間
+                    if (OrderDataLists[0].ProjType == 4)
+                    {
+                        ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    }
+                    else
+                    {
+                        ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    }
                     FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                     FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
@@ -260,13 +269,13 @@ namespace WebAPI.Controllers
                                 bool PointFlag = int.TryParse(wsOutput.Data[i].GIFTPOINT, out tmpPoint);
                                 if (DateFlag && (tmpDate >= DateTime.Now) && PointFlag)
                                 {
-                                    if (wsOutput.Data[i].GIFTTYPE == "01")
+                                    if (wsOutput.Data[i].GIFTTYPE == "01")  //汽車
                                     {
-                                        MotorPoint += string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? 0 : Convert.ToInt32(wsOutput.Data[i].LASTPOINT);
+                                        CarPoint += string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? 0 : Convert.ToInt32(wsOutput.Data[i].LASTPOINT);
                                     }
                                     else
                                     {
-                                        CarPoint += string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? 0 : Convert.ToInt32(wsOutput.Data[i].LASTPOINT);
+                                        MotorPoint += string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? 0 : Convert.ToInt32(wsOutput.Data[i].LASTPOINT);
                                     }
                                 }
                             }
@@ -280,21 +289,21 @@ namespace WebAPI.Controllers
                     //判斷輸入的點數有沒有超過總點數
                     if (ProjType == 4)
                     {
-                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)
+                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
                         {
                             flag = false;
                             errCode = "ERR205";
                         }
                         else
                         {
-                            if (Discount > (MotorPoint + CarPoint))
+                            if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
                             {
                                 flag = false;
                                 errCode = "ERR207";
                             }
                         }
 
-                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > 使用時數
+                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
                         {
                             flag = false;
                             errCode = "ERR303";
@@ -462,28 +471,36 @@ namespace WebAPI.Controllers
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (ProjType == 4)
                     {
+                        //目前折抵還有部分問題還未解
+                        //汽車折抵是可以折抵到機車那邊的
+                        //此處換算邏輯還未寫入
+                        //ActualRedeemableTimePoint 需要針對機車部分換算 機車第一天最多折抵上限199分鐘 第二天為200分鐘
+                        
                         if (TotalPoint >= TotalRentMinutes) //可使用總點數 >= 總租車時數
                         {
-                            ActualRedeemableTimePoint = TotalRentMinutes;
+                            //ActualRedeemableTimePoint = TotalRentMinutes;
+                            ActualRedeemableTimePoint = billCommon.GetMotorCanDiscountPoint(TotalRentMinutes);
                         }
                         else
                         {
-                            if ((TotalPoint - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)
+                            if ((TotalPoint - TotalRentMinutes) < OrderDataLists[0].BaseMinutes)    //(可使用總點數-總租車時數) < 基本分鐘數
                             {
-                                ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                //ActualRedeemableTimePoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                ActualRedeemableTimePoint = billCommon.GetMotorCanDiscountPoint(TotalRentMinutes) - OrderDataLists[0].BaseMinutes;
                             }
                         }
+
                         if (Discount >= TotalRentMinutes)   // 要折抵的點數 >= 總租車時數
                         {
                             Discount = (days * 600) + (hours * 60) + (mins);    //自動縮減
                         }
                         else
                         {
-                            int tmp = TotalRentMinutes - Discount;
-                            if (tmp < OrderDataLists[0].BaseMinutes)
-                            {
-                                Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
-                            }
+                            //int tmp = TotalRentMinutes - Discount;
+                            //if (tmp < OrderDataLists[0].BaseMinutes)
+                            //{
+                            //    Discount += TotalRentMinutes - Discount - OrderDataLists[0].BaseMinutes;
+                            //}
                         }
                         TotalRentMinutes -= Discount;   // 總租車時數 = 總租車時數 - 要折抵的點數
 
@@ -498,7 +515,8 @@ namespace WebAPI.Controllers
                             billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
                         }
 
-                        outputApi.Rent.CarRental = CarRentPrice;
+                        //outputApi.Rent.CarRental = CarRentPrice;
+                        outputApi.Rent.CarRental = new BillCommon().MotoRentCompute(SD, ED, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].BaseMinutes, OrderDataLists[0].MaxPrice, Discount);
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     }
                     else
@@ -569,22 +587,30 @@ namespace WebAPI.Controllers
                         {
                             int n_price = OrderDataLists[0].PRICE * 10;
                             int h_price = OrderDataLists[0].PRICE_H * 10;
-                            int inPrice = new BillCommon().CarRentCompute(SD, ED, n_price, h_price, 10, lstHoliday);
-                            CarRentPrice = inPrice;
+
                             if (hasFine)
                             {
                                 //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, ED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday,true);
+
+                                int inPrice = new BillCommon().CarRentCompute(SD, ED, n_price, h_price, 10, lstHoliday);
+                                CarRentPrice = inPrice;
+
+                                int overPrice = new BillCommon().CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true);
                                 CarRentPrice += overPrice;
                             }
-                            //else
-                            //{
-                            //    CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
-                            //}
+                            else
+                            {
+                                //CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
+                                int inPrice = new BillCommon().CarRentCompute(SD, FED, n_price, h_price, 10, lstHoliday);
+                                CarRentPrice = inPrice;
+                            }
                         }
                         if (Discount > 0)
                         {
+                            var result = new BillCommon().GetRangeMins(SD, ED, 60, 10 * 60, lstHoliday, null, null);
+
                             int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
+                            
                             if (UseMonthMode)
                             {
                                 if (billCommon._scriptHolidayHour > 0)
@@ -598,7 +624,8 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                if (billCommon._holidayHour > 0)
+                                //if (billCommon._holidayHour > 0)
+                                if (result.Item2 > 0)
                                 {
                                     DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE_H)));
                                 }
@@ -654,6 +681,8 @@ namespace WebAPI.Controllers
                         Token = Access_Token,
                         LogID = LogID,
                     };
+                    
+
                     SPOutput_Base SPOutput = new SPOutput_Base();
                     SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);
                     flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);

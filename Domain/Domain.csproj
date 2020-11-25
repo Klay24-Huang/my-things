@@ -46,6 +46,7 @@
     <Compile Include="Common\BackEnd\OperatorItem.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
+    <Compile Include="MemberData\UnBindLog.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="MemberData\StatusData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NPR136Success.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
@@ -137,9 +139,11 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />
+    <Compile Include="SP\Input\Member\SPInput_InsUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\Mochi\SPInput_DisabledMochiPark.cs" />

@@ -32,8 +32,6 @@ namespace WebAPI.Models.BillFunc
         public delegate double MinsProcess(double mins);//剩餘分轉計費分(未滿60)
         public delegate void DayMinsProcess(ref double wMins, ref double hMins);//當日分特殊邏輯
 
-        private readonly int CarBaseMinutes = 60;//汽車基本分鐘數
-
         /// <summary>
         /// 計算時間
         /// </summary>
@@ -42,7 +40,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Days">天數</param>
         /// <param name="Hours">時數</param>
         /// <param name="Minutes">分數</param>
-        public void CalDayHourMin(DateTime SD, DateTime ED,ref int Days,ref int Hours,ref int Minutes)
+        public void CalDayHourMin(DateTime SD, DateTime ED, ref int Days, ref int Hours, ref int Minutes)
         {
             int dayNum = 0;
             double diffHours = 0;
@@ -54,9 +52,9 @@ namespace WebAPI.Models.BillFunc
             double totalPay = 0;
 
             double totalHours = Math.Floor(ED.Subtract(SD).TotalHours);
-             Minutes = ED.Subtract(SD).Minutes;
-             Days = Convert.ToInt32(Math.Floor(totalHours / 24));
-             Hours = Convert.ToInt32(totalHours % 24);
+            Minutes = ED.Subtract(SD).Minutes;
+            Days = Convert.ToInt32(Math.Floor(totalHours / 24));
+            Hours = Convert.ToInt32(totalHours % 24);
             //2017-01-24新增，避免尾差
             if (Hours >= 10)
             {
@@ -72,10 +70,10 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Days"></param>
         /// <param name="Hours"></param>
         /// <param name="Minutes"></param>
-        public void CalPointerToDayHourMin(int point,ref int Days,ref int Hours,ref int Minutes)
+        public void CalPointerToDayHourMin(int point, ref int Days, ref int Hours, ref int Minutes)
         {
-            Days= Convert.ToInt32(Math.Floor(Convert.ToDouble(point / 600)));
-            Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((point%600) / 60))));
+            Days = Convert.ToInt32(Math.Floor(Convert.ToDouble(point / 600)));
+            Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((point % 600) / 60))));
             Minutes = point - (Days * 600) - (Hours * 60);
 
         }
@@ -104,7 +102,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="price">平日每分鐘</param>
         /// <param name="priceH">假日每分鐘</param>
         /// <param name="MaxPrice">當日最高價</param>
-        public void CalFinalPriceByMinutes(int days,int hours,int minutes,int baseMinutes,int BasePrice,float price,float priceH,int MaxPrice,ref int TotalPrice)
+        public void CalFinalPriceByMinutes(int days, int hours, int minutes, int baseMinutes, int BasePrice, float price, float priceH, int MaxPrice, ref int TotalPrice)
         {
 
         }
@@ -120,15 +118,15 @@ namespace WebAPI.Models.BillFunc
         /// <param name="TotalPrice"></param>
         public void CalFinalPriceByMinutes(int TotalMinutes, int BaseMinutes, int BasePrice, float Price, float PriceH, int MaxPrice, ref int TotalPrice)
         {
-            if(TotalMinutes>0 && TotalMinutes <= BaseMinutes)   //如果時間大於0且小於基本時數，則以基本費計算
+            if (TotalMinutes > 0 && TotalMinutes <= BaseMinutes)   //如果時間大於0且小於基本時數，則以基本費計算
             {
                 TotalPrice = BasePrice;
             }
-            else if(TotalMinutes>0)
+            else if (TotalMinutes > 0)
             {
-                int days = 0,hours=0,mins=0;
-                CalMinuteToDayHourMin(TotalMinutes-BaseMinutes, ref days, ref hours, ref mins); //取出天、時、分
-                TotalPrice=Convert.ToInt32(Math.Floor((MaxPrice*days)+(((Price*60*hours)<MaxPrice)? (Price * 60 * hours) : MaxPrice)+(mins*Price)))+BaseMinutes;
+                int days = 0, hours = 0, mins = 0;
+                CalMinuteToDayHourMin(TotalMinutes - BaseMinutes, ref days, ref hours, ref mins); //取出天、時、分
+                TotalPrice = Convert.ToInt32(Math.Floor((MaxPrice * days) + (((Price * 60 * hours) < MaxPrice) ? (Price * 60 * hours) : MaxPrice) + (mins * Price))) + BaseMinutes;
             }
             else
             {
@@ -144,14 +142,14 @@ namespace WebAPI.Models.BillFunc
         /// <param name="MilageDef">預設每公里費用</param>
         /// <param name="baseMil">每小時幾公里</param>
         /// <returns></returns>
-        public int CalMilagePay(DateTime SD, DateTime ED, float MilageBase, float MilageDef,float baseMil)
+        public int CalMilagePay(DateTime SD, DateTime ED, float MilageBase, float MilageDef, float baseMil)
         {
             int Days = 0, Hours = 0, Minutes = 0;
             int MilagePrice = 0;
             CalDayHourMin(SD, ED, ref Days, ref Hours, ref Minutes);
             if (MilageBase < 0)
             {
-                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + (Minutes < 60 ? 1 : (Minutes/60))) * baseMil) * MilageDef));
+                MilagePrice = Convert.ToInt32(Math.Floor((((Days * 10) + Hours + (Minutes < 60 ? 1 : (Minutes / 60))) * baseMil) * MilageDef));
             }
             else
             {
@@ -168,7 +166,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="EDate">迄日</param>
         /// <param name="LogID">此筆呼叫的id</param>
         /// <returns></returns>
-        public float GetMilageBase(string ProjID,string CarType,DateTime SDate,DateTime EDate,Int64 LogID)
+        public float GetMilageBase(string ProjID, string CarType, DateTime SDate, DateTime EDate, Int64 LogID)
         {
             bool flag = true;
             float MilageBase = -1;
@@ -186,22 +184,22 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                string SPName= new ObjType().GetSPName(ObjType.SPType.GetMilageSetting);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetMilageSetting);
                 SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting> sqlHelp = new SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting>(WebApiApplication.connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
-                new CommonFunc().checkSQLResult(ref flag,SPOutput.Error,SPOutput.ErrorCode, ref lstError, ref errCode);
+                new CommonFunc().checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
                     MilageBase = SPOutput.MilageBase;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 flag = false;
             }
             finally
             {
-               
+
             }
             return MilageBase;
         }
@@ -286,7 +284,7 @@ namespace WebAPI.Models.BillFunc
             int totalMinutes = ED.Subtract(SD).Minutes;
             double Day = Math.Floor(totalHours / 24);
             double tHours = totalHours % 24;
-          
+
             if (tHours >= 10)
             {
                 Day += 1;
@@ -373,6 +371,71 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 機車租金試算
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="PriceMin">每分鐘多少</param>
+        /// <param name="baseMinutes">基本分鐘數</param>
+        /// <param name="dayMaxPrice">單日計費上限</param>
+        /// <param name="disc">折扣點數</param>
+        /// <returns></returns>
+        /// <mark>2020-11-19 eason</mark>
+        public int MotoRentCompute(DateTime SD, DateTime ED, double PriceMin, int baseMinutes, double dayMaxPrice, int disc = 0)
+        {
+            int re = 0;
+
+            if (disc < 0)
+                throw new Exception("折扣不可為負數");
+
+            if (disc > 0 && disc < 6)
+                throw new Exception("折扣不可低於6分鐘");
+
+            double dayMaxMins = dayMaxPrice / PriceMin;//單日上限分鐘 
+
+            SD = SD.AddSeconds(SD.Second * -1);
+            ED = ED.AddSeconds(ED.Second * -1);
+
+            double mins = ED.Subtract(SD).TotalMinutes;
+            double fpay = 0;
+
+            if (mins < 24 * 60)
+            {
+                //先從基消判斷
+                if (mins <= 6)
+                    fpay = 10;
+                else if (mins > dayMaxMins)
+                    fpay = dayMaxPrice;
+                else
+                    fpay = (mins - baseMinutes) * PriceMin + 10;
+
+                if (disc >= 199)
+                    return 0;
+            }
+            else
+            {
+                var result = GetRangeMins(SD, ED, baseMinutes, dayMaxMins, new List<Holiday>());
+                if (result != null)
+                {
+                    double payMins = result.Item1;
+                    fpay = payMins * PriceMin;
+                }
+            }
+
+            if (disc > 0)
+            {
+                if (disc < 199)
+                    fpay = fpay - 10 - (disc - 6) * PriceMin;
+                else
+                    fpay = (fpay - 300) - (disc - 199) * PriceMin;
+            }
+
+            fpay = fpay >= 0 ? fpay : 0;
+            re = Convert.ToInt32(Math.Round(fpay, 0, MidpointRounding.AwayFromZero));
+            return re;
+        }
+
+        /// <summary>
         /// 租金試算-新
         /// </summary>
         /// <param name="SD">起</param>
@@ -384,19 +447,19 @@ namespace WebAPI.Models.BillFunc
         /// <param name="overTime">是否為逾時</param>
         /// <returns></returns>
         /// <mark>eason-2020-11-19</mark>
-        public int CarRentCompute(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday,bool overTime=false)
+        public int CarRentCompute(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, bool overTime = false)
         {
             int re = 0;
             var minsPro = new MinsProcess(GetCarPayMins);
-            var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null; 
+            var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null;
             double baseMinutes = 60;
 
             double wPriceHour = 0; //平日每小時價格
             double hPriceHour = 0; //假日每小時價格
 
-            if(overTime)
+            if (overTime)
             {//逾時超過6小時以10小時價格計算
-                wPriceHour = Price/10;
+                wPriceHour = Price / 10;
                 hPriceHour = PriceH / 10;
             }
             else
@@ -405,18 +468,46 @@ namespace WebAPI.Models.BillFunc
                 hPriceHour = PriceH / dayMaxHour;
             }
 
-            var result = GetRangeMins(SD, ED, baseMinutes, dayMaxHour*60, lstHoliday, minsPro, dayPro);
+            var result = GetRangeMins(SD, ED, baseMinutes, dayMaxHour * 60, lstHoliday, minsPro, dayPro);
 
             if (result != null)
             {
                 double tPrice = 0;
-                tPrice += Math.Floor(result.Item1 / 60) * wPriceHour;
-                tPrice += Math.Floor(result.Item2 / 60) * hPriceHour;
+                tPrice += Math.Floor((result.Item1 / 60) * wPriceHour);
+                tPrice += Math.Floor((result.Item2 / 60) * hPriceHour);
 
                 if (tPrice > 0)
-                    re = Convert.ToInt32(tPrice);                         
+                    re = Convert.ToInt32(tPrice);
             }
             return re;
+        }
+
+        /// <summary>
+        /// 預估里程試算
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="MilageBase">專案的每公里金額</param>
+        /// <param name="MilageDef">預設每公里費用</param>
+        /// <param name="baseMil">每小時幾公里</param>
+        /// <param name="lstHoliday">假日清單</param>
+        /// <returns></returns>
+        public int CarMilageCompute(DateTime SD, DateTime ED, float MilageBase, float MilageDef, float baseMil, List<Holiday> lstHoliday)
+        {
+            int MilagePrice = 0;
+            
+            var AllMinute = GetRangeMins(SD, ED, 60, 600, lstHoliday);  //基本分鐘數及單日分鐘上限寫死
+            var TotalHour = (AllMinute.Item1 + AllMinute.Item2) / 60;
+
+            if (MilageBase < 0)
+            {
+                MilagePrice = Convert.ToInt32(Math.Floor((TotalHour * baseMil) * MilageDef));
+            }
+            else
+            {
+                MilagePrice = Convert.ToInt32(Math.Floor((TotalHour * baseMil) * MilageBase));
+            }
+            return MilagePrice;
         }
 
         /// <summary>
@@ -439,7 +530,7 @@ namespace WebAPI.Models.BillFunc
             if (SD > ED)
                 throw new Exception("起日不可大於迄日");
 
-            if (SD.Date == ED.Date || SD.AddDays(1) > ED)
+            if (SD.Date == ED.Date || SD.AddDays(1) >= ED)
                 return GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
             else
             {
@@ -495,7 +586,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 逾時單日時間轉計費時間
+        /// 汽車逾時單日時間轉計費時間
         /// </summary>
         /// <param name="wMins"></param>
         /// <param name="hMins"></param>
@@ -510,7 +601,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 24小時租金計算
+        /// 24小時計費分鐘數
         /// </summary>
         /// <param name="SD">起</param>
         /// <param name="ED">迄</param>
@@ -524,7 +615,7 @@ namespace WebAPI.Models.BillFunc
             double n_allMins = 0;//總平日分鐘
             double h_allMins = 0;//總假日分鐘
 
-            if (SD == null && ED == null && SD > ED)
+            if (SD == null || ED == null)
                 throw new Exception("SD,ED不可為null");
 
             if (SD > ED)
@@ -583,7 +674,7 @@ namespace WebAPI.Models.BillFunc
                         var pay_xhours = Math.Floor(pay_mins / 60);
                         var pay_xmins = pay_mins % 60;
 
-                        if (minsPro != null && pay_xmins > 0)
+                        if (minsPro != null && pay_xmins > 0 && pay_xmins < 60)
                             pay_xmins = minsPro(pay_xmins);
 
                         var allPayMis = pay_xhours * 60 + pay_xmins;
@@ -610,7 +701,7 @@ namespace WebAPI.Models.BillFunc
                             double _af_xhour = Math.Floor(_af_mins / 60);//後日小時
                             double _af_xmins = _af_mins % 60;//後日分
 
-                            if (minsPro != null && _af_mins > 0)//未滿60處理
+                            if (minsPro != null && _af_xmins > 0 && _af_xmins < 60)//未滿60處理
                                 _af_xmins = minsPro(_af_xmins);
 
                             var allPayMins = _af_xhour * 60 + _af_xmins;
@@ -633,7 +724,7 @@ namespace WebAPI.Models.BillFunc
 
                             if (lastMins < 60)
                             {
-                                if (minsPro != null && lastMins > 0)
+                                if (minsPro != null && lastMins > 0 && lastMins < 60)
                                     lastMins = minsPro(lastMins);
 
                                 if (sd_isHoliday)
@@ -655,13 +746,13 @@ namespace WebAPI.Models.BillFunc
                                 var af_xhours = Math.Floor(af_mins / 60);
                                 var af_xmins = af_mins % 60;
 
-                                if (minsPro != null && af_mins > 0)//尾數分轉有計費分鐘
-                                    af_mins = minsPro(af_mins);
+                                if (minsPro != null && af_xmins > 0 && af_xmins < 60)//尾數分轉有計費分鐘
+                                    af_xmins = minsPro(af_xmins);
 
                                 if (ed_isHoliday)
-                                    h_allMins += af_xhours * 60 + af_mins;
+                                    h_allMins += af_xhours * 60 + af_xmins;
                                 else
-                                    n_allMins += af_xhours * 60 + af_mins;
+                                    n_allMins += af_xhours * 60 + af_xmins;
                             }
                         }
                     }
@@ -674,7 +765,7 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
 
-        private void insSubScription(DateTime Date, DateTime StartDate, DateTime EndDate, bool isHoliday, double tmpHours, Int64 SubScriptionID,ref List<MonthlyRentData> UseMonthlyRentDatas)
+        private void insSubScription(DateTime Date, DateTime StartDate, DateTime EndDate, bool isHoliday, double tmpHours, Int64 SubScriptionID, ref List<MonthlyRentData> UseMonthlyRentDatas)
         {
             if (isHoliday)
             {
@@ -740,14 +831,14 @@ namespace WebAPI.Models.BillFunc
             }
 
         }
-        public int CalBillBySubScription(DateTime SD, DateTime ED, List<Holiday> holidayList,int Price,int PriceH, ref string errCode, ref List<MonthlyRentData> lstSubScript, ref List<MonthlyRentData> ListUseMonthly)
+        public int CalBillBySubScription(DateTime SD, DateTime ED, List<Holiday> holidayList, int Price, int PriceH, ref string errCode, ref List<MonthlyRentData> lstSubScript, ref List<MonthlyRentData> ListUseMonthly)
         {
             double normalHour = 0.0;
             double holidayHour = 0.0;
             double totalHour = 0.0;
 
 
-            this.HolidayRantCarBySubScription(holidayList, SD, ED, ref normalHour, ref holidayHour, ref totalHour, ref lstSubScript,ref  ListUseMonthly);
+            this.HolidayRantCarBySubScription(holidayList, SD, ED, ref normalHour, ref holidayHour, ref totalHour, ref lstSubScript, ref ListUseMonthly);
             if (ListUseMonthly != null)
             {
                 if (ListUseMonthly.Count > 0)
@@ -760,10 +851,10 @@ namespace WebAPI.Models.BillFunc
             int normalAllBill = (int)(normalHour * (double)Price);
             int scriptRateH = (int)(_scriptionRateHolidayHour * _scriptionRateHolidayHourPrice);
             int scriptRateW = (int)(_scriptionRateWorkHour * _scriptionRateWorkHourPrice);
-            int  bill = normalAllBill + holidayAllBill + scriptRateH + scriptRateW;
+            int bill = normalAllBill + holidayAllBill + scriptRateH + scriptRateW;
             return bill;
         }
-        public void HolidayRantCarBySubScription(List<Holiday> holidayList, DateTime rantStart, DateTime rantEnd, ref double normalHour, ref double holidayHour, ref double totalHour, ref List<MonthlyRentData> lstSubScript,ref List<MonthlyRentData> ListUseMonthly)
+        public void HolidayRantCarBySubScription(List<Holiday> holidayList, DateTime rantStart, DateTime rantEnd, ref double normalHour, ref double holidayHour, ref double totalHour, ref List<MonthlyRentData> lstSubScript, ref List<MonthlyRentData> ListUseMonthly)
         {
             //總時數
             TimeSpan totalSub = rantEnd - rantStart;
@@ -1583,6 +1674,32 @@ namespace WebAPI.Models.BillFunc
         private bool IsInDate(DateTime dt_keyin, DateTime dt_start, DateTime dt_end)
         {
             return dt_keyin.CompareTo(dt_start) >= 0 && dt_keyin.CompareTo(dt_end) <= 0;
+        }
+        /// <summary>
+        /// 計算機車可折抵時數
+        /// </summary>
+        /// <param name="rentmins"></param>
+        /// <returns></returns>
+        public int GetMotorCanDiscountPoint(int rentmins)
+        {
+            int CanDiscountPoint = 0;
+
+            //首日最多折199分鐘
+            if (rentmins <= 199)
+            {
+                CanDiscountPoint = rentmins;
+            }
+            else if (rentmins <= 600)
+            {
+                CanDiscountPoint = 199;
+            }
+            else
+            {
+                int days = rentmins / 600;
+                CanDiscountPoint = (days - 1) * 200 + 199 + ((rentmins % 600) >= 200 ? 200 : rentmins % 600);
+            }
+
+            return CanDiscountPoint;
         }
     }
 }

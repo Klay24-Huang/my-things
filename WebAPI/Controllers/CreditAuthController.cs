@@ -537,7 +537,8 @@ namespace WebAPI.Controllers
                             WSAuthInput.RequestParams.Item.Add(item);
 
                             WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                            flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
+                            //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
+                            flag = WebAPI.DoCreditCardAuthV2(WSAuthInput,IDNO, ref errCode, ref WSAuthOutput);
                             if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
                             {
                                 flag = false;

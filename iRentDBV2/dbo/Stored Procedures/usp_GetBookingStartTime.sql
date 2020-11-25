@@ -136,8 +136,8 @@ SET @Token    =ISNULL (@Token    ,'');
 			  LEFT JOIN TB_OrderDetail AS OrderDetail ON OrderMain.order_number=OrderDetail.order_number
 			  --WHERE booking_status<=3 AND (car_mgt_status>=4 AND car_mgt_status<15) AND cancel_status<3 AND OrderMain.order_number=@OrderNo AND OrderMain.IDNO=@IDNO;
 			  WHERE booking_status <=  ( --eason 2020-11-06
-			     CASE WHEN  pr.PROJTYPE in (0) THEN 3 --同站可延長再延長
-				 WHEN pr.PROJTYPE in (3,4) THEN 2 --路邊,機車不可延長
+			     CASE WHEN  pr.PROJTYPE in (0,3) THEN 3 --同站,路邊可延長再延長
+				 WHEN pr.PROJTYPE in (4) THEN 2 --機車不可延長
 				 ELSE booking_status END
 			  )				  
 			  AND (car_mgt_status>=4 AND car_mgt_status<15) AND cancel_status<3 AND OrderMain.order_number=@OrderNo AND OrderMain.IDNO=@IDNO

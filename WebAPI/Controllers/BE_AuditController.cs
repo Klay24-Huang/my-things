@@ -102,7 +102,7 @@ namespace WebAPI.Controllers
                     Motor_1_Image = (apiInput.ImageData.Motor_1 == apiInput.ImageData.Motor_1_new) ? RemoveSuff(apiInput.ImageData.Motor_1_Image) : CheckNeedChangeName(apiInput.ImageData.Motor_1, apiInput.ImageData.Motor_1_new, RemoveSuff(apiInput.ImageData.Motor_1_Image)),
 
                     Motor_2 = apiInput.ImageData.Motor_2_new,
-                    Motor_2_Audit = (apiInput.ImageData.Motor_2_Audit == 1) ? 2 : apiInput.ImageData.Car_2_Audit,
+                    Motor_2_Audit = (apiInput.ImageData.Motor_2_Audit == 1) ? 2 : apiInput.ImageData.Motor_2_Audit,
                     Motor_2_Reason = apiInput.ImageData.Motor_2_Reason,
                     Motor_2_Image = (apiInput.ImageData.Motor_2 == apiInput.ImageData.Motor_2_new) ? RemoveSuff(apiInput.ImageData.Motor_2_Image) : CheckNeedChangeName(apiInput.ImageData.Motor_2, apiInput.ImageData.Motor_2_new, RemoveSuff(apiInput.ImageData.Motor_2_Image)),
 
@@ -187,7 +187,14 @@ namespace WebAPI.Controllers
                     SPED = apiInput.SPED,
                     SPSD = apiInput.SPSD,
                     UniCode = apiInput.UniCode,
-                    Driver = string.Format("{0}{1}", CarRentType, MotorRentType)
+                    Driver = string.Format("{0}{1}", CarRentType, MotorRentType),
+                    MEMHTEL = apiInput.MEMHTEL,
+                    MEMCOMTEL = apiInput.MEMCOMTEL,
+                    MEMCONTRACT = apiInput.MEMCONTRACT,
+                    MEMCONTEL = apiInput.MEMCONTEL,
+                    MEMEMAIL = apiInput.MEMEMAIL,
+                    HasVaildEMail = apiInput.HasVaildEMail,
+                    MEMMSG = apiInput.MEMMSG
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
@@ -228,11 +235,21 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    Message = string.Format("iRent會員通知：" +
+                    if (apiInput.IsNew == 1)
+                    {
+                        Message = string.Format("iRent審核未通過：" +
+                            "您尚未通過iRent會員申請，" +
+                            "原因為({0}，請登入App重新操作，" +
+                            "如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
+                    }
+                    else
+                    {
+                        Message = string.Format("iRent會員通知：" +
                         "很抱歉，" +
                         "您申請變更「iRent共享汽機車會員」身分審核" +
                         "({0})未通過，" +
-                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.NotAuditReason);
+                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
+                    }
                 }
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
@@ -248,7 +265,8 @@ namespace WebAPI.Controllers
         }
         private string CheckNeedChangeName(int OldType,int NewType,string OldFileName)
         {
-            string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1" };
+            //string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
+            string[] suff = { "", "ID_1", "ID_2", "Car_1", "Car_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
             string fileName = OldFileName.Replace(suff[OldType],suff[NewType]);
             bool flag = new AzureStorageHandle().RenameFromAzureStorage(fileName, OldFileName, credentialContainer);
             return fileName;

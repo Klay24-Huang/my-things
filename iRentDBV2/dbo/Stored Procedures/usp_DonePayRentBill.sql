@@ -191,7 +191,33 @@ SET @ParkingSpace='';
 					--寫入一次性開門的deadline
 					INSERT INTO TB_OpenDoor(OrderNo,DeadLine)VALUES(@OrderNo,DATEADD(MINUTE,15,@NowTime));
 
-					
+					--準備傳送合約
+					IF NOT EXISTS(SELECT IRENTORDNO FROM TB_ReturnCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
+					BEGIN
+						INSERT INTO TB_ReturnCarControl
+						(
+							[PROCD], [ORDNO], [IRENTORDNO], [CUSTID], [CUSTNM], [BIRTH], 
+							[CUSTTYPE], [ODCUSTID], [CARTYPE], [CARNO], [TSEQNO], [GIVEDATE], 
+							[GIVETIME], [RENTDAYS], [GIVEKM], [OUTBRNHCD], [RNTDATE], [RNTTIME], 
+							[RNTKM], [INBRNHCD], [RPRICE], [RINSU], [DISRATE], [OVERHOURS], 
+							[OVERAMT2], [RNTAMT], [RENTAMT], [LOSSAMT2], [PROJID], [REMARK], 
+							[INVKIND], [UNIMNO], [INVTITLE], [INVADDR], [GIFT], [GIFT_MOTO], 
+							[CARDNO], [PAYAMT], [AUTHCODE], [isRetry], [RetryTimes], [eTag], 
+							[CARRIERID], [NPOBAN], [NOCAMT], [PARKINGAMT2], [MKTime], [UPDTime]
+						)
+						SELECT PROCD='A',C.ORDNO,A.order_number,C.CUSTID,C.CUSTNM, C.BIRTH,
+							C.CUSTTYPE,C.ODCUSTID,C.CARTYPE,CASRNO=A.CarNo,C.TSEQNO,C.GIVEDATE,
+							C.GIVETIME,dbo.FN_CalRntdays(B.final_start_time,B.final_stop_time),CAST(B.start_mile AS INT),C.OUTBRNHCD,CONVERT(VARCHAR,B.final_stop_time,112),REPLACE(CONVERT(VARCHAR(5),B.final_stop_time,108),':',''),
+							CAST(B.end_mile AS INT),C.INBRNHCD,C.RPRICE,C.RINSU,C.DISRATE,B.fine_interval/600,
+							fine_price,final_price,pure_price,mileage_price,A.ProjID,C.REMARK,
+							C.INVKIND,C.UNIMNO,C.INVTITLE,C.INVADDR,B.gift_point,B.gift_motor_point,
+							CASRDNO='',B.already_payment,AUTHCODE='',isRetry=1,RetryTimes=0,B.Etag,
+							C.CARRIERID,C.NPOBAN,B.Insurance_price,B.parkingFee,@NowTime,@NowTime
+						FROM TB_OrderMain A WITH(NOLOCK)
+						JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
+						JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
+						WHERE A.order_number=@OrderNo
+					END
 
 		 END
 		--寫入錯誤訊息

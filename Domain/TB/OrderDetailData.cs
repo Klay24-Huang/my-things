@@ -156,5 +156,25 @@
         /// 據點區域
         /// </summary>
         public string Area { get; set; }
+
+        /// <summary>
+        /// 取車里程
+        /// </summary>
+        public float Start_mile { get; set; }
+
+        /// <summary>
+        /// 還車里程
+        /// </summary>
+        public float End_mile { get; set; }
+
+        /// <summary>
+        /// 優惠折抵金額
+        /// </summary>
+        public int DiscountAmount { get; set; }
+
+        /// <summary>
+        /// 折抵專案名稱
+        /// </summary>
+        public string DiscountName { get; set; }
     }
 }

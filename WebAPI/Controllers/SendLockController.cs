@@ -170,6 +170,12 @@ namespace WebAPI.Controllers
                             {
                                 CID = CENSCID;
                             }
+                            else
+                            {
+                                CID = spOut.CID;
+                            }
+
+
                             #region 興聯車機
                             CensWebAPI censWebAPI = new CensWebAPI();
                             WSOutput_GetInfo output = new WSOutput_GetInfo();

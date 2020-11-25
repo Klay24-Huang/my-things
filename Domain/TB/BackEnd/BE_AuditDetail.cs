@@ -11,7 +11,9 @@ namespace Domain.TB.BackEnd
         public int AuditID       {set;get;}
         public string MEMIDNO       {set;get;}
         public string MEMCNAME      {set;get;}
-        public string MEMTEL        {set;get;}
+        public string MEMTEL        {set;get; }
+        //20201125 ADD BY JERRY 增加連絡電話
+        public string MEMHTEL { set; get; }
         public string MEMBIRTH      {set;get;}
         public int MEMCOUNTRY    {set;get;}
         public int MEMCITY       {set;get;}
@@ -41,6 +43,10 @@ namespace Domain.TB.BackEnd
         ///// 是否有通過手機驗證
         ///// </summary>
         public Int16 HasCheckMobile { set; get; }
+        ///// <summary>
+        ///// 是否有通過EMAIL驗證
+        ///// </summary>
+        public Int16 HasVaildEMail { set; get; }
         /// <summary>
         /// 手機/自然人憑證載具
         /// </summary>
@@ -77,5 +83,9 @@ namespace Domain.TB.BackEnd
         /// 前一次審核者
         /// </summary>
         public string LastOpt { set; get; }
+        public string RentType { set; get; }
+        public string SPECSTATUS { set; get; }
+        public string SPSD { set; get; }
+        public string SPED { set; get; }
     }
 }

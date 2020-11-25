@@ -172,7 +172,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -215,7 +214,6 @@ namespace WebAPI.Controllers
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 if (QueryMode == 0 || (QueryMode == 1 && ProjType == 3))
                 {
-
                     //ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
                     //20201110 ADD BY ADAM REASON.改為sp處理
                     SPInput_GetProjectPriceBase spInput = new SPInput_GetProjectPriceBase()
@@ -236,17 +234,20 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        //if (priceBase != null)
                         if (priceBase.Count > 0)
                         {
                             int InsurancePer10Hours = priceBase[0].InsurancePerHours * 10;
+
                             outputApi = new OAPI_GetEstimate()
                             {
-                                CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, lstHoliday)),
-                                InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, lstHoliday)) : 0,
+                                //CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, lstHoliday)),
+                                CarRentBill = billCommon.CarRentCompute(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday),
+                                //InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, lstHoliday)) : 0,
+                                InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
                                 InsurancePerHour = priceBase[0].InsurancePerHours,
                                 MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
-                                MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
+                                //MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
+                                MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                             };
                             outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
                         }

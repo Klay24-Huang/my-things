@@ -156,7 +156,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (false == string.IsNullOrWhiteSpace(StationID))
+            if (false == string.IsNullOrWhiteSpace(StationID) && StationID!="ALL")
             {
                 term += (term == "") ? "" : " AND ";
                 term += " StationID=@StationID";
@@ -180,9 +180,9 @@ namespace Reposotory.Implement
                 else
                 {
                     term += (term == "") ? "" : " AND ";
-                    term += " LastUpdate<=@LastUpdate";
+                    term += " LastUpdate>=@LastUpdate";
                     para[nowCount] = new SqlParameter("@LastUpdate", SqlDbType.DateTime);
-                    para[nowCount].Value = OneHour.ToString("yyyy-MM-dd HH:mm:ss");
+                    para[nowCount].Value = noResonse.ToString("yyyy-MM-dd HH:mm:ss");
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                     hasOneNoResponse = true;

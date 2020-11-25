@@ -35,8 +35,29 @@ $(function () {
             $("#NotAuditReason").prop("disabled", "");
         } else {
             $("#NotAuditReason").prop("disabled", "disabled");
+            $('#NotAuditReason').val('');
         }
-    })
+        if ($('#NotAuditReason').val() == '其他') {
+            $("#RejectReason").prop("readonly", "");
+            $("#RejectReason").prop("disabled", "");
+        } else {
+            $("#RejectReason").prop("readonly", "readonly");
+            $('#RejectReason').val('');
+        }
+    });
+
+    //20201124 UPD BY JERRY 增加載入時，欄位狀態處理
+    if ($("#AuditReject").prop("checked")) {
+        $("#NotAuditReason").prop("disabled", "");
+        setTimeout(function () {
+            if ($('#NotAuditReason').val() == '其他') {
+                $("#RejectReason").prop("readonly", "");
+                $("#RejectReason").prop("disabled", "");
+            }
+        }, 300);
+    }
+
+
     for (var i = 0; i < fieldLen; i++) {
         $("input[name='" + fieldName[i] + "_AuditStatus']").on("click", function () {
             var textName = $(this).attr("name").replace("AuditStatus", "RejectReason");
@@ -58,8 +79,8 @@ $(function () {
         var SendObj = new Object();
         var Driver = new Array();
         var SPECSTATUS = $("#SPECSTATUS").val();
-        var SPSD = $("#StartDate").val();
-        var SPED = $("#EndDate").val();
+        var SPSD = $("#StartDate").val().replace(/\-/g,'');
+        var SPED = $("#EndDate").val().replace(/\-/g, '');
         var Birth = $("#Birth").val();
         var Mobile = $("#Mobile").val();
         var Addr = $("#Addr").val();
@@ -69,9 +90,21 @@ $(function () {
         var NotAuditReason = $("#NotAuditReason").val();
         var RejectReason = $("#RejectReason").val();
         var Area = $("#Area").val();
-        var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()):0
+        //var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()) : 0;
+        //20201124 UPD BY JERRY 修改發送簡訊判斷
+        var SendMessage = $("#SendMessage").prop("checked") ? 1 : 0;
+
+
+        //20201125 UPD BY JERRY 增加欄位處理
+        var MEMHTEL = $("#MEMHTEL").val();
+        var MEMCOMTEL = $("#MEMCOMTEL").val();
+        var MEMCONTRACT = $("#MEMCONTRACT").val();
+        var MEMCONTEL = $("#MEMCONTEL").val();
+        var MEMEMAIL = $("#MEMEMAIL").val();
+        var HasVaildEMail = $("#HasVaildEMail_OK").prop("checked") ? 1 : 0;
+        var MEMMSG = $("#MEMMSG_OK").prop("checked") ? 'Y' : 'N';
         
-        console.log("AuditStatus=" + AuditStatus);
+        //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
             console.log($(this).val());
             Driver.push($(this).val());
@@ -80,6 +113,14 @@ $(function () {
             flag = false;
             errMsg = "請至少選擇一種駕照類型";
         }
+        //if (flag) {
+        //    $('.sameMobile').each(function () {
+        //        if ($.trim($(this).html()) == $.trim(Mobile)) {
+        //            flag = false;
+        //            errMsg = "手機號碼重複，請確認手機正確性，並修改手機號碼！";
+        //        }
+        //    });
+        //}
         if (flag) {
             if (SPECSTATUS != "00") {
                 if (SPSD == "" && SPED == "") {
@@ -109,6 +150,12 @@ $(function () {
             }
         }
         if (flag) {
+            if (HasVaildEMail == 1 && MEMEMAIL=="") {
+                flag = false;
+                errMsg = "請輸入正確的EMAIL欄位";
+            } 
+        }
+        if (flag) {
             if (InvoiceType == "0") {
                 flag = false;
                 errMsg = "請選擇發票寄送方式";
@@ -126,9 +173,56 @@ $(function () {
                 errMsg = "請輸入手機號碼";
             }
         }
+        setData();
+
+        if (flag) {
+            if ($.trim(Obj.ID_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.ID_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【汽車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【汽車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【機車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_2_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【機車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Self_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【自拍照】的照片審核結果";
+            }
+            if ($.trim(Obj.F01_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【法定代理人】的照片審核結果";
+            }
+            if ($.trim(Obj.Other_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【其他證件】的照片審核結果";
+            }
+            if ($.trim(Obj.Business_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【企業用戶】的照片審核結果";
+            }
+            if ($.trim(Obj.Signture_1_Audit) == "") {
+                flag = false;
+                errMsg = "請勾選【簽名檔】的照片審核結果";
+            }
+        }
         if (flag) {
            
-            setData();
             SendObj.ImageData = Obj;
             SendObj.IDNO = $("#IDNO").val();
             SendObj.Driver = Driver;
@@ -147,6 +241,16 @@ $(function () {
             SendObj.UserID = Account;
             SendObj.SendMessage = SendMessage;
             SendObj.IsNew = IsNew;
+
+            //20201125 UPD BY JERRY 增加欄位處理
+            SendObj.MEMHTEL = MEMHTEL;
+            SendObj.MEMCOMTEL = MEMCOMTEL;
+            SendObj.MEMCONTRACT = MEMCONTRACT;
+            SendObj.MEMCONTEL = MEMCONTEL;
+            SendObj.MEMEMAIL = MEMEMAIL;
+            SendObj.HasVaildEMail = HasVaildEMail;
+            SendObj.MEMMSG = MEMMSG;
+            
 
             DoAjaxAfterGoBack(SendObj, "BE_Audit", "審核發生錯誤");
             
@@ -200,8 +304,54 @@ $(function () {
                 } 
             }
         }
+        setData();
         if (flag) {
-            setData();
+            if ($.trim(Obj.ID_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.ID_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【身份證正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【汽車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Car_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【汽車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【機車駕照正面】的照片審核結果";
+            }
+            if ($.trim(Obj.Motor_2_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【機車駕照反面】的照片審核結果";
+            }
+            if ($.trim(Obj.Self_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【自拍照】的照片審核結果";
+            }
+            if ($.trim(Obj.F01_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【法定代理人】的照片審核結果";
+            }
+            if ($.trim(Obj.Other_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【其他證件】的照片審核結果";
+            }
+            if ($.trim(Obj.Business_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【企業用戶】的照片審核結果";
+            }
+            if ($.trim(Obj.Signture_1_Audit) == "") {
+                flag = false;
+                errmsg = "請勾選【簽名檔】的照片審核結果";
+            }
+        }
+        if (flag) {
             console.log(JSON.stringify(Obj));
             $("#tmpPicData").val(JSON.stringify(Obj));
             $("#picreject").val(reject);
@@ -212,6 +362,11 @@ $(function () {
             console.log(errmsg);
         }
     });
+
+    if (MobileLen > 0) {
+        $('#btnCheckSameMobile').click();
+    }
+    setPostbackValue();
 })
 function ShowPIC(site) {
     if (site != "") {
@@ -233,8 +388,8 @@ function setData() {
 
     Obj.ID_2 = 2;
     Obj.ID_2_new = change(field[1] );
-    Obj.ID_2_Audit = fieldAudit[0] ;
-    Obj.ID_2_Reason = fieldReason[0];
+    Obj.ID_2_Audit = fieldAudit[1] ;
+    Obj.ID_2_Reason = fieldReason[1];
     Obj.ID_2_Image = $("#ID_2_PIC").attr('src');
 
     Obj.Car_1 = 3;

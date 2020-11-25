@@ -1,10 +1,8 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
-using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Rent;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
@@ -62,15 +60,11 @@ namespace WebAPI.Controllers
             string CID = "";
             double mil = 0;
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -102,11 +96,9 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -125,7 +117,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -172,7 +163,6 @@ namespace WebAPI.Controllers
                 #region 汽車
                 if (IsMotor == 0)
                 {
-                   
                     if (IsCens == 1)
                     {
                         #region 興聯車機
@@ -183,12 +173,10 @@ namespace WebAPI.Controllers
                         if (false == flag)
                         {
                             errCode = wsOutInfo.ErrorCode;
-                            
                         }
                         else
                         {
                             if (wsOutInfo.data.CID != CID)
-                        
                             {
                                 flag = false;
                                 errCode = "ERR400";
@@ -254,7 +242,6 @@ namespace WebAPI.Controllers
                             method = CommandType,
                             requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                             _params = new Params()
-
                         };
                         requestId = input.requestId;
                         string method = CommandType;
@@ -297,7 +284,7 @@ namespace WebAPI.Controllers
                                         Latitude = info.Latitude,
                                         Longitude = info.Longitude
                                     };
-                                    flag = CheckInPolygon(Nowlatlng,StationID);
+                                    flag = CheckInPolygon(Nowlatlng, StationID);
                                     #region 快樂模式
                                     if (ClosePolygonOpen == "0")
                                     {
@@ -386,14 +373,22 @@ namespace WebAPI.Controllers
                                 {
                                     errCode = "ERR188";
                                 }
-                              
+                            }
+                            #endregion
+                            #region 檢核兩顆電池完整
+                            if (flag)
+                            {
+                                if (info.deviceLBA <= 0 || info.deviceMBA <= 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR230";
+                                }
                             }
                             #endregion
                         }
                     }
                     #endregion
                 }
-
             }
             //通過檢查，更新狀態
             if (flag)
@@ -404,18 +399,17 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     LogID = LogID,
                     Token = Access_Token,
-                     NowMileage= Convert.ToSingle(mil)
+                    NowMileage = Convert.ToSingle(mil)
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.ReturnCar);
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_ReturnCar, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReturnCar, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-           
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -425,7 +419,7 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-        private bool CheckInPolygon(Domain.Common.Polygon latlng,string StationID)
+        private bool CheckInPolygon(Domain.Common.Polygon latlng, string StationID)
         {
             bool flag = false;
             StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
@@ -437,28 +431,25 @@ namespace WebAPI.Controllers
             PolygonModel pm = new PolygonModel();
             for (int i = 0; i < DataLen; i++)
             {
-             
                 string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
                 string[] tmpLatGroup = lstData[i].Latitude.Split('⊙');
                 int tmpLonGroupLen = tmpLonGroup.Length;
 
-
                 for (int j = 0; j < tmpLonGroupLen; j++)
                 {
-                    string tmpData = "";
                     string[] tmpLon = tmpLonGroup[j].Split(',');
                     string[] tmpLat = tmpLatGroup[j].Split(',');
                     int LonLen = tmpLon.Length;
                     List<Domain.Common.Polygon> polygonGroups = new List<Domain.Common.Polygon>();
-                    for(int k = 0; k < LonLen; k++)
+                    for (int k = 0; k < LonLen; k++)
                     {
                         polygonGroups.Add(new Domain.Common.Polygon()
                         {
-                            Latitude =  Convert.ToDouble(tmpLat[k]),
+                            Latitude = Convert.ToDouble(tmpLat[k]),
                             Longitude = Convert.ToDouble(tmpLon[k])
                         });
                     }
-                   
+
                     polygonFlag = pm.isInPolygonNew(ref polygonGroups, latlng);
                     if (polygonFlag)
                     {
@@ -472,16 +463,10 @@ namespace WebAPI.Controllers
                             break;
                         }
                     }
-                   
-     
-
                 }
-
-
             }
             flag = polygonFlag;
             return flag;
         }
-
     }
 }

@@ -444,7 +444,7 @@ function SetCity(obj) {
 function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
     var CityList = localStorage.getItem("CityList");
     var AreaList = localStorage.getItem("AreaList");
-    console.log(CityList);
+    //console.log(CityList);
     obj.empty();
     if (CheckStorageIsNull(CityList)) {
         CityList = JSON.parse(CityList);
@@ -455,7 +455,7 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
     if (CityList.length > 0) {
         var CityLen = CityList.length;
         for (var i = 0; i < CityLen; i++) {
-            console.log(CityList[i].CityName);
+            //console.log(CityList[i].CityName);
             obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
         }
         obj.val(selectValue);
@@ -468,7 +468,7 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
         if (tmpAreaLen > 0) {
            
             for (var i = 0; i < tmpAreaLen; i++) {
-                console.log(tmpArea[i].AreaName);
+                //console.log(tmpArea[i].AreaName);
                 triggerObj.append($('<option>', { value: tmpArea[i].AreaID, text: tmpArea[i].AreaName }));
             }
             if (triggerObjSelectValue != "" && triggerObjSelectValue != "0") {
@@ -483,7 +483,7 @@ function SetCityHasSelectedhaveZipCode(obj, selectValue, triggerObj, triggerObjS
     var CityList = localStorage.getItem("CityList");
     var AreaList = localStorage.getItem("AreaList");
     var ZipCode = "";
-    console.log(CityList);
+    //console.log(CityList);
     obj.empty();
     if (CheckStorageIsNull(CityList)) {
         CityList = JSON.parse(CityList);
@@ -494,7 +494,7 @@ function SetCityHasSelectedhaveZipCode(obj, selectValue, triggerObj, triggerObjS
     if (CityList.length > 0) {
         var CityLen = CityList.length;
         for (var i = 0; i < CityLen; i++) {
-            console.log(CityList[i].CityName);
+            //console.log(CityList[i].CityName);
             obj.append($('<option>', { value: CityList[i].CityID, text: CityList[i].CityName }));
         }
         obj.val(selectValue);
@@ -844,6 +844,8 @@ function clearFileInput(id) {
 //20201109 ADD BY JERRY 增加下拉欄位設值的共同處理
 function setPostbackValue() {
     $('select').each(function (i, obj) {
-        $(obj).val($(obj).attr('value'));
+        if ($(obj).attr('value') != null) {
+            $(obj).val($(obj).attr('value'));
+        }
     });
 }

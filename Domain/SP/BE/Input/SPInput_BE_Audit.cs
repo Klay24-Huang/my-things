@@ -70,5 +70,14 @@ namespace Domain.SP.BE.Input
         /// </summary>
         public int IsNew { set; get; }
         public string UserID { set; get; }
+
+        //20201125 UPD BY JERRY 增加欄位處理
+        public string MEMHTEL { get; set; }
+        public string MEMCOMTEL { get; set; }
+        public string MEMCONTRACT { get; set; }
+        public string MEMCONTEL { get; set; }
+        public string MEMEMAIL { get; set; }
+        public int HasVaildEMail { get; set; }
+        public string MEMMSG { get; set; }
     }
 }

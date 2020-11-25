@@ -40,5 +40,41 @@ namespace Domain.TB.BackEnd
         public int Other_1_IsNew { set; get; } = 2;
         public int Business_1_IsNew { set; get; } = 2;
 
+        public string ID_1_UPDTime { set; get; } = "";
+        public string ID_2_UPDTime { set; get; } = "";
+        public string Car_1_UPDTime { set; get; } = "";
+        public string Car_2_UPDTime { set; get; } = "";
+        public string Motor_1_UPDTime { set; get; } = "";
+        public string Motor_2_UPDTime { set; get; } = "";
+        public string Self_1_UPDTime { set; get; } = "";
+        public string Signture_1_UPDTime { set; get; } = "";
+        public string F01_UPDTime { set; get; } = "";
+        public string Other_1_UPDTime { set; get; } = "";
+        public string Business_1_UPDTime { set; get; } = "";
+
+        public int ID_1_AuditResult { set; get; } = 1;
+        public int ID_2_AuditResult { set; get; } = 1;
+        public int Car_1_AuditResult { set; get; } = 1;
+        public int Car_2_AuditResult { set; get; } = 1;
+        public int Motor_1_AuditResult { set; get; } = 1;
+        public int Motor_2_AuditResult { set; get; } = 1;
+        public int Self_1_AuditResult { set; get; } = 1;
+        public int Signture_1_AuditResult { set; get; } = 1;
+        public int F01_AuditResult { set; get; } = 1;
+        public int Other_1_AuditResult { set; get; } = 1;
+        public int Business_1_AuditResult { set; get; } = 1;
+
+        public string ID_1_RejectReason { set; get; } = "";
+        public string ID_2_RejectReason { set; get; } = "";
+        public string Car_1_RejectReason { set; get; } = "";
+        public string Car_2_RejectReason { set; get; } = "";
+        public string Motor_1_RejectReason { set; get; } = "";
+        public string Motor_2_RejectReason { set; get; } = "";
+        public string Self_1_RejectReason { set; get; } = "";
+        public string Signture_1_RejectReason { set; get; } = "";
+        public string F01_RejectReason { set; get; } = "";
+        public string Other_1_RejectReason { set; get; } = "";
+        public string Business_1_RejectReason { set; get; } = "";
+
     }
 }

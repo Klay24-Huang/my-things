@@ -1,9 +1,12 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Member;
+using Domain.SP.Output;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.ResultData;
 using OtherService;
+using OtherService.Enum;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -104,76 +107,96 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 送台新查詢
+            //if (flag)
+            //{
+            //    TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+            //    PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+            //    {
+            //        ApiVer = ApiVerOther,
+            //        ApposId = TaishinAPPOS,
+            //        RequestParams = new GetCreditCardListRequestParamasData()
+            //        {
+            //            MemberId = IDNO,
+            //        },
+            //        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+            //        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+            //        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+
+            //    };
+            //    WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+            //    flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+            //    if (flag)
+            //    {
+            //        int Len = wsOutput.ResponseParams.ResultData.Count;
+            //        if (Len > 0)
+            //        {
+            //            int index = wsOutput.ResponseParams.ResultData.FindIndex(delegate (GetCreditCardResultData obj)
+            //            {
+            //                return obj.CardToken == apiInput.CardToken;
+            //            });
+            //            if (index > -1)
+            //            {
+            //                hasFind = true;
+            //            }
+            //        }
+            //        if (hasFind)//有找到，可以做刪除
+            //        {
+            //            Thread.Sleep(1000);
+            //            PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
+            //            {
+            //                ApiVer = ApiVerOther,
+            //                ApposId = TaishinAPPOS,
+            //                RequestParams = new DeleteCreditCardAuthRequestParamasData()
+            //                {
+            //                    MemberId = IDNO,
+            //                    CardToken = apiInput.CardToken
+            //                },
+            //                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+            //                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+            //                TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+            //            };
+
+            //            WebAPIOutput_DeleteCreditCardAuth WSDeleteOutput = new WebAPIOutput_DeleteCreditCardAuth();
+            //            flag = WebAPI.DoDeleteCreditCardAuth(WSDeleteInput, ref errCode, ref WSDeleteOutput);
+            //            if (WSDeleteOutput.ResponseParams.ResultData.IsSuccess == false)
+            //            {
+            //                flag = false;
+            //                errCode = "ERR196";
+            //            }
+            //        }
+            //        else
+            //        {
+            //            flag = false;
+            //            errCode = "ERR195";
+            //        }
+
+            //    }
+
+            //}
+
+            string OrderNo = IDNO + "-" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            #region TB
             if (flag)
             {
-                TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
-                {
-                    ApiVer = ApiVerOther,
-                    ApposId = TaishinAPPOS,
-                    RequestParams = new GetCreditCardListRequestParamasData()
-                    {
-                        MemberId = IDNO,
-                    },
-                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                    TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
 
+                string spName = new ObjType().GetSPName(ObjType.SPType.InsUnBindLog);
+                SPInput_InsUnBindLog spInput = new SPInput_InsUnBindLog()
+                {
+                    LogID = LogID,
+                    IDNO = IDNO,
+                    CardToken = apiInput.CardToken,
+                    OrderNo = OrderNo,
                 };
-                WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
-                if (flag)
-                {
-                    int Len = wsOutput.ResponseParams.ResultData.Count;
-                    if (Len > 0)
-                    {
-                        int index = wsOutput.ResponseParams.ResultData.FindIndex(delegate (GetCreditCardResultData obj)
-                        {
-                            return obj.CardToken == apiInput.CardToken;
-                        });
-                        if (index > -1)
-                        {
-                            hasFind = true;
-                        }
-                    }
-                    if (hasFind)//有找到，可以做刪除
-                    {
-                        Thread.Sleep(1000);
-                        PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
-                        {
-                            ApiVer = ApiVerOther,
-                            ApposId = TaishinAPPOS,
-                            RequestParams = new DeleteCreditCardAuthRequestParamasData()
-                            {
-                                MemberId = IDNO,
-                                CardToken = apiInput.CardToken
-                            },
-                            Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                            TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-                        };
-
-                        WebAPIOutput_DeleteCreditCardAuth WSDeleteOutput = new WebAPIOutput_DeleteCreditCardAuth();
-                        flag = WebAPI.DoDeleteCreditCardAuth(WSDeleteInput, ref errCode, ref WSDeleteOutput);
-                        if (WSDeleteOutput.ResponseParams.ResultData.IsSuccess == false)
-                        {
-                            flag = false;
-                            errCode = "ERR196";
-                        }
-                    }
-                    else
-                    {
-                        flag = false;
-                        errCode = "ERR195";
-                    }
-
-                }
-              
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_InsUnBindLog, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsUnBindLog, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
+            #endregion
             #region 刪除成功，重新取得綁定卡號網址
             if (flag)
             {
-                Thread.Sleep(1000); //避免重覆訂單編號
+                //Thread.Sleep(1000); //避免重覆訂單編號
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
                 WebAPIInput_Base wsInput = new WebAPIInput_Base()
                 {
@@ -185,7 +208,8 @@ namespace WebAPI.Controllers
                         SuccessUrl = HttpUtility.UrlEncode(BindSuccessURL),
                         ResultUrl = HttpUtility.UrlEncode(BindResultURL),
                         MemberId = IDNO,
-                        OrderNo = DateTime.Now.ToString("yyyyMMddHHmmssfff"),
+                        //OrderNo = IDNO + "-" + DateTime.Now.ToString("yyyyMMddHHmmssfff"),
+                        OrderNo = OrderNo,
                         PaymentType = "04"
                         //   PaymentType = "04"
 

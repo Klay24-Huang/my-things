@@ -25,7 +25,7 @@
     }, 500);
 });
 function GoDetail(IDNO) {
-    ShowLoading("資料讀取車…");
+    ShowLoading("資料讀取中…");
     $("#AuditIDNO").val(IDNO);
     $("#frmAuditDetail").submit();
 }
