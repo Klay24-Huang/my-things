@@ -530,7 +530,7 @@ namespace WebAPI.Models.BillFunc
             if (SD > ED)
                 throw new Exception("起日不可大於迄日");
 
-            if (SD.Date == ED.Date || SD.AddDays(1) > ED)
+            if (SD.Date == ED.Date || SD.AddDays(1) >= ED)
                 return GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
             else
             {
