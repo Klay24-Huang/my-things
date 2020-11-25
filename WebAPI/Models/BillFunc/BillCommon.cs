@@ -28,6 +28,12 @@ namespace WebAPI.Models.BillFunc
         public double _scriptionRateHolidayHourPrice;     //訂閱優惠費率時數（假日）
         public double _scriptionRateWorkHour;       //訂閱優惠費率時數（平日）
         public double _scriptionRateHolidayHour;     //訂閱優惠費率時數（假日）
+
+        public delegate double MinsProcess(double mins);//剩餘分轉計費分(未滿60)
+        public delegate void DayMinsProcess(ref double wMins, ref double hMins);//當日分特殊邏輯
+
+        private readonly int CarBaseMinutes = 60;//汽車基本分鐘數
+
         /// <summary>
         /// 計算時間
         /// </summary>
@@ -365,6 +371,309 @@ namespace WebAPI.Models.BillFunc
             }
             return totalPay;
         }
+
+        /// <summary>
+        /// 租金試算-新
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="Price">平日價</param>
+        /// <param name="PriceH">假日價</param>
+        /// <param name="dayMaxHour">單日時數上限</param>
+        /// <param name="lstHoliday">假日清單</param>
+        /// <param name="overTime">是否為逾時</param>
+        /// <returns></returns>
+        /// <mark>eason-2020-11-19</mark>
+        public int CarRentCompute(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday,bool overTime=false)
+        {
+            int re = 0;
+            var minsPro = new MinsProcess(GetCarPayMins);
+            var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null; 
+            double baseMinutes = 60;
+
+            double wPriceHour = 0; //平日每小時價格
+            double hPriceHour = 0; //假日每小時價格
+
+            if(overTime)
+            {//逾時超過6小時以10小時價格計算
+                wPriceHour = Price/10;
+                hPriceHour = PriceH / 10;
+            }
+            else
+            {
+                wPriceHour = Price / dayMaxHour;
+                hPriceHour = PriceH / dayMaxHour;
+            }
+
+            var result = GetRangeMins(SD, ED, baseMinutes, dayMaxHour*60, lstHoliday, minsPro, dayPro);
+
+            if (result != null)
+            {
+                double tPrice = 0;
+                tPrice += Math.Floor(result.Item1 / 60) * wPriceHour;
+                tPrice += Math.Floor(result.Item2 / 60) * hPriceHour;
+
+                if (tPrice > 0)
+                    re = Convert.ToInt32(tPrice);                         
+            }
+            return re;
+        }
+
+        /// <summary>
+        /// 時間區段內平日計費分鐘總和,假日計費分鐘總和
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="dayMaxMins">單日分鐘上限</param>
+        /// <param name="lstHoliday">假日清單</param>
+        /// <returns>平日計費分鐘,假日計費分鐘</returns>
+        /// <mark>eason-2020-11-19</mark>
+        public Tuple<double, double> GetRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            double n_allMins = 0;//總平日分鐘
+            double h_allMins = 0;//總假日分鐘
+
+            if (SD == null && ED == null && SD > ED)
+                throw new Exception("SD,ED不可為null");
+
+            if (SD > ED)
+                throw new Exception("起日不可大於迄日");
+
+            if (SD.Date == ED.Date || SD.AddDays(1) > ED)
+                return GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+            else
+            {
+                while (SD < ED)
+                {
+                    var sd24 = SD.AddHours(24);
+                    if (ED > sd24)
+                    {
+                        var re24 = GetH24Mins(SD, sd24, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (re24 != null)
+                        {
+                            n_allMins += re24.Item1;
+                            h_allMins += re24.Item2;
+                        }
+                    }
+                    else
+                    {
+                        var reLast = GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (reLast != null)
+                        {
+                            n_allMins += reLast.Item1;
+                            h_allMins += reLast.Item2;
+                        }
+                    }
+                    SD = sd24;
+                }
+            }
+
+            return new Tuple<double, double>(n_allMins, h_allMins);
+        }
+
+        /// <summary>
+        /// 汽車未滿1小時分鐘改為計費分鐘
+        /// </summary>
+        /// <param name="Mins"></param>
+        /// <returns></returns>
+        /// <mark>2020-11-19 eason</mark>
+        public double GetCarPayMins(double Mins)
+        {
+            double re = 0;
+
+            if (Mins < 0)
+                throw new Exception("不可負數");
+            if (Mins > 60)
+                throw new Exception("不可大於60分鐘");
+
+            if (Mins >= 15 && Mins < 45)
+                re = 30;
+            else if (Mins >= 45)
+                re = 60;
+
+            return re;
+        }
+
+        /// <summary>
+        /// 逾時單日時間轉計費時間
+        /// </summary>
+        /// <param name="wMins"></param>
+        /// <param name="hMins"></param>
+        /// <returns></returns>
+        /// <mark>2020-11-19 eason</mark>
+        public void CarOverTimeMinsToPayMins(ref double wMins, ref double hMins)
+        {//逾時超過6小時當作10小時
+            if (wMins >= 360)
+                wMins = 600;
+            if (hMins >= 360)
+                hMins = 600;
+        }
+
+        /// <summary>
+        /// 24小時租金計算
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="lstHoliday">假日列表</param>
+        /// <param name="minsPro">未滿60分鐘轉計費分鐘</param>
+        /// <returns>平日計費分鐘,假日計費分鐘</returns>
+        /// <mark>起迄不可超過24小時</mark>
+        /// <mark>eason-2020-11-19</mark>
+        public Tuple<double, double> GetH24Mins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            double n_allMins = 0;//總平日分鐘
+            double h_allMins = 0;//總假日分鐘
+
+            if (SD == null && ED == null && SD > ED)
+                throw new Exception("SD,ED不可為null");
+
+            if (SD > ED)
+                throw new Exception("起日不可大於迄日");
+
+            SD = SD.AddSeconds(SD.Second * -1); //去秒數
+            ED = ED.AddSeconds(ED.Second * -1); //去秒數
+
+            double mins = ED.Subtract(SD).TotalMinutes;
+            if (mins > (24 * 60))
+                throw new Exception("不可大於24小時");
+
+            var sd_end = Convert.ToDateTime(SD.AddDays(1).ToString("yyyy/MM/dd 00:00:00"));//首日結束時間
+
+            double xhours = Math.Floor(mins / 60);
+            double xmins = mins % 60;//未達1小時分鐘數
+
+            var sd10 = SD.AddMinutes(dayMaxMins);//計費截止時間
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            bool sd_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_sd);
+            bool ed_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_ed);
+
+            if (mins < baseMinutes)//未達基本分鐘
+            {
+                if (sd_isHoliday)
+                    h_allMins = baseMinutes;
+                else
+                    n_allMins = baseMinutes;
+            }
+            else
+            {
+                if (SD.Date == ED.Date)
+                {
+                    if (minsPro != null && xmins > 0)
+                        xmins = minsPro(xmins);
+
+                    var allPayMins = xhours * 60 + xmins;
+                    allPayMins = allPayMins > dayMaxMins ? dayMaxMins : allPayMins;
+
+                    if (sd_isHoliday)
+                        h_allMins = allPayMins;
+                    else
+                        n_allMins = allPayMins;
+                }
+                else
+                {
+                    if (mins < dayMaxMins)//未達上限
+                        sd10 = ED;
+
+                    if (sd10 <= sd_end)//計費未跨日
+                    {
+                        var pay_mins = sd10.Subtract(SD).TotalMinutes;
+                        var pay_xhours = Math.Floor(pay_mins / 60);
+                        var pay_xmins = pay_mins % 60;
+
+                        if (minsPro != null && pay_xmins > 0)
+                            pay_xmins = minsPro(pay_xmins);
+
+                        var allPayMis = pay_xhours * 60 + pay_xmins;
+
+                        if (sd_isHoliday)
+                            h_allMins = allPayMis;
+                        else
+                            n_allMins = allPayMis;
+                    }
+                    else//跨日
+                    {
+                        var bef_mins = sd_end.Subtract(SD).TotalMinutes;//前日總分鐘
+                        var bef_xhours = Math.Floor(Convert.ToDouble(bef_mins) / 60);//前日小時
+                        var bef_xmins = bef_mins % 60;//前日分
+
+                        if (bef_xmins == 0)//物理整點
+                        {
+                            if (sd_isHoliday)
+                                h_allMins += bef_xhours * 60;
+                            else
+                                n_allMins += bef_xhours * 60;
+
+                            double _af_mins = sd10.Subtract(sd_end).TotalMinutes;
+                            double _af_xhour = Math.Floor(_af_mins / 60);//後日小時
+                            double _af_xmins = _af_mins % 60;//後日分
+
+                            if (minsPro != null && _af_mins > 0)//未滿60處理
+                                _af_xmins = minsPro(_af_xmins);
+
+                            var allPayMins = _af_xhour * 60 + _af_xmins;
+
+                            if (ed_isHoliday)
+                                h_allMins += allPayMins;
+                            else
+                                n_allMins += allPayMins;
+                        }
+                        else
+                        {
+                            //前日完整hour
+                            if (sd_isHoliday)
+                                h_allMins += bef_xhours * 60;
+                            else
+                                n_allMins += bef_xhours * 60;
+
+                            //後日-前日相對整點的point
+                            var lastMins = ED.Subtract(SD.AddHours(bef_xhours)).TotalMinutes;
+
+                            if (lastMins < 60)
+                            {
+                                if (minsPro != null && lastMins > 0)
+                                    lastMins = minsPro(lastMins);
+
+                                if (sd_isHoliday)
+                                    h_allMins += lastMins;
+                                else
+                                    n_allMins += lastMins;
+                            }
+                            else
+                            {
+                                //交界小時算前日
+                                if (sd_isHoliday)
+                                    h_allMins += 60;
+                                else
+                                    n_allMins += 60;
+
+                                //後日-相對整點起
+                                var af_star = SD.AddHours(bef_xhours + 1);
+                                var af_mins = sd10.Subtract(af_star).TotalMinutes;
+                                var af_xhours = Math.Floor(af_mins / 60);
+                                var af_xmins = af_mins % 60;
+
+                                if (minsPro != null && af_mins > 0)//尾數分轉有計費分鐘
+                                    af_mins = minsPro(af_mins);
+
+                                if (ed_isHoliday)
+                                    h_allMins += af_xhours * 60 + af_mins;
+                                else
+                                    n_allMins += af_xhours * 60 + af_mins;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (dayPro != null)//日計費分鐘特殊邏輯
+                dayPro(ref n_allMins, ref h_allMins);
+
+            return new Tuple<double, double>(n_allMins, h_allMins);
+        }
+
         private void insSubScription(DateTime Date, DateTime StartDate, DateTime EndDate, bool isHoliday, double tmpHours, Int64 SubScriptionID,ref List<MonthlyRentData> UseMonthlyRentDatas)
         {
             if (isHoliday)

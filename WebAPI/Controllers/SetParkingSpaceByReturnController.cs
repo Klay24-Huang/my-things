@@ -1,7 +1,5 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
-using Domain.SP.Input.Rent;
-using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using System;
 using System.Collections.Generic;
@@ -12,7 +10,6 @@ using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Utils;
 using WebCommon;
@@ -29,13 +26,11 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-      [HttpPost]
-        //public Dictionary<string, object> DoSetParkingSpaceByReturn(Dictionary<string, object> value)
+        [HttpPost]
         public Dictionary<string, object> DoSetParkingSpaceByReturn(IAPI_SetParkingSpaceByReturn apiInput)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -46,21 +41,15 @@ namespace WebAPI.Controllers
             string funName = "SetParkingSpaceByReturnController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            //IAPI_SetParkingSpaceByReturn apiInput = null;
             NullOutput outputApi = new NullOutput();
             Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
-
             #endregion
             #region 防呆
             Dictionary<string, object> value = new Dictionary<string, object>();
@@ -68,14 +57,9 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetParkingSpaceByReturn>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                //string restoreCarImg = apiInput.ParkingSpaceImage;
-                //string tmpCarImg = apiInput.ParkingSpaceImage.Length.ToString();
-
                 flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
-                //apiInput.ParkingSpaceImage = restoreCarImg;
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
                     flag = false;
@@ -98,21 +82,19 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
+            }
 
-            }
-       
-            if (flag)
-            {
-                if (string.IsNullOrEmpty(apiInput.ParkingSpace))
-                {
-                    flag = false;
-                    errCode = "ERR900";
-                }
-            }
+            //if (flag)
+            //{
+            //    if (string.IsNullOrEmpty(apiInput.ParkingSpace))
+            //    {
+            //        flag = false;
+            //        errCode = "ERR900";
+            //    }
+            //}
             //if (flag)
             //{
             //    if (string.IsNullOrEmpty(apiInput.ParkingSpaceImage))
@@ -153,46 +135,32 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                for (int i = 0; i < apiInput.ParkingSpacePic.Count; i++)
+                if (apiInput.ParkingSpacePic.Count > 0)
                 {
-                    string FileName = string.Format("{0}_ParkingSpace_{1}_{2}.png", apiInput.OrderNo,apiInput.ParkingSpacePic[i].SEQNO.ToString() , DateTime.Now.ToString("yyyyMMddHHmmss"));
-                    #region 加入azure
-                    //if (apiInput.ParkingSpaceImage.Length > 0)
-                    if (apiInput.ParkingSpacePic[i].ParkingSpaceFile.Length > 0)
+                    for (int i = 0; i < apiInput.ParkingSpacePic.Count; i++)
                     {
-                        try
+                        string FileName = string.Format("{0}_ParkingSpace_{1}_{2}.png", apiInput.OrderNo, apiInput.ParkingSpacePic[i].SEQNO.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+                        if (apiInput.ParkingSpacePic[i].ParkingSpaceFile.Length > 0)
                         {
-                            //flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpaceImage, FileName, "carpic");
-                            flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpacePic[i].ParkingSpaceFile, FileName, "carpic");
-                            apiInput.ParkingSpacePic[i].ParkingSpaceFile = FileName;//base64轉檔名存入db
-                        }
-                        catch (Exception ex)
-                        {
-                            flag = true;
+                            try
+                            {
+                                flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.ParkingSpacePic[i].ParkingSpaceFile, FileName, "carpic");
+                                apiInput.ParkingSpacePic[i].ParkingSpaceFile = FileName;    //base64轉檔名存入db
+                            }
+                            catch
+                            {
+                                flag = false;
+                                errCode = "ERR229";
+                            }
                         }
                     }
-                    #endregion
                 }
-                //SPInput_SetingParkingSpaceByReturn spInput = new SPInput_SetingParkingSpaceByReturn()
-                //{
-                //    IDNO = IDNO,
-                //    OrderNo = tmpOrder,
-                //    ParkingSpace = apiInput.ParkingSpace,
-                //    ParkingSpaceImage = apiInput.ParkingSpaceImage,
-                //    LogID = LogID,
-                //    Token = Access_Token
-                //};
-                string SPName = new ObjType().GetSPName(ObjType.SPType.SettingParkingSpce);
-                //SPOutput_Base spOut = new SPOutput_Base();
-                //SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetingParkingSpaceByReturn, SPOutput_Base>(connetStr);
-
-                //flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
-                //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                ParkingSpaceImage[] parkingImages = apiInput.ParkingSpacePic.ToArray();
-                object[] objparms = new object[parkingImages.Length == 0 ? 1 : parkingImages.Length];
-                if (parkingImages.Length > 0)
+                
+                object[] objparms = new object[apiInput.ParkingSpacePic.Count == 0 ? 1 : apiInput.ParkingSpacePic.Count];
+                if (apiInput.ParkingSpacePic.Count > 0)
                 {
-                    for(int i=0;i<parkingImages.Length;i++)
+                    ParkingSpaceImage[] parkingImages = apiInput.ParkingSpacePic.ToArray();
+                    for (int i = 0; i < parkingImages.Length; i++)
                     {
                         objparms[i] = new
                         {
@@ -211,15 +179,15 @@ namespace WebAPI.Controllers
                 }
 
                 object[][] parms1 = {
-                        new object[] {
-                            IDNO,
-                            tmpOrder,
-                            apiInput.ParkingSpace,
-                            //(FileName!="")?FileName:apiInput.ParkingSpaceImage,
-                            Access_Token,
-                            LogID
+                    new object[] {
+                        IDNO,
+                        tmpOrder,
+                        apiInput.ParkingSpace,
+                        //(FileName!="")?FileName:apiInput.ParkingSpaceImage,
+                        Access_Token,
+                        LogID
                     },
-                        objparms
+                    objparms
                 };
 
                 DataSet ds1 = null;
@@ -227,6 +195,7 @@ namespace WebAPI.Controllers
                 string messageLevel = "";
                 string messageType = "";
 
+                string SPName = new ObjType().GetSPName(ObjType.SPType.SettingParkingSpce);
                 ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (ds1.Tables.Count == 0)
@@ -243,12 +212,11 @@ namespace WebAPI.Controllers
                     }
                 }
                 ds1.Dispose();
-
             }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

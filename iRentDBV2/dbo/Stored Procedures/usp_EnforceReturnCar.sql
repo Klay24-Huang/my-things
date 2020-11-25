@@ -88,22 +88,34 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
+		BEGIN TRAN
 		SELECT @order_number=NowOrderNo FROM TB_Car WITH(NOLOCK) WHERE CarNo=@CarNo;
 
 		SELECT @MEMIDNO=IDNO,@ProjType=ProjType FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@order_number;
 
-		UPDATE TB_OrderMain SET car_mgt_status=16,booking_status=5 WHERE order_number=@order_number;
+		UPDATE TB_OrderMain 
+		SET car_mgt_status=16,
+			booking_status=5 
+		WHERE order_number=@order_number;
 
 		UPDATE TB_OrderDetail SET final_stop_time=@NowTime WHERE order_number=@order_number;
 
-		UPDATE TB_Car SET NowOrderNo=0,LastOrderNo=@order_number,available=1 WHERE CarNo=@CarNo;
+		UPDATE TB_Car 
+		SET NowOrderNo=0,
+			LastOrderNo=@order_number,
+			available=1,
+			UPDTime=@NowTime 
+		WHERE CarNo=@CarNo;
 
 		UPDATE TB_BookingStatusOfUser 
 		SET MotorRentBookingNowCount=CASE WHEN @ProjType=4 THEN 0 ELSE MotorRentBookingNowCount END
 			,AnyRentBookingNowCount=CASE WHEN @ProjType=3 THEN 0 ELSE AnyRentBookingNowCount END
 			,RentNowActiveType=5
 			,NowActiveOrderNum=0
+			,UPDTime=@NowTime
 		WHERE IDNO=@MEMIDNO;
+
+		COMMIT TRAN;
 	END
 
 	--寫入錯誤訊息

@@ -46,5 +46,9 @@ namespace Domain.SP.Input.Common
         /// 此api呼叫的log id 對應TB_APILOG PK
         /// </summary>
         public Int64 LogID { set; get; }
+        /// <summary>
+        /// 推播註冊流水號
+        /// </summary>
+        public int PushREGID { set; get; }
     }
 }

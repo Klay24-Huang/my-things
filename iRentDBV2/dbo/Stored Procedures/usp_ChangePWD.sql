@@ -45,8 +45,8 @@
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_ChangePWD]
 	@IDNO                   VARCHAR(10)           ,
-	@OldPWD                 VARCHAR(20)           , --舊密碼
-	@NewPWD                 VARCHAR(20)           , --新密碼
+	@OldPWD                 VARCHAR(100)           , --舊密碼
+	@NewPWD                 VARCHAR(100)           , --新密碼
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息

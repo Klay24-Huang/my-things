@@ -21,19 +21,16 @@ namespace WebAPI.Controllers
         private string key = ConfigurationManager.AppSettings["apikey"].ToString();
         private string salt = ConfigurationManager.AppSettings["salt"].ToString();
         [HttpGet]
-        public Dictionary<string, object> doVerifyEMail(string VerifyCode)
+        public string doVerifyEMail(string VerifyCode)
         {
             #region 初始宣告
-            var objOutput = new Dictionary<string, object>();    //輸出
+            string OutputString = "";   //輸出
             bool flag = true;
             bool isWriteError = false;
-            string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "VerifyEMailController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            OAPI_Login CheckAccountAPI = null;
-            Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string IDNO = "";
@@ -80,14 +77,21 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
-            return objOutput;
+            if (flag)
+            {
+                OutputString = "EMAIL驗證成功";
+            }
+            else
+            {
+                OutputString = "EMAIL驗證失敗";
+            }
+            return OutputString;
             #endregion
         }
     }

@@ -179,6 +179,8 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'新增者�
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'由哪個程式新增，對應TB_APILIST PK', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'A_PRGID';
 
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'推播註冊流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'PushREGID';
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'會員資料表', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData';

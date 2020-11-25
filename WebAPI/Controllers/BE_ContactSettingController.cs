@@ -70,10 +70,8 @@ namespace WebAPI.Controllers
             bool clearFlag = false;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
             List<BE_CarScheduleTimeLog> lstOrder = null;
-         
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -82,7 +80,7 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.OrderNo};
+                string[] checkList = { apiInput.UserID, apiInput.OrderNo };
                 string[] errList = { "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -94,7 +92,7 @@ namespace WebAPI.Controllers
                         errCode = "ERR900";
                     }
                 }
-               
+
                 if (flag)
                 {
                     if (apiInput.Mode < 0 || apiInput.Mode > 2)
@@ -103,10 +101,10 @@ namespace WebAPI.Controllers
                         errCode = "ERR900";
                     }
                 }
-            
+
                 if (flag)
                 {
-                    if(apiInput.type==1 && string.IsNullOrEmpty(apiInput.returnDate))
+                    if (apiInput.type == 1 && string.IsNullOrEmpty(apiInput.returnDate))
                     {
                         if (string.IsNullOrEmpty(apiInput.returnDate))
                         {
@@ -121,11 +119,7 @@ namespace WebAPI.Controllers
                                 errCode = "ERR900";
                             }
                         }
-
-
                     }
-                   
-
                 }
                 if (flag)
                 {
@@ -144,16 +138,13 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
             #endregion
 
             #region TB
-
             if (flag)
             {
                 if (apiInput.Mode == 0)
@@ -161,7 +152,7 @@ namespace WebAPI.Controllers
                     #region 取出目前訂單狀態
                     StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
 
-                     lstOrder = _repository.GetOrderStatus(tmpOrder);
+                    lstOrder = _repository.GetOrderStatus(tmpOrder);
                     if (lstOrder == null)
                     {
                         flag = false;
@@ -189,28 +180,25 @@ namespace WebAPI.Controllers
                         IDNO = lstOrder[0].IDNO;
                         if (apiInput.type == 2) //取消
                         {
-                                if (lstOrder[0].car_mgt_status > 0)
+                            if (lstOrder[0].car_mgt_status > 0)
+                            {
+                                flag = false;
+                                errCode = "ERR735";
+                            }
+                            else
+                            {
+                                string spName = new ObjType().GetSPName(ObjType.SPType.BE_BookingCancel);
+                                SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
                                 {
-                                    flag = false;
-                                    errCode = "ERR735";
-                                }
-                                else
-                                {
-                                    string spName = new ObjType().GetSPName(ObjType.SPType.BE_BookingCancel);
-                                    SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
-                                    {
-                                        LogID = LogID,
-                                        OrderNo = tmpOrder,
-                                        UserID = apiInput.UserID
-
-
-                                    };
-                                    SPOutput_Base spOut = new SPOutput_Base();
-                                    SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base>(connetStr);
-                                    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                                    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-                                }
-                                                      
+                                    LogID = LogID,
+                                    OrderNo = tmpOrder,
+                                    UserID = apiInput.UserID
+                                };
+                                SPOutput_Base spOut = new SPOutput_Base();
+                                SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base>(connetStr);
+                                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                            }
                         }
                         else if (apiInput.type == 0)
                         { //取車
@@ -239,8 +227,6 @@ namespace WebAPI.Controllers
                                         //汽車
                                     }
                                 }
-                             
-
                             }
                         }
                         else
@@ -275,7 +261,6 @@ namespace WebAPI.Controllers
                                     {
                                         flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
                                     }
-                                   
                                 }
                                 if (flag)
                                 {
@@ -295,22 +280,20 @@ namespace WebAPI.Controllers
                                             IDNO = IDNO,
                                             LogID = LogID,
                                             OrderNo = tmpOrder,
-                                           UserID=apiInput.UserID,
+                                            UserID = apiInput.UserID,
                                             transaction_no = "",
-                                             ReturnDate= ReturnDate
+                                            ReturnDate = ReturnDate
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
                                         SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
                                         flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
                                         baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
-
-                                     
                                     }
                                     else
                                     {
                                         //重新計價
-                                        flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID,apiInput.returnDate, ref errCode);
+                                        flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, ref errCode);
                                         if (flag)
                                         {
                                             if (clearFlag)
@@ -329,7 +312,7 @@ namespace WebAPI.Controllers
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
-                                                 ReturnDate= ReturnDate
+                                                ReturnDate = ReturnDate
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();
@@ -339,14 +322,11 @@ namespace WebAPI.Controllers
                                         }
                                     }
                                 }
-                            
                             }
                             #endregion
                         }
                     }
-              
                 }
-               
             }
             #endregion
 
@@ -372,7 +352,7 @@ namespace WebAPI.Controllers
         /// <param name="errMsg"></param>
         /// <param name="baseVerify"></param>
         /// <returns></returns>
-        private bool DoPickCar(Int64 tmpOrder,string IDNO,Int64 LogID,string UserID,ref string errCode,ref string errMsg,CommonFunc baseVerify)
+        private bool DoPickCar(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref string errMsg, CommonFunc baseVerify)
         {
             bool flag = true;
             string CID = "";
@@ -389,7 +369,7 @@ namespace WebAPI.Controllers
                 OrderNo = tmpOrder,
                 IDNO = IDNO,
                 LogID = LogID,
-                 UserID= UserID
+                UserID = UserID
             };
             SPOutput_BE_BeforeBookingStart spOut = new SPOutput_BE_BeforeBookingStart();
             SQLHelper<SPInput_BE_BeforeBookingStart, SPOutput_BE_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BE_BeforeBookingStart, SPOutput_BE_BeforeBookingStart>(connetStr);
@@ -486,7 +466,7 @@ namespace WebAPI.Controllers
                             IDNO = IDNO,
                             LogID = LogID,
                             OrderNo = tmpOrder,
-                            UserID=UserID,
+                            UserID = UserID,
                             NowMileage = Convert.ToSingle(mil),
                             StopTime = ""
                         };
@@ -631,9 +611,9 @@ namespace WebAPI.Controllers
                                 IDNO = IDNO,
                                 LogID = LogID,
                                 OrderNo = tmpOrder,
-                                UserID=UserID,
+                                UserID = UserID,
                                 NowMileage = Convert.ToSingle(mil),
-                                StopTime =""
+                                StopTime = ""
                             };
                             SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
                             SQLHelper<SPInput_BE_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_BookingStart, SPOutput_Base>(connetStr);
@@ -700,7 +680,7 @@ namespace WebAPI.Controllers
         private bool DoPickMotor(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref string errMsg, CommonFunc baseVerify)
         {
             bool flag = true;
-       
+
             string CID = "";
             string deviceToken = "";
             int IsMotor = 0;
@@ -806,7 +786,7 @@ namespace WebAPI.Controllers
 
                         }
 
-                 
+
                     }
 
                 }
@@ -815,7 +795,7 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
-        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID,string returnDate, ref string errCode)
+        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode)
         {
             bool flag = true;
             MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
@@ -850,7 +830,7 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     OrderNo = tmpOrder,
                     LogID = LogID,
-                   UserID=UserID
+                    UserID = UserID
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderStatusByOrderNo);
                 SPOutput_Base spOutBase = new SPOutput_Base();
@@ -932,16 +912,16 @@ namespace WebAPI.Controllers
                     BookingEndDate = ED.ToString("yyyy-MM-dd HH:mm:ss"),
                     BookingStartDate = SD.ToString("yyyy-MM-dd HH:mm:ss"),
                     CarNo = OrderDataLists[0].CarNo,
-                    RedeemingTimeCarInterval ="0",
-                    RedeemingTimeMotorInterval ="0",
-                    RedeemingTimeInterval ="0",
+                    RedeemingTimeCarInterval = "0",
+                    RedeemingTimeMotorInterval = "0",
+                    RedeemingTimeInterval = "0",
                     RentalDate = FED.ToString("yyyy-MM-dd HH:mm:ss"),
                     RentalTimeInterval = (TotalRentMinutes + TotalFineRentMinutes).ToString(),
                 };
 
                 if (ProjType == 4)
                 {
-                  
+
                     outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase()
                     {
                         BaseMinutePrice = OrderDataLists[0].BaseMinutesPrice,
@@ -951,7 +931,7 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                  
+
                     outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase()
                     {
                         HoildayOfHourPrice = OrderDataLists[0].PRICE_H,
@@ -1048,7 +1028,7 @@ namespace WebAPI.Controllers
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                 if (ProjType == 4)
                 {
-            
+
 
                     if (UseMonthMode)   //true:有月租;false:無月租
                     {
@@ -1100,7 +1080,7 @@ namespace WebAPI.Controllers
                             CarRentPrice = Convert.ToInt32(new BillCommon().CalSpread(SD, FED, Convert.ToInt32(OrderDataLists[0].PRICE * 10), Convert.ToInt32(OrderDataLists[0].PRICE_H * 10), lstHoliday));
                         }
                     }
-           
+
                     outputApi.Rent.CarRental = CarRentPrice;
                     outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit <= 0) ? Mildef : OrderDataLists[0].MilageUnit;
@@ -1126,7 +1106,7 @@ namespace WebAPI.Controllers
                     parkingFee = outputApi.Rent.ParkingFee,
                     TransDiscount = outputApi.Rent.TransferPrice,
                     LogID = LogID,
-                     UserID=UserID
+                    UserID = UserID
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base>(connetStr);
@@ -1143,5 +1123,4 @@ namespace WebAPI.Controllers
             return flag;
         }
     }
-
 }

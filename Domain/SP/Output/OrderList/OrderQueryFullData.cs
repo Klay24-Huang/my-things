@@ -223,6 +223,14 @@ namespace Domain.SP.Output.OrderList
         /// 安心服務每小時價
         /// </summary>
         public float InsurancePerHours { set; get; }
+        /// <summary>
+        /// 平日價
+        /// </summary>
+        public int WeekdayPrice { get; set; }
+        /// <summary>
+        /// 假日售價
+        /// </summary>
+        public int HoildayPrice { get; set; }
         #endregion
     }
 }
