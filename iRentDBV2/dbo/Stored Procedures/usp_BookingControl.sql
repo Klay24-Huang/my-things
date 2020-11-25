@@ -235,7 +235,7 @@ BEGIN TRY
 			SET @RENTDAY=0;
 			SET @EBONUS=0;
 			SET @TYPE=1;
-			SET @isRetry=0;
+			SET @isRetry=1;
 			SET @RetryTimes=0;
 			SET @ORDNO='';
 			SET @IRENTORDNO = 'H' + RIGHT(REPLICATE('0', 7) + CAST(@OrderNo as VARCHAR), 7)

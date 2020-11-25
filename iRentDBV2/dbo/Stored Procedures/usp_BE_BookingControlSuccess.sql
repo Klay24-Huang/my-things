@@ -105,12 +105,20 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 			 UPDATE TB_BookingControl 
 			 SET isRetry=1,RetryTimes=RetryTimes+1,UPDTime=@NowTime
 			 WHERE order_number=@OrderNo
+
+			 
 			END
 			ELSE
 			BEGIN
 		     UPDATE TB_BookingControl 
 			 SET isRetry=0,ORDNO=@ORDNO,UPDTime=@NowTime
 			 WHERE order_number=@OrderNo
+
+			 UPDATE TB_lendCarControl
+			 SET ORDNO=@ORDNO
+			 WHERE IRENTORDNO=@OrderNo
+			 AND ORDNO=''
+
 			END
 		 	
 		 END

@@ -423,7 +423,6 @@ namespace OtherService
                 CreditType = creditType,
                 LogID = 0,
                 MerchantTradeNo = Input.RequestParams.MerchantTradeNo
-
             };
             new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
             if (flag)
@@ -444,6 +443,76 @@ namespace OtherService
           
             return flag;
         }
+        /// <summary>
+        /// 2020/11/24 ADD BY ADAM REASON.InsTrade增加IDNO存檔
+        /// </summary>
+        /// <param name="wsInput"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="errCode"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool DoCreditCardAuthV2(PartOfCreditCardAuth wsInput,string IDNO, ref string errCode, ref WebAPIOutput_Auth output)
+        {
+            bool flag = true;
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string checksum = GenerateSign(ori);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            WebAPIInput_Auth Input = new WebAPIInput_Auth()
+            {
+                ApiVer = wsInput.ApiVer,
+                ApposId = wsInput.ApposId,
+                Random = wsInput.Random,
+                RequestParams = wsInput.RequestParams,
+                CheckSum = checksum,
+                TimeStamp = wsInput.TimeStamp
+
+            };
+            string[] tmp;
+            Int64 tmpOrder = 0;
+            int creditType = 99;
+            if (Input.RequestParams.MerchantTradeNo.IndexOf('F') > -1)
+            {
+                tmp = Input.RequestParams.MerchantTradeNo.Split('F');
+                tmpOrder = Convert.ToInt64(tmp[0]);
+                creditType = 0;
+            }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf('P') > -1)
+            {
+                tmp = Input.RequestParams.MerchantTradeNo.Split('P');
+                tmpOrder = Convert.ToInt64(tmp[0]);
+                creditType = 1;
+            }
+            SPInput_InsTrade SPInput = new SPInput_InsTrade()
+            {
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,
+                OrderNo = tmpOrder,
+                CreditType = creditType,
+                LogID = 0,
+                MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
+                MemberID = IDNO,
+                CardToken = Input.RequestParams.CardToken
+
+            };
+            new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
+            if (flag)
+            {
+                output = DoCreditCardAuthSend(Input).Result;
+                if (output.RtnCode == "1000")
+                {
+                    //if (output.Data == null)
+                    //{
+                    //    flag = false;
+                    //}
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+
+            return flag;
+        }
+
         /// <summary>
         /// 
         /// </summary>

@@ -11,7 +11,8 @@ namespace Domain.SP.Input.OtherService.Taishin
         public Int64 OrderNo          {set;get;}
         public string MerchantTradeNo  {set;get;}
         public int CreditType       {set;get;}
-    
+        public string MemberID { set; get; }        //20201124 ADD BY ADAM REASON.InsTrade增加MEMIDNO
+        public string CardToken { set; get; }       //20201124 ADD BY ADAM REASON.InsTrade增加CardToken
         public int amount           { set; get; }
     }
 }
