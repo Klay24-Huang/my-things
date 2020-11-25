@@ -107,6 +107,9 @@ DECLARE @EDate		DateTime;		--預約還車時間
 DECLARE @PriceN		INT;			--平日價格
 DECLARE @PriceH		INT;			--假日價格
 DECLARE @ProjType	TINYINT;		--專案類型：0:同站;3:路邊;4:機車
+DECLARE @MotorPrice	FLOAT;			--機車每分鐘價格
+DECLARE @BaseMinutes INT;			--基本分鐘數
+DECLARE @BaseMinutesPrice FLOAT;	--單日計費上限
 DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
 		,@BIRTH			DATETIME
 		,@GIVEKM		INT
@@ -218,6 +221,8 @@ BEGIN TRY
 			SELECT @RPRICE=Case When @IsHoliday=1 Then PROPRICE_H Else PROPRICE_N End FROM [dbo].[TB_Project] WHERE [PROJID]=@PROJID;
 
 			SELECT @PriceN=[PRICE],@PriceH=[PRICE_H] FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] WHERE PROJID=@PROJID AND CARTYPE=@CARTYPE;
+
+			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice FROM [TB_PriceByMinutes] WHERE ProjID=@PROJID AND CarType=@CARTYPE;
 			
 			--部分參數寫死
 			SET @PROCD='A';
@@ -230,7 +235,7 @@ BEGIN TRY
 			SET @RENTDAY=0;
 			SET @EBONUS=0;
 			SET @TYPE=1;
-			SET @isRetry=1;
+			SET @isRetry=0;
 			SET @RetryTimes=0;
 			SET @ORDNO='';
 			SET @IRENTORDNO = 'H' + RIGHT(REPLICATE('0', 7) + CAST(@OrderNo as VARCHAR), 7)
@@ -238,7 +243,8 @@ BEGIN TRY
 			If @ProjType = 4
 			BEGIN
 				--機車
-				exec @ORDAMT=[dbo].[FN_MotoRentTrial] @SDate,@EDate,@PROJID,@CARTYPE;
+				exec @ORDAMT=[dbo].[FN_MotoRentCompute] @SDate,@EDate,@MotorPrice,@BaseMinutes,@BaseMinutesPrice,0;
+				SET @RNTAMT=@ORDAMT
 			END
 			ELSE
 			BEGIN
@@ -279,7 +285,7 @@ BEGIN TRY
 				  ,@IDNO		AS CUSTID
 				  ,@ODCUSTNM	AS CUSTNM
 
-				  ,CONVERT(VARCHAR(10),@BIRTH,120) AS BIRTH
+				  ,CONVERT(VARCHAR(10),@BIRTH,120)
 				  ,CASE WHEN LEN(@IDNO)=10 THEN '1' ELSE '2' END AS CUSTTYPE
 				  ,'' AS ODCUSTID
 				  ,@CARTYPE		AS CARTYPE
