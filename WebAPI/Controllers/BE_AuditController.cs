@@ -102,7 +102,7 @@ namespace WebAPI.Controllers
                     Motor_1_Image = (apiInput.ImageData.Motor_1 == apiInput.ImageData.Motor_1_new) ? RemoveSuff(apiInput.ImageData.Motor_1_Image) : CheckNeedChangeName(apiInput.ImageData.Motor_1, apiInput.ImageData.Motor_1_new, RemoveSuff(apiInput.ImageData.Motor_1_Image)),
 
                     Motor_2 = apiInput.ImageData.Motor_2_new,
-                    Motor_2_Audit = (apiInput.ImageData.Motor_2_Audit == 1) ? 2 : apiInput.ImageData.Car_2_Audit,
+                    Motor_2_Audit = (apiInput.ImageData.Motor_2_Audit == 1) ? 2 : apiInput.ImageData.Motor_2_Audit,
                     Motor_2_Reason = apiInput.ImageData.Motor_2_Reason,
                     Motor_2_Image = (apiInput.ImageData.Motor_2 == apiInput.ImageData.Motor_2_new) ? RemoveSuff(apiInput.ImageData.Motor_2_Image) : CheckNeedChangeName(apiInput.ImageData.Motor_2, apiInput.ImageData.Motor_2_new, RemoveSuff(apiInput.ImageData.Motor_2_Image)),
 

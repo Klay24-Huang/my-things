@@ -172,19 +172,19 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver">
+                                    <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") ? " checked" : "")>
                                     <label class="form-check-label" for="CarDriver">汽車</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1">
+                                    <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") ? " checked" : "")>
                                     <label class="form-check-label" for="CarDriver1">機車(持汽車駕照使用輕型機車)</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2">
+                                    <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") ? " checked" : "")>
                                     <label class="form-check-label" for="MotoDriver2">機車(重型)</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1">
+                                    <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") ? " checked" : "")>
                                     <label class="form-check-label" for="MotorDriver1">機車(輕型)</label>
                                 </div>
                             </div>

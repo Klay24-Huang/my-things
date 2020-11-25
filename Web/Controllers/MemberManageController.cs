@@ -202,78 +202,78 @@ namespace Web.Controllers
                                     Data.Images.ID_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_1_IsNew = 0;
                                     Data.Images.ID_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.ID_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 2:
                                     Data.Images.ID_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_2_IsNew = 0;
                                     Data.Images.ID_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.ID_2_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_2_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 3:
                                     Data.Images.Car_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_1_IsNew = 0;
                                     Data.Images.Car_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Car_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 4:
                                     Data.Images.Car_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_2_IsNew = 0;
                                     Data.Images.Car_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Car_2_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_2_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 5:
                                     Data.Images.Motor_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_1_IsNew = 0;
                                     Data.Images.Motor_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Motor_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 6:
                                     Data.Images.Motor_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_2_IsNew = 0;
                                     Data.Images.Motor_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Motor_2_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_2_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 7:
                                     Data.Images.Self_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Self_1_IsNew = 0;
                                     Data.Images.Self_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Self_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Self_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 8:
                                     Data.Images.F01 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.F01_IsNew = 0;
                                     Data.Images.F01_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.F01_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.F01_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 9:
                                     Data.Images.Other_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Other_1_IsNew = 0;
                                     Data.Images.Other_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Other_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Other_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 10:
                                     Data.Images.Business_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Business_1_IsNew = 0;
                                     Data.Images.Business_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Business_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Business_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                                 case 11:
                                     Data.Images.Signture_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : ImgURL + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Signture_1_IsNew = 0;
                                     Data.Images.Signture_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[index].AuditResult;
-                                    Data.Images.Signture_1_RejectReason = lstAudits[index].RejectReason;
+                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? -1 : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Signture_1_RejectReason = lstAudits[Oindex].RejectReason;
                                     break;
                             }
                         }

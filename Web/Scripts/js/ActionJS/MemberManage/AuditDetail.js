@@ -166,6 +166,7 @@ $(function () {
             }
         }
         setData();
+
         if (flag) {
             if ($.trim(Obj.ID_1_Audit) == "") {
                 flag = false;
