@@ -846,7 +846,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_HandleCarDataSettingMemo";
                     break;
                 case SPType.BE_HandleChargeParkingData:
-                    SPName = "usp_BE_HandleTransParking";
+                    //SPName = "usp_BE_HandleTransParking";
+                    SPName = "usp_BE_HandleChargeParkingData";
                     break;
                 case SPType.BE_HandleCarMachineData:
                     SPName = "usp_BE_HandleCarBindData";

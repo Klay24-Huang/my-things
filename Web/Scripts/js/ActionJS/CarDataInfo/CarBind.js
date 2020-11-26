@@ -106,6 +106,12 @@ function DoSave(Id) {
     var flag = true;
     var errMsg = "";
 
+    var sCIDVal = $("#CID_" + Id).val();
+    if (sCIDVal === '') {
+        flag = false
+        errMsg = 'CID不可空白';
+    }
+
     if (flag) {
         var obj = new Object();
         obj.UserID = Account;

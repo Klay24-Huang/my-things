@@ -137,7 +137,7 @@ namespace OtherService
                 output = new WebAPIOutput_Base()
                 {
                     RtnCode="0",
-                    RtnMessage=ex.Message.Substring(0,200)
+                    RtnMessage=ex.Message
                 };
             }
             finally
@@ -262,7 +262,7 @@ namespace OtherService
                 output = new WebAPIOutput_GetCreditCardList()
                 {
                     RtnCode = "0",
-                    RtnMessage = ex.Message.Substring(0, 200)
+                    RtnMessage = ex.Message
                 };
             }
             finally
@@ -376,7 +376,7 @@ namespace OtherService
                 output = new WebAPIOutput_DeleteCreditCardAuth()
                 {
                     RtnCode = "0",
-                    RtnMessage = ex.Message.Substring(0, 200)
+                    RtnMessage = ex.Message
                 };
             }
             finally
@@ -482,7 +482,7 @@ namespace OtherService
                 output = new WebAPIOutput_GetPaymentInfo()
                 {
                     RtnCode = "0",
-                    RtnMessage = ex.Message.Substring(0, 200)
+                    RtnMessage = ex.Message
                 };
             }
             finally
@@ -707,7 +707,7 @@ namespace OtherService
                 output = new WebAPIOutput_Auth()
                 {
                     RtnCode = "0",
-                    RtnMessage = ex.Message.Substring(0, 200)
+                    RtnMessage = ex.Message
                 };
             }
             finally
@@ -875,7 +875,7 @@ namespace OtherService
                 output = new WebAPIOutput_ECRefund()
                 {
                     RtnCode = "0",
-                    RtnMessage = ex.Message.Substring(0, 200)
+                    RtnMessage = ex.Message
                 };
             }
             finally
