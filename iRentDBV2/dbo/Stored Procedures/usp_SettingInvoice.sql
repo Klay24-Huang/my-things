@@ -83,90 +83,97 @@ SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
-SET @Token    =ISNULL (@Token    ,'');
+SET @Token=ISNULL (@Token,'');
 SET @InvoiceType=ISNULL(@InvoiceType,0);
 SET @SettingMode=ISNULL(@SettingMode,2);
-SET @NPOBAN    =ISNULL(@NPOBAN    ,'');
-SET @UniCode  =ISNULL(@UniCode  ,'');
+SET @NPOBAN=ISNULL(@NPOBAN,'');
+SET @UniCode=ISNULL(@UniCode,'');
 SET @CARRIERID=ISNULL(@CARRIERID,'');
-		BEGIN TRY
-	
-		 
-		 IF @Token='' OR @IDNO=''  
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 IF @Error=0
-		 BEGIN
-		    IF @SettingMode=1 AND @OrderNo=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR900'
-			END
-		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+
+BEGIN TRY
+	IF @Token='' OR @IDNO=''  
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+	IF @Error=0
+	BEGIN
+		IF @SettingMode=1 AND @OrderNo=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR900'
+		END
+	END
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
-		 END
-		 --設定發票
-		 IF @Error=0
-		 BEGIN
-			IF @SettingMode=0
-			BEGIN
-				UPDATE TB_MemberData 
-				SET MEMSENDCD=@InvoiceType,UNIMNO=@UniCode,NPOBAN=@NPOBAN,CARRIERID=@CARRIERID,U_SYSDT=@NowTime
-				WHERE MEMIDNO=@IDNO
-			END
-			ELSE
-			BEGIN
-				UPDATE TB_OrderMain
-				SET bill_option=@InvoiceType,unified_business_no=@UniCode,NPOBAN=@NPOBAN,CARRIERID=@CARRIERID
-				WHERE order_number=@OrderNo
-			END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+	END
+
+	--設定發票
+	IF @Error=0
+	BEGIN
+		IF @SettingMode=0
+		BEGIN
+			UPDATE TB_MemberData 
+			SET MEMSENDCD=@InvoiceType,
+				UNIMNO=@UniCode,
+				NPOBAN=@NPOBAN,
+				CARRIERID=@CARRIERID,
+				U_SYSDT=@NowTime
+			WHERE MEMIDNO=@IDNO
+		END
+		ELSE
+		BEGIN
+			UPDATE TB_OrderMain
+			SET bill_option=@InvoiceType,
+				unified_business_no=@UniCode,
+				NPOBAN=@NPOBAN,
+				CARRIERID=@CARRIERID
+			WHERE order_number=@OrderNo
+		END
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SettingInvoice';

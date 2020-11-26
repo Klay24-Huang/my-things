@@ -194,6 +194,7 @@ namespace WebAPI.Controllers
                     LogID = LogID
                 };
 
+                // 目前APP都是送0進來，因此這段目前無用
                 if (apiInput.Mode == 1)
                 {
                     iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);

@@ -28,7 +28,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -47,15 +46,11 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int64 tmpOrder = 0;
             Int16 SettingMode = 0;  //設定發票
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -84,7 +79,6 @@ namespace WebAPI.Controllers
                                     flag = false;
                                     errCode = "ERR900";
                                 }
-
                             }
                         }
                     }
@@ -98,14 +92,13 @@ namespace WebAPI.Controllers
                         errCode = "ERR192";
                     }
                 }
-              
-             
+
                 #region 各類型判斷
                 if (flag)
                 {
                     switch (apiInput.InvoiceType)
                     {
-                        case 4: //判斷統編
+                        case 4:     // 統編
                             if (string.IsNullOrWhiteSpace(apiInput.UniCode))
                             {
                                 flag = false;
@@ -121,8 +114,7 @@ namespace WebAPI.Controllers
                                 }
                             }
                             break;
-                        case 5:
-                        
+                        case 5:     // 手機條碼
                             if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
                             {
                                 flag = false;
@@ -130,12 +122,10 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-
                                 flag = new HiEasyRentAPI().CheckEinvBiz(apiInput.CARRIERID, ref errCode);
-                              
                             }
                             break;
-                        case 6:
+                        case 6:     // 自然人憑證
                             if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
                             {
                                 flag = false;
@@ -145,7 +135,6 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-
             }
             //不開放訪客
             if (flag)
@@ -164,7 +153,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -180,11 +168,9 @@ namespace WebAPI.Controllers
             #region 更新會員資料表或是寫入訂單內
             if (flag)
             {
-                
-                 string SPName = new ObjType().GetSPName(ObjType.SPType.SettingInvoice);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.SettingInvoice);
                 SPInput_SettingInvoice SPInput = new SPInput_SettingInvoice()
                 {
-
                     LogID = LogID,
                     CARRIERID = apiInput.CARRIERID,
                     IDNO = IDNO,
@@ -199,12 +185,11 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_SettingInvoice, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SettingInvoice, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-               
             }
             #endregion
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
