@@ -21,9 +21,9 @@ function doSetting() {
 
     var jsonData = "";
     if (StationID.length > 0) {
-        jsonData =JSON.stringify({ "para": { "Account": $("#Account").val(), "StationID": StationID} });
+        jsonData =JSON.stringify({ "Account": $("#Account").val(), "StationID": StationID} );
     } else {
-        jsonData =JSON.stringify({ "para": { "Account": $("#Account").val()} });
+        jsonData = JSON.stringify({"Account": $("#Account").val()} );
     }
     
     console.log(jsonData);
@@ -35,18 +35,18 @@ function doSetting() {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); $.busyLoadFull("hide", { animate: "fade" }); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 $.busyLoadFull("hide", { animate: "fade" });
                 swal({
                     title: '設定據點成功',
-                    text: data.ErrMsg,
+                    text: data.ErrorMessage,
                     showCancelButton: false,
                     type: "success",
                     position: "center-left",
                     customClass: "aaaa"
-                }).then(() => {
+                }).then(function (value) {
                     window.location.reload();
                 });
 
@@ -54,12 +54,12 @@ function doSetting() {
                 $.busyLoadFull("hide", { animate: "fade" });
                 swal({
                     title: '設定資料發生錯誤',
-                    text: data.ErrMsg,
+                    text: data.ErrorMessage,
                     showCancelButton: false,
                     type: "error",
                     position: "center-left",
                     customClass: "aaaa"
-                }).then(() => {
+                }).then(()=>{
                     window.location.reload();
                 });
                 console.log("false");
@@ -90,7 +90,7 @@ $(document).ready(function () {
 function getData() {
     var URL = jsHost + "MA_GetManageStationSetting";// GetCleanCar
   
-    var jsonData = JSON.stringify({ "para": { "Account": $("#Account").val()} });
+    var jsonData = JSON.stringify({ "Account": $("#Account").val()} );
     console.log(jsonData);
 
     console.log(URL);
@@ -102,12 +102,12 @@ function getData() {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); $.busyLoadFull("hide", { animate: "fade" }); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 console.log("true");
-                console.log(JsonData.data);
-                var dataLen = JsonData.data.length;
+                console.log(JsonData.Data);
+                var dataLen = JsonData.Data.length;
                 console.log("dataLen:" + dataLen);
                 $.busyLoadFull("hide", { animate: "fade" });
                 var tmpHTML = "";
@@ -116,19 +116,19 @@ function getData() {
                     tmpHTML += "<input type=\"button\" name=\"btnDownload\" class=\"btn-info\" value=\"下載\"  onclick=\"doDownload();\"/></td></tr>";
                 }
                 for (var i = 0; i < dataLen; i++) {
-                    var isCheck = (JsonData.data[i].isSelected=="1")?" checked":"";
+                    var isCheck = (JsonData.Data[i].isSelected=="1")?" checked":"";
                    if (i % 3 == 0 ) {
                         tmpHTML += "<tr>";
                        tmpHTML += "<td>";
-                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.data[i].StationID + "\" " + isCheck + ">" + JsonData.data[i].StationName + "</label></td>";
+                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.Data[i].StationID + "\" " + isCheck + ">" + JsonData.Data[i].StationName + "</label></td>";
 
                     }  else if (i % 3 == 1) {
                        tmpHTML += "<td>";
-                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.data[i].StationID + "\" " + isCheck + ">" + JsonData.data[i].StationName + "</label></td>";
+                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.Data[i].StationID + "\" " + isCheck + ">" + JsonData.Data[i].StationName + "</label></td>";
                     
                     } else if (i % 3 == 2) {
                        tmpHTML += "<td>";
-                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.data[i].StationID + "\" " + isCheck + ">" + JsonData.data[i].StationName + "</label></td></tr>";
+                       tmpHTML += "<label><input type=\"checkbox\" name=\"StationID[]\" value=\"" + JsonData.Data[i].StationID + "\" " + isCheck + ">" + JsonData.Data[i].StationName + "</label></td></tr>";
   
                     }
                 }
@@ -143,12 +143,12 @@ function getData() {
                 $.busyLoadFull("hide", { animate: "fade" });
                 swal({
                     title: '取得資料發生錯誤',
-                    text: data.ErrMsg,
+                    text: data.ErrorMessage,
                     showCancelButton: false,
                     type: "error",
                     position: "center-left",
                     customClass: "aaaa"
-                }).then(() => {
+                }).then(()=>{
                     window.location.reload();
                 });
                 console.log("false");

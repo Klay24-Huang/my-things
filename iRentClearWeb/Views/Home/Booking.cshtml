@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewBag.Title = "預約";
+    Layout = "~/Views/_Layout.cshtml";
+    DateTime? BookingStartTime;// = ViewData["BookingStart"] as DateTime?;
+    DateTime? BookingEndTime;// = ViewData["BookingEnd"] as DateTime?;
+    string BookingStart = "", BookingEnd = "";
+    string CarNo = ViewData["CarNo"] as string;
+    CarNo = (string.IsNullOrEmpty(CarNo) ? "" : CarNo);
+    string Account = "";
+    string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+        UserName = Session["UserName"].ToString();
+
+        if (ViewData["BookingStart"] != null)
+        {
+            BookingStartTime = Convert.ToDateTime(ViewData["BookingStart"]);
+            BookingStart = BookingStartTime.Value.ToString("yyyy-MM-dd HH:mm");
+        }
+
+        if (ViewData["BookingEnd"] != null)
+        {
+            BookingStartTime = Convert.ToDateTime(ViewData["BookingEnd"]);
+            BookingEnd = BookingStartTime.Value.ToString("yyyy-MM-dd HH:mm");
+        }
+
+    }
+
+
+
+
+}
+<div>
+    <div class="bookingTitle  text-center bg-dark">
+        <h2><b><font color="white">預約清潔</font></b></h2>
+    </div>
+    <form class="form-horizontal form-material" name="dataForm" id="dataForm" action="BookingList" method="post">
+
+        <div class="row">
+            <div class="form-group col-12 m-t-30">
+                <div class="col-xs-12">
+                    <label for="CarNo">車號</label>
+                </div>
+                <div class="col-xs-12">
+
+                    <input name="CarNo" id="CarNo" class="form-control" type="text" value="@CarNo" required>
+                    <span class="bar"></span>
+
+                </div>
+            </div>
+            <div class="form-group col-12 m-t-60">
+                <div class="col-xs-12">
+                    <label for="BookingStart">起始時間</label>
+                    <input name="BookingStart" id="BookingStart" class="form-control input-limit-datepickerTime" data-format="yyyy-MM-dd HH:mm" type="text" value="@BookingStart" required>
+                    <span class="bar"></span>
+
+                </div>
+            </div>
+
+            <div class="form-group col-12 m-t-60">
+                <div class="col-xs-12">
+                    <label for="BookingEnd">結束時間</label>
+                    <input name="BookingEnd" id="BookingEnd" class="form-control input-limit-datepickerTime" data-format="yyyy-MM-dd HH:mm" type="text" value="@BookingEnd" />
+                    <span class="bar"></span>
+
+                </div>
+            </div>
+            <div class="form-group col-12 m-t-60">
+                <div class="col-xs-12 text-center">
+                    <span class="btn btn-danger text-center" style="width:100%;" id="btnSend" name="btnSend">預約</span>
+
+                </div>
+            </div>
+            @Html.Hidden("manager", UserName)
+
+    </form>
+</div>
+
+
+

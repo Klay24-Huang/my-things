@@ -918,6 +918,7 @@
     <Content Include="Scripts\plugin\sweetalert\package.json" />
     <Content Include="Scripts\plugin\sweetalert\README.md" />
     <Content Include="Views\Home\SettingStation.cshtml" />
+    <Content Include="Views\Home\Booking.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -439,26 +439,26 @@ function getCarData() {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); $.busyLoadFull("hide", { animate: "fade" });},
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 console.log("true");
-                console.log(JsonData.data);
-                var dataLen = JsonData.data.length;
+                console.log(JsonData.Data);
+                var dataLen = JsonData.Data.length;
                 console.log("dataLen:"+dataLen);
                 for (var i = 0; i < dataLen; i++) {
-                    if (JsonData.data[i].total > 0) {
-                        console.log(JsonData.data[i].total);
+                    if (JsonData.Data[i].total > 0) {
+                        console.log(JsonData.Data[i].total);
                         if (NowType == 5) {
-                            localStorage.setItem('maintain', JSON.stringify(JsonData.data[i].CarList));
+                            localStorage.setItem('maintain', JSON.stringify(JsonData.Data[i].CarList));
                         } else {
-                            if (JsonData.data[i].projType == 0) {
-                                localStorage.setItem('nor', JSON.stringify(JsonData.data[i].CarList));
+                            if (JsonData.Data[i].projType == 0) {
+                                localStorage.setItem('nor', JSON.stringify(JsonData.Data[i].CarList));
 
-                            } else if (JsonData.data[i].projType == 3) {
-                                localStorage.setItem('any', JSON.stringify(JsonData.data[i].CarList));
+                            } else if (JsonData.Data[i].projType == 3) {
+                                localStorage.setItem('any', JSON.stringify(JsonData.Data[i].CarList));
                             } else {
-                                localStorage.setItem('moto', JSON.stringify(JsonData.data[i].CarList));
+                                localStorage.setItem('moto', JSON.stringify(JsonData.Data[i].CarList));
                             }
                         }
                         
