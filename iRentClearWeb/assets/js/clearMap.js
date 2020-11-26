@@ -1,4 +1,4 @@
-﻿var host = "http://113.196.107.238/"
+﻿
 var latlng = { lat: 25.046891, lng: 121.516602 }; // 給一個初始位置
 var map;
 var markers = [];
@@ -367,8 +367,8 @@ function getNowLocation() {
     $.busyLoadFull("show", {
         spinner: "cube-grid"
     });
-    var URL = host + "iMotoWebAPI/api/MaintainUserGetLatLng";
-    var jsonData = JSON.stringify({ "para": { "Account": $("#Account").val() } });
+    var URL = jsHost + "MA_MaintainUserGetLatLng";
+    var jsonData = JSON.stringify({ "Account": $("#Account").val() });
     console.log(jsonData);
     console.log(URL);
     $.ajax({
@@ -380,9 +380,9 @@ function getNowLocation() {
         error: function (xhr, error) { $.busyLoadFull("hide", { animate: "fade" }); console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
             $.busyLoadFull("hide", { animate: "fade" });
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
 
                 console.log("true");
                 console.log(JsonData.data);
@@ -431,7 +431,7 @@ function getCarData(lat, lng) {
     localStorage.removeItem('any');
     localStorage.removeItem('moto');
     clearMarkers()
-    var URL = host + "iMotoWebAPI/api/GetCleanCarByLatLng";
+    var URL = jsHost + "MA_GetCleanCarByLatLng";
     var NowType = 0;
     var radius = 3.5;
     if (nowSelMode == "any") {
@@ -443,7 +443,7 @@ function getCarData(lat, lng) {
         NowType = 5;
         radius = 10;
     }
-    var jsonData = JSON.stringify({ "para": { "Account": $("#Account").val(), "NowType": NowType, "Lng": lng, "Lat": lat, "raduis": radius } });
+    var jsonData = JSON.stringify({  "Account": $("#Account").val(), "NowType": NowType, "Lng": lng, "Lat": lat, "raduis": radius  });
     console.log(jsonData);
 
     console.log(URL);
@@ -456,54 +456,54 @@ function getCarData(lat, lng) {
         error: function (xhr, error) { $.busyLoadFull("hide", { animate: "fade" }); console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
             $.busyLoadFull("hide", { animate: "fade" });
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                
                 console.log("true");
-                console.log(JsonData.data);
-                var dataLen = JsonData.data.length;
+                console.log(JsonData.Data);
+                var dataLen = JsonData.Data.length;
                 console.log(dataLen);
                 for (var i = 0; i < dataLen; i++) {
-                    if (JsonData.data[i].total > 0) {
-                        console.log(JsonData.data[i].total);
+                    if (JsonData.Data[i].total > 0) {
+                        console.log(JsonData.Data[i].total);
                         if (NowType == 5) {
-                            localStorage.setItem('maintain', JSON.stringify(JsonData.data[i].CarList));
+                            localStorage.setItem('maintain', JSON.stringify(JsonData.Data[i].CarList));
                         } else {
-                            if (JsonData.data[i].projType == 0) {
-                                localStorage.setItem('nor', JSON.stringify(JsonData.data[i].CarList));
+                            if (JsonData.Data[i].projType == 0) {
+                                localStorage.setItem('nor', JSON.stringify(JsonData.Data[i].CarList));
 
-                            } else if (JsonData.data[i].projType == 3) {
-                                localStorage.setItem('any', JSON.stringify(JsonData.data[i].CarList));
+                            } else if (JsonData.Data[i].projType == 3) {
+                                localStorage.setItem('any', JSON.stringify(JsonData.Data[i].CarList));
                             } else {
-                                localStorage.setItem('moto', JSON.stringify(JsonData.data[i].CarList));
+                                localStorage.setItem('moto', JSON.stringify(JsonData.Data[i].CarList));
                             }
                         }
                     
                         console.log(nowMode);
                         if (nowMode == "location") {
-                            if (nowSelMode == "nor" && JsonData.data[i].projType == 0) {
-                                for (var j = 0; j < JsonData.data[i].total; j++) {
+                            if (nowSelMode == "nor" && JsonData.Data[i].projType == 0) {
+                                for (var j = 0; j < JsonData.Data[i].total; j++) {
 
-                                    drawMark(JsonData.data[i].CarList[j].Lat, JsonData.data[i].CarList[j].Lng, JsonData.data[i].CarList[j], JsonData.data[i].projType);
+                                    drawMark(JsonData.Data[i].CarList[j].Lat, JsonData.Data[i].CarList[j].Lng, JsonData.Data[i].CarList[j], JsonData.Data[i].projType);
                                 }
                                 // showMarkers();
-                            } else if ((nowSelMode == "any" && JsonData.data[i].projType == 3)) {
-                                for (var j = 0; j < JsonData.data[i].total; j++) {
+                            } else if ((nowSelMode == "any" && JsonData.Data[i].projType == 3)) {
+                                for (var j = 0; j < JsonData.Data[i].total; j++) {
 
-                                    drawMark(JsonData.data[i].CarList[j].Lat, JsonData.data[i].CarList[j].Lng, JsonData.data[i].CarList[j], JsonData.data[i].projType);
+                                    drawMark(JsonData.Data[i].CarList[j].Lat, JsonData.Data[i].CarList[j].Lng, JsonData.Data[i].CarList[j], JsonData.Data[i].projType);
                                 }
                                 //  showMarkers();
-                            } else if ((nowSelMode == "moto" && JsonData.data[i].projType == 4)) {
-                                for (var j = 0; j < JsonData.data[i].total; j++) {
+                            } else if ((nowSelMode == "moto" && JsonData.Data[i].projType == 4)) {
+                                for (var j = 0; j < JsonData.Data[i].total; j++) {
 
-                                    drawMark(JsonData.data[i].CarList[j].Lat, JsonData.data[i].CarList[j].Lng, JsonData.data[i].CarList[j], JsonData.data[i].projType);
+                                    drawMark(JsonData.Data[i].CarList[j].Lat, JsonData.Data[i].CarList[j].Lng, JsonData.Data[i].CarList[j], JsonData.Data[i].projType);
                                 }
 
                             } else if (nowSelMode == "maintain") {
-                                for (var j = 0; j < JsonData.data[i].total; j++) {
+                                for (var j = 0; j < JsonData.Data[i].total; j++) {
 
-                                    drawMark(JsonData.data[i].CarList[j].Lat, JsonData.data[i].CarList[j].Lng, JsonData.data[i].CarList[j], JsonData.data[i].projType);
+                                    drawMark(JsonData.Data[i].CarList[j].Lat, JsonData.Data[i].CarList[j].Lng, JsonData.Data[i].CarList[j], JsonData.Data[i].projType);
                                 }
                             }
                             showMarkers();

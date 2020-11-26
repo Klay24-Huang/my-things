@@ -11,6 +11,10 @@
             UserName = Session["UserName"].ToString();
         }
     }*@
+@{ 
+    string hostPath = System.Configuration.ConfigurationManager.AppSettings["jsHost"];
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -153,13 +157,13 @@
 
 
     @*@Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")*@
+        @Scripts.Render("~/bundles/bootstrap")*@
 
     <script src="~/assets/js/jquery/1.9.1/jquery-1.9.1.js"></script>
 
     @if (actionName == "Map")
     {
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBio-E7uXMlPAbXaXXvJ5_TC8ZFMVj7PM">
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVquooZC9O0F84LwJ-FRL3LzVmP_ExJ5M&libraries=drawin5">
         </script>
         <script src="~/assets/js/clearMap.js"></script>
         //&callback=initMap
@@ -212,6 +216,7 @@
     </div>
 </body>
 <script language="javascript">
+      var jsHost = "@hostPath";
     function goMap(type) {
         if (type == 1) {
 

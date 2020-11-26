@@ -100,6 +100,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\bootstrap.min.css" />
+    <Content Include="assets\chosen.css" />
     <Content Include="assets\css\all.css" />
     <Content Include="assets\css\all.min.css" />
     <Content Include="assets\css\autocontrolcar.css" />
@@ -210,10 +212,32 @@
     <Content Include="assets\css\ViewFixDetail.css" />
     <Content Include="assets\css\ViewStationDetail.css" />
     <Content Include="assets\css\vis.css" />
+    <Content Include="assets\EvTimeLine\bootstrap-responsive.css" />
+    <Content Include="assets\EvTimeLine\bootstrap-theme.min.css" />
+    <Content Include="assets\EvTimeLine\bootstrap.min.css" />
+    <Content Include="assets\EvTimeLine\bootstrap3.0.min.css" />
+    <Content Include="assets\EvTimeLine\cabinet.css" />
+    <Content Include="assets\EvTimeLine\chosen.css" />
+    <Content Include="assets\EvTimeLine\datepicker-zh-TW.js" />
+    <Content Include="assets\EvTimeLine\drawer.js" />
+    <Content Include="assets\EvTimeLine\evTrack.css" />
+    <Content Include="assets\EvTimeLine\EvTrack.js" />
+    <Content Include="assets\EvTimeLine\fullcalendar.css" />
+    <Content Include="assets\EvTimeLine\jquery-1.10.2.min.js" />
+    <Content Include="assets\EvTimeLine\jquery-1.9.1.js" />
+    <Content Include="assets\EvTimeLine\jquery-ui-1.10.2.custom.min.js" />
+    <Content Include="assets\EvTimeLine\jquery-ui-timepicker-addon.css" />
+    <Content Include="assets\EvTimeLine\jquery-ui-timepicker-addon.js" />
+    <Content Include="assets\EvTimeLine\jquery.autocomplete.css" />
+    <Content Include="assets\EvTimeLine\jquery.cabinet.js" />
+    <Content Include="assets\EvTimeLine\jquery.chosen.min.js" />
+    <Content Include="assets\EvTimeLine\style.css" />
+    <Content Include="assets\EvTimeLine\theme\avocado.css" />
     <Content Include="assets\fonts\fontawesome-webfont.svg" />
     <Content Include="assets\fonts\footable.svg" />
     <Content Include="assets\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="assets\font\fontawesome-webfont.svg" />
+    <Content Include="assets\fullcalendar.css" />
     <Content Include="assets\img\btn_rentcar_pressed.png" />
     <Content Include="assets\img\btn_rentmoto_pressed.png" />
     <Content Include="assets\img\download.png" />
@@ -269,6 +293,7 @@
     <Content Include="assets\img\location.png" />
     <Content Include="assets\img\maintain.png" />
     <Content Include="assets\img\set.png" />
+    <Content Include="assets\jquery-ui.css" />
     <Content Include="assets\js\autocontrolcar.js" />
     <Content Include="assets\js\avocado-custom-predom.js" />
     <Content Include="assets\js\avocado-custom.js" />
@@ -370,6 +395,7 @@
     <Content Include="assets\js\tradequery.js" />
     <Content Include="assets\js\tradequeryForAllPay.js" />
     <Content Include="assets\js\vis.js" />
+    <Content Include="assets\logo.png" />
     <Content Include="assets\plugins\bootstrap-datepicker\bootstrap-datepicker.min.css" />
     <Content Include="assets\plugins\bootstrap-datepicker\bootstrap-datepicker.min.js" />
     <Content Include="assets\plugins\bootstrap-daterangepicker\daterangepicker.css" />
@@ -431,6 +457,7 @@
     <Content Include="assets\plugins\pages\floating-label.css" />
     <Content Include="assets\plugins\timepicker\bootstrap-timepicker.min.css" />
     <Content Include="assets\plugins\timepicker\bootstrap-timepicker.min.js" />
+    <Content Include="assets\prism.css" />
     <Content Include="assets\scss\icons\flag-icon-css\flag-icon.min.css" />
     <Content Include="assets\scss\icons\flag-icon-css\flags\ad.svg" />
     <Content Include="assets\scss\icons\flag-icon-css\flags\ae.svg" />
@@ -701,6 +728,7 @@
     <Content Include="assets\scss\icons\themify-icons\fonts\themify9f24.svg" />
     <Content Include="assets\scss\icons\themify-icons\themify-icons.css" />
     <Content Include="assets\scss\icons\weather-icons\css\weather-icons.min.css" />
+    <Content Include="assets\sweetalert.css" />
     <Content Include="assets\webfonts\fa-brands-400.svg" />
     <Content Include="assets\webfonts\fa-regular-400.svg" />
     <Content Include="assets\webfonts\fa-solid-900.svg" />
@@ -711,9 +739,25 @@
     <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\ActionJS\autocontrolcar.js" />
+    <Content Include="Scripts\ActionJS\Booking.js" />
+    <Content Include="Scripts\ActionJS\BookingList.js" />
+    <Content Include="Scripts\ActionJS\CarSetStation.js" />
+    <Content Include="Scripts\ActionJS\index.js" />
+    <Content Include="Scripts\ActionJS\insertcleanorder.js" />
+    <Content Include="Scripts\ActionJS\insertorder.js" />
+    <Content Include="Scripts\ActionJS\iscroll.js" />
+    <Content Include="Scripts\ActionJS\ProjManage.js" />
+    <Content Include="Scripts\ActionJS\SettingStation.js" />
+    <Content Include="Scripts\ActionJS\StationBlock.js" />
+    <Content Include="Scripts\ActionJS\sweetalert.js" />
+    <Content Include="Scripts\ActionJS\sweetalert.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="assets\style.scss" />
+    <Content Include="assets\helpers\_variables.scss" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\CommonFunc.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
@@ -724,6 +768,18 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\plugin\busy-load-master\app.css" />
+    <Content Include="Scripts\plugin\busy-load-master\app.js" />
+    <Content Include="Scripts\plugin\busy-load-master\app.min.css" />
+    <Content Include="Scripts\plugin\busy-load-master\app.min.js" />
+    <Content Include="Scripts\plugin\footable-bootstrap\css\footable.bootstrap.css" />
+    <Content Include="Scripts\plugin\footable-bootstrap\css\footable.bootstrap.min.css" />
+    <Content Include="Scripts\plugin\footable-bootstrap\js\footable.js" />
+    <Content Include="Scripts\plugin\footable-bootstrap\js\footable.min.js" />
+    <Content Include="Scripts\plugin\sweetalert\dist\sweetalert.min.js" />
+    <Content Include="Scripts\sweetalert2.min.js" />
+    <Content Include="Scripts\tinycolor-0.9.15.min.js" />
+    <Content Include="Scripts\vis.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -858,6 +914,9 @@
     <Content Include="Views\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Map.cshtml" />
+    <Content Include="Scripts\plugin\sweetalert\LICENSE.md" />
+    <Content Include="Scripts\plugin\sweetalert\package.json" />
+    <Content Include="Scripts\plugin\sweetalert\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

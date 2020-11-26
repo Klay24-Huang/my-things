@@ -43,7 +43,7 @@ namespace Reposotory.Implement
             {
                 latlngLimit = GetAround(lat, lon, raidus);
             }
-            string SQL = "SELECT * FROM VW_GetAllCarData_202003";
+            string SQL = "SELECT * FROM VW_MA_GetAllCarData";
             if (type == 0)
             {
                 SQL += " WITH(NOLOCK) WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4')";
@@ -114,7 +114,7 @@ namespace Reposotory.Implement
             {
                 latlngLimit = GetAround(lat, lon, raidus);
             }
-            string SQL = "SELECT * FROM VW_GetAllCarData_202003 WITH(NOLOCK) ";
+            string SQL = "SELECT * FROM VW_MA_GetAllCarData WITH(NOLOCK) ";
             if (type == 0)
             {
                 SQL += "  WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4') ";
@@ -182,7 +182,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string term = "";
             bool flag = false;
-            string SQL = "SELECT * FROM VW_GetAllCarData_202003 WITH(NOLOCK) ";
+            string SQL = "SELECT * FROM VW_MA_GetAllCarData WITH(NOLOCK) ";
 
             if (StationID != "")
             {
@@ -225,7 +225,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string term = "";
             bool flag = false;
-            string SQL = "SELECT * FROM VW_GetAllMotoData_201907";
+            string SQL = "SELECT * FROM VW_MA_GetAllMotoData";
             SqlParameter[] para = new SqlParameter[2];
             carInfo = GetObjList<CarCleanData>(ref flag, ref lstError, SQL, para, term);
             return carInfo;
@@ -241,7 +241,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             bool flag = false;
             string term = "";
-            string SQL = "SELECT * FROM VW_GetAllMotoData_202003 ";
+            string SQL = "SELECT * FROM VW_MA_GetAllMotoData ";
             if (StationID != "")
             {
                 string[] tmpStationID = StationID.Split(';');
@@ -302,7 +302,7 @@ namespace Reposotory.Implement
             {
                 latlngLimit = GetAround(lat, lon, raidus);
             }
-            string SQL = "SELECT * FROM VW_GetAllMotoData_202003 ";
+            string SQL = "SELECT * FROM VW_MA_GetAllMotoData ";
             for (int j = 0; j < 4; j++)
             {
                 if (latlngLimit[j] == 0)
@@ -376,7 +376,7 @@ namespace Reposotory.Implement
             {
                 latlngLimit = GetAround(lat, lon, raidus);
             }
-            string SQL = "SELECT * FROM VW_GetAllMotoData_202003 ";
+            string SQL = "SELECT * FROM VW_MA_GetAllMotoData ";
             for (int j = 0; j < 4; j++)
             {
                 if (latlngLimit[j] == 0)
@@ -448,7 +448,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             bool flag = false;
-            string SQL = "SELECT ISNULL([Account],'') AS Account,ISNULL([StationGroup],'') AS StationGroup,ISNULL([Lat],0.0) AS Lat,ISNULL([Lng],0.0) AS Lng  FROM [TB_MemberCleanSetting_202003] ";
+            string SQL = "SELECT ISNULL([Account],'') AS Account,ISNULL([StationGroup],'') AS StationGroup,ISNULL([Lat],0.0) AS Lat,ISNULL([Lng],0.0) AS Lng  FROM [TB_MemberCleanSetting] ";
             int nowCount = 0;
             if (false == string.IsNullOrEmpty(Account))
             {
