@@ -203,5 +203,5 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'特殊身�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'推播註冊流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_MemberData', @level2type = N'COLUMN', @level2name = N'PushREGID';
+
 

@@ -88,6 +88,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_NewsHandle.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NPR136Success.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
@@ -324,6 +325,7 @@
     <Compile Include="TB\MotorBillBase.cs" />
     <Compile Include="TB\MotorInfo.cs" />
     <Compile Include="TB\MotorRentObj.cs" />
+    <Compile Include="TB\News.cs" />
     <Compile Include="TB\OrderDetailData.cs" />
     <Compile Include="TB\ParkingData.cs" />
     <Compile Include="TB\Polygon.cs" />

@@ -150,6 +150,7 @@
     <Compile Include="Controllers\MemberManageController.cs" />
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\MonitorController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StationAndParkingController.cs" />
     <Compile Include="Controllers\SystemManageController.cs" />
@@ -354,6 +355,7 @@
     <Content Include="Scripts\js\ActionJS\MemberManage\ViewSameMobile.js" />
     <Content Include="Scripts\js\ActionJS\Message\Index.js" />
     <Content Include="Scripts\js\ActionJS\Monitor\Index.js" />
+    <Content Include="Scripts\js\ActionJS\News\NewsManage.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarFeedBackQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ChargeParkingDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MaintainLogReport.js" />
@@ -642,6 +644,8 @@
     <Content Include="Views\CommonObj\GetUserGroupList.cshtml" />
     <Content Include="Views\CommonObj\GetDisablePowerList.cshtml" />
     <Content Include="Views\Manage\APILogQuery.cshtml" />
+    <Content Include="Views\News\NewsManage.cshtml" />
+    <Content Include="Views\News\NewsList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

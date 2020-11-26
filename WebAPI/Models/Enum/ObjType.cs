@@ -507,6 +507,10 @@ namespace WebAPI.Models.Enum
             /// 合約修改（汽機車整合共用）
             /// </summary>
             BE_HandleOrderModify,
+            /// <summary>
+            /// 推播訊息處理
+            /// </summary>
+            BE_HandleNews,
 
             #endregion
         }
@@ -911,6 +915,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_NPR136Success:
                     SPName = "usp_BE_NPR136Success";
+                    break;
+                case SPType.BE_HandleNews:
+                    SPName = "usp_BE_HandleNews";
                     break;
                     #endregion
             }
