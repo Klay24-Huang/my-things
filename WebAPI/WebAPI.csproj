@@ -195,6 +195,7 @@
     <Compile Include="Controllers\BE_HandleUserMaintainController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
+    <Compile Include="Controllers\BE_NewsHandleController.cs" />
     <Compile Include="Controllers\BE_QueryFuncByUserGroupController.cs" />
     <Compile Include="Controllers\BE_QueryFuncController.cs" />
     <Compile Include="Controllers\BE_ReCalculateByDiscountController.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleUserMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_NewsHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFunc.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFuncByUserGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ReCalculateByDiscount.cs" />

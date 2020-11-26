@@ -207,6 +207,7 @@ GO
 
 
 
+
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'推播註冊ID',
     @level0type = N'SCHEMA',

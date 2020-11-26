@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Domain.TB.News>
+@{
+    Layout = null;
+    List<Domain.TB.News> lstNewsData = null;
+    int len = 0;
+    if (null != Model)
+    {
+        len = Model.Count();
+        lstNewsData = Model.ToList<Domain.TB.News>();
+    }
+}
+@for (int i = 0; i < len; i++)
+{
+    string NewsType = "";
+    string NewsClass = "";
+    switch (lstNewsData[i].NewsType)
+    {
+        case 0:
+            NewsType = "一般訊息";
+            break;
+        case 1:
+            NewsType = "優惠edm";
+            break;
+    }
+    string isTop = "";
+    switch (lstNewsData[i].isTop)
+    {
+        case "0":
+            isTop = "否";
+            break;
+        case "1":
+            isTop = "是";
+            break;
+    }
+    switch (lstNewsData[i].NewsClass)
+    {
+        case 1:
+            NewsClass = "和運";
+            break;
+        case 2:
+            NewsClass = "系統";
+            break;
+        case 3:
+            NewsClass = "活動";
+            break;
+        case 4:
+            NewsClass = "優惠";
+            break;
+    }
+
+    //string NewsType = (lstNewsData[i].NewsType == 0) ? "一般訊息" : "EDM";
+    string isDisabled = (lstNewsData[i].SD > DateTime.Now) ? "" : " disabled";
+<tr>
+    <td>@(i+1)</td>
+    <td>@NewsClass</td>
+    <td>@lstNewsData[i].Title</td>
+    <td>@NewsType</td>
+    <td>@lstNewsData[i].SD.ToString("yyyy/MM/dd") - @lstNewsData[i].ED.ToString("yyyy/MM/dd") </td>
+    <td>@lstNewsData[i].Content</td>
+    <td>@((lstNewsData[i].URL=="")?"無": lstNewsData[i].URL)</td>
+    <td>@isTop</td>
+    <td><button type="button" class="btn" onclick="EditNews(@lstNewsData[i].NewsID)" @isDisabled>修改</button> <button type="button" data-SD="@lstNewsData[i].SD.ToString("yyyy-MM-dd HH:mm:ss")" data-ED="@lstNewsData[i].ED.ToString("yyyy-MM-dd HH:mm:ss")" class="btn delete" onclick="DelNews(@lstNewsData[i].NewsID,'@lstNewsData[i].SD.ToString("yyyy-MM-dd HH:mm:ss")','@lstNewsData[i].ED.ToString("yyyy-MM-dd HH:mm:ss")');" @isDisabled>刪除</button></td>
+</tr>
+}
+<input type="hidden" id="len" name="len" value="@len" />
