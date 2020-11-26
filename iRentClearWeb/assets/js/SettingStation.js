@@ -1,4 +1,4 @@
-﻿var host = "http://113.196.107.238/"
+﻿
 function doSetting() {
     $.busyLoadFull("show", {
         spinner: "cube-grid"
@@ -13,7 +13,7 @@ function doSetting() {
     });
     console.log(StationID.length);
 
-    var URL = host + "iMotoWebAPI/api/SettingManageStation";// GetCleanCar
+    var URL = jsHost + "MA_SettingManageStation";// GetCleanCar
     var StationIDStr = "";
     if (StationID.length > 0) {
         StationIDStr = JSON.stringify(StationID);
@@ -88,7 +88,7 @@ $(document).ready(function () {
 });
 
 function getData() {
-    var URL = host + "iMotoWebAPI/api/GetManageStationSetting";// GetCleanCar
+    var URL = jsHost + "MA_GetManageStationSetting";// GetCleanCar
   
     var jsonData = JSON.stringify({ "para": { "Account": $("#Account").val()} });
     console.log(jsonData);

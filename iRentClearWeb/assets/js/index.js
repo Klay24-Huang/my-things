@@ -1,4 +1,4 @@
-﻿var host = "https://irent.irentcar.com.tw/"
+﻿
 var latlng = { lat: 25.046891, lng: 121.516602 }; // 給一個初始位置
 var map;
 var markers = [];
@@ -418,7 +418,7 @@ function getList() {
 }
 function getCarData() {
 
-    var URL = host + "iMotoWebAPI/api/GetCleanCarByList";// GetCleanCar
+    var URL = jsHost + "MA_GetCleanCarByList";// GetCleanCar
     var NowType = 0;
     if (nowSelMode == "any") {
         NowType = 1;

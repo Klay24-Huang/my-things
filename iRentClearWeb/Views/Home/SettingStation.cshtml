@@ -1,0 +1,28 @@
+﻿@{
+    string Account = "";
+    string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+        UserName = Session["UserName"].ToString();
+    }
+}
+<div class="container">
+    <form action="ReportDownload" method="post" name="frmDownload" id="frmDownload">
+        <table class="table">
+            <tbody name="data" id="data"></tbody>
+
+        </table>
+    </form>
+</div>
+
+@*<div class="row justify-content-center text-center">
+        <div class="col-xs-6"><input type="button" class="btn-danger"  name="btnSetting" value="設定" /></div>
+        <div class="col-xs-6"><input type="button" class="btn-info" name="btnDownload" value="下載" /></div>
+    </div>*@
+
+@Html.Hidden("Account", Session["Account"])
