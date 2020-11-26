@@ -75,7 +75,7 @@ namespace Reposotory.Implement
         }
 
         /// <summary>
-        /// 取得所有據點
+        /// 取得同站所有據點
         /// </summary>
         /// <returns></returns>
         public List<iRentStationData> GetAlliRentStation()
@@ -84,7 +84,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT  [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content]  FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 ORDER BY StationID ASC;";
+            string SQL = "SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 AND [IsNormalStation]=0 ORDER BY StationID ASC;";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentStationData>(ref flag, ref lstError, SQL, para, term);
@@ -109,7 +109,7 @@ namespace Reposotory.Implement
         }
 
         /// <summary>
-        /// 取出方圓據點
+        /// 取出方圓同站據點
         /// </summary>
         /// <param name="lat">緯度</param>
         /// <param name="lng">經度</param>
@@ -126,7 +126,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT  [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content]  FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 ";
+            string SQL = "SELECT  [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content]  FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 AND [IsNormalStation]=0 ";
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -167,7 +167,7 @@ namespace Reposotory.Implement
             //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
-            SQL += (IDNO == "" ? " 0" : " 1" ) + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
             SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
             SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
@@ -196,7 +196,7 @@ namespace Reposotory.Implement
         /// <param name="lng">經度</param>
         /// <param name="radius">半徑（單位公里）</param>
         /// <returns></returns>
-        public List<AnyRentObj> GetAllAnyRent(string IDNO,double lat, double lng, double radius)
+        public List<AnyRentObj> GetAllAnyRent(string IDNO, double lat, double lng, double radius)
         {
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
@@ -609,7 +609,7 @@ namespace Reposotory.Implement
         /// <param name="SDate"></param>
         /// <param name="EDate"></param>
         /// <returns></returns>
-        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string IDNO,string CarNo, DateTime SDate, DateTime EDate)
+        public List<ProjectAndCarTypeData> GetProjectOfAnyRent(string IDNO, string CarNo, DateTime SDate, DateTime EDate)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -639,7 +639,7 @@ namespace Reposotory.Implement
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
 			JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
-            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID AND irs.IsNormalStation=3
             LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3
             LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel
             LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
@@ -649,7 +649,6 @@ namespace Reposotory.Implement
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
-
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -713,7 +712,7 @@ namespace Reposotory.Implement
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType AND VW.StationID=Car.nowStationID           
             INNER JOIN TB_CarStatus AS cs ON cs.CarNo = Car.CarNo            
-            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID
+            INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND irs.IsNormalStation=4
             INNER JOIN TB_PriceByMinutes AS PriceByMinutes ON PriceByMinutes.ProjID=VW.ProjID AND PriceByMinutes.use_flag=1
             WHERE Car.CarNo=@CarNo
               AND SPCLOCK='Z'
@@ -861,7 +860,7 @@ namespace Reposotory.Implement
             string term = "";
             string term2 = "";
             int nowCount = 0;
-            if (OrderNo>0)
+            if (OrderNo > 0)
             {
                 term = "  OrderNum=@OrderNo";
                 para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
@@ -875,13 +874,13 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
             }
-        
+
             SQL += "  ORDER BY SD ASC";
 
             lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
             return lstCarScheduleTimeLog;
         }
-        public List<BE_GetPartOfStationInfo> GetPartOfStation(string StationID,bool isNotMach)
+        public List<BE_GetPartOfStationInfo> GetPartOfStation(string StationID, bool isNotMach)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -893,15 +892,15 @@ namespace Reposotory.Implement
             string term = "";
             string term2 = "";
             int nowCount = 0;
-            if (StationID !="")
+            if (StationID != "")
             {
                 term = "  StationID=@StationID";
-                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar,10);
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
                 para[nowCount].Value = StationID;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (isNotMach )
+            if (isNotMach)
             {
                 if (term != "")
                 {
