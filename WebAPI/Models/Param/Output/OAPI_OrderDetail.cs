@@ -127,9 +127,9 @@
         /// </summary>
         public int InvoiceType { get; set; }
 
-      /// <summary>
-      /// 捐贈碼
-      /// </summary>
+        /// <summary>
+        /// 捐贈碼
+        /// </summary>
         public string NPOBAN { get; set; }
 
         /// <summary>
@@ -176,5 +176,15 @@
         /// 據點區域
         /// </summary>
         public string CarOfArea { get; set; }
+
+        /// <summary>
+        /// 優惠折抵金額
+        /// </summary>
+        public int DiscountAmount { get; set; }
+
+        /// <summary>
+        /// 折抵專案名稱
+        /// </summary>
+        public string DiscountName { get; set; }
     }
 }

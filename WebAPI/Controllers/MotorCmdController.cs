@@ -184,12 +184,12 @@ namespace WebAPI.Controllers
                         string method = CommandType;
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
 
-                        /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus
+                        /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus */
                         if (flag)
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
-                        */
+                        
                         if (flag)
                         {
                             info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);

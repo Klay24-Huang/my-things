@@ -46,6 +46,10 @@ namespace Domain.SP.Input.Register
         /// 簽名檔檔案名稱
         /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// 短租會員流水號
+        /// </summary>
+        public int MEMRFNBR { get; set; }
 
         /// <summary>
         /// 

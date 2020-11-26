@@ -66,6 +66,9 @@
             $("#btnSearch").click();
         }, 300);
     };
+    $("#btnSearch_ALL").on("click", function () {
+        gotoBrnhcd('ALL');
+    });
     $("#btnSearch_X0WR").on("click", function () {
         gotoBrnhcd('X0WR');
     });
@@ -80,6 +83,9 @@
     });
     $("#btnSearch_X1KY").on("click", function () {
         gotoBrnhcd('X1KY');
+    });
+    $("#btnSearch_X1ZZ").on("click", function () {
+        gotoBrnhcd('X1ZZ');
     });
     $("#btnSearch").on("click", function () {
         ShowLoading("資料處理中...");
@@ -116,7 +122,7 @@
 
 
 });
-function SendMotoCmd(CID, deviceToken, Action) {
+function SendMotoCmd(CID, deviceToken, BLE_Code, Action, callback) {
     ShowLoading("發送命令…"); 
     var Account = $("#Account").val();
     var obj = new Object();
@@ -124,6 +130,7 @@ function SendMotoCmd(CID, deviceToken, Action) {
     obj.CmdType = Action;
     obj.deviceToken = deviceToken;
     obj.CID = CID;
+    obj.BLE_Code = BLE_Code;
 
     var json = JSON.stringify(obj);
     console.log(json);
@@ -140,13 +147,17 @@ function SendMotoCmd(CID, deviceToken, Action) {
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                swal({
-                    title: 'SUCCESS',
-                    text: data.ErrorMessage,
-                    icon: 'success'
-                }).then(function (value) {
-                    window.location.reload();
-                });
+                if (callback) {
+                    callback();
+                } else {
+                    swal({
+                        title: 'SUCCESS',
+                        text: data.ErrorMessage,
+                        icon: 'success'
+                    }).then(function (value) {
+                        window.location.reload();
+                    });
+                }
             } else {
 
                 swal({
@@ -167,9 +178,11 @@ function SendMotoCmd(CID, deviceToken, Action) {
 
     });
 }
-function SendCarCmd2(CID, deviceToken, Action, IsCens, IsCens2) {
-    SendCarCmd(CID, deviceToken, Action, IsCens, function () {
-        SendCarCmd(CID, deviceToken, Action, IsCens2);
+function SendMotoCmd2(CID, deviceToken, BLE_Code, Action, Action2) {
+    SendMotoCmd(CID, deviceToken, BLE_Code, Action, function () {
+        setTimeout(function () {
+            SendMotoCmd(CID, deviceToken, BLE_Code, Action2);
+        },1000);
     });
 }
 function SendCarCmd(CID, deviceToken, Action, IsCens,callback) {

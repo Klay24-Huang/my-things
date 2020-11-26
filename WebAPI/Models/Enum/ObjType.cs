@@ -318,6 +318,14 @@ namespace WebAPI.Models.Enum
             /// 20201110 ADD BY ADAM
             /// </summary>
             GetProjectPriceBase,
+            /// 更新解綁資料
+            /// 20201122 ADD BY Jerry
+            /// </summary>
+            UnBindCard,
+            /// 取得解綁資料
+            /// 20201122 ADD BY Jerry
+            /// </summary>
+            GetUnBindLog,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -751,6 +759,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetProjectPriceBase:    //20201110 ADD BY ADAM 
                     SPName = "usp_GetProjectPriceBase";
+                    break;
+                case SPType.UnBindCard:    //20201122 ADD BY Jerry 
+                    SPName = "usp_UnBindCard";
+                    break;
+                case SPType.GetUnBindLog:    //20201122 ADD BY Jerry 
+                    SPName = "usp_GetUnBindLog";
                     break;
                 case SPType.BookingControl:
                     SPName = "usp_BookingControl";

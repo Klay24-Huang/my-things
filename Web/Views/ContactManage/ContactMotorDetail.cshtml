@@ -303,7 +303,7 @@
                                 實際取車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss")))
+                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>
@@ -325,10 +325,10 @@
                                     {
                                         <span class="icon-1">無定位資訊</span>
                                     }
-                                    <span class="icon-7  text-cyan"></span> @(string.Format("左邊電池電量{0}%",obj.Data.P_LBA))
-                                    <span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%",obj.Data.P_RBA))
-                                    <span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%",obj.Data.P_MBA))
-                                    <span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%",obj.Data.P_TBA))
+                                        <br><span class="icon-7  text-cyan"></span> @(string.Format("左邊電池電量{0}%",Math.Round(obj.Data.P_LBA,0)))
+                                            <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.P_RBA, 0)))
+                                                <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.P_MBA, 0)))
+                                                    <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.P_TBA, 0)))
                                 }
                             </div>
                         </div>
@@ -364,7 +364,7 @@
                                 實際還車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss")))
+                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>
@@ -386,10 +386,10 @@
                                     {
                                         <span class="icon-1">無定位資訊</span>
                                     }
-                                    <span class="icon-7  text-cyan"></span> @(string.Format("左邊電池電量{0}%",obj.Data.R_LBA))
-                                    <span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%",obj.Data.R_RBA))
-                                    <span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%",obj.Data.R_MBA))
-                                    <span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%",obj.Data.R_TBA))
+                                    <br><span class="icon-7 text-cyan"></span> @(string.Format("左邊電池電量{0}%", Math.Round(obj.Data.R_LBA, 0)))
+                                        <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.R_RBA, 0)))
+                                            <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.R_MBA, 0)))
+                                                <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.R_TBA, 0)))
                                 }
 
                             </div>

@@ -156,5 +156,9 @@ namespace Domain.MemberData
         /// 電子簽名BASE64編碼
         /// </summary>
         public string SigntureCode { get; set; }
+        /// <summary>
+        /// 短租會員流水號
+        /// </summary>
+        public int MEMRFNBR { get; set; }
     }
 }

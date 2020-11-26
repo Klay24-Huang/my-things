@@ -147,6 +147,7 @@ BEGIN TRY
 					,ISNULL([Signture],0) AS Signture_pic
 					--,'' as SigntureCode
 					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
+					,A.MEMRFNBR			--20201126 ADD BY ADAM REASON.增加短租流水號
 			FROM TB_MemberData A WITH(NOLOCK)
 			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
 			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
@@ -189,6 +190,7 @@ BEGIN TRY
 					,ISNULL([Law_Agent],0) As F01_pic
 					,ISNULL([Signture],0) AS Signture_pic
 					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
+					,A.MEMRFNBR			--20201126 ADD BY ADAM REASON.增加短租流水號
 			FROM TB_MemberData A WITH(NOLOCK)
 			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
 			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11

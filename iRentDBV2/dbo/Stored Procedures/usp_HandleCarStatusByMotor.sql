@@ -144,6 +144,13 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 		   SET @ErrorCode='ERR900'
  		 END
 		 
+		--20201124 UPD BY Jerry	增加預估里程計算
+		IF @deviceRDistance='NA'
+		IF @deviceMBA>0 or @deviceLBA>0 or @deviceRBA>0
+		SET @deviceRDistance=Round((@deviceMBA*9600+@deviceLBA*12000+@deviceRBA*12000)/(CASE @deviceMBA WHEN 0 THEN 0 ELSE 9600 END+CASE @deviceLBA WHEN 0 THEN 0 ELSE 12000 END+CASE @deviceRBA WHEN 0 THEN 0 ELSE 12000 END)*0.45,1);
+		ELSE
+		SET @deviceRDistance=0;
+
 		IF @Error=0
 		BEGIN
 			SELECT @CarNo=ISNULL(CarNo,'') FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
@@ -176,8 +183,8 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 			END
 			ELSE
 			BEGIN
-				IF @deviceMillage > 0
-				BEGIN
+				--IF @deviceMillage > 0
+				--BEGIN
 					UPDATE TB_CarStatus
 					SET  [ACCStatus]=@deviceACCStatus,
 						 [GPSStatus]=@deviceGPSStatus,
@@ -187,7 +194,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						 [Volt]=@deviceVolt,
 						 [Latitude]=@deviceLatitude,
 						 [Longitude]=@deviceLongitude,
-						 [Millage]= CASE WHEN @deviceMillage IS NOT NULL THEN @deviceMillage ELSE Millage END,
+						 [Millage]= CASE WHEN @deviceMillage IS NOT NULL AND @deviceMillage > -1 THEN @deviceMillage ELSE Millage END,
 						 [deviceCourse]=@deviceCourse,
 						 [deviceRPM]= CASE WHEN @deviceRPM IS NOT NULL THEN @deviceRPM ELSE deviceRPM END,
 						 [device2TBA]= CASE WHEN @device2TBA IS NOT NULL THEN @device2TBA ELSE device2TBA END,
@@ -232,7 +239,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						 [deviceName]=@deviceName
 						,UPDTime=@NowTime
 					WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
-				END
+				--END
 			END
 			INSERT INTO TB_CarRawData([CarNo],[CID],[deviceType],[ACCStatus],[GPSStatus]
 										,[GPSTime],[GPRSStatus],[Speed],[Volt],[Latitude]

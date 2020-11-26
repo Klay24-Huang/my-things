@@ -262,8 +262,25 @@ SET @PayMode=ISNULL(@PayMode,0);
 				 END
 				 ELSE
 				 BEGIN
-						
-						INSERT INTO TB_OrderMain(IDNO,CarNo,ProjID,lend_place,return_place,start_time,stop_time,init_price,Insurance,InsurancePurePrice,ProjType,PayMode,stop_pick_time)VALUES(@IDNO,@tmpCarNo,@ProjID,@StationID,@StationID,@SD,@ED,@Price,@Insurance,@InsurancePurePrice,@ProjType,@PayMode,@StopPickTime);
+						--20201124 ADD BY ADAM REASON.由會員檔取出發票資料
+						DECLARE  @INVKIND		TINYINT		--發票寄送方式
+								,@CARRIERID		VARCHAR(20)	--手機條碼
+								,@NPOBAN		VARCHAR(20)	--愛心碼
+								,@UNIMNO		VARCHAR(10)	--統編
+						SELECT @INVKIND=MEMSENDCD,@CARRIERID=CARRIERID,@NPOBAN=NPOBAN,@UNIMNO=UNIMNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+
+
+						INSERT INTO TB_OrderMain
+						(
+							IDNO,CarNo,ProjID,lend_place,return_place,start_time,stop_time,
+							init_price,Insurance,InsurancePurePrice,ProjType,PayMode,stop_pick_time,
+							bill_option, title. unified_business_no, invoiceAddress, CARRIERID, NPOBAN
+						)
+						VALUES(
+							@IDNO,@tmpCarNo,@ProjID,@StationID,@StationID,@SD,@ED,
+							@Price,@Insurance,@InsurancePurePrice,@ProjType,@PayMode,@StopPickTime,
+							@INVKIND, '', @UNIMNO, '', @CARRIERID, @NPOBAN			--發票抬頭跟發票地址沒有設定
+						);
 						IF @@ROWCOUNT=1
 						BEGIN
 							SET @OrderNum=@@IDENTITY;

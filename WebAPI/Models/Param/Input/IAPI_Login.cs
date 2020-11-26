@@ -45,7 +45,7 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 推播註冊流水號 等APP改好再更新上去
         /// </summary>
-        //public string PushREGID { set; get; }
+        public int PushREGID { set; get; }
 
     }
 }

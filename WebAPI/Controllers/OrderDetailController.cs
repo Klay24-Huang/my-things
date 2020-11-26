@@ -152,6 +152,7 @@ namespace WebAPI.Controllers
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].GiftMotorPoint), ref gmd, ref gmh, ref gmm);
+                        float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
                         outputApi = new OAPI_OrderDetail()
                         {
                             OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(7, '0')),
@@ -187,8 +188,10 @@ namespace WebAPI.Controllers
                             InvoiceURL = "",
                             StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
                             EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
-                            Millage = orderFinishDataLists[0].Millage,
-                            CarOfArea = orderFinishDataLists[0].Area
+                            Millage = UseMile <= 0 ? 0 : UseMile,
+                            CarOfArea = orderFinishDataLists[0].Area,
+                            DiscountAmount = orderFinishDataLists[0].DiscountAmount,
+                            DiscountName = orderFinishDataLists[0].DiscountName
                         };
                     }
                 }

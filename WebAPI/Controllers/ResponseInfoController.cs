@@ -196,7 +196,7 @@ namespace WebAPI.Controllers
                spInput.Volt = Convert.ToSingle(objResInfo.Volt);// (objResInfo.objInfo[i].Volt < 0) ? 2 : Convert.ToSingle(objResInfo.objInfo[i].Volt);
                spInput.LightStatus = objResInfo.indoorLight;// (objResInfo.objInfo[i].indoorLight < 0) ? 2 : objResInfo.objInfo[i].indoorLight;
                spInput.OrderStatus = objResInfo.OrderStatus;// (objResInfo.objInfo[i].OrderStatus < 0) ? 2 : objResInfo.objInfo[i].OrderStatus;
-               spInput.SecurityStatus = objResInfo.SecurityStatus;// (objResInfo.objInfo[i].SecurityStatus < 0) ? 2 : objResInfo.objInfo[i].SecurityStatus;
+               spInput.SecurityStatus = objResInfo.SecurityStatus == 1 ? 0 : 1;// (objResInfo.objInfo[i].SecurityStatus < 0) ? 2 : objResInfo.objInfo[i].SecurityStatus;
                spInput.GPSTime = objResInfo.GPSTime;// (objResInfo.objInfo[i].GpsTime == null) ? DateTime.Now : objResInfo.objInfo[i].GpsTime;
                spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
                spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
