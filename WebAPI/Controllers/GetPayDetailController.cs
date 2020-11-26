@@ -303,7 +303,11 @@ namespace WebAPI.Controllers
                             }
                         }
 
-                        if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
+                        if (TotalRentMinutes <= 6 && Discount == 6)
+                        {
+                            
+                        }
+                        else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
                         {
                             flag = false;
                             errCode = "ERR303";
@@ -490,7 +494,11 @@ namespace WebAPI.Controllers
                             }
                         }
 
-                        if (Discount >= TotalRentMinutes)   // 要折抵的點數 >= 總租車時數
+                        if (TotalRentMinutes <= 6 && Discount == 6)
+                        {
+
+                        }
+                        else if (Discount >= TotalRentMinutes)   // 要折抵的點數 >= 總租車時數
                         {
                             Discount = (days * 600) + (hours * 60) + (mins);    //自動縮減
                         }
@@ -660,9 +668,10 @@ namespace WebAPI.Controllers
                     }
 
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
-                    outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes).ToString();
+                    outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes > 0 ? TotalRentMinutes:0).ToString();
                     outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
                     outputApi.Rent.TotalRental = (outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice < 0) ? 0 : outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice;
+
                     string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
                     SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                     {
@@ -681,7 +690,6 @@ namespace WebAPI.Controllers
                         Token = Access_Token,
                         LogID = LogID,
                     };
-                    
 
                     SPOutput_Base SPOutput = new SPOutput_Base();
                     SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);
