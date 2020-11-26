@@ -607,7 +607,7 @@ namespace WebAPI.Controllers
                         }
                         if (Discount > 0)
                         {
-                            var result = new BillCommon().GetRangeMins(SD, ED, 60, 10 * 60, lstHoliday, null, null);
+                            var result = new BillCommon().GetCarRangeMins(SD, ED, 60, 10 * 60, lstHoliday);
 
                             int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
                             

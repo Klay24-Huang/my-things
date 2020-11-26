@@ -562,6 +562,13 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
 
+
+        public Tuple<double, double> GetCarRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
+        {
+            var minsPro = new MinsProcess(GetCarPayMins);
+            return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);          
+        }
+
         /// <summary>
         /// 汽車未滿1小時分鐘改為計費分鐘
         /// </summary>
