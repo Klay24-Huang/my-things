@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
             DateTime NowTime = DateTime.Now;
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
-            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限6小時)
+            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
             int days = 0; int hours = 0; int mins = 0; //以分計費總時數
             int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
@@ -664,7 +664,8 @@ namespace WebAPI.Controllers
                         outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                         outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit <= 0) ? Mildef : OrderDataLists[0].MilageUnit;
-                        outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
+                        //里程費計算修改，遇到取不到里程數的先以0元為主
+                        outputApi.Rent.MileageRent = OrderDataLists[0].end_mile == 0 ? 0 : Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                     }
 
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();

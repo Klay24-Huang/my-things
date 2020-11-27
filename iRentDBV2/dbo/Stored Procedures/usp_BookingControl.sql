@@ -111,7 +111,8 @@ DECLARE @PriceH		INT;			--假日價格
 DECLARE @ProjType	TINYINT;		--專案類型：0:同站;3:路邊;4:機車
 DECLARE @MotorPrice	FLOAT;			--機車每分鐘價格
 DECLARE @BaseMinutes INT;			--基本分鐘數
-DECLARE @BaseMinutesPrice FLOAT;	--單日計費上限
+DECLARE @BaseMinutesPrice FLOAT;	--基本分鐘費用
+DECLARE @MotorMaxPrice INT			--單日計費上限
 DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
 		,@BIRTH			DATETIME
 		,@GIVEKM		INT
@@ -172,7 +173,7 @@ BEGIN TRY
 		BEGIN TRAN
 		SET @hasData=0
 		
-		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo;
+		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo;
 				
 		IF @hasData>0
 		BEGIN
@@ -183,7 +184,7 @@ BEGIN TRY
 				@TEL2=[MEMTEL],
 				@TEL3=[MEMCOMTEL],
 				@BIRTH=[MEMBIRTH]
-			FROM [dbo].[TB_MemberData] WHERE [MEMIDNO]=@IDNO;
+			FROM [dbo].[TB_MemberData] WITH(NOLOCK) WHERE [MEMIDNO]=@IDNO;
 			
 			SELECT @CarNo=[CarNo],
 				@ODDATE=convert(varchar,[booking_date],112),
@@ -205,7 +206,7 @@ BEGIN TRY
 				@SDate=start_time,
 				@EDate=stop_time,
 				@ProjType=ProjType
-			FROM [dbo].[TB_OrderMain] WHERE [order_number]=@OrderNo;
+			FROM [dbo].[TB_OrderMain] WITH(NOLOCK) WHERE [order_number]=@OrderNo;
 			
 			
 			SELECT @GIVEDATE_R=CONVERT(VARCHAR,[final_start_time],112),
@@ -213,7 +214,7 @@ BEGIN TRY
 				--@RNTAMT=[pure_price]
 				@GIVEKM = CAST(start_mile AS INT),
 				@RNTKM = CAST(end_mile AS INT)
-			FROM [dbo].[TB_OrderDetail]
+			FROM [dbo].[TB_OrderDetail] WITH(NOLOCK)
 			WHERE [order_number]=@OrderNo;
 			
 			SELECT @TSEQNO=[TSEQNO],@CARTYPE=[CarType] FROM [dbo].[TB_Car] WITH(NOLOCK) Where CarNo=@CarNo;
@@ -224,7 +225,7 @@ BEGIN TRY
 
 			SELECT @PriceN=[PRICE],@PriceH=[PRICE_H] FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] WHERE PROJID=@PROJID AND CARTYPE=@CARTYPE;
 
-			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice FROM [TB_PriceByMinutes] WITH(NOLOCK) WHERE ProjID=@PROJID AND CarType=@CARTYPE;
+			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice,@MotorMaxPrice=MaxPrice FROM [TB_PriceByMinutes] WITH(NOLOCK) WHERE ProjID=@PROJID AND CarType=@CARTYPE;
 			
 			--部分參數寫死
 			SET @PROCD='A';
@@ -246,6 +247,7 @@ BEGIN TRY
 			BEGIN
 				--機車 起訖都抓七天，其實算租金有點沒意義，現行預約都是送RPRICE=>ORDAMT
 				--exec @ORDAMT=[dbo].[FN_MotoRentCompute] @SDate,@EDate,@MotorPrice,@BaseMinutes,@BaseMinutesPrice,0;
+				SET @RPRICE = @MotorMaxPrice
 				SET @ORDAMT = @RPRICE
 				SET @RNTAMT=@ORDAMT
 			END
