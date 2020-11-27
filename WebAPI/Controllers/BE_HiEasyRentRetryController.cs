@@ -342,7 +342,7 @@ namespace WebAPI.Controllers
                                     };
                                     input.tbPaymentDetail[1] = new PaymentDetail()
                                     {
-                                        PAYAMT = ( obj.eTag).ToString(),
+                                        PAYAMT = (obj.eTag).ToString(),
                                         PAYTYPE = "2",
                                         PAYMENTTYPE = "1",
                                         PAYMEMO = "eTag",
@@ -361,7 +361,20 @@ namespace WebAPI.Controllers
                                         PORDNO = obj.REMARK
                                     };
                                 }
-                              
+
+                            }
+                            else
+                            {
+                                //至少塞一筆空的
+                                input.tbPaymentDetail = new PaymentDetail[1];
+                                input.tbPaymentDetail[0] = new PaymentDetail()
+                                {
+                                    PAYAMT = "0",
+                                    PAYTYPE = "",
+                                    PAYMENTTYPE = "",
+                                    PAYMEMO = "",
+                                    PORDNO = ""
+                                };
                             }
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
@@ -378,12 +391,13 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    INVAMT = output.Data[0].INVAMT;
-                                    INVNO = output.Data[0].INVNO;
-                                    INVDATE = output.Data[0].INVDATE;
+                                    
                                     if (obj.PAYAMT > 0)
                                     {
                                         HasPaid = 1;
+                                        INVAMT = output.Data[0].INVAMT;
+                                        INVNO = output.Data[0].INVNO;
+                                        INVDATE = output.Data[0].INVDATE;
                                     }
                                 }
 

@@ -102,6 +102,9 @@ SET @CNTRNO		=ISNULL(@CNTRNO,'')
 			 SET isRetry=0,UPDTime=@NowTime
 			 ,CNTRNO=@CNTRNO		--20201127 ADD BY ADAM REASON.增加合約編號
 			 WHERE IRENTORDNO=@OrderNo
+
+			 --順便更新，如果有延遲轉送的話
+			 UPDATE TB_ReturnCarControl SET CNTRNO=@CNTRNO WHERE IRENTORDNO=@OrderNo AND CNTRNO=''
 			END
 		 END
 		--寫入錯誤訊息

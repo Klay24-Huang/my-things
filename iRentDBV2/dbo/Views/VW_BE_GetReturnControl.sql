@@ -1,6 +1,6 @@
 ﻿CREATE VIEW [dbo].[VW_BE_GetReturnControl]
 	AS 
-	 SELECT PROCD,ORDNO,IRENTORDNO,CUSTID,CUSTNM,BIRTH,CUSTTYPE,ODCUSTID,CARTYPE,CARNO,TSEQNO	  
+	 SELECT PROCD,ORDNO,CNTRNO,IRENTORDNO,CUSTID,CUSTNM,BIRTH,CUSTTYPE,ODCUSTID,CARTYPE,CARNO,TSEQNO	  
                          	  ,GIVEDATE,GIVETIME,RENTDAYS,CEILING(GIVEKM) AS GIVEKM,OUTBRNHCD, ISNULL(CONVERT(VARCHAR(8),BookingDetail.final_stop_time, 112),'') AS RNTDATE, ISNULL(REPLACE(CONVERT(VARCHAR(5),BookingDetail.final_stop_time, 8), ':', ''),'') AS RNTTIME
                          	  ,CEILING(BookingDetail.end_mile) AS RNTKM,RPRICE	  
                          	  ,RINSU,DISRATE,OVERHOURS,BookingDetail.fine_price AS OVERAMT2,(BookingDetail.fine_price+BookingDetail.mileage_price) AS RNTAMT,BookingDetail.pure_price AS  RENTAMT,BookingDetail.mileage_price AS LOSSAMT2,PROJID,ISNULL(Trade.TaishinTradeNo,'') AS REMARK

@@ -223,6 +223,7 @@
     <Compile Include="Controllers\BookingStartMotorController.cs" />
     <Compile Include="Controllers\ChangeCreditCardBindController.cs" />
     <Compile Include="Controllers\ChangePWDController.cs" />
+    <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
