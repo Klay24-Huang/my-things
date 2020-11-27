@@ -201,10 +201,28 @@ namespace WebAPI.Controllers
                     {
                         for (int i = 0; i < CarImagesLen; i++)
                         {
+
+                            //20201127 UPD BY JERRY 更新車輛照片檔，直接上傳Azure
+                            #region Azure Storage
+                            string fileName = "";
+                            if (flag)
+                            {
+                                try
+                                {
+                                    fileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo.ToString(), carImages[i].CarType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+                                    flag = new AzureStorageHandle().UploadFileToAzureStorage(carImages[i].CarImage, fileName, "carpic");
+                                }
+                                catch (Exception ex)
+                                {
+                                    flag = false;
+                                    errCode = "ERR226";
+                                }
+                            }
+                            #endregion
                             objparms[i] = new
                             {
                                 CarImageType = carImages[i].CarType,
-                                CarImage = carImages[i].CarImage
+                                CarImage = fileName
                             };
                         }
                     }
