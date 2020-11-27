@@ -81,6 +81,14 @@ namespace Domain.SP.Output.Project
         /// </summary>
         public string ContentForAPP { get; set; }
         /// <summary>
+        /// 縣市
+        /// </summary>
+        public string CityName { get; set; }
+        /// <summary>
+        /// 行政區
+        /// </summary>
+        public string AreaName { get; set; }
+        /// <summary>
         /// 計費模式
         /// </summary>
         public Int16 PayMode { set; get; }

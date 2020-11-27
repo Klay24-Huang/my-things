@@ -11,6 +11,14 @@ namespace Domain.WebAPI.output.rootAPI
         public string StationID { set; get; }
         public string StationName { set; get; }
         /// <summary>
+        /// 縣市
+        /// </summary>
+        public string CityName { get; set; }
+        /// <summary>
+        /// 行政區
+        /// </summary>
+        public string AreaName { get; set; }
+        /// <summary>
         /// 地址
         /// </summary>
         public string ADDR { set; get; }

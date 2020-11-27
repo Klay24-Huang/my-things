@@ -272,7 +272,9 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Longitude				= ISNULL(I.Longitude,0)
 						,Latitude				= ISNULL(I.Latitude,0)
 						,Content				= ISNULL(I.Content,'')
-						,ContentForAPP          = ISNULL(I.ContentForAPP,'') --據點描述app顯示）
+						,ContentForAPP          = ISNULL(I.ContentForAPP,'') --據點描述app顯示） eason 2020-11-27
+						,CityName               = ISNULL(CT.CityName,'')--縣市 eason 2020-11-27					
+						,AreaName               = ISNULL(AZ.AreaName,'') -- 行政區 eason 2020-11-27
 						,PayMode				= P.PayMode
 						,CarOfArea				= I.Area
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
@@ -286,6 +288,8 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
 				JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
 				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
+				LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID = I.CityID --eason 2020-11-27
+				LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID = I.AreaID --eason 2020-11-27
 				LEFT JOIN #BookingList BL ON C.nowStationID=BL.nowStationID AND C.CarType=BL.CarType
 				LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 				LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
