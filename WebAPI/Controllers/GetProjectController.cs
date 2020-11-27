@@ -218,6 +218,7 @@ namespace WebAPI.Controllers
                                    CarTypeName = a.CarTypeName,
                                    CarTypePic = a.CarTypePic,
                                    Content = a.Content,
+                                   ContentForAPP = a.ContentForAPP,
                                    Insurance = a.Insurance,
                                    InsurancePerHours = a.InsurancePerHours,
                                    IsRent = a.IsRent,
@@ -250,6 +251,7 @@ namespace WebAPI.Controllers
                             {
                                 ADDR = lstData[0].ADDR,
                                 Content = lstData[0].Content,
+                                ContentForAPP = lstData[0].ContentForAPP,
                                 Latitude = lstData[0].Latitude,
                                 Longitude = lstData[0].Longitude,
                                 StationID = lstData[0].StationID,
@@ -324,6 +326,7 @@ namespace WebAPI.Controllers
                                     {
                                         ADDR = lstData[i].ADDR,
                                         Content = lstData[i].Content,
+                                        ContentForAPP = lstData[i].ContentForAPP,
                                         Latitude = lstData[i].Latitude,
                                         Longitude = lstData[i].Longitude,
                                         StationID = lstData[i].StationID,

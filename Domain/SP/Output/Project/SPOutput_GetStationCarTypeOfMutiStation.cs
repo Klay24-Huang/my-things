@@ -77,6 +77,10 @@ namespace Domain.SP.Output.Project
         /// </summary>
         public string Content { set; get; }
         /// <summary>
+        /// 據點描述（app顯示）
+        /// </summary>
+        public string ContentForAPP { get; set; }
+        /// <summary>
         /// 計費模式
         /// </summary>
         public Int16 PayMode { set; get; }

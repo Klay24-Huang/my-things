@@ -272,6 +272,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Longitude				= ISNULL(I.Longitude,0)
 						,Latitude				= ISNULL(I.Latitude,0)
 						,Content				= ISNULL(I.Content,'')
+						,ContentForAPP          = ISNULL(I.ContentForAPP,'') --據點描述app顯示）
 						,PayMode				= P.PayMode
 						,CarOfArea				= I.Area
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
