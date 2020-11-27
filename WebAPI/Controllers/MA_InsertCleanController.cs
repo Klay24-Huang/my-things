@@ -20,16 +20,13 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 【整備人員】設定管轄據點
+    /// 【後台及整備人員共用】新增保修清潔合約
     /// </summary>
-    public class MA_SettingManageStationController : ApiController
-    { 
-        /// <summary>
-      /// 【整備人員】設定管轄據點
-      /// </summary>
+    public class MA_InsertCleanController : ApiController
+    {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> DoMA_GetManageStationSetting(Dictionary<string, object> value)
+        public Dictionary<string, object> DoMA_InsertClean(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -41,15 +38,17 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "MA_SettingManageStationController";
+            string funName = "MA_InsertCleanController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_MA_SettingManageStation apiInput = null;
+            IAPI_MA_InsClean apiInput = null;
             NullOutput outputApi = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             CarRepository _repository = new CarRepository(connetStr);
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
+            DateTime SD = DateTime.Now;
+            DateTime ED = DateTime.Now;
             string ManageStation = "";
             Int16 APPKind = 2;
             string Contentjson = "";
@@ -61,45 +60,67 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MA_SettingManageStation>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MA_InsClean>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
+            }
+            if (flag)
+            {
+                if (flag)
+                {
+                    if (false == DateTime.TryParseExact(apiInput.SD, "yyyyMMddHHmm00", null, System.Globalization.DateTimeStyles.None, out SD))
+                    {
+                        flag = false;
+                        errCode = "ERR241";
+                    }
+                    if (false == DateTime.TryParseExact(apiInput.ED, "yyyyMMddHHmm00", null, System.Globalization.DateTimeStyles.None, out ED))
+                    {
+                        flag = false;
+                        errCode = "ERR243";
+                    }
+                    if (flag)
+                    {
+                        DateTime nowTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
+                        // ED = ED.AddHours(8);
+                        if (nowTime > SD)
+                        {
+                            flag = false;
+                            errCode = "ERR266";
+                        }
+                        if (flag)
+                        {
+                            if (SD > ED || ED.Subtract(SD).TotalMinutes < 5)
+                            {
+                                flag = false;
+                                errCode = "ERR267";
+                            }
+                        }
+                    }
+                }
             }
             #endregion
             #region TB
             if (flag)
             {
                 //usp_SettingClearMemberData_202003
-                string spName = "usp_MA_SettingClearMemberData";
-         
-                if (apiInput.StationID != null)
-                {
-                    if (apiInput.StationID.Length > 0 && apiInput.StationID.Length < 2)
-                    {
-                        ManageStation = apiInput.StationID[0];
-                    }
-                    else if (apiInput.StationID.Length > 1)
-                    {
-                        ManageStation = apiInput.StationID[0];
-                        int len = apiInput.StationID.Length;
-                        for (int i = 1; i < len; i++)
-                        {
-                            ManageStation += string.Format(";{0}", apiInput.StationID[i]);
-                        }
-                    }
-                }
+                string spName = "usp_MA_InsClean";
 
-                SPInput_MA_SettingClearMemberData spInput = new SPInput_MA_SettingClearMemberData()
+          
+
+                SPInput_MA_InsClean spInput = new SPInput_MA_InsClean()
                 {
-                    Account = apiInput.Account,
-                    Station = ManageStation,
+                    manager = apiInput.manager,
+                    CarNo = apiInput.CarNo,
+                    SD = SD,
+                    ED = ED,
+                    SpecCode = apiInput.SpecCode,
                      LogID=LogID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
 
-                flag = new SQLHelper<SPInput_MA_SettingClearMemberData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                flag = new SQLHelper<SPInput_MA_InsClean, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
 

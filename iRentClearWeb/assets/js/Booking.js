@@ -1,4 +1,4 @@
-﻿var host = "http://113.196.107.238/";
+﻿
 $(document).ready(function () {
     registerLabel('.form-control', '.form-group');
     $('[name="BookingStart"]').parents('.form-group').addClass('focused');

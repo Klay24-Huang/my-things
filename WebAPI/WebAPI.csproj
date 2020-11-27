@@ -264,6 +264,7 @@
     <Compile Include="Controllers\MA_GetCleanCarByLatLngController.cs" />
     <Compile Include="Controllers\MA_GetCleanCarByListController.cs" />
     <Compile Include="Controllers\MA_GetManageStationSettingController.cs" />
+    <Compile Include="Controllers\MA_InsertCleanController.cs" />
     <Compile Include="Controllers\MA_MaintainUserGetLatLngController.cs" />
     <Compile Include="Controllers\MA_SettingManageStationController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
@@ -478,6 +479,7 @@
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_CleanCarByList.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_GetCleanCarByLatLng.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_GetManageStationSetting.cs" />
+    <Compile Include="Models\Param\Maintain\Input\IAPI_MA_InsClean.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_SettingManageStation.cs" />
     <Compile Include="Models\Param\Maintain\Output\OAPI_MA_CleanCarByLatLng.cs" />
     <Compile Include="Models\Param\Maintain\Output\OAPI_MA_GetManageStationSetting.cs" />
