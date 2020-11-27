@@ -108,7 +108,7 @@ BEGIN TRY
 		WHERE CarNo=@CarNo;
 
 		UPDATE TB_BookingStatusOfUser 
-		SET NormalRentBookingNowCount=CASE WHEN @ProjType=0 THEN 0 ELSE MotorRentBookingNowCount END,
+		SET NormalRentBookingNowCount=CASE WHEN @ProjType=0 THEN 0 ELSE NormalRentBookingNowCount END,
 			MotorRentBookingNowCount=CASE WHEN @ProjType=4 THEN 0 ELSE MotorRentBookingNowCount END,
 			AnyRentBookingNowCount=CASE WHEN @ProjType=3 THEN 0 ELSE AnyRentBookingNowCount END,
 			RentNowActiveType=5,
