@@ -206,6 +206,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
+    <Compile Include="SP\MA\Input\SPInput_MA_InsClean.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_SaveClearMemberData.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_SettingClearMemberData.cs" />
     <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
