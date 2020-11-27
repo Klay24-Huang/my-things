@@ -94,8 +94,9 @@ function doReturnCar(UserName) {
         SendObj.incarPicType = $("#hidincarPicType").val();
         SendObj.outcarPic = $("#hidoutcarPic").val();
         SendObj.outcarPicType = $("#hidoutcarPicType").val();
-        var jdata = JSON.stringify({ "para": SendObj });
+        var jdata = JSON.stringify( SendObj );
         console.log(jdata);
+        return;
         $.ajax({
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
@@ -105,16 +106,16 @@ function doReturnCar(UserName) {
             error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); $.busyLoadFull("hide", { animate: "fade" }); },
             success: function (JsonData) {
                 $.busyLoadFull("hide", { animate: "fade" });
-                console.log(JsonData.Result + "," + JsonData.ErrMsg);
+                console.log(JsonData.Result + "," + JsonData.ErrorMessage);
                 console.log(JsonData);
-                if (JsonData.Result === "0") {
+                if (JsonData.Result === "1") {
                    // $.unblockUI();
 
                     if (flag) {
                         swal({
                             title: "",
-                            text: JsonData.ErrMsg,
-                            html: JsonData.ErrMsg,
+                            text: JsonData.ErrorMessage,
+                            html: JsonData.ErrorMessage,
                             type: "success",
                             confirmButtonColor: '#ff0000',
                             confirmButtonText: '確定',
@@ -174,7 +175,7 @@ function getCarData() {
             console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
             $.busyLoadFull("hide", { animate: "fade" });
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 localStorage.removeItem('bookingList');
                 console.log("true");
                 console.log(JsonData.Data);
@@ -204,18 +205,18 @@ var now = new Date()
                     console.log("SD=" + SD);
                     console.log("ED=" + ED);
                     if (JsonData.Data[i].OrderStatus == 0 && JsonData.Data[i].cancel_status == 0) {
-                        if (JsonData.data[i].isOverTime == 1) {
+                        if (JsonData.Data[i].isOverTime == 1) {
                             htmlStr += "<td>已逾時</td>";
                         } else {
                             if (JsonData.Data[i].CanPick == 1 && JsonData.Data[i].CanCancel == 1) {
-                                htmlStr += "<td><span class=\"btn btn-danger\" id='POrder_" + JsonData.Data[i].OrderNum + "' ontouchend=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取車</span><br><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span>  </td>";
+                                htmlStr += "<td><span class=\"btn btn-danger\" id='POrder_" + JsonData.Data[i].OrderNum + "' ontouchend=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取車</span><br><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span>  </td>";
                             } else if (JsonData.Data[i].CanPick == 0 && JsonData.Data[i].CanCancel == 1) {
                                 htmlStr += "<td><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span></td>";
                             }
                         }
                         console.log("0");
-                    } else if (JsonData.data[i].OrderStatus == 1) {
-                        htmlStr += "<td><span class=\"btn btn-danger\"  id='ROrder_" + JsonData.Data[i].OrderNum + "'  ontouchend=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');   onclick=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');>還車</span></td>";
+                    } else if (JsonData.Data[i].OrderStatus == 1) {
+                        htmlStr += "<td><span class=\"btn btn-danger\"  id='ROrder_" + JsonData.Data[i].OrderNum + "'  ontouchend=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');   onclick=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');>還車</span></td>";
 
                         console.log("1");
                     } else if (JsonData.Data[i].OrderStatus == 2) {
@@ -304,7 +305,7 @@ function cancelCar(OrderNum, MachineNo, isCar, CarNo) {
         return element.assigned_car_id.replace(/ /g, "").replace(/\"/g, "") == CarNo;
     });
     var SendObj = new Object();
-    SendObj.OrderNum = OrderNum;
+    SendObj.OrderNo = "H"+OrderNum;
     blockUI();
  
         returnDate = nowDate.getFullYear().toString() + "-" + (nowDate.getMonth() + 1).toString() + "-" + nowDate.getDate().toString() + " " + nowDate.getHours().toString() + ":" + nowDate.getMinutes().toString() + ":00";
@@ -315,14 +316,14 @@ function cancelCar(OrderNum, MachineNo, isCar, CarNo) {
     SendObj.type = 2;
     SendObj.Mode = 1;
     SendObj.returnDate = returnDate;
-    SendObj.UserID = $("#manager").val();
+    SendObj.UserID = $("#Account").val();
     console.log(SendObj);
-    var jdata = JSON.stringify({ "para": SendObj });
-    GetEncyptData(jdata, carControlComplete);
+    var jdata = JSON.stringify( SendObj);
+    carControlComplete(jdata);
 }
 //強制取還車
 function carControlComplete(encryptData) {
-    var jdata = JSON.stringify({ "para": encryptData });
+    var jdata =  encryptData ;
     var URL = jsHost + "BE_ContactSetting";
     $.ajax({
         type: 'POST',
@@ -333,7 +334,7 @@ function carControlComplete(encryptData) {
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
             console.log(JsonData.Result + "," + JsonData.ErrMsg);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 console.log("true");
                 //   $.unblockUI();
                 warningAlertSubMit(JsonData.ErrMsg, 1, 1, "BookingList");
@@ -411,7 +412,7 @@ function warningAlertSubMit(msg, type, ImgType, site) {
         }, function (isConfirm) { $("#" + site).submit(); });
     }
 }
-function pickCar(orderNum, MachineNo, isCar, CarNo) {
+function pickCar(orderNum, MachineNo,deviceToken, isCar, CarNo) {
     $("#showPick").hide();
     $("#pickCarOpt").hide();
     $("#pickMotoOpt").hide();
@@ -422,6 +423,7 @@ $("#hidIsCar").val(isCar);
     $("#hidOrderNum").val(orderNum);
     $("#hidCarNo").val(CarNo);
     let bookingList = JSON.parse(localStorage.getItem('bookingList'));
+    console.log(bookingList);
     var obj = bookingList.find(function (element) {
         return element.assigned_car_id.replace(/ /g, "").replace(/\"/g, "") == CarNo;
     });
@@ -431,7 +433,7 @@ $("#hidIsCar").val(isCar);
     SendObj.UserID = $("#manager").val();
     SendObj.CarNo = CarNo;
     SendObj.OrderNum = orderNum;
-    var jdata = JSON.stringify({ "para": SendObj });
+    var jdata = JSON.stringify(SendObj);
     console.log(jdata);
     $.ajax({
         type: 'POST',
@@ -441,9 +443,9 @@ $("#hidIsCar").val(isCar);
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
-            if (JsonData.Result === "0") {
+            if (JsonData.Result === "1") {
                 timeFlag = false;
                 $("#showPick").show();
                 if (isCar == 1) {
@@ -457,44 +459,44 @@ $("#hidIsCar").val(isCar);
                     }
                     //上鎖
                     $("#LockON").on("click", function () {
-                        SetLock(MachineNo, 5);
+                        SetLock(MachineNo, deviceToken, 5);
                     });
                     //解鎖
                     $("#LockOff").on("click", function () {
-                        SetLock(MachineNo, 4);
+                        SetLock(MachineNo, deviceToken, 4);
                     });
                     //中控上鎖
                     $("#LockDoorON").on("click", function () {
-                        SetLock(MachineNo, 3);
+                        SetLock(MachineNo, deviceToken, 3);
                     });
                     //中控解鎖
                     $("#LockDoorOff").on("click", function () {
-                        SetLock(MachineNo, 2);
+                        SetLock(MachineNo, deviceToken, 2);
                     });
                     //尋車
                     $("#SearchCar").on("click", function () {
-                        searchCarFun(MachineNo);
+                        searchCarFun(MachineNo, deviceToken);
                     })
                     //以下手機用
                     //上鎖
                     $("#LockON").on("touchend", function () {
-                        SetLock(MachineNo, 5);
+                        SetLock(MachineNo, deviceToken, 5);
                     });
                     //解鎖
                     $("#LockOff").on("touchend", function () {
-                        SetLock(MachineNo, 4);
+                        SetLock(MachineNo, deviceToken, 4);
                     });
                     //中控上鎖
                     $("#LockDoorON").on("touchend", function () {
-                        SetLock(MachineNo, 3);
+                        SetLock(MachineNo, deviceToken, 3);
                     });
                     //中控解鎖
                     $("#LockDoorOff").on("touchend", function () {
-                        SetLock(MachineNo, 2);
+                        SetLock(MachineNo, deviceToken, 2);
                     });
                     //尋車
                     $("#SearchCar").on("touchend", function () {
-                        searchCarFun(MachineNo);
+                        searchCarFun(MachineNo, deviceToken);
                     })
                 } else {
                     $("#pickMotoOpt").show();
@@ -504,45 +506,45 @@ $("#hidIsCar").val(isCar);
                         $("#tdMCarNo").html(CarNo);
                     }
                     $("#AccOn").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 1, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 1, '1');
                     });
                     $("#AccOff").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 2, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 2, '1');
                     });
                     //電池架
                     $("#batConvert").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 3, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 3, '1');
                     });
                     //座墊
                     $("#convertON").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 4, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 4, '1');
                     });
                     $("#SearchByLight").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 6, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 6, '1');
                     });
                     $("#SearchBySpeaker").on("click", function () {
-                        SendMotoCmdFun(MachineNo, 5, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 5, '1');
                     });
                     //以下手機用
                     $("#AccOn").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 1, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 1, '1');
                     });
                     $("#AccOff").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 2, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 2, '1');
                     });
                     //電池架
                     $("#batConvert").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 3, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 3, '1');
                     });
                     //座墊
                     $("#convertON").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 4, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 4, '1');
                     });
                     $("#SearchByLight").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 6, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 6, '1');
                     });
                     $("#SearchBySpeaker").on("touchend", function () {
-                        SendMotoCmdFun(MachineNo, 5, '1');
+                        SendMotoCmdFun(MachineNo, deviceToken, 5, '1');
                     });
                 }
                 $("#returnOpt").show();
@@ -552,7 +554,7 @@ $("#hidIsCar").val(isCar);
     });
 
 }
-function returnCar(orderNum, MachineNo, isCar, obj) {
+function returnCar(orderNum, MachineNo,deviceToken, isCar, obj) {
 console.log("isCar="+isCar);
     $("#pickMotoOpt").hide();
     $("#pickCarOpt").hide();
@@ -575,45 +577,45 @@ $("#hidIsCar").val(isCar);
 
         $("#tdMCarNo").html(CarNo);
         $("#AccOn").on("click", function () {
-            SendMotoCmdFun(MachineNo, 1, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 1, '1');
         });
         $("#AccOff").on("click", function () {
-            SendMotoCmdFun(MachineNo, 2, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 2, '1');
         });
         //電池架
         $("#batConvert").on("click", function () {
-            SendMotoCmdFun(MachineNo, 3, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 3, '1');
         });
         //座墊
         $("#convertON").on("click", function () {
-            SendMotoCmdFun(MachineNo, 4, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 4, '1');
         });
         $("#SearchByLight").on("click", function () {
-            SendMotoCmdFun(MachineNo, 6, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 6, '1');
         });
         $("#SearchBySpeaker").on("click", function () {
-            SendMotoCmdFun(MachineNo, 5, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 5, '1');
         });
         //以下手機用
         $("#AccOn").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 1, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 1, '1');
         });
         $("#AccOff").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 2, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 2, '1');
         });
         //電池架
         $("#batConvert").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 3, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 3, '1');
         });
         //座墊
         $("#convertON").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 4, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 4, '1');
         });
         $("#SearchByLight").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 6, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 6, '1');
         });
         $("#SearchBySpeaker").on("touchend", function () {
-            SendMotoCmdFun(MachineNo, 5, '1');
+            SendMotoCmdFun(MachineNo, deviceToken, 5, '1');
         });
     } else {
         $("#pickCarOpt").show();
@@ -622,41 +624,41 @@ $("#hidIsCar").val(isCar);
         $("#tdCarNo").html(CarNo);
         //上鎖
         $("#LockON").on("click", function () {
-            SetLock(MachineNo, 5);
+            SetLock(MachineNo, deviceToken, 5);
         });
         //手機用上鎖
         $("#LockON").on("touchend", function () {
-            SetLock(MachineNo, 5);
+            SetLock(MachineNo, deviceToken, 5);
         });
         //解鎖
         $("#LockOff").on("click", function () {
-            SetLock(MachineNo, 4);
+            SetLock(MachineNo, deviceToken, 4);
         });
         $("#LockOff").on("touchend", function () {
-            SetLock(MachineNo, 4);
+            SetLock(MachineNo, deviceToken, 4);
         });
                     //中控上鎖
                     $("#LockDoorON").on("click", function () {
-                        SetLock(MachineNo, 3);
+                        SetLock(MachineNo, deviceToken, 3);
                     });
                     //中控解鎖
                     $("#LockDoorOff").on("click", function () {
-                        SetLock(MachineNo, 2);
+                        SetLock(MachineNo, deviceToken, 2);
                     });
     //中控上鎖
                     $("#LockDoorON").on("touchend", function () {
-                        SetLock(MachineNo, 3);
+                        SetLock(MachineNo, deviceToken, 3);
                     });
                     //中控解鎖
                     $("#LockDoorOff").on("touchend", function () {
-                        SetLock(MachineNo, 2);
+                        SetLock(MachineNo, deviceToken, 2);
                     });
         //尋車
         $("#SearchCar").on("click", function () {
-            searchCarFun(MachineNo);
+            searchCarFun(MachineNo, deviceToken);
         })
         $("#SearchCar").on("touchend", function () {
-            searchCarFun(MachineNo);
+            searchCarFun(MachineNo, deviceToken);
         })
     }
     $("#returnOpt").show();
@@ -1093,35 +1095,47 @@ function getCompressRate(allowMaxSize, fileSize) { //計算壓縮比率，size�
     }
     return compressRate;
 }
-function SendMotoCmdFun(machineNo, CMD, hasRent) {
+function SendMotoCmdFun(machineNo, deviceToken, CMD, hasRent) {
     var userName = $('#manager').val();
     var hasRentFlag = 0;
     if (hasRent == "0") {
         hasRentFlag = 1;
     }
-    var jsonData = JSON.stringify({ "para": { "CID": machineNo, "hasRent": hasRentFlag, "User": userName, "CMD": CMD } });
+    var obj = new Object();
+    obj.CID = machineNo;
+    obj.deviceToken = deviceToken;
+    obj.UserId = $("#Account").val();
+
+   
     var title = "";
     switch (parseInt(CMD, 10)) {
         case 1:
         case 7:
             title = "是否確定要發動";
+            obj.CmdType = 2;
             break;
         case 2:
             title = "是否確定要熄火";
+            obj.CmdType = 3;
             break;
         case 3:
             title = "是否確定要開/關電池蓋";
+            obj.CmdType = 7;
             break;
         case 4:
             title = "是否確定要開啟坐墊";
+            obj.CmdType = 6;
             break;
         case 5:
             title = "是否確定要使用尋車功能(喇叭)";
+            obj.CmdType = 4;
             break;
         case 6:
             title = "是否確定要使用尋車功能(方向燈)";
+            obj.CmdType = 5;
             break;
     }
+    var jsonData = JSON.stringify(obj);
     swal({
         title: title,
         text: title,
@@ -1134,7 +1148,7 @@ function SendMotoCmdFun(machineNo, CMD, hasRent) {
             console.log(jsonData);
             blockUI();
             $.ajax({
-                url: 'http://113.196.107.238/iMotoWebAPI/api/SendMotoCmdOfWeb',
+                url: jsHost +"SendMotorCMD",
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -1159,7 +1173,7 @@ function SendMotoCmdFun(machineNo, CMD, hasRent) {
                         $.unblockUI();
                         swal({
                             title: '處理失敗',
-                            text: data.ErrMsg,
+                            text: data.ErrorMessage,
                             showCancelButton: false,
                             type: "error",
                             position: "center-left",
@@ -1182,22 +1196,36 @@ function SendMotoCmdFun(machineNo, CMD, hasRent) {
 
     });
 }
-function SetLock(CID, Action) {
-    var userName = $('#manager').val();
+function SetLock(CID, deviceToken, Action) {
+    var userName = $('#Account').val();
     console.log(userName);
-    var LockAction = new Object();
-    LockAction.CID = CID;
-    LockAction.Action = Action;
-    LockAction.User = userName;
-    var jdata = JSON.stringify({ "para": LockAction });
-    GetEncyptData(jdata, SetLockComplete);
+    var obj = new Object();
+    obj.CID = machineNo;
+    obj.deviceToken = deviceToken;
+    obj.UserId = $("#Account").val();
+    if (machineNo.length > 4) {
+        obj.IsCens = 1;
+    
+    } else {
+        obj.IsCens = 0;
+    
+    }
+    if (obj.IsCens == 0) {
+        obj.CmdType = Action + 5;
+    } else {
+        obj.CmdType = Action + 18;
+    }
+
+    var jdata = JSON.stringify(obj);
+    SetLockComplete(jdata);
     blockUI();
 }
 
-function SetLockComplete(encryptData) {
-    var jdata = JSON.stringify({ "para": encryptData });
-    var URL = host + "iMotoWebAPI/api/SendLock/SendLockCMD";
+function SetLockComplete(jdata) {
+
+    var URL = jsHost + "SendCarCMD";
     console.log(URL);
+    console.log(jdata);
     $.ajax({
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -1206,21 +1234,33 @@ function SetLockComplete(encryptData) {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
-            if (JsonData.Result === "0") {
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
+            if (JsonData.Result === "1") {
                 //  $.unblockUI();
-                warningAlertSubMit(JsonData.ErrMsg, 2, 1, "formCarDashBoard");
+                warningAlertSubMit(JsonData.ErrorMessage, 2, 1, "formCarDashBoard");
             } else {
                 // UPDFail();
                 //   $.unblockUI();
-                warningAlert(JsonData.ErrMsg, false, 0, "");
+                warningAlert(JsonData.ErrorMessage, false, 0, "");
             }
         }
     });
 }
-function searchCarFun(machineNo) {
+function searchCarFun(machineNo, deviceToken) {
     var userName = $('#manager').val();
-    var jsonData = JSON.stringify({ "para": { "MachineNo": machineNo, "User": userName, "Random": "56iu6Iqx55qE56iL5byP5aW95qmf5YWr" } });
+    var obj = new Object();
+    obj.CID = machineNo;
+    obj.deviceToken = deviceToken;
+    obj.UserId = $("#Account").val();
+    
+    if (machineNo.length > 4) {
+        obj.IsCens = 1;
+        obj.CmdType = 15;
+    } else {
+        obj.IsCens = 0;
+        obj.CmdType = 0;
+    }
+    var jsonData = JSON.stringify(obj);
 
     swal({
         title: "",
@@ -1233,7 +1273,7 @@ function searchCarFun(machineNo) {
         if (isConfirm) {
             blockUI();
             $.ajax({
-                url: 'http://113.196.107.238/iMotoWebAPI/api/SearchCarForWeb',
+                url: jsHost +"SendCarCMD",
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -1258,7 +1298,7 @@ function searchCarFun(machineNo) {
                         $.unblockUI();
                         swal({
                             title: '處理失敗',
-                            text: data.ErrMsg,
+                            text: data.ErrorMessage,
                             showCancelButton: false,
                             type: "error",
                             position: "center-left",
