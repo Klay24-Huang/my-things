@@ -141,8 +141,8 @@ SET @manager    =ISNULL (@manager    ,'');
 			    );
 			  IF @tmpCount2=0
 			  BEGIN
-			      INSERT INTO TB_OrderMain (IDNO,CarNo,lend_place,return_place,start_time,stop_time,booking_status,spec_status)
-				  VALUES(@manager,@CarNo,@StationID,@StationID,@SD,@ED,1,@SpecNum);
+			      INSERT INTO TB_OrderMain (IDNO,CarNo,lend_place,return_place,start_time,stop_time,booking_status,spec_status,stop_pick_time)
+				  VALUES(@manager,@CarNo,@StationID,@StationID,@SD,@ED,1,@SpecNum,DATEADD(minute,5,@SD));
 				   SET @OrderNum=@@IDENTITY;
 				    INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNum,0,0,0,@LogName);
 						 --寫入短租060

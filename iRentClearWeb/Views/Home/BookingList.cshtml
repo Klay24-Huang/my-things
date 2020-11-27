@@ -1,0 +1,212 @@
+﻿
+@{
+    ViewBag.Title = "BookingList";
+    Layout = "~/Views/_Layout.cshtml";
+}
+@{
+    string Account = "";
+    string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+        UserName = Session["UserName"].ToString();
+    }
+}
+<div id="wrapper" class="container-fluid fixedContent" style="padding-left:0px;padding-right:0px;">
+    <div class="bookingTitle  text-center bg-dark">
+        <h2><b><font color="white"><span id="title">預約列表</span></font></b></h2>
+    </div>
+    <div class="BookingList" id="BookingList">
+        <table id="bookDetail" name="bookDetail" class="table table-bordered footable" data-filter="#filter" data-paging="true" data-limit-navigation="5" data-page-size="10" data-paging-limit="5">
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>車號</th>
+
+                    <th>狀態</th>
+                    <th data-hide="all">目前據點</th>
+                    <th data-hide="all">取車</th>
+                    <th data-hide="all">還車</th><!--phone,tablet-->
+                </tr>
+            </thead>
+            <tbody id="bookDetailBody" name="bookDetailBody"></tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <form enctype="multipart/form-data" class="form-group">
+
+        <div class="panel panel-default" id="showPick">
+
+            <div class="panel-heading">功能控制</div>
+            <div class="panel-body">
+
+                <fieldset class="col-md-12">
+
+                    <div class="pickOpt" id="pickCarOpt">
+                        <div class="row">
+                            <div class="col-12">
+                                <table>
+
+                                    <tr><td>車號</td><td id="tdCarNo"></td></tr>
+                                    <tr><td>起始時間</td><td id="tdStart"></td></tr>
+                                    <tr><td>結束時間</td><td id="tdEnd"></td></tr>
+                                    <!--    <tr><td colspan="2" class="text-center">功能</td></tr> -->
+                                    <tr>
+                                        <td colspan="2" id="tdAction">
+                                            <span class="btn btn-danger" id="LockON">上防盜鎖</span>
+                                            <span class="btn btn-danger" id="LockOff">解防盜鎖</span>
+                                            <span class="btn btn-primary" id="LockDoorON">上門鎖</span>
+                                            <span class="btn btn-primary" id="LockDoorOff">解門鎖</span>
+                                            <span class="btn btn-danger" id="SearchCar">尋車</span>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pickOpt" id="pickMotoOpt">
+                        <table>
+
+                            <tr><td>車號</td><td id="tdMCarNo"></td></tr>
+                            <tr><td>起始時間</td><td id="tdMStart"></td></tr>
+                            <tr><td>結束時間</td><td id="tdMEnd"></td></tr>
+                            <!--    <tr><td colspan="2" class="text-center">功能</td></tr> -->
+                            <tr>
+                                <td colspan="2" id="tdAction">
+                                    <span class="btn btn-danger" id="AccOn">發動</span>
+                                    <span class="btn btn-danger" id="AccOff">熄火</span>
+                                    <span class="btn btn-danger" id="batConvert">開關電池架</span>
+                                    <span class="btn btn-danger" id="convertON">開座墊</span>
+                                    <span class="btn btn-danger" id="SearchByLight">尋車<i class="mdi mdi-lightbulb-on-outline"></i></span>
+                                    <span class="btn btn-danger" id="SearchBySpeaker">尋車<i class="fas fa-volume-up"></i></span>
+
+                                </td>
+                            </tr>
+
+                        </table>
+
+
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+
+        <div class="returnOpt" id="returnOpt">
+
+            @Html.Hidden("manager", UserName)
+            <div class="panel panel-default">
+
+                <div class="panel-heading">還車</div>
+                <div class="panel-body">
+
+                    <fieldset class="col-md-12">
+
+
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-6">
+                                            <input type="checkbox" id="incarclean">
+                                            <label for="incarclean">內裝清潔</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-6">
+                                            <input type="checkbox" id="outcarclean">
+                                            <label for="outcarclean">車外清潔</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <input type="checkbox" id="rescue">
+                                            <label for="rescue">車輛救援(備註必填)</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <input type="checkbox" id="dispatch">
+                                            <label for="dispatch">非路邊租還調度(備註必填)</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <input type="checkbox" id="Anydispatch">
+                                            <label for="Anydispatch" class="form-group">路邊租還調度(備註必填)</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <input type="checkbox" id="Maintenance">
+                                            <label for="Maintenance" class="form-group">保養(備註必填)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <label for="remark">備註</label>
+                                            <textarea id="remark" name="remark" style="width:100%;height:100px;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <label for="incarPic">車內照</label>
+                                            <input type="file" id="incarPic" accept="image/*" capture="camera" onchange="handleFiles(this.files, 'incarPic');">
+                                            <img src="" alt="" id="show-incarPic" style="display:none;max-width:100px;max-height:100px;">
+                                            @Html.Hidden("hidincarPic", "")
+                                            @Html.Hidden("hidincarPicType", "")
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 m-t-20">
+                                        <div class="col-xs-12">
+                                            <label for="outcarPic">車外照</label>
+                                            <input type="file" id="outcarPic" accept="image/*" capture="camera" onchange="handleFiles(this.files, 'outcarPic');">
+                                            <img src="" alt="" id="show-outcarPic" style="display:none;max-width:100px;max-height:100px;">
+                                            @Html.Hidden("hidoutcarPic", "")
+                                            @Html.Hidden("hidoutcarPicType", "")
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-12 m-t-80">
+                                <div class="col-xs-12 text-center">
+                                    @Html.Hidden("hidMachineNo", "")
+                                    @Html.Hidden("hidOrderNum", "")
+                                    @Html.Hidden("hidCarNo", "")
+                                    @Html.Hidden("hidIsCar", "")
+                                    <span class="btn btn-danger" id="btnFinish" onclick=doReturnCar('@(UserName)'); ontouchend=doReturnCar('@(UserName)');>還車</span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                </div>
+
+            </div>
+    </form>
+</div>
+

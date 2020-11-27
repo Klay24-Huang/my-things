@@ -100,10 +100,10 @@ $(document).ready(function () {
             SendObj.CarNo = CarNo;
             SendObj.ED = ED.replace(/-/g, "") + EH + EM + "00";
             SendObj.SD = SD.replace(/-/g, "") + SH + SM + "00";
-            SendObj.SpecCode = '1';
+            SendObj.SpecCode = '4';
             console.log(SendObj);
-            var jdata = JSON.stringify({ "para": SendObj });
-            GetEncyptData(jdata, insCleanOrderComplete);
+            var jdata = JSON.stringify(SendObj);
+            insCleanOrderComplete(jdata);
         } else {
             warningAlert(errMsg, false, 0, "");
         }
@@ -264,8 +264,8 @@ function GetEncyptData(jdata, callback) {
 }
 //新增清潔合約
 function insCleanOrderComplete(encryptData) {
-    var jdata = JSON.stringify({ "para": encryptData });
-    var URL = host + "iMotoWebAPI/api/InsertClean/CleanAdd";
+    var jdata = encryptData;
+    var URL = jsHost + "MA_InsertClean";
     $.ajax({
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -274,15 +274,15 @@ function insCleanOrderComplete(encryptData) {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
-            if (JsonData.Result === "0") {
+            console.log(JsonData);
+            if (JsonData.Result === "1") {
                 console.log("true");
                 //   $.unblockUI();
-                warningAlertSubMit(JsonData.ErrMsg, 2, 1, "dataForm");
+                warningAlertSubMit(JsonData.ErrorMessage, 2, 1, "dataForm");
             } else {
                 console.log("false");
                 //    $.unblockUI();
-                warningAlert(JsonData.ErrMsg, false, 0, "");
+                warningAlert(JsonData.ErrorMessage, false, 0, "");
             }
         }
     });

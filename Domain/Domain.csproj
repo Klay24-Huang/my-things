@@ -206,9 +206,12 @@
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
+    <Compile Include="SP\MA\Input\SPInpupt_MA_CleanCarStart.cs" />
+    <Compile Include="SP\MA\Input\SPInput_MA_CleanCarEndNew.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_InsClean.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_SaveClearMemberData.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_SettingClearMemberData.cs" />
+    <Compile Include="SP\MA\Output\SPOutput_MA_ClearCarReturn.cs" />
     <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetInsurancePrice.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
@@ -324,6 +327,7 @@
     <Compile Include="TB\LoveCodeListData.cs" />
     <Compile Include="TB\Maintain\CarCleanData.cs" />
     <Compile Include="TB\Maintain\CarCleanDataNew.cs" />
+    <Compile Include="TB\Maintain\GetBookingMainForMaintain.cs" />
     <Compile Include="TB\Maintain\iRentManageStation.cs" />
     <Compile Include="TB\Maintain\MemberCleanSetting.cs" />
     <Compile Include="TB\Mochi\SyncMachiParkId.cs" />
@@ -480,7 +484,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SP\Input\PolygonGroup\" />
-    <Folder Include="SP\MA\Output\" />
     <Folder Include="SP\Output\PolygonGroup\" />
   </ItemGroup>
   <ItemGroup>
