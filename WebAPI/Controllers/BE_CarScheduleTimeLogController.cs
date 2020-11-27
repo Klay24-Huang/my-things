@@ -77,12 +77,12 @@ namespace WebAPI.Controllers
                 }
                 if (flag)
                 {
-                    if (false == DateTime.TryParseExact(apiInput.SD, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out SD))
+                    if (false == DateTime.TryParseExact(apiInput.SD+" 000000", "yyyyMMdd HHmmss", null, System.Globalization.DateTimeStyles.None, out SD))
                     {
                         flag = false;
                         errCode = "ERR241";
                     }
-                    if (false == DateTime.TryParseExact(apiInput.ED, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out ED))
+                    if (false == DateTime.TryParseExact(apiInput.ED+" 235959", "yyyyMMdd HHmmss", null, System.Globalization.DateTimeStyles.None, out ED))
                     {
                         flag = false;
                         errCode = "ERR243";
@@ -106,7 +106,9 @@ namespace WebAPI.Controllers
             {
 
                 StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
-                List<BE_CarScheduleTimeLog> lstCarSchedule = _repository.GetCarScheduleNew(apiInput.StationID.ToUpper(),apiInput.CarNo.ToUpper().Replace(" ",""), apiInput.SD, apiInput.ED);
+                //List<BE_CarScheduleTimeLog> lstCarSchedule = _repository.GetCarScheduleNew(apiInput.StationID.ToUpper(),apiInput.CarNo.ToUpper().Replace(" ",""), apiInput.SD, apiInput.ED);
+                //20201127 UPD BY JERRY 改用時間格式查詢，避免同一天查不出資料
+                List<BE_CarScheduleTimeLog> lstCarSchedule = _repository.GetCarScheduleNew(apiInput.StationID.ToUpper(), apiInput.CarNo.ToUpper().Replace(" ", ""), SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"));
                 if (lstCarSchedule != null)
                 {
                    apiOutput =new List<OAPI_BE_CarScheduleTimeLog>();
