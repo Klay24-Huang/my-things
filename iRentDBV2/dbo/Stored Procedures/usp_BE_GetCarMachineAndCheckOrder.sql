@@ -78,82 +78,78 @@ SET @IsSystem=0;
 SET @hasData=0;
 
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 
-
-		BEGIN TRY
-	
+BEGIN TRY
+	IF  @IDNO=''  OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF  @IDNO=''  OR @OrderNo=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-				SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND IDNO=@IDNO;
-				IF @hasData=0
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND IDNO=@IDNO;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR720'
+		END
+		ELSE
+		BEGIN
+			SELECT @CID=ISNULL([CID],''),@deviceToken=ISNULL([deviceToken],''),@IsCens=ISNULL([IsCens],''),@CardNo=ISNULL(MemberData.CARDNO,'')
+			FROM [TB_CarInfo] AS CarInfo
+			INNER JOIN TB_OrderMain AS OrderMain ON OrderMain.CarNo=CarInfo.CarNo AND OrderMain.order_number=@OrderNo
+			INNER JOIN TB_MemberData AS MemberData ON MemberData.MEMIDNO=OrderMain.IDNO
+			IF @deviceToken='' AND @IsCens=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR721'
+			END
+			IF @Error=0
+			BEGIN
+				IF @CardNo=''
 				BEGIN
 					SET @Error=1;
-					SET @ErrorCode='ERR720'
+					SET @ErrorCode='ERR722'
 				END
-				ELSE
+			END
+			IF @Error=0
+			BEGIN
+				IF @CID=''
 				BEGIN
-					SELECT @CID=ISNULL([CID],''),@deviceToken=ISNULL([deviceToken],''),@IsCens=ISNULL([IsCens],''),@CardNo=ISNULL(MemberData.CARDNO,'')
-					FROM [TB_CarInfo] AS CarInfo
-					INNER JOIN TB_OrderMain AS OrderMain ON OrderMain.CarNo=CarInfo.CarNo AND OrderMain.order_number=@OrderNo
-					INNER JOIN TB_MemberData AS MemberData ON MemberData.MEMIDNO=OrderMain.IDNO
-					IF @deviceToken='' AND @IsCens=0
-					BEGIN
-						SET @Error=1;
-					    SET @ErrorCode='ERR721'
-					END
-					IF @Error=0
-					BEGIN
-						IF @CardNo=''
-						BEGIN
-							SET @Error=1;
-					        SET @ErrorCode='ERR722'
-						END
-					END
-					IF @Error=0
-					BEGIN
-						IF @CID=''
-						BEGIN
-							SET @Error=1;
-					        SET @ErrorCode='ERR723'
-						END
-					END
+					SET @Error=1;
+					SET @ErrorCode='ERR723'
 				END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+	END
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_GetCarMachineAndCheckOrder';
