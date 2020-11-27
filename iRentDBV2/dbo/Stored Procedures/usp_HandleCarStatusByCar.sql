@@ -127,34 +127,31 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 			END
 			ELSE
 			BEGIN
-				--IF @deviceOBDstatus = 1
-				--BEGIN
-					UPDATE TB_CarStatus
-					SET  [ACCStatus]=@deviceACCStatus,
-						 [GPSStatus]=@deviceGPSStatus,
-						 [GPSTime]=@deviceGPSTime,
-						 [OBDStatus]=@deviceOBDstatus,
-						 [GPRSStatus]=@deviceGPRSStatus,
-						 [PowerOnStatus]=@devicePowerONStatus,
-						 [CentralLockStatus]=@devcieCentralLockStatus,
-						 [DoorStatus]=@deviceDoorStatus,
-						 [LockStatus]=@deviceLockStatus,
-						 [IndoorLightStatus]=@deviceIndoorLightStatus,
-						 [SecurityStatus]=@deviceSecurityStatus,
-						 [Speed]=@deviceSpeed,
-						 [Volt]=@deviceVolt,
-						 [Latitude]=@deviceLatitude,
-						 [Longitude]=@deviceLongitude,
-						 [Millage]=CASE WHEN @deviceMillage > -1 THEN @deviceMillage ELSE Millage END,
-						 [extDeviceStatus1]=@extDeviceStatus1,
-						 [extDeviceStatus2]=@extDeviceStatus2,
-						 [extDeviceData2]=@extDeviceData2,
-						 [extDeviceData3]=CASE WHEN @extDeviceData3 IS NOT NULL THEN @extDeviceData3 ELSE extDeviceData3 END,
-						 [extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
-						 [deviceName]=@deviceName,
-						 UPDTime=@NowTime
-					WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
-				--END
+				UPDATE TB_CarStatus
+				SET  [ACCStatus]=@deviceACCStatus,
+						[GPSStatus]=@deviceGPSStatus,
+						[GPSTime]=@deviceGPSTime,
+						[OBDStatus]=@deviceOBDstatus,
+						[GPRSStatus]=@deviceGPRSStatus,
+						[PowerOnStatus]=CASE WHEN @deviceOBDstatus = 1 THEN @devicePowerONStatus ELSE PowerOnStatus END,
+						[CentralLockStatus]=@devcieCentralLockStatus,
+						[DoorStatus]=@deviceDoorStatus,
+						[LockStatus]=CASE WHEN @deviceOBDstatus = 1 THEN @deviceLockStatus ELSE LockStatus END,
+						[IndoorLightStatus]=@deviceIndoorLightStatus,
+						[SecurityStatus]=@deviceSecurityStatus,
+						[Speed]=CASE WHEN @deviceOBDstatus = 1 THEN @deviceSpeed ELSE Speed END,
+						[Volt]=@deviceVolt,
+						[Latitude]=@deviceLatitude,
+						[Longitude]=@deviceLongitude,
+						[Millage]=CASE WHEN @deviceOBDstatus = 1 THEN @deviceMillage ELSE Millage END,
+						[extDeviceStatus1]=@extDeviceStatus1,
+						[extDeviceStatus2]=@extDeviceStatus2,
+						[extDeviceData2]=@extDeviceData2,
+						[extDeviceData3]=CASE WHEN @extDeviceData3 IS NOT NULL THEN @extDeviceData3 ELSE extDeviceData3 END,
+						[extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
+						[deviceName]=@deviceName,
+						UPDTime=@NowTime
+				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
 			END
 						INSERT INTO TB_CarRawData([CarNo],[CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
