@@ -805,7 +805,7 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false)
                 {
-                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
+                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED) OR (@SD between SD AND ED) OR (@ED between SD AND ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
