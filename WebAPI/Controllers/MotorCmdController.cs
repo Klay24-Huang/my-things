@@ -169,7 +169,11 @@ namespace WebAPI.Controllers
                         OtherService.Enum.MachineCommandType.CommandType CmdType = new OtherService.Enum.MachineCommandType.CommandType();
                         string CommandType = "";
                         string requestId = "";
+                        WSInput_Base<Params> input;
+                        string method = CommandType;
                         #region 先捉最近一次資料
+                        //20201127 小BENSON建議先把指令前的REPORT NOW取消掉測試看看
+                        /*
                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                         CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                         WSInput_Base<Params> input = new WSInput_Base<Params>()
@@ -184,12 +188,12 @@ namespace WebAPI.Controllers
                         string method = CommandType;
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
 
-                        /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus */
+                        // 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus 
                         if (flag)
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
-                        
+                        */
                         if (flag)
                         {
                             info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);
@@ -204,6 +208,7 @@ namespace WebAPI.Controllers
                                 deviceToken = spOut.deviceToken;
                             }
                         }
+                        
                         #endregion
                         if (flag)
                         {
@@ -279,7 +284,9 @@ namespace WebAPI.Controllers
                                 //}
 
                                 // 20201029 ADD BY ADAM REASON. 儲存指令結果，後續還是看ReportNow
-                                if (flag)
+                                // 20201127 小BENSON建議先把指令前的REPORT NOW取消掉測試看看
+                                // 這邊就先不跑強更狀態
+                                if (flag && false)
                                 {
                                     SPInput_SetMotorStatus spInput2 = new SPInput_SetMotorStatus()
                                     {
@@ -292,8 +299,6 @@ namespace WebAPI.Controllers
                                     SQLHelper<SPInput_SetMotorStatus, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_SetMotorStatus, SPOutput_Base>(connetStr);
                                     flag = sqlHelp2.ExecuteSPNonQuery(SPName2, spInput2, ref spOutBase, ref lstError);
                                     baseVerify.checkSQLResult(ref flag, spOutBase.Error, spOutBase.ErrorCode, ref lstError, ref errCode);
-
-
                                 }
                             }
                         }
