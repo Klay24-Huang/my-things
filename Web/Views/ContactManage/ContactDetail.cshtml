@@ -66,7 +66,6 @@
                 訂單/合約明細
             </div>
             <ul class="list-group list-group-flush">
-
                 <!--每一個li是一項查詢條件-->
                 <li class="list-group-item">
                     <div class="container-fluid">
@@ -75,7 +74,7 @@
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                @(string.Format("H{0}",obj.Data.OrderNo.ToString().PadLeft(7,'0')))
+                                @(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))
                             </div>
                         </div>
                     </div>
@@ -171,7 +170,7 @@
                                 延長用車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"無": obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss")))
+                                @((obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "無" : obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss")))
                             </div>
                         </div>
                     </div>
@@ -282,13 +281,11 @@
                                 @(OrderKind)
                             </div>
                             <div class="col-md-3">
-
-                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.location.href='~/Contact/returnCar/@(obj.Data.OrderNo)'">HTML</button>
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?OrderNum=@(obj.Data.OrderNo)','_blank','');">HTML</button>
                             </div>
                         </div>
                     </div>
                 </li>
-
                 <li class="list-group-item card-header bg-gray-400 text-white">
                     <div class="container-fluid">
                         <div class="row ml-1">
@@ -303,7 +300,7 @@
                                 實際取車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
+                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>
@@ -319,7 +316,7 @@
                                 {
                                     if (obj.PickCarImage != null)
                                     {
-                                         PickLen = obj.PickCarImage.Count;
+                                        PickLen = obj.PickCarImage.Count;
                                         if (PickLen > 0)
                                         {
                                             <button type="button" data-toggle="modal" data-target="#pick_modal" class="btn btn-primary">檢視照片</button>
@@ -330,7 +327,6 @@
                         </div>
                     </div>
                 </li>
-
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -338,7 +334,7 @@
                                 實際還車時間
                             </div>
                             <div class="col-md-3">
-                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00")?"": obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
+                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
                     </div>
@@ -354,10 +350,10 @@
                                 {
                                     if (obj.ReturnCarImage != null)
                                     {
-                                         ReturnLen = obj.ReturnCarImage.Count;
+                                        ReturnLen = obj.ReturnCarImage.Count;
                                         if (ReturnLen > 0)
                                         {
-                                            <button type="button" data-toggle="modal" data-target="#return_modal"  class="btn btn-primary">檢視照片</button>
+                                            <button type="button" data-toggle="modal" data-target="#return_modal" class="btn btn-primary">檢視照片</button>
                                         }
                                     }
                                 }
@@ -365,7 +361,6 @@
                         </div>
                     </div>
                 </li>
-
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -373,7 +368,7 @@
                                 取車里程
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>0)?obj.Data.StartMile.ToString():"")
+                                @((OrderStatus > 0) ? obj.Data.StartMile.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -385,7 +380,7 @@
                                 還車里程
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>1)?obj.Data.StopMile.ToString():"")
+                                @((OrderStatus > 1) ? obj.Data.StopMile.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -397,7 +392,7 @@
                                 租金
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>1)?obj.Data.CarRent.ToString():"")
+                                @((OrderStatus > 1) ? obj.Data.CarRent.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -409,7 +404,7 @@
                                 罰金
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>1)?obj.Data.FinePrice.ToString():"")
+                                @((OrderStatus > 1) ? obj.Data.FinePrice.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -421,7 +416,7 @@
                                 油資
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>1)?obj.Data.Mileage.ToString():"")
+                                @((OrderStatus > 1) ? obj.Data.Mileage.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -433,7 +428,7 @@
                                 eTag費用
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>1)?obj.Data.eTag.ToString():"")
+                                @((OrderStatus > 1) ? obj.Data.eTag.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -445,7 +440,7 @@
                                 車輛調度
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.CarDispatch.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.CarDispatch.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -457,7 +452,7 @@
                                 清潔費
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.CleanFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.CleanFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -469,7 +464,7 @@
                                 物品損壞/遺失
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.DestroyFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.DestroyFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -481,7 +476,7 @@
                                 代收停車費(車麻吉)
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.MachiFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.MachiFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -493,7 +488,7 @@
                                 非配合場停車費
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.ParkingFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.ParkingFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -505,7 +500,7 @@
                                 拖吊費
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.DraggingFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.DraggingFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -517,7 +512,7 @@
                                 其他
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.OtherFee.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.OtherFee.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -529,7 +524,7 @@
                                 轉乘優惠
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.TransDiscount.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.TransDiscount.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -541,7 +536,7 @@
                                 時數折抵
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.CarPoint.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.CarPoint.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -553,7 +548,7 @@
                                 結算金額
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.FinalPrice.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.FinalPrice.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -565,7 +560,6 @@
                                 已付金額
                             </div>
                             <div class="col-md-3">
-
                             </div>
                         </div>
                     </div>
@@ -577,7 +571,7 @@
                                 取車回饋
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>0)?obj.Data.LFeedBack.ToString():"")
+                                @((OrderStatus > 0) ? obj.Data.LFeedBack.ToString() : "")
                             </div>
                         </div>
                     </div>
@@ -589,7 +583,19 @@
                                 還車回饋
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus>3)?obj.Data.RFeedBack.ToString():"")
+                                @((OrderStatus > 3) ? obj.Data.RFeedBack.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                停車格
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.parkingSpace.ToString() : "")
                             </div>
                         </div>
                     </div>
