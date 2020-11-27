@@ -60,6 +60,7 @@ namespace WebAPI.Controllers
             HiEasyRentAPI WebAPI = new HiEasyRentAPI();
             int retryMode = 0;
             string ORDNO = "";
+            string CNTRNO = "";
 
             #endregion
             #region 防呆
@@ -264,9 +265,13 @@ namespace WebAPI.Controllers
                                     errMsg = output.Message;
 
                                 }
-                               
+                                else
+                                {
+                                    CNTRNO = output.Data[0].CNTRNO;     //20201127 ADD BY ADAM REASON.增加短租合約回存
+                                }
 
-                                bool saveFlag = DoSave125Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
+                                //20201127 ADD BY ADAM REASON.增加短租合約回存
+                                bool saveFlag = DoSave125Data(tmpOrder, CNTRNO, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
                             }
                         }
                     }
@@ -421,13 +426,14 @@ namespace WebAPI.Controllers
             return flag;
 
         }
-        private bool DoSave125Data(Int64 OrderNo,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        private bool DoSave125Data(Int64 OrderNo, string CNTRNO,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);
             SPInput_BE_LandControlSuccess spInput = new SPInput_BE_LandControlSuccess()
             {
                 IsSuccess = IsSuccess,
+                CNTRNO = CNTRNO,        //20201127 ADD BY ADAM REASON.增加短租合約回存
                 LogID = LogID,
                 OrderNo = OrderNo
             };

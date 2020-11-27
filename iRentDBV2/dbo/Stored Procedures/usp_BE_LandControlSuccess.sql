@@ -45,6 +45,7 @@
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_LandControlSuccess]
 	@OrderNo                BIGINT                ,
+	@CNTRNO					VARCHAR(30)			  ,		--20201127 ADD BY ADAM REASON.增加合約編號
 	@IsSuccess              TINYINT               ,    
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -75,7 +76,7 @@ SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 SET @OrderNo    =ISNULL (@OrderNo    ,0);
-
+SET @CNTRNO		=ISNULL(@CNTRNO,'')
 
 		BEGIN TRY
 
@@ -99,6 +100,7 @@ SET @OrderNo    =ISNULL (@OrderNo    ,0);
 			BEGIN
 		     UPDATE TB_lendCarControl 
 			 SET isRetry=0,UPDTime=@NowTime
+			 ,CNTRNO=@CNTRNO		--20201127 ADD BY ADAM REASON.增加合約編號
 			 WHERE IRENTORDNO=@OrderNo
 			END
 		 END

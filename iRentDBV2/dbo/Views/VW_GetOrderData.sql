@@ -96,7 +96,7 @@ AS
 	LEFT JOIN [dbo].[TB_OperatorBase] AS Operator  WITH(NOLOCK)  ON Operator.OperatorID=Car.Operator
 	LEFT JOIN [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW  WITH(NOLOCK) ON VW.CARTYPE=Car.CarType AND VW.StationID=OrderMain.lend_place AND VW.PROJID=OrderMain.ProjID AND VW.IOType='O'
 	LEFT JOIN [dbo].[TB_PriceByMinutes] AS PriceByMinutes WITH(NOLOCK) ON PriceByMinutes.CarType=Car.CarType AND PriceByMinutes.ProjID=VW.PROJID
-	LEFT JOIN [dbo].[TB_CarStatus] AS CarStatus WITH(NOLOCK) ON CarStatus.CarNo=OrderMain.CarNo
+	LEFT JOIN [dbo].[TB_CarStatus] AS CarStatus WITH(NOLOCK) ON CarStatus.CarNo=OrderMain.CarNo AND CarInfo.CID=CarStatus.CID		--20201127 ADD BY ADAM REASON.過濾多的CID
 	LEFT JOIN [dbo].[TB_iRentStation] AS Station WITH(NOLOCK) ON Station.StationID=OrderMain.lend_place
 GO
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
