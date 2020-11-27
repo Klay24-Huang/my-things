@@ -1,4 +1,5 @@
 ﻿using Domain.TB.BackEnd;
+using Domain.TB.Maintain;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -494,6 +495,43 @@ namespace Reposotory.Implement
             }
 
             return tmp;
+        }
+        /// <summary>
+        /// 整備人員用
+        /// </summary>
+        /// <param name="UserID"></param>
+        /// <returns></returns>
+        public List<GetBookingMainForMaintain> GetAllCleanDataHasStation(string UserID)
+        {
+            bool flag = false;
+            List<GetBookingMainForMaintain> lstBooking = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT List.*,Station.StationID AS Site_ID,Station.Location AS Location FROM VW_MA_GetCleanOrderList AS List ";
+            SQL += " LEFT JOIN TB_Car AS Car ON Car.CarNo = List.CarNo ";
+            SQL += " LEFT JOIN TB_iRentStation AS Station ON Station.StationID = Car.nowStationID";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            if (null != UserID)
+            {
+
+                if (UserID != "")
+                {
+                    if ("" != term) { term += " AND "; }
+                    term += " UserID=@UserID ";
+                    para[0] = new SqlParameter("@UserID", SqlDbType.VarChar, 50);
+                    para[0].Value = UserID;
+                    para[0].Direction = ParameterDirection.Input;
+
+                }
+                if ("" != term)
+                {
+                    SQL += " WHERE " + term;
+                }
+                SQL += "  ORDER BY OrderStatus ASC,start_time desc";
+
+                lstBooking = GetObjList<GetBookingMainForMaintain>(ref flag, ref lstError, SQL, para, term);
+            }
+            return lstBooking;
         }
 
     }

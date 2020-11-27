@@ -1,4 +1,4 @@
-﻿var host = "http://113.196.107.238/";
+﻿
 var timeFlag = true;
 var delayTime = 1 * 60 * 1000;
 var userName='@UserName';
@@ -75,7 +75,7 @@ function doReturnCar(UserName) {
    //  alert(CarNo+","+UserName);
     if (flag) {
         
-        var URL = host + "iMotoWebAPI/api/CleanCarReturnNew";
+        var URL = jsHost + "MA_CleanCarReturnNew";
         console.log(URL);
         var SendObj = new Object();
         SendObj.UserID = UserName;
@@ -157,11 +157,11 @@ function getCarData() {
     $.busyLoadFull("show", {
         spinner: "cube-grid"
     });
-    var URL = host + "iMotoWebAPI/api/CleanListQuery";
+    var URL = jsHost + "MA_CleanListQuery";
     console.log(URL);
     var SendObj = new Object();
     SendObj.IDNO = $("#manager").val();
-    var jdata = JSON.stringify({ "para": SendObj });
+    var jdata = JSON.stringify( SendObj );
     console.log(jdata);
     $.ajax({
         type: 'POST',
@@ -171,17 +171,17 @@ function getCarData() {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); $.busyLoadFull("hide", { animate: "fade" }); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             console.log(JsonData);
             $.busyLoadFull("hide", { animate: "fade" });
             if (JsonData.Result === "0") {
                 localStorage.removeItem('bookingList');
                 console.log("true");
-                console.log(JsonData.data);
+                console.log(JsonData.Data);
 
-                var dataLen = JsonData.data.length;
+                var dataLen = JsonData.Data.length;
                 if (dataLen > 0) {
-                    localStorage.setItem('bookingList', JSON.stringify(JsonData.data));
+                    localStorage.setItem('bookingList', JSON.stringify(JsonData.Data));
                 }
                 console.log(dataLen);
                 var htmlStr = "";
@@ -190,12 +190,12 @@ var now = new Date()
 //alert("now time is :"+ now);
 
                 for (var i = 0; i < dataLen; i++) {
-                    console.log(JsonData.data[i]);
-                    htmlStr += "<tr><td>H" + JsonData.data[i].OrderNum + "</td><td>" + JsonData.data[i].assigned_car_id + "</td>";
+                    console.log(JsonData.Data[i]);
+                    htmlStr += "<tr><td>H" + JsonData.Data[i].OrderNum + "</td><td>" + JsonData.Data[i].assigned_car_id + "</td>";
                     //Date.timezoneOffset(-480)
-                    var SD = addMinutes(new Date(Date.parse(JsonData.data[i].start_time)), -30);
+                    var SD = addMinutes(new Date(Date.parse(JsonData.Data[i].start_time)), -30);
 
-                    var ED = addMinutes(new Date(Date.parse(JsonData.data[i].stop_time)), 15);
+                    var ED = addMinutes(new Date(Date.parse(JsonData.Data[i].stop_time)), 15);
 //alert("SD="+SD+";ED="+ED);
                    // var now = new Date();
                   //  var d = new Date()
@@ -203,27 +203,27 @@ var now = new Date()
                     console.log("now=" + now);
                     console.log("SD=" + SD);
                     console.log("ED=" + ED);
-                    if (JsonData.data[i].OrderStatus == 0 && JsonData.data[i].cancel_status == 0) {
+                    if (JsonData.Data[i].OrderStatus == 0 && JsonData.Data[i].cancel_status == 0) {
                         if (JsonData.data[i].isOverTime == 1) {
                             htmlStr += "<td>已逾時</td>";
                         } else {
-                            if (JsonData.data[i].CanPick == 1 && JsonData.data[i].CanCancel == 1) {
-                                htmlStr += "<td><span class=\"btn btn-danger\" id='POrder_" + JsonData.data[i].OrderNum + "' ontouchend=pickCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "'); onclick=pickCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "');>取車</span><br><span class=\"btn btn-danger\" id='COrder_" + JsonData.data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "');>取消</span>  </td>";
-                            } else if (JsonData.data[i].CanPick == 0 && JsonData.data[i].CanCancel == 1) {
-                                htmlStr += "<td><span class=\"btn btn-danger\" id='COrder_" + JsonData.data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JsonData.data[i].assigned_car_id + "');>取消</span></td>";
+                            if (JsonData.Data[i].CanPick == 1 && JsonData.Data[i].CanCancel == 1) {
+                                htmlStr += "<td><span class=\"btn btn-danger\" id='POrder_" + JsonData.Data[i].OrderNum + "' ontouchend=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取車</span><br><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span>  </td>";
+                            } else if (JsonData.Data[i].CanPick == 0 && JsonData.Data[i].CanCancel == 1) {
+                                htmlStr += "<td><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span></td>";
                             }
                         }
                         console.log("0");
                     } else if (JsonData.data[i].OrderStatus == 1) {
-                                htmlStr += "<td><span class=\"btn btn-danger\"  id='ROrder_" + JsonData.data[i].OrderNum + "'  ontouchend=returnCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JSON.stringify(JsonData.data[i]) + "');   onclick=returnCar('" + JsonData.data[i].OrderNum + "','" + JsonData.data[i].MachineNo + "'," + JsonData.data[i].IsCar + ",'" + JSON.stringify(JsonData.data[i]) + "');>還車</span></td>";
+                        htmlStr += "<td><span class=\"btn btn-danger\"  id='ROrder_" + JsonData.Data[i].OrderNum + "'  ontouchend=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');   onclick=returnCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JSON.stringify(JsonData.Data[i]) + "');>還車</span></td>";
 
                         console.log("1");
-                    } else if (JsonData.data[i].OrderStatus == 2) {
+                    } else if (JsonData.Data[i].OrderStatus == 2) {
                         htmlStr += "<td>已完成</td>";
                         console.log("2");
-                    } else if(JsonData.data[i].OrderStatus == 3){
+                    } else if (JsonData.Data[i].OrderStatus == 3){
                         htmlStr += "<td>已取消</td>";
-                    } else if (JsonData.data[i].OrderStatus == 4) {
+                    } else if (JsonData.Data[i].OrderStatus == 4) {
                         htmlStr += "<td>取車逾時，系統已取消</td>";
                      
                     
@@ -231,8 +231,8 @@ var now = new Date()
                         htmlStr += "<td>已逾時</td>";
                         console.log("3");
                     }
-   htmlStr += "<td>" + JsonData.data[i].Location + "</td>";
-                    htmlStr += "<td>" + JsonData.data[i].start_time.replace("T", " ") + "</td><td>" + JsonData.data[i].stop_time.replace("T", " ") + "</td>";
+                    htmlStr += "<td>" + JsonData.Data[i].Location + "</td>";
+                    htmlStr += "<td>" + JsonData.Data[i].start_time.replace("T", " ") + "</td><td>" + JsonData.Data[i].stop_time.replace("T", " ") + "</td>";
                     htmlStr += "</tr>";
                 }
                 $("#bookDetailBody").html(htmlStr);
@@ -323,7 +323,7 @@ function cancelCar(OrderNum, MachineNo, isCar, CarNo) {
 //強制取還車
 function carControlComplete(encryptData) {
     var jdata = JSON.stringify({ "para": encryptData });
-    var URL = host + "iMotoWebAPI/api/AutoCarAndMotor/";
+    var URL = jsHost + "BE_ContactSetting";
     $.ajax({
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -425,7 +425,7 @@ $("#hidIsCar").val(isCar);
     var obj = bookingList.find(function (element) {
         return element.assigned_car_id.replace(/ /g, "").replace(/\"/g, "") == CarNo;
     });
-    var URL = host + "iMotoWebAPI/api/CleanCarStart";
+    var URL = jsHost + "MA_CleanCarStart";
     console.log(URL);
     var SendObj = new Object();
     SendObj.UserID = $("#manager").val();
