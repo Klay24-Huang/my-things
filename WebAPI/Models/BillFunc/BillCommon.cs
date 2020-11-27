@@ -496,7 +496,7 @@ namespace WebAPI.Models.BillFunc
         {
             int MilagePrice = 0;
             
-            var AllMinute = GetRangeMins(SD, ED, 60, 600, lstHoliday);  //基本分鐘數及單日分鐘上限寫死
+            var AllMinute = GetCarRangeMins(SD, ED, 60, 600, lstHoliday);  //基本分鐘數及單日分鐘上限寫死
             var TotalHour = (AllMinute.Item1 + AllMinute.Item2) / 60;
 
             if (MilageBase < 0)
