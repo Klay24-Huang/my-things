@@ -105,6 +105,15 @@ namespace WebAPI.Controllers
                     AllCars = _repository.GetAllMotorRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
                 }
 
+                if (AllCars != null && AllCars.Count > 0)
+                {
+                    AllCars.ForEach(x =>
+                    {
+                        x.Power = Convert.ToInt32(x.Power);
+                        x.RemainingMileage = Convert.ToInt32(x.RemainingMileage);
+                    });
+                }
+
                 OAnyRentAPI = new OAPI_MotorRent()
                 {
                     MotorRentObj = AllCars
@@ -113,7 +122,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
