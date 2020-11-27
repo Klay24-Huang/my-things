@@ -165,7 +165,7 @@ SET @ParkingSpace='';
 
 						--寫入機車還車時的資訊 20201030 ADD BY ERIC
 						INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
-						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WHERE CarNo=@CarNo;
+						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 					END
 					ELSE IF @ProjType=0
 					BEGIN
@@ -209,13 +209,15 @@ SET @ParkingSpace='';
 							C.CUSTTYPE,C.ODCUSTID,C.CARTYPE,CASRNO=A.CarNo,C.TSEQNO,C.GIVEDATE,
 							C.GIVETIME,dbo.FN_CalRntdays(B.final_start_time,B.final_stop_time),CAST(B.start_mile AS INT),C.OUTBRNHCD,CONVERT(VARCHAR,B.final_stop_time,112),REPLACE(CONVERT(VARCHAR(5),B.final_stop_time,108),':',''),
 							CAST(B.end_mile AS INT),C.INBRNHCD,C.RPRICE,C.RINSU,C.DISRATE,B.fine_interval/600,
-							fine_price,final_price,pure_price,mileage_price,A.ProjID,C.REMARK,
+							fine_price,RNTAMT=(B.fine_price+B.mileage_price),pure_price,mileage_price,A.ProjID,C.REMARK,
 							C.INVKIND,C.UNIMNO,C.INVTITLE,C.INVADDR,B.gift_point,B.gift_motor_point,
-							CASRDNO='',B.already_payment,AUTHCODE='',isRetry=1,RetryTimes=0,B.Etag,
-							C.CARRIERID,C.NPOBAN,B.Insurance_price,B.parkingFee,@NowTime,@NowTime
+							CARDNO=ISNULL(Trade.CardNumber,''),PAYAMT=ISNULL(Trade.AUTHAMT,0),AUTHCODE=IIF(ISNULL(Trade.AuthIdResp,0)=0,'',CONVERT(VARCHAR(20),Trade.AuthIdResp)),isRetry=1,RetryTimes=0,B.Etag,
+							C.CARRIERID,C.NPOBAN,B.Insurance_price,ISNULL(Machi.Amount,0) AS PARKINGAMT2,@NowTime,@NowTime
 						FROM TB_OrderMain A WITH(NOLOCK)
 						JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 						JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
+						LEFT JOIN TB_Trade AS Trade ON Trade.MerchantTradeNo =B.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=B.order_number
+						LEFT JOIN TB_OrderParkingFeeByMachi AS Machi ON Machi.OrderNo=B.order_number
 						WHERE A.order_number=@OrderNo
 					END
 
