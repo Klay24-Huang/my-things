@@ -421,11 +421,12 @@ namespace WebAPI.Models.BillFunc
                     fpay = payMins * PriceMin;
                 }
             }
-
+            //折抵通則
+            //折抵優先折抵基本分鐘，除非剩餘折抵時數小於基本分鐘，則只能折抵非基本分鐘數
             if (disc > 0)
             {
                 if (disc < 199)
-                    fpay = fpay - 10 - (disc - 6) * PriceMin;
+                    fpay = fpay - 10 - (disc - 6) * PriceMin; 
                 else
                     fpay = (fpay - 300) - (disc - 199) * PriceMin;
             }
