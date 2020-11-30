@@ -283,10 +283,10 @@ namespace WebAPI.Controllers
                                             UserID = apiInput.UserID,
                                             transaction_no = "",
                                             ReturnDate = ReturnDate,
-                                            bill_option = apiInput.InvoiceType,
+                                            bill_option = apiInput.bill_option,
                                             NPOBAN = apiInput.NPOBAN,
                                             CARRIERID = apiInput.CARRIERID,
-                                            unified_business_no = apiInput.UniCode
+                                            unified_business_no = apiInput.unified_business_no
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
@@ -317,10 +317,10 @@ namespace WebAPI.Controllers
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
                                                 ReturnDate = ReturnDate,
-                                                bill_option = apiInput.InvoiceType,
+                                                bill_option = apiInput.bill_option,
                                                 NPOBAN = apiInput.NPOBAN,
                                                 CARRIERID = apiInput.CARRIERID,
-                                                unified_business_no = apiInput.UniCode
+                                                unified_business_no = apiInput.unified_business_no
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();

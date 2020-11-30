@@ -29,7 +29,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <summary>
         /// 發票寄送方式
         /// </summary>
-        public string InvoiceType { set; get; }
+        public string bill_option { set; get; }
         /// <summary>
         /// 手機條碼載具,自然人憑證載具
         /// </summary>
@@ -41,7 +41,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <summary>
         /// 統一編號
         /// </summary>
-        public string UniCode { set; get; }
+        public string unified_business_no { set; get; }
         /// <summary>
         /// 操作者
         /// </summary>
