@@ -208,6 +208,32 @@ namespace Reposotory.Implement
             lstZip = GetObjList<CityData>(ref flag, ref lstError, SQL, para, term);
             return lstZip;
         }
+        public List<BE_MemberInvoiceSetting> GetMemberDataFromOrder(string orderNum)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MemberInvoiceSetting> lstZip = null;
+            int nowCount = 0;
+            string SQL = "SELECT MEMIDNO,CARRIERID,NOBAN,InvoiceType,UniCode " +
+                "FROM TB_MemberData A WITH(NOLOCK) " +
+                "JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            
+            term = " B.order_number=@order_number";
+            para[nowCount] = new SqlParameter("@order_number", SqlDbType.VarChar, 30);
+            para[nowCount].Value = orderNum;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK)  WHERE " + term;
+            }
+
+            lstZip = GetObjList<BE_MemberInvoiceSetting>(ref flag, ref lstError, SQL, para, term);
+            return lstZip;
+        }
         /// <summary>
         ///  取得行政區列表
         /// </summary>
