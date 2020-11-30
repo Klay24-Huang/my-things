@@ -481,6 +481,7 @@
     <Compile Include="Models\Param\Input\IAPI_WallHistory.cs" />
     <Compile Include="Models\Param\Input\IAP_OrderDetail.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_CleanCarByList.cs" />
+    <Compile Include="Models\Param\Maintain\Input\IAPI_MA_CleanCarReturnNew.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_CleanCarStart.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_CleanListQuery.cs" />
     <Compile Include="Models\Param\Maintain\Input\IAPI_MA_GetCleanCarByLatLng.cs" />

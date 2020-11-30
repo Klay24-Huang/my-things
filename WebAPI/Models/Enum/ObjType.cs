@@ -521,6 +521,9 @@ namespace WebAPI.Models.Enum
             BE_HandleNews,
 
             #endregion
+            #region 整備人員
+            MA_CheckCarStatusByReturn,
+            #endregion
         }
         /// <summary>
         /// 取出SPName
@@ -933,6 +936,11 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleNews:
                     SPName = "usp_BE_HandleNews";
+                    break;
+                #endregion
+                #region 整備人員
+                case SPType.MA_CheckCarStatusByReturn:
+                    SPName = "usp_MA_CheckCarStatusByReturn";
                     break;
                     #endregion
             }

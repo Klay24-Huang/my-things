@@ -8,13 +8,15 @@
       ,[rescue]
       ,[dispatch]
       ,[Anydispatch]
-	  ,IDNO
-      ,BookingMain.CarNo
+	  ,IDNO AS citizen_id
+      ,BookingMain.CarNo AS assigned_car_id
       ,[start_time]
       ,[stop_time]
 	  ,[cancel_status]
 	  ,CarMachine.CarMachineID AS MachineID
-	  ,CarMachine.MachineNo
+	  --,CarMachine.MachineNo /*資料未匯入*/
+      ,CarInfo.CID AS MachineNo /*上方未匯入前，先使用這個*/
+      ,CarInfo.deviceToken AS deviceToken
 	  ,case CarInfo.IsMotor WHEN  0 then 1 when 1 then 0 END AS IsCar
   FROM [dbo].[TB_CarCleanLog] AS CarClean
   LEFT JOIN TB_OrderMain AS BookingMain  WITH(NOLOCK) on CarClean.OrderNum=BookingMain.order_number

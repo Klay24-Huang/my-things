@@ -101,7 +101,8 @@ namespace WebAPI.Controllers
                                 stop_time = lstOrder[i].stop_time,
                                 UserID = lstOrder[i].UserID,
                                 Location = lstOrder[i].Location.Replace(" ", "").Replace("\t", ""),
-                                Site_ID = lstOrder[i].Site_ID
+                                Site_ID = lstOrder[i].Site_ID,
+                                 deviceToken=lstOrder[i].deviceToken
                             };
                             DateTime nowDateTime = DateTime.Now;
                             if (nowDateTime >= tmp.start_time.AddMinutes(-15) && nowDateTime <= tmp.start_time.AddMinutes(15))
@@ -141,7 +142,8 @@ namespace WebAPI.Controllers
                                     stop_time = lstOrder[i].stop_time,
                                     UserID = lstOrder[i].UserID,
                                     Location = lstOrder[i].Location.Replace(" ", "").Replace("\t", ""),
-                                    Site_ID = lstOrder[i].Site_ID
+                                    Site_ID = lstOrder[i].Site_ID,
+                                    deviceToken = lstOrder[i].deviceToken
                                 });
                             }
 

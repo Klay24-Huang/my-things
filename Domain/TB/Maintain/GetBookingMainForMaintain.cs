@@ -65,6 +65,7 @@ namespace Domain.TB.Maintain
         /// 車機編號
         /// </summary>
         public string MachineNo { set; get; }
+        public string deviceToken { set; get; }
         /// <summary>
         /// 是否是汽車
         /// <para>0:否，機車</para>
