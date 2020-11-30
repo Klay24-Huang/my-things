@@ -125,7 +125,7 @@ $(function () {
             obj.Mode = parseInt(mode);
             obj.returnDate = ReturnDate;
             obj.bill_option = bill_option;
-            obj.CARRIERID = CARRIERID;
+            obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
             obj.NPOBAN = NPOBAN;
             obj.unified_business_no = unified_business_no;
             var json = JSON.stringify(obj);
