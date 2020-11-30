@@ -377,7 +377,44 @@ namespace Reposotory.Implement
         /// <param name="OrderNo"></param>
         /// <param name="Mode"></param>
         /// <returns></returns>
-        public List<BE_CarImageData> GetOrdeCarImage(Int64 OrderNo,int Mode,bool IsContact)
+        public List<BE_ParkingImageData> GetOrderParkingImage(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ParkingImageData> lstCarImage = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT SEQNO,ParkingSpace,ParkingImage  FROM TB_ParkingSpace WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            term += " OrderNo=@OrderNo";
+            para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            para[nowCount].Value = OrderNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            SQL += " ORDER BY OrderNo,SEQNO ASC;";
+
+            lstCarImage = GetObjList<BE_ParkingImageData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarImage;
+        }
+
+        /// <summary>
+        /// 取出出還車照
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        public List<BE_CarImageData> GetOrdeCarImage(Int64 OrderNo, int Mode, bool IsContact)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -391,7 +428,7 @@ namespace Reposotory.Implement
             string term = " ImageType<>5 ";
             if (IsContact)
             {
-                term= " ImageType=5 ";
+                term = " ImageType=5 ";
             }
 
 
@@ -404,7 +441,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (Mode >= 0 && Mode<2)
+            if (Mode >= 0 && Mode < 2)
             {
                 term += (term == "") ? "" : " AND ";
                 term += " Mode=@Mode";
@@ -426,6 +463,7 @@ namespace Reposotory.Implement
 
             return lstCarImage;
         }
+
         /// <summary>
         /// 判斷強還時是不是已經有其他車取車，以判斷要不要清空車機
         /// </summary>
