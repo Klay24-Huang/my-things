@@ -512,6 +512,191 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 取得真實折扣分鐘,平日折扣分鐘,假日折扣分鐘
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘</param>
+        /// <param name="dayMaxMins">單日計費分鐘上限</param>
+        /// <param name="lstHoliday">假日列表</param>
+        /// <param name="Discount">預備折扣點數</param>
+        /// <returns></returns>
+        public Tuple<double, double, double> CarDiscToPara(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, int Discount)
+        {
+            double payDisc = 0; //真實使用折扣
+            double wDisc = 0; //平日折扣
+            double hDisc = 0; //假日則扣           
+
+            double disc = Convert.ToDouble(Discount);
+
+            if (disc < 0)
+                throw new Exception("折扣不可於0");
+
+            if(disc % 30 > 0)
+                throw new Exception("折扣須為30的倍數");
+
+            var dayPayList = GetCarRangeDayFlow(SD, ED, baseMinutes, dayMaxMins, lstHoliday);           
+
+            if(dayPayList != null && dayPayList.Count()>0)
+            {
+                double mins = dayPayList.Select(x => x.xMins).Sum();
+              
+                if (disc > mins)
+                    disc = mins; //自動縮減
+
+                dayPayList.ForEach(x =>
+                {
+                    if(disc > 0)
+                    {
+                        if (disc >= x.xMins)
+                        {
+                            wDisc += x.isHoliday ? 0 : x.xMins;
+                            hDisc += x.isHoliday ? x.xMins : 0;
+                            payDisc += x.xMins;
+                            disc -= x.xMins;
+                        }
+                        else
+                        {
+                            wDisc += x.isHoliday ? 0 : disc;
+                            hDisc += x.isHoliday ? disc : 0;
+                            payDisc += disc;
+                            disc = 0;
+                        }
+                    }
+                });
+            }
+
+            return new Tuple<double, double, double>(payDisc, wDisc, hDisc);
+        }
+
+        public List<DayPayHour> GetCarRangeDayFlow(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
+        {
+            MinsProcess minsPro = new MinsProcess(GetCarPayMins);
+            var re = GetRangeDayFlow(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
+
+            if (re != null && re.Count() > 0)
+                re = re.OrderBy(x => x.xDate).ToList();
+
+            return re;
+        }
+
+        /// <summary>
+        /// 依時間軸取得則扣點數(平日點,假日點)
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘</param>
+        /// <param name="dayMaxMins">單日計費分鐘上限</param>
+        /// <param name="lstHoliday">假日</param>
+        /// <returns>平日可折點數,假日點可折點數</returns>
+        public List<DayPayHour> GetRangeDayFlow( DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            List<DayPayHour> re = new List<DayPayHour>();
+
+            if (SD == null && ED == null && SD > ED)
+                throw new Exception("SD,ED不可為null");
+
+            if (SD > ED)
+                throw new Exception("起日不可大於迄日");
+
+            SD = SD.AddSeconds(SD.Second * -1);
+            ED = ED.AddSeconds(ED.Second * -1);
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            bool sd_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_sd);
+            bool ed_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_ed);
+
+            double mins = ED.Subtract(SD).TotalMinutes;             
+
+            if (SD.Date == ED.Date || SD.AddDays(1) >= ED)
+            {
+                var xre = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                if (xre != null && xre.Count > 0)
+                    re.AddRange(xre);
+            }
+            else
+            {
+                while (SD < ED)
+                {
+                    var sd24 = SD.AddHours(24);
+                    if (ED > sd24)
+                    {
+                        var re24 = GetH24DayPayList(SD, sd24, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (re24 != null && re24.Count() > 0)
+                            re.AddRange(re24);
+                    }
+                    else
+                    {
+                        var reLast = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (reLast != null && reLast.Count() > 0)
+                            re.AddRange(reLast);
+                    }
+                    SD = sd24;
+                }
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// 取得單日時間軸轉平假日計費時數列表
+        /// </summary>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <param name="baseMinutes"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <param name="lstHoliday"></param>
+        /// <param name="minsPro"></param>
+        /// <returns></returns>
+        public List<DayPayHour> GetH24DayPayList(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            List<DayPayHour> re = new List<DayPayHour>();
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            bool sd_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_sd);
+            bool ed_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_ed);
+
+            var re24 = GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+
+            if (re24.Item1 == 0 || re24.Item2 == 0)//都是假日或都是平日
+            {
+                DayPayHour item = new DayPayHour()
+                {
+                    isHoliday = sd_isHoliday,
+                    xDate = str_sd,
+                    xMins = sd_isHoliday ? re24.Item2 : re24.Item1
+                };
+                re.Add(item);
+            }
+            else//有平日有假日
+            {
+                //首日
+                DayPayHour item_sd = new DayPayHour()
+                {
+                    isHoliday = sd_isHoliday,
+                    xDate = str_sd,
+                    xMins = sd_isHoliday ? re24.Item2 : re24.Item1
+                };
+                re.Add(item_sd);
+
+                //隔日
+                DayPayHour item_ed = new DayPayHour()
+                {
+                    isHoliday = ed_isHoliday,
+                    xDate = str_ed,
+                    xMins = ed_isHoliday ? re24.Item2 : re24.Item1
+                };
+                re.Add(item_ed);
+            }
+
+            return re;
+        }
+
+        /// <summary>
         /// 時間區段內平日計費分鐘總和,假日計費分鐘總和
         /// </summary>
         /// <param name="SD">起日</param>
@@ -562,7 +747,6 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
-
 
         public Tuple<double, double> GetCarRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {
@@ -1710,4 +1894,12 @@ namespace WebAPI.Models.BillFunc
             return CanDiscountPoint;
         }
     }
+
+    public class DayPayHour
+    {
+        public string xDate { get; set; }//格式yyyyMMdd
+        public double xMins { get; set; }//當日付費分鐘
+        public bool isHoliday { get; set; }//是否假日
+    }
+   
 }

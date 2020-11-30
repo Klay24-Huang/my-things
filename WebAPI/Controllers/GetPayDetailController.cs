@@ -6,6 +6,7 @@ using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Newtonsoft.Json;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -198,6 +199,7 @@ namespace WebAPI.Controllers
                 #endregion
             }
             #endregion
+
             #region 第二階段判斷及計價
             if (flag)
             {
@@ -251,6 +253,7 @@ namespace WebAPI.Controllers
                         errCode = "ERR208";
                     }
                 }
+
                 #region 與短租查時數
                 if (flag)
                 {
@@ -569,26 +572,56 @@ namespace WebAPI.Controllers
                                 ActualRedeemableTimePoint = TotalRentMinutes - 30;
                             }
                         }
-                        if (Discount > TotalRentMinutes)
+                        //if (Discount > TotalRentMinutes)
+                        //{
+                        //    Discount = (days * 600) + (hours * 60);        //自動縮減
+                        //    if (mins > 15 && mins < 45)
+                        //    {
+                        //        Discount += 30;
+                        //    }
+                        //    else if (mins > 45)
+                        //    {
+                        //        Discount += 60;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    int tmp = TotalRentMinutes - Discount;
+                        //    if (tmp > 0 && tmp < 30)
+                        //    {
+                        //        Discount += TotalRentMinutes - Discount - 30;
+                        //    }
+                        //}
+
+                        #region 折扣計算
+
+                        double wDisc = 0;
+                        double hDisc = 0;
+                        int PayDisc = 0;
+                        if (hasFine)
                         {
-                            Discount = (days * 600) + (hours * 60);        //自動縮減
-                            if (mins > 15 && mins < 45)
+                            var xre = new BillCommon().CarDiscToPara(SD, ED, 60, 600, lstHoliday, Discount);
+                            if(xre != null)
                             {
-                                Discount += 30;
-                            }
-                            else if (mins > 45)
-                            {
-                                Discount += 60;
+                                PayDisc = Convert.ToInt32(xre.Item1);
+                                wDisc = xre.Item2;
+                                hDisc = xre.Item3;
                             }
                         }
                         else
                         {
-                            int tmp = TotalRentMinutes - Discount;
-                            if (tmp > 0 && tmp < 30)
+                            var xre = new BillCommon().CarDiscToPara(SD, FED, 60, 600, lstHoliday, Discount);
+                            if (xre != null)
                             {
-                                Discount += TotalRentMinutes - Discount - 30;
+                                PayDisc = Convert.ToInt32(xre.Item1);
+                                wDisc = xre.Item2;
+                                hDisc = xre.Item3;
                             }
                         }
+
+                        Discount = PayDisc;
+
+                        #endregion
 
                         if (TotalRentMinutes > 0)
                         {
@@ -631,8 +664,13 @@ namespace WebAPI.Controllers
                         {
                             var result = new BillCommon().GetCarRangeMins(SD, ED, 60, 10 * 60, lstHoliday);
 
-                            int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
-                            
+                            //int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
+
+                            double n_price = Convert.ToDouble(OrderDataLists[0].PRICE);
+                            double h_price = Convert.ToDouble(OrderDataLists[0].PRICE_H);
+
+                            int DiscountPrice = Convert.ToInt32(((wDisc/60) * n_price) + ((hDisc/60) * h_price));
+
                             if (UseMonthMode)
                             {
                                 if (billCommon._scriptHolidayHour > 0)
@@ -644,14 +682,14 @@ namespace WebAPI.Controllers
                                     DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * monthlyRentDatas[0].WorkDayRateForCar)));
                                 }
                             }
-                            else
-                            {
-                                //if (billCommon._holidayHour > 0)
-                                if (result.Item2 > 0)
-                                {
-                                    DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE_H)));
-                                }
-                            }
+                            //else
+                            //{
+                            //    //if (billCommon._holidayHour > 0)
+                            //    if (result.Item2 > 0)
+                            //    {
+                            //        DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE_H)));
+                            //    }
+                            //}
                             CarRentPrice -= DiscountPrice;
                         }
                         //安心服務
