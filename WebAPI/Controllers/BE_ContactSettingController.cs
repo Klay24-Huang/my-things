@@ -316,7 +316,11 @@ namespace WebAPI.Controllers
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
-                                                ReturnDate = ReturnDate
+                                                ReturnDate = ReturnDate,
+                                                bill_option = apiInput.InvoiceType,
+                                                NPOBAN = apiInput.NPOBAN,
+                                                CARRIERID = apiInput.CARRIERID,
+                                                unified_business_no = apiInput.UniCode
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();
@@ -868,12 +872,12 @@ namespace WebAPI.Controllers
                 //機車路邊不計算預計還車時間
                 if (OrderDataLists[0].ProjType == 4)
                 {
-                    ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
+                    ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time==""? returnDate: OrderDataLists[0].final_stop_time);
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                 }
                 else
                 {
-                    ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
+                    ED = Convert.ToDateTime(OrderDataLists[0].stop_time==""? returnDate: OrderDataLists[0].stop_time);
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                 }
                 FED = Convert.ToDateTime(returnDate);

@@ -52,7 +52,10 @@ $(function () {
         var type = $("#type").val();
         var mode = $("#mode").val();
         var ReturnDate = $("#StartDate").val();
-        var InvoiceType = $("#InvoiceType").val();
+        var bill_option = $("#InvoiceType").val();
+        var CARRIERID = $("#CARRIERID").val();
+        var NPOBAN = $("#NPOBAN").val();
+        var unified_business_no = $("#UniCode").val();
         var flag = true;
         var errMsg = "";
         if (OrderNo == "") {
@@ -84,8 +87,8 @@ $(function () {
             }
         }
         if (flag) {
-            if (type == "1" && Mode == "0") {
-                switch (invoiceType) {
+            if (type == "1" && mode == "0") {
+                switch (bill_option) {
                     case '1':   //捐贈
                         if ($("#LoveCodeList").val() == '') {
                             flag = false;
@@ -105,7 +108,7 @@ $(function () {
                     case '6':   //自然人憑證載具
                         if ($("#CARRIERID").val() == '') {
                             flag = false;
-                            errMsg = invoiceType == '4' ? '手機條碼載具未填' :'自然人憑證載具未填';
+                            errMsg = bill_option == '4' ? '手機條碼載具未填' :'自然人憑證載具未填';
                         }
                         break;
                     default:
@@ -121,7 +124,10 @@ $(function () {
             obj.type = parseInt(type);
             obj.Mode = parseInt(mode);
             obj.returnDate = ReturnDate;
-            obj.InvoiceType = InvoiceType;
+            obj.bill_option = bill_option;
+            obj.CARRIERID = CARRIERID;
+            obj.NPOBAN = NPOBAN;
+            obj.unified_business_no = unified_business_no;
             var json = JSON.stringify(obj);
             console.log(json);
             DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
