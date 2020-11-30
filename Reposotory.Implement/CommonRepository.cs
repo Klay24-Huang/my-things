@@ -208,7 +208,7 @@ namespace Reposotory.Implement
             lstZip = GetObjList<CityData>(ref flag, ref lstError, SQL, para, term);
             return lstZip;
         }
-        public List<BE_MemberInvoiceSetting> GetMemberDataFromOrder(string orderNum)
+        public List<BE_MemberInvoiceSetting> GetMemberDataFromOrder(Int64 orderNum)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -221,7 +221,7 @@ namespace Reposotory.Implement
             string term = "";
             
             term = " B.order_number=@order_number";
-            para[nowCount] = new SqlParameter("@order_number", SqlDbType.VarChar, 30);
+            para[nowCount] = new SqlParameter("@order_number", SqlDbType.Int, 4);
             para[nowCount].Value = orderNum;
             para[nowCount].Direction = ParameterDirection.Input;
             nowCount++;
