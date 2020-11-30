@@ -84,15 +84,35 @@ BEGIN TRY
 		 
 	IF @Error=0
 	BEGIN
+		-- 註冊也會寄EMAIL做認證，因此會碰到帳號尚未審核通過還在待審檔的問題，因此先判斷主檔是否有資料，沒資料則判斷待審檔，當待審檔也沒資料再回傳ErrorCode
 		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
 		IF @hasData=0
 		BEGIN
-			SET @Error=1;
-			SET @ErrorCode='ERR139';
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR139';
+			END
+			ELSE
+			BEGIN
+				UPDATE TB_MemberData 
+				SET MEMEMAIL=@EMAIL,
+					HasVaildEMail=1,
+					U_USERID=@IDNO,
+					U_SYSDT=@NowDate 
+				WHERE MEMIDNO=@IDNO;
+			END
 		END
 		ELSE
 		BEGIN
-			UPDATE TB_MemberData SET MEMEMAIL=@EMAIL,HasVaildEMail=1,U_USERID=@IDNO,U_SYSDT=@NowDate WHERE MEMIDNO=@IDNO ;
+			UPDATE TB_MemberData 
+			SET MEMEMAIL=@EMAIL,
+				HasVaildEMail=1,
+				U_USERID=@IDNO,
+				U_SYSDT=@NowDate 
+			WHERE MEMIDNO=@IDNO;
 		END
 	END
 	--寫入錯誤訊息
