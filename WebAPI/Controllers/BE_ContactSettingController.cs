@@ -282,7 +282,11 @@ namespace WebAPI.Controllers
                                             OrderNo = tmpOrder,
                                             UserID = apiInput.UserID,
                                             transaction_no = "",
-                                            ReturnDate = ReturnDate
+                                            ReturnDate = ReturnDate,
+                                            bill_option = apiInput.InvoiceType,
+                                            NPOBAN = apiInput.NPOBAN,
+                                            CARRIERID = apiInput.CARRIERID,
+                                            unified_business_no = apiInput.UniCode
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();

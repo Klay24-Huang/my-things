@@ -26,6 +26,21 @@ namespace Domain.SP.BE.Input
         /// 強還時間
         /// </summary>
         public DateTime ReturnDate { set; get; }
-
+        /// <summary>
+        /// 發票寄送方式：1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證
+        /// </summary>
+        public string bill_option { set; get; }
+        /// <summary>
+        /// 手機條碼載具,自然人憑證載具
+        /// </summary>
+        public string CARRIERID { set; get; }
+        /// <summary>
+        /// 愛心碼
+        /// </summary>
+        public string NPOBAN { set; get; }
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string unified_business_no { set; get; }
     }
 }
