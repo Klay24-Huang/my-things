@@ -518,7 +518,8 @@ namespace WebAPI.Controllers
                                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                    MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    //MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyMMddHHmm")),      //20201130 ADD BY ADAM 因應短租財務長度20進行調整
                                     NonRedeemAmt = Amount.ToString() + "00",
                                     NonRedeemdescCode = "",
                                     Remark1 = "",
