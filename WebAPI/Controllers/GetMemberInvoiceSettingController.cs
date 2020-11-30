@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            BE_MemberInvoiceSettingData lstOut = null;
+            BE_MemberInvoiceSettingData lstOut = new BE_MemberInvoiceSettingData();
             _repository = new CommonRepository(connetStr);
             #endregion
             #region 防呆

@@ -214,7 +214,11 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_MemberInvoiceSetting> lstZip = null;
             int nowCount = 0;
-            string SQL = "SELECT MEMIDNO,CARRIERID,NOBAN,InvoiceType,UniCode " +
+            string SQL = "SELECT MEMIDNO," +
+                "CARRIERID = CASE WHEN B.CARRIERID = '' THEN A.CARRIERID ELSE B.CARRIERID END," +
+                "NPOBAN = CASE WHEN B.NPOBAN = '' THEN A.NPOBAN ELSE B.NPOBAN END," +
+                "InvoiceType = CASE WHEN B.bill_option = '' THEN A.MEMSENDCD ELSE B.bill_option END," +
+                "UniCode = CASE WHEN B.unified_business_no = '' THEN A.UNIMNO ELSE B.unified_business_no END  " +
                 "FROM TB_MemberData A WITH(NOLOCK) " +
                 "JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO ";
             SqlParameter[] para = new SqlParameter[2];
@@ -228,7 +232,7 @@ namespace Reposotory.Implement
 
             if ("" != term)
             {
-                SQL += " WITH(NOLOCK)  WHERE " + term;
+                SQL += " WHERE " + term;
             }
 
             lstZip = GetObjList<BE_MemberInvoiceSetting>(ref flag, ref lstError, SQL, para, term);

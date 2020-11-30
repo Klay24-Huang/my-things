@@ -14,7 +14,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 會員編號
         /// </summary>
-        public int MEMIDNO { set; get; }
+        public string MEMIDNO { set; get; }
         /// <summary>
         /// 手機條碼/自然人憑證
         /// </summary>
@@ -22,7 +22,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 愛心碼
         /// </summary>
-        public string NOBAN { set; get; }
+        public string NPOBAN { set; get; }
         /// <summary>
         /// 發票類別
         /// </summary>
