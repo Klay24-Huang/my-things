@@ -164,6 +164,15 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                 }
+                else
+                {
+                    // 帳號起始沒綁定悠遊卡時，一樣可以重新綁卡，因此將flag和errCode清掉以利往下走
+                    if (errCode == "ERR722")
+                    {
+                        flag = true;
+                        errCode = "";
+                    }
+                }
             }
 
             // 開始做讀卡判斷
