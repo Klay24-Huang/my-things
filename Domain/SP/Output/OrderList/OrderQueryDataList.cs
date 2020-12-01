@@ -38,12 +38,32 @@ namespace Domain.SP.Output.OrderList
         /// 據點地區
         /// </summary>
         public string Area { get; set; }
-        #endregion
 
-        public string StationPic1 { set; get; }
-        public string StationPic2 { set; get; }
-        public string StationPic3 { set; get; }
-        public string StationPic4 { set; get; }
+        /// <summary>
+        /// 據點照片1
+        /// </summary>
+        public string StationPic1 { get; set; }
+
+        /// <summary>
+        /// 據點照片2
+        /// </summary>
+        public string StationPic2 { get; set; }
+
+        /// <summary>
+        /// 據點照片3
+        /// </summary>
+        public string StationPic3 { get; set; }
+
+        /// <summary>
+        /// 據點照片4
+        /// </summary>
+        public string StationPic4 { get; set; }
+
+        /// <summary>
+        /// 據點照片5
+        /// </summary>
+        public string StationPic5 { get; set; }
+        #endregion
         #region 營運商相關              
         /// <summary>
         /// 營運商名稱

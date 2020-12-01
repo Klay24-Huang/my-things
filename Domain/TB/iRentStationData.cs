@@ -36,7 +36,9 @@ namespace Domain.TB
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
-
+        /// <summary>
+        /// 據點照片
+        /// </summary>
         public string[] StationPic { get; set; }
     }
 }

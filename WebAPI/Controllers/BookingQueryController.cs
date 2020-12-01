@@ -156,10 +156,16 @@ namespace WebAPI.Controllers
                         {
                             //20201026 ADD BY ADAM REASON.增加據點圖片
                             List<string> StationPics = new List<string>();
-                            if (OrderDataLists[i].StationPic1 != "") StationPics.Add(OrderDataLists[i].StationPic1);
-                            if (OrderDataLists[i].StationPic2 != "") StationPics.Add(OrderDataLists[i].StationPic2);
-                            if (OrderDataLists[i].StationPic3 != "") StationPics.Add(OrderDataLists[i].StationPic3);
-                            if (OrderDataLists[i].StationPic4 != "") StationPics.Add(OrderDataLists[i].StationPic4);
+                            if (OrderDataLists[i].StationPic1 != "") 
+                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic1));
+                            if (OrderDataLists[i].StationPic2 != "")
+                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic2));
+                            if (OrderDataLists[i].StationPic3 != "")
+                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic3));
+                            if (OrderDataLists[i].StationPic4 != "")
+                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic4));
+                            if (OrderDataLists[i].StationPic5 != "")
+                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic5));
 
                             ActiveOrderData obj = new ActiveOrderData()
                             {

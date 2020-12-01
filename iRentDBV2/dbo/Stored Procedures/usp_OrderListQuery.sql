@@ -107,7 +107,6 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 		BEGIN
-			
 			SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content            --據點相關
                 ,OperatorName,OperatorICon,Score                                                    --營運商相關
                 ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)            --車子相關, 20201006 eason ADD CarNo,IsMotor
@@ -159,6 +158,7 @@ BEGIN TRY
 				,StationPic2 = i2.StationPic
 				,StationPic3 = i3.StationPic
 				,StationPic4 = i4.StationPic
+				,StationPic5 = i5.StationPic
 				,[CarLatitude]
 				,[CarLongitude]
 				,Area
@@ -172,7 +172,6 @@ BEGIN TRY
 						WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 			
-
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i1 WITH(NOLOCK) WHERE use_flag=1) AS I1 ON lend_place=I1.StationID AND I1.SEQ=1
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
@@ -181,6 +180,8 @@ BEGIN TRY
 						FROM TB_iRentStationInfo i3 WITH(NOLOCK) WHERE use_flag=1) AS I3 ON lend_place=I3.StationID AND I3.SEQ=3
 			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
 						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
+			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
+						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I5 ON lend_place=I5.StationID AND I5.SEQ=5
 			LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
             WHERE VW.IDNO=@IDNO AND cancel_status=0
             AND (car_mgt_status<16    --排除已還車的
@@ -193,8 +194,6 @@ BEGIN TRY
             AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
 
             ORDER BY start_time ASC 
-			
-			
 		END
 
 	--寫入錯誤訊息
