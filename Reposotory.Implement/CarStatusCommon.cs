@@ -261,7 +261,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WITH(NOLOCK) WHERE " + term;
+                SQL += " WITH(NOLOCK) WHERE " + term+" ORDER BY NowStatus,CarNo ";
             }
 
             lstDashBoard = GetObjList<BE_CarDashBoardData>(ref flag, ref lstError, SQL, para, term);
