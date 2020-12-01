@@ -1,0 +1,54 @@
+﻿body { padding-top: 102px; font-family:'微軟正黑體';}
+		.table-bordered.table {font-family:'微軟正黑體';font-size:15px;}
+		.table-bordered.table th {background-color: #aaa; color:#fff}
+		#editor {display:none;}
+		#textarea {display:none;}
+		@media only screen and (min-width: 1025px)
+		{
+			.table tbody td:first-child {padding-left:20px}
+		}
+		@media only screen and (max-width: 1024px)
+		 {
+			.table-bordered.table {font-family:'微軟正黑體';font-size:12px;}
+			/* Force table to not be like tables anymore */
+			.table-bordered.table table, thead, tbody, th, td, tr {
+				display: block;
+			}
+
+			/* Hide table headers (but not display: none;, for accessibility) */
+			.table-bordered.table thead tr {
+				position: absolute;
+				top: -9999px;
+				left: -9999px;
+			}
+
+			.table-bordered.table tr { border: 1px solid #ccc; }
+
+			.table-bordered.table td {
+				/* Behave  like a "row" */
+				border: none;
+				border-bottom: 1px solid #eee;
+				position: relative;
+				padding-left: 30%;
+			}
+
+			.table-bordered.table td:before {
+				/* Now like a table header */
+				position: absolute;
+				/* Top/left values mimic padding */
+				top: 6px;
+				left: 6px;
+				width: 25%;
+				padding-right: 10px;
+				white-space: nowrap;
+			}
+
+			/*
+			Label the data
+			*/
+			.table-bordered.table td:nth-of-type(1):before { content: "SN"; }
+			.table-bordered.table td:nth-of-type(2):before { content: "檔名"; }
+			.table-bordered.table td:nth-of-type(3):before { content: "上傳日期"; }
+			.table-bordered.table td:nth-of-type(4):before { content: "資訊"; }
+
+		}

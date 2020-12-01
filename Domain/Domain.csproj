@@ -351,6 +351,8 @@
     <Compile Include="TB\ReadCardData.cs" />
     <Compile Include="TB\StationAndProjectAndCarTypeData.cs" />
     <Compile Include="TB\iRentStationBaseInfo.cs" />
+    <Compile Include="TB\SubScript\MemberAuth.cs" />
+    <Compile Include="TB\SubScript\SubScriptionForClient.cs" />
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_Base.cs" />

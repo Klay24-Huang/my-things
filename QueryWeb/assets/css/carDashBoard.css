@@ -1,0 +1,521 @@
+﻿		
+body { padding-top: 102px; font-family:'微軟正黑體';}
+		.table-bordered.table {font-family:'微軟正黑體';font-size:15px;}
+		.table-bordered.table th {background-color: #aaa; color:#fff}
+		@media only screen and (min-width: 1025px)
+		{
+			.table tbody td:first-child {padding-left:20px}
+		}
+		@media only screen and (max-width: 1024px)
+		 {
+			.table-bordered.table {font-family:'微軟正黑體';font-size:12px;}
+			/* Force table to not be like tables anymore */
+			.table-bordered.table table, thead, tbody, th, td, tr {
+				display: block;
+			}
+
+			/* Hide table headers (but not display: none;, for accessibility) */
+			.table-bordered.table thead tr {
+				position: absolute;
+				top: -9999px;
+				left: -9999px;
+			}
+
+			.table-bordered.table tr { border: 1px solid #ccc; }
+
+			.table-bordered.table td {
+				/* Behave  like a "row" */
+				border: none;
+				border-bottom: 1px solid #eee;
+				position: relative;
+				padding-left: 30%;
+				min-height:20px;
+			}
+             /* this is TH */
+			.table-bordered.table td:before { 
+			
+				/* Now like a table header */
+				position: absolute;
+				/* Top/left values mimic padding */
+				top: 6px;
+				left: 3px;
+				width: 30%;
+				padding-right: 10px;
+				white-space: nowrap;
+			}
+
+			/*
+			Label the data
+			*/
+.table-bordered.table tr:first-child td:nth-of-type(2):before { content: "統計"; } 
+			.table-bordered.table td:nth-of-type(1){ display: none; }
+			.table-bordered.table td:nth-of-type(2):before { content: "據點"; }
+			.table-bordered.table td:nth-of-type(3):before { content: "車號"; }
+			.table-bordered.table td:nth-of-type(4):before { content: "車機狀態"; }
+			.table-bordered.table td:nth-of-type(5):before { content: "車輛狀態"; }
+			.table-bordered.table td:nth-of-type(6):before { content: "時速/里程數"; }
+			.table-bordered.table td:nth-of-type(7):before { content: "中控"; }
+            .table-bordered.table td:nth-of-type(8):before { content: "防盜"; }
+            .table-bordered.table td:nth-of-type(9):before { content: "最後更新時間"; }
+		}
+/*
+		.icon_obc_on {
+	background-image: url(../img/power_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_obc_off {
+	background-image: url(../img/power_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_gps_on {
+	background-image: url(../img/gps_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_gps_off {
+	background-image: url(../img/gps_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_gprs_on {
+	background-image: url(../img/gprs_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_gprs_off {
+	background-image: url(../img/gprs_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_acc_on {
+	background-image: url(../img/power_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_acc_off {
+	background-image: url(../img/power_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_12v_on {
+	background-image: url(../img/12v_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_12v_off {
+	background-image: url(../img/12v_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_engine_on {
+	background-image: url(../img/engine_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_engine_off {
+	background-image: url(../img/engine_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_light_on {
+	background-image: url(../img/light_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_light_off {
+	background-image: url(../img/light_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_door_on {
+	background-image: url(../img/door_open_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_door_off {
+	background-image: url(../img/door_close_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_lock_on {
+	background-image: url(../img/unlock_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_lock_off {
+	background-image: url(../img/lock_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_order_on {
+	background-image: url(../img/order_on.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_order_off {
+	background-image: url(../img/order_off.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_map {
+	background-image: url(../img/map-marker-16.ico);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+
+.icon_eserver {
+	padding: 10px;
+}
+.icon_eserver_on {
+	color: red;
+}
+.icon_eserver_off {
+	color: gray;
+}
+
+.icon_mserver {
+	padding: 10px;
+}
+.icon_mserver_on {
+	color: red;
+}
+.icon_mserver_off {
+	color: gray;
+}
+*/
+.icon_obc_on {
+	background-image: url(../img/power_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_obc_off {
+	background-image: url(../img/power_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_gps_on {
+	background-image: url(../img/gps_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_gps_off {
+	background-image: url(../img/gps_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_gprs_on {
+	background-image: url(../img/gprs_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_gprs_off {
+	background-image: url(../img/gprs_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_acc_on {
+	background-image: url(../img/power_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_acc_off {
+	background-image: url(../img/power_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_12v_on {
+	background-image: url(../img/12v_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_12v_off {
+	background-image: url(../img/12v_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_12v_moto_on {
+	background-image: url(../img/12v_on_20.png);
+	background-repeat: no-repeat; 
+	float: inherit;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_12v_moto_off {
+	background-image: url(../img/12v_off_20.png);
+	background-repeat: no-repeat; 
+	float: inherit;
+	width: 20px;
+	height: 16px;
+	margin: 5px;
+}
+
+
+.icon_engine_on {
+	background-image: url(../img/engine_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_engine_off {
+	background-image: url(../img/engine_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_light_on {
+	background-image: url(../img/light_on_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_light_off {
+	background-image: url(../img/light_off_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_door_on {
+	background-image: url(../img/door_open_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_door_off {
+	background-image: url(../img/door_close_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_lock_on {
+	background-image: url(../img/unlock_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_lock_off {
+	background-image: url(../img/lock_20.png);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.icon_map {
+	background-image: url(../img/map-marker-16.ico);
+	background-repeat: no-repeat; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.icon_key_on {
+    background-image: url(../img/icon_key_on.png);
+    background-repeat: no-repeat;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 5px;
+}
+.icon_key_off {
+    background-image: url(../img/icon_key_off.png);
+    background-repeat: no-repeat;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 5px;
+}
+.icon_bat_conver_off {
+    background-image: url(../img/icon_getmoto_off.png);
+    background-repeat: no-repeat;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 5px;
+}
+.icon_bat_conver_on {
+    background-image: url(../img/icon_getmoto.png);
+    background-repeat: no-repeat;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 5px;
+}
+.icon_bt_on {
+    
+}
+
+
+.icon_eserver {
+	padding: 10px;
+}
+.icon_eserver_on {
+	color: red;
+}
+.icon_eserver_off {
+	color: gray;
+}
+
+.icon_mserver {
+	padding: 10px;
+}
+.icon_mserver_on {
+	color: red;
+}
+.icon_mserver_off {
+	color: gray;
+}
+
+.on {
+	font-size: 19px;
+	color:red; 
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.off {
+	font-size: 19px;
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+.control-labelnew{
+        font-size: 15px;
+	width: auto;
+	text-align: left;
+
+}
+.control-checkbox{
+    vertical-align: top;
+    height:15px;
+
+}

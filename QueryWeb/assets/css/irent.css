@@ -1,0 +1,11 @@
+@media screen and (max-width: 939px){
+	.container{
+		width: 100%;
+	}
+}
+
+@media screen and (max-width: 576px){
+	.table_container{
+		overflow-x: scroll;
+	}
+}
