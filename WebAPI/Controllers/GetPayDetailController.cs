@@ -79,6 +79,7 @@ namespace WebAPI.Controllers
             int CarRentPrice = 0; //車輛租金
             int MonthlyPoint = 0;   //月租折抵點數        20201128 ADD BY ADAM 
             int MonthlyPrice = 0;   //月租折抵換算金額      20201128 ADD BY ADAM 
+            int TransferPrice = 0;      //轉乘優惠折抵金額  20201201 ADD BY ADAM
             MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
             List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
@@ -193,6 +194,8 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR203";
                         }
+
+                        
                     }
                 }
 
@@ -393,6 +396,8 @@ namespace WebAPI.Controllers
                             HoildayPrice = OrderDataLists[0].PRICE_H * 10
                         };
                     }
+                    //20201201 ADD BY ADAM REASON.轉乘優惠
+                    TransferPrice = OrderDataLists[0].init_TransDiscount;
                 }
                 #endregion
                 #region 月租
