@@ -28,7 +28,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Audit(int AuditMode,int AuditType,string StartDate,string EndDate,int AuditReuslt,string UserName,string IDNO,string[] IDNOSuff)
+        public ActionResult Audit(int AuditMode,int AuditType,string StartDate,string EndDate,int AuditReuslt,string UserName,string IDNO,string[] IDNOSuff, string AuditError)
         {
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
@@ -38,6 +38,7 @@ namespace Web.Controllers
             ViewData["UserName"] = UserName;
             ViewData["IDNO"] = IDNO;
             ViewData["IDNOSuff"] =(IDNOSuff==null)?"": string.Join(",", IDNOSuff);
+            ViewData["AuditError"] = AuditError;
             string IDNoSuffCombind = "";
             if (IDNOSuff != null)
             {
@@ -52,7 +53,7 @@ namespace Web.Controllers
                 }
             }
         
-            List<BE_GetAuditList> lstData= new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind);
+            List<BE_GetAuditList> lstData= new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
 
             return View(lstData);
         }

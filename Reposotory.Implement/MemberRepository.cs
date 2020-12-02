@@ -120,7 +120,7 @@ namespace Reposotory.Implement
         /// <param name="IDNO"></param>
         /// <param name="IDNOSuff"></param>
         /// <returns></returns>
-        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff)
+        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff, string AuditError)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -172,6 +172,18 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
+            if (AuditError != "")
+            {
+                if (term != "") { term += " AND "; }
+                if (AuditError == "Y")
+                {
+                    term += " MEMO =''";
+                }
+                else
+                {
+                    term += " MEMO <>''";
+                }
+            }
             if (string.IsNullOrEmpty(StartDate) == false)
             {
                 if (string.IsNullOrEmpty(EndDate) == false)
@@ -179,7 +191,7 @@ namespace Reposotory.Implement
                     //term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
                     if (term != "") { term += " AND "; }
-                    term = " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
+                    term += " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -193,7 +205,7 @@ namespace Reposotory.Implement
                     //term2 = " AND ApplyDate = @SD";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
                     if (term != "") { term += " AND "; }
-                    term = (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
+                    term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -207,7 +219,7 @@ namespace Reposotory.Implement
                     //term2 = " AND ApplyDate = @ED";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
                     if (term != "") { term += " AND "; }
-                    term = (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
+                    term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = EndDate;
                     para[nowCount].Direction = ParameterDirection.Input;
