@@ -413,7 +413,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
                 #region 查ETAG 20201202 ADD BY ADAM
-                if (flag && )
+                if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要進來
                 {
                     WebAPIOutput_ETAG010 wsOutput = new WebAPIOutput_ETAG010();
                     HiEasyRentAPI wsAPI = new HiEasyRentAPI();
