@@ -4,6 +4,7 @@ using Domain.SP.Input.OrderList;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
+using Domain.WebAPI.output.rootAPI;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -155,17 +156,11 @@ namespace WebAPI.Controllers
                         for (int i = 0; i < DataLen; i++)
                         {
                             //20201026 ADD BY ADAM REASON.增加據點圖片
-                            List<string> StationPics = new List<string>();
-                            if (OrderDataLists[i].StationPic1 != "") 
-                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic1));
-                            if (OrderDataLists[i].StationPic2 != "")
-                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic2));
-                            if (OrderDataLists[i].StationPic3 != "")
-                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic3));
-                            if (OrderDataLists[i].StationPic4 != "")
-                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic4));
-                            if (OrderDataLists[i].StationPic5 != "")
-                                StationPics.Add(string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], OrderDataLists[i].StationPic5));
+                            List<StationInfoObj> tmpStationInfoObj = JsonConvert.DeserializeObject<List<StationInfoObj>>(OrderDataLists[i].StationPicJson);
+                            foreach (var StationInfo in tmpStationInfoObj)
+                            {
+                                StationInfo.StationPic = string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], StationInfo.StationPic);
+                            }
 
                             ActiveOrderData obj = new ActiveOrderData()
                             {
@@ -204,7 +199,7 @@ namespace WebAPI.Controllers
                                     StationID = OrderDataLists[i].StationID,
                                     StationName = OrderDataLists[i].StationName,
                                     Tel = OrderDataLists[i].Tel,
-                                    StationPic = StationPics.ToArray()
+                                    StationPic = tmpStationInfoObj
                                 },
                                 MileagePerKM = (OrderDataLists[i].ProjType < 4) ? ((OrderDataLists[i].MilageUnit == 0) ? Mildef : OrderDataLists[i].MilageUnit) : 0,
                                 DailyMaxHour = 10,

@@ -40,29 +40,9 @@ namespace Domain.SP.Output.OrderList
         public string Area { get; set; }
 
         /// <summary>
-        /// 據點照片1
+        /// 據點照片
         /// </summary>
-        public string StationPic1 { get; set; }
-
-        /// <summary>
-        /// 據點照片2
-        /// </summary>
-        public string StationPic2 { get; set; }
-
-        /// <summary>
-        /// 據點照片3
-        /// </summary>
-        public string StationPic3 { get; set; }
-
-        /// <summary>
-        /// 據點照片4
-        /// </summary>
-        public string StationPic4 { get; set; }
-
-        /// <summary>
-        /// 據點照片5
-        /// </summary>
-        public string StationPic5 { get; set; }
+        public string StationPicJson { get; set; }
         #endregion
         #region 營運商相關              
         /// <summary>
