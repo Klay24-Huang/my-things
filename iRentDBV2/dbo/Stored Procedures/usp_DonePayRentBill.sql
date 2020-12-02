@@ -49,6 +49,7 @@ CREATE PROCEDURE [dbo].[usp_DonePayRentBill]
 	@transaction_no         NVARCHAR(100)         , --金流交易序號，免付費使用Free
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
+	@Reward					INT				OUTPUT,	--換電獎勵
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
