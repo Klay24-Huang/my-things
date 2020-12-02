@@ -247,6 +247,50 @@ namespace WebAPI.Controllers
                             #region 強還，先判斷目前是不是相同訂單，要不要下車機cmd
                             if (flag)
                             {
+
+                                #region 各類型判斷
+                                if (flag)
+                                {
+                                    switch (apiInput.bill_option)
+                                    {
+                                        case "4":     // 統編
+                                            if (string.IsNullOrWhiteSpace(apiInput.unified_business_no))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR190";
+                                            }
+                                            else
+                                            {
+                                                flag = baseVerify.checkUniNum(apiInput.unified_business_no);
+                                                if (false == flag)
+                                                {
+                                                    flag = false;
+                                                    errCode = "ERR191";
+                                                }
+                                            }
+                                            break;
+                                        case "5":     // 手機條碼
+                                            if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR193";
+                                            }
+                                            else
+                                            {
+                                                flag = new HiEasyRentAPI().CheckEinvBiz(apiInput.CARRIERID, ref errCode);
+                                            }
+                                            break;
+                                        case "6":     // 自然人憑證
+                                            if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR193";
+                                            }
+                                            break;
+                                    }
+                                }
+                                #endregion
+
                                 if (apiInput.type == 1)  //還車
                                 {
                                     BE_CheckHasOrder tmp = new ContactRepository(this.connetStr).CheckCanClear(tmpOrder.ToString());
@@ -835,6 +879,7 @@ namespace WebAPI.Controllers
             float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
             int InsurancePerHours = 0;  //安心服務每小時價
             #region 取出訂單資訊
+
             if (flag)
             {
                 SPInput_BE_GetOrderStatusByOrderNo spInput = new SPInput_BE_GetOrderStatusByOrderNo()
@@ -872,12 +917,14 @@ namespace WebAPI.Controllers
                 //機車路邊不計算預計還車時間
                 if (OrderDataLists[0].ProjType == 4)
                 {
-                    ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time==""? returnDate: OrderDataLists[0].final_stop_time);
+                    //ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time==""? returnDate: OrderDataLists[0].final_stop_time);
+                    ED = Convert.ToDateTime(returnDate);
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                 }
                 else
                 {
-                    ED = Convert.ToDateTime(OrderDataLists[0].stop_time==""? returnDate: OrderDataLists[0].stop_time);
+                    //ED = Convert.ToDateTime(OrderDataLists[0].stop_time==""? returnDate: OrderDataLists[0].stop_time);
+                    ED = Convert.ToDateTime(returnDate);
                     ED = ED.AddSeconds(ED.Second * -1); //去秒數
                 }
                 FED = Convert.ToDateTime(returnDate);
