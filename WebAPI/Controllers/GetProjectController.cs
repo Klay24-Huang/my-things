@@ -262,8 +262,16 @@ namespace WebAPI.Controllers
                                 StationName = lstData[0].StationName,
                                 IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
                                 ProjectObj = new List<ProjectObj>(),
-                                StationInfoObj = new List<StationInfoObj>(JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[0].StationPicJson))
+                                StationInfoObj = new List<StationInfoObj>()
                             });
+
+                            List<StationInfoObj> tmpStationInfoObj = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[0].StationPicJson);
+                            foreach (var StationInfo in tmpStationInfoObj)
+                            {
+                                StationInfo.StationPic = string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], StationInfo.StationPic);
+                            }
+                            lstTmpData[0].StationInfoObj = tmpStationInfoObj;
+
                             lstTmpData[0].ProjectObj.Add(new ProjectObj()
                             {
                                 StationID = lstData[0].StationID,
@@ -327,7 +335,12 @@ namespace WebAPI.Controllers
                                         Content = "",
                                         IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
                                     };
+
                                     List<StationInfoObj> tmpStation = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[i].StationPicJson);
+                                    foreach (var StationInfo in tmpStation)
+                                    {
+                                        StationInfo.StationPic = string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], StationInfo.StationPic);
+                                    }
 
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
