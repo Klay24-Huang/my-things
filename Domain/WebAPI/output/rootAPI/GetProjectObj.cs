@@ -42,10 +42,7 @@ namespace Domain.WebAPI.output.rootAPI
         /// 最低價
         /// </summary>
         public int Minimum { set; get; }
-        /// <summary>
-        /// 據點照片
-        /// </summary>
-        public string[] StationPic { set; get; }
+
         /// <summary>
         /// 是否有車可租(BY據點)
         /// </summary>
@@ -54,5 +51,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// 專案資料
         /// </summary>
         public List<ProjectObj> ProjectObj { set; get; }
+
+        /// <summary>
+        /// 站點照片
+        /// </summary>
+        public List<StationInfoObj> StationInfoObj { get; set; }
     }
 }

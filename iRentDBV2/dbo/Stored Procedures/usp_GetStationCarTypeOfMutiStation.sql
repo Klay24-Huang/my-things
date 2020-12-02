@@ -43,19 +43,6 @@
 ** 2020/10/14 下午 04:00:00    |  eason|          First Release
 **			 |			  |
 *****************************************************************/
-/*
-測試語法
-DECLARE  @StationIDs varchar(max) ='X0A1'
-		,@SD datetime = '2020-10-22 14:01:00'
-		,@ED datetime = '2020-10-23 11:00:00'
-		,@CarType varchar(10) = ''
-		--固定欄位
-		,@LogID bigint=999
-		,@ErrorCode varchar(6),@ErrorMsg nvarchar(100),@SQLExceptionCode varchar(10),@SQLExceptionMsg nvarchar(1000)
-
-EXEC usp_GetStationCarTypeOfMutiStation @StationIDs ,@SD ,@ED ,@CarType ,@LogID ,@ErrorCode  OUTPUT ,@ErrorMsg  OUTPUT ,@SQLExceptionCode  OUTPUT ,@SQLExceptionMsg  OUTPUT
-SELECT @ErrorCode,@ErrorMsg
-*/
 CREATE PROCEDURE [dbo].[usp_GetStationCarTypeOfMutiStation]
 	@StationIDs             VARCHAR(MAX)          , --據點代碼（1~多個）
 	@SD                     DATETIME		      , --起日
@@ -160,59 +147,6 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 		IF @Error = 0
 		BEGIN
 		   BEGIN
-				/*
-				SELECT VW.StationID,
-				       PROJID,
-					   PRONAME,
-					   Price,
-					   PRICE_H,
-					   [CarBrend],
-					   [CarTypeGroupCode] AS CarType,
-					   [CarTypeName],
-					   [CarTypeImg] AS CarTypePic,
-					   OperatorICon AS Operator,
-					   Score AS OperatorScore,
-					   Seat,
-					   iRentStation.StationID,
-					   iRentStation.ADDR,
-					   iRentStation.Location AS StationName,
-					   iRentStation.Longitude,
-					   iRentStation.Latitude,
-					   iRentStation.Content,
-					   PayMode,
-					   CarOfArea = (select top 1 c.CarOfArea from TB_Car c where c.nowStationID = VW.StationID)
-				FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
-				INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
-				AND CarNo NOT IN
-				  (SELECT CarNo
-				   FROM [TB_OrderMain]
-				   WHERE (booking_status<5
-						  AND car_mgt_status<16
-						  AND cancel_status=0)
-					 AND CarNo in
-					   (SELECT [CarNo]
-						FROM [dbo].[TB_Car]
-						WHERE nowStationID IN (SELECT s.StationID FROM  @tb_StationID s)
-						  AND CarType IN
-							(SELECT CarType
-							 FROM VW_GetFullProjectCollectionOfCarTypeGroup
-							 WHERE StationID IN (SELECT s.StationID FROM  @tb_StationID s) )
-						  AND available<2 )
-					 AND ((start_time BETWEEN @SD AND @ED)
-						  OR (stop_time BETWEEN @SD AND @ED)
-						  OR (@SD BETWEEN start_time AND stop_time)
-						  OR (@ED BETWEEN start_time AND stop_time)
-						  OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
-						  OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time)) )
-				LEFT JOIN TB_iRentStation AS iRentStation ON iRentStation.StationID=VW.StationID
-				WHERE VW.StationID IN (SELECT s.StationID FROM  @tb_StationID s)
-				AND SPCLOCK='Z' 
-				AND VW.CarTypeGroupCode = 
-				  CASE WHEN @CarType <> '' THEN @CarType
-				  ELSE VW.CarTypeGroupCode END
-				GROUP BY VW.StationID,PROJID,PRONAME,Price,PRICE_H,[CarBrend],[CarTypeGroupCode] ,[CarTypeName],[CarTypeImg] ,OperatorICon ,Score ,Seat,iRentStation.StationID,iRentStation.ADDR,iRentStation.Location ,iRentStation.Longitude ,iRentStation.Latitude,iRentStation.Content,PayMode
-				ORDER BY Price,PRICE_H ASC
-				*/
 				--找出被預約的車輛
 				IF OBJECT_ID('tempdb..#TB_OrderMain') IS NOT NULL DROP TABLE #TB_OrderMain
 				SELECT order_number,IDNO,CarNo
@@ -280,6 +214,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
 						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END		--安心服務
 						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
+						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
 				FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
 				JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
 				JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=C.CarType

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Domain.TB
 {
@@ -59,7 +58,13 @@ namespace Domain.TB
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        /// <summary>
+        /// 據點代碼
+        /// </summary>
         public string StationID { set; get; }
+        /// <summary>
+        /// 據點名稱
+        /// </summary>
         public string StationName { set; get; }
         /// <summary>
         /// 地址
@@ -109,5 +114,10 @@ namespace Domain.TB
         /// 安心服務每小時計價
         /// </summary>
         public int InsurancePerHours { set; get; }
+
+        /// <summary>
+        /// 站點照片
+        /// </summary>
+        public string StationPicJson { get; set; }
     }
 }

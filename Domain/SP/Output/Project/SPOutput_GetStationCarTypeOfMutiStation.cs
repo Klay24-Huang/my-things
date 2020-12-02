@@ -109,5 +109,10 @@ namespace Domain.SP.Output.Project
         /// 安心服務計價
         /// </summary>
         public int InsurancePerHours { set; get; }
+
+        /// <summary>
+        /// 站點照片
+        /// </summary>
+        public string StationPicJson { get; set; }
     }
 }

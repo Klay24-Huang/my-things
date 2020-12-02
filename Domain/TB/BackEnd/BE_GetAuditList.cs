@@ -53,5 +53,9 @@ namespace Domain.TB.BackEnd
         /// 身份證尾數
         /// </summary>
         public string IDNOSUFF { set; get; }
+        /// <summary>
+        /// MEMO
+        /// </summary>
+        public string MEMO { set; get; }
     }
 }

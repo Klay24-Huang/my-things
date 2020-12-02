@@ -156,6 +156,18 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
+                                審核備註
+                            </div>
+                            <div class="col-md-3" style="color:red;">
+                                @(obj.detail.MEMO)
+                        </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
                                 會員手機
                             </div>
                             <div class="col-md-3">
@@ -172,19 +184,19 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit==2 ? " checked" : "")>
+                                    <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
                                     <label class="form-check-label" for="CarDriver">汽車</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit==2 ? " checked" : "")>
+                                    <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
                                     <label class="form-check-label" for="CarDriver1">機車(持汽車駕照使用輕型機車)</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit==2 ? " checked" : "")>
+                                    <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
                                     <label class="form-check-label" for="MotoDriver2">機車(重型)</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit==2 ? " checked" : "")>
+                                    <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
                                     <label class="form-check-label" for="MotorDriver1">機車(輕型)</label>
                                 </div>
                             </div>
@@ -222,6 +234,7 @@
                             待設定發票開立
                         </label>
                     </div>-->
+
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="0" @((obj.detail.HasAudit == 0) ? " checked" : "") disabled>
                                     <label class="form-check-label" for="NoRegister">
@@ -664,7 +677,6 @@
                                         通過
                                     </label>
                                 </div>
-
                             </div>
                             <div class="col-md-3">
                             </div>
@@ -1342,7 +1354,7 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" style="display:none;">
                                         <div class="container-fluid">
                                             <div class="row">
                                                 <div class="col-md-4">
