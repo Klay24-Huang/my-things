@@ -230,28 +230,30 @@ namespace WebAPI.Controllers
                         else
                         {
                             CID = spOut.CID;
+                            //20201202 直接下命令，不執行ReportNow
                             //取最新狀況, 先送getlast之後從tb捉最近一筆
                             FETCatAPI FetAPI = new FETCatAPI();
                             string requestId = "";
                             string CommandType = "";
+                            string method = "";
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
-                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                            CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                            WSInput_Base<Params> input = new WSInput_Base<Params>()
-                            {
-                                command = true,
-                                method = CommandType,
-                                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                _params = new Params()
+                            //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                            //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                            //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                            //{
+                            //    command = true,
+                            //    method = CommandType,
+                            //    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            //    _params = new Params()
 
-                            };
-                            requestId = input.requestId;
-                            string method = CommandType;
-                            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                            if (flag)
-                            {
-                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                            }
+                            //};
+                            //requestId = input.requestId;
+                            //string method = CommandType;
+                            //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                            //if (flag)
+                            //{
+                            //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            //}
                             if (flag)
                             {
                                 info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -266,29 +268,29 @@ namespace WebAPI.Controllers
                                 switch (apiInput.Lock)
                                 {
                                     case 0: //解鎖
-                                        if (info.CentralLockStatus == 0)
-                                        {
-                                            flag = false;
-                                            errCode = "ERR427"; //已經是解鎖狀態
-                                        }
-                                        else
-                                        {
+                                        //if (info.CentralLockStatus == 0)
+                                        //{
+                                        //    flag = false;
+                                        //    errCode = "ERR427"; //已經是解鎖狀態
+                                        //}
+                                        //else
+                                        //{
                                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Unlock);
                                             CmdType = OtherService.Enum.MachineCommandType.CommandType.Unlock;
-                                        }
+                                        //}
                                         break;
-                                    case 1: //上鎖
-                                        if (info.CentralLockStatus == 1)
-                                        {
-                                            flag = false;
-                                            errCode = "ERR428"; //已經是上鎖狀態
+                                    default: //上鎖
+                                        //if (info.CentralLockStatus == 1)
+                                        //{
+                                        //    flag = false;
+                                        //    errCode = "ERR428"; //已經是上鎖狀態
                                           
-                                        }
-                                        else
-                                        {
+                                        //}
+                                        //else
+                                        //{
                                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock);
                                             CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock;
-                                        }
+                                        //}
                                         break;
                                 }
                                 if (flag)
