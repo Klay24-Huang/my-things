@@ -178,7 +178,8 @@ namespace Reposotory.Implement
                 {
                     //term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    term2 = " AND ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
+                    if (term != "") { term += " AND "; }
+                    term = " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -191,7 +192,8 @@ namespace Reposotory.Implement
                 {
                     //term2 = " AND ApplyDate = @SD";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    term2 = " AND " + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
+                    if (term != "") { term += " AND "; }
+                    term = (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = StartDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -204,7 +206,8 @@ namespace Reposotory.Implement
                 {
                     //term2 = " AND ApplyDate = @ED";
                     //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    term2 = " AND " + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
+                    if (term != "") { term += " AND "; }
+                    term = (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = EndDate;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -216,10 +219,10 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
             }
-            if ("" != term2)
-            {
-                SQL += term2;
-            }
+            //if ("" != term2)
+            //{
+            //    SQL += term2;
+            //}
 
             lstAudits = GetObjList<BE_GetAuditList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
