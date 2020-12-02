@@ -550,15 +550,15 @@ namespace WebAPI.Models.BillFunc
                     {
                         if (disc >= x.xMins)
                         {
-                            wDisc += x.isHoliday ? 0 : x.xMins;
-                            hDisc += x.isHoliday ? x.xMins : 0;
+                            wDisc += x.isMarkDay ? 0 : x.xMins;
+                            hDisc += x.isMarkDay ? x.xMins : 0;
                             payDisc += x.xMins;
                             disc -= x.xMins;
                         }
                         else
                         {
-                            wDisc += x.isHoliday ? 0 : disc;
-                            hDisc += x.isHoliday ? disc : 0;
+                            wDisc += x.isMarkDay ? 0 : disc;
+                            hDisc += x.isMarkDay ? disc : 0;
                             payDisc += disc;
                             disc = 0;
                         }
@@ -666,7 +666,7 @@ namespace WebAPI.Models.BillFunc
             {
                 DayPayMins item = new DayPayMins()
                 {
-                    isHoliday = sd_isHoliday,
+                    isMarkDay = sd_isHoliday,
                     xDate = str_sd,
                     xMins = sd_isHoliday ? re24.Item2 : re24.Item1
                 };
@@ -677,7 +677,7 @@ namespace WebAPI.Models.BillFunc
                 //首日
                 DayPayMins item_sd = new DayPayMins()
                 {
-                    isHoliday = sd_isHoliday,
+                    isMarkDay = sd_isHoliday,
                     xDate = str_sd,
                     xMins = sd_isHoliday ? re24.Item2 : re24.Item1
                 };
@@ -686,7 +686,7 @@ namespace WebAPI.Models.BillFunc
                 //隔日
                 DayPayMins item_ed = new DayPayMins()
                 {
-                    isHoliday = ed_isHoliday,
+                    isMarkDay = ed_isHoliday,
                     xDate = str_ed,
                     xMins = ed_isHoliday ? re24.Item2 : re24.Item1
                 };
@@ -1900,7 +1900,14 @@ namespace WebAPI.Models.BillFunc
         public string DateType { get; set; }//日期分類
         public string xDate { get; set; }//格式yyyyMMdd
         public double xMins { get; set; }//當日付費分鐘
-        public bool isHoliday { get; set; }//是否假日
+        public bool isMarkDay { get; set; }//是否為註記日, 平日,假日,月租平日,月租假日
     }
-   
+
+    public enum eumDateType
+    {
+        wDay, //平日
+        hDay, //假日
+        m_wDay, //月租平日
+        m_hDay, //月租假日
+    }
 }
