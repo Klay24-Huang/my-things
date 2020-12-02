@@ -241,13 +241,13 @@
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort-ignore="true">
-
                 </th>
                 <th scope="col">申請日期</th>
                 <th scope="col">姓名</th>
                 <th scope="col">身份證字號</th>
                 <th scope="col">姓別</th>
                 <th scope="col">處理區分</th>
+                <th scope="col" style="width:150px;">審核備註</th>
                 <th scope="col">審核結果</th>
                 <th data-sort-ignore="true">審核</th>
             </tr>
@@ -265,35 +265,35 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                    <tr>
-                        <td data-sort="false">
-                        </td>
-                        <td scope="col">@(Convert.ToDateTime(lstData[i].ApplyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
-                        <td scope="col">@(lstData[i].MEMCNAME)</td>
-                        <td scope="col">@(lstData[i].MEMIDNO)</td>
-                        <td scope="col">@((lstData[i].SEX == "1") ? "男" : "女")</td>
-                        <td scope="col">
-                            @{
-                                string AuditStr = "未處理";
-                                string AuditResultStr = "";
-                            }
-                            @if (lstData[i].HasAudit != "0")
+                <tr>
+                    <td data-sort="false"></td>
+                    <td scope="col">@(Convert.ToDateTime(lstData[i].ApplyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                    <td scope="col">@(lstData[i].MEMCNAME)</td>
+                    <td scope="col">@(lstData[i].MEMIDNO)</td>
+                    <td scope="col">@((lstData[i].SEX == "1") ? "男" : "女")</td>
+                    <td scope="col">
+                        @{
+                            string AuditStr = "未處理";
+                            string AuditResultStr = "";
+                        }
+                        @if (lstData[i].HasAudit != "0")
+                        {
+                            AuditStr = "已處理";
+                            if (lstData[i].HasAudit == "1")
                             {
-                                AuditStr = "已處理";
-                                if (lstData[i].HasAudit == "1")
-                                {
-                                    AuditResultStr = "未通過";
-                                }
-                                else
-                                {
-                                    AuditResultStr = "已通過";
-                                }
+                                AuditResultStr = "未通過";
                             }
-                            @(AuditStr)
-                        </td>
-                        <td scope="col">@(AuditResultStr)</td>
-                        <td scope="col"><button name="btnAudit_@(i)" id="btnAudit_@(i)" onclick="GoDetail('@(lstData[i].MEMIDNO)')" class="btn btn-outline-info">審核</button></td>
-                    </tr>
+                            else
+                            {
+                                AuditResultStr = "已通過";
+                            }
+                        }
+                        @(AuditStr)
+                    </td>
+                    <td scope="col" style="color:red;">@(lstData[i].MEMO.ToString().Replace(",",", "))</td>
+                    <td scope="col">@(AuditResultStr)</td>
+                    <td scope="col"><button name="btnAudit_@(i)" id="btnAudit_@(i)" onclick="GoDetail('@(lstData[i].MEMIDNO)')" class="btn btn-outline-info">審核</button></td>
+                </tr>
                 }
 
             }
