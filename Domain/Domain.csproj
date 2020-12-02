@@ -117,6 +117,7 @@
     <Compile Include="SP\Input\Bill\SPInput_GetInsurancePrice.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_SetRewardResult.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BindUUCard.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="SP\Output\Battle\SPOutput_GetKey.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetInsurancePrice.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
+    <Compile Include="SP\Output\Bill\SPOutput_GetRewardPoint.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BeforeBookingStart.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_Booking.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BookingStart.cs" />
@@ -378,6 +380,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\Mochi\WebAPIInput_MochiLogin.cs" />
     <Compile Include="WebAPI\Input\Param\BLECode.cs" />
     <Compile Include="WebAPI\Input\Param\ClientCardNoObj.cs" />
@@ -434,6 +437,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370CheckData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370SaveData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR380Save.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_MochiLogin.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_ParkData.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_QueryBillByCar.cs" />

@@ -326,6 +326,11 @@ namespace WebAPI.Models.Enum
             /// 20201122 ADD BY Jerry
             /// </summary>
             GetUnBindLog,
+            /// <summary>
+            /// 儲存換電獎勵結果
+            /// 20201201 ADD BY ADAM
+            /// </summary>
+            SaveNPR380Result,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -771,6 +776,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BookingControl:
                     SPName = "usp_BookingControl";
+                    break;
+                case SPType.SaveNPR380Result:    //20201201 ADD BY ADAM
+                    SPName = "usp_SaveNPR380Result";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

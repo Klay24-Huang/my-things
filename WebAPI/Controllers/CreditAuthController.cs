@@ -1,15 +1,18 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Wallet;
+using Domain.SP.Input.Bill;
 using Domain.SP.Output;
 using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Wallet;
+using Domain.SP.Output.Bill;
 using Domain.TB;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 using OtherService;
 using Reposotory.Implement;
@@ -76,6 +79,7 @@ namespace WebAPI.Controllers
             int Amount = 0;
             bool HasETAG = false;
             List<OrderQueryFullData> OrderDataLists = null;
+            int RewardPoint = 0;    //20201201 ADD BY ADAM REASON.換電獎勵
             #endregion
             #region 防呆
 
@@ -368,11 +372,40 @@ namespace WebAPI.Controllers
                         if(flag)
                         {
                             string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
-                            SPOutput_Base PayOutput = new SPOutput_Base();
-                            SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+
+                            //20201201 ADD BY ADAM REASON.換電獎勵
+                            //SPOutput_Base PayOutput = new SPOutput_Base();
+                            //SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                            SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
+                            SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
                             flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                            baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                RewardPoint = PayOutput.Reward;
+                            }
                         }
+                    }
+
+                    //20201201 ADD BY ADAM REASON.換電獎勵
+                    if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
+                    {
+                        WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
+                        HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                        flag = wsAPI.NPR380Save(IDNO, RewardPoint.ToString(), apiInput.OrderNo, ref wsOutput);
+                        //存檔
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.SaveNPR380Result);
+                        SPOutput_Base NPR380Output = new SPOutput_Base();
+                        SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
+                        {
+                            OrderNo = tmpOrder,
+                            Result = flag==true?1:0,
+                            LogID = LogID
+                        };
+                        SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
+                        flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
                     }
 
                     #region 寫還車照片到azure

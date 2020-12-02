@@ -157,15 +157,25 @@ SET @ParkingSpace='';
 						SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
 						WHERE IDNO=@IDNO;
 
-						--20201102 ADD BY ADAM REASON.檢查資料是否存在 
+						--20201201 ADD BY ADAM REASON.換電獎勵處理
 						IF EXISTS(SELECT OrderNo FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo)
 						BEGIN
-							DELETE FROM TB_OrderDataByMotor WHERE OrderNo=@OrderNo
+							--寫入機車還車時的資訊 20201030 ADD BY ERIC
+							--INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
+							--SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
+							UPDATE TB_OrderDataByMotor
+							SET R_lat=B.Latitude,R_lon=B.Longitude
+							,R_LBA=deviceLBA,R_RBA=deviceRBA,R_MBA=deviceMBA,R_TBA=device3TBA
+							,Reward=CASE WHEN R_TBA-P_TBA>=99 THEN 0
+										 WHEN R_TBA-P_TBA>=40 THEN 20
+										 WHEN R_TBA-P_TBA>=20 THEN 10
+										 ELSE 0 END
+							FROM TB_CarStatus B WITH(NOLOCK)
+							WHERE B.CarNo=@CarNo AND TB_OrderDataByMotor.OrderNo=@OrderNo
+
+							
 						END
 
-						--寫入機車還車時的資訊 20201030 ADD BY ERIC
-						INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
-						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 					END
 					ELSE IF @ProjType=0
 					BEGIN
