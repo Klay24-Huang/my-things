@@ -569,7 +569,7 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double, double>(payDisc, wDisc, hDisc);
         }
 
-        public List<DayPayHour> GetCarRangeDayFlow(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
+        public List<DayPayMins> GetCarRangeDayFlow(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {
             MinsProcess minsPro = new MinsProcess(GetCarPayMins);
             var re = GetRangeDayFlow(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
@@ -589,9 +589,9 @@ namespace WebAPI.Models.BillFunc
         /// <param name="dayMaxMins">單日計費分鐘上限</param>
         /// <param name="lstHoliday">假日</param>
         /// <returns>平日可折點數,假日點可折點數</returns>
-        public List<DayPayHour> GetRangeDayFlow( DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        public List<DayPayMins> GetRangeDayFlow( DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
         {
-            List<DayPayHour> re = new List<DayPayHour>();
+            List<DayPayMins> re = new List<DayPayMins>();
 
             if (SD == null && ED == null && SD > ED)
                 throw new Exception("SD,ED不可為null");
@@ -650,9 +650,9 @@ namespace WebAPI.Models.BillFunc
         /// <param name="lstHoliday"></param>
         /// <param name="minsPro"></param>
         /// <returns></returns>
-        public List<DayPayHour> GetH24DayPayList(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        public List<DayPayMins> GetH24DayPayList(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
         {
-            List<DayPayHour> re = new List<DayPayHour>();
+            List<DayPayMins> re = new List<DayPayMins>();
 
             string str_sd = SD.ToString("yyyyMMdd");
             string str_ed = ED.ToString("yyyyMMdd");
@@ -664,7 +664,7 @@ namespace WebAPI.Models.BillFunc
 
             if (re24.Item1 == 0 || re24.Item2 == 0)//都是假日或都是平日
             {
-                DayPayHour item = new DayPayHour()
+                DayPayMins item = new DayPayMins()
                 {
                     isHoliday = sd_isHoliday,
                     xDate = str_sd,
@@ -675,7 +675,7 @@ namespace WebAPI.Models.BillFunc
             else//有平日有假日
             {
                 //首日
-                DayPayHour item_sd = new DayPayHour()
+                DayPayMins item_sd = new DayPayMins()
                 {
                     isHoliday = sd_isHoliday,
                     xDate = str_sd,
@@ -684,7 +684,7 @@ namespace WebAPI.Models.BillFunc
                 re.Add(item_sd);
 
                 //隔日
-                DayPayHour item_ed = new DayPayHour()
+                DayPayMins item_ed = new DayPayMins()
                 {
                     isHoliday = ed_isHoliday,
                     xDate = str_ed,
@@ -1895,8 +1895,9 @@ namespace WebAPI.Models.BillFunc
         }
     }
 
-    public class DayPayHour
+    public class DayPayMins
     {
+        public string DateType { get; set; }//日期分類
         public string xDate { get; set; }//格式yyyyMMdd
         public double xMins { get; set; }//當日付費分鐘
         public bool isHoliday { get; set; }//是否假日
