@@ -85,6 +85,7 @@ namespace WebAPI.Controllers
             List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
             bool UseMonthMode = false;  //false:無月租;true:有月租
             int InsurancePerHours = 0;  //安心服務每小時價
+            int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             #endregion
 
             #region 防呆
@@ -411,6 +412,24 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
+                #region 查ETAG 20201202 ADD BY ADAM
+                if (flag && )
+                {
+                    WebAPIOutput_ETAG010 wsOutput = new WebAPIOutput_ETAG010();
+                    HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                    //ETAG查詢失敗也不影響流程
+                    flag = wsAPI.ETAG010Send(apiInput.OrderNo, DateTime.Now.ToString("yyyyMMddHHmmss"), ref wsOutput);
+                    if (flag)
+                    {
+                        //取出ETAG費用
+                        if (wsOutput.Data.Length > 0)
+                        {
+                            etagPrice = wsOutput.Data[0].TAMT == "" ? 0 : int.Parse(wsOutput.Data[0].TAMT);
+
+                        }
+                    }
+                }
+                #endregion
                 #region 建空模及塞入要輸出的值
                 if (flag)
                 {
@@ -461,6 +480,8 @@ namespace WebAPI.Controllers
                     }
                     //20201201 ADD BY ADAM REASON.轉乘優惠
                     TransferPrice = OrderDataLists[0].init_TransDiscount;
+                    //20201202 ADD BY ADAM REASON.ETAG費用
+                    
                 }
                 #endregion
                 #region 月租
