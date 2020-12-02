@@ -418,14 +418,17 @@ namespace WebAPI.Controllers
                     WebAPIOutput_ETAG010 wsOutput = new WebAPIOutput_ETAG010();
                     HiEasyRentAPI wsAPI = new HiEasyRentAPI();
                     //ETAG查詢失敗也不影響流程
-                    flag = wsAPI.ETAG010Send(apiInput.OrderNo, DateTime.Now.ToString("yyyyMMddHHmmss"), ref wsOutput);
+                    flag = wsAPI.ETAG010Send(apiInput.OrderNo,"" , ref wsOutput);
                     if (flag)
                     {
-                        //取出ETAG費用
-                        if (wsOutput.Data.Length > 0)
+                        if (wsOutput.RtnCode=="0")
                         {
-                            etagPrice = wsOutput.Data[0].TAMT == "" ? 0 : int.Parse(wsOutput.Data[0].TAMT);
+                            //取出ETAG費用
+                            if (wsOutput.Data.Length > 0)
+                            {
+                                etagPrice = wsOutput.Data[0].TAMT == "" ? 0 : int.Parse(wsOutput.Data[0].TAMT);
 
+                            }
                         }
                     }
                 }
@@ -480,7 +483,7 @@ namespace WebAPI.Controllers
                     }
                     //20201201 ADD BY ADAM REASON.轉乘優惠
                     TransferPrice = OrderDataLists[0].init_TransDiscount;
-                    //20201202 ADD BY ADAM REASON.ETAG費用
+                    
                     
                 }
                 #endregion
@@ -819,7 +822,9 @@ namespace WebAPI.Controllers
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
                     outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes > 0 ? TotalRentMinutes:0).ToString();
                     outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
-                    outputApi.Rent.TotalRental = (outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice < 0) ? 0 : outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice;
+                    //20201202 ADD BY ADAM REASON.ETAG費用
+                    outputApi.Rent.ETAGRental = etagPrice;
+                    outputApi.Rent.TotalRental = (outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice < 0) ? 0 : outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
 
                     #region 修正輸出欄位
                     

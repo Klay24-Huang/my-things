@@ -224,7 +224,8 @@ namespace WebAPI.Controllers
                     #region 設定租約
                     if (flag)
                     {
-                        if (info.extDeviceStatus1 == 0)
+                        //租約再下租約應該沒關係
+                        //if (info.extDeviceStatus1 == 0)
                         {
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent;
