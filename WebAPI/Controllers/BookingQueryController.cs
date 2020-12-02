@@ -207,6 +207,7 @@ namespace WebAPI.Controllers
                                 AppStatus = OrderDataLists[i].AppStatus,     //20201026 ADD BY ADAM REASON.增加APP對應狀態
                                 CarLatitude = OrderDataLists[i].CarLatitude,
                                 CarLongitude = OrderDataLists[i].CarLongitude,
+                                OpenDoorDeadLine = (string.IsNullOrWhiteSpace(OrderDataLists[i].OpenDoorDeadLine)) ? "" : Convert.ToDateTime(OrderDataLists[i].OpenDoorDeadLine).ToString("yyyy-MM-dd HH:mm:ss"),
                             };
                             obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
 

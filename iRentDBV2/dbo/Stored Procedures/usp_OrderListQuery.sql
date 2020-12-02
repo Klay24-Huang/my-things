@@ -133,8 +133,7 @@ BEGIN TRY
                 ,car_mgt_status
                 ,booking_status
                 ,cancel_status
-                ,ISNULL(Setting.MilageBase
-                ,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
+                ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
                 ,already_lend_car
                 ,IsReturnCar
 				--20201026 ADD BY ADAM REASON.增加AppStatus
@@ -158,6 +157,7 @@ BEGIN TRY
 				,[CarLongitude]
 				,Area
 				,StationPicJson = ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
+				,OD.DeadLine AS OpenDoorDeadLine
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 
