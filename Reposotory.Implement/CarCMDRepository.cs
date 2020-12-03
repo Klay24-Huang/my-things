@@ -150,7 +150,7 @@ namespace Reposotory.Implement
             {
                 term += " CarNo=@CarNo";
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 100);
-                para[nowCount].Value = CarNo;
+                para[nowCount].Value = CarNo.Trim();
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
