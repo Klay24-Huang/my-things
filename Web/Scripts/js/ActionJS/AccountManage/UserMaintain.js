@@ -197,7 +197,7 @@ $(document).ready(function () {
 
 })
 function DoEdit(Id) {
-   
+   console.log('edit')
     if (NowEditID > 0) {
         //先還原前一個
         /*
@@ -242,10 +242,6 @@ function DoEdit(Id) {
     $("#OperatorName_" + Id).show();
     $("#ddlOperator").find('option').clone().appendTo('#OperatorName_' + Id);
     $("#OperatorName_" + Id).val(OperatorID);
-    OperatorNameChange($("#OperatorName_" + Id).val());
-    $("#OperatorName_" + Id).on("change", function () {
-        OperatorNameChange($(this).val());
-    });
 
     var OperatorNameChange = function (OperatorValue) {
         if (OperatorValue != "0" && OperatorValue != "") {
@@ -262,6 +258,12 @@ function DoEdit(Id) {
             $("#UserGroupName_" + NowEditID).empty();
         }
     };
+
+    OperatorNameChange($("#OperatorName_" + Id).val());
+    $("#OperatorName_" + Id).on("change", function () {
+        OperatorNameChange($(this).val());
+    });
+
     $("#OperatorName_" + Id).val(UserGroupID);
     $("#OperatorName_" + Id).trigger("click");
 
