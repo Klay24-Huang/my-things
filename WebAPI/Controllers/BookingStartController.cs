@@ -228,22 +228,27 @@ namespace WebAPI.Controllers
                                     CID = CID,
                                     mode = 1
                                 };
+                                var CardNo = string.Empty;
                                 for (int i = 0; i < CardLen; i++)
                                 {
                                     CardData[i] = new SendCarNoData();
                                     CardData[i].CardNo = lstCardList[i].CardNO;
                                     CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    CardNo += lstCardList[i].CardNO;
                                     count++;
                                 }
-                                //  Array.Resize(ref CardData, count + 1);
-                                wsInput.data = new SendCarNoData[CardLen];
-                                wsInput.data = CardData;
-                                WSOutput_Base wsOut = new WSOutput_Base();
-                                Thread.Sleep(500);
-                                flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                                if (false == flag)
+
+                                if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
                                 {
-                                    errCode = wsOut.ErrorCode;
+                                    wsInput.data = new SendCarNoData[CardLen];
+                                    wsInput.data = CardData;
+                                    WSOutput_Base wsOut = new WSOutput_Base();
+                                    Thread.Sleep(500);
+                                    flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                                    if (false == flag)
+                                    {
+                                        errCode = wsOut.ErrorCode;
+                                    }
                                 }
                             }
                         }
@@ -369,12 +374,14 @@ namespace WebAPI.Controllers
                                 int CardLen = lstCardList.Count;
                                 if (CardLen > 0)
                                 {
+                                    var CardNo = string.Empty;
                                     string[] CardStr = new string[CardLen];
                                     for (int i = 0; i < CardLen; i++)
                                     {
                                         CardStr[i] = lstCardList[i].CardNO;
+                                        CardNo += lstCardList[i].CardNO;
                                     }
-                                    if (CardStr.Length > 0)
+                                    if (CardStr.Length > 0 && !string.IsNullOrEmpty(CardNo))    // 有卡號才呼叫車機
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;

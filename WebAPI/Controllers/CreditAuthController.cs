@@ -29,6 +29,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using Domain.SP.Input.Car;
 
 namespace WebAPI.Controllers
 {
@@ -156,7 +157,6 @@ namespace WebAPI.Controllers
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                 #region 這邊要再加上查訂單狀態
-
                 SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
                 {
                     IDNO = IDNO,
@@ -226,6 +226,23 @@ namespace WebAPI.Controllers
                     {
                         flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
                     }
+                    #endregion
+                    #region 檢查iButton
+                    //if (flag)
+                    //{
+                    //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                    //    {
+                    //        OrderNo = tmpOrder,
+                    //        Token = Access_Token,
+                    //        IDNO = IDNO,
+                    //        LogID = LogID
+                    //    };
+                    //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                    //    SPOutput_Base SPOutputBase = new SPOutput_Base();
+                    //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                    //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                    //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                    //}
                     #endregion
                     #region 台新信用卡-Mark
                     //if (flag)
@@ -349,7 +366,7 @@ namespace WebAPI.Controllers
                     //                flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
                     //                baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
                     //            }
-                              
+
                     //        }
                     //        else
                     //        {
@@ -365,11 +382,11 @@ namespace WebAPI.Controllers
                     //    }
                     //}
                     #endregion
-                  
-                    if(flag)
+
+                    if (flag)
                     {
                         flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
-                        if(flag)
+                        if (flag)
                         {
                             string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
 
@@ -400,7 +417,7 @@ namespace WebAPI.Controllers
                         SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
                         {
                             OrderNo = tmpOrder,
-                            Result = flag==true?1:0,
+                            Result = flag == true ? 1 : 0,
                             LogID = LogID
                         };
                         SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
@@ -436,11 +453,11 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                 }
-                else if(apiInput.PayType == 1)
+                else if (apiInput.PayType == 1)
                 {
-                    if(flag)
+                    if (flag)
                     {
-                        if(apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
+                        if (apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
                         {
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
                             if (flag)
@@ -453,12 +470,11 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
                 #endregion
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -572,7 +588,7 @@ namespace WebAPI.Controllers
 
                             WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                             //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
-                            flag = WebAPI.DoCreditCardAuthV2(WSAuthInput,IDNO, ref errCode, ref WSAuthOutput);
+                            flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
                             if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
                             {
                                 flag = false;
@@ -649,6 +665,5 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
             return flag;
         }
-    
     }
 }
