@@ -278,10 +278,11 @@ namespace WebAPI.Controllers
                                  requestId = input.requestId;
                                  flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                                 //20201020 MARK BY JERRY 無連續動作，可以先不執行等待
-                                //if (flag)
-                                //{
-                                //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                //}
+                                //20201203 ADD BY ADAM REASON.今天開會決議APP要等待指令結果
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                }
 
                                 // 20201029 ADD BY ADAM REASON. 儲存指令結果，後續還是看ReportNow
                                 // 20201127 小BENSON建議先把指令前的REPORT NOW取消掉測試看看
