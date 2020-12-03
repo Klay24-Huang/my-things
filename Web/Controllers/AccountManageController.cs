@@ -291,10 +291,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult UserMaintain(FormCollection collection)
         {
-            ViewData["OperatorID"] = (collection["ddlOperator"] == null) ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString());
+            ViewData["OperatorID"] = (collection["ddlOperator"] == null) ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString() == "" ? "0" : collection["ddlOperator"].ToString());
             string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
             ViewData["Mode"] = collection["ddlObj"];
-            ViewData["UserGroup"] = (collection["ddlUserGroup"] == null) ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString());
+            ViewData["UserGroup"] = (collection["ddlUserGroup"] == null) ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString() == "" ? "0" : collection["ddlUserGroup"].ToString());
             ViewData["UserAccount"] = collection["UserAccount"];
             ViewData["UserName"] = collection["UserName"];
             ViewData["StartDate"] = collection["StartDate"]; 
@@ -303,11 +303,11 @@ namespace Web.Controllers
             ViewData["IsShowMessage"] = null;
             ViewData["UserPWD"]= collection["UserPWD"];
             string Mode = ViewData["Mode"].ToString();
-            int justSearch = Convert.ToInt32(collection["justSearch"]);
+            int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
             string Account= (string.IsNullOrEmpty(collection["UserAccount"]))?"": collection["UserAccount"].ToString();
             string UserName = (string.IsNullOrEmpty(collection["UserName"])) ? "" : collection["UserName"].ToString();
-            int UserGroup= (string.IsNullOrEmpty(collection["ddlUserGroup"]) || collection["ddlUserGroup"]=="") ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString());
-            int OperatorID = (string.IsNullOrEmpty(collection["ddlOperator"]) || collection["ddlOperator"] == "") ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString());
+            int UserGroup= (string.IsNullOrEmpty(collection["ddlUserGroup"]) || collection["ddlUserGroup"]=="") ? 0 : Convert.ToInt32(collection["ddlUserGroup"].ToString() == "" ? "0" : collection["ddlUserGroup"].ToString());
+            int OperatorID = (string.IsNullOrEmpty(collection["ddlOperator"]) || collection["ddlOperator"] == "") ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString() == "" ? "0" : collection["ddlOperator"].ToString());
             string StartDate= (string.IsNullOrEmpty(collection["StartDate"])) ? "" : collection["StartDate"].ToString();
             string EndDate = (string.IsNullOrEmpty(collection["EndDate"])) ? "" : collection["EndDate"].ToString();
 
