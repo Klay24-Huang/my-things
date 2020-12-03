@@ -338,6 +338,10 @@ namespace WebAPI.Models.Enum
             /// 檢查iButton
             /// </summary>
             CheckCarIButton,
+            /// <summary>
+            /// 判斷Token跟DeviceID後回傳該IDNO
+            /// </summary>
+            CheckTokenDeviceReturnID,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -785,6 +789,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SaveNPR380Result:    //20201201 ADD BY ADAM
                     SPName = "usp_SaveNPR380Result";
+                    break;
+                case SPType.CheckTokenDeviceReturnID:
+                    SPName = "usp_CheckTokenDeviceReturnID";
                     break;
                 case SPType.CheckCarIButton:    //檢查iButton
                     SPName = "usp_CheckCarIButton";

@@ -64,6 +64,9 @@ namespace WebAPI.Controllers
             int IsCens = 0;
             DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
+
+            //20201203 ADD BY ADAM REASON.增加DEVICEID判斷登入
+            string DeviceID = (httpContext.Request.Headers["DeviceID"] == null) ? "" : httpContext.Request.Headers["DeviceID"]; //Bearer 
             #endregion
             #region 防呆
 
@@ -127,6 +130,7 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag && isGuest == false)
             {
+                /*
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
@@ -137,6 +141,19 @@ namespace WebAPI.Controllers
                 SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                */
+                //20201203 ADD BY ADAM REASON.改為載入DEVICEID判斷
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenDeviceReturnID);
+                SPInput_CheckTokenDevice spCheckTokenDevice = new SPInput_CheckTokenDevice()
+                {
+                    Token = Access_Token,
+                    DeviceID = DeviceID,
+                    LogID = LogID
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenDevice, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenDevice, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenDevice, ref spOut, ref lstError);
+
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {

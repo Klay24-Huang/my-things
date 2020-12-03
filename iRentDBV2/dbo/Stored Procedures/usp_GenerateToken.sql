@@ -99,7 +99,8 @@ SET @hasData=0;
 			SET @RxpiresRefrashDate=DATEADD(HOUR,8,DATEADD(SECOND,@Refrash_Rxpires_in+30,GETDATE()));   --多給30秒當buffer
 		   	SET @Key = '5KMTE9JDGUJ52HE88T7PGGBF8WGU5T4YZB4TYRRSRVZWT9KGML';
 			--SET @Hash1th = UPPER(RIGHT(master.dbo.fn_varbintohexstr(HASHBYTES('SHA1',UPPER(@MEMIDNO) + @key + UPPER(@salt))),40));
-			SET @Hash1th = UPPER(RIGHT(sys.fn_varbintohexstr(HASHBYTES('SHA1',UPPER(@MEMIDNO) + @key + CONVERT(VARCHAR(20),@RxpiresDate,112))),40));
+			--20201203 ADD BY ADAM REASON.補上deviceid
+			SET @Hash1th = UPPER(RIGHT(sys.fn_varbintohexstr(HASHBYTES('SHA1',UPPER(@MEMIDNO) + @DeviceID + @key + CONVERT(VARCHAR(20),@RxpiresDate,112))),40));
 			SET @Hash2th = UPPER(RIGHT(sys.fn_varbintohexstr(HASHBYTES('SHA1',@hash1th)), 40));
 			SET @Access_Token = LEFT(@hash1th + @hash2th,64);
 			SET @Refrash_Token=RIGHT(@hash2th+@hash1th,64);

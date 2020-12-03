@@ -65,6 +65,14 @@ DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
 DECLARE @tmpOrderNum TINYINT;
+DECLARE @IDNO	VARCHAR(10)
+--目前各類型預約數
+DECLARE @NormalRentBookingNowCount      TINYINT;
+DECLARE @AnyRentBookingNowCount			TINYINT;
+DECLARE @MotorRentBookingNowCount		TINYINT;
+DECLARE @RentNowActiveType              TINYINT;
+DECLARE @NowActiveOrderNum				BIGINT;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -103,7 +111,7 @@ SET @UserID=ISNULL(@UserID,'');
 			SET @Descript=CONCAT(N'後台操作【取消訂單】，操作者【',@UserID,'】');
 			BEGIN TRAN
 	
-		     SELECT @tmpOrderNum=COUNT(order_number)  FROM TB_OrderMain WHERE order_number=@OrderNo AND (car_mgt_status=0 AND cancel_status=0 AND booking_status<3);
+		     SELECT @tmpOrderNum=COUNT(order_number)  FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND (car_mgt_status=0 AND cancel_status=0 AND booking_status<3);
 		  
 		   IF @tmpOrderNum=0
 		   BEGIN
@@ -113,6 +121,19 @@ SET @UserID=ISNULL(@UserID,'');
 		   END
 		   ELSE
 		   BEGIN
+				IF @Error=0
+				 BEGIN
+					SELECT @IDNO=IDNO FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
+
+					SELECT @NormalRentBookingNowCount=ISNULL([NormalRentBookingNowCount],0)
+								,@AnyRentBookingNowCount=ISNULL([AnyRentBookingNowCount],0)
+								,@MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount],0)
+								,@RentNowActiveType=ISNULL(RentNowActiveType,5)
+								,@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
+					FROM [dbo].[TB_BookingStatusOfUser]
+					WHERE IDNO=@IDNO;
+				 END
+
 		       UPDATE TB_OrderMain SET cancel_status=5 WHERE  order_number=@OrderNo
 			  IF @@ROWCOUNT=1
 			  BEGIN
@@ -123,6 +144,24 @@ SET @UserID=ISNULL(@UserID,'');
 				   INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 				 --  UPDATE Car_201607 SET available=1 WHERE car_id=@CarNo;
 				  -- SELECT @RstationID=return_place,@ProjID=premium FROM TB_BookingMain_201609 WHERE order_number=@OrderNum;
+
+					UPDATE TB_CarInfo SET RentCount=RentCount-1 WHERE CarNo=@CarNo AND RentCount>0;
+
+					--更新總表
+					IF @ProjType=0
+					BEGIN
+						UPDATE [TB_BookingStatusOfUser] SET  [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,NormalRentBookingCancelCount=NormalRentBookingCancelCount+1 WHERE IDNO=@IDNO AND NormalRentBookingNowCount>0;
+					END
+					ELSE IF @ProjType=3
+					BEGIN
+						UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
+					END
+					ELSE IF @ProjType=4
+					BEGIN
+						UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=MotorRentBookingNowCount-1,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
+					END
+
+
 			  END
 			  ELSE
 			  BEGIN

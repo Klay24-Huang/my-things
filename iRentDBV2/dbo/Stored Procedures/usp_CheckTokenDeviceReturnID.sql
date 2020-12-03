@@ -1,5 +1,5 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_CheckTokenReturnID]
+** Name: [dbo].[usp_CheckTokenDeviceReturnID]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,22 +29,23 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_CheckTokenReturnID]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_CheckTokenDeviceReturnID]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
-** Auth:Eric 
-** Date:2020/8/22 下午 04:49:15 
-**
+** Auth:Adam 
+** Date:2020/12/03 12:12:12  
+** 複製usp_CheckTokenReturnID修改
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/8/22 下午 04:49:15    |  Eric|          First Release
+** 2020/12/03 12:12:12   |  Adam		|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_CheckTokenReturnID]
+CREATE PROCEDURE [dbo].[usp_CheckTokenDeviceReturnID]
 	@Token                  VARCHAR(64)           ,
+	@DeviceID				VARCHAR(100)		  ,
 	@LogID                  BIGINT                ,
 	@IDNO                   VARCHAR(20)     OUTPUT,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -65,7 +66,7 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_CheckTokenReturnID';
+SET @FunName='usp_CheckTokenDeviceReturnID';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
@@ -82,7 +83,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		 IF @Error=0
 		 BEGIN
 		    
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime --AND DeviceID=@DeviceID;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -90,7 +91,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 			END
 			ELSE
 			BEGIN
-				SELECT @IDNO=MEMIDNO FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token;
+				SELECT @IDNO=MEMIDNO FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token --AND DeviceID=@DeviceID;
 				IF @IDNO=''
 				BEGIN
 				   SET @Error=1;
@@ -123,20 +124,22 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenReturnID';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenDeviceReturnID';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenReturnID';
+EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Adam', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenDeviceReturnID';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'判斷Token是否正確', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenReturnID';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'判斷TokenDevice是否正確', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenDeviceReturnID';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenReturnID';
+EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenDeviceReturnID';
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenReturnID';
+EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckTokenDeviceReturnID'
+
+GO
