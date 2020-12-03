@@ -53,13 +53,13 @@ namespace WebAPI.Controllers
 
             #endregion
             #region 防呆
+            string ClientIP = baseVerify.GetClientIp(Request);
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleMasterCard>(Contentjson);
                 //寫入API Log
-                string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                 string[] checkList = { apiInput.UserID, apiInput.CarNo, apiInput.CardNo, apiInput.ManagerId };
@@ -103,6 +103,15 @@ namespace WebAPI.Controllers
 
             }
             #endregion
+
+            if (flag)
+            {
+
+                string[] ClientCardNo = new string[0];
+                string[] UnivCard = new string[1];
+                UnivCard[0] = apiInput.CardNo;
+                SendCarCMDController.SendCarCmd(apiInput.CarNo, 2, ClientCardNo, UnivCard, ClientIP);
+            }
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)

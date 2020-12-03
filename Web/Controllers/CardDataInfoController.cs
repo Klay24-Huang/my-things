@@ -144,7 +144,6 @@ namespace Web.Controllers
                             for (int i = 1; i <= sheetLen; i++)
                             {
 
-
                                 SPInput_BE_ImportMasterCardData data = new SPInput_BE_ImportMasterCardData()
                                 {
                                     ManagerId = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
@@ -155,16 +154,27 @@ namespace Web.Controllers
                                 };
 
 
-                                if (flag)
+                                if (data.CardNo.Trim()!="" && data.CarNo.Trim() != "")
                                 {
-                                    SPOutput_Base SPOutput = new SPOutput_Base();
-                                    flag = new SQLHelper<SPInput_BE_ImportMasterCardData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                    if (flag == false)
+                                    if (flag)
                                     {
-                                        errorLine = i.ToString();
-                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                        SPOutput_Base SPOutput = new SPOutput_Base();
+                                        flag = new SQLHelper<SPInput_BE_ImportMasterCardData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                        baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                        if (flag == false)
+                                        {
+                                            errorLine = i.ToString();
+                                            errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                        }
+                                        else
+                                        {
+                                            string[] ClientCardNo = new string[0];
+                                            string[] UnivCard = new string[1];
+                                            UnivCard[0] = data.CardNo;
+                                            WebAPI.Controllers.SendCarCMDController.SendCarCmd(data.CarNo, 2, ClientCardNo, UnivCard, "0.0.0.0");
+                                        }
                                     }
+
                                 }
 
                             }

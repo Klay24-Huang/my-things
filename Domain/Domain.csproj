@@ -316,6 +316,7 @@
     <Compile Include="TB\BatExchangeStationData.cs" />
     <Compile Include="TB\BonusData.cs" />
     <Compile Include="TB\BonusHistoryData.cs" />
+    <Compile Include="TB\CarCmdData.cs" />
     <Compile Include="TB\CarCMDResponse.cs" />
     <Compile Include="TB\CarData.cs" />
     <Compile Include="TB\CarInfo.cs" />

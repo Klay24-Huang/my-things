@@ -90,7 +90,7 @@ namespace Reposotory.Implement
                 }
                 term = " ManagerId=@ManagerId ";
                 para[nowCount] = new SqlParameter("@ManagerId", SqlDbType.VarChar, 20);
-                para[nowCount].Value = CardNo;
+                para[nowCount].Value = ManagerId;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
