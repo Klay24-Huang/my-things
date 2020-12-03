@@ -55,7 +55,6 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             CarInfo info = new CarInfo();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
 
@@ -106,8 +105,8 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                        apiInput.Lock = (apiInput.Lock < 0) ? 0: apiInput.Lock;
-                        apiInput.Lock = (apiInput.Lock >1) ? 1: apiInput.Lock;
+                        apiInput.Lock = (apiInput.Lock < 0) ? 0 : apiInput.Lock;
+                        apiInput.Lock = (apiInput.Lock > 1) ? 1 : apiInput.Lock;
                     }
                 }
 
@@ -130,7 +129,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -161,8 +159,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-
-                    if (spOut.car_mgt_status>=4 && spOut.car_mgt_status<16 && spOut.cancel_status==0)  //未完成訂單（包含未取消）
+                    if (spOut.car_mgt_status >= 4 && spOut.car_mgt_status < 16 && spOut.cancel_status == 0)  //未完成訂單（包含未取消）
                     {
                         if (spOut.IsCens == 1)
                         {
@@ -175,7 +172,6 @@ namespace WebAPI.Controllers
                                 CID = spOut.CID;
                             }
 
-
                             #region 興聯車機
                             CensWebAPI censWebAPI = new CensWebAPI();
                             WSOutput_GetInfo output = new WSOutput_GetInfo();
@@ -187,24 +183,22 @@ namespace WebAPI.Controllers
                                     flag = false;
                                     errCode = "ERR429"; //車門未關
                                 }
-                                else
-                                {
-                                    if (output.data.CentralLock == 1 && apiInput.Lock==1)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR427"; //已經是解鎖狀態
-                                 
-                                    }
-                                    else if (output.data.CentralLock == 0 && apiInput.Lock == 0)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR428"; //已經是上鎖狀態
-                                  
-                                    }
-                                }
+                                //else
+                                //{
+                                //    if (output.data.CentralLock == 1 && apiInput.Lock == 1)
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR427"; //已經是解鎖狀態
+                                //    }
+                                //    else if (output.data.CentralLock == 0 && apiInput.Lock == 0)
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR428"; //已經是上鎖狀態
+                                //    }
+                                //}
                                 if (flag)//執行上解鎖
                                 {
-                                    int lockAction = (apiInput.Lock == 0) ? 3 : 2;
+                                    int lockAction = (apiInput.Lock == 0) ? 2 : 3;      // apiInput.Lock 0:解鎖 1:上鎖
                                     WSInput_SendLock wsInput = new WSInput_SendLock()
                                     {
                                         CID = CID,
@@ -217,7 +211,6 @@ namespace WebAPI.Controllers
                                         errCode = wsOutput.ErrorCode;
                                         errMsg = wsOutput.ErrMsg;
                                     }
-                                 
                                 }
                             }
                             else
@@ -268,28 +261,28 @@ namespace WebAPI.Controllers
                                 switch (apiInput.Lock)
                                 {
                                     case 0: //解鎖
-                                        //if (info.CentralLockStatus == 0)
-                                        //{
-                                        //    flag = false;
-                                        //    errCode = "ERR427"; //已經是解鎖狀態
-                                        //}
-                                        //else
-                                        //{
-                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Unlock);
-                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.Unlock;
+                                            //if (info.CentralLockStatus == 0)
+                                            //{
+                                            //    flag = false;
+                                            //    errCode = "ERR427"; //已經是解鎖狀態
+                                            //}
+                                            //else
+                                            //{
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Unlock);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.Unlock;
                                         //}
                                         break;
                                     default: //上鎖
-                                        //if (info.CentralLockStatus == 1)
-                                        //{
-                                        //    flag = false;
-                                        //    errCode = "ERR428"; //已經是上鎖狀態
-                                          
+                                             //if (info.CentralLockStatus == 1)
+                                             //{
+                                             //    flag = false;
+                                             //    errCode = "ERR428"; //已經是上鎖狀態
+
                                         //}
                                         //else
                                         //{
-                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock);
-                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock;
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock;
                                         //}
                                         break;
                                 }
@@ -301,7 +294,6 @@ namespace WebAPI.Controllers
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
 
                                     requestId = Input.requestId;
@@ -313,17 +305,14 @@ namespace WebAPI.Controllers
                                     }
                                 }
                             }
-
                         }
                     }
                 }
-
             }
-
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
