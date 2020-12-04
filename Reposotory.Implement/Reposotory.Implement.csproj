@@ -52,6 +52,7 @@
     <Compile Include="ContactRepository.cs" />
     <Compile Include="Enum\ObjType.cs" />
     <Compile Include="EventHandleRepository.cs" />
+    <Compile Include="FeedBackRepository.cs" />
     <Compile Include="HiEasyRentRepository.cs" />
     <Compile Include="ManagerRepository.cs" />
     <Compile Include="MemberRepository.cs" />

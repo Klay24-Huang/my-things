@@ -1,1 +1,358 @@
-﻿
+﻿@model  IEnumerable<Domain.TB.BackEnd.BE_FeedBackMainDetail>
+@{
+    int feedBackLen = 0;
+    string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
+
+    string ImgURL = StorageBaseURL + "feedbackpic/";
+    List<Domain.TB.BackEnd.BE_FeedBackMainDetail> feedBackData = new List<Domain.TB.BackEnd.BE_FeedBackMainDetail>();
+    //var ticket = (FormsIdentity)User.Identity;
+    if (null == Model)
+    {
+        feedBackLen = 0;
+    }
+    else
+    {
+        feedBackData = Model.ToList();
+        feedBackLen = feedBackData.Count();
+
+    }
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            查詢車況回饋
+        </div>
+        @using (Html.BeginForm("CarFeedBackQuery", "Report", FormMethod.Post, new { id = "formFeedBackQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                所屬門市
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="StationID" id="StationID" value="@ViewData["objStation"]" />
+                            </div>
+
+                        </div>
+
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車牌號碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="carid" id="carid" value="@((ViewData["carid"]==null ||ViewData["carid"].ToString()=="-1" )?"":ViewData["carid"].ToString())">
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員帳號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="userID" id="userID" value="@((ViewData["userID"]==null)?"":ViewData["userID"].ToString())">
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                回饋起迄日
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@((ViewData["SDate"]==null)?"":ViewData["SDate"].ToString())" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker with time -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@((ViewData["EDate"]==null)?"":ViewData["EDate"].ToString())" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理狀態
+                            </div>
+                            <div class="col-md-3">
+                                <select name="isHandle" id="isHandle" class="form-control">
+                                    <option value="2">全部</option>
+                                    <option value="0">未處理</option>
+                                    <option value="1">已處理</option>
+
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <!-- <button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">匯出</button>-->
+                                @if (feedBackLen > 0)
+                                {
+                                  
+                                        using (Html.BeginForm("FeedBackDownload", "Resport", FormMethod.Post, new { id = "formFeedBackQuery" }))
+                                        {
+                                            <button id="btnDownload" name="btnDownload" class="btn btn-primary">匯出excel</button>
+                                            <input type="hidden" name="carid" id="carid" value="@ViewData["carid"]">
+                                            <input type="hidden" name="objStation" id="objStation" value="@ViewData["objStation"]">
+                                            <input type="hidden" name="SDate" id="SDate" value="@ViewData["SDate"]">
+                                            <input type="hidden" name="EDate" id="EDate" value="@ViewData["EDate"]">
+                                            <input type="hidden" name="isHandle" id="isHandle" value="@ViewData["isHandle"]">
+                                            <input type="hidden" name="userID" id="userID" value="@ViewData["userID"]">
+                                        }
+                                  
+                                }
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="len" name="len" value="@feedBackLen" />
+                                <button type="submit" class="btn btn-primary">確認送出</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="ShowSetCardPanel">
+
+    <table class="table bg-white" data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            @if (feedBackLen == 0)
+            {
+                <tr>
+                    <th data-sort-inital="descending" data-class="expand">回饋日期</th>
+                    <th>回饋狀態</th>
+                    <th>合約NO.</th>
+                    <th>車號</th>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>手機</th>
+                    <th>內容</th>
+                    <th>
+                        狀態
+
+                    </th>
+                    <th data-hide="all">回饋照片</th>
+                    <th>處理結果</th>
+                    <th>處理人員</th>
+                    <th></th>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <th data-sort-inital="descending" data-class="expand">回饋日期</th>
+                    <th>回饋狀態</th>
+                    <th>合約NO.</th>
+                    <th>車號</th>
+                    <th>ID</th>
+                    <th data-hide="all">姓名</th>
+                    <th data-hide="all">手機</th>
+                    <th>內容</th>
+                    <th>
+                        狀態
+
+                    </th>
+                    <th data-hide="all">回饋照片</th>
+                    <th data-hide="all">處理結果</th>
+                    <th>處理人員</th>
+                    <th data-hide="all"></th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (feedBackLen == 0)
+            {
+                <tr>
+                    <td colspan="13" class="text-center">查無結果</td>
+
+
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < feedBackLen; i++)
+                {
+                    string status = (feedBackData[i].isHandle == 0) ? "未處理" : "已處理";
+                    string orderStatus = (feedBackData[i].mode == 0) ? "取車" : "還車";
+                    string fieldName = "handleDescript" + feedBackData[i].FeedBackID;
+                    string PIC1 = (string.IsNullOrEmpty(feedBackData[i].PIC1) || feedBackData[i].PIC1 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC1 + "\" target=\"_blank\">回饋照片一</a>";
+                    string PIC2 = (string.IsNullOrEmpty(feedBackData[i].PIC2) || feedBackData[i].PIC2 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC2 + "\" target=\"_blank\">回饋照片二</a>";
+                    string PIC3 = (string.IsNullOrEmpty(feedBackData[i].PIC3) || feedBackData[i].PIC3 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC3 + "\" target=\"_blank\">回饋照片三</a>";
+                    string PIC4 = (string.IsNullOrEmpty(feedBackData[i].PIC4) || feedBackData[i].PIC4 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC4 + "\" target=\"_blank\">回饋照片四</a>";
+                    try
+                    {
+                        if (PIC1 != "無")
+                        {
+                            string uri = ImgURL + feedBackData[i].PIC1;
+
+                            PIC1 = "<input type=\"button\" value=\"顯示圖片一\" onclick=showPic(\"" + feedBackData[i].PIC1 + "\",\"img1_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img1_" + feedBackData[i].IDNO + "\" name=\"img1_" + feedBackData[i].IDNO + "\"></img> ";
+       
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        PIC1 = "讀取照片發生錯誤：" + ex.Message;
+                    }
+                    try
+                    {
+                        if (PIC2 != "無")
+                        {
+                            string uri = ImgURL + feedBackData[i].PIC2;
+
+                            PIC2 = "<input type=\"button\" value=\"顯示圖片二\" onclick=showPic(\"" + feedBackData[i].PIC2 + "\",\"img2_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img2_" + feedBackData[i].IDNO + "\" name=\"img2_" + feedBackData[i].IDNO + "\"></img> ";
+
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        PIC2 = "已刪除照片";
+                    }
+                    try
+                    {
+                        if (PIC3 != "無")
+                        {
+                            string uri = ImgURL + feedBackData[i].PIC3;
+
+                            PIC3 = "<input type=\"button\" value=\"顯示圖片三\" onclick=showPic(\"" + feedBackData[i].PIC3 + "\",\"img3_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img3_" + feedBackData[i].IDNO + "\" name=\"img3_" + feedBackData[i].IDNO + "\"></img> ";
+
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        PIC3 = "已刪除照片";
+                    }
+                    try
+                    {
+                        if (PIC4 != "無")
+                        {
+                            string uri = ImgURL + feedBackData[i].PIC4;
+                            PIC4 = "<input type=\"button\" value=\"顯示圖片四\" onclick=showPic(\"" + feedBackData[i].PIC4 + "\",\"img4_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img4_" + feedBackData[i].IDNO + "\" name=\"img4_" + feedBackData[i].IDNO + "\"></img> ";
+            
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        PIC4 = "已刪除照片";
+                    }
+                    <tr>
+
+                        <td>@feedBackData[i].MKTime.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>@orderStatus</td>
+                        <td>@("H" + feedBackData[i].order_number.ToString().PadLeft(7, '0'))</td>
+                        <td>@feedBackData[i].CarNo</td>
+                        <td> @feedBackData[i].IDNO</td>
+                        <td> @feedBackData[i].MEMCNAME</td>
+                        <td> @feedBackData[i].MEMTEL</td>
+                        <td style="max-width:100px;word-break: break-all;"> @feedBackData[i].descript</td>
+                        @if (feedBackData[i].isHandle == 0)
+                        {
+                            <td>
+
+                                <select class="form-control" name="status" id="status">
+                                    <option value="0">未處理</option>
+                                    <option value="1">已處理</option>
+
+                                </select>
+
+                            </td>
+                            <td>@Html.Raw(PIC1) <br> @Html.Raw(PIC2)<br> @Html.Raw(PIC3) <br> @Html.Raw(PIC4) <br></td>
+                            <td>
+                                <textarea class="form-control" name="@fieldName" id="@fieldName"></textarea>
+                            </td>
+                            <td></td>
+                            <td><input type="button" class="btn btn-info" value="儲存" onclick=doHandle('@feedBackData[i].FeedBackID','@User.Identity.Name'); /></td>
+
+                        }
+                        else
+                        {
+                            <td>@status</td>
+                            <td>@Html.Raw(PIC1) <br> @Html.Raw(PIC2)<br> @Html.Raw(PIC3) <br> @Html.Raw(PIC4) <br></td>
+                            <td>@feedBackData[i].handleDescript</td>
+                            <td>@feedBackData[i].opt</td>
+                            <td></td>
+                        }
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="13" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
