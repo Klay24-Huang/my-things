@@ -105,6 +105,15 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		--1.取得資料
 		IF @Error=0
 		BEGIN
+			--統計在線案件數量
+			SELECT ProjType,COUNT(ProjType) AS Total
+			INTO #OrderProjCount
+			FROM TB_OrderMain WITH(NOLOCK)
+			WHERE IDNO=@IDNO
+			AND cancel_status < 3
+			AND car_mgt_status < 16 AND car_mgt_status > 3
+			GROUP BY ProjType
+
 			SELECT 
 				 MEMIDNO
 				,MEMCNAME AS MEMNAME
@@ -160,12 +169,14 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 				,NormalRentCount	= ISNULL(B.NormalRentBookingNowCount,0)
 				,AnyRentCount		= ISNULL(B.AnyRentBookingNowCount,0)
 				,MotorRentCount		= ISNULL(B.MotorRentBookingNowCount,0)
-				,TotalRentCount		= ISNULL(B.NormalRentBookingNowCount,0) + ISNULL(B.AnyRentBookingNowCount,0) + ISNULL(B.MotorRentBookingNowCount,0)
-				
+				--,TotalRentCount		= ISNULL(B.NormalRentBookingNowCount,0) + ISNULL(B.AnyRentBookingNowCount,0) + ISNULL(B.MotorRentBookingNowCount,0)
+				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)		--20201204 ADD BY ADAM REASON.改為線上統計
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			WHERE A.MEMIDNO=@IDNO
+
+			DROP TABLE #OrderProjCount
 		END
 		
 		--寫入錯誤訊息
