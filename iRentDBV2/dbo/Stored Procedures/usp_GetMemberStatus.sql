@@ -111,7 +111,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 			FROM TB_OrderMain WITH(NOLOCK)
 			WHERE IDNO=@IDNO
 			AND cancel_status < 3
-			AND car_mgt_status < 16 AND car_mgt_status > 3
+			AND car_mgt_status < 16 --AND car_mgt_status > 3
 			GROUP BY ProjType
 
 			SELECT 
