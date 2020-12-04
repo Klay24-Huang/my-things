@@ -260,8 +260,6 @@
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
     <Compile Include="TB\BackEnd\BE_BookingControl.cs" />
-    <Compile Include="TB\BackEnd\BE_MemberInvoiceSetting.cs" />
-    <Compile Include="TB\BackEnd\BE_ParkingImageData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />
