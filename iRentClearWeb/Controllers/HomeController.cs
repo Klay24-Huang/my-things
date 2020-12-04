@@ -228,10 +228,20 @@ namespace iRentClearWeb.Controllers
             //FormsAuthentication.RedirectFromLoginPage(uAccount.UserName, false);
             //剛剛已導向，此行不會執行到
             //return Redirect(FormsAuthentication.GetRedirectUrl(uAccount.UserName, false));
-            Session["UserName"] = uAccount.UserName;
-            Session["Account"] = uAccount.Account;
-            Session["AUTHGPNO"] = uAccount.AUTHGPNO;
-            return Redirect("~/Home/Index");
+            if (uAccount.AUTHGPNO == "10")
+            {
+                Session["UserName"] = uAccount.UserName;
+                Session["Account"] = uAccount.Account;
+                Session["AUTHGPNO"] = uAccount.AUTHGPNO;
+                uAccount.ErrorMessage = "";
+                return Redirect("~/Home/Index");
+            }
+            else
+            {
+                uAccount.ReturnUrl = "Index";
+                uAccount.ErrorMessage = "沒有使用整備網站的權限，請洽企劃人員!";
+                return View(uAccount);
+            }
         }
         /// <summary>
         /// 後台使用者登出動作
