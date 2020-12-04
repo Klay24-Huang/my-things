@@ -42,6 +42,9 @@ namespace QueryWeb.Controllers
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, account, now, dateTime.AddMinutes(10), false, "NUser", FormsAuthentication.FormsCookiePath);
             string encTicket = FormsAuthentication.Encrypt(ticket);
             base.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+            
+            Session["Account"] = uAccount.Account;
+
             return base.RedirectToAction("QueryList");
         }
 
@@ -49,21 +52,25 @@ namespace QueryWeb.Controllers
         {
             List<SubScriptionForClient> lstQuery = null;
             SubScriptionRepository subScriptionRepository = new SubScriptionRepository(this.connetStr);
-            if (base.User.Identity.IsAuthenticated)
+            //if (base.User.Identity.IsAuthenticated)
+            //{
+            //    FormsIdentity id = (FormsIdentity)base.User.Identity;
+            //    if (id != null)
+            //    {
+            //        FormsAuthenticationTicket ticket = id.Ticket;
+            //        if (!string.IsNullOrEmpty(ticket.Name))
+            //        {
+            //            lstQuery = subScriptionRepository.GetSubScriptionForClients(ticket.Name);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        base.Response.Redirect("Index");
+            //    }
+            //}
+            if (Session["Account"]!=null)
             {
-                FormsIdentity id = (FormsIdentity)base.User.Identity;
-                if (id != null)
-                {
-                    FormsAuthenticationTicket ticket = id.Ticket;
-                    if (!string.IsNullOrEmpty(ticket.Name))
-                    {
-                        lstQuery = subScriptionRepository.GetSubScriptionForClients(ticket.Name);
-                    }
-                }
-                else
-                {
-                    base.Response.Redirect("Index");
-                }
+                lstQuery = subScriptionRepository.GetSubScriptionForClients(Session["Account"].ToString());
             }
             else
             {
