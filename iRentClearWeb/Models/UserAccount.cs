@@ -47,6 +47,12 @@ namespace iRentClearWeb.Models
         /// </summary>
         public string AUTHGPNM { set; get; }
 
+
+        /// <summary>
+        /// Error Message
+        /// </summary>
+        public string ErrorMessage { set; get; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             string happyAccount = String.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("happyAccount")) ? "" : ConfigurationManager.AppSettings.Get("happyAccount").ToString();

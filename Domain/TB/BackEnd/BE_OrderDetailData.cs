@@ -318,16 +318,20 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public DateTime MEMBIRTH { set; get; }
         /// <summary>
-        /// 出生日期
+        /// 城市
         /// </summary>
         public string CityName { set; get; }
         /// <summary>
-        /// 出生日期
+        /// 區域
         /// </summary>
         public string AreaName { set; get; }
         /// <summary>
-        /// 出生日期
+        /// 地址
         /// </summary>
         public string MEMADDR { set; get; }
+        /// <summary>
+        /// 停車格
+        /// </summary>
+        public string parkingSpace { set; get; }
     }
 }

@@ -159,6 +159,9 @@ namespace WebAPI.Controllers
                             var deviceLBA = 0.0;
                             var deviceMBA = 0.0;
                             var deviceRBA = 0.0;
+                            MotorDataInput.deviceLBA = MotorDataInput.deviceLBA == "NA" ? "-999" : MotorDataInput.deviceLBA;
+                            MotorDataInput.deviceMBA = MotorDataInput.deviceMBA == "NA" ? "-999" : MotorDataInput.deviceMBA;
+                            MotorDataInput.deviceRBA = MotorDataInput.deviceRBA == "NA" ? "-999" : MotorDataInput.deviceRBA;
                             double.TryParse(MotorDataInput.device2TBA, out device2TBA);
                             double.TryParse(MotorDataInput.device3TBA, out device3TBA);
                             double.TryParse(MotorDataInput.deviceLBA, out deviceLBA);

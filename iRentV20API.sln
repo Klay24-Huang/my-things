@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30611.23
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1300
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{9769C278-31F4-47ED-8011-1F27E10847A6}"
 EndProject
@@ -22,6 +22,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{CF0FFDB1-03D7-4372-918B-CB8262F21E08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iRentClearWeb", "iRentClearWeb\iRentClearWeb.csproj", "{529A79DE-0F0A-4415-A74D-ECB0AA7CC19D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryWeb", "QueryWeb\QueryWeb.csproj", "{2187CB19-B061-4793-B399-A88322F8C05A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EC8CF1D8-B569-4B3F-9C8E-4AB95622961C} = {EC8CF1D8-B569-4B3F-9C8E-4AB95622961C}
+		{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4} = {A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +77,10 @@ Global
 		{529A79DE-0F0A-4415-A74D-ECB0AA7CC19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{529A79DE-0F0A-4415-A74D-ECB0AA7CC19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{529A79DE-0F0A-4415-A74D-ECB0AA7CC19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2187CB19-B061-4793-B399-A88322F8C05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2187CB19-B061-4793-B399-A88322F8C05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2187CB19-B061-4793-B399-A88322F8C05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2187CB19-B061-4793-B399-A88322F8C05A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

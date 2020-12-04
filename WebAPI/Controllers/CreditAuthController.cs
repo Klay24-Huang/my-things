@@ -1,15 +1,18 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Wallet;
+using Domain.SP.Input.Bill;
 using Domain.SP.Output;
 using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Wallet;
+using Domain.SP.Output.Bill;
 using Domain.TB;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 using OtherService;
 using Reposotory.Implement;
@@ -26,6 +29,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using Domain.SP.Input.Car;
 
 namespace WebAPI.Controllers
 {
@@ -76,6 +80,7 @@ namespace WebAPI.Controllers
             int Amount = 0;
             bool HasETAG = false;
             List<OrderQueryFullData> OrderDataLists = null;
+            int RewardPoint = 0;    //20201201 ADD BY ADAM REASON.換電獎勵
             #endregion
             #region 防呆
 
@@ -152,7 +157,6 @@ namespace WebAPI.Controllers
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                 #region 這邊要再加上查訂單狀態
-
                 SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
                 {
                     IDNO = IDNO,
@@ -222,6 +226,23 @@ namespace WebAPI.Controllers
                     {
                         flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
                     }
+                    #endregion
+                    #region 檢查iButton
+                    //if (flag)
+                    //{
+                    //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                    //    {
+                    //        OrderNo = tmpOrder,
+                    //        Token = Access_Token,
+                    //        IDNO = IDNO,
+                    //        LogID = LogID
+                    //    };
+                    //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                    //    SPOutput_Base SPOutputBase = new SPOutput_Base();
+                    //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                    //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                    //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                    //}
                     #endregion
                     #region 台新信用卡-Mark
                     //if (flag)
@@ -345,7 +366,7 @@ namespace WebAPI.Controllers
                     //                flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
                     //                baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
                     //            }
-                              
+
                     //        }
                     //        else
                     //        {
@@ -361,18 +382,47 @@ namespace WebAPI.Controllers
                     //    }
                     //}
                     #endregion
-                  
-                    if(flag)
+
+                    if (flag)
                     {
                         flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
-                        if(flag)
+                        if (flag)
                         {
                             string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
-                            SPOutput_Base PayOutput = new SPOutput_Base();
-                            SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+
+                            //20201201 ADD BY ADAM REASON.換電獎勵
+                            //SPOutput_Base PayOutput = new SPOutput_Base();
+                            //SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                            SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
+                            SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
                             flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                            baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                RewardPoint = PayOutput.Reward;
+                            }
                         }
+                    }
+
+                    //20201201 ADD BY ADAM REASON.換電獎勵
+                    if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
+                    {
+                        WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
+                        HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                        flag = wsAPI.NPR380Save(IDNO, RewardPoint.ToString(), apiInput.OrderNo, ref wsOutput);
+                        //存檔
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.SaveNPR380Result);
+                        SPOutput_Base NPR380Output = new SPOutput_Base();
+                        SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
+                        {
+                            OrderNo = tmpOrder,
+                            Result = flag == true ? 1 : 0,
+                            LogID = LogID
+                        };
+                        SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
+                        flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
                     }
 
                     #region 寫還車照片到azure
@@ -403,11 +453,11 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                 }
-                else if(apiInput.PayType == 1)
+                else if (apiInput.PayType == 1)
                 {
-                    if(flag)
+                    if (flag)
                     {
-                        if(apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
+                        if (apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
                         {
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
                             if (flag)
@@ -420,12 +470,11 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
                 #endregion
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -518,7 +567,8 @@ namespace WebAPI.Controllers
                                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                    MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    //MerchantTradeNo = string.Format("{0}F{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyMMddHHmm")),      //20201130 ADD BY ADAM 因應短租財務長度20進行調整
                                     NonRedeemAmt = Amount.ToString() + "00",
                                     NonRedeemdescCode = "",
                                     Remark1 = "",
@@ -538,7 +588,7 @@ namespace WebAPI.Controllers
 
                             WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                             //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
-                            flag = WebAPI.DoCreditCardAuthV2(WSAuthInput,IDNO, ref errCode, ref WSAuthOutput);
+                            flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
                             if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
                             {
                                 flag = false;
@@ -615,6 +665,5 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
             return flag;
         }
-    
     }
 }

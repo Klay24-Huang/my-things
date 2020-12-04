@@ -143,6 +143,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string StopTime { set; get; }
         /// <summary>
+        /// 使用期限
+        /// </summary>
+        public string OpenDoorDeadLine { get; set; }
+        /// <summary>
         /// 預估租金
         /// </summary>
         public int CarRentBill { set; get; }

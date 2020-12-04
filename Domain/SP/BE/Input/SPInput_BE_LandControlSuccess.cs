@@ -13,7 +13,10 @@ namespace Domain.SP.BE.Input
         /// iRent訂單編號
         /// </summary>
         public Int64 OrderNo { set; get; }
-
+        /// <summary>
+        /// 短租合約編號
+        /// </summary>
+        public string CNTRNO { set; get; }
         /// <summary>
         /// 是否成功
         /// <para>0:失敗</para>

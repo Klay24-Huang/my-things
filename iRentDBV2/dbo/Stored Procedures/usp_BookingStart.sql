@@ -71,6 +71,14 @@ DECLARE @ProjType INT;
 
 DECLARE @RentNowActiveType              TINYINT;
 DECLARE @NowActiveOrderNum				BIGINT;
+
+DECLARE @IsMotor	 INT		--是否為機車
+DECLARE @PrevOrderNo INT		--上一筆訂單編號
+DECLARE @PrevIsMotor INT		--上一筆專案是否為機車
+DECLARE @PrevRentPrice INT		--上一筆專案租金
+DECLARE @PrevFinalStopTime DATETIME		--上一筆專案
+DECLARE @TransferPrice INT=0
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -109,7 +117,7 @@ BEGIN TRY
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -118,7 +126,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -129,7 +137,7 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		SELECT @RentNowActiveType=ISNULL(RentNowActiveType,5),@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
-		FROM [dbo].[TB_BookingStatusOfUser]
+		FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
 		IF @RentNowActiveType NOT IN(0,5) AND @NowActiveOrderNum>0
 		BEGIN
@@ -141,7 +149,7 @@ BEGIN TRY
 	BEGIN
 		IF @ProjType=3 AND @StopTime<>''
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_OrderMain WHERE order_number=@OrderNo AND start_time>CONVERT(datetime,@StopTime);
+			SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND start_time>CONVERT(datetime,@StopTime);
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -165,7 +173,8 @@ BEGIN TRY
 				   @cancel_status=cancel_status,
 				   @car_mgt_status=car_mgt_status,
 				   @CarNo=CarNo,
-				   @ProjType=ProjType
+				   @ProjType=ProjType,
+				   @IsMotor=CASE WHEN ProjType=4 THEN 1 ELSE 0 END
 			FROM TB_OrderMain
 			WHERE order_number=@OrderNo;
 
@@ -175,8 +184,27 @@ BEGIN TRY
 				SELECT @NowMileage=Millage FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 			END
 
+			--轉乘優惠判斷，先找上一筆訂單
+			SELECT TOP 1 @PrevOrderNo=A.order_number
+						,@PrevIsMotor=CASE WHEN A.ProjType=4 THEN 1 ELSE 0 END
+						,@PrevFinalStopTime=B.final_stop_time
+						,@PrevRentPrice=B.pure_price
+			FROM TB_OrderMain A WITH(NOLOCK)
+			JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
+			WHERE A.order_number<@OrderNo		--上一筆訂單
+			AND A.IDNO=@IDNO AND A.car_mgt_status>=16
+			
+			--運具轉換且時間在一個小時內轉乘
+			IF @PrevOrderNo>0 AND @IsMotor<>@PrevIsMotor AND DATEADD(hour,1,@PrevFinalStopTime) > @NowTime
+			BEGIN
+				--設定可折抵金額
+				SELECT @TransferPrice = CASE WHEN @PrevRentPrice>=46 THEN 46 ELSE @PrevRentPrice END
+			END
+
 			--寫入訂單明細
-			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile)VALUES(@OrderNo,1,@NowTime,@NowMileage);
+			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile
+			)VALUES(@OrderNo,1,@NowTime,@NowMileage
+			);
 
 			--更新訂單主檔
 			IF @ProjType=3 AND @StopTime<>''
@@ -184,14 +212,16 @@ BEGIN TRY
 				UPDATE TB_OrderMain 
 				SET stop_time=@stopTime,
 					car_mgt_status=4,
-					Insurance=@Insurance
+					Insurance=@Insurance,
+					init_TransDiscount=@TransferPrice	--20201201 ADD BY ADAM REASON增加轉乘優惠
 				WHERE order_number=@OrderNo AND start_time<CONVERT(datetime,@StopTime);
 			END
 			ELSE
 			BEGIN
 				UPDATE TB_OrderMain 
 				SET car_mgt_status=4,
-					Insurance=@Insurance
+					Insurance=@Insurance,
+					init_TransDiscount=@TransferPrice	--20201201 ADD BY ADAM REASON增加轉乘優惠
 				WHERE order_number=@OrderNo	
 			END
 

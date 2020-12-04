@@ -60,6 +60,7 @@ namespace WebAPI.Controllers
             HiEasyRentAPI WebAPI = new HiEasyRentAPI();
             int retryMode = 0;
             string ORDNO = "";
+            string CNTRNO = "";
 
             #endregion
             #region 防呆
@@ -264,9 +265,13 @@ namespace WebAPI.Controllers
                                     errMsg = output.Message;
 
                                 }
-                               
+                                else
+                                {
+                                    CNTRNO = output.Data[0].CNTRNO;     //20201127 ADD BY ADAM REASON.增加短租合約回存
+                                }
 
-                                bool saveFlag = DoSave125Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
+                                //20201127 ADD BY ADAM REASON.增加短租合約回存
+                                bool saveFlag = DoSave125Data(tmpOrder, CNTRNO, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
                             }
                         }
                     }
@@ -337,7 +342,7 @@ namespace WebAPI.Controllers
                                     };
                                     input.tbPaymentDetail[1] = new PaymentDetail()
                                     {
-                                        PAYAMT = ( obj.eTag).ToString(),
+                                        PAYAMT = (obj.eTag).ToString(),
                                         PAYTYPE = "2",
                                         PAYMENTTYPE = "1",
                                         PAYMEMO = "eTag",
@@ -356,7 +361,20 @@ namespace WebAPI.Controllers
                                         PORDNO = obj.REMARK
                                     };
                                 }
-                              
+
+                            }
+                            else
+                            {
+                                //至少塞一筆空的
+                                input.tbPaymentDetail = new PaymentDetail[1];
+                                input.tbPaymentDetail[0] = new PaymentDetail()
+                                {
+                                    PAYAMT = "0",
+                                    PAYTYPE = "",
+                                    PAYMENTTYPE = "",
+                                    PAYMEMO = "",
+                                    PORDNO = ""
+                                };
                             }
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
@@ -373,12 +391,13 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    INVAMT = output.Data[0].INVAMT;
-                                    INVNO = output.Data[0].INVNO;
-                                    INVDATE = output.Data[0].INVDATE;
+                                    
                                     if (obj.PAYAMT > 0)
                                     {
                                         HasPaid = 1;
+                                        INVAMT = output.Data[0].INVAMT;
+                                        INVNO = output.Data[0].INVNO;
+                                        INVDATE = output.Data[0].INVDATE;
                                     }
                                 }
 
@@ -421,13 +440,14 @@ namespace WebAPI.Controllers
             return flag;
 
         }
-        private bool DoSave125Data(Int64 OrderNo,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        private bool DoSave125Data(Int64 OrderNo, string CNTRNO,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);
             SPInput_BE_LandControlSuccess spInput = new SPInput_BE_LandControlSuccess()
             {
                 IsSuccess = IsSuccess,
+                CNTRNO = CNTRNO,        //20201127 ADD BY ADAM REASON.增加短租合約回存
                 LogID = LogID,
                 OrderNo = OrderNo
             };

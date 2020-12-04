@@ -150,9 +150,7 @@ namespace OtherService
                 }
                 nowCount++;
             }
-            //20201028車機無回應時設定為成功，以狀態檔為主
-            //現階段因為遠傳車機因素先讓他暫時
-            waitFlag = true;
+
             if (waitFlag == false)
             {
                 if (errCode != "ERR167")

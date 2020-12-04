@@ -180,8 +180,8 @@
         var OnlineNum  = $("#OnlineNum").val();
         var flag = true;
         var errMsg = "";
-        var checkList = [StationID, StationName, ManageStationID, ZipCode, Addr,  Longitude, Latitude, in_description, show_description, FCode, SDate, EDate, ParkingNum, OnlineNum];
-        var checkErrList = ["據點代碼未填", "據點名稱未填", "管轄據點代碼未填", "郵遞區號未填", "地址未填", "經度未填", "緯度未填", "據點描述(內部註記)未填", "據點描述(app顯示)未填", "財務部門代碼未填", "有效起日未填", "有效迄日未填", "車位數未填", "實際上線數未填"];
+        var checkList = [StationID, StationName, ManageStationID, ZipCode, Addr,  Longitude, Latitude, show_description, FCode, SDate, EDate, ParkingNum, OnlineNum];
+        var checkErrList = ["據點代碼未填", "據點名稱未填", "管轄據點代碼未填", "郵遞區號未填", "地址未填", "經度未填", "緯度未填", "據點描述(app顯示)未填", "財務部門代碼未填", "有效起日未填", "有效迄日未填", "車位數未填", "實際上線數未填"];
         var checkLen = checkList.length;
         var showAreaName = $("#showAreaName").val();
         if (StationType == "-1") {

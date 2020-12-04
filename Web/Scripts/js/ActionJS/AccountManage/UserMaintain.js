@@ -197,7 +197,7 @@ $(document).ready(function () {
 
 })
 function DoEdit(Id) {
-   
+   console.log('edit')
     if (NowEditID > 0) {
         //先還原前一個
         /*
@@ -242,21 +242,28 @@ function DoEdit(Id) {
     $("#OperatorName_" + Id).show();
     $("#ddlOperator").find('option').clone().appendTo('#OperatorName_' + Id);
     $("#OperatorName_" + Id).val(OperatorID);
-    $("#OperatorName_" + Id).on("change", function () {
-        if ($(this).val() != "0" && $(this).val() != "") {
+
+    var OperatorNameChange = function (OperatorValue) {
+        if (OperatorValue != "0" && OperatorValue != "") {
             var Account = $("#Account").val();
             // var Id = $(this).attr("id").val().split("_")[1];
             $("#UserGroupName_" + NowEditID).empty();
             var obj = new Object();
             obj.UserID = Account;
-            obj.OperatorID = $(this).val();
+            obj.OperatorID = OperatorValue;
             obj.UserGroupID = $("#UserGroupID_" + NowEditID).val();
             obj.NowID = NowEditID;
-            DoAjaxAfterCallBack(obj, "BE_GetUserGroupByOperator","查詢使用者群組發生錯誤", SetUserGroupData);
+            DoAjaxAfterCallBack(obj, "BE_GetUserGroupByOperator", "查詢使用者群組發生錯誤", SetUserGroupData);
         } else {
             $("#UserGroupName_" + NowEditID).empty();
         }
+    };
+
+    OperatorNameChange($("#OperatorName_" + Id).val());
+    $("#OperatorName_" + Id).on("change", function () {
+        OperatorNameChange($(this).val());
     });
+
     $("#OperatorName_" + Id).val(UserGroupID);
     $("#OperatorName_" + Id).trigger("click");
 

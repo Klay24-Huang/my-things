@@ -1,0 +1,46 @@
+﻿		body { padding-top: 102px; font-family:'微軟正黑體'; font-size:15px;}
+		#list {font-family:'微軟正黑體';font-size:15px;}
+		#list th {background-color: #aaa; color:#fff}
+		#content {display:none;}
+         /* Custom styles for the Timeline */
+			    div.root {
+			    	background-color: white;
+			        border-color: #5D99C3;
+			
+			        border-radius: 5px;
+			        -moz-border-radius: 5px; /* For Firefox 3.6 and older */
+			    }
+
+			    div.vis.timeline .labelset {
+			    	background-color: #DBEFA5;
+			    }
+			    
+			    div.item.range.cancel {
+			        background-color: #DEDEDE; /* gray */
+			        border-color: #C4C4C4;     /* gray */
+			    }
+			    
+			    div.item.range.reserve {
+			        background-color: #8dbdca; /* blue */
+			        border-color: #1955FA;     /* blue */
+			    }
+			    
+			    div.item.range.dispatch {
+			        background-color: #f89406; /* orange */
+			        border-color: #CC8100;     /* orange */
+			    }
+			    
+			    div.item.range.extend {
+			        background-color: #A800CC; /* purple */
+			        border-color: #CCAFD2;     /* purple */
+			    }
+			
+			    div.item.range.maintain {
+			        background-color: #FF6363; /* red */
+			        border-color: #FF0000;     /* red */
+			    }
+			
+				div.item.range.finish {
+			        background-color: #7fc18d; /* green */
+			        border-color: #3E7C01;     /* green */
+			    }

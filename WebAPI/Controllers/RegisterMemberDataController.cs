@@ -146,7 +146,7 @@ namespace WebAPI.Controllers
                 {
                     if (wsOutput.Data.Length > 0)
                     {
-                        MEMRFNBR = wsOutput.Data[0].MEMRFNBR == "" ? 0 : int.Parse(wsOutput.Data[0].MEMRFNBR);
+                        MEMRFNBR = wsOutput.Data[0].MEMRFNBR == "" ? 0 : MEMRFNBR_FromStr(wsOutput.Data[0].MEMRFNBR);
                     }
                 }
             }
@@ -206,6 +206,14 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
             return objOutput;
             #endregion
+        }
+    
+        private int MEMRFNBR_FromStr(string sour)
+        {
+            if (double.TryParse(sour, out double d_sour))
+                return Convert.ToInt32(Math.Floor(d_sour));
+            else
+                throw new Exception("MEMRFNBR格式錯誤");
         }
     }
 }

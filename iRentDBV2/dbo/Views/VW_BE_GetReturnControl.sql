@@ -1,9 +1,11 @@
 ﻿CREATE VIEW [dbo].[VW_BE_GetReturnControl]
 	AS 
-	 SELECT PROCD,ORDNO,IRENTORDNO,CUSTID,CUSTNM,BIRTH,CUSTTYPE,ODCUSTID,CARTYPE,CARNO,TSEQNO	  
+	 SELECT PROCD,ORDNO,CNTRNO,IRENTORDNO,CUSTID,CUSTNM,BIRTH,CUSTTYPE,ODCUSTID,CARTYPE,CARNO,TSEQNO	  
                          	  ,GIVEDATE,GIVETIME,RENTDAYS,CEILING(GIVEKM) AS GIVEKM,OUTBRNHCD, ISNULL(CONVERT(VARCHAR(8),BookingDetail.final_stop_time, 112),'') AS RNTDATE, ISNULL(REPLACE(CONVERT(VARCHAR(5),BookingDetail.final_stop_time, 8), ':', ''),'') AS RNTTIME
                          	  ,CEILING(BookingDetail.end_mile) AS RNTKM,RPRICE	  
-                         	  ,RINSU,DISRATE,OVERHOURS,BookingDetail.fine_price AS OVERAMT2,(BookingDetail.fine_price+BookingDetail.mileage_price) AS RNTAMT,BookingDetail.pure_price AS  RENTAMT,BookingDetail.mileage_price AS LOSSAMT2,PROJID,ISNULL(Trade.TaishinTradeNo,'') AS REMARK
+                         	  ,RINSU,DISRATE,OVERHOURS,BookingDetail.fine_price AS OVERAMT2,(BookingDetail.fine_price+BookingDetail.mileage_price) AS RNTAMT,BookingDetail.pure_price AS  RENTAMT,BookingDetail.mileage_price AS LOSSAMT2,PROJID
+                              --,ISNULL(Trade.TaishinTradeNo,'') AS REMARK
+                              ,ISNULL(Trade.MerchantTradeNo,'') AS REMARK       --20201130 ADD BY ADAM REASON.網刷編號調整為MerchantTradeNo方便對帳
                          	  ,INVKIND,UNIMNO,INVTITLE,INVADDR,BookingDetail.gift_point AS GIFT,BookingDetail.gift_motor_point AS GIFT_MOTO
 							  ,ISNULL(Trade.CardNumber,'') AS CARDNO,IIF(ISNULL(Trade.AuthIdResp,0)=0,'',CONVERT(VARCHAR(20),Trade.AuthIdResp)) AS   AUTHCODE
 							  ,LendCarControl.[CARRIERID],LendCarControl.[NPOBAN]

@@ -171,10 +171,11 @@ namespace WebAPI.Controllers
                                 };
                                 if (objPoint.PointType == 0)
                                 {
+                                    /*
                                     if (!objPoint.GIFTNAME.Contains("【汽車】"))
                                     {
                                         objPoint.GIFTNAME = "【汽車】\n" + objPoint.GIFTNAME;
-                                    }
+                                    }*/
                                     TotalGiftPointCar += int.Parse(objPoint.GIFTPOINT);
                                     TotalLastPointCar += int.Parse(objPoint.LASTPOINT);
                                     //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數
@@ -182,10 +183,11 @@ namespace WebAPI.Controllers
                                 }
                                 else if (objPoint.PointType == 1)
                                 {
+                                    /*
                                     if (!objPoint.GIFTNAME.Contains("【機車】"))
                                     {
                                         objPoint.GIFTNAME = "【機車】\n" + objPoint.GIFTNAME;
-                                    }
+                                    }*/
                                     TotalGiftPointMotor += int.Parse(objPoint.GIFTPOINT);
                                     TotalLastPointMotor += int.Parse(objPoint.LASTPOINT);
                                     //20201018 ADD BY ADAM REASON.增加可轉贈的剩餘點數

@@ -54,7 +54,6 @@ namespace WebAPI.Controllers
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now.AddHours(-1);
@@ -218,6 +217,9 @@ namespace WebAPI.Controllers
                                    CarTypeName = a.CarTypeName,
                                    CarTypePic = a.CarTypePic,
                                    Content = a.Content,
+                                   ContentForAPP = a.ContentForAPP,
+                                   CityName = a.CityName,
+                                   AreaName = a.AreaName,
                                    Insurance = a.Insurance,
                                    InsurancePerHours = a.InsurancePerHours,
                                    IsRent = a.IsRent,
@@ -234,7 +236,8 @@ namespace WebAPI.Controllers
                                    PRONAME = a.PRONAME,
                                    Seat = a.Seat,
                                    StationID = a.StationID,
-                                   StationName = a.StationName                                   
+                                   StationName = a.StationName,
+                                   StationPicJson = a.StationPicJson
                                }).ToList();
                 }
 
@@ -250,13 +253,25 @@ namespace WebAPI.Controllers
                             {
                                 ADDR = lstData[0].ADDR,
                                 Content = lstData[0].Content,
+                                ContentForAPP = lstData[0].ContentForAPP,
+                                CityName = lstData[0].CityName,
+                                AreaName = lstData[0].AreaName,
                                 Latitude = lstData[0].Latitude,
                                 Longitude = lstData[0].Longitude,
                                 StationID = lstData[0].StationID,
                                 StationName = lstData[0].StationName,
                                 IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
-                                ProjectObj = new List<ProjectObj>()
+                                ProjectObj = new List<ProjectObj>(),
+                                StationInfoObj = new List<StationInfoObj>()
                             });
+
+                            List<StationInfoObj> tmpStationInfoObj = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[0].StationPicJson);
+                            foreach (var StationInfo in tmpStationInfoObj)
+                            {
+                                StationInfo.StationPic = string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], StationInfo.StationPic);
+                            }
+                            lstTmpData[0].StationInfoObj = tmpStationInfoObj;
+
                             lstTmpData[0].ProjectObj.Add(new ProjectObj()
                             {
                                 StationID = lstData[0].StationID,
@@ -288,9 +303,9 @@ namespace WebAPI.Controllers
                             for (int i = 1; i < DataLen; i++)
                             {
                                 int index = lstTmpData.FindIndex(delegate (GetProjectObj station)
-                                  {
-                                      return station.StationID == lstData[i].StationID;
-                                  });
+                                {
+                                    return station.StationID == lstData[i].StationID;
+                                });
                                 if (index < 0)
                                 {
                                     //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
@@ -320,19 +335,32 @@ namespace WebAPI.Controllers
                                         Content = "",
                                         IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
                                     };
+
+                                    List<StationInfoObj> tmpStation = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[i].StationPicJson);
+                                    foreach (var StationInfo in tmpStation)
+                                    {
+                                        StationInfo.StationPic = string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["stationContainer"], StationInfo.StationPic);
+                                    }
+
                                     GetProjectObj tmpGetProjectObj = new GetProjectObj()
                                     {
                                         ADDR = lstData[i].ADDR,
                                         Content = lstData[i].Content,
+                                        ContentForAPP = lstData[i].ContentForAPP,
+                                        CityName = lstData[i].CityName,
+                                        AreaName = lstData[i].AreaName,
                                         Latitude = lstData[i].Latitude,
                                         Longitude = lstData[i].Longitude,
                                         StationID = lstData[i].StationID,
                                         StationName = lstData[i].StationName,
                                         IsRent = lstData[i].IsRent,
                                         ProjectObj = new List<ProjectObj>(),
+                                        StationInfoObj = new List<StationInfoObj>(),
                                         Minimum = tmpBill
                                     };
+
                                     tmpGetProjectObj.ProjectObj.Add(tmpObj);
+                                    tmpGetProjectObj.StationInfoObj = tmpStation;
                                     lstTmpData.Add(tmpGetProjectObj);
                                 }
                                 else
@@ -373,11 +401,6 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
-                }
-
-                if (lstTmpData != null && lstTmpData.Count > 0)
-                {
-                    lstTmpData.ForEach(x => x.StationPic = x.StationPic ?? new string[0]);
                 }
 
                 outputApi = new OAPI_GetProject()

@@ -421,11 +421,12 @@ namespace WebAPI.Models.BillFunc
                     fpay = payMins * PriceMin;
                 }
             }
-
+            //折抵通則
+            //折抵優先折抵基本分鐘，除非剩餘折抵時數小於基本分鐘，則只能折抵非基本分鐘數
             if (disc > 0)
             {
                 if (disc < 199)
-                    fpay = fpay - 10 - (disc - 6) * PriceMin;
+                    fpay = fpay - 10 - (disc - 6) * PriceMin; 
                 else
                     fpay = (fpay - 300) - (disc - 199) * PriceMin;
             }
@@ -496,7 +497,7 @@ namespace WebAPI.Models.BillFunc
         {
             int MilagePrice = 0;
             
-            var AllMinute = GetRangeMins(SD, ED, 60, 600, lstHoliday);  //基本分鐘數及單日分鐘上限寫死
+            var AllMinute = GetCarRangeMins(SD, ED, 60, 600, lstHoliday);  //基本分鐘數及單日分鐘上限寫死
             var TotalHour = (AllMinute.Item1 + AllMinute.Item2) / 60;
 
             if (MilageBase < 0)
@@ -508,6 +509,356 @@ namespace WebAPI.Models.BillFunc
                 MilagePrice = Convert.ToInt32(Math.Floor((TotalHour * baseMil) * MilageBase));
             }
             return MilagePrice;
+        }
+
+        /// <summary>
+        /// 取得真實折扣分鐘,平日折扣分鐘,假日折扣分鐘
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘</param>
+        /// <param name="dayMaxMins">單日計費分鐘上限</param>
+        /// <param name="lstHoliday">假日列表</param>
+        /// <param name="Discount">預備折扣點數</param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public Tuple<double, double, double> CarDiscToPara(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, int Discount)
+        {
+            double payDisc = 0; //真實使用折扣
+            double wDisc = 0; //平日折扣
+            double hDisc = 0; //假日則扣           
+
+            double disc = Convert.ToDouble(Discount);
+
+            if (disc < 0)
+                throw new Exception("折扣不可於0");
+
+            if(disc % 30 > 0)
+                throw new Exception("折扣須為30的倍數");
+
+            var dayPayList = GetCarRangeDayFlow(SD, ED, baseMinutes, dayMaxMins, lstHoliday);           
+
+            if(dayPayList != null && dayPayList.Count()>0)
+            {
+                double mins = dayPayList.Select(x => x.xMins).Sum();
+              
+                if (disc > mins)
+                    disc = mins; //自動縮減
+
+                dayPayList.ForEach(x =>
+                {
+                    if(disc > 0)
+                    {
+                        if (disc >= x.xMins)
+                        {
+                            wDisc += x.isMarkDay ? 0 : x.xMins;
+                            hDisc += x.isMarkDay ? x.xMins : 0;
+                            payDisc += x.xMins;
+                            disc -= x.xMins;
+                        }
+                        else
+                        {
+                            wDisc += x.isMarkDay ? 0 : disc;
+                            hDisc += x.isMarkDay ? disc : 0;
+                            payDisc += disc;
+                            disc = 0;
+                        }
+                    }
+                });
+            }
+
+            return new Tuple<double, double, double>(payDisc, wDisc, hDisc);
+        }
+
+        /// <summary>
+        /// 未逾時計費分鐘by時間順序
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘數</param>
+        /// <param name="dayMaxMins">日最大計費分鐘數</param>
+        /// <param name="lstHoliday">假日列表</param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public List<DayPayMins> GetCarRangeDayFlow(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
+        {
+            MinsProcess minsPro = new MinsProcess(GetCarPayMins);
+            var re = GetRangeDayFlow(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
+
+            if (re != null && re.Count() > 0)
+                re = re.OrderBy(x => x.xDate).ToList();
+
+            return re;
+        }
+
+        /// <summary>
+        /// 每個DataType的計費分鐘數總和
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘數</param>
+        /// <param name="dayMaxMins">日最大計費分鐘數</param>
+        /// <param name="markDays">標記日期</param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public List<DayPayMins> GetCarTypeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<DayPayMins> markDays)
+        {//note: GetCarTypeMins
+            List<DayPayMins> re = new List<DayPayMins>();
+
+           var minsPro = new MinsProcess(GetCarPayMins);
+
+            if (markDays != null && markDays.Count() > 0)
+                markDays = FillDate(SD, ED, markDays);
+
+            var res = GetTypeDayFlow(SD, ED, baseMinutes, dayMaxMins, markDays, minsPro);
+            if (res != null)
+              re = res.GroupBy(x => x.DateType).Select(y => new DayPayMins { DateType=y.Key,xMins=y.Select(z=>z.xMins).Sum()}).ToList();
+
+            return re;
+        }
+
+        /// <summary>
+        /// 取得List中所有DateType的計費時間
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本計費分鐘</param>
+        /// <param name="dayMaxMins">每日計費分鐘上限</param>
+        /// <param name="markDays">日期分類列表</param>
+        /// <param name="minsPro">未滿60加工</param>
+        /// <param name="dayPro">每個計費日特殊邏輯</param>
+        /// <returns></returns>
+        /// <mark>2020-12-02 eason</mark>
+        public List<DayPayMins> GetTypeDayFlow(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<DayPayMins> markDays, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            List<DayPayMins> re = new List<DayPayMins>();
+
+            if (SD == null && ED == null && SD > ED)
+                throw new Exception("SD,ED不可為null");
+
+            if (SD > ED)
+                throw new Exception("起日不可大於迄日");
+
+            SD = SD.AddSeconds(SD.Second * -1);
+            ED = ED.AddSeconds(ED.Second * -1);
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            string type_sd = markDays.Where(x => x.xDate == str_sd).Select(y => y.DateType).FirstOrDefault();
+            string type_ed = markDays.Where(x => x.xDate == str_ed).Select(y => y.DateType).FirstOrDefault();
+
+            if (SD.Date == ED.Date)
+            {
+                var xre = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, new List<Holiday>(), minsPro, dayPro);
+                if (xre != null && xre.Count > 0)
+                {
+                    xre.ForEach(x => x.DateType = type_sd);
+                    re.AddRange(xre);
+                }
+            }
+            else if(SD.AddDays(1) >= ED)
+            {
+                if(type_sd == type_ed)
+                {
+                    var xre = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, new List<Holiday>(), minsPro, dayPro);
+                    if (xre != null && xre.Count > 0)
+                    {
+                        xre.ForEach(x => x.DateType = type_sd);
+                        re.AddRange(xre);
+                    }
+                }
+                else
+                {
+                    var fDays = markDays.Where(x => x.DateType == type_ed).ToList();
+                    var iDays = FromDayPayMins(fDays);
+                    var xre = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, iDays, minsPro, dayPro);
+                    if(xre != null && xre.Count() > 0)
+                    {
+                        xre.ForEach(x => { x.DateType = x.isMarkDay ? type_ed : type_sd; });
+                        re.AddRange(xre);
+                    }
+                }
+            }
+            else
+            {
+                while (SD < ED)
+                {
+                    var sd24 = SD.AddHours(24);
+
+                    string typ_sd = markDays.Where(x => x.xDate == SD.ToString("yyyyMMdd")).Select(y => y.DateType).FirstOrDefault();
+                    string typ_ed = markDays.Where(x => x.xDate == ED.ToString("yyyyMMdd")).Select(y => y.DateType).FirstOrDefault();
+                    string typ_sd24 = markDays.Where(x => x.xDate == sd24.ToString("yyyyMMdd")).Select(y => y.DateType).FirstOrDefault();
+
+                    if (ED > sd24)
+                    {
+                        if(typ_sd == typ_sd24)
+                        {
+                            var re24 = GetH24DayPayList(SD, sd24, baseMinutes, dayMaxMins, new List<Holiday>(), minsPro, dayPro);
+                            if(re24 != null && re24.Count() > 0)
+                            {
+                                re24.ForEach(x => x.DateType = typ_sd);
+                                re.AddRange(re24);
+                            }
+                        }
+                        else
+                        {
+                            var fDays = markDays.Where(x => x.DateType == typ_sd24).ToList();
+                            var iDays = FromDayPayMins(fDays);
+                            var re24 = GetH24DayPayList(SD, sd24, baseMinutes, dayMaxMins, iDays, minsPro, dayPro);
+                            if (re24 != null && re24.Count() > 0)
+                            {
+                                re24.ForEach(x => { x.DateType = x.isMarkDay ? typ_sd24 : typ_sd; });
+                                re.AddRange(re24);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(typ_sd == typ_ed)
+                        {
+                            var reLast = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, new List<Holiday>(), minsPro, dayPro);
+                            if(reLast != null && reLast.Count() > 0)
+                            {
+                                reLast.ForEach(x => x.DateType = typ_sd);
+                                re.AddRange(reLast);
+                            }
+                        }
+                        else
+                        {
+                            var fDays = markDays.Where(x => x.DateType == typ_ed).ToList();
+                            var iDays = FromDayPayMins(fDays);
+                            var reLast = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, iDays, minsPro, dayPro);
+                            if (reLast != null && reLast.Count() > 0)
+                            {
+                                reLast.ForEach(x => { x.DateType = x.isMarkDay ? typ_ed : typ_sd; });
+                                re.AddRange(reLast);
+                            }
+                        }
+                    }
+                    SD = sd24;
+                }
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// 依時間軸取得則扣點數(平日點,假日點)
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘</param>
+        /// <param name="dayMaxMins">單日計費分鐘上限</param>
+        /// <param name="lstHoliday">假日</param>
+        /// <returns>平日可折點數,假日點可折點數</returns>
+        public List<DayPayMins> GetRangeDayFlow( DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            List<DayPayMins> re = new List<DayPayMins>();
+
+            if (SD == null && ED == null && SD > ED)
+                throw new Exception("SD,ED不可為null");
+
+            if (SD > ED)
+                throw new Exception("起日不可大於迄日");
+
+            SD = SD.AddSeconds(SD.Second * -1);
+            ED = ED.AddSeconds(ED.Second * -1);
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            bool sd_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_sd);
+            bool ed_isHoliday = lstHoliday.Any(x => x.HolidayDate == str_ed);
+
+            double mins = ED.Subtract(SD).TotalMinutes;             
+
+            if (SD.Date == ED.Date || SD.AddDays(1) >= ED)
+            {
+                var xre = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                if (xre != null && xre.Count > 0)
+                    re.AddRange(xre);
+            }
+            else
+            {
+                while (SD < ED)
+                {
+                    var sd24 = SD.AddHours(24);
+                    if (ED > sd24)
+                    {
+                        var re24 = GetH24DayPayList(SD, sd24, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (re24 != null && re24.Count() > 0)
+                            re.AddRange(re24);
+                    }
+                    else
+                    {
+                        var reLast = GetH24DayPayList(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+                        if (reLast != null && reLast.Count() > 0)
+                            re.AddRange(reLast);
+                    }
+                    SD = sd24;
+                }
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// 取得單日時間軸轉註記日計費時數列表,不可大於24小時
+        /// </summary>
+        /// <param name="SD">起</param>
+        /// <param name="ED">迄</param>
+        /// <param name="baseMinutes">基本分鐘</param>
+        /// <param name="dayMaxMins">單日計費分鐘上限</param>
+        /// <param name="lstHoliday">註記日</param>
+        /// <param name="minsPro">未滿60分處理</param>
+        /// <param name="dayPro">單日特殊邏輯</param>
+        /// <returns></returns>
+        /// <mark>2020-12-02 eason</mark>
+        public List<DayPayMins> GetH24DayPayList(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday, MinsProcess minsPro = null, DayMinsProcess dayPro = null)
+        {
+            List<DayPayMins> re = new List<DayPayMins>();
+
+            string str_sd = SD.ToString("yyyyMMdd");
+            string str_ed = ED.ToString("yyyyMMdd");
+
+            bool sd_isMarkDay = lstHoliday.Any(x => x.HolidayDate == str_sd);
+            bool ed_isMarkDay = lstHoliday.Any(x => x.HolidayDate == str_ed);
+
+            var re24 = GetH24Mins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+
+            if (re24.Item1 == 0 || re24.Item2 == 0)//都是無註記,或都是註記日
+            {
+                DayPayMins item = new DayPayMins()
+                {
+                    isMarkDay = sd_isMarkDay,
+                    xDate = str_sd,
+                    xMins = sd_isMarkDay ? re24.Item2 : re24.Item1
+                };
+                re.Add(item);
+            }
+            else//同時有無註記,註記日
+            {
+                //首日
+                DayPayMins item_sd = new DayPayMins()
+                {
+                    isMarkDay = sd_isMarkDay,
+                    xDate = str_sd,
+                    xMins = sd_isMarkDay ? re24.Item2 : re24.Item1
+                };
+                re.Add(item_sd);
+
+                //隔日
+                DayPayMins item_ed = new DayPayMins()
+                {
+                    isMarkDay = ed_isMarkDay,
+                    xDate = str_ed,
+                    xMins = ed_isMarkDay ? re24.Item2 : re24.Item1
+                };
+                re.Add(item_ed);
+            }
+
+            return re;
         }
 
         /// <summary>
@@ -562,13 +913,21 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
 
-
+        //汽車未超時
         public Tuple<double, double> GetCarRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {
             var minsPro = new MinsProcess(GetCarPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);          
         }
 
+        //汽車超時時間-計算用
+        //2020-12-03 eason
+        public Tuple<double, double> GetCarOutComputeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
+        {//note: GetCarOutMins
+            var minsPro = new MinsProcess(GetCarPayMins);
+            var dayPro = new DayMinsProcess(CarOverTimeMinsToPayMins);
+            return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
+        }
         /// <summary>
         /// 汽車未滿1小時分鐘改為計費分鐘
         /// </summary>
@@ -1708,5 +2067,107 @@ namespace WebAPI.Models.BillFunc
 
             return CanDiscountPoint;
         }
+
+        /// <summary>
+        /// 自動填平常日
+        /// </summary>
+        /// <param name="sd"></param>
+        /// <param name="ed"></param>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public List<DayPayMins> FillDate(DateTime sd, DateTime ed, List<DayPayMins> sour)
+        {//note: FillDate
+
+            List<DayPayMins> re = new List<DayPayMins>();
+            if (sour != null && sour.Count() > 0)
+                re = sour;
+
+            if (sd != null && ed != null &&  ed > sd)
+            {
+                DateTime sct = Convert.ToDateTime(sd.ToString("yyyy-MM-dd"));
+                DateTime ect = Convert.ToDateTime(ed.ToString("yyyy-MM-dd"));
+
+                while (sct <= ect)
+                {
+                    if (!re.Any(x => x.xDate == sct.ToString("yyyyMMdd")))
+                    {
+                        DayPayMins item = new DayPayMins()
+                        {
+                            DateType = eumDateType.wDay.ToString(),
+                            xDate = sct.ToString("yyyyMMdd")
+                        };
+                        re.Add(item);
+                    }
+                    sct = sct.AddDays(1);
+                }
+            }
+
+            if (re != null && re.Count() > 0)
+                re = re.OrderBy(x => x.xDate).ToList();
+
+            return re;
+        }
+
+        /// <summary>
+        /// DayPayMins轉Holiday
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public List<Holiday> FromDayPayMins(List<DayPayMins> sour)
+        {
+            List<Holiday> re = new List<Holiday>();
+
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new Holiday
+                      {
+                          HolidayDate = a.xDate
+                      }).ToList();
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// Holiday轉DayPayMins自動加DateType
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        /// <mark>2020-12-03 eason</mark>
+        public List<DayPayMins> FromHoliday(List<Holiday> sour)
+        {
+            List<DayPayMins> re = new List<DayPayMins>();
+
+            if(sour != null && sour.Count()>0)
+            {
+                re = (from a in sour
+                      select new DayPayMins
+                      {
+                          DateType = eumDateType.hDay.ToString(),
+                          xDate = a.HolidayDate                          
+                      }).ToList();
+            }
+            return re;
+        }
+    }
+
+    public class DayPayMins
+    {
+        public string DateType { get; set; }//日期分類
+        public string xDate { get; set; }//格式yyyyMMdd
+        public double xMins { get; set; }//當日付費分鐘
+        public bool isMarkDay { get; set; }//是否為註記日, 平日,假日,月租平日,月租假日
+    }
+
+    public enum eumDateType
+    {
+        wDay, //平日
+        hDay, //假日
+        m_Day, //月租不分平假日
+        m_wDay, //月租平日
+        m_hDay, //月租假日
     }
 }

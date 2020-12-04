@@ -107,7 +107,6 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 		BEGIN
-			
 			SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content            --據點相關
                 ,OperatorName,OperatorICon,Score                                                    --營運商相關
                 ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)            --車子相關, 20201006 eason ADD CarNo,IsMotor
@@ -134,8 +133,7 @@ BEGIN TRY
                 ,car_mgt_status
                 ,booking_status
                 ,cancel_status
-                ,ISNULL(Setting.MilageBase
-                ,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
+                ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
                 ,already_lend_car
                 ,IsReturnCar
 				--20201026 ADD BY ADAM REASON.增加AppStatus
@@ -155,13 +153,11 @@ BEGIN TRY
 										AND OD.nowStatus=0 THEN 7							--7:物品遺漏(再開一次車門)
 								  WHEN car_mgt_status=16 AND OD.nowStatus=1 THEN 8	--8:鎖門並還車(一次性開門申請後)
                                   ELSE 0 END
-				,StationPic1 = i1.StationPic
-				,StationPic2 = i2.StationPic
-				,StationPic3 = i3.StationPic
-				,StationPic4 = i4.StationPic
 				,[CarLatitude]
 				,[CarLongitude]
 				,Area
+				,StationPicJson = ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
+				,OD.DeadLine AS OpenDoorDeadLine
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 
@@ -171,16 +167,7 @@ BEGIN TRY
 						LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
 						WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
-			
 
-			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
-						FROM TB_iRentStationInfo i1 WITH(NOLOCK) WHERE use_flag=1) AS I1 ON lend_place=I1.StationID AND I1.SEQ=1
-			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
-						FROM TB_iRentStationInfo i2 WITH(NOLOCK) WHERE use_flag=1) AS I2 ON lend_place=I2.StationID AND I2.SEQ=2
-			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
-						FROM TB_iRentStationInfo i3 WITH(NOLOCK) WHERE use_flag=1) AS I3 ON lend_place=I3.StationID AND I3.SEQ=3
-			LEFT JOIN (SELECT ROW_NUMBER() OVER(PARTITION BY StationID ORDER BY iRentStationInfoID) as SEQ,StationID,StationPic,PicDescription
-						FROM TB_iRentStationInfo i4 WITH(NOLOCK) WHERE use_flag=1) AS I4 ON lend_place=I4.StationID AND I4.SEQ=4
 			LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
             WHERE VW.IDNO=@IDNO AND cancel_status=0
             AND (car_mgt_status<16    --排除已還車的
@@ -193,8 +180,6 @@ BEGIN TRY
             AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
 
             ORDER BY start_time ASC 
-			
-			
 		END
 
 	--寫入錯誤訊息

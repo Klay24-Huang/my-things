@@ -5,7 +5,7 @@
     Dictionary<string, object> style = new Dictionary<string, object>();
     style.Add("class", "form-signin form-horizontal");
     style.Add("autocomplete", false);
-
+    
 }
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -86,6 +86,9 @@
 
                 <div class="padding" style="text-align:center">
                     <button class="btn btn-primary" type="submit">登入</button>
+                </div>
+                <div class="padding" style="text-align:center;color:red;padding-top:0px;">
+                    @(Model.ErrorMessage)
                 </div>
             </div>
 

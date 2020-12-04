@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
@@ -224,6 +225,23 @@ namespace WebAPI.Controllers
                             }
                         }
                         #endregion
+                        #region 檢查iButton
+                        //if (flag)
+                        //{
+                        //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                        //    {
+                        //        OrderNo = tmpOrder,
+                        //        Token = Access_Token,
+                        //        IDNO = IDNO,
+                        //        LogID = LogID
+                        //    };
+                        //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                        //    SPOutput_Base SPOutputBase = new SPOutput_Base();
+                        //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                        //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                        //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                        //}
+                        #endregion
                         #endregion
                     }
                     else
@@ -296,6 +314,23 @@ namespace WebAPI.Controllers
                                         errCode = "ERR188";
                                     }
                                 }
+                                #endregion
+                                #region 檢查iButton
+                                //if (flag)
+                                //{
+                                //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                //    {
+                                //        OrderNo = tmpOrder,
+                                //        Token = Access_Token,
+                                //        IDNO = IDNO,
+                                //        LogID = LogID
+                                //    };
+                                //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                                //    SPOutput_Base SPOutputBase = new SPOutput_Base();
+                                //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                                //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                                //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                                //}
                                 #endregion
                             }
                         }

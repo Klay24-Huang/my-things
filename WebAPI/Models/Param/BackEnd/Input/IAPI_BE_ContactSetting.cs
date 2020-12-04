@@ -22,7 +22,26 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <para>2:保修取還車</para>
         /// </summary>
         public Int16 Mode { set; get; }
+        /// <summary>
+        /// 還車時間
+        /// </summary>
         public string returnDate { set; get; }
+        /// <summary>
+        /// 發票寄送方式
+        /// </summary>
+        public string bill_option { set; get; }
+        /// <summary>
+        /// 手機條碼載具,自然人憑證載具
+        /// </summary>
+        public string CARRIERID { set; get; }
+        /// <summary>
+        /// 愛心碼
+        /// </summary>
+        public string NPOBAN { set; get; }
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string unified_business_no { set; get; }
         /// <summary>
         /// 操作者
         /// </summary>

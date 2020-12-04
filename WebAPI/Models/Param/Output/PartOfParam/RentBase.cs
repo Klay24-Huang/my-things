@@ -52,6 +52,11 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string RemainRentalTimeInterval { set; get; } = "";
         /// <summary>
+        /// 月租專案時數折抵顯示
+        /// 20201128 ADD BY ADAM REASON.
+        /// </summary>
+        public string RemainMonthlyTimeInterval { set; get; } = "";
+        /// <summary>
         /// 每小時基本租金
         /// </summary>
         public int RentBasicPrice { set; get; } = 0;

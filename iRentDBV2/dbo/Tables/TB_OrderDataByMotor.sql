@@ -14,6 +14,7 @@
     [R_lon]        DECIMAL (9, 6)  DEFAULT ((0.0)) NOT NULL,
     [R_lat]        DECIMAL (9, 6)  DEFAULT ((0.0)) NOT NULL,
     [Reward]       INT             DEFAULT ((0)) NULL,
+    [IsSend]     INT             DEFAULT(0) NULL,
     [MKTime]       DATETIME        DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL, 
     [UPDTime]      DATETIME       NULL, 
     CONSTRAINT [PK_TB_OrderDataByMotor] PRIMARY KEY ([OrderNo]),
@@ -77,3 +78,5 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'取車時�
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'訂單編號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderDataByMotor', @level2type = N'COLUMN', @level2name = N'OrderNo';
 
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否通知短租', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderDataByMotor', @level2type = N'COLUMN', @level2name = N'IsSend';

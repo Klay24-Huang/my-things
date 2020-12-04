@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Domain.TB
 {
@@ -59,7 +58,13 @@ namespace Domain.TB
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        /// <summary>
+        /// 據點代碼
+        /// </summary>
         public string StationID { set; get; }
+        /// <summary>
+        /// 據點名稱
+        /// </summary>
         public string StationName { set; get; }
         /// <summary>
         /// 地址
@@ -77,6 +82,18 @@ namespace Domain.TB
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
+        /// <summary>
+        /// 據點描述（app顯示）
+        /// </summary>
+        public string ContentForAPP { get; set; }
+        /// <summary>
+        /// 縣市
+        /// </summary>
+        public string CityName { get; set; }
+        /// <summary>
+        /// 行政區
+        /// </summary>
+        public string AreaName { get; set; }
         /// <summary>
         /// 計費模式
         /// </summary>
@@ -97,5 +114,10 @@ namespace Domain.TB
         /// 安心服務每小時計價
         /// </summary>
         public int InsurancePerHours { set; get; }
+
+        /// <summary>
+        /// 站點照片
+        /// </summary>
+        public string StationPicJson { get; set; }
     }
 }

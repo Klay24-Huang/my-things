@@ -444,9 +444,10 @@ namespace Web.Controllers
                     for (int i = 0; i < fieldLen; i++)
                     {
                         ICell headCell = sheet.GetRow(0).GetCell(i);
-                        if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                        if (headCell.ToString().Replace(" ", "").ToUpper() != field[i].ToUpper())
                         {
-                            errorLine = "標題列不相符";
+                            //errorLine = "標題列不相符";
+                            errorMsg = "欄位內容與標題列不相符";
                             flag = false;
                             break;
                         }
@@ -573,9 +574,10 @@ namespace Web.Controllers
                     for (int i = 0; i < fieldLen; i++)
                     {
                         ICell headCell = sheet.GetRow(0).GetCell(i);
-                        if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                        if (headCell.ToString().Replace(" ", "").ToUpper() != field[i].ToUpper())
                         {
-                            errorLine = "標題列不相符";
+                            //errorLine = "標題列不相符";
+                            errorMsg = "欄位內容與標題列不相符";
                             flag = false;
                             break;
                         }

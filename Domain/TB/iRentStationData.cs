@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Domain.WebAPI.output.rootAPI;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.TB
 {
@@ -36,7 +33,9 @@ namespace Domain.TB
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
-
-        public string[] StationPic { get; set; }
+        /// <summary>
+        /// 據點照片
+        /// </summary>
+        public List<StationInfoObj> StationPic { get; set; }
     }
 }

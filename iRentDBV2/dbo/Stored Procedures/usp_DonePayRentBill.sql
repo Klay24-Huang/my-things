@@ -49,6 +49,7 @@ CREATE PROCEDURE [dbo].[usp_DonePayRentBill]
 	@transaction_no         NVARCHAR(100)         , --金流交易序號，免付費使用Free
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
+	@Reward					INT				OUTPUT,	--換電獎勵
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -157,15 +158,25 @@ SET @ParkingSpace='';
 						SET [MotorRentBookingNowCount]=[MotorRentBookingNowCount]-1,RentNowActiveType=5,NowActiveOrderNum=0,[MotorRentBookingFinishCount]=[MotorRentBookingFinishCount]+1
 						WHERE IDNO=@IDNO;
 
-						--20201102 ADD BY ADAM REASON.檢查資料是否存在 
+						--20201201 ADD BY ADAM REASON.換電獎勵處理
 						IF EXISTS(SELECT OrderNo FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo)
 						BEGIN
-							DELETE FROM TB_OrderDataByMotor WHERE OrderNo=@OrderNo
+							--寫入機車還車時的資訊 20201030 ADD BY ERIC
+							--INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
+							--SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
+							UPDATE TB_OrderDataByMotor
+							SET R_lat=B.Latitude,R_lon=B.Longitude
+							,R_LBA=deviceLBA,R_RBA=deviceRBA,R_MBA=deviceMBA,R_TBA=device3TBA
+							,Reward=CASE WHEN R_TBA-P_TBA>=99 THEN 0
+										 WHEN R_TBA-P_TBA>=40 THEN 20
+										 WHEN R_TBA-P_TBA>=20 THEN 10
+										 ELSE 0 END
+							FROM TB_CarStatus B WITH(NOLOCK)
+							WHERE B.CarNo=@CarNo AND TB_OrderDataByMotor.OrderNo=@OrderNo
+
+							
 						END
 
-						--寫入機車還車時的資訊 20201030 ADD BY ERIC
-						INSERT INTO TB_OrderDataByMotor(OrderNo,R_lat,R_lon,R_LBA,R_RBA,R_MBA,R_TBA)
-						SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA FROM TB_CarStatus WHERE CarNo=@CarNo;
 					END
 					ELSE IF @ProjType=0
 					BEGIN
@@ -196,7 +207,7 @@ SET @ParkingSpace='';
 					BEGIN
 						INSERT INTO TB_ReturnCarControl
 						(
-							[PROCD], [ORDNO], [IRENTORDNO], [CUSTID], [CUSTNM], [BIRTH], 
+							[PROCD], [ORDNO], [CNTRNO], [IRENTORDNO], [CUSTID], [CUSTNM], [BIRTH], 
 							[CUSTTYPE], [ODCUSTID], [CARTYPE], [CARNO], [TSEQNO], [GIVEDATE], 
 							[GIVETIME], [RENTDAYS], [GIVEKM], [OUTBRNHCD], [RNTDATE], [RNTTIME], 
 							[RNTKM], [INBRNHCD], [RPRICE], [RINSU], [DISRATE], [OVERHOURS], 
@@ -205,17 +216,19 @@ SET @ParkingSpace='';
 							[CARDNO], [PAYAMT], [AUTHCODE], [isRetry], [RetryTimes], [eTag], 
 							[CARRIERID], [NPOBAN], [NOCAMT], [PARKINGAMT2], [MKTime], [UPDTime]
 						)
-						SELECT PROCD='A',C.ORDNO,A.order_number,C.CUSTID,C.CUSTNM, C.BIRTH,
+						SELECT PROCD='A',C.ORDNO,C.CNTRNO,A.order_number,C.CUSTID,C.CUSTNM, C.BIRTH,
 							C.CUSTTYPE,C.ODCUSTID,C.CARTYPE,CASRNO=A.CarNo,C.TSEQNO,C.GIVEDATE,
 							C.GIVETIME,dbo.FN_CalRntdays(B.final_start_time,B.final_stop_time),CAST(B.start_mile AS INT),C.OUTBRNHCD,CONVERT(VARCHAR,B.final_stop_time,112),REPLACE(CONVERT(VARCHAR(5),B.final_stop_time,108),':',''),
 							CAST(B.end_mile AS INT),C.INBRNHCD,C.RPRICE,C.RINSU,C.DISRATE,B.fine_interval/600,
-							fine_price,final_price,pure_price,mileage_price,A.ProjID,C.REMARK,
+							fine_price,RNTAMT=(B.fine_price+B.mileage_price),pure_price,mileage_price,A.ProjID,C.REMARK,
 							C.INVKIND,C.UNIMNO,C.INVTITLE,C.INVADDR,B.gift_point,B.gift_motor_point,
-							CASRDNO='',B.already_payment,AUTHCODE='',isRetry=1,RetryTimes=0,B.Etag,
-							C.CARRIERID,C.NPOBAN,B.Insurance_price,B.parkingFee,@NowTime,@NowTime
+							CARDNO=ISNULL(Trade.CardNumber,''),PAYAMT=ISNULL(Trade.AUTHAMT,0),AUTHCODE=IIF(ISNULL(Trade.AuthIdResp,0)=0,'',CONVERT(VARCHAR(20),Trade.AuthIdResp)),isRetry=1,RetryTimes=0,B.Etag,
+							C.CARRIERID,C.NPOBAN,B.Insurance_price,ISNULL(Machi.Amount,0) AS PARKINGAMT2,@NowTime,@NowTime
 						FROM TB_OrderMain A WITH(NOLOCK)
 						JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 						JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
+						LEFT JOIN TB_Trade AS Trade ON Trade.MerchantTradeNo =B.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=B.order_number
+						LEFT JOIN TB_OrderParkingFeeByMachi AS Machi ON Machi.OrderNo=B.order_number
 						WHERE A.order_number=@OrderNo
 					END
 

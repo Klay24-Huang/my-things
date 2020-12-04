@@ -38,12 +38,12 @@ namespace Domain.SP.Output.OrderList
         /// 據點地區
         /// </summary>
         public string Area { get; set; }
-        #endregion
 
-        public string StationPic1 { set; get; }
-        public string StationPic2 { set; get; }
-        public string StationPic3 { set; get; }
-        public string StationPic4 { set; get; }
+        /// <summary>
+        /// 據點照片
+        /// </summary>
+        public string StationPicJson { get; set; }
+        #endregion
         #region 營運商相關              
         /// <summary>
         /// 營運商名稱
@@ -183,6 +183,10 @@ namespace Domain.SP.Output.OrderList
         /// 預計還車時間
         /// </summary>
         public string stop_time { set; get; }
+        /// <summary>
+        /// 使用期限
+        /// </summary>
+        public string OpenDoorDeadLine { get; set; }
         /// <summary>
         /// 預估租金
         /// </summary>

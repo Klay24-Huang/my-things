@@ -1,0 +1,5 @@
+﻿body { padding-top: 102px; font-family:'微軟正黑體'; font-size:15px;}
+		.table-bordered.table {font-family:'微軟正黑體';font-size:15px;}
+		.table-bordered.table th {background-color: #aaa; color:#fff}
+		.form-horizontal .control-label { padding-top: 0px;}
+		.well .control-group .controls{ margin-left: 140px; margin-top: 0;}

@@ -72,6 +72,8 @@ DECLARE @TEL3 		VARCHAR(20);	--公司電話
 DECLARE @ODDATE 	VARCHAR(8);		--受訂日期
 DECLARE @GIVEDATE 	VARCHAR(8);		--取車日期
 DECLARE @GIVETIME 	VARCHAR(4);		--取車時間
+DECLARE @GIVEDATE_R VARCHAR(8)		--實際取車日期
+DECLARE @GIVETIME_R VARCHAR(4)		--實際取車時間
 DECLARE @RNTDATE 	VARCHAR(8);		--預還日期
 DECLARE @RNTTIME 	VARCHAR(4);		--預還時間
 DECLARE @CARTYPE 	VARCHAR(10);	--車型代碼
@@ -109,7 +111,8 @@ DECLARE @PriceH		INT;			--假日價格
 DECLARE @ProjType	TINYINT;		--專案類型：0:同站;3:路邊;4:機車
 DECLARE @MotorPrice	FLOAT;			--機車每分鐘價格
 DECLARE @BaseMinutes INT;			--基本分鐘數
-DECLARE @BaseMinutesPrice FLOAT;	--單日計費上限
+DECLARE @BaseMinutesPrice FLOAT;	--基本分鐘費用
+DECLARE @MotorMaxPrice INT			--單日計費上限
 DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
 		,@BIRTH			DATETIME
 		,@GIVEKM		INT
@@ -170,7 +173,7 @@ BEGIN TRY
 		BEGIN TRAN
 		SET @hasData=0
 		
-		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo;
+		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo;
 				
 		IF @hasData>0
 		BEGIN
@@ -181,7 +184,7 @@ BEGIN TRY
 				@TEL2=[MEMTEL],
 				@TEL3=[MEMCOMTEL],
 				@BIRTH=[MEMBIRTH]
-			FROM [dbo].[TB_MemberData] WHERE [MEMIDNO]=@IDNO;
+			FROM [dbo].[TB_MemberData] WITH(NOLOCK) WHERE [MEMIDNO]=@IDNO;
 			
 			SELECT @CarNo=[CarNo],
 				@ODDATE=convert(varchar,[booking_date],112),
@@ -203,26 +206,26 @@ BEGIN TRY
 				@SDate=start_time,
 				@EDate=stop_time,
 				@ProjType=ProjType
-			FROM [dbo].[TB_OrderMain] WHERE [order_number]=@OrderNo;
+			FROM [dbo].[TB_OrderMain] WITH(NOLOCK) WHERE [order_number]=@OrderNo;
 			
 			
-			SELECT --@GIVEDATE=CONVERT(VARCHAR,[final_start_time],112),
-				--@GIVETIME=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
+			SELECT @GIVEDATE_R=CONVERT(VARCHAR,[final_start_time],112),
+				@GIVETIME_R=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
 				--@RNTAMT=[pure_price]
 				@GIVEKM = CAST(start_mile AS INT),
 				@RNTKM = CAST(end_mile AS INT)
-			FROM [dbo].[TB_OrderDetail]
+			FROM [dbo].[TB_OrderDetail] WITH(NOLOCK)
 			WHERE [order_number]=@OrderNo;
 			
-			SELECT @TSEQNO=[TSEQNO],@CARTYPE=[CarType] FROM [dbo].[TB_Car] Where CarNo=@CarNo;
+			SELECT @TSEQNO=[TSEQNO],@CARTYPE=[CarType] FROM [dbo].[TB_Car] WITH(NOLOCK) Where CarNo=@CarNo;
 			
-			SELECT @IsHoliday=COUNT(1) FROM [dbo].[TB_Holiday] Where use_flag=1 And HolidayDate=@GIVEDATE;
+			SELECT @IsHoliday=COUNT(1) FROM [dbo].[TB_Holiday] WITH(NOLOCK) Where use_flag=1 And HolidayDate=@GIVEDATE;
 
-			SELECT @RPRICE=Case When @IsHoliday=1 Then PROPRICE_H Else PROPRICE_N End FROM [dbo].[TB_Project] WHERE [PROJID]=@PROJID;
+			SELECT @RPRICE=Case When @IsHoliday=1 Then PROPRICE_H Else PROPRICE_N End FROM [dbo].[TB_Project] WITH(NOLOCK) WHERE [PROJID]=@PROJID;
 
 			SELECT @PriceN=[PRICE],@PriceH=[PRICE_H] FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] WHERE PROJID=@PROJID AND CARTYPE=@CARTYPE;
 
-			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice FROM [TB_PriceByMinutes] WHERE ProjID=@PROJID AND CarType=@CARTYPE;
+			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice,@MotorMaxPrice=MaxPrice FROM [TB_PriceByMinutes] WITH(NOLOCK) WHERE ProjID=@PROJID AND CarType=@CARTYPE;
 			
 			--部分參數寫死
 			SET @PROCD='A';
@@ -242,8 +245,10 @@ BEGIN TRY
 			--計算租金
 			If @ProjType = 4
 			BEGIN
-				--機車
-				exec @ORDAMT=[dbo].[FN_MotoRentCompute] @SDate,@EDate,@MotorPrice,@BaseMinutes,@BaseMinutesPrice,0;
+				--機車 起訖都抓七天，其實算租金有點沒意義，現行預約都是送RPRICE=>ORDAMT
+				--exec @ORDAMT=[dbo].[FN_MotoRentCompute] @SDate,@EDate,@MotorPrice,@BaseMinutes,@BaseMinutesPrice,0;
+				SET @RPRICE = @MotorMaxPrice
+				SET @ORDAMT = @RPRICE
 				SET @RNTAMT=@ORDAMT
 			END
 			ELSE
@@ -292,8 +297,8 @@ BEGIN TRY
 				  ,@CarNo		AS CARNO
 				  
 				  ,@TSEQNO		AS TSEQNO
-				  ,@GIVEDATE	AS GIVEDATE
-				  ,@GIVETIME	AS GIVETIME
+				  ,@GIVEDATE_R	AS GIVEDATE
+				  ,@GIVETIME_R	AS GIVETIME
 				  ,0			AS RENTDAYS
 				  ,@GIVEKM		AS GIVEKM
 
@@ -317,8 +322,8 @@ BEGIN TRY
 
 				  ,@INVKIND		AS INVKIND
 				  ,@UNIMNO		AS UNIMNO
-				  ,@INVTITLE	AS INVTITLE
-				  ,''			AS INVADDR
+				  ,@INVTITLE	AS INVTITLE		--沒有抬頭
+				  ,''			AS INVADDR		--沒有地址
 				  ,@NowTime		AS MKTime
 
 				  ,@NowTime		AS UPDTIME

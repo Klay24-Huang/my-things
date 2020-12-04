@@ -60,8 +60,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.StationID, apiInput.StationName, apiInput.ManagerStationID, apiInput.FCode, apiInput.Addr,apiInput.in_description,apiInput.show_description };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.StationID, apiInput.StationName, apiInput.ManagerStationID, apiInput.FCode, apiInput.Addr,apiInput.show_description };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (apiInput.Latitude <= 0 || apiInput.Longitude <= 0)

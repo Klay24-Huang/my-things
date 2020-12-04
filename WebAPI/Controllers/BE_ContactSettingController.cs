@@ -247,6 +247,50 @@ namespace WebAPI.Controllers
                             #region 強還，先判斷目前是不是相同訂單，要不要下車機cmd
                             if (flag)
                             {
+
+                                #region 各類型判斷
+                                if (flag)
+                                {
+                                    switch (apiInput.bill_option)
+                                    {
+                                        case "4":     // 統編
+                                            if (string.IsNullOrWhiteSpace(apiInput.unified_business_no))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR190";
+                                            }
+                                            else
+                                            {
+                                                flag = baseVerify.checkUniNum(apiInput.unified_business_no);
+                                                if (false == flag)
+                                                {
+                                                    flag = false;
+                                                    errCode = "ERR191";
+                                                }
+                                            }
+                                            break;
+                                        case "5":     // 手機條碼
+                                            if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR193";
+                                            }
+                                            else
+                                            {
+                                                flag = new HiEasyRentAPI().CheckEinvBiz(apiInput.CARRIERID, ref errCode);
+                                            }
+                                            break;
+                                        case "6":     // 自然人憑證
+                                            if (string.IsNullOrWhiteSpace(apiInput.CARRIERID))
+                                            {
+                                                flag = false;
+                                                errCode = "ERR193";
+                                            }
+                                            break;
+                                    }
+                                }
+                                #endregion
+
                                 if (apiInput.type == 1)  //還車
                                 {
                                     BE_CheckHasOrder tmp = new ContactRepository(this.connetStr).CheckCanClear(tmpOrder.ToString());
@@ -282,7 +326,11 @@ namespace WebAPI.Controllers
                                             OrderNo = tmpOrder,
                                             UserID = apiInput.UserID,
                                             transaction_no = "",
-                                            ReturnDate = ReturnDate
+                                            ReturnDate = ReturnDate,
+                                            bill_option = apiInput.bill_option,
+                                            NPOBAN = apiInput.NPOBAN,
+                                            CARRIERID = apiInput.CARRIERID,
+                                            unified_business_no = apiInput.unified_business_no
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
@@ -312,7 +360,11 @@ namespace WebAPI.Controllers
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
-                                                ReturnDate = ReturnDate
+                                                ReturnDate = ReturnDate,
+                                                bill_option = apiInput.bill_option,
+                                                NPOBAN = apiInput.NPOBAN,
+                                                CARRIERID = apiInput.CARRIERID,
+                                                unified_business_no = apiInput.unified_business_no
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();
@@ -815,14 +867,19 @@ namespace WebAPI.Controllers
             int ProjType = 0;
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
+            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
             int days = 0; int hours = 0; int mins = 0; //以分計費總時數
             int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
             int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int CarRentPrice = 0; //車輛租金
+            int MonthlyPoint = 0;   //月租折抵點數        20201128 ADD BY ADAM 
+            int MonthlyPrice = 0;   //月租折抵換算金額      20201128 ADD BY ADAM 
             bool UseMonthMode = false;
             float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+            int InsurancePerHours = 0;  //安心服務每小時價
             #region 取出訂單資訊
+
             if (flag)
             {
                 SPInput_BE_GetOrderStatusByOrderNo spInput = new SPInput_BE_GetOrderStatusByOrderNo()
@@ -857,8 +914,19 @@ namespace WebAPI.Controllers
                 ProjType = OrderDataLists[0].ProjType;
                 SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                 SD = SD.AddSeconds(SD.Second * -1); //去秒數
-                ED = Convert.ToDateTime(OrderDataLists[0].stop_time);
-                ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                //機車路邊不計算預計還車時間
+                if (OrderDataLists[0].ProjType == 4)
+                {
+                    //ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time==""? returnDate: OrderDataLists[0].final_stop_time);
+                    ED = Convert.ToDateTime(returnDate);
+                    ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                }
+                else
+                {
+                    //ED = Convert.ToDateTime(OrderDataLists[0].stop_time==""? returnDate: OrderDataLists[0].stop_time);
+                    ED = Convert.ToDateTime(returnDate);
+                    ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                }
                 FED = Convert.ToDateTime(returnDate);
                 FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
@@ -950,7 +1018,7 @@ namespace WebAPI.Controllers
                 //1.0 先還原這個單號使用的
                 flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
                 int RateType = (ProjType == 4) ? 1 : 0;
-                if (hasFine)
+                if (!hasFine)
                 {
                     monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(IDNO, SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
                 }
@@ -962,7 +1030,7 @@ namespace WebAPI.Controllers
                 if (MonthlyLen > 0)
                 {
                     UseMonthMode = true;
-
+                    outputApi.IsMonthRent = 1;
                     if (flag)
                     {
                         if (ProjType == 4)
@@ -970,27 +1038,37 @@ namespace WebAPI.Controllers
                             //機車沒有分平假日，直接送即可
                             for (int i = 0; i < MonthlyLen; i++)
                             {
-                                int MotoTotalHours = Convert.ToInt32(60 * monthlyRentDatas[i].MotoTotalHours);
-                                if (MotoTotalHours >= TotalRentMinutes) //全部扣光
+                                int MotoTotalMinutes = Convert.ToInt32(monthlyRentDatas[i].MotoTotalHours);
+                                if (MotoTotalMinutes >= TotalRentMinutes) //全部扣光
                                 {
+                                    MonthlyPoint += TotalRentMinutes;    //20201128 ADD BY ADAM REASON.月租折抵點數計算
                                     flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄
                                     TotalRentMinutes = 0;
                                     break;
                                 }
                                 else
                                 {
-                                    if (TotalRentMinutes - MotoTotalHours >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
+                                    //折抵不能全折時，基本分鐘數會擺在最後折，且要一次折抵掉
+                                    //一般時數會先折抵基本分鐘數，所以月租必須先折非基本分鐘，否則兩邊會有牴觸
+                                    if (TotalRentMinutes - MotoTotalMinutes >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
                                     {
-                                        TotalRentMinutes -= MotoTotalHours;
-                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        MonthlyPoint += MotoTotalMinutes;        //20201128 ADD BY ADAM REASON.月租折抵點數計算
+                                        TotalRentMinutes -= MotoTotalMinutes;
+                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalMinutes, LogID, ref errCode); //寫入記錄
                                     }
                                     else
                                     {
-                                        MotoTotalHours += TotalRentMinutes - MotoTotalHours - OrderDataLists[0].BaseMinutes;
-                                        TotalRentMinutes -= MotoTotalHours;
-                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalHours, LogID, ref errCode); //寫入記錄
+                                        //折抵時數不夠扣基本費 只能折  租用時數-基本分鐘數
+                                        int tmpMonthlyPoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                        MonthlyPoint += tmpMonthlyPoint;
+                                        TotalRentMinutes -= tmpMonthlyPoint;
+                                        //MotoTotalHours += TotalRentMinutes - MotoTotalHours - OrderDataLists[0].BaseMinutes;
+                                        //TotalRentMinutes -= MotoTotalHours;
+                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, tmpMonthlyPoint, LogID, ref errCode); //寫入記錄
                                     }
                                 }
+
+                                outputApi.Rent.RemainMonthlyTimeInterval = MonthlyPoint.ToString();
                             }
                         }
                         else
@@ -1022,7 +1100,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            #region 開始計價
+            #region 開始計價  20201129 還沒同步到前端計算租金
             if (flag)
             {
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));

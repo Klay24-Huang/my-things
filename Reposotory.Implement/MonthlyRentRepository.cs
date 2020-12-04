@@ -115,7 +115,7 @@ namespace Reposotory.Implement
             checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo,Int64 MonthlyRentId, int UseWorkDayHours, int UseHolidayHours, int UseMotoTotalHours, Int64 LogID, ref string errCode)
+        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo,Int64 MonthlyRentId, int UseWorkDayHours, int UseHolidayHours, int UseMotoTotalMinutes, Int64 LogID, ref string errCode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -127,7 +127,7 @@ namespace Reposotory.Implement
                 OrderNo = OrderNo,
                 MonthlyRentId = MonthlyRentId,
                 UseHolidayHours = UseHolidayHours*60,
-                UseMotoTotalHours = UseMotoTotalHours*60,
+                UseMotoTotalHours = UseMotoTotalMinutes,        //2021128 ADD BY ADAM 
                 UseWorkDayHours = UseWorkDayHours*60
             };
             SPOutput_Base SPOutput = new SPOutput_Base();

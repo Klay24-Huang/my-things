@@ -64,6 +64,9 @@ namespace WebAPI.Controllers
             int IsCens = 0;
             DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
+
+            //20201203 ADD BY ADAM REASON.增加DEVICEID判斷登入
+            string DeviceID = (httpContext.Request.Headers["DeviceID"] == null) ? "" : httpContext.Request.Headers["DeviceID"]; //Bearer 
             #endregion
             #region 防呆
 
@@ -127,6 +130,7 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag && isGuest == false)
             {
+                /*
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
@@ -137,6 +141,19 @@ namespace WebAPI.Controllers
                 SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                */
+                //20201203 ADD BY ADAM REASON.改為載入DEVICEID判斷
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenDeviceReturnID);
+                SPInput_CheckTokenDevice spCheckTokenDevice = new SPInput_CheckTokenDevice()
+                {
+                    Token = Access_Token,
+                    DeviceID = DeviceID,
+                    LogID = LogID
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenDevice, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenDevice, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenDevice, ref spOut, ref lstError);
+
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
@@ -169,7 +186,11 @@ namespace WebAPI.Controllers
                         OtherService.Enum.MachineCommandType.CommandType CmdType = new OtherService.Enum.MachineCommandType.CommandType();
                         string CommandType = "";
                         string requestId = "";
+                        WSInput_Base<Params> input;
+                        string method = CommandType;
                         #region 先捉最近一次資料
+                        //20201127 小BENSON建議先把指令前的REPORT NOW取消掉測試看看
+                        /*
                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                         CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                         WSInput_Base<Params> input = new WSInput_Base<Params>()
@@ -184,12 +205,12 @@ namespace WebAPI.Controllers
                         string method = CommandType;
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
 
-                        /* 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus */
+                        // 20201030 ADD BY ADAM REASON.先取消ReportNow等待，直接寫入記錄到TB_CarStatus 
                         if (flag)
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
-                        
+                        */
                         if (flag)
                         {
                             info = new CarStatusCommon(connetStr).GetInfoByMotor(spOut.CID);
@@ -204,6 +225,7 @@ namespace WebAPI.Controllers
                                 deviceToken = spOut.deviceToken;
                             }
                         }
+                        
                         #endregion
                         if (flag)
                         {
@@ -273,13 +295,16 @@ namespace WebAPI.Controllers
                                  requestId = input.requestId;
                                  flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                                 //20201020 MARK BY JERRY 無連續動作，可以先不執行等待
-                                //if (flag)
-                                //{
-                                //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                //}
+                                //20201203 ADD BY ADAM REASON.今天開會決議APP要等待指令結果
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                }
 
                                 // 20201029 ADD BY ADAM REASON. 儲存指令結果，後續還是看ReportNow
-                                if (flag)
+                                // 20201127 小BENSON建議先把指令前的REPORT NOW取消掉測試看看
+                                // 這邊就先不跑強更狀態
+                                if (flag && false)
                                 {
                                     SPInput_SetMotorStatus spInput2 = new SPInput_SetMotorStatus()
                                     {
@@ -292,8 +317,6 @@ namespace WebAPI.Controllers
                                     SQLHelper<SPInput_SetMotorStatus, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_SetMotorStatus, SPOutput_Base>(connetStr);
                                     flag = sqlHelp2.ExecuteSPNonQuery(SPName2, spInput2, ref spOutBase, ref lstError);
                                     baseVerify.checkSQLResult(ref flag, spOutBase.Error, spOutBase.ErrorCode, ref lstError, ref errCode);
-
-
                                 }
                             }
                         }

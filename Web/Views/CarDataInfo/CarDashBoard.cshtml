@@ -97,7 +97,7 @@
                         <div class="col-md-10">
                             <input class="form-control col-md-2" type="text" name="StationID" id="StationID" value="@StationID" />
                             <span class="form-inline" id="StationName" name="StationName"></span>
-                            <button type="button" id="btnSearch_ALL" name="btnSearch_ALL" class="btn btn-warning">ALL【機車】</button>
+                            <button type="button" id="btnSearch_ALL" name="btnSearch_ALL" class="btn btn-warning">ALL</button>
                             <button type="button" id="btnSearch_X0WR" name="btnSearch_X0WR" class="btn btn-primary">雙北【機車】</button>
                             <button type="button" id="btnSearch_X1JT" name="btnSearch_X1JT" class="btn btn-primary">台南【機車】</button>
                             <button type="button" id="btnSearch_X1KX" name="btnSearch_X1KX" class="btn btn-primary">桃園【機車】</button>
@@ -393,10 +393,10 @@
                         <span data-toggle="tooltip" title="大燈" class="icon-14 @((lstCarData[i].IndoorLightStatus==1)?" text-danger":"")"></span>
                         <span data-toggle="tooltip" title="車門" class="icon-16 @((lstCarData[i].DoorStatus==1)?" text-danger":"") "></span>
                         <br>
-                        <span data-toggle="tooltip" title="防盜鎖" class="icon-12 @((lstCarData[i].SecurityStatus==1)?" text-danger":"")"></span>
-                        <span data-toggle="tooltip" title="中控鎖" class="icon-15 @((lstCarData[i].CentralLockStatus==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="防盜鎖" class="icon-12 @((lstCarData[i].SecurityStatus==0)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="中控鎖" class="icon-15 @((lstCarData[i].CentralLockStatus==0)?" text-danger":"")"></span>
 
-                        <span data-toggle="tooltip" title="iButton" class="icon-17 @((lstCarData[i].iButton==1)?" text-danger":"")"></span>
+                        <span data-toggle="tooltip" title="iButton" class="icon-17 @((lstCarData[i].iButton==0)?" text-danger":"")"></span>
                         <br>
                     </td>
                     <td>

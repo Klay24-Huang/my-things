@@ -20,5 +20,9 @@ namespace Domain.TB.BackEnd
         /// 還車照
         /// </summary>
         public List<BE_CarImageData> ReturnCarImage { set; get; }
+        /// <summary>
+        /// 停車照
+        /// </summary>
+        public List<BE_ParkingImageData> ParkingCarImage { set; get; }
     }
 }

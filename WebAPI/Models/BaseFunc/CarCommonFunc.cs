@@ -1,11 +1,6 @@
 ﻿using Domain.CarMachine;
-using Domain.Common;
 using Domain.SP.BE.Input;
-using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
-using Domain.SP.Output.Booking;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Rent;
 using Domain.TB;
 using Domain.WebAPI.Input.CENS;
@@ -17,12 +12,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Web;
-using System.Web.Http;
-using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Models.BaseFunc
@@ -36,15 +26,15 @@ namespace WebAPI.Models.BaseFunc
         private string isDebug = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["isDebug"])) ? "0" : ConfigurationManager.AppSettings["isDebug"].ToString();
         private string CENSCID = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MockCID"])) ? "90001" : ConfigurationManager.AppSettings["MockCID"].ToString();
         private string ClosePolygonOpen = (ConfigurationManager.AppSettings["ClosePolygonOpen"] == null) ? "1" : ConfigurationManager.AppSettings["ClosePolygonOpen"].ToString();
-     /// <summary>
-     /// 後台強還使用
-     /// </summary>
-     /// <param name="tmpOrder"></param>
-     /// <param name="IDNO"></param>
-     /// <param name="LogID"></param>
-     /// <param name="UserID"></param>
-     /// <param name="errCode"></param>
-     /// <returns></returns>
+        /// <summary>
+        /// 後台強還使用
+        /// </summary>
+        /// <param name="tmpOrder"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="LogID"></param>
+        /// <param name="UserID"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
         public bool BE_CheckReturnCar(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode)
         {
             int IsCens = 0;
@@ -60,7 +50,7 @@ namespace WebAPI.Models.BaseFunc
                 OrderNo = tmpOrder,
                 IDNO = IDNO,
                 LogID = LogID,
-                 UserID=UserID
+                UserID = UserID
             };
             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_CheckCarStatusByReturn);
             SPOutput_CheckCarStatusByReturn spOut = new SPOutput_CheckCarStatusByReturn();
@@ -302,7 +292,6 @@ namespace WebAPI.Models.BaseFunc
                     }
                     #endregion
                 }
-
             }
             #endregion
             return flag;
@@ -319,7 +308,7 @@ namespace WebAPI.Models.BaseFunc
         /// </param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool CheckReturnCar(Int64 tmpOrder,string IDNO,Int64 LogID,string Access_Token,ref string errCode)
+        public bool CheckReturnCar(Int64 tmpOrder, string IDNO, Int64 LogID, string Access_Token, ref string errCode)
         {
             int IsCens = 0;
             int IsMotor = 0;
@@ -355,7 +344,6 @@ namespace WebAPI.Models.BaseFunc
                 #region 汽車
                 if (IsMotor == 0)
                 {
-
                     if (IsCens == 1)
                     {
                         #region 興聯車機
@@ -366,12 +354,10 @@ namespace WebAPI.Models.BaseFunc
                         if (false == flag)
                         {
                             errCode = wsOutInfo.ErrorCode;
-
                         }
                         else
                         {
                             if (wsOutInfo.data.CID != CID)
-
                             {
                                 flag = false;
                                 errCode = "ERR400";
@@ -380,7 +366,6 @@ namespace WebAPI.Models.BaseFunc
                         #region 判斷是否熄火
                         if (flag)
                         {
-                           
                             if (wsOutInfo.data.PowOn == 1)
                             {
                                 flag = false;
@@ -419,33 +404,43 @@ namespace WebAPI.Models.BaseFunc
                             }
                         }
                         #endregion
+                        #region 判斷是否上鎖
+                        if (flag)
+                        {
+                            if (wsOutInfo.data.lockStatus != "1111")
+                            {
+                                flag = false;
+                                errCode = "ERR232";
+                            }
+                        }
+                        #endregion
                         #endregion
                     }
                     else
                     {
                         #region 遠傳車機
                         //取最新狀況, 先送getlast之後從tb捉最近一筆
-                        FETCatAPI FetAPI = new FETCatAPI();
-                        string requestId = "";
-                        string CommandType = "";
-                        OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        {
-                            command = true,
-                            method = CommandType,
-                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            _params = new Params()
+                        //FETCatAPI FetAPI = new FETCatAPI();
+                        //string requestId = "";
+                        //string CommandType = "";
+                        //OtherService.Enum.MachineCommandType.CommandType CmdType;
+                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        //{
+                        //    command = true,
+                        //    method = CommandType,
+                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        //    _params = new Params()
 
-                        };
-                        requestId = input.requestId;
-                        string method = CommandType;
-                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        if (flag)
-                        {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
+                        //};
+                        //requestId = input.requestId;
+                        //string method = CommandType;
+                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -454,7 +449,6 @@ namespace WebAPI.Models.BaseFunc
                                 #region 判斷是否熄火
                                 if (flag)
                                 {
-                              
                                     if (info.PowerONStatus == 1)
                                     {
                                         flag = false;
@@ -490,6 +484,16 @@ namespace WebAPI.Models.BaseFunc
                                     if (false == flag)
                                     {
                                         errCode = "ERR188";
+                                    }
+                                }
+                                #endregion
+                                #region 判斷是否上鎖
+                                if (flag)
+                                {
+                                    if (info.LockStatus != "1111")
+                                    {
+                                        flag = false;
+                                        errCode = "ERR232";
                                     }
                                 }
                                 #endregion
@@ -532,7 +536,7 @@ namespace WebAPI.Models.BaseFunc
                             #region 判斷是否熄火
                             if (flag)
                             {
-                               
+
                                 if (info.ACCStatus == 1)
                                 {
                                     flag = false;
@@ -576,7 +580,6 @@ namespace WebAPI.Models.BaseFunc
                     }
                     #endregion
                 }
-
             }
             #endregion
             return flag;
@@ -620,7 +623,6 @@ namespace WebAPI.Models.BaseFunc
                 #region 汽車
                 if (IsMotor == 0)
                 {
-
                     if (IsCens == 1)
                     {
                         #region 興聯車機
@@ -631,12 +633,10 @@ namespace WebAPI.Models.BaseFunc
                         if (false == flag)
                         {
                             errCode = wsOutInfo.ErrorCode;
-
                         }
                         else
                         {
                             if (wsOutInfo.data.CID != CID)
-
                             {
                                 flag = false;
                                 errCode = "ERR400";
@@ -790,23 +790,22 @@ namespace WebAPI.Models.BaseFunc
                         string requestId = "";
                         string CommandType = "";
                         OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        //{
-                        //    command = true,
-                        //    method = CommandType,
-                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //    _params = new Params()
-
-                        //};
-                        //requestId = input.requestId;
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
                         string method = CommandType;
-                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        //if (flag)
-                        //{
-                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //}
+                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -855,13 +854,11 @@ namespace WebAPI.Models.BaseFunc
                                 }
                                 #endregion
                             }
-
                         }
                         if (flag)
                         {
                             if (lstCardList != null)
                             {
-
                                 int CardLen = lstCardList.Count;
                                 //清空顧客卡
                                 if (flag)
@@ -887,9 +884,6 @@ namespace WebAPI.Models.BaseFunc
                                 //寫入萬用卡
                                 if (CardLen > 0)
                                 {
-
-
-
                                     string[] CardStr = new string[CardLen];
                                     int NowCount = -1;
                                     for (int i = 0; i < CardLen; i++)
@@ -900,7 +894,6 @@ namespace WebAPI.Models.BaseFunc
                                             CardStr[NowCount] = lstCardList[i].CardNO;
 
                                         }
-
                                     }
 
                                     if (NowCount >= 0)
@@ -916,7 +909,6 @@ namespace WebAPI.Models.BaseFunc
                                             {
                                                 UnivCardNo = CardStr
                                             }
-
                                         };
                                         requestId = SetCardInput.requestId;
                                         method = CommandType;
@@ -925,7 +917,6 @@ namespace WebAPI.Models.BaseFunc
                                         {
                                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                         }
-
                                     }
                                 }
                                 //清除租約
@@ -939,7 +930,6 @@ namespace WebAPI.Models.BaseFunc
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
                                     requestId = SetNoRentInput.requestId;
                                     method = CommandType;
@@ -960,7 +950,6 @@ namespace WebAPI.Models.BaseFunc
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
                                     requestId = SetNoRentInput.requestId;
                                     method = CommandType;
@@ -970,7 +959,6 @@ namespace WebAPI.Models.BaseFunc
                                         flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                     }
                                 }
-
                             }
                         }
                         #endregion
@@ -984,23 +972,22 @@ namespace WebAPI.Models.BaseFunc
                     string requestId = "";
                     string CommandType = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    //{
-                    //    command = true,
-                    //    method = CommandType,
-                    //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                    //    _params = new Params()
-
-                    //};
-                    //requestId = input.requestId;
+                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    {
+                        command = true,
+                        method = CommandType,
+                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        _params = new Params()
+                    };
+                    requestId = input.requestId;
                     string method = CommandType;
-                    //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    //if (flag)
-                    //{
-                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    //}
+                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                    if (flag)
+                    {
+                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    }
 
                     if (flag)
                     {
@@ -1096,7 +1083,6 @@ namespace WebAPI.Models.BaseFunc
                     }
                     #endregion
                 }
-
             }
             #endregion
             return flag;
@@ -1310,23 +1296,23 @@ namespace WebAPI.Models.BaseFunc
                         string requestId = "";
                         string CommandType = "";
                         OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        //{
-                        //    command = true,
-                        //    method = CommandType,
-                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //    _params = new Params()
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
 
-                        //};
-                        //requestId = input.requestId;
+                        };
+                        requestId = input.requestId;
                         string method = CommandType;
-                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        //if (flag)
-                        //{
-                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //}
+                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -1375,7 +1361,7 @@ namespace WebAPI.Models.BaseFunc
                                 }
                                 #endregion
                             }
-                            
+
                         }
                         if (flag)
                         {
@@ -1407,8 +1393,8 @@ namespace WebAPI.Models.BaseFunc
                                 //寫入萬用卡
                                 if (CardLen > 0)
                                 {
-                                    
-                                    
+
+
 
                                     string[] CardStr = new string[CardLen];
                                     int NowCount = -1;
@@ -1418,9 +1404,9 @@ namespace WebAPI.Models.BaseFunc
                                         {
                                             NowCount++;
                                             CardStr[NowCount] = lstCardList[i].CardNO;
-                                           
+
                                         }
-                                      
+
                                     }
 
                                     if (NowCount >= 0)
@@ -1434,7 +1420,7 @@ namespace WebAPI.Models.BaseFunc
                                             requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                             _params = new UnivCardNoObj()
                                             {
-                                                 UnivCardNo = CardStr
+                                                UnivCardNo = CardStr
                                             }
 
                                         };
@@ -1504,23 +1490,23 @@ namespace WebAPI.Models.BaseFunc
                     string requestId = "";
                     string CommandType = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    //{
-                    //    command = true,
-                    //    method = CommandType,
-                    //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                    //    _params = new Params()
+                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    {
+                        command = true,
+                        method = CommandType,
+                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        _params = new Params()
 
-                    //};
-                    //requestId = input.requestId;
+                    };
+                    requestId = input.requestId;
                     string method = CommandType;
-                    //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    //if (flag)
-                    //{
-                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    //}
+                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                    if (flag)
+                    {
+                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    }
 
                     if (flag)
                     {
@@ -1633,11 +1619,9 @@ namespace WebAPI.Models.BaseFunc
             PolygonModel pm = new PolygonModel();
             for (int i = 0; i < DataLen; i++)
             {
-
                 string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
                 string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
                 int tmpLonGroupLen = tmpLonGroup.Length;
-
 
                 for (int j = 0; j < tmpLonGroupLen; j++)
                 {
@@ -1668,12 +1652,7 @@ namespace WebAPI.Models.BaseFunc
                             break;
                         }
                     }
-
-
-
                 }
-
-
             }
             flag = polygonFlag;
             return flag;
@@ -1691,13 +1670,13 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="LogID"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSetFETMasterCard(string CID,string deviceToken, string[] CardStr, int Mode,Int64 LogID, ref string errCode)
+        public bool DoSetFETMasterCard(string CID, string deviceToken, string[] CardStr, int Mode, Int64 LogID, ref string errCode)
         {
             bool flag = true;
             FETCatAPI FetAPI = new FETCatAPI();
             string requestId = "";
             string CommandType = "";
-    
+
             string method = CommandType;
             OtherService.Enum.MachineCommandType.CommandType CmdType;
             if (Mode == 1)
@@ -1713,7 +1692,6 @@ namespace WebAPI.Models.BaseFunc
                     {
                         UnivCardNo = CardStr
                     }
-
                 };
                 requestId = SetCardInput.requestId;
                 method = CommandType;
@@ -1733,7 +1711,6 @@ namespace WebAPI.Models.BaseFunc
                     method = CommandType,
                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                     _params = new Params()
-
                 };
                 requestId = ClearInput.requestId;
                 method = CommandType;
@@ -1761,7 +1738,7 @@ namespace WebAPI.Models.BaseFunc
         public bool DoSetFETCustomerCard(string CID, string deviceToken, string[] CardStr, int Mode, Int64 LogID, ref string errCode)
         {
             bool flag = true;
-     
+
             FETCatAPI FetAPI = new FETCatAPI();
             string requestId = "";
             string CommandType = "";
@@ -1799,9 +1776,8 @@ namespace WebAPI.Models.BaseFunc
                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                     _params = new ClientCardNoObj()
                     {
-                          ClientCardNo = CardStr
+                        ClientCardNo = CardStr
                     }
-
                 };
                 requestId = SetCardInput.requestId;
                 method = CommandType;
@@ -1824,35 +1800,34 @@ namespace WebAPI.Models.BaseFunc
         /// </param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSetCensMasterCard(string CID,SendCarNoData[] lstCardList, int Mode, ref string errCode)
+        public bool DoSetCensMasterCard(string CID, SendCarNoData[] lstCardList, int Mode, ref string errCode)
         {
             bool flag = true;
             CensWebAPI webAPI = new CensWebAPI();
             WSOutput_Base wsOut = new WSOutput_Base();
-       
-                //清空顧客卡及寫入萬用卡
-                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                {
-                    CID = CID,
-                    mode = Mode
 
-                };
+            //清空顧客卡及寫入萬用卡
+            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+            {
+                CID = CID,
+                mode = Mode
+            };
 
-                int count = 0;
-                int CardLen = lstCardList.Length;
-                SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                for (int i = 0; i < CardLen; i++)
-                {
-                    CardData[i] = new SendCarNoData();
-                    CardData[i].CardNo = lstCardList[i].CardNo;
-                    CardData[i].CardType =0;
-                    count++;
-                }
-                //  Array.Resize(ref CardData, count + 1);
-                wsInput.data = CardData;
+            int count = 0;
+            int CardLen = lstCardList.Length;
+            SendCarNoData[] CardData = new SendCarNoData[CardLen];
+            for (int i = 0; i < CardLen; i++)
+            {
+                CardData[i] = new SendCarNoData();
+                CardData[i].CardNo = lstCardList[i].CardNo;
+                CardData[i].CardType = 0;
+                count++;
+            }
+            //  Array.Resize(ref CardData, count + 1);
+            wsInput.data = CardData;
 
-                flag = webAPI.SendCardNo(wsInput, ref wsOut);
-            
+            flag = webAPI.SendCardNo(wsInput, ref wsOut);
+
             if (false == flag)
             {
                 errCode = wsOut.ErrorCode;
@@ -1870,18 +1845,16 @@ namespace WebAPI.Models.BaseFunc
         /// </param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSetCensCustomerCard(string CID, SendCarNoData[] lstCardList,int Mode, ref string errCode)
+        public bool DoSetCensCustomerCard(string CID, SendCarNoData[] lstCardList, int Mode, ref string errCode)
         {
             bool flag = true;
             CensWebAPI webAPI = new CensWebAPI();
             WSOutput_Base wsOut = new WSOutput_Base();
 
-           
             WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
             {
                 CID = CID,
-                mode =Mode
-
+                mode = Mode
             };
 
             int count = 0;

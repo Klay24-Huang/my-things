@@ -625,7 +625,7 @@ namespace OtherService
             }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
-                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額
                 OrderNo = tmpOrder,
                 CreditType = creditType,
                 LogID = 0,

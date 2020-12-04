@@ -34,11 +34,11 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <summary>
         /// 開始里程
         /// </summary>
-        public int start_mile { set; get; }
+        public float start_mile { set; get; }
         /// <summary>
         /// 結束里程
         /// </summary>
-        public int end_mile { set; get; }
+        public float end_mile { set; get; }
         /// <summary>
         /// 逾時費
         /// </summary>

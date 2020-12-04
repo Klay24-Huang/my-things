@@ -82,7 +82,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		 IF @Error=0
 		 BEGIN
 		    
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -90,7 +90,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 			END
 			ELSE
 			BEGIN
-				SELECT @IDNO=MEMIDNO FROM TB_Token WHERE  Access_Token=@Token;
+				SELECT @IDNO=MEMIDNO FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token;
 				IF @IDNO=''
 				BEGIN
 				   SET @Error=1;

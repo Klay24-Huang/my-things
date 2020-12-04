@@ -314,18 +314,34 @@ namespace WebAPI.Models.Enum
             /// 
             /// </summary>
             BookingControl,
+            /// <summary>
             /// 取得專案基本價格
             /// 20201110 ADD BY ADAM
             /// </summary>
             GetProjectPriceBase,
+            /// <summary>
             /// 更新解綁資料
             /// 20201122 ADD BY Jerry
             /// </summary>
             UnBindCard,
+            /// <summary>
             /// 取得解綁資料
             /// 20201122 ADD BY Jerry
             /// </summary>
             GetUnBindLog,
+            /// <summary>
+            /// 儲存換電獎勵結果
+            /// 20201201 ADD BY ADAM
+            /// </summary>
+            SaveNPR380Result,
+            /// <summary>
+            /// 檢查iButton
+            /// </summary>
+            CheckCarIButton,
+            /// <summary>
+            /// 判斷Token跟DeviceID後回傳該IDNO
+            /// </summary>
+            CheckTokenDeviceReturnID,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -355,146 +371,146 @@ namespace WebAPI.Models.Enum
             HandleWallet,
             #endregion
             #region 車麻吉
-                /// <summary>
-                /// 取得車麻吉token
-                /// </summary>
-                GetMochiToken,
-                /// <summary>
-                /// 新增或修改車麻吉token
-                /// </summary>
-                MaintainMachiToken,
-                /// <summary>
-                /// 同步車麻吉停車場
-                /// </summary>
-                MochiParkHandle,
-                /// <summary>
-                /// 停用車麻吉停車場
-                /// </summary>
-                DisabledMachiPark,
+            /// <summary>
+            /// 取得車麻吉token
+            /// </summary>
+            GetMochiToken,
+            /// <summary>
+            /// 新增或修改車麻吉token
+            /// </summary>
+            MaintainMachiToken,
+            /// <summary>
+            /// 同步車麻吉停車場
+            /// </summary>
+            MochiParkHandle,
+            /// <summary>
+            /// 停用車麻吉停車場
+            /// </summary>
+            DisabledMachiPark,
             #endregion,
             #region 短租沖銷
             HandleNPR340Save,
             HandleNPR340SaveU1,
             HandleNPR340SaveU2,
-           
+
             #endregion
             #region BackEnd
             /// <summary>
             /// 更改密碼
             /// </summary>
             BE_ChangePWD,
-                /// <summary>
-                /// 新增及修改據點
-                /// </summary>
-                BE_HandleStation,
-                /// <summary>
-                /// 特約停車場處理
-                /// </summary>
-                BE_HandleTransParking,
-                /// <summary>
-                /// 保有車輛處理
-                /// </summary>
-                BE_HandleCarSetting,
-                /// <summary>
-                /// 車輛設定上下線
-                /// </summary>
-                BE_CarDataSettingSetOnline,
-                /// <summary>
-                /// 車輛設定備註
-                /// </summary>
-                BE_HandleCarDataSettingMemo,
-                /// <summary>
-                /// 停車便利付修改
-                /// </summary>
-                BE_HandleChargeParkingData,
-                /// <summary>
-                /// 修改車機綁定
-                /// </summary>
-                BE_HandleCarMachineData,
-                /// <summary>
-                /// 修改萬用卡
-                /// </summary>
-                BE_HandleMasterCardData,
-                /// <summary>
-                /// 確認訂單並取出車機、卡號
-                /// </summary>
-                BE_GetCarMachineAndCheckOrder,
-                /// <summary>
-                /// 確認訂單並取出車機、卡號、身份證
-                /// </summary>
-                BE_GetCarMachineAndCheckOrderNoIDNO,
-                /// <summary>
-                /// 更新會員卡號
-                /// </summary>
-                BE_UpdCardNo,
-                /// <summary>
-                /// 強制延長用車
-                /// </summary>
-                BE_HandleExtendCar,
-                /// <summary>
-                /// 強制取消
-                /// </summary>
-                BE_BookingCancel,
-                /// <summary>
-                /// 換車
-                /// </summary>
-                BE_ChangeCar,
-                /// <summary>
-                /// 判斷加盟業者統編是否存在
-                /// </summary>
-                BE_CheckOperator,
-                /// <summary>
-                /// 更新加盟業者
-                /// </summary>
-                BE_UPDOperator,
-                /// <summary>
-                /// 更新功能群組
-                /// </summary>
-                BE_UPDFuncGroup,
-                /// <summary>
-                /// 判斷功能群組編號是否存在
-                /// </summary>
-                BE_CheckFuncGroup,
-                /// <summary>
-                /// 新增/修改功能權限
-                /// </summary>
-                BE_HandleFunc,
-                /// <summary>
-                /// 判斷使用者群組編號是否存在
-                /// </summary>
-                BE_CheckUserGroup,
-                /// <summary>
-                /// 更新使用者群組
-                /// </summary>
-                BE_UPDUserGroup,
-                /// <summary>
-                /// 新增/修改使用者
-                /// </summary>
-                BE_HandleUserMaintain,
-                /// <summary>
-                /// 處理審核照片
-                /// </summary>
-                BE_HandleAuditImage,
-                /// <summary>
-                /// 處理審核資料
-                /// </summary>
-                BE_HandleAudit,
-                /// <summary>
-                /// 設定電子柵欄
-                /// </summary>
-                BE_HandlePolygon,
-                /// <summary>
-                /// 取得合約修改前資料
-                /// </summary>
-                BE_GetOrderInfoBeforeModify,
-                /// <summary>
-                /// 短租補傳
-                /// </summary>
+            /// <summary>
+            /// 新增及修改據點
+            /// </summary>
+            BE_HandleStation,
+            /// <summary>
+            /// 特約停車場處理
+            /// </summary>
+            BE_HandleTransParking,
+            /// <summary>
+            /// 保有車輛處理
+            /// </summary>
+            BE_HandleCarSetting,
+            /// <summary>
+            /// 車輛設定上下線
+            /// </summary>
+            BE_CarDataSettingSetOnline,
+            /// <summary>
+            /// 車輛設定備註
+            /// </summary>
+            BE_HandleCarDataSettingMemo,
+            /// <summary>
+            /// 停車便利付修改
+            /// </summary>
+            BE_HandleChargeParkingData,
+            /// <summary>
+            /// 修改車機綁定
+            /// </summary>
+            BE_HandleCarMachineData,
+            /// <summary>
+            /// 修改萬用卡
+            /// </summary>
+            BE_HandleMasterCardData,
+            /// <summary>
+            /// 確認訂單並取出車機、卡號
+            /// </summary>
+            BE_GetCarMachineAndCheckOrder,
+            /// <summary>
+            /// 確認訂單並取出車機、卡號、身份證
+            /// </summary>
+            BE_GetCarMachineAndCheckOrderNoIDNO,
+            /// <summary>
+            /// 更新會員卡號
+            /// </summary>
+            BE_UpdCardNo,
+            /// <summary>
+            /// 強制延長用車
+            /// </summary>
+            BE_HandleExtendCar,
+            /// <summary>
+            /// 強制取消
+            /// </summary>
+            BE_BookingCancel,
+            /// <summary>
+            /// 換車
+            /// </summary>
+            BE_ChangeCar,
+            /// <summary>
+            /// 判斷加盟業者統編是否存在
+            /// </summary>
+            BE_CheckOperator,
+            /// <summary>
+            /// 更新加盟業者
+            /// </summary>
+            BE_UPDOperator,
+            /// <summary>
+            /// 更新功能群組
+            /// </summary>
+            BE_UPDFuncGroup,
+            /// <summary>
+            /// 判斷功能群組編號是否存在
+            /// </summary>
+            BE_CheckFuncGroup,
+            /// <summary>
+            /// 新增/修改功能權限
+            /// </summary>
+            BE_HandleFunc,
+            /// <summary>
+            /// 判斷使用者群組編號是否存在
+            /// </summary>
+            BE_CheckUserGroup,
+            /// <summary>
+            /// 更新使用者群組
+            /// </summary>
+            BE_UPDUserGroup,
+            /// <summary>
+            /// 新增/修改使用者
+            /// </summary>
+            BE_HandleUserMaintain,
+            /// <summary>
+            /// 處理審核照片
+            /// </summary>
+            BE_HandleAuditImage,
+            /// <summary>
+            /// 處理審核資料
+            /// </summary>
+            BE_HandleAudit,
+            /// <summary>
+            /// 設定電子柵欄
+            /// </summary>
+            BE_HandlePolygon,
+            /// <summary>
+            /// 取得合約修改前資料
+            /// </summary>
+            BE_GetOrderInfoBeforeModify,
+            /// <summary>
+            /// 短租補傳
+            /// </summary>
             BE_HandleHiEasyRentRetry,
-                /// <summary>
-                /// 儲存060執行結果
-                /// </summary>
-                BE_BookingControlSuccess,
+            /// <summary>
+            /// 儲存060執行結果
+            /// </summary>
+            BE_BookingControlSuccess,
             /// <summary>
             /// 儲存125執行結果
             /// </summary>            
@@ -519,7 +535,6 @@ namespace WebAPI.Models.Enum
             /// 推播訊息處理
             /// </summary>
             BE_HandleNews,
-
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -772,6 +787,15 @@ namespace WebAPI.Models.Enum
                 case SPType.BookingControl:
                     SPName = "usp_BookingControl";
                     break;
+                case SPType.SaveNPR380Result:    //20201201 ADD BY ADAM
+                    SPName = "usp_SaveNPR380Result";
+                    break;
+                case SPType.CheckTokenDeviceReturnID:
+                    SPName = "usp_CheckTokenDeviceReturnID";
+                    break;
+                case SPType.CheckCarIButton:    //檢查iButton
+                    SPName = "usp_CheckCarIButton";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
@@ -801,13 +825,11 @@ namespace WebAPI.Models.Enum
                 case SPType.HandleWallet:
                     SPName = "usp_HandleWallet";
                     break;
-
                 #endregion
                 #region 車麻吉
-
                 case SPType.GetMochiToken:
                     SPName = "usp_GetMachiToken";
-                break;
+                    break;
                 case SPType.MaintainMachiToken:
                     SPName = "usp_MaintainMachiToken";
                     break;
@@ -879,7 +901,6 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_CheckOperator:
                     SPName = "usp_BE_CheckOperator";
                     break;
-               
                 case SPType.BE_UPDOperator:
                     SPName = "usp_BE_UPDOperator";
                     break;
