@@ -245,7 +245,7 @@ namespace WebAPI.Controllers
                                 //InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, lstHoliday)) : 0,
                                 InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
                                 InsurancePerHour = priceBase[0].InsurancePerHours,
-                                MileagePerKM = (MilUnit < 0) ? Mildef : MilUnit,
+                                MileagePerKM = (MilUnit < 0) ? Mildef : Math.Round(MilUnit,2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
                                 //MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
                                 MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                             };
