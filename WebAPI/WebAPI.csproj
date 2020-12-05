@@ -167,6 +167,7 @@
     <Compile Include="Controllers\BE_CheckOperatorController.cs" />
     <Compile Include="Controllers\BE_CheckUserGroupController.cs" />
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
+    <Compile Include="Controllers\BE_FeedBackHandleController.cs" />
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
@@ -344,6 +345,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckUserGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSetting.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_FeedBackHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />

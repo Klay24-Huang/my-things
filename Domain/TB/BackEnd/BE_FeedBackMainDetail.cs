@@ -8,7 +8,7 @@ namespace Domain.TB.BackEnd
 {
     public class BE_FeedBackMainDetail : BE_FeedBackMain
     {
-        public string order_number { set; get; }
+        public string OrderNo { set; get; }
         public string CarNo { set; get; }
         public string lend_place { set; get; }
         public string return_place { set; get; }

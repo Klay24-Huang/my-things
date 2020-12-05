@@ -1,10 +1,22 @@
 ﻿@model  IEnumerable<Domain.TB.BackEnd.BE_FeedBackMainDetail>
+
 @{
     int feedBackLen = 0;
     string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
 
     string ImgURL = StorageBaseURL + "feedbackpic/";
     List<Domain.TB.BackEnd.BE_FeedBackMainDetail> feedBackData = new List<Domain.TB.BackEnd.BE_FeedBackMainDetail>();
+    string Account = "";
+  //  string UserName = "";
+    if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
+    {
+        Response.Redirect("~/Home/Login");
+    }
+    else
+    {
+        Account = Session["Account"].ToString();
+       // UserName = Session["UserName"].ToString();
+    }
     //var ticket = (FormsIdentity)User.Identity;
     if (null == Model)
     {
@@ -25,11 +37,11 @@
         <div class="card-header bg-secondary text-white">
             查詢車況回饋
         </div>
-        @using (Html.BeginForm("CarFeedBackQuery", "Report", FormMethod.Post, new { id = "formFeedBackQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
-        {
-            <ul class="list-group list-group-flush">
-                <!--每一個li是一項查詢條件-->
-
+     
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            @using (Html.BeginForm("CarFeedBackQuery", "Report", FormMethod.Post, new { id = "formFeedBackQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
+            {
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -143,22 +155,6 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <!-- <button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">匯出</button>-->
-                                @if (feedBackLen > 0)
-                                {
-                                  
-                                        using (Html.BeginForm("FeedBackDownload", "Resport", FormMethod.Post, new { id = "formFeedBackQuery" }))
-                                        {
-                                            <button id="btnDownload" name="btnDownload" class="btn btn-primary">匯出excel</button>
-                                            <input type="hidden" name="carid" id="carid" value="@ViewData["carid"]">
-                                            <input type="hidden" name="objStation" id="objStation" value="@ViewData["objStation"]">
-                                            <input type="hidden" name="SDate" id="SDate" value="@ViewData["SDate"]">
-                                            <input type="hidden" name="EDate" id="EDate" value="@ViewData["EDate"]">
-                                            <input type="hidden" name="isHandle" id="isHandle" value="@ViewData["isHandle"]">
-                                            <input type="hidden" name="userID" id="userID" value="@ViewData["userID"]">
-                                        }
-                                  
-                                }
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                                 <input type="hidden" id="len" name="len" value="@feedBackLen" />
                                 <button type="submit" class="btn btn-primary">確認送出</button>
@@ -167,8 +163,36 @@
                         </div>
                     </div>
                 </li>
-            </ul>
-        }
+            }
+            @if (feedBackLen > 0)
+            {
+
+                using (Html.BeginForm("FeedBackDownload", "Report", FormMethod.Post, new { id = "formFeedBackDownload", name = "formFeedBackDownload" }))
+                {
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3 offset-md-2">
+                                    <button id="btnDownload" name="btnDownload" class="btn btn-outline-primary">匯出excel</button>
+                                    <input type="hidden" name="carid" id="carid" value="@ViewData["carid"]">
+                                    <input type="hidden" name="objStation" id="objStation" value="@ViewData["objStation"]">
+                                    <input type="hidden" name="SDate" id="SDate" value="@ViewData["SDate"]">
+                                    <input type="hidden" name="EDate" id="EDate" value="@ViewData["EDate"]">
+                                    <input type="hidden" name="isHandle" id="isHandle" value="@ViewData["isHandle"]">
+                                    <input type="hidden" name="userID" id="userID" value="@ViewData["userID"]">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                }
+
+            }
+                </ul>
+        
+   
+              
+             
+    
     </div>
     <!--end card-->
 </div>
@@ -237,18 +261,18 @@
                     string status = (feedBackData[i].isHandle == 0) ? "未處理" : "已處理";
                     string orderStatus = (feedBackData[i].mode == 0) ? "取車" : "還車";
                     string fieldName = "handleDescript" + feedBackData[i].FeedBackID;
-                    string PIC1 = (string.IsNullOrEmpty(feedBackData[i].PIC1) || feedBackData[i].PIC1 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC1 + "\" target=\"_blank\">回饋照片一</a>";
-                    string PIC2 = (string.IsNullOrEmpty(feedBackData[i].PIC2) || feedBackData[i].PIC2 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC2 + "\" target=\"_blank\">回饋照片二</a>";
-                    string PIC3 = (string.IsNullOrEmpty(feedBackData[i].PIC3) || feedBackData[i].PIC3 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC3 + "\" target=\"_blank\">回饋照片三</a>";
-                    string PIC4 = (string.IsNullOrEmpty(feedBackData[i].PIC4) || feedBackData[i].PIC4 == "null") ? "無" : "<a href=\"http://113.196.107.239/iMotoAPI/uploadFeedImages/" + feedBackData[i].PIC4 + "\" target=\"_blank\">回饋照片四</a>";
+                    string PIC1 = (string.IsNullOrEmpty(feedBackData[i].PIC1) || feedBackData[i].PIC1 == "null") ? "無" : "<a href=\"" + (ImgURL + feedBackData[i].PIC1) + "\" target=\"_blank\">回饋照片一</a>";
+                    string PIC2 = (string.IsNullOrEmpty(feedBackData[i].PIC2) || feedBackData[i].PIC2 == "null") ? "無" : "<a href=\"" + (ImgURL + feedBackData[i].PIC2) + "\" target=\"_blank\">回饋照片二</a>";
+                    string PIC3 = (string.IsNullOrEmpty(feedBackData[i].PIC3) || feedBackData[i].PIC3 == "null") ? "無" : "<a href=\"" + (ImgURL + feedBackData[i].PIC3) + "\" target=\"_blank\">回饋照片三</a>";
+                    string PIC4 = (string.IsNullOrEmpty(feedBackData[i].PIC4) || feedBackData[i].PIC4 == "null") ? "無" : "<a href=\"" + (ImgURL + feedBackData[i].PIC4) + "\" target=\"_blank\">回饋照片四</a>";
                     try
                     {
                         if (PIC1 != "無")
                         {
                             string uri = ImgURL + feedBackData[i].PIC1;
 
-                            PIC1 = "<input type=\"button\" value=\"顯示圖片一\" onclick=showPic(\"" + feedBackData[i].PIC1 + "\",\"img1_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img1_" + feedBackData[i].IDNO + "\" name=\"img1_" + feedBackData[i].IDNO + "\"></img> ";
-       
+                            PIC1 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片一\" onclick=showPic(\"" + uri + "\",\"img1_" + feedBackData[i].FeedBackID + "\"); /> ";
+
                         }
 
 
@@ -263,7 +287,7 @@
                         {
                             string uri = ImgURL + feedBackData[i].PIC2;
 
-                            PIC2 = "<input type=\"button\" value=\"顯示圖片二\" onclick=showPic(\"" + feedBackData[i].PIC2 + "\",\"img2_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img2_" + feedBackData[i].IDNO + "\" name=\"img2_" + feedBackData[i].IDNO + "\"></img> ";
+                            PIC2 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片二\" onclick=showPic(\"" + uri + "\",\"img2_" + feedBackData[i].IDNO + "\"); /> ";
 
                         }
 
@@ -279,7 +303,7 @@
                         {
                             string uri = ImgURL + feedBackData[i].PIC3;
 
-                            PIC3 = "<input type=\"button\" value=\"顯示圖片三\" onclick=showPic(\"" + feedBackData[i].PIC3 + "\",\"img3_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img3_" + feedBackData[i].IDNO + "\" name=\"img3_" + feedBackData[i].IDNO + "\"></img> ";
+                            PIC3 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片三\" onclick=showPic(\"" + uri + "\",\"img3_" + feedBackData[i].IDNO + "\"); />";
 
                         }
 
@@ -294,8 +318,8 @@
                         if (PIC4 != "無")
                         {
                             string uri = ImgURL + feedBackData[i].PIC4;
-                            PIC4 = "<input type=\"button\" value=\"顯示圖片四\" onclick=showPic(\"" + feedBackData[i].PIC4 + "\",\"img4_" + feedBackData[i].IDNO + "\"); /><img src=\"\" id=\"img4_" + feedBackData[i].IDNO + "\" name=\"img4_" + feedBackData[i].IDNO + "\"></img> ";
-            
+                            PIC4 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片四\" onclick=showPic(\"" + uri + "\",\"img4_" + feedBackData[i].IDNO + "\"); />";
+
                         }
 
 
@@ -308,7 +332,7 @@
 
                         <td>@feedBackData[i].MKTime.ToString("yyyy/MM/dd HH:mm")</td>
                         <td>@orderStatus</td>
-                        <td>@("H" + feedBackData[i].order_number.ToString().PadLeft(7, '0'))</td>
+                        <td>@((feedBackData[i].OrderNo == null)?feedBackData[i].IDNO:("H" + feedBackData[i].OrderNo.ToString().PadLeft(7, '0')))</td>
                         <td>@feedBackData[i].CarNo</td>
                         <td> @feedBackData[i].IDNO</td>
                         <td> @feedBackData[i].MEMCNAME</td>
@@ -330,7 +354,7 @@
                                 <textarea class="form-control" name="@fieldName" id="@fieldName"></textarea>
                             </td>
                             <td></td>
-                            <td><input type="button" class="btn btn-info" value="儲存" onclick=doHandle('@feedBackData[i].FeedBackID','@User.Identity.Name'); /></td>
+                            <td><input type="button" class="btn btn-info" value="儲存" onclick=doHandle('@feedBackData[i].FeedBackID','@Account'); /></td>
 
                         }
                         else
@@ -356,3 +380,26 @@
         </tfoot>
     </table>
 </div>
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="" name="ReviewImg" id="ReviewImg" class="thumbnails" />
+            </div>
+            <div class="modal-footer">
+
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="javascript">
+    var carid = '@ViewData["carid"]';
+var objStation = '@ViewData["objStation"]';
+var SD = '@ViewData["SDate"]';
+var ED = '@ViewData["EDate"]';
+var UserID = '@ViewData["userID"]';
+var isHandle = '@ViewData["isHandle"]';
+
+</script>

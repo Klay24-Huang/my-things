@@ -30,7 +30,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_FeedBackMain> lstFeedBack = null;
-            string SQL = "SELECT * FROM VW_GetFeedBackMain ";
+            string SQL = "SELECT * FROM VW_BE_GetFeedBackMain ";
             SqlParameter[] para = new SqlParameter[4];
             string term = "";
             int nowCount = 0;
@@ -89,7 +89,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_FeedBackMainDetail> lstFeedBack = null;
-            string SQL = "SELECT * FROM VW_GetFeedBackByOrderMain ";
+            string SQL = "SELECT * FROM VW_BE_GetFeedBackByOrderMain ";
             SqlParameter[] para = new SqlParameter[6];
             string term = "";
             int nowCount = 0;

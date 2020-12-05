@@ -535,6 +535,10 @@ namespace WebAPI.Models.Enum
             /// 推播訊息處理
             /// </summary>
             BE_HandleNews,
+            /// <summary>
+            /// 使用者回饋處理
+            /// </summary>
+            BE_FeedBackHandle,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -958,6 +962,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_HandleNews:
                     SPName = "usp_BE_HandleNews";
                     break;
+                case SPType.BE_FeedBackHandle:
+                    SPName = "usp_BE_FeedBackHandle";
+                        break;
                 #endregion
                 #region 整備人員
                 case SPType.MA_CheckCarStatusByReturn:

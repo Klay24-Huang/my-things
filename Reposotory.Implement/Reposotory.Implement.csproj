@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{A30A71DC-72CA-4BD3-8B02-00C7A9B336C4}</Project>
+      <Project>{a30a71dc-72ca-4bd3-8b02-00c7a9b336c4}</Project>
       <Name>Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Repository.Interface\Repository.Interface.csproj">
@@ -78,7 +78,7 @@
       <Name>Repository.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">
-      <Project>{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}</Project>
+      <Project>{2a4a3c9d-372f-4f8b-af38-911acff3fb2e}</Project>
       <Name>WebCommon</Name>
     </ProjectReference>
   </ItemGroup>
