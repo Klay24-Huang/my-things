@@ -234,12 +234,274 @@ namespace Web.Controllers
             return View();
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SDate">查詢日期起</param>
+        /// <param name="EDate">查詢日期迄</param>
+        /// <param name="userID">查詢帳號</param>
+        /// <param name="isHandle">模式
+        /// <para>0:無點數</para>
+        /// <para>1:有點數</para>
+        /// <para>2:不限</para>
+        /// </param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
+        {
+            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            int tmpIsHandle = 2;
+            string tSDate = "", tEDate = "", tUserID = "";
+
+            if (isHandle.HasValue)
+            {
+                tmpIsHandle = isHandle.Value;
+                ViewData["isHandle"] = tmpIsHandle;
+            }
+            if (!string.IsNullOrEmpty(SDate))
+            {
+                tSDate = SDate;
+                ViewData["SDate"] = tSDate;
+            }
+            if (!string.IsNullOrEmpty(EDate))
+            {
+                tEDate = EDate;
+                ViewData["EDate"] = tEDate;
+            }
+            if (!string.IsNullOrEmpty(userID))
+            {
+                tUserID = userID;
+                ViewData["userID"] = tUserID;
+            }
+            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            {
+                lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+            }
+            return View(lstSubScription);
+        }
+        /// <summary>
+        /// 月租總表下載
+        /// </summary>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <param name="userID"></param>
+        /// <param name="isHandle"></param>
+        /// <returns></returns>
+       
+        public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
+        {
+            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            int tmpIsHandle = 2;
+            string tSDate = "", tEDate = "", tUserID = "";
+            if (isHandle.HasValue)
+            {
+                tmpIsHandle = isHandle.Value;
+                ViewData["isHandle"] = tmpIsHandle;
+            }
+            if (!string.IsNullOrEmpty(SDate))
+            {
+                tSDate = SDate;
+                ViewData["SDate"] = tSDate;
+            }
+            if (!string.IsNullOrEmpty(EDate))
+            {
+                tEDate = EDate;
+                ViewData["EDate"] = tEDate;
+            }
+            if (!string.IsNullOrEmpty(userID))
+            {
+                tUserID = userID;
+                ViewData["userID"] = tUserID;
+            }
+            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            {
+                lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+            }
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間", "IDNO", "汽車－平日", "汽車－假日", "機車" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+
+            int len = lstSubScription.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstSubScription[k].SEQNO);   //ID
+                content.CreateCell(1).SetCellValue(lstSubScription[k].ProjID);   //ID
+                content.CreateCell(2).SetCellValue(lstSubScription[k].ProjNM);   //ID
+                content.CreateCell(3).SetCellValue(lstSubScription[k].StartDate.ToString("yyyy-MM-dd HH:mm"));  //合約起
+                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
+                                                                                                                // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
+                                                                                                                // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
+                content.CreateCell(5).SetCellValue(lstSubScription[k].IDNO);   //ID
+                content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
+                content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
+                content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours * 60).ToString("f1"));   //機車
+
+                sheet.AutoSizeColumn(0);
+                sheet.AutoSizeColumn(1);
+                sheet.AutoSizeColumn(2);
+                sheet.AutoSizeColumn(3);
+                sheet.AutoSizeColumn(4);
+                sheet.AutoSizeColumn(5);
+                sheet.AutoSizeColumn(6);
+                sheet.AutoSizeColumn(7);
+                sheet.AutoSizeColumn(8);
+
+                /* sheet.AutoSizeColumn(8);
+                 sheet.AutoSizeColumn(9);
+                 sheet.AutoSizeColumn(10);*/
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            //workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱總表_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        /// <summary>
         /// 月租報表
         /// </summary>
         /// <returns></returns>
+        
         public ActionResult MonthlyDetailQuery()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult MonthlyDetailQuery(string SDate, string EDate, string userID, string OrderNum)
+        {
+            List<BE_MonthlyReportData> lstSubScription = new List<BE_MonthlyReportData>();
+            SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            string tSDate = "", tEDate = "", tUserID = "", tOrderNum = "";
+
+
+            if (!string.IsNullOrEmpty(SDate))
+            {
+                tSDate = SDate;
+                ViewData["SDate"] = tSDate;
+            }
+            if (!string.IsNullOrEmpty(EDate))
+            {
+                tEDate = EDate;
+                ViewData["EDate"] = tEDate;
+            }
+            if (!string.IsNullOrEmpty(userID))
+            {
+                tUserID = userID;
+                ViewData["userID"] = tUserID;
+            }
+            if (!string.IsNullOrEmpty(OrderNum))
+            {
+                tOrderNum = OrderNum;
+                ViewData["OrderNum"] = tOrderNum;
+                tOrderNum = tOrderNum.Replace("H", "");
+            }
+            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            {
+                lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
+            }
+            return View(lstSubScription);
+        }
+        /// <summary>
+        /// 月租報表下載
+        /// </summary>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <param name="userID"></param>
+        /// <param name="OrderNum"></param>
+        /// <returns></returns>
+        public ActionResult MonthlyDetailQueryDownload(string SDate, string EDate, string userID, string OrderNum)
+        {
+            List<BE_MonthlyReportData> lstSubScription = new List<BE_MonthlyReportData>();
+            SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            string tSDate = "", tEDate = "", tUserID = "", tOrderNum = "";
+
+
+            if (!string.IsNullOrEmpty(SDate))
+            {
+                tSDate = SDate;
+                ViewData["SDate"] = tSDate;
+            }
+            if (!string.IsNullOrEmpty(EDate))
+            {
+                tEDate = EDate;
+                ViewData["EDate"] = tEDate;
+            }
+            if (!string.IsNullOrEmpty(userID))
+            {
+                tUserID = userID;
+                ViewData["userID"] = tUserID;
+            }
+            if (!string.IsNullOrEmpty(OrderNum))
+            {
+                tOrderNum = OrderNum;
+                ViewData["OrderNum"] = tOrderNum;
+                tOrderNum = tOrderNum.Replace("H", "");
+            }
+            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            {
+                lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
+            }
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)", "使用機車(分)", "使用時間", "扣抵訂閱方案編號", "扣抵方案代碼", "扣抵方案名稱" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+
+            int len = lstSubScription.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue("H" + lstSubScription[k].OrderNo.ToString().PadLeft(7, '0'));  //訂單編號
+                                                                                                                   //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
+                                                                                                                   // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
+                                                                                                                   // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
+                content.CreateCell(1).SetCellValue(lstSubScription[k].IDNO);   //ID
+                content.CreateCell(2).SetCellValue(lstSubScription[k].lend_place);   //ID
+                content.CreateCell(3).SetCellValue(lstSubScription[k].UseWorkDayHours);   //汽車－平日
+                content.CreateCell(4).SetCellValue(lstSubScription[k].UseHolidayHours);   //汽車－假日
+                content.CreateCell(5).SetCellValue((lstSubScription[k].UseMotoTotalHours * 60).ToString("f1"));   //機車
+                content.CreateCell(6).SetCellValue(lstSubScription[k].MKTime.ToString("yyyy-MM-dd HH:mm"));
+                content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
+                content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //ID
+                content.CreateCell(9).SetCellValue(lstSubScription[k].ProjNM);   //汽車－平日
+                sheet.AutoSizeColumn(0);
+                sheet.AutoSizeColumn(1);
+                sheet.AutoSizeColumn(2);
+                sheet.AutoSizeColumn(3);
+                sheet.AutoSizeColumn(4);
+                sheet.AutoSizeColumn(5);
+                sheet.AutoSizeColumn(6);
+                sheet.AutoSizeColumn(7);
+                sheet.AutoSizeColumn(8);
+                sheet.AutoSizeColumn(9);
+
+                /* sheet.AutoSizeColumn(8);
+                 sheet.AutoSizeColumn(9);
+                 sheet.AutoSizeColumn(10);*/
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         /// <summary>
         /// 進出停車場明細
