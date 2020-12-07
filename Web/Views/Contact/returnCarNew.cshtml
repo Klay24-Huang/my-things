@@ -2,6 +2,7 @@
 @{
     string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
     string CarContainer = (System.Configuration.ConfigurationManager.AppSettings["CarContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["CarContainer"].ToString();
+    string CredentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
     string ImgURL = StorageBaseURL + CarContainer + "/";
     Domain.TB.BackEnd.BE_OrderDetailData obj = null;
     string OrderKind = ""; //訂單類型
@@ -10,11 +11,22 @@
     int OrderStatus = 0;
     int PickLen = 0;
     int ReturnLen = 0;
+    string outSign = "";
+    string inSign = "";
     if (Model != null)
     {
         obj = Model.Data;
-  
-
+        if (Model.CredentialImage != null)
+        {
+            if (obj.car_mgt_status >= 2)
+            {
+                outSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            }
+            if (obj.car_mgt_status >= 14)
+            {
+                inSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            }
+        }
     }
 }
 @{
@@ -218,7 +230,6 @@
                         <div class="col-12 p-1">
                             <label class="table-label text-red">出車收款人簽名</label>
                             <p class="height-lg">
-
                             </p>
                             <div class="text-sm text-right">(本出租單無出車收款人簽章無效)</div>
                         </div>
@@ -393,7 +404,7 @@
                         <div class="col-6 border-left border-secondary p-1">
                             <label class="table-label text-red">承租人還車確認簽名</label>
                             <p>
-                                <img src="" id="sign2" name="sign2" style="width:20%" />
+                                <img src="@(outSign)" id="sign2" name="sign2" style="height:65px;" />
                             </p>
                         </div>
                     </div>
@@ -410,7 +421,7 @@
                     </div>
                     <div class="row no-gutters border border-secondary">
                         <div class="col-12 p-1">
-                            <h5><b>承租人簽名：<div class="text-underline pt-4" style="margin-left: 5rem"> <img src="" id="sign1" name="sign1" style="width:25%" /></div></b></h5>
+                            <h5><b>承租人簽名：<div class="text-underline pt-4" style="margin-left: 5rem"> <img src="@(inSign)" id="sign1" name="sign1" style="height:65px;" /></div></b></h5>
                         </div>
                     </div>
                 </div>

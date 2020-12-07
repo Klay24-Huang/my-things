@@ -158,6 +158,12 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 預估里程費
         /// </summary>
         public int MileageBill { set; get; }
+
+        /// <summary>
+        /// 是否可以使用安心服務
+        /// </summary>
+        public int Insurance { get; set; }
+
         /// <summary>
         /// 安心保險每小時
         /// </summary>

@@ -172,6 +172,7 @@ namespace WebAPI.Controllers
                                 CarTypePic = OrderDataLists[i].CarTypeImg,
                                 Seat = OrderDataLists[i].Seat,
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
+                                Insurance = OrderDataLists[i].Insurance,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
                                 InsurancePerHour = OrderDataLists[i].InsurancePerHours,
                                 Operator = OrderDataLists[i].OperatorICon,
