@@ -440,7 +440,8 @@ namespace Web.Controllers
                     IWorkbook workBook = new XSSFWorkbook(path);
                     ISheet sheet = workBook.GetSheetAt(0);
                     int sheetLen = sheet.LastRowNum;
-                    string[] field = { "CarNo", "TSEQNO", "CarType", "Seat", "FactoryYear", "CarColor", "EngineNO", "BodyNO", "CCNum" };
+                    //20201207唐改大寫
+                    string[] field = { "CARNO", "TSEQNO", "CARTYPE", "SEAT", "FACTORYYEAR", "CARCOLOR", "ENGINENO", "BODYNO", "CCNUM" };
                     int fieldLen = field.Length;
                     //第一關，判斷位置是否相等
                     for (int i = 0; i < fieldLen; i++)
