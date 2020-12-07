@@ -571,7 +571,8 @@ namespace Web.Controllers
                     IWorkbook workBook = new XSSFWorkbook(path);
                     ISheet sheet = workBook.GetSheetAt(0);
                     int sheetLen = sheet.LastRowNum;
-                    string[] field = { "車機編號", "門號(遠傳)", "卡號(遠傳)","deviceToken" };
+                    //20201207唐改大寫
+                    string[] field = { "車機編號", "門號(遠傳)", "卡號(遠傳)","DEVICETOKEN" };
                     int fieldLen = field.Length;
                     //第一關，判斷位置是否相等
                     for (int i = 0; i < fieldLen; i++)
