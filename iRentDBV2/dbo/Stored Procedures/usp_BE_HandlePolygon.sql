@@ -92,80 +92,93 @@ SET @UserID   	=ISNULL(@UserID   ,'');
 SET @Mode       =ISNULL(@Mode,-1);
 SET @StartDate =ISNULL(@StartDate,@NowTime);
 SET @EndDate   =ISNULL(@EndDate  ,'2099-12-31 23:59:59');
-		BEGIN TRY
 
+BEGIN TRY
+	IF @UserID='' OR @StationID=''  OR @BlockName='' OR @Mode<0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @UserID='' OR @StationID=''  OR @BlockName='' OR @Mode<0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-			IF @BlockID=0
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		IF @BlockID=0
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode;
+			IF @hasData>0
 			BEGIN
-				SET @hasData=0;
-		 		SELECT @hasData=COUNT(1) FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode;
-				IF @hasData>0
-				BEGIN
-					--先寫入舊資料到歷史
-					INSERT INTO TB_PolygonHistory(StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,UPDTime,ADD_User,UPD_User)
-					SELECT StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,@NowTime,ADD_User,@UserID FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode;
-
-					
-				END
-				ELSE
-				BEGIN
-					INSERT INTO TB_Polygon(StationID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,ADD_User)
-									VALUES(@StationID,@BlockName,@MAPColor,@Longitude,@Latitude,@Mode,@StartDate,@EndDate,1,@UserID)
-				END
-		   END
-		   ELSE
-		   BEGIN
-				SET @hasData=0;
-		 		SELECT @hasData=COUNT(1) FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
-				IF @hasData=0
-				BEGIN
-					SET @Error=1;
-					SET @ErrorCode='ERR743'
-				END
-				ELSE
-				BEGIN
-					INSERT INTO TB_PolygonHistory(StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,UPDTime,ADD_User,UPD_User)
-					SELECT StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,@NowTime,ADD_User,@UserID FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
-
-					UPDATE TB_Polygon
-					SET StationID=@StationID,BlockName=@BlockName,MAPColor=@MAPColor,Longitude=@Longitude,Latitude=@Latitude,BlockType=@Mode,StartDate=@StartDate,EndDate=@EndDate,UPDTime=@NowTime,UPD_User=@UserID
-					WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
-				END
-		   END
-
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				--先寫入舊資料到歷史
+				INSERT INTO TB_PolygonHistory(StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,
+											  StartDate,EndDate,use_flag,MKTime,UPDTime,ADD_User,UPD_User)
+				SELECT StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,@NowTime,ADD_User,@UserID 
+				FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode;
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				INSERT INTO TB_Polygon(StationID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,ADD_User)
+				VALUES(@StationID,@BlockName,@MAPColor,@Longitude,@Latitude,@Mode,@StartDate,@EndDate,1,@UserID);
+
+				UPDATE [TB_UPDDataWatchTable] SET Polygon=@NowTime,UPDTime=@NowTime;
 			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR743'
+			END
+			ELSE
+			BEGIN
+				INSERT INTO TB_PolygonHistory(StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,
+											  StartDate,EndDate,use_flag,MKTime,UPDTime,ADD_User,UPD_User)
+				SELECT StationID,BLOCK_ID,BlockName,MAPColor,Longitude,Latitude,BlockType,StartDate,EndDate,use_flag,MKTime,@NowTime,ADD_User,@UserID 
+				FROM TB_Polygon WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
+
+				UPDATE TB_Polygon
+				SET StationID=@StationID,
+					BlockName=@BlockName,
+					MAPColor=@MAPColor,
+					Longitude=@Longitude,
+					Latitude=@Latitude,
+					BlockType=@Mode,
+					StartDate=@StartDate,
+					EndDate=@EndDate,
+					UPDTime=@NowTime,
+					UPD_User=@UserID
+				WHERE StationID=@StationID AND BlockType=@Mode AND BLOCK_ID=@BlockID;
+
+				UPDATE [TB_UPDDataWatchTable] SET Polygon=@NowTime,UPDTime=@NowTime;
+			END
+		END
+	END
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandlePolygon';

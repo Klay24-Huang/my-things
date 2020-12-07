@@ -126,8 +126,8 @@ BEGIN TRY
                 ,stop_pick_time
                 ,stop_time
                 ,init_price
-				,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END		--安心服務
-				,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
+				,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務 20201206改為等級4就是停權
+				,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
                 ,VW.InsurancePurePrice
                 ,init_TransDiscount
                 ,car_mgt_status

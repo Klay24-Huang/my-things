@@ -221,7 +221,7 @@ SET @ParkingSpace='';
 							C.GIVETIME,dbo.FN_CalRntdays(B.final_start_time,B.final_stop_time),CAST(B.start_mile AS INT),C.OUTBRNHCD,CONVERT(VARCHAR,B.final_stop_time,112),REPLACE(CONVERT(VARCHAR(5),B.final_stop_time,108),':',''),
 							CAST(B.end_mile AS INT),C.INBRNHCD,C.RPRICE,C.RINSU,C.DISRATE,B.fine_interval/600,
 							fine_price,RNTAMT=(B.fine_price+B.mileage_price),pure_price,mileage_price,A.ProjID,C.REMARK,
-							C.INVKIND,C.UNIMNO,C.INVTITLE,C.INVADDR,B.gift_point,B.gift_motor_point,
+							A.bill_option,A.unified_business_no,'',A.invoiceAddress,B.gift_point,B.gift_motor_point,
 							CARDNO=ISNULL(Trade.CardNumber,''),PAYAMT=ISNULL(Trade.AUTHAMT,0),AUTHCODE=IIF(ISNULL(Trade.AuthIdResp,0)=0,'',CONVERT(VARCHAR(20),Trade.AuthIdResp)),isRetry=1,RetryTimes=0,B.Etag,
 							C.CARRIERID,C.NPOBAN,B.Insurance_price,ISNULL(Machi.Amount,0) AS PARKINGAMT2,@NowTime,@NowTime
 						FROM TB_OrderMain A WITH(NOLOCK)

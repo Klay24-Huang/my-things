@@ -110,7 +110,7 @@ BEGIN TRY
 			,init_price,Insurance,InsurancePurePrice,init_TransDiscount,car_mgt_status,booking_status,cancel_status
 			,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
 			,already_lend_car,IsReturnCar,CarNo,final_price,start_mile,end_mile
-			,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END	--安心服務每小時價
+			,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END	--安心服務每小時價
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours

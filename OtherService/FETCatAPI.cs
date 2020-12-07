@@ -132,7 +132,7 @@ namespace OtherService
             int nowCount = 0;
             bool waitFlag = false;
             //while (nowCount < 30)
-            while (nowCount < 10)  //測試方便先等10秒  20201028 ADD BY ADAM 
+            while (nowCount < 20)  //20201204 ADD BY ADAM 改為20秒
             {
                 Thread.Sleep(1000);
                 CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);

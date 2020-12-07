@@ -212,8 +212,8 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,PayMode				= P.PayMode
 						,CarOfArea				= I.Area
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
-						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END		--安心服務
-						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
+						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >=4 THEN 0 ELSE 1 END		--安心服務 20201206改為等級4就是停權
+						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
 				FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
 				JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType

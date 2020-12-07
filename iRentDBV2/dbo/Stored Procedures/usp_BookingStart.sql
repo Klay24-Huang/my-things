@@ -161,10 +161,13 @@ BEGIN TRY
 	BEGIN
 		BEGIN TRAN
 		SET @hasData=0
-		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain 
+		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK)
 		WHERE IDNO=@IDNO AND order_number=@OrderNo 
 		AND (car_mgt_status<=3 AND cancel_status=0 AND booking_status<3) 
-		AND stop_pick_time>@NowTime AND start_time<=@NowTime;
+		AND stop_pick_time>@NowTime 
+		AND ((ProjType=0 AND start_time <= DATEADD(MINUTE,30,@NowTime)) --同站可提早30分鐘取車
+			OR (start_time<=@NowTime)	--路邊通常都是預約後才取車
+			);
 				
 		IF @hasData>0
 		BEGIN
@@ -175,7 +178,7 @@ BEGIN TRY
 				   @CarNo=CarNo,
 				   @ProjType=ProjType,
 				   @IsMotor=CASE WHEN ProjType=4 THEN 1 ELSE 0 END
-			FROM TB_OrderMain
+			FROM TB_OrderMain WITH(NOLOCK)
 			WHERE order_number=@OrderNo;
 
 			--如果取不到里程，從tb取出
@@ -243,7 +246,7 @@ BEGIN TRY
 			BEGIN
 				INSERT INTO TB_OrderDataByMotor(OrderNo,P_lat,P_lon,P_LBA,P_RBA,P_MBA,P_TBA)
 				SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA 
-				FROM TB_CarStatus WHERE CarNo=@CarNo
+				FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo
 			END
 			COMMIT TRAN;
 		END
