@@ -167,10 +167,11 @@ namespace Reposotory.Implement
             //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [Latitude] ,[Longitude], OperatorICon[Operator], Score[OperatorScore], CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
-            SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            //SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            SQL += " CASE WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
             SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
-            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel AND BU.IDNO='" + IDNO + "' ";
             if (IDNO.Length > 0)
             {
                 //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
@@ -212,10 +213,11 @@ namespace Reposotory.Implement
             //SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE]/10 AS Rental,2.5 AS Mileage,0 As ShowSpecial,'' As SpecialInfo, ";
             SQL += " [Latitude] ,[Longitude] ,OperatorICon[Operator] ,Score[OperatorScore] ,CarTypeImg[CarTypePic], Seat, [PROJID] as ProjID, ";
-            SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            //SQL += (IDNO == "" ? " 0" : " 1") + " AS Insurance,InsurancePrice=II.InsurancePerHours ";
+            SQL += " CASE WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END AS Insurance,InsurancePrice=II.InsurancePerHours ";
             SQL += " FROM [VW_GetAllAnyRentData] vw WITH(NOLOCK) ";
             SQL += " LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON vw.CarTypeGroupCode=II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3 ";
-            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel ";
+            SQL += " LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel AND BU.IDNO='" + IDNO + "' ";
             if (IDNO.Length > 0)
             {
                 //SQL += " LEFT JOIN TB_BookingInsuranceOfUser BIOU WITH(NOLOCK) ON II.InsuranceLevel=BIOU.InsuranceLevel ";
