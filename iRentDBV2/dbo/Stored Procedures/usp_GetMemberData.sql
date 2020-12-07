@@ -109,9 +109,7 @@ BEGIN TRY
 		SELECT TOP 1 * INTO #TB_MemberDataOfAudit FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasAudit=0 ORDER BY MKTime DESC
 
 		--尚未通過審核，先從待審資料區取出
-		IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO 
-				AND Audit=0)	--待審核
-				--AND IrFlag=0)
+		IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND Audit=0)
 		BEGIN
 			SELECT   [MEMIDNO] = A.MEMIDNO
 					--,[MEMPWD]	--20201024 ADD BY ADAM REASON.安全考量移除
@@ -140,12 +138,20 @@ BEGIN TRY
 					,[HasVaildEMail]
 					,[Audit]
 					,[RentType]
-					,Case When [ID_1]=1 And [ID_2] =1 Then B.ID_1 Else 0 End ID_pic
-					,Case When [CarDriver_1]=1 And [CarDriver_2]=1 Then B.CarDriver_1 Else 0 End DD_pic
-					,Case When [MotorDriver_1]=1 And [MotorDriver_2]=1 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,CASE WHEN [ID_1]=[ID_2] THEN B.ID_1 
+						  WHEN [ID_1]<[ID_2] THEN [ID_1] 
+						  WHEN [ID_1]>[ID_2] THEN [ID_2] 
+						  ELSE 0 End ID_pic
+					,CASE WHEN [CarDriver_1]=[CarDriver_2] Then B.CarDriver_1 
+						  WHEN [CarDriver_1]<[CarDriver_2] THEN [CarDriver_1]
+						  WHEN [CarDriver_1]>[CarDriver_2] THEN [CarDriver_2] 
+						  ELSE 0 End DD_pic
+					,CASE WHEN [MotorDriver_1]=[MotorDriver_2] Then B.MotorDriver_1 
+						  WHEN [MotorDriver_1]<[MotorDriver_2] Then B.MotorDriver_1 
+						  WHEN [MotorDriver_1]>[MotorDriver_2] Then B.MotorDriver_2 
+						  ELSE 0 End MOTOR_pic
 					,ISNULL([Self_1],0) As AA_pic 
 					,ISNULL([Law_Agent],0) As F01_pic
-					--,0 as Signture_pic
 					,ISNULL([Signture],0) AS Signture_pic
 					--,'' as SigntureCode
 					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
@@ -185,9 +191,18 @@ BEGIN TRY
 					,[HasVaildEMail]
 					,[Audit]
 					,[RentType]
-					,Case When [ID_1]>0 And [ID_2]>0 Then B.ID_1 Else 0 End ID_pic
-					,Case When [CarDriver_1]>0 And [CarDriver_2]>0 Then B.CarDriver_1 Else 0 End DD_pic
-					,Case When [MotorDriver_1]>0 And [MotorDriver_2]>0 Then B.MotorDriver_1 Else 0 End MOTOR_pic
+					,CASE WHEN [ID_1]=[ID_2] THEN B.ID_1 
+						  WHEN [ID_1]<[ID_2] THEN [ID_1] 
+						  WHEN [ID_1]>[ID_2] THEN [ID_2] 
+						  ELSE 0 End ID_pic
+					,CASE WHEN [CarDriver_1]=[CarDriver_2] Then B.CarDriver_1 
+						  WHEN [CarDriver_1]<[CarDriver_2] THEN [CarDriver_1]
+						  WHEN [CarDriver_1]>[CarDriver_2] THEN [CarDriver_2] 
+						  ELSE 0 End DD_pic
+					,CASE WHEN [MotorDriver_1]=[MotorDriver_2] Then B.MotorDriver_1 
+						  WHEN [MotorDriver_1]<[MotorDriver_2] Then B.MotorDriver_1 
+						  WHEN [MotorDriver_1]>[MotorDriver_2] Then B.MotorDriver_2 
+						  ELSE 0 End MOTOR_pic
 					,ISNULL([Self_1],0) As AA_pic 
 					,ISNULL([Law_Agent],0) As F01_pic
 					,ISNULL([Signture],0) AS Signture_pic
