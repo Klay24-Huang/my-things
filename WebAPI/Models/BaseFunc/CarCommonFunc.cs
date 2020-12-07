@@ -657,7 +657,7 @@ namespace WebAPI.Models.BaseFunc
                                 if (DoorOpen > -1)
                                 {
                                     flag = false;
-                                    errCode = "ERR43" + DoorOpen.ToString();
+                                    errCode = "ERR429" + DoorOpen.ToString();
                                 }
                             }
                         }
@@ -1163,7 +1163,7 @@ namespace WebAPI.Models.BaseFunc
                                 if (DoorOpen > -1)
                                 {
                                     flag = false;
-                                    errCode = "ERR43" + DoorOpen.ToString();
+                                    errCode = "ERR429" + DoorOpen.ToString();
                                 }
                             }
                         }
@@ -1955,7 +1955,7 @@ namespace WebAPI.Models.BaseFunc
                                 if (DoorOpen > -1)
                                 {
                                     flag = false;
-                                    errCode = "ERR43" + DoorOpen.ToString();
+                                    errCode = "ERR429" + DoorOpen.ToString();
                                 }
                             }
                         }
