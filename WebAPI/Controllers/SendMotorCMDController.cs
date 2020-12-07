@@ -89,14 +89,14 @@ namespace WebAPI.Controllers
                     }
                 }
                
-                if (flag)
-                {
-                    if(apiInput.CmdType==0 && string.IsNullOrWhiteSpace(apiInput.BLE_Code))
-                    {
-                        flag = false;
-                        errCode = "ERR900";
-                    }
-                }
+                //if (flag)
+                //{
+                    //if (apiInput.CmdType == 0 && string.IsNullOrWhiteSpace(apiInput.BLE_Code))
+                    //{
+                    //    flag = false;
+                    //    errCode = "ERR900";
+                    //}
+                //}
                 if (flag)
                 {
                     if (string.IsNullOrWhiteSpace(apiInput.UserId))
