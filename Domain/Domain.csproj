@@ -264,6 +264,8 @@
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
     <Compile Include="TB\BackEnd\BE_BookingControl.cs" />
+    <Compile Include="TB\BackEnd\BE_CleanData.cs" />
+    <Compile Include="TB\BackEnd\BE_CleanDataWithoutPIC.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMainDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />

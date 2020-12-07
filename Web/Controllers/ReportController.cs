@@ -30,7 +30,134 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MaintainLogReport(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
-            return View();
+            List<BE_CleanData> lstData = new List<BE_CleanData>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            DateTime SD, ED;
+            if (!string.IsNullOrEmpty(SDate) && !string.IsNullOrEmpty(EDate))
+            {
+
+                SD = DateTime.Parse(SDate + " 00:00:00");
+                ED = DateTime.Parse(EDate + " 23:59:59");
+                if (SD.Subtract(ED).TotalMilliseconds > 0)
+                {
+                    ViewData["SDate"] = EDate;
+                    ViewData["EDate"] = SDate;
+                }
+                else
+                {
+                    ViewData["SDate"] = SDate;
+                    ViewData["EDate"] = EDate;
+                }
+            }
+            else if (string.IsNullOrEmpty(SDate) && string.IsNullOrEmpty(EDate))
+            {
+                SDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd 00:00:00");
+                EDate = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd 23:59:59");
+                ViewData["SDate"] = SDate.Split(' ')[0];
+                ViewData["EDate"] = EDate.Split(' ')[0];
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(SDate))
+                {
+                    ViewData["SDate"] = SDate;
+                }
+                if (!string.IsNullOrEmpty(EDate))
+                {
+                    ViewData["EDate"] = EDate;
+                }
+            }
+            if (!string.IsNullOrEmpty(carid))
+            {
+                
+                ViewData["CarNo"] = carid;
+            }
+            if (!string.IsNullOrEmpty(objStation))
+            {
+                ViewData["objStation"] = objStation;
+            }
+            if (!string.IsNullOrEmpty(userID))
+            {
+                ViewData["userID"] = userID;
+            }
+            if (status.HasValue)
+            {
+                if (status < 3)
+                {
+                    ViewData["status"] = status;
+                }
+            }
+            lstData = new CarClearRepository(connetStr).GetCleanData(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
+            return View(lstData);
+        }
+        public ActionResult MaintainLogReportDownload(string SDate, string EDate, string carid, string objStation, string userID, int? status)
+        {
+            List<BE_CleanDataWithoutPIC> data = new List<BE_CleanDataWithoutPIC>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            data = new CarClearRepository(connetStr).GetCleanDataWithOutPic(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "帳號", "整備人員", "訂單編號", "車號", "據點", "狀態", "實際取車", "實際還車", "車外清潔", "車內清潔", "車輛救援", "車輛調度", "車輛調度(路邊租還)", "保養", "清潔時幾天未清", ",出租次數", "備註" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+
+            int len = data.Count;
+            for (int k = 0; k < len; k++)
+            {
+                string OrderStatus = "已預約";
+                if (data[k].OrderStatus == 1)
+                {
+                    OrderStatus = "已取車";
+                }
+                else if (data[k].OrderStatus == 2)
+                {
+                    OrderStatus = "已還車";
+                }
+                else if (data[k].OrderStatus == 3)
+                {
+                    OrderStatus = "已取消";
+                }
+                else if (data[k].OrderStatus == 4)
+                {
+                    OrderStatus = "逾時未取車(排程取消)";
+                }
+
+                double totalDay = ((data[k].lastCleanTime != "" && data[k].lastCleanTime != "1900/1/1 上午 12:00:00") ? Convert.ToDateTime(data[k].BookingStart).Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays : -1);
+                string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(Convert.ToDateTime(data[k].BookingStart).Subtract(Convert.ToDateTime(data[k].lastCleanTime)).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                if (data[k].OrderStatus < 2)
+                {
+                    totalDayStr = DateTime.Now.Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays.ToString();
+                }
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(data[k].Account);
+                content.CreateCell(1).SetCellValue(data[k].UserID);
+                content.CreateCell(2).SetCellValue("H" + data[k].OrderNum.ToString().PadLeft(7, '0'));           //合約
+                content.CreateCell(3).SetCellValue(data[k].CarNo);                                               //車號
+                content.CreateCell(4).SetCellValue(data[k].lend_place);                                          //據點
+                content.CreateCell(5).SetCellValue(OrderStatus);                                                 //狀態
+                content.CreateCell(6).SetCellValue(data[k].BookingStart.Replace("1900/1/1 上午 12:00:00", ""));  //實際取車
+                content.CreateCell(7).SetCellValue(data[k].BookingEnd.Replace("1900/1/1 上午 12:00:00", ""));    //實際還車
+                content.CreateCell(8).SetCellValue((data[k].outsideClean == 1) ? "✔" : "✖");                                                 //車外清潔
+                content.CreateCell(9).SetCellValue((data[k].insideClean == 1) ? "✔" : "✖");                                                 //車內清潔
+                content.CreateCell(10).SetCellValue((data[k].rescue == 1) ? "✔" : "✖");                                                 //車輛救援
+                content.CreateCell(11).SetCellValue((data[k].dispatch == 1) ? "✔" : "✖");                                                 //車輛調度
+                content.CreateCell(12).SetCellValue((data[k].Anydispatch == 1) ? "✔" : "✖");                                                 //車輛調度(路邊租還)
+                content.CreateCell(13).SetCellValue((data[k].Maintenance == 1) ? "✔" : "✖");
+                content.CreateCell(14).SetCellValue(totalDayStr);
+                content.CreateCell(15).SetCellValue(data[k].lastRentTimes);
+                content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
+
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "整備人員查詢結果_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         /// <summary>
         /// 車況回饋查詢
@@ -517,6 +644,7 @@ namespace Web.Controllers
             List<BE_QueryOrderMachiParkData> lstDetail = null;
             if (!string.IsNullOrEmpty(OrderNo))
             {
+                ViewData["OrderNo"] = OrderNo;
                 lstDetail = new ParkingRepository(connetStr).GetOrderMachiParkDetail(OrderNo.Replace("H", ""));
             }
             return View(lstDetail);

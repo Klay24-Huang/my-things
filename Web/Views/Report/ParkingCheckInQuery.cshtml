@@ -1,1 +1,131 @@
-﻿
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_QueryOrderMachiParkData>
+@{
+    List<Domain.TB.BackEnd.BE_QueryOrderMachiParkData> lstBooking = null;
+    int len = 0;
+    int total = 0;
+    if (Model != null)
+    {
+        lstBooking = Model.ToList<Domain.TB.BackEnd.BE_QueryOrderMachiParkData>();
+        lstBooking.Count();
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            進出停車場明細
+        </div>
+
+        <ul class="list-group list-group-flush">
+            <!--每一個li是一項查詢條件-->
+            @using (Html.BeginForm("ParkingCheckInQuery", "Report", FormMethod.Post, new { id = "formParkingCheckInQuery", @class = "form-horizontal" }))
+            {
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="OrderNum" id="OrderNum" value="@((ViewData["OrderNo"]==null)?"":ViewData["OrderNo"].ToString())" pattern="(H)[0-9]{1,7}" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="len" name="len" value="@len" />
+                                <button type="submit" class="btn btn-primary">確認送出</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+
+        </ul>
+
+
+
+
+
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<!--輸出表格-->
+<div class="container mt-4" id="ShowSetCardPanel">
+
+    <table class="table bg-white" data-limit-navigation="5">
+
+        <tbody>
+
+            @for (int i = 0; i < len; i++)
+            {
+                total += lstBooking[i].Amount;
+                <tr align="center"><td>第@(i+1)筆</td></tr>
+                <tr>
+                    <td>
+                        <div class="control-group">
+                            <label class="control-label">停車場名稱</label>
+                            <div class="controls">
+                                <span class="help-inline">@lstBooking[i].Name</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">停車場地址</label>
+                            <div class="controls">
+                                <span class="help-inline">@(string.Format("{0} {1}", lstBooking[i].city, lstBooking[i].addr))</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">代收停車費</label>
+                            <div class="controls">
+                                <span class="help-inline">@lstBooking[i].Amount</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">入場時間</label>
+                            <div class="controls">
+                                <span class="help-inline">@lstBooking[i].Check_in</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">出場時間</label>
+                            <div class="controls">
+                                <span class="help-inline">@lstBooking[i].Check_out</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+            }
+
+            <tr><td>合計：@total 元</td></tr>
+
+        </tbody>
+
+    </table>
+</div>
+<div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="" name="ReviewImg" id="ReviewImg" class="thumbnails" />
+            </div>
+            <div class="modal-footer">
+
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
