@@ -39,6 +39,18 @@ namespace Web.Controllers
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false)
                     };
 
+                    List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(obj.Data.IDNO);
+                    for(int i=0;i< lstAudits.Count; i++)
+                    {
+                        if (lstAudits[i].CrentialsType == 11)
+                        {
+                            obj.CredentialImage = lstAudits[i];
+                        }
+                        if (lstAudits[i].AlreadyType == 11)
+                        {
+                            obj.CredentialImage = lstAudits[i];
+                        }
+                    }
                 }
                 else
                 {

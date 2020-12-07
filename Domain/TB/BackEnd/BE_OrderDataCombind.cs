@@ -24,5 +24,9 @@ namespace Domain.TB.BackEnd
         /// 停車照
         /// </summary>
         public List<BE_ParkingImageData> ParkingCarImage { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public BE_AuditImage CredentialImage { set; get; }
     }
 }
