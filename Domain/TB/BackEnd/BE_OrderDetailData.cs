@@ -333,5 +333,9 @@ namespace Domain.TB.BackEnd
         /// 停車格
         /// </summary>
         public string parkingSpace { set; get; }
+        /// <summary>
+        /// 合約狀態
+        /// </summary>
+        public int car_mgt_status { set; get; }
     }
 }

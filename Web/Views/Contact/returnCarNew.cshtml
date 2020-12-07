@@ -18,8 +18,14 @@
         obj = Model.Data;
         if (Model.CredentialImage != null)
         {
-            outSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
-            inSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            if (obj.car_mgt_status >= 2)
+            {
+                outSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            }
+            if (obj.car_mgt_status >= 14)
+            {
+                inSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            }
         }
     }
 }
