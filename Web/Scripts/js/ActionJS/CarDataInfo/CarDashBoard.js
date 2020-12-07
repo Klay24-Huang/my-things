@@ -130,12 +130,12 @@ function SendMotoCmd(CID, deviceToken, BLE_Code, Action, callback) {
     obj.CmdType = Action;
     obj.deviceToken = deviceToken;
     obj.CID = CID;
-    obj.BLE_Code = BLE_Code;
+    obj.BLE_Code = BLE_Code == '' ? 'A12345678' : BLE_Code;
 
     var json = JSON.stringify(obj);
-    console.log(json);
+    //console.log(json);
     var site = jsHost + "SendMotorCMD";
-    console.log("site:" + site);
+    //console.log("site:" + site);
     $.ajax({
         url: site,
         type: 'POST',

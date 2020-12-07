@@ -285,7 +285,7 @@
                             @(lstMotoData[i].Speed)/@(lstMotoData[i].Millage)
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', '2','0')">發動</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', '0','2')">發動</button>
                             <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 3,1)">熄火</button>
                             <br>
                             @*<button type="button" class="btn btn-outline-secondary mb-2">key on</button>*@
