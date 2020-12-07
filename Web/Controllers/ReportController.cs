@@ -517,6 +517,7 @@ namespace Web.Controllers
             List<BE_QueryOrderMachiParkData> lstDetail = null;
             if (!string.IsNullOrEmpty(OrderNo))
             {
+                ViewData["OrderNo"] = OrderNo;
                 lstDetail = new ParkingRepository(connetStr).GetOrderMachiParkDetail(OrderNo.Replace("H", ""));
             }
             return View(lstDetail);

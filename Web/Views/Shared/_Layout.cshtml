@@ -217,6 +217,26 @@
             ControllerStrName = "報表專區";
             ActionStrName = "車輛回饋查詢";
             break;
+        case "ParkingCheckInQuery":
+            ControllerStrName = "報表專區";
+            ActionStrName = "進出特約停車場查詢";
+            break;
+        case "ChargeParkingDetailQuery":
+            ControllerStrName = "報表專區";
+            ActionStrName = "代收停車費明細";
+            break;
+        case "MonthlyMainQuery":
+            ControllerStrName = "報表專區";
+            ActionStrName = "月租總表";
+            break;
+        case "MonthlyDetailQuery":
+            ControllerStrName = "報表專區";
+            ActionStrName = "月租報表";
+            break;
+        case "MaintainLogReport":
+            ControllerStrName = "報表專區";
+            ActionStrName = "整備人員報表";
+            break;
             #endregion
 
 
@@ -229,7 +249,7 @@
             Response.Redirect("~/Home/Login");
         }
     }
-}
+    }
 <!DOCTYPE html>
 <html lang="zh-tw">
 <head>
@@ -455,7 +475,7 @@
                                 @*<a class="dropdown-item" href="~/Report/">綠界交易紀錄查詢</a>*@
                                 <a class="dropdown-item" href="~/Report/MonthlyMainQuery">月租總表查詢</a>
                                 <a class="dropdown-item" href="~/Report/MonthlyDetailQuery">月租報表</a>
-                                @*<a class="dropdown-item" href="~/Report/ParkingCheckInQuery">進出停車場明細</a>*@
+                                <a class="dropdown-item" href="~/Report/ParkingCheckInQuery">進出停車場明細</a>
                                 <a class="dropdown-item" href="~/Report/ChargeParkingDetailQuery">代收停車費明細</a>
                             </div>
                         </li>
