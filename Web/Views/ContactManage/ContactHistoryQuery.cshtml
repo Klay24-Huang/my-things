@@ -53,15 +53,14 @@
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4" id="panelResult">
-    <table class="table bg-white footable" data-filter="#filter" id="list"  data-limit-navigation="5">
+    <table class="table bg-white footable" id="list" data-page-size data-paging-limit="5">
         <thead class="text-white bg-primary">
             <tr>
-                <th data-sort="false"></th>
-                <td scope="row"></td>
-                <th scope="col">預約編號</th>
-                <th scope="col">敘述</th>
+                <th data-sort-ignore="true"></th>
+                <th scope="col" data-type="numeric"></th>
+                <th scope="col" data-sort-ignore="true">預約編號</th>
+                <th scope="col" data-sort-ignore="true">敘述</th>
                 <th scope="col">時間</th>
-
             </tr>
         </thead>
         <tbody>
@@ -69,9 +68,6 @@
             {
                 <tr>
                     <td colspan="5">查無資料</td>
-
-
-
                 </tr>
             }
             else
@@ -80,18 +76,23 @@
                 {
                     <tr>
                         <td></td>
-                        <td scope="row">@(i+1)</td>
-                        <td scope="col">@(string.Format("H{0}",lstData[i].OrderNum.ToString().PadLeft(7,'0')))</td>
+                        <td scope="col">@(i + 1)</td>
+                        <td scope="col">@(string.Format("H{0}", lstData[i].OrderNum.ToString().PadLeft(7, '0')))</td>
                         <td scope="col">@(lstData[i].Descript)</td>
                         <td scope="col">@(lstData[i].MKTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
-
 
                     </tr>
                 }
 
             }
-
         </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="5" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 
