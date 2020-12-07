@@ -315,6 +315,8 @@
     <Compile Include="TB\BackEnd\BE_ParkingImageData.cs" />
     <Compile Include="TB\BackEnd\BE_PowerList.cs" />
     <Compile Include="TB\BackEnd\BE_PowerListCombind.cs" />
+    <Compile Include="TB\BackEnd\BE_QueryOrderMachiParkData.cs" />
+    <Compile Include="TB\BackEnd\BE_RawDataOfMachi.cs" />
     <Compile Include="TB\BackEnd\BE_ReadCardLog.cs" />
     <Compile Include="TB\BackEnd\BE_ReturnControl.cs" />
     <Compile Include="TB\BackEnd\BE_SameMobileData.cs" />

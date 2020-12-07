@@ -511,6 +511,16 @@ namespace Web.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult ParkingCheckInQuery(string OrderNo)
+        {
+            List<BE_QueryOrderMachiParkData> lstDetail = null;
+            if (!string.IsNullOrEmpty(OrderNo))
+            {
+                lstDetail = new ParkingRepository(connetStr).GetOrderMachiParkDetail(OrderNo.Replace("H", ""));
+            }
+            return View(lstDetail);
+        }
         /// <summary>
         /// 代收停車費明細
         /// </summary>
@@ -518,6 +528,83 @@ namespace Web.Controllers
         public ActionResult ChargeParkingDetailQuery()
         {
             return View();
+        }
+        public ActionResult ExplodeParkingReport(DateTime? SDate, DateTime? EDate, string CarNo)
+        {
+            List<BE_RawDataOfMachi> lstRawDataOfMachi = new List<BE_RawDataOfMachi>();
+            ParkingRepository _repository = new ParkingRepository(connetStr);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            string tSDate = "", tEDate = "", tCarNo = "";
+
+
+            if (SDate.HasValue)
+            {
+                tSDate = SDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            if (EDate.HasValue)
+            {
+                tEDate = EDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            if (!string.IsNullOrEmpty(CarNo))
+            {
+                tCarNo = CarNo;
+
+            }
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "訂單編號(車麻吉)", "合約編號", "車牌號碼", "停車地點", "入場時間", "出場時間", "停車時數", "iRent取車時間", "iRent還車時間", "停車費用", "優惠折扣", "付款時間", "發票號碼(車麻吉)", "疑似違規" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstRawDataOfMachi = _repository.GetMachiReport(tSDate, tEDate, CarNo);
+            int len = lstRawDataOfMachi.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);   //訂單編號(車麻吉)
+                content.CreateCell(1).SetCellValue(((lstRawDataOfMachi[k].OrderNo == 0) ? "未掛帳" : "H" + lstRawDataOfMachi[k].OrderNo.ToString().PadLeft(7, '0'))); //合約編號
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);   //車牌號碼
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Name);   //停車地點
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Check_in.ToString("yyyy-MM-dd HH:mm:ss"));   //入場時間
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].Check_out.ToString("yyyy-MM-dd HH:mm:ss"));   //出場時間
+                TimeSpan diffSecond = lstRawDataOfMachi[k].Check_out.Subtract(lstRawDataOfMachi[k].Check_in).Duration();
+                content.CreateCell(6).SetCellValue(string.Format("{0}天{1}小時{2}分{3}秒", diffSecond.Days, diffSecond.Hours, diffSecond.Minutes, diffSecond.Seconds)); //停車時間
+                content.CreateCell(7).SetCellValue(((lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent取車時間
+                content.CreateCell(8).SetCellValue(((lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent還車時間
+                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Amount);   //停車費用
+                content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].refund_amount);   //優惠折扣
+                content.CreateCell(11).SetCellValue(lstRawDataOfMachi[k].paid_at.ToString("yyyy-MM-dd HH:mm:ss"));   //付款時間
+                content.CreateCell(12).SetCellValue("無");   //發票號碼(車麻吉)
+                content.CreateCell(13).SetCellValue((lstRawDataOfMachi[k].Conviction == 1) ? "疑似" : "否");   //發票號碼(車麻吉)
+
+
+                /* sheet.AutoSizeColumn(0);
+               sheet.AutoSizeColumn(1);
+               sheet.AutoSizeColumn(2);
+               sheet.AutoSizeColumn(3);
+               sheet.AutoSizeColumn(4);
+               sheet.AutoSizeColumn(5);
+               sheet.AutoSizeColumn(6);
+
+              sheet.AutoSizeColumn(8);
+                sheet.AutoSizeColumn(9);
+                sheet.AutoSizeColumn(10);*/
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+           // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代收停車費明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
     }
 }

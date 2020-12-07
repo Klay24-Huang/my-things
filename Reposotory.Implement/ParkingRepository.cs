@@ -216,5 +216,111 @@ namespace Reposotory.Implement
             lstParking = GetObjList<BE_ChargeParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
         }
+        /// <summary>
+        /// 取得代收停車費明細
+        /// </summary>
+        /// <param name="OrderNum"></param>
+        /// <returns></returns>
+        public List<BE_QueryOrderMachiParkData> GetOrderMachiParkDetail(string OrderNum)
+        {
+            bool flag = false;
+            List<BE_QueryOrderMachiParkData> lstDetail = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT [Name],[city],[addr],[Amount],[Check_in],[Check_out] FROM VW_BE_GetParkingDetail ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            if (null != OrderNum)
+            {
+
+                if (OrderNum != "")
+                {
+                    if ("" != term) { term += " AND "; }
+                    term += " OrderNo=@OrderNo ";
+                    para[0] = new SqlParameter("@OrderNo", SqlDbType.VarChar, 50);
+                    para[0].Value = OrderNum;
+                    para[0].Direction = ParameterDirection.Input;
+
+                }
+                if ("" != term)
+                {
+                    SQL += " WHERE " + term;
+                }
+                SQL += "  ORDER BY Check_in ASC";
+
+                lstDetail = GetObjList<BE_QueryOrderMachiParkData>(ref flag, ref lstError, SQL, para, term);
+            }
+            return lstDetail;
+        }
+        /// <summary>
+        /// 取得車麻吉原始訂單
+        /// </summary>
+        /// <param name="SD">起始日</param>
+        /// <param name="ED">結束日</param>
+        /// <param name="CarNo">車號</param>
+        /// <returns></returns>
+        public List<BE_RawDataOfMachi> GetMachiReport(string SD, string ED, string CarNo)
+        {
+            bool flag = true;
+            List<BE_RawDataOfMachi> lstReport = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT * FROM VW_BE_GetRawDataOfMachi  ";
+
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            int nowCount = 0;
+
+            if (flag)
+            {
+
+
+                if (false == string.IsNullOrEmpty(SD))
+                {
+                    term = " Check_in>=@SD ";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30)
+                    {
+                        Value = SD,
+                        Direction = ParameterDirection.Input
+                    };
+                    nowCount++;
+                }
+                if (false == string.IsNullOrEmpty(ED))
+                {
+
+                    if ("" != term) { term += " AND "; }
+                    term += " Check_out<=@ED ";
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30)
+                    {
+                        Value = ED,
+                        Direction = ParameterDirection.Input
+                    };
+                    nowCount++;
+
+                }
+                if (false == string.IsNullOrEmpty(CarNo))
+                {
+
+                    if ("" != term) { term += " AND "; }
+                    term += " CarNo=@CarNo ";
+                    para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 30)
+                    {
+                        Value = CarNo,
+                        Direction = ParameterDirection.Input
+                    };
+                    nowCount++;
+
+                }
+
+
+                if ("" != term)
+                {
+                    SQL += " WHERE " + term;
+                }
+                SQL += "  ORDER BY Check_in ASC";
+
+                lstReport = GetObjList<BE_RawDataOfMachi>(ref flag, ref lstError, SQL, para, term);
+            }
+
+            return lstReport;
+        }
     }
 }
