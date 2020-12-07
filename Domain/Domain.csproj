@@ -168,6 +168,7 @@
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
+    <Compile Include="SP\Input\OtherService\Machi\SPInput_InsParkingFeeData.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
@@ -253,6 +254,8 @@
     <Compile Include="SP\Output\SPOutput_Base.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
+    <Compile Include="Sync\Input\SyncInput_MessageParam.cs" />
+    <Compile Include="Sync\Output\SyncOutput_ResultParam.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
     <Compile Include="TB\BackEnd\BE_APILog.cs" />
     <Compile Include="TB\BackEnd\BE_AuditCrentials.cs" />

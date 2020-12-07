@@ -346,7 +346,7 @@ namespace Web.Controllers
                 content.CreateCell(5).SetCellValue(lstSubScription[k].IDNO);   //ID
                 content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
                 content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
-                content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours * 60).ToString("f1"));   //機車
+                content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours ).ToString("f1"));   //機車
 
                 sheet.AutoSizeColumn(0);
                 sheet.AutoSizeColumn(1);
@@ -479,7 +479,7 @@ namespace Web.Controllers
                 content.CreateCell(2).SetCellValue(lstSubScription[k].lend_place);   //ID
                 content.CreateCell(3).SetCellValue(lstSubScription[k].UseWorkDayHours);   //汽車－平日
                 content.CreateCell(4).SetCellValue(lstSubScription[k].UseHolidayHours);   //汽車－假日
-                content.CreateCell(5).SetCellValue((lstSubScription[k].UseMotoTotalHours * 60).ToString("f1"));   //機車
+                content.CreateCell(5).SetCellValue((lstSubScription[k].UseMotoTotalHours).ToString("f1"));   //機車
                 content.CreateCell(6).SetCellValue(lstSubScription[k].MKTime.ToString("yyyy-MM-dd HH:mm"));
                 content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
                 content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //ID
