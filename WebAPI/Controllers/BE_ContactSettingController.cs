@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (apiInput.type == 1 && string.IsNullOrEmpty(apiInput.returnDate))
+                    if (apiInput.type == 1 && !string.IsNullOrEmpty(apiInput.returnDate))
                     {
                         if (string.IsNullOrEmpty(apiInput.returnDate))
                         {
