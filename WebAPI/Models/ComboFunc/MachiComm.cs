@@ -1,4 +1,5 @@
 ﻿using Domain.SP.Input.Mochi;
+using Domain.SP.Input.OtherService.Machi;
 using Domain.SP.Output;
 using Domain.SP.Output.Mochi;
 using Domain.WebAPI.output.Mochi;
@@ -102,6 +103,63 @@ namespace WebAPI.Models.ComboFunc
                 }
             }
          
+            return flag;
+        }
+        /// <summary>
+        /// 寫入車麻吉停車費
+        /// </summary>
+        /// <param name="LogID"></param>
+        /// <param name="OrderNo">訂單編號（去掉H, 並轉Int64)</param>
+        /// <param name="CarNo">車號</param>
+        /// <param name="StartDate">此訂單實際取車時間</param>
+        /// <param name="EndDate">此訂單按下還車時間</param>
+        /// <param name="ParkingBill">回傳車麻吉停車費</param>
+        /// <param name="wsOut"></param>
+        /// <returns></returns>
+        public bool GetParkingBill(Int64 LogID,Int64 OrderNo, string CarNo, string StartDate, string EndDate, ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
+        {
+            bool flag = true;
+            string Token = "";
+            flag = GetToken(LogID, ref Token);
+            DateTime SD = Convert.ToDateTime(StartDate);
+            DateTime ED = Convert.ToDateTime(EndDate);
+            ParkingBill = 0;
+            if (flag)
+            {
+                flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate, EndDate, ref wsOut);
+                if (wsOut != null)
+                {
+                    if (wsOut.data.Count() > 0)
+                    {
+                        int len = wsOut.data.Count();
+                        for (int i = 0; i < len; i++)
+                        {
+                            if (wsOut.data[i].details.parking_checked_in_at > SD && wsOut.data[i].details.parking_checked_out_at <= ED && wsOut.data[i].plate_number == CarNo.Replace(" ", ""))
+                            {
+                             
+                                SPInput_InsParkingFeeData spInsPark = new SPInput_InsParkingFeeData()
+                                {
+                                    Amount = Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount)),
+                                    Check_in = Convert.ToDateTime(wsOut.data[i].details.parking_checked_in_at),
+                                    Check_out = Convert.ToDateTime(wsOut.data[i].details.parking_checked_out_at),
+                                    machi_id = wsOut.data[i].id,
+                                    machi_parking_id = wsOut.data[i].store_id,
+                                    OrderNo = OrderNo,
+                                     LogID=LogID
+                                };
+                                SPOutput_Base spInsOut = new SPOutput_Base();
+                                SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base>(connetStr);
+                                string SPName = new ObjType().GetSPName(ObjType.SPType.InsMachiParkData);
+                                flag = sqlInsHelp.ExecuteSPNonQuery(SPName, spInsPark, ref spInsOut, ref lstError);
+                                ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
+                            }
+                           
+
+                        }
+                    }
+                }
+            }
+
             return flag;
         }
     }

@@ -387,6 +387,10 @@ namespace WebAPI.Models.Enum
             /// 停用車麻吉停車場
             /// </summary>
             DisabledMachiPark,
+            /// <summary>
+            /// 寫入停車資料
+            /// </summary>
+            InsMachiParkData,
             #endregion,
             #region 短租沖銷
             HandleNPR340Save,
@@ -394,6 +398,7 @@ namespace WebAPI.Models.Enum
             HandleNPR340SaveU2,
 
             #endregion
+
             #region BackEnd
             /// <summary>
             /// 更改密碼
@@ -842,6 +847,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.DisabledMachiPark:
                     SPName = "usp_disabledMachiPark";
+                    break;
+                case SPType.InsMachiParkData:
+                    SPName = "usp_InsParkingFeeData";
                     break;
                 #endregion
                 #region 短租沖銷
