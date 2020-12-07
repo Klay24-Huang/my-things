@@ -33,7 +33,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -51,7 +50,6 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
@@ -178,7 +176,7 @@ namespace WebAPI.Controllers
                             WSInput_SendLock wsInput = new WSInput_SendLock()
                             {
                                 CID = CID,
-                                CMD = 3
+                                CMD = 2
                             };
                             WSOutput_Base wsOutput = new WSOutput_Base();
                             flag = censWebAPI.SendLock(wsInput, ref wsOutput);
@@ -202,7 +200,6 @@ namespace WebAPI.Controllers
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                 _params = new Params()
-
                             };
                             string method = CommandType;
                             requestId = input.requestId;
@@ -228,7 +225,6 @@ namespace WebAPI.Controllers
                             method = CommandType,
                             requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                             _params = new Params()
-
                         };
                         string method = CommandType;
                         requestId = input.requestId;
@@ -243,7 +239,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
