@@ -109,9 +109,11 @@ $(function () {
             console.log($(this).val());
             Driver.push($(this).val());
         });
-        if (Driver.length == 0) {
-            flag = false;
-            errMsg = "請至少選擇一種駕照類型";
+        if (AuditStatus != -1) {
+            if (Driver.length == 0) {
+                flag = false;
+                errMsg = "請至少選擇一種駕照類型";
+            }
         }
         //if (flag) {
         //    $('.sameMobile').each(function () {
