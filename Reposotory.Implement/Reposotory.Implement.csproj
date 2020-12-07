@@ -45,6 +45,7 @@
     <Compile Include="BackEnd\StationRepository.cs" />
     <Compile Include="BaseRepository.cs" />
     <Compile Include="CarCardCommonRepository.cs" />
+    <Compile Include="CarClearRepository.cs" />
     <Compile Include="CarCMDRepository.cs" />
     <Compile Include="CarRepository.cs" />
     <Compile Include="CarStatusCommon.cs" />
