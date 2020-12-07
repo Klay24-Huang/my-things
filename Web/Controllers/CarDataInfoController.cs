@@ -113,7 +113,8 @@ namespace Web.Controllers
                        sheet.AutoSizeColumn(j);
                     }
                     for (int i = 0; i < DataLen; i++){
-                       string[] DataArr = { lstData[i].CarNo, ((lstData[i].BindStatus == 1) ? "已綁定" : "未綁定"), lstData[i].deviceToken, lstData[i].iButtonKey, lstData[i].MobileNum };
+                        //20201207唐加CID
+                       string[] DataArr = { lstData[i].CID, ((lstData[i].BindStatus == 1) ? "已綁定" : "未綁定"), lstData[i].CarNo, lstData[i].deviceToken, lstData[i].iButtonKey, lstData[i].MobileNum };
                        IRow content = sheet.CreateRow(i + 1);  
                        for(int k=0;k< headerFieldLen; k++)
                        {
@@ -158,7 +159,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "車機編號", "車號", "iButton" };
+                        string[] field = { "車機編號", "車號", "IBUTTON" };//20201207唐改ibutton -> IBUTTON
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)

@@ -47,6 +47,8 @@ $(document).ready(function () {
 });
 function DoQuery() {
     var BindStatus = $("#BindStatus").val();
+    //20201207唐改...我之前改的還沒push，不小心全刪了....只能重改....
+    /*
     if (CheckIsUndefined(BindStatus)) {
         if (parseInt(BindStatus) < 0) {
             ShowFailMessage("請選擇使用狀態");
@@ -55,7 +57,8 @@ function DoQuery() {
         }
     } else {
         ShowFailMessage("請選擇使用狀態");
-    }
+    }*/
+    $("#frmCarBind").submit();
     console.log("BindStatus="+BindStatus);
 
 } 

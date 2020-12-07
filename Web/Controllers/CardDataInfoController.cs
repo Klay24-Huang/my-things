@@ -1,5 +1,4 @@
-﻿
-using Domain.SP.BE.Input;
+﻿using Domain.SP.BE.Input;
 using Domain.SP.Output;
 using Domain.TB.BackEnd;
 using NPOI.SS.UserModel;
