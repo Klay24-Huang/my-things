@@ -1068,7 +1068,7 @@ namespace WebAPI.Controllers
                                     }
                                 }
 
-                                outputApi.Rent.RemainMonthlyTimeInterval = MonthlyPoint.ToString();
+                                outputApi.Rent.UseMonthlyTimeInterval = MonthlyPoint.ToString();
                             }
                         }
                         else

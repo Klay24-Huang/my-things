@@ -481,32 +481,31 @@ namespace WebAPI.Models.BillFunc
             
             if(Discount>0)
             {
-                double disc = Convert.ToDouble(Discount);
+                double useDisc = Convert.ToDouble(Discount);
 
                 var norList = dayPayList.Where(x => norDates.Contains(x.DateType)).OrderBy(y => y.xDate).ToList();
                 double mins = norList.Select(x => x.xMins).Sum();
 
-                if (disc > mins)//自動縮減
-                {
-                    disc = mins;//實際使用點數
-                    re.discount = Convert.ToInt32(Math.Floor(disc));
-                }
+                if (useDisc > mins)//自動縮減
+                    useDisc = mins;//實際使用點數
+                re.DiscRentInMins = Convert.ToInt32(Math.Floor(mins));//最大可折抵分鐘
+                re.useDisc = Convert.ToInt32(Math.Floor(useDisc));//使用的點數
 
                 norList.ForEach(x =>
                 {
-                    if (disc > 0)
+                    if (useDisc > 0)
                     {
-                        if (disc >= x.xMins)
+                        if (useDisc >= x.xMins)
                         {
                             wDisc += x.DateType == eumDateType.wDay.ToString() ? x.xMins : 0;
                             hDisc += x.DateType == eumDateType.hDay.ToString() ? x.xMins : 0;
-                            disc -= x.xMins;
+                            useDisc -= x.xMins;
                         }
                         else
                         {
-                            wDisc += x.DateType == eumDateType.wDay.ToString() ? disc : 0;
-                            hDisc += x.DateType == eumDateType.hDay.ToString() ? disc : 0;
-                            disc = 0;
+                            wDisc += x.DateType == eumDateType.wDay.ToString() ? useDisc : 0;
+                            hDisc += x.DateType == eumDateType.hDay.ToString() ? useDisc : 0;
+                            useDisc = 0;
                         }
                     }
                 });
@@ -521,9 +520,6 @@ namespace WebAPI.Models.BillFunc
 
                 //總租用時數
                 re.RentInMins = Convert.ToInt32(Math.Floor(xre.Select(x => x.xMins).Sum()));
-
-                //未逾時一般時段租用時數(可折抵時數)
-                re.DiscRentInMins = Convert.ToInt32(Math.Floor(xre.Where(x=>norDates.Contains(x.DateType)).Select(y => y.xMins).Sum()));
 
                 //一般折扣扣除
                 if (Discount > 0)
@@ -544,6 +540,7 @@ namespace WebAPI.Models.BillFunc
                 if (mOri != null && mOri.Count() > 0)
                 {         
                     double useMonthDisc = 0;//使用月租折抵點數
+                    double lastMonthDisc = 0;//剩餘月租點數
                     xre.ForEach(x =>
                     {
                         if(!norDates.Any(q=>q == x.DateType))
@@ -558,24 +555,27 @@ namespace WebAPI.Models.BillFunc
                                 {
                                     double useHours = Convert.ToDouble(md.HolidayHours - md.HolidayHours % 30);//可用折扣點數
                                     useHours = useHours > x.xMins ? x.xMins : useHours;//實際折抵
-                                    //float FinalHours = (float)(Convert.ToDouble(md.HolidayHours) - useHours);
+                                    float FinalHours = (float)(Convert.ToDouble(md.HolidayHours) - useHours);
                                     x.xMins -= useHours;
-                                    md.HolidayHours = (float)useHours;
+                                    md.HolidayHours = (float)useHours;//使用多少折扣
                                     useMonthDisc += useHours;
+                                    lastMonthDisc += FinalHours;
                                 }
                                 else
                                 {
                                     double useHours = Convert.ToDouble(md.WorkDayHours - md.WorkDayHours % 30);//可用則扣點數
                                     useHours = useHours > x.xMins ? x.xMins : useHours;//實際折抵
-                                    //float FinalHours = (float)(Convert.ToDouble(md.WorkDayHours) - useHours);
+                                    float FinalHours = (float)(Convert.ToDouble(md.WorkDayHours) - useHours);
                                     x.xMins -= useHours;
-                                    md.WorkDayHours = (float)useHours;
+                                    md.WorkDayHours = (float)useHours;//使用多少折扣
                                     useMonthDisc += useHours;
+                                    lastMonthDisc += FinalHours;
                                 }
                             }
                         }
                     });
                     re.useMonthDisc = useMonthDisc;
+                    re.lastMonthDisc = lastMonthDisc;
                 }
 
                 //折扣後租用時數
@@ -2483,17 +2483,21 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int AfterDiscRentInMins { get; set; }
         /// <summary>
-        /// 剩餘月租點數
+        /// 使用月租點數
         /// </summary>
         public List<MonthlyRentData> mFinal { get; set; }
         /// <summary>
-        /// 使用一般折扣點數
+        /// 使用折抵點數
         /// </summary>
-        public int discount { get; set; }
+        public int useDisc { get; set; }
         /// <summary>
         /// 使用月租折抵點數
         /// </summary>
         public double useMonthDisc { get; set; }
+        /// <summary>
+        /// 剩餘月租點數
+        /// </summary>
+        public double lastMonthDisc { get; set; }
     }
 
     public class DayPayMins

@@ -521,7 +521,7 @@ namespace WebAPI.Controllers
                         MonthAll += Convert.ToInt32(monthlyRentDatas[i].MotoTotalHours);
                     }
                     //先設定一遍
-                    outputApi.Rent.RemainMonthlyTimeInterval = MonthlyPoint.ToString();
+                    outputApi.Rent.UseMonthlyTimeInterval = MonthlyPoint.ToString();
                     if (MonthlyLen > 0)
                     {
                         UseMonthMode = true;
@@ -566,7 +566,7 @@ namespace WebAPI.Controllers
                                         }
                                     }
 
-                                    outputApi.Rent.RemainMonthlyTimeInterval = MonthlyPoint.ToString();
+                                    outputApi.Rent.UseMonthlyTimeInterval = MonthlyPoint.ToString();
                                 }
                             }
                             else
@@ -585,7 +585,7 @@ namespace WebAPI.Controllers
                                         CarRentPrice += carMonthInfo.RentInPay;
                                         if (carMonthInfo.mFinal != null && carMonthInfo.mFinal.Count > 0)
                                             UseMonthlyRent = carMonthInfo.mFinal;
-                                        Discount = carMonthInfo.discount;
+                                        Discount = carMonthInfo.useDisc;
                                     }
                                     CarRentPrice += car_outPrice;                                    
                                 }
@@ -598,7 +598,7 @@ namespace WebAPI.Controllers
                                         CarRentPrice += carMonthInfo.RentInPay;
                                         if (carMonthInfo.mFinal != null && carMonthInfo.mFinal.Count > 0)
                                             UseMonthlyRent = carMonthInfo.mFinal;
-                                        Discount = carMonthInfo.discount;
+                                        Discount = carMonthInfo.useDisc;
                                     }
                                 }
 
@@ -612,7 +612,7 @@ namespace WebAPI.Controllers
                                     }
                                 }
                                 else
-                                    {
+                                {
                                     UseMonthMode = false;
                                 }
                             }
@@ -868,12 +868,15 @@ namespace WebAPI.Controllers
                     {
                         if (UseMonthMode)
                         {
+                            outputApi.Rent.UseMonthlyTimeInterval = carMonthInfo.useMonthDisc.ToString();
+                            outputApi.Rent.UseNorTimeInterval = carMonthInfo.useDisc.ToString();
                             outputApi.Rent.RentalTimeInterval = (carMonthInfo.RentInMins + car_payOutMins).ToString();//租用時數
                             outputApi.Rent.ActualRedeemableTimeInterval = carMonthInfo.DiscRentInMins.ToString();//可折抵租用時數
-                            outputApi.Rent.RemainRentalTimeInterval = carMonthInfo.AfterDiscRentInMins.ToString();//未逾時折抵後的租用時數
+                            outputApi.Rent.RemainRentalTimeInterval = carMonthInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
                         }
                         else
                         {
+                            outputApi.Rent.UseNorTimeInterval = Discount.ToString();
                             outputApi.Rent.RentalTimeInterval = car_payAllMins.ToString(); //租用時數
                             outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
