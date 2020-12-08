@@ -259,3 +259,13 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+Web/Properties/PublishProfiles/iRentV2-BackEnd - Web Deploy.pubxml
+Web/Properties/ServiceDependencies/iRentV2-BackEnd - Web Deploy/profile.arm.json
+WebAPI/Properties/PublishProfiles/iRentV2-App-api - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/irentV2-testapi-adam - Web Deploy.pubxml
+WebAPI/Properties/ServiceDependencies/iRentV2-App-api - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/irentV2-testapi-adam - Web Deploy/profile.arm.json
+CreditCardWeb/Properties/PublishProfiles/iRentV2-pay-api - Web Deploy.pubxml
+CreditCardWeb/Properties/ServiceDependencies/iRentV2-pay-api - Web Deploy/profile.arm.json
+iRentClearWeb/Properties/PublishProfiles/iRentV2-clear-web - Web Deploy.pubxml
+iRentClearWeb/Properties/ServiceDependencies/iRentV2-clear-web - Web Deploy/profile.arm.json

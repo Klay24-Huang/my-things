@@ -508,6 +508,10 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\image\" />
+    <Folder Include="Content\upload\ImportCarBindData\" />
+    <Folder Include="Content\upload\ImportCarMachineData\" />
+    <Folder Include="Content\upload\ImportMasterCardData\" />
+    <Folder Include="Content\upload\TransParkingImport\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\footable\fonts\footable.eot" />
@@ -551,15 +555,6 @@
     <Content Include="Content\Contact\scss\setting\_mixins.scss" />
     <Content Include="Content\Contact\scss\setting\_reset.scss" />
     <Content Include="Content\Contact\scss\setting\_variables.scss" />
-    <Content Include="Content\upload\ImportCarBindData\ImportCarBindData_98105_20201019145339.xlsx" />
-    <Content Include="Content\upload\ImportCarMachineData\ImportCarMachineDatat_98105_20201016154828.xlsx" />
-    <Content Include="Content\upload\ImportCarMachineData\ImportCarMachineDatat_98105_20201016154941.xlsx" />
-    <Content Include="Content\upload\ImportMasterCardData\ImportMasterCardData_98105_20201020105254.xlsx" />
-    <Content Include="Content\upload\ImportMasterCardData\ImportMasterCardData_98105_20201020110042.xlsx" />
-    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162126.xlsx" />
-    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162332.xlsx" />
-    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162529.xlsx" />
-    <Content Include="Content\upload\TransParkingImport\TransParkingImport_98105_20201014162645.xlsx" />
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />

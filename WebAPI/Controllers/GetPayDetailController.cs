@@ -442,6 +442,12 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
+                if (flag && OrderDataLists[0].ProjType != 4)
+                {
+                    //檢查有無車麻吉停車費用
+
+                }
+
                 #region 建空模及塞入要輸出的值
                 if (flag)
                 {
