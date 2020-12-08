@@ -48,5 +48,10 @@ namespace WebAPI.Utils
             else
                 return default(T);
         }
+
+        public static List<string> StrEmuList<T>()
+        {
+            return Enum.GetNames(typeof(T)).ToList();
+        }
     }
 }
