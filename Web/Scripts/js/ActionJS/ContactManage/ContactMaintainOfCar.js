@@ -3,11 +3,13 @@ var oldOtherPrice = 0;
 $(document).ready(function () {
     $("#panelResult").hide();
     $("#OrderNo").on("blur", function () {
+        console.log('c');
         if ($(this).val() != "") {
             $("#OrderNo").val($(this).val().toUpperCase())
         }
     })
     $("#UseStatus").on("change", function () {
+        console.log('b');
         if ($(this).val() == "3") {
             $("#remark_input").prop("readonly", "");
         } else {
@@ -15,6 +17,7 @@ $(document).ready(function () {
         }
     });
     $("#btnQuery").on("click", function () {
+        console.log('a');
         var OrderNo = $("#OrderNo").val();
 
         var flag = true;
@@ -22,7 +25,7 @@ $(document).ready(function () {
         ShowLoading("資料查詢中…");
         if (OrderNo == "") {
             flag = false;
-            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字";
+            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字a";
         }
         if (flag) {
             var Account = $("#Account").val();
@@ -91,7 +94,7 @@ $(document).ready(function () {
         ShowLoading("資料查詢中…");
         if (OrderNo == "") {
             flag = false;
-            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字";
+            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字b";
         }
         if (flag) {
             var Account = $("#Account").val();

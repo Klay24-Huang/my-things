@@ -12,15 +12,13 @@
                 flag = false;
                 errMsg = "訂單編號未填";
             }
-            //20201208唐註解，資料庫那邊此欄位根本不是長這樣，OrderNo不是H開頭，是純數字
-            /*
             else {
                 if (false == RegexOrderNo(OrderNo)) {
                     flag = false;
                     errMsg = "訂單編號格式不符（格式：H+7碼數字，未滿7碼左補0)";
                 }
             }
-            */
+            
         }
         if (flag) {
             if (IDNO == "") {
