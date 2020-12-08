@@ -48,18 +48,20 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             bool isGuest = true;
             string Contentjson = "";
-            Int64 tmpOrder = 0;
+            //Int64 tmpOrder = 0; //20201208唐註解
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson); //20201208唐註解，移到下面
+                //20201208唐註解，移到下面
+                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
                 //20201208唐加
                 Contentjson = value["para"].ToString();
+                //20201208唐加
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson);
 
                 string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.OrderNo };
@@ -109,7 +111,7 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID, //20201208唐改Convert.ToInt32(apiInput.UserID)，但adam說不是丟userid，logid應該會透過一個步驟得到值，我測試真的會產生一組logid
                     IDNO = apiInput.IDNO,
-                    OrderNo = Convert.ToInt32(apiInput.OrderNo)//tmpOrder //20201208唐改
+                    OrderNo = Convert.ToInt32(apiInput.OrderNo) //20201208唐改tmpOrder -> Convert.ToInt32(apiInput.OrderNo)
                 };
                 SPOutput_BE_GetCarMachineAndCheckOrder spOut = new SPOutput_BE_GetCarMachineAndCheckOrder();
                 SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder> sqlHelp = new SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder>(connetStr);

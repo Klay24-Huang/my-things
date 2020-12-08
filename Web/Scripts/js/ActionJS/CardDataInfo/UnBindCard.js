@@ -45,7 +45,6 @@
         //var Account = $("#Account").val();
         console.log('a');
         var flag = true;
-        var errMsg = "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp";
 
         if (flag) {
             console.log('b');
@@ -71,9 +70,10 @@
                             text: data.ErrorMessage,
                             icon: 'success'
                         }).then(function (value) {
-                            //window.location.reload();
+                            window.location.reload();
                         });
                     } else {
+
                         swal({
                             title: 'Fail',
                             text: data.ErrorMessage,
