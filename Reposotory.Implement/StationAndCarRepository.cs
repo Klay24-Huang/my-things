@@ -642,7 +642,7 @@ namespace Reposotory.Implement
             JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
 			JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID AND irs.IsNormalStation=3
-            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
+            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 		    LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3	
             WHERE Car.CarNo = @CarNo
