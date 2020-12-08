@@ -938,14 +938,14 @@ namespace WebCommon
                 sqlCommand.CommandText = tmpSQL.ToString();
                 sqlCommand.Connection = this.sqlConnection;
 
-                sqlCommand.ExecuteNonQuery();
+                sqlCommand.ExecuteNonQuery(); //這行會掛
                 GetSQLReturnValue(sqlCommand.Parameters, ref objOutputPara);
 
                 flag = true;
             }
             catch (Exception ex)
             {
-                lstErrorInfo.Add(new ErrorInfo() { ErrorCode = "ER000", ErrorMsg = ex.Message });
+                lstErrorInfo.Add(new ErrorInfo() { ErrorCode = "ER00A", ErrorMsg = ex.Message });
 
             }
             finally

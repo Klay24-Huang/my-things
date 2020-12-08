@@ -54,10 +54,13 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson);
+                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson); //20201208唐註解，移到下面
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+                //20201208唐加
+                Contentjson = value["para"].ToString();
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_UnBind>(Contentjson);
 
                 string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.OrderNo };
                 string[] errList = { "ERR900", "ERR900", "ERR900" };
@@ -71,6 +74,8 @@ namespace WebAPI.Controllers
                         errCode = "ERR900";
                     }
                 }
+                //20201208唐註解，資料庫那邊此欄位根本不是長這樣，OrderNo不是H開頭，是純數字
+                /*
                 if (flag)
                 {
                     if (apiInput.OrderNo.IndexOf("H") < 0)
@@ -91,6 +96,7 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+                */
             }
             #endregion
             //20201208唐加
@@ -101,7 +107,7 @@ namespace WebAPI.Controllers
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_GetCarMachineAndCheckOrder);
                 SPInput_BE_GetCarMachineAndCheckOrder spInput = new SPInput_BE_GetCarMachineAndCheckOrder()
                 {
-                    LogID = Convert.ToInt32(apiInput.UserID),//LogID, //20201208唐改
+                    LogID = LogID, //20201208唐改Convert.ToInt32(apiInput.UserID)，但adam說不是丟userid，logid應該會透過一個步驟得到值，我測試真的會產生一組logid
                     IDNO = apiInput.IDNO,
                     OrderNo = Convert.ToInt32(apiInput.OrderNo)//tmpOrder //20201208唐改
                 };

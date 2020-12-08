@@ -11,12 +11,16 @@
             if (OrderNo == "") {
                 flag = false;
                 errMsg = "訂單編號未填";
-            } else {
+            }
+            //20201208唐註解，資料庫那邊此欄位根本不是長這樣，OrderNo不是H開頭，是純數字
+            /*
+            else {
                 if (false == RegexOrderNo(OrderNo)) {
                     flag = false;
                     errMsg = "訂單編號格式不符（格式：H+7碼數字，未滿7碼左補0)";
                 }
             }
+            */
         }
         if (flag) {
             if (IDNO == "") {
@@ -39,17 +43,18 @@
     function DoSend(obj) {
         ShowLoading("資料處理中");
         //var Account = $("#Account").val();
-
+        console.log('a');
         var flag = true;
-        var errMsg = "";
+        var errMsg = "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp";
 
         if (flag) {
-
+            console.log('b');
             var json = JSON.stringify(obj);
             console.log(json);
-            //var site = "http://localhost:2061/api/BE_UnBind"
             var site = jsHost + "BE_UnBind";
             console.log("site:" + site);
+
+
             $.ajax({
                 url: site,
                 type: 'POST',
@@ -66,10 +71,9 @@
                             text: data.ErrorMessage,
                             icon: 'success'
                         }).then(function (value) {
-                            window.location.reload();
+                            //window.location.reload();
                         });
                     } else {
-
                         swal({
                             title: 'Fail',
                             text: data.ErrorMessage,
@@ -85,9 +89,10 @@
                         icon: 'error'
                     });
                 }
-
+                
             });
         } else {
+            console.log('c');
             disabledLoadingAndShowAlert(errMsg);
         }
     }
