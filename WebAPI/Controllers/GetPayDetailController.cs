@@ -525,48 +525,51 @@ namespace WebAPI.Controllers
                     if (MonthlyLen > 0)
                     {
                         UseMonthMode = true;
-                        outputApi.IsMonthRent = 1;
                         if (flag)
                         {
-                            if (ProjType == 4 && MonthAll > 0)
+                            if (ProjType == 4)
                             {
-                                //機車沒有分平假日，直接送即可
-                                for (int i = 0; i < MonthlyLen; i++)
+                                outputApi.IsMonthRent = 1;
+                                if (MonthAll > 0)
                                 {
-                                    int MotoTotalMinutes = Convert.ToInt32(monthlyRentDatas[i].MotoTotalHours);     //換算分鐘數
-                                    if (MotoTotalMinutes >= TotalRentMinutes && TotalRentMinutes >=6) //全部扣光
+                                    //機車沒有分平假日，直接送即可
+                                    for (int i = 0; i < MonthlyLen; i++)
                                     {
-                                        MonthlyPoint += TotalRentMinutes;    //20201128 ADD BY ADAM REASON.月租折抵點數計算
-                                        flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄
-                                        TotalRentMinutes = 0;
-                                        
-                                    }
-                                    else
-                                    {
-                                        //折抵不能全折時，基本分鐘數會擺在最後折，且要一次折抵掉
-                                        //一般時數會先折抵基本分鐘數，所以月租必須先折非基本分鐘，否則兩邊會有牴觸
-                                        if (TotalRentMinutes >= 6)
+                                        int MotoTotalMinutes = Convert.ToInt32(monthlyRentDatas[i].MotoTotalHours);     //換算分鐘數
+                                        if (MotoTotalMinutes >= TotalRentMinutes && TotalRentMinutes >= 6) //全部扣光
                                         {
-                                            if ((TotalRentMinutes - MotoTotalMinutes) >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
+                                            MonthlyPoint += TotalRentMinutes;    //20201128 ADD BY ADAM REASON.月租折抵點數計算
+                                            flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, TotalRentMinutes, LogID, ref errCode);//寫入記錄
+                                            TotalRentMinutes = 0;
+
+                                        }
+                                        else
+                                        {
+                                            //折抵不能全折時，基本分鐘數會擺在最後折，且要一次折抵掉
+                                            //一般時數會先折抵基本分鐘數，所以月租必須先折非基本分鐘，否則兩邊會有牴觸
+                                            if (TotalRentMinutes >= 6)
                                             {
-                                                MonthlyPoint += MotoTotalMinutes;        //20201128 ADD BY ADAM REASON.月租折抵點數計算
-                                                TotalRentMinutes -= MotoTotalMinutes;
-                                                flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalMinutes, LogID, ref errCode); //寫入記錄
-                                            }
-                                            else
-                                            {
-                                                //折抵時數不夠扣基本費 只能折  租用時數-基本分鐘數
-                                                int tmpMonthlyPoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
-                                                MonthlyPoint += tmpMonthlyPoint;
-                                                TotalRentMinutes -= tmpMonthlyPoint;
-                                                //MotoTotalMinutes += TotalRentMinutes - MotoTotalMinutes - OrderDataLists[0].BaseMinutes;
-                                                //TotalRentMinutes -= MotoTotalMinutes;
-                                                flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, tmpMonthlyPoint, LogID, ref errCode); //寫入記錄
+                                                if ((TotalRentMinutes - MotoTotalMinutes) >= OrderDataLists[0].BaseMinutes) //扣完有超過基本費
+                                                {
+                                                    MonthlyPoint += MotoTotalMinutes;        //20201128 ADD BY ADAM REASON.月租折抵點數計算
+                                                    TotalRentMinutes -= MotoTotalMinutes;
+                                                    flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, MotoTotalMinutes, LogID, ref errCode); //寫入記錄
+                                                }
+                                                else
+                                                {
+                                                    //折抵時數不夠扣基本費 只能折  租用時數-基本分鐘數
+                                                    int tmpMonthlyPoint = TotalRentMinutes - OrderDataLists[0].BaseMinutes;
+                                                    MonthlyPoint += tmpMonthlyPoint;
+                                                    TotalRentMinutes -= tmpMonthlyPoint;
+                                                    //MotoTotalMinutes += TotalRentMinutes - MotoTotalMinutes - OrderDataLists[0].BaseMinutes;
+                                                    //TotalRentMinutes -= MotoTotalMinutes;
+                                                    flag = monthlyRentRepository.InsMonthlyHistory(IDNO, tmpOrder, monthlyRentDatas[i].MonthlyRentId, 0, 0, tmpMonthlyPoint, LogID, ref errCode); //寫入記錄
+                                                }
                                             }
                                         }
-                                    }
 
-                                    outputApi.Rent.UseMonthlyTimeInterval = MonthlyPoint.ToString();
+                                        outputApi.Rent.UseMonthlyTimeInterval = MonthlyPoint.ToString();
+                                    }
                                 }
                             }
                             else
