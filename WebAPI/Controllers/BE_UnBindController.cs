@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
 
                 string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.OrderNo };
                 string[] errList = { "ERR900", "ERR900", "ERR900" };
-                //1.判斷必填
+                //1.判斷必填 //20201208這邊判斷false
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
                 {
@@ -93,16 +93,17 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
+            //20201208唐加
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             #region TB
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_GetCarMachineAndCheckOrder);
                 SPInput_BE_GetCarMachineAndCheckOrder spInput = new SPInput_BE_GetCarMachineAndCheckOrder()
                 {
-                    LogID = LogID,
+                    LogID = Convert.ToInt32(apiInput.UserID),//LogID, //20201208唐改
                     IDNO = apiInput.IDNO,
-                    OrderNo = tmpOrder
+                    OrderNo = Convert.ToInt32(apiInput.OrderNo)//tmpOrder //20201208唐改
                 };
                 SPOutput_BE_GetCarMachineAndCheckOrder spOut = new SPOutput_BE_GetCarMachineAndCheckOrder();
                 SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder> sqlHelp = new SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder>(connetStr);
@@ -131,7 +132,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
+            //20201208這邊會寫入log，但沒看到寫入，要研究commonfunc，我先跳過
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {

@@ -1173,6 +1173,7 @@ namespace WebAPI.Models.BaseFunc
                 {
                     spOut.ErrorCode = lstError[0].ErrorCode;
                 }
+                //20201208會執行這邊
                 if (false == flag)
                 {
                     errCode = spOut.ErrorCode;
