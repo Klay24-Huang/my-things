@@ -429,6 +429,7 @@
     <Build Include="dbo\Stored Procedures\usp_MA_CheckCarStatusByReturn.sql" />
     <Build Include="dbo\Views\VW_BE_GetFeedBackMain.sql" />
     <Build Include="dbo\Views\VW_BE_GetFeedBackByOrderMain.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetAnyRentCar.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
