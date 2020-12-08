@@ -143,15 +143,14 @@ namespace WebAPI.Controllers
                         int md = 0, mh = 0, mm = 0;
                         int ud = 0, uh = 0, um = 0;
                         int td = 0, th = 0, tm = 0;
-                        int gmd = 0, gmh = 0, gmm = 0;
                         int total = Convert.ToInt32(Convert.ToDateTime(orderFinishDataLists[0].EndTime).Subtract(Convert.ToDateTime(orderFinishDataLists[0].StartTime)).TotalMinutes);
                         int useHour = Convert.ToInt32(total - orderFinishDataLists[0].GiftPoint - orderFinishDataLists[0].GiftMotorPoint - (orderFinishDataLists[0].MonthlyHours * 60));
                         BillCommon billComm = new BillCommon();
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].GiftPoint), ref gd, ref gh, ref gm);
+                        var GiftPoint = orderFinishDataLists[0].GiftPoint + orderFinishDataLists[0].GiftMotorPoint;
+                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(GiftPoint), ref gd, ref gh, ref gm);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].MonthlyHours * 60), ref md, ref mh, ref mm);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].GiftMotorPoint), ref gmd, ref gmh, ref gmm);
                         float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
                         outputApi = new OAPI_OrderDetail()
                         {
@@ -170,7 +169,6 @@ namespace WebAPI.Controllers
                             TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
                             MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),
                             GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),
-                            GiftMotorPoint = string.Format("{0}天{1}時{2}分", gmd, gmh, gmm),
                             PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
                             MileageBill = orderFinishDataLists[0].mileage_price,
                             InsuranceBill = orderFinishDataLists[0].Insurance_price,
@@ -180,8 +178,10 @@ namespace WebAPI.Controllers
                             TransDiscount = orderFinishDataLists[0].TransDiscount,
                             TotalBill = orderFinishDataLists[0].final_price,
                             InvoiceType = orderFinishDataLists[0].InvoiceType,
+                            CARRIERID = orderFinishDataLists[0].CARRIERID,
                             NPOBAN = orderFinishDataLists[0].NPOBAN,
                             NPOBAN_Name = orderFinishDataLists[0].NPOBAN_Name,
+                            Unified_business_no = orderFinishDataLists[0].Unified_business_no,
                             InvoiceNo = orderFinishDataLists[0].invoiceCode,
                             InvoiceDate = orderFinishDataLists[0].invoice_date,
                             InvoiceBill = orderFinishDataLists[0].invoice_price,

@@ -58,11 +58,6 @@
         public int pure_price { get; set; }
 
         /// <summary>
-        /// 月租抵扣
-        /// </summary>
-        public float MonthlyHours { get; set; }
-
-        /// <summary>
         /// 折抵時數(汽車)
         /// </summary>
         public float GiftPoint { get; set; }
@@ -71,6 +66,26 @@
         /// 折抵時數(機車)
         /// </summary>
         public float GiftMotorPoint { get; set; }
+
+        /// <summary>
+        /// 月租抵扣
+        /// </summary>
+        public float MonthlyHours { get; set; }
+
+        /// <summary>
+        /// 專案類型：0:同站;3:路邊;4:機車
+        /// </summary>
+        public int ProjType { get; set; }
+
+        /// <summary>
+        /// 開始時間
+        /// </summary>
+        public string StartTime { get; set; }
+
+        /// <summary>
+        /// 結束時間
+        /// </summary>
+        public string EndTime { get; set; }
 
         /// <summary>
         /// 里程費
@@ -93,9 +108,9 @@
         public int fine_price { get; set; }
 
         /// <summary>
-        /// 代收停車費
+        /// 總金額
         /// </summary>
-        public int parkingFee { get; set; }
+        public int final_price { get; set; }
 
         /// <summary>
         /// 轉乘優惠折抵
@@ -103,29 +118,9 @@
         public int TransDiscount { get; set; }
 
         /// <summary>
-        /// 總金額
+        /// 代收停車費
         /// </summary>
-        public int final_price { get; set; }
-
-        /// <summary>
-        /// 發票類型
-        /// </summary>
-        public int InvoiceType { get; set; }
-
-        /// <summary>
-        /// 捐贈碼
-        /// </summary>
-        public string NPOBAN { get; set; }
-
-        /// <summary>
-        /// 捐贈協會名稱
-        /// </summary>
-        public string NPOBAN_Name { get; set; }
-
-        /// <summary>
-        /// 發票號碼
-        /// </summary>
-        public string invoiceCode { get; set; }
+        public int parkingFee { get; set; }
 
         /// <summary>
         /// 發票日期
@@ -138,14 +133,40 @@
         public int invoice_price { get; set; }
 
         /// <summary>
-        /// 開始時間
+        /// 發票號碼
         /// </summary>
-        public string StartTime { get; set; }
+        public string invoiceCode { get; set; }
 
         /// <summary>
-        /// 結束時間
+        /// 發票類型
+        /// <para>1:愛心碼</para>
+        /// <para>2:email</para>
+        /// <para>3:二聯</para>
+        /// <para>4:三聯</para>
+        /// <para>5:手機條碼</para>
+        /// <para>6:自然人憑證</para>
         /// </summary>
-        public string EndTime { get; set; }
+        public int InvoiceType { get; set; }
+
+        /// <summary>
+        /// 手機條碼/自然人憑證
+        /// </summary>
+        public string CARRIERID { get; set; }
+
+        /// <summary>
+        /// 捐贈碼
+        /// </summary>
+        public string NPOBAN { get; set; }
+
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string Unified_business_no { get; set; }
+
+        /// <summary>
+        /// 捐贈協會名稱
+        /// </summary>
+        public string NPOBAN_Name { get; set; }
 
         /// <summary>
         /// 里程

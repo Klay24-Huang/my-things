@@ -73,14 +73,9 @@
         public string MonthlyHours { get; set; }
 
         /// <summary>
-        /// 折抵時數(汽車)
+        /// 折抵時數(汽車+機車)
         /// </summary>
         public string GiftPoint { get; set; }
-
-        /// <summary>
-        /// 折抵時數(機車)
-        /// </summary>
-        public string GiftMotorPoint { get; set; }
 
         /// <summary>
         ///  計費時數
@@ -124,8 +119,19 @@
 
         /// <summary>
         /// 發票類型
+        /// <para>1:愛心碼</para>
+        /// <para>2:email</para>
+        /// <para>3:二聯</para>
+        /// <para>4:三聯</para>
+        /// <para>5:手機條碼</para>
+        /// <para>6:自然人憑證</para>
         /// </summary>
         public int InvoiceType { get; set; }
+
+        /// <summary>
+        /// 手機條碼/自然人憑證
+        /// </summary>
+        public string CARRIERID { get; set; }
 
         /// <summary>
         /// 捐贈碼
@@ -136,6 +142,11 @@
         /// 捐贈協會名稱
         /// </summary>
         public string NPOBAN_Name { get; set; }
+
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string Unified_business_no { get; set; }
 
         /// <summary>
         /// 發票號碼
