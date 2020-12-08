@@ -200,6 +200,7 @@ namespace WebAPI.Controllers
                                     StationID = OrderDataLists[i].StationID,
                                     StationName = OrderDataLists[i].StationName,
                                     Tel = OrderDataLists[i].Tel,
+                                    ContentForAPP = OrderDataLists[i].ContentForAPP,
                                     StationPic = tmpStationInfoObj
                                 },
                                 MileagePerKM = (OrderDataLists[i].ProjType < 4) ? ((OrderDataLists[i].MilageUnit == 0) ? Mildef : OrderDataLists[i].MilageUnit) : 0,

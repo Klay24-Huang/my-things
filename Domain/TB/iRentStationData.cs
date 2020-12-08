@@ -33,6 +33,12 @@ namespace Domain.TB
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
+
+        /// <summary>
+        /// 據點描述（app顯示）
+        /// </summary>
+        public string ContentForAPP { get; set; }
+
         /// <summary>
         /// 據點照片
         /// </summary>
