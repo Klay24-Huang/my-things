@@ -161,11 +161,12 @@ BEGIN TRY
             FROM VW_GetOrderData AS VW WITH(NOLOCK)
             LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 
-			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
-			LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
-						FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
-						LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
-						WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
+			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
+			--LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
+			--			FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
+			--			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.InsuranceLevel=II.InsuranceLevel and II.useflg='Y'
+			--			WHERE BU.IDNO=@IDNO) K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
+			LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 
 			LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
