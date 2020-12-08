@@ -642,12 +642,9 @@ namespace Reposotory.Implement
             JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
 			JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
             INNER JOIN TB_iRentStation irs ON irs.StationID = VW.StationID AND VW.StationID=Car.nowStationID AND irs.IsNormalStation=3
-            LEFT JOIN TB_InsuranceInfo II ON VW.CarTypeGroupCode = II.CarTypeGroupCode AND useflg='Y' AND II.InsuranceLevel=3
-            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON II.InsuranceLevel=BU.InsuranceLevel
-            LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
-							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
-							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
-							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
+            LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
+		    LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
+		    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3	
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1

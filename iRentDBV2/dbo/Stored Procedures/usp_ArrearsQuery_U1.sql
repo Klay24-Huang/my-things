@@ -118,9 +118,10 @@ BEGIN
 						    ShortOrderNo = (SELECT TOP 1 t0.ShortOrderNo FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo ), --短租合約編號
 							StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WHERE s.StationID = t.StationID),'-'), --取車據點
 							CarType = ISNULL(( --車型代碼
-							SELECT TOP 1 ct.CarTypeName FROM TB_CarType ct
-							WHERE ct.CarType = (
-								SELECT TOP 1 c.CarType FROM TB_Car c WHERE c.CarNo = t.CarNo)
+							--SELECT TOP 1 ct.CarTypeName FROM TB_CarType ct WITH(NOLOCK)
+							SELECT TOP 1 ctg.CarTypeImg FROM TB_CarType ct WITH(NOLOCK)
+							LEFT JOIN TB_CarTypeGroupConsist ctgc WITH(NOLOCK) ON ct.CarType=ctgc.CarType
+							LEFT JOIN TB_CarTypeGroup ctg WITH(NOLOCK) ON ctgc.CarTypeGroupID=ctg.CarTypeGroupID
 						    ),''),		
 							IsMotor = ISNULL((SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WHERE c.CarNo = t.CarNo),0) ---是否是機車0否,1是				
 						FROM (SELECT DISTINCT tmp.OrderNo, tmp.StationID, tmp.CarNo FROM #tmp_ArrearsQuery tmp) t
