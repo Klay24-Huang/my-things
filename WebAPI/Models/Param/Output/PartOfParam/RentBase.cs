@@ -55,7 +55,11 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 月租專案時數折抵顯示
         /// 20201128 ADD BY ADAM REASON.
         /// </summary>
-        public string RemainMonthlyTimeInterval { set; get; } = "";
+        public string UseMonthlyTimeInterval { set; get; } = "";
+        /// <summary>
+        /// 一般時段時數折抵
+        /// </summary>
+        public string UseNorTimeInterval { get; set; } = "";
         /// <summary>
         /// 每小時基本租金
         /// </summary>
