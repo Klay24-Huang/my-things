@@ -17,6 +17,10 @@ namespace Domain.Sync.Input
         public string CategoryCode { get; set; } // 固定填"00"
         public string ImageUrl { get; set; } // 固定填""
         public string WebUrl { get; set; } // 跳轉網址
+        /// <summary>
+        /// 01推給全部
+        /// </summary>
+        public string ListType { get; set; }
         public int ShareTo { get; set; } // 固定填0
         public string ExternalTitle { get; set; } // 固定填""
         public string ExternalUrl { get; set; } // 固定填""
