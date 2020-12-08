@@ -255,6 +255,7 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />
+    <Compile Include="Sync\Input\SPInput_SYNC_BookingCancel.cs" />
     <Compile Include="Sync\Input\SyncInput_MessageParam.cs" />
     <Compile Include="Sync\Output\SyncOutput_ResultParam.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
