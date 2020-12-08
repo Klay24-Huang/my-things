@@ -342,6 +342,10 @@ namespace WebAPI.Models.Enum
             /// 判斷Token跟DeviceID後回傳該IDNO
             /// </summary>
             CheckTokenDeviceReturnID,
+            /// <summary>
+            /// 取得路邊租還車輛
+            /// </summary>
+            GetAnyRentCar,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -804,6 +808,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.CheckCarIButton:    //檢查iButton
                     SPName = "usp_CheckCarIButton";
+                    break;
+                case SPType.GetAnyRentCar:      //取得路邊租還車輛
+                    SPName = "usp_GetAnyRentCar";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

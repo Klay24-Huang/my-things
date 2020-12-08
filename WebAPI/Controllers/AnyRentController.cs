@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
@@ -7,6 +8,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -119,21 +121,45 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-                List<AnyRentObj> AllCars = new List<AnyRentObj>();
-                if (apiInput.ShowALL == 1)
+                //List<AnyRentObj> AllCars = new List<AnyRentObj>();
+                //if (apiInput.ShowALL == 1)
+                //{
+                //    AllCars = _repository.GetAllAnyRent(IDNO);
+                //}
+                //else
+                //{
+                //    AllCars = _repository.GetAllAnyRent(IDNO, apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                //}
+
+                //OAnyRentAPI = new OAPI_AnyRent()
+                //{
+                //    AnyRentObj = AllCars
+                //};
+
+                double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
+                latlngLimit = _repository.GetAround(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetAnyRentCar);
+                SPInput_GetAnyRentCar spCarStatusInput = new SPInput_GetAnyRentCar()
                 {
-                    //AllCars = _repository.GetAllAnyRent();
-                    AllCars = _repository.GetAllAnyRent(IDNO);
-                }
-                else
-                {
-                    //AllCars = _repository.GetAllAnyRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                    AllCars = _repository.GetAllAnyRent(IDNO, apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                }
+                    IDNO = IDNO,
+                    ShowALL = apiInput.ShowALL.Value,
+                    MinLatitude = latlngLimit[0],
+                    MinLongitude = latlngLimit[1],
+                    MaxLatitude = latlngLimit[2],
+                    MaxLongitude = latlngLimit[3],
+                    LogID = LogID,
+                };
+                SPOutput_Base SPOutputBase = new SPOutput_Base();
+                SQLHelper<SPInput_GetAnyRentCar, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetAnyRentCar, SPOutput_Base>(connetStr);
+                List<AnyRentObj> ListOut = new List<AnyRentObj>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(spName, spCarStatusInput, ref SPOutputBase, ref ListOut, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
 
                 OAnyRentAPI = new OAPI_AnyRent()
                 {
-                    AnyRentObj = AllCars
+                    AnyRentObj = ListOut
                 };
             }
             #endregion

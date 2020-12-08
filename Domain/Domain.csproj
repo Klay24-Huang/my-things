@@ -131,6 +131,7 @@
     <Compile Include="SP\Input\Car\SPInput_CarStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_CheckCariButton.cs" />
     <Compile Include="SP\Input\Car\SPInput_EnforceReturnCar.cs" />
+    <Compile Include="SP\Input\Car\SPInput_GetAnyRentCar.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_SetMotorStatus.cs" />
