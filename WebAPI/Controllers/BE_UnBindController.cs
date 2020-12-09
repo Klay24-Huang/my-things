@@ -109,7 +109,7 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID, //20201208唐改Convert.ToInt32(apiInput.UserID)，但adam說不是丟userid，logid應該會透過一個步驟得到值，我測試真的會產生一組logid
                     IDNO = apiInput.IDNO,
-                    OrderNo = tmpOrder //20201208唐改tmpOrder -> Convert.ToInt32(apiInput.OrderNo)
+                    OrderNo = tmpOrder //20201208唐改tmpOrder -> Convert.ToInt32(apiInput.OrderNo)，但ADAM說會再轉值，所以放tmpOrder沒錯
                 };
                 SPOutput_BE_GetCarMachineAndCheckOrder spOut = new SPOutput_BE_GetCarMachineAndCheckOrder();
                 SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder> sqlHelp = new SQLHelper<SPInput_BE_GetCarMachineAndCheckOrder, SPOutput_BE_GetCarMachineAndCheckOrder>(connetStr);
