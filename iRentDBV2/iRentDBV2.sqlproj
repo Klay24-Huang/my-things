@@ -63,6 +63,7 @@
     <Folder Include="dbo\Views\" />
     <Folder Include="dbo\User Defined Types\" />
     <Folder Include="dbo\Functions" />
+    <Folder Include="dbo\SQL Script" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\TB_Token.sql" />
@@ -430,6 +431,8 @@
     <Build Include="dbo\Views\VW_BE_GetFeedBackMain.sql" />
     <Build Include="dbo\Views\VW_BE_GetFeedBackByOrderMain.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetAnyRentCar.sql" />
+    <Build Include="dbo\SQL Script\Azure會員資料轉入iRent2.sql" />
+    <Build Include="dbo\SQL Script\訂單資料轉入Azure.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
