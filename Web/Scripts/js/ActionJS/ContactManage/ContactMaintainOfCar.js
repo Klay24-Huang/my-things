@@ -314,9 +314,11 @@ function SetData(data) {
 
             $("#gift_point_input").hide();
             $("#gift_point_select").empty().show();
-            for (var i = 0; i <= BonusObj.CanUseTotalCarPoint; i += 30) {
+            if (BonusObj) {
+                for (var i = 0; i <= BonusObj.CanUseTotalCarPoint; i += 30) {
 
-                $("#gift_point_select").append(`<option value="${i}">${i}</option>`);
+                    $("#gift_point_select").append(`<option value="${i}">${i}</option>`);
+                }
             }
             $("#gift_point_select").val(OrderObj.CarPoint)
 
