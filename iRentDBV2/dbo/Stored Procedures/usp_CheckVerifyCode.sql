@@ -44,11 +44,11 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_CheckVerifyCode]
-	@IDNO                   VARCHAR(10)           ,
-	@DeviceID               VARCHAR(128)          ,
-	@OrderNum               VARCHAR(20)           ,
-	@Mode                   TINYINT               , --0:註冊;1:一次性開門
-	@VerifyCode             VARCHAR(6)            , 
+	@IDNO                   VARCHAR(10)           , --帳號
+	@DeviceID               VARCHAR(128)          , --機號
+	@OrderNum               VARCHAR(20)           , --訂單編號
+	@Mode                   TINYINT               , --0:註冊;1:忘記密碼;2:一次性開門
+	@VerifyCode             VARCHAR(6)            , --簡訊驗證碼
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -119,8 +119,20 @@ BEGIN TRY
 					SELECT @hasData=Count(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND MEMTEL=@MOBILE AND HasAudit=0;
 					IF @hasData=0
 					BEGIN
-						INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_USERID,A_SYSDT)
-						VALUES(@IDNO,@MOBILE,1,@IDNO,@NowTime);
+						IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO)
+						BEGIN
+							UPDATE [TB_MemberData] 
+							SET MEMTEL=@MOBILE,
+								HasCheckMobile=1,
+								U_USERID=@IDNO,
+								U_SYSDT=@NowTime
+							WHERE MEMIDNO=@IDNO;
+						END
+						ELSE
+						BEGIN
+							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_USERID,A_SYSDT)
+							VALUES(@IDNO,@MOBILE,1,@IDNO,@NowTime);
+						END
 					END
 					ELSE
 					BEGIN
