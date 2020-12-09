@@ -18,7 +18,7 @@
                                 訂單編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="(H)[0-9]{1,7}" required value="" /> <!--20201208唐改pattern-->
+                                <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="^(H|h)[0-9]{7}$" required value="" /> <!--20201208唐改pattern，強制H開頭、7數字結束-->
                             </div>
                         </div>
                     </div>
