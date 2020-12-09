@@ -160,7 +160,7 @@
                             </div>
                             <div class="col-md-3" style="color:red;">
                                 @(obj.detail.MEMO)
-                        </div>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -726,11 +726,23 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-8 text-danger">
                                 *己通過身份變更者，更修改會員資料
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                推薦時數歷程
+                            </div>
+                            <div class="col-md-3">
+                                <a id="btnRecommendHistory" name="btnRecommendHistory" class="btn btn-info" href="@("mng/MNG305_RecommendHis.html?&IDNO="+obj.detail.MEMIDNO)" target="_blank">顯示推薦時數歷程</a>
                             </div>
                         </div>
                     </div>
