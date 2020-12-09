@@ -300,9 +300,9 @@ function SetData(data) {
             /*營損結束*/
 
 
-            $("#gift_point_input").prop("placeholder", "與機車點數合計最多只能使用" + BonusObj.CanUseTotalCarPoint).val(OrderObj.CarPoint);
+            $("#gift_point_input").prop("placeholder", "與機車點數合計最多只能使用" + (BonusObj == null ? '0' :BonusObj.CanUseTotalCarPoint)).val(OrderObj.CarPoint);
             $("#gift_point_select").empty().hide();
-            $("#gift_point_moto_input").prop("placeholder", "與機車點數合計最多只能使用" + BonusObj.CanUseTotalCarPoint).val(OrderObj.MotorPoint);
+            $("#gift_point_moto_input").prop("placeholder", "與機車點數合計最多只能使用" + (BonusObj == null ? '0' :BonusObj.CanUseTotalCarPoint)).val(OrderObj.MotorPoint);
             $("#gift_point_moto_input").prop("readonly", "");
 
             $("#gift_point_input").prop("disabled", "").show();

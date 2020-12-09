@@ -515,9 +515,8 @@ namespace WebAPI.Controllers
                 //note: 月租GetPayDetail
                 if (flag)
                 {
-                    //hack: 2020-12-08 先mark,這個應該是測試用code(monthlyRentRepository) 
                     //1.0 先還原這個單號使用的
-                    //flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
+                    flag = monthlyRentRepository.RestoreHistory(IDNO, tmpOrder, LogID, ref errCode);
 
                     int RateType = (ProjType == 4) ? 1 : 0;
                     if (!hasFine)
