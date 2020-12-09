@@ -223,7 +223,6 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-
                                     WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
                                     flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     if (flag)
@@ -242,17 +241,8 @@ namespace WebAPI.Controllers
                                 flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                             }
                         }
-                     
-                        
-
                     }
-                    
-                 
-
-
-
                 }
-
             }
 
             #endregion

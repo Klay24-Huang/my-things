@@ -42,12 +42,12 @@ namespace OtherService
         protected string NPR370CheckURL; //點數轉贈前檢查
         protected string NPR370SaveURL;  //進行轉贈
         protected string NPR380SaveURL;  //換電獎勵 20201201 ADD BY ADAM 
-    
+
         protected string EinvBizURL;     //手機條碼檢核
-       
-        
+
+
         protected string MonthlyRentURL; //月租訂閱
-       
+
         protected string ETAG010QueryURL; //ETAG查詢(合約編號)
         protected string ETAG020QueryURL;//ETAG查詢(身份證)
         protected string ETAG031SaveURL; //ETAG沖銷
@@ -74,7 +74,7 @@ namespace OtherService
             NPR330QueryURL = (ConfigurationManager.AppSettings.Get("NPR330QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR330QueryURL").ToString();
             NPR340SaveURL = (ConfigurationManager.AppSettings.Get("NPR340SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR340SaveURL").ToString();
             NPR350CheckURL = (ConfigurationManager.AppSettings.Get("NPR350CheckURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR350CheckURL").ToString();
-            
+
             EinvBizURL = (ConfigurationManager.AppSettings.Get("EinvBizURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EinvBizURL").ToString();
             NPR320QueryURL = (ConfigurationManager.AppSettings.Get("NPR320QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR320QueryURL").ToString();
             MonthlyRentURL = (ConfigurationManager.AppSettings.Get("MonthlyRentURL") == null) ? "" : ConfigurationManager.AppSettings.Get("MonthlyRentURL").ToString();
@@ -887,7 +887,7 @@ namespace OtherService
                         if (output.Result)
                         {
                             IsSuccess = 1;
-                          //  ORDNO = output.Data[0].ORDNO;
+                            //  ORDNO = output.Data[0].ORDNO;
                         }
                     }
 
@@ -1353,7 +1353,7 @@ namespace OtherService
                         if (output.Result)
                         {
                             IsSuccess = 1;
-                        
+
                         }
                     }
 
@@ -1481,9 +1481,9 @@ namespace OtherService
             }
             return output;
         }
-            #endregion
-            #region NPR350查詢合約狀態
-            public bool NPR350Check(WebAPIInput_NPR350Check input, ref WebAPIOutput_NPR350Check output)
+        #endregion
+        #region NPR350查詢合約狀態
+        public bool NPR350Check(WebAPIInput_NPR350Check input, ref WebAPIOutput_NPR350Check output)
         {
             bool flag = false;
 
@@ -1579,7 +1579,7 @@ namespace OtherService
         #endregion
         #endregion
         #region 會員相關
-        public bool NPR013Reg(string IDNO,string MEMCNAME, ref WebAPIOutput_NPR013Reg output)
+        public bool NPR013Reg(string IDNO, string MEMCNAME, ref WebAPIOutput_NPR013Reg output)
         {
             bool flag = false;
             WebAPIInput_NPR013Reg input = new WebAPIInput_NPR013Reg()
@@ -1666,7 +1666,7 @@ namespace OtherService
         #endregion
 
         #region 換電獎勵兌換 20201201 ADD BY ADAM
-        public bool NPR380Save(string IDNO,string POINT,string IRENTORDNO, ref WebAPIOutput_NPR380Save output)
+        public bool NPR380Save(string IDNO, string POINT, string IRENTORDNO, ref WebAPIOutput_NPR380Save output)
         {
             bool flag = false;
 

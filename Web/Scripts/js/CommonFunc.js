@@ -245,7 +245,8 @@ function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj
 function DoAjaxAfterReload(obj,API,FailMessage) {
     var json = JSON.stringify(obj);
     console.log(json);
-    var site = jsHost + API;
+    //var site = jsHost + API;
+    var site = "http://localhost:2061/api/BE_HandleOrderModifyByDiscount"
     console.log("site:" + site);
     $.ajax({
         url: site,
@@ -266,9 +267,8 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
                     window.location.reload();
                 });
             } else {
-
                 swal({
-                    title: 'Fail',
+                    title: 'Fail01',
                     text: data.ErrorMessage,
                     icon: 'error'
                 });
@@ -277,7 +277,7 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
         error: function (e) {
             $.busyLoadFull("hide");
             swal({
-                title: 'Fail',
+                title: 'Fail02',
                 text: FailMessage,
                 icon: 'error'
             });

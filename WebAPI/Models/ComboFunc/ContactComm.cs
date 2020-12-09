@@ -30,11 +30,11 @@ namespace WebAPI.Models.ComboFunc
                 {
                     if (output.Data == null)
                     {
-                        errCode = "ERR";
+                        errCode = "ERR1";
                         Message = "查無資料";
                     }else if (output.Data.Count() == 0)
                     {
-                        errCode = "ERR";
+                        errCode = "ERR2";
                         Message = "查無資料";
                     }
                     else
@@ -47,14 +47,14 @@ namespace WebAPI.Models.ComboFunc
                 }
                 else
                 {
-                    errCode = "ERR";
+                    errCode = "ERR3";
                     Message = output.Message;
                 }
             }
             else
             {
                 flag = false;
-                errCode = "ERR";
+                errCode = "ERR4";
                 Message = "網路發生異常錯誤，請稍候再試";
             }
             return flag;
