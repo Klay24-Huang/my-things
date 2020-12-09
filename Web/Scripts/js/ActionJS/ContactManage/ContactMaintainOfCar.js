@@ -166,7 +166,7 @@ $(document).ready(function () {
                 var ParkingFeeByMachiRemark = $("#ParkingFeeByMachiRemark_input").val();
                 var Insurance_price = $("#Insurance_price_input").val();
                 
-                if (CarPoint == "") {
+                if ($.trim(CarPoint) == "") {
                     $("#gift_point_select").val("0");
                     CarPoint = 0;
                 }
@@ -205,7 +205,7 @@ $(document).ready(function () {
                     obj.MotorPoint = MotorPoint
 
                 } else {
-                    obj.CarPoint = $("#gift_point_select").val();
+                    obj.CarPoint = $.trim($("#gift_point_select").val()) == '' ? 0 : $("#gift_point_select").val();
                     obj.MotorPoint = 0;
                 }
                 obj.UseStatus = UseStatus;
