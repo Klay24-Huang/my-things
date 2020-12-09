@@ -880,7 +880,7 @@ namespace WebAPI.Controllers
                     //note: 修正輸出欄位PayDetail
                     if (ProjType == 4)
                     {
-
+                        outputApi.Rent.UseNorTimeInterval = Discount.ToString();
                     }
                     else
                     {
