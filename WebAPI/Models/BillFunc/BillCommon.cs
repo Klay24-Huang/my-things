@@ -395,7 +395,6 @@ namespace WebAPI.Models.BillFunc
             double dre = 0;
 
             List<MonthlyRentData> mFinal = new List<MonthlyRentData>();//剩餘月租點數
-            List<DayPayMins> allDay = new List<DayPayMins>();//區間內時間註記
             List<string> norDates = new List<string>()//一般平假日
             {
                 eumDateType.wDay.ToString(),
@@ -410,9 +409,6 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                if (mOri.Any(x => x.EndDate < x.StartDate))
-                    throw new Exception("迄日不可小於起日");
-
                 if (mOri.Any(x => x.WorkDayHours < 0 || x.WorkDayRateForCar < 0 ||
                    x.HolidayHours < 0 || x.HoildayRateForCar < 0 || x.MonthlyRentId <= 0
                    || x.Mode != 0
@@ -424,53 +420,11 @@ namespace WebAPI.Models.BillFunc
 
                 mFinal = mOri;
 
-                //避免產月租日列表多算一天
-                mFinal.ForEach(x => {
-                    var HHmmss = x.EndDate.ToString("HHmmss");
-                   if (HHmmss == "000000")
-                        x.EndDate = x.EndDate.AddSeconds(-1);
-                });
-
                 //小時轉分
                 mFinal.ForEach(x => { x.WorkDayHours = x.WorkDayHours * 60; x.HolidayHours = x.HolidayHours * 60; });
-            }                
-
-            if (lstHoliday != null && lstHoliday.Count() > 0)
-            {
-                lstHoliday.ForEach(x => //月租假日
-                {
-                    if(!allDay.Any(w=>w.xDate == x.HolidayDate))
-                    {
-                        var mf = mFinal.Where(y =>
-                            string.Compare(x.HolidayDate, y.StartDate.ToString("yyyyMMdd")) >= 0 &&
-                            string.Compare(x.HolidayDate, y.EndDate.ToString("yyyyMMdd")) <= 0
-                          ).FirstOrDefault();
-
-                        if (mf != null)
-                        {
-                            DayPayMins d = new DayPayMins();
-                            d.DateType = mf.MonthlyRentId.ToString() + "h";
-                            d.xDate = x.HolidayDate;
-                            allDay.Add(d);
-                        }
-                    }
-                });
-
-                var hDays = lstHoliday.Where(x => !allDay.Any(y => y.xDate == x.HolidayDate)).ToList();
-                allDay.AddRange(FromHoliday(hDays));//一般假日
-
-                allDay = allDay.OrderBy(x => x.xDate).ToList();
             }
 
-            if (mFinal != null && mFinal.Count()>0)//月租日期
-                mFinal.ForEach(x => allDay = (FillDateType(x.StartDate, x.EndDate, x.MonthlyRentId.ToString(),allDay)));
-
-            allDay = allDay.Where(x =>
-                          string.Compare(x.xDate, SD.ToString("yyyyMMdd")) >= 0 &&
-                          string.Compare(x.xDate, ED.ToString("yyyyMMdd")) <= 0).ToList();
-
-            if(allDay != null && allDay.Count()>0)//平日
-                allDay = FillDate(SD, ED, allDay);
+            var allDay = GetDateMark(SD, ED, lstHoliday, mOri);//區間內時間註記
 
             var dayPayList = GetCarTypeMins(SD, ED, daybaseMins, dayMaxHour*60, allDay);//全分類時間
 
@@ -607,8 +561,6 @@ namespace WebAPI.Models.BillFunc
             if(mFinal != null && mFinal.Count() > 0)//回傳monthData
             {              
                 mFinal.ForEach(x => {
-                    //還原EndDate
-                    x.EndDate = mOri.Where(y => y.MonthlyRentId == x.MonthlyRentId).Select(z => z.EndDate).FirstOrDefault();
                     x.HolidayHours = x.HolidayHours / 60;//分轉回小時
                     x.WorkDayHours = x.WorkDayHours / 60;//分轉回小時
                 });
@@ -844,7 +796,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 汽車每個DataType的計費分鐘數總和,不含逾時
+        /// 汽車每個DataType的List,不含逾時
         /// </summary>
         /// <param name="SD">起</param>
         /// <param name="ED">迄</param>
@@ -2335,6 +2287,85 @@ namespace WebAPI.Models.BillFunc
             }
 
             return CanDiscountPoint;
+        }
+
+        /// <summary>
+        /// 取得區段內時間標記
+        /// </summary>
+        /// <param name="sd">起</param>
+        /// <param name="ed">迄</param>
+        /// <param name="lstHoliday">一班假日列表(必填HolidayDate)</param>
+        /// <param name="mData">月租(必填MonthlyRentId,StartDate,EndDate)</param>
+        /// <returns></returns>
+        /// <mark>2020-12-09</mark>
+        public List<DayPayMins> GetDateMark(DateTime sd, DateTime ed, List<Holiday> lstHoliday = null, List<MonthlyRentData> mData = null)
+        {//note: GetDateMark
+            var re = new List<DayPayMins>();
+
+            if(lstHoliday != null && lstHoliday.Count() > 0)
+            {
+                if (lstHoliday.Any(x => string.IsNullOrEmpty(x.HolidayDate) || string.IsNullOrWhiteSpace(x.HolidayDate)))
+                    throw new Exception("HolidayDate必填");
+            }
+
+            if (mData != null && mData.Count() > 0)
+            {
+                if (mData.Any(x => x.StartDate == null || x.EndDate == null || x.EndDate < x.StartDate))
+                    throw new Exception("起迄必填,迄日不可小於起日");
+
+                if (mData.Any(x =>  x.MonthlyRentId <= 0))
+                    throw new Exception("MonthlyRentId必填且不可為0或負數");
+
+                if (mData.GroupBy(x => x.MonthlyRentId).Where(y => y.Count() > 1).Count() > 0)
+                    throw new Exception("MonthlyRentId不可重複");
+
+                //避免產月租日列表多算一天
+                mData.ForEach(x => {
+                    var HHmmss = x.EndDate.ToString("HHmmss");
+                    if (HHmmss == "000000")
+                        x.EndDate = x.EndDate.AddSeconds(-1);
+                });
+            }
+
+            if (lstHoliday != null && lstHoliday.Count() > 0)
+            {
+                if(mData != null && mData.Count() > 0)
+                {
+                    lstHoliday.ForEach(x => //月租假日
+                    {
+                        if (!re.Any(w => w.xDate == x.HolidayDate))
+                        {
+                            var mf = mData.Where(y =>
+                                string.Compare(x.HolidayDate, y.StartDate.ToString("yyyyMMdd")) >= 0 &&
+                                string.Compare(x.HolidayDate, y.EndDate.ToString("yyyyMMdd")) <= 0
+                              ).FirstOrDefault();
+
+                            if (mf != null)
+                            {
+                                DayPayMins d = new DayPayMins();
+                                d.DateType = mf.MonthlyRentId.ToString() + "h";
+                                d.xDate = x.HolidayDate;
+                                re.Add(d);
+                            }
+                        }
+                    });
+                }
+
+                var hDays = lstHoliday.Where(x => !re.Any(y => y.xDate == x.HolidayDate)).ToList();
+                re.AddRange(FromHoliday(hDays));//一般假日                
+            }
+
+            if (mData != null && mData.Count() > 0)//月租日期
+                mData.ForEach(x => re = (FillDateType(x.StartDate, x.EndDate, x.MonthlyRentId.ToString(), re)));
+
+            re = re.Where(x =>
+                            string.Compare(x.xDate, sd.ToString("yyyyMMdd")) >= 0 &&
+                            string.Compare(x.xDate, ed.ToString("yyyyMMdd")) <= 0).ToList();
+
+            re = FillDate(sd, ed, re);
+            re = re.OrderBy(x => x.xDate).ToList();            
+
+            return re;
         }
 
         /// <summary>
