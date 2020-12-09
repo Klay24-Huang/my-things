@@ -20,7 +20,9 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.ComboFunc;
 using WebCommon;
+using Domain.WebAPI.output.Mochi;
 
 namespace WebAPI.Controllers
 {
@@ -87,6 +89,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carMonthInfo = new CarRentInfo();//汽車月租資料
+            int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
             #endregion
 
             #region 防呆
@@ -445,7 +448,13 @@ namespace WebAPI.Controllers
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     //檢查有無車麻吉停車費用
-
+                    WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
+                    MachiComm mochi = new MachiComm();
+                    flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"), ref ParkingPrice, ref mochiOutput);
+                    if (flag)
+                    {
+                        outputApi.Rent.ParkingFee = ParkingPrice;
+                    }
                 }
 
                 #region 建空模及塞入要輸出的值
