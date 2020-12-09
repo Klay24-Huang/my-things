@@ -50,6 +50,7 @@ $(function () {
         ShowLoading("資料處理中");
         var OrderNo = $("#OrderNo").val();
         var type = $("#type").val();
+        //var ParkInfo = $("#ParkInfo").val(); //20201209唐加
         var mode = $("#mode").val();
         var ReturnDate = $("#StartDate").val();
         var bill_option = $("#InvoiceType").val();
@@ -122,6 +123,7 @@ $(function () {
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
             obj.type = parseInt(type);
+            //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
             obj.Mode = parseInt(mode);
             obj.returnDate = ReturnDate;
             obj.bill_option = bill_option;
