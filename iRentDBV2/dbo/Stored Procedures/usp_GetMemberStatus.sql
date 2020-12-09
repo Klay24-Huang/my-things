@@ -137,11 +137,17 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN 5
 										   WHEN Audit=1 AND C.Self_1=1 THEN 5
 										   WHEN Audit=1 AND C.Signture=1 THEN 5
+										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN 5
 										   WHEN Audit=1 AND C.ID_1=-1 THEN 6
 										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN 6
 										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN 6
 										   WHEN Audit=1 AND C.Self_1=-1 THEN 6
 										   WHEN Audit=1 AND C.Signture=-1 THEN 6
+										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN 6
 										   ELSE 0 END
 				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
 				,MenuStatusText		= CASE WHEN Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
@@ -149,11 +155,18 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
 										   WHEN Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
 										   WHEN Audit=1 AND C.Signture=1 THEN '身分變更審核中'
+										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN '身分變更審核中'
+
 										   WHEN Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
 										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
 										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
 										   WHEN Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
 										   WHEN Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
+										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
 										   ELSE '' END
 				,BlackList			= 'N'
 				,StatusTextCar			= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'

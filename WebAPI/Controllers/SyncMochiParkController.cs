@@ -222,6 +222,8 @@ namespace WebAPI.Controllers
                                       
                                     }
                                     //更新及寫入發mail
+                                    //20201209 ADAM =>有新增的再寄，寄送的對象浩宇再補
+
                                 }
                              
                             }
