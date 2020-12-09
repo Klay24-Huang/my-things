@@ -435,34 +435,15 @@ namespace WebAPI.Models.BillFunc
             
             if(Discount>0)
             {
-                double useDisc = Convert.ToDouble(Discount);
-
                 var norList = dayPayList.Where(x => norDates.Contains(x.DateType)).OrderBy(y => y.xDate).ToList();
-                double mins = norList.Select(x => x.xMins).Sum();
-
-                if (useDisc > mins)//自動縮減
-                    useDisc = mins;//實際使用點數
-                re.DiscRentInMins = Convert.ToInt32(Math.Floor(mins));//最大可折抵分鐘
-                re.useDisc = Convert.ToInt32(Math.Floor(useDisc));//使用的點數
-
-                norList.ForEach(x =>
+                var discRe = discCompute(Convert.ToDouble(Discount), eumDateType.wDay.ToString(), eumDateType.hDay.ToString(), norList);
+                if(discRe != null)
                 {
-                    if (useDisc > 0)
-                    {
-                        if (useDisc >= x.xMins)
-                        {
-                            wDisc += x.DateType == eumDateType.wDay.ToString() ? x.xMins : 0;
-                            hDisc += x.DateType == eumDateType.hDay.ToString() ? x.xMins : 0;
-                            useDisc -= x.xMins;
-                        }
-                        else
-                        {
-                            wDisc += x.DateType == eumDateType.wDay.ToString() ? useDisc : 0;
-                            hDisc += x.DateType == eumDateType.hDay.ToString() ? useDisc : 0;
-                            useDisc = 0;
-                        }
-                    }
-                });
+                    wDisc = discRe.Item1;
+                    hDisc = discRe.Item2;
+                    re.useDisc = Convert.ToInt32(Math.Floor(discRe.Item3));
+                    re.DiscRentInMins = Convert.ToInt32(Math.Floor(discRe.Item4));
+                }
             }
 
             #endregion
@@ -2287,6 +2268,54 @@ namespace WebAPI.Models.BillFunc
             }
 
             return CanDiscountPoint;
+        }
+
+        /// <summary>
+        /// 區間折扣計算
+        /// </summary>
+        /// <param name="disc"></param>
+        /// <param name="wDay">平日DateType</param>
+        /// <param name="hDay">假日DateType</param>
+        /// <param name="norList">折扣日期列表,須包含DateType, xDate, xMins</param>
+        /// <returns>平日折扣, 假日則扣, 使用的點數, 最大可折抵分鐘</returns>
+        /// <mark>2020-12-09 eason</mark>
+        public Tuple<double, double, double, double> discCompute(double disc, string wDay,string hDay, List<DayPayMins> norList)
+        {//dev: NorDisc
+            double wDisc = 0;//平日折扣
+            double hDisc = 0;//假日則扣
+            double useDisc = 0;//使用的點數
+            double DiscRentInMins = 0;//最大可折抵分鐘
+
+            if (norList != null && norList.Count()>0 && disc > 0)
+            {
+                useDisc = disc;
+                norList = norList.OrderBy(x => x.xDate).ToList();
+                double mins = norList.Select(x => x.xMins).Sum();
+
+                if (useDisc > mins)//自動縮減
+                    useDisc = mins;//實際使用點數
+                DiscRentInMins = mins;//最大可折抵分鐘
+
+                norList.ForEach(x =>
+                {
+                    if (useDisc > 0)
+                    {
+                        if (useDisc >= x.xMins)
+                        {
+                            wDisc += x.DateType == wDay ? x.xMins : 0;
+                            hDisc += x.DateType == hDay ? x.xMins : 0;
+                            useDisc -= x.xMins;
+                        }
+                        else
+                        {
+                            wDisc += x.DateType == wDay ? useDisc : 0;
+                            hDisc += x.DateType == hDay ? useDisc : 0;
+                            useDisc = 0;
+                        }
+                    }
+                });
+            }
+            return new Tuple<double, double, double, double>(wDisc, hDisc, useDisc, DiscRentInMins);
         }
 
         /// <summary>
