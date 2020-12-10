@@ -847,6 +847,50 @@ namespace Reposotory.Implement
             lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
             return lstCarScheduleTimeLog;
         }
+
+        public List<BE_CarData> GetCarScheduleForAllCar(string StationID, string CarNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarData> lstCarData = null;
+            string SQL = " SELECT * FROM TB_Car ";
+
+
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            string term2 = "";
+            int nowCount = 0;
+            if ("" != StationID)
+            {
+                term = "  nowStationID=@StationID";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != CarNo)
+            {
+                if (term != "") { term += " AND "; }
+                term += "  CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            if ("" != term2)
+            {
+                SQL += term2;
+            }
+            SQL += "  ORDER BY CarNo ASC";
+
+            lstCarData = GetObjList<BE_CarData>(ref flag, ref lstError, SQL, para, term);
+            return lstCarData;
+        }
         public List<BE_CarScheduleTimeLog> GetOrderStatus(Int64 OrderNo)
         {
             bool flag = false;

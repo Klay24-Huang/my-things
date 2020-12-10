@@ -109,69 +109,103 @@ namespace WebAPI.Controllers
                 //List<BE_CarScheduleTimeLog> lstCarSchedule = _repository.GetCarScheduleNew(apiInput.StationID.ToUpper(),apiInput.CarNo.ToUpper().Replace(" ",""), apiInput.SD, apiInput.ED);
                 //20201127 UPD BY JERRY 改用時間格式查詢，避免同一天查不出資料
                 List<BE_CarScheduleTimeLog> lstCarSchedule = _repository.GetCarScheduleNew(apiInput.StationID.ToUpper(), apiInput.CarNo.ToUpper().Replace(" ", ""), SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"));
+                List<BE_CarData> lstCar = _repository.GetCarScheduleForAllCar(apiInput.StationID.ToUpper(), apiInput.CarNo.ToUpper().Replace(" ", ""));
                 if (lstCarSchedule != null)
                 {
                    apiOutput =new List<OAPI_BE_CarScheduleTimeLog>();
                     int Len = lstCarSchedule.Count;
-                    if (Len > 0)
-                    {
-                        apiOutput.Add(new OAPI_BE_CarScheduleTimeLog()
-                        {
-                            CarNo = lstCarSchedule[0].CarNo,
-                            lstOrder = new List<BE_OrderInfo>()
-                              {
-                                   new BE_OrderInfo()
-                                   {
-                                        booking_status=lstCarSchedule[0].booking_status,
-                                         cancel_status=lstCarSchedule[0].cancel_status,
-                                          car_mgt_status=lstCarSchedule[0].car_mgt_status,
-                                           ED=lstCarSchedule[0].ED.ToString("yyyy-MM-dd HH:mm:ss"),
-                                            FE=lstCarSchedule[0].FE.ToString("yyyy-MM-dd HH:mm:ss"),
-                                             FS=lstCarSchedule[0].FS.ToString("yyyy-MM-dd HH:mm:ss"),
-                                              IDNO=lstCarSchedule[0].IDNO,
-                                               Mobile=lstCarSchedule[0].Mobile,
-                                                OrderNum=string.Format("H{0}",lstCarSchedule[0].OrderNum.PadLeft(7,'0')),
-                                                  SD=lstCarSchedule[0].SD.ToString("yyyy-MM-dd HH:mm:ss"),
-                                                   UName=lstCarSchedule[0].UName
-                                   }
-                              }
-                        });
-                    }
-                    for (int i = 1; i < Len; i++)
-                    {
-                        int orderIndex = apiOutput.FindIndex(delegate (OAPI_BE_CarScheduleTimeLog car)
-                        {
-                            return car.CarNo == lstCarSchedule[i].CarNo;
-                        });
-                        BE_OrderInfo tmpOrderInfo = new BE_OrderInfo()
-                        {
-                            booking_status = lstCarSchedule[i].booking_status,
-                            cancel_status = lstCarSchedule[i].cancel_status,
-                            Mobile = lstCarSchedule[i].Mobile,
-                            car_mgt_status = lstCarSchedule[i].car_mgt_status,
-                            ED = lstCarSchedule[i].ED.ToString("yyyy-MM-dd HH:mm:ss"),
-                            FE = lstCarSchedule[i].FE.ToString("yyyy-MM-dd HH:mm:ss"),
-                            FS = lstCarSchedule[i].FS.ToString("yyyy-MM-dd HH:mm:ss"),
-                            IDNO = lstCarSchedule[i].IDNO,
-                            OrderNum = (lstCarSchedule[i].OrderNum == "0") ? "0" : "H" + lstCarSchedule[i].OrderNum.PadLeft(7, '0'),
-                            SD = lstCarSchedule[i].SD.ToString("yyyy-MM-dd HH:mm:ss"),
-                            UName = lstCarSchedule[i].UName
-                        };
-                        if (orderIndex < 0)
-                        {
-                            OAPI_BE_CarScheduleTimeLog tmp = new OAPI_BE_CarScheduleTimeLog()
-                            {
-                                CarNo = lstCarSchedule[i].CarNo,
-                                lstOrder = new List<BE_OrderInfo>()
-                            };
-                            tmp.lstOrder.Add(tmpOrderInfo);
-                            apiOutput.Add(tmp);
-                        }
-                        else
-                        {
-                            apiOutput[orderIndex].lstOrder.Add(tmpOrderInfo);
-                        }
+                    //if (Len > 0)
+                    //{
+                    //    apiOutput.Add(new OAPI_BE_CarScheduleTimeLog()
+                    //    {
+                    //        CarNo = lstCarSchedule[0].CarNo,
+                    //        lstOrder = new List<BE_OrderInfo>()
+                    //          {
+                    //               new BE_OrderInfo()
+                    //               {
+                    //                    booking_status=lstCarSchedule[0].booking_status,
+                    //                    cancel_status=lstCarSchedule[0].cancel_status,
+                    //                    car_mgt_status=lstCarSchedule[0].car_mgt_status,
+                    //                    ED=lstCarSchedule[0].ED.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //                    FE=lstCarSchedule[0].FE.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //                    FS=lstCarSchedule[0].FS.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //                    IDNO=lstCarSchedule[0].IDNO,
+                    //                    Mobile=lstCarSchedule[0].Mobile,
+                    //                    OrderNum=string.Format("H{0}",lstCarSchedule[0].OrderNum.PadLeft(7,'0')),
+                    //                    SD=lstCarSchedule[0].SD.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //                    UName=lstCarSchedule[0].UName
+                    //               }
+                    //          }
+                    //    });
+                    //}
+                    //for (int i = 1; i < lstCarSchedule.Count; i++)
+                    //{
+                    //    int orderIndex = apiOutput.FindIndex(delegate (OAPI_BE_CarScheduleTimeLog car)
+                    //    {
+                    //        return car.CarNo == lstCarSchedule[i].CarNo;
+                    //    });
+                    //    BE_OrderInfo tmpOrderInfo = new BE_OrderInfo()
+                    //    {
+                    //        booking_status = lstCarSchedule[i].booking_status,
+                    //        cancel_status = lstCarSchedule[i].cancel_status,
+                    //        Mobile = lstCarSchedule[i].Mobile,
+                    //        car_mgt_status = lstCarSchedule[i].car_mgt_status,
+                    //        ED = lstCarSchedule[i].ED.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //        FE = lstCarSchedule[i].FE.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //        FS = lstCarSchedule[i].FS.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //        IDNO = lstCarSchedule[i].IDNO,
+                    //        OrderNum = (lstCarSchedule[i].OrderNum == "0") ? "0" : "H" + lstCarSchedule[i].OrderNum.PadLeft(7, '0'),
+                    //        SD = lstCarSchedule[i].SD.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //        UName = lstCarSchedule[i].UName
+                    //    };
+                    //    if (orderIndex < 0)
+                    //    {
+                    //        OAPI_BE_CarScheduleTimeLog tmp = new OAPI_BE_CarScheduleTimeLog()
+                    //        {
+                    //            CarNo = lstCarSchedule[i].CarNo,
+                    //            lstOrder = new List<BE_OrderInfo>()
+                    //        };
+                    //        tmp.lstOrder.Add(tmpOrderInfo);
+                    //        apiOutput.Add(tmp);
+                    //    }
+                    //    else
+                    //    {
+                    //        apiOutput[orderIndex].lstOrder.Add(tmpOrderInfo);
+                    //    }
 
+                    //}
+
+                    for (int i = 1; i < lstCar.Count; i++)
+                    {
+                        List<BE_CarScheduleTimeLog> orders = lstCarSchedule.FindAll(delegate (BE_CarScheduleTimeLog car)
+                        {
+                            return car.CarNo == lstCar[i].CarNo;
+                        });
+                        List<BE_OrderInfo> tmpOrderInfo=new List<BE_OrderInfo>();
+
+                        for (int x = 1; x < orders.Count; x++)
+                        {
+                            tmpOrderInfo.Add(new BE_OrderInfo()
+                            {
+                                booking_status = orders[x].booking_status,
+                                cancel_status = orders[x].cancel_status,
+                                Mobile = orders[x].Mobile,
+                                car_mgt_status = orders[x].car_mgt_status,
+                                ED = orders[x].ED.ToString("yyyy-MM-dd HH:mm:ss"),
+                                FE = orders[x].FE.ToString("yyyy-MM-dd HH:mm:ss"),
+                                FS = orders[x].FS.ToString("yyyy-MM-dd HH:mm:ss"),
+                                IDNO = orders[x].IDNO,
+                                OrderNum = (orders[x].OrderNum == "0") ? "0" : "H" + orders[x].OrderNum.PadLeft(7, '0'),
+                                SD = orders[x].SD.ToString("yyyy-MM-dd HH:mm:ss"),
+                                UName = orders[x].UName
+                            });
+                        }
+                        OAPI_BE_CarScheduleTimeLog tmp = new OAPI_BE_CarScheduleTimeLog()
+                        {
+                            CarNo = lstCar[i].CarNo,
+                            lstOrder = orders.Count == 0 ? new List<BE_OrderInfo>() : tmpOrderInfo
+                        };
+                        apiOutput.Add(tmp);
                     }
                 }
 
