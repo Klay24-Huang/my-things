@@ -1523,8 +1523,6 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
-
                 //發出Request
                 string responseStr = "";
                 using (WebResponse response = request.GetResponse())
