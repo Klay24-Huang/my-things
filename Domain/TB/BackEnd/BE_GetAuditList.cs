@@ -16,6 +16,10 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string ApplyDate { set; get; }
         /// <summary>
+        /// 申請日期
+        /// </summary>
+        public string ModifyDate { set; get; }
+        /// <summary>
         /// 會員姓名
         /// </summary>
         public string MEMCNAME   {set;get;}

@@ -31,5 +31,7 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 轉贈分鐘數
         /// </summary>
         public int TransMins { set; get; }
+
+        public string TargetId { set; get; }
     }
 }

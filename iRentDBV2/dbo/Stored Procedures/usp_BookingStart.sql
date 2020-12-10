@@ -196,7 +196,8 @@ BEGIN TRY
 			JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 			WHERE A.order_number<@OrderNo		--上一筆訂單
 			AND A.IDNO=@IDNO AND A.car_mgt_status>=16
-			
+			ORDER BY A.order_number DESC
+
 			--運具轉換且時間在一個小時內轉乘
 			IF @PrevOrderNo>0 AND @IsMotor<>@PrevIsMotor AND DATEADD(hour,1,@PrevFinalStopTime) > @NowTime
 			BEGIN

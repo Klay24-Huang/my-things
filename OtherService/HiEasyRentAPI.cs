@@ -388,7 +388,8 @@ namespace OtherService
                 user_id = userid,
                 SourceId = IDNO,
                 Mobile = Mobile,
-                TransMins = Pointer
+                TransMins = Pointer,
+                TargetId = ""
             };
             output = DoNPR370Check(input).Result;
             if (output.Result)

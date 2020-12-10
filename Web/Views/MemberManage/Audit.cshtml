@@ -281,7 +281,7 @@
                 {
                 <tr>
                     <td data-sort="false"></td>
-                    <td scope="col">@(Convert.ToDateTime(lstData[i].ApplyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                    <td scope="col">@(Convert.ToDateTime(lstData[i].IsNew=="1"?lstData[i].ApplyDate:lstData[i].ModifyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
                     <td scope="col">@(lstData[i].MEMCNAME)</td>
                     <td scope="col">@(lstData[i].MEMIDNO)</td>
                     <td scope="col">@((lstData[i].SEX == "1") ? "男" : "女")</td>
