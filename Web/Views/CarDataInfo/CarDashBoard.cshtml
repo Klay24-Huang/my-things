@@ -17,6 +17,7 @@
     int CarNoResponse = 0;
     int NoiButton = 0;
     int iButton = 0;
+    int NoiButtonKey = 0;
     int lowPow = 0;
     DateTime NoReponseOneHour = DateTime.Now.AddHours(-1);
     DateTime NoResponse = DateTime.Now.AddHours(-2);
@@ -58,8 +59,11 @@
         CarRent = lstCarData.Count(p=>p.NowStatus==0);
         CarOneHour = lstCarData.Count(p=> p.LastUpdate!="" && Convert.ToDateTime(p.LastUpdate)<=NoReponseOneHour);
         CarNoResponse = lstCarData.Count(p => p.LastUpdate == "" && Convert.ToDateTime(p.LastUpdate) < NoResponse && Convert.ToDateTime(p.LastUpdate)> NoReponseOneHour);
-        NoiButton = lstCarData.Count(p => p.iButton == 0 && p.iButtonKey!="");
+        //NoiButton = lstCarData.Count(p => p.iButton == 0 && p.iButtonKey!="");
+        //iButton = lstCarData.Count(p => p.iButton == 1 && p.iButtonKey != "");
+        NoiButton = lstCarData.Count(p => p.iButton == 0 && p.iButtonKey != "");
         iButton = lstCarData.Count(p => p.iButton == 1 && p.iButtonKey != "");
+        NoiButtonKey = lstCarData.Count(p => p.iButtonKey == "");
         lowPow = lstCarData.Count(p => p.Volt < 12);
 
     }
@@ -327,7 +331,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col text-white bg-primary">
-                共有@(CarResultLen)輛<br />汽車目前租約中：@CarRent;一小時無回應:@(CarOneHour)輛;完全無回應:@(CarNoResponse)輛;低電量：@(lowPow)輛;iButton有掛回：@(iButton)輛;iButton無掛回：@(NoiButton)輛
+                共有@(CarResultLen)輛<br />
+                汽車目前租約中：@CarRent; 一小時無回應：@(CarOneHour)輛; 完全無回應：@(CarNoResponse)輛; 低電量：@(lowPow)輛; iButton有掛回：@(iButton)輛; iButton無掛回：@(NoiButton)輛; iButton無Key：@(NoiButtonKey)輛
             </div>
 
         </div>
