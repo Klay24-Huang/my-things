@@ -264,6 +264,7 @@
     <Compile Include="TB\BackEnd\BE_AuditCrentials.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetail.cs" />
     <Compile Include="TB\BackEnd\BE_AuditDetailCombind.cs" />
+    <Compile Include="TB\BackEnd\BE_AuditRecommendHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
     <Compile Include="TB\BackEnd\BE_BookingControl.cs" />

@@ -1,13 +1,17 @@
 ﻿using Domain.TB.BackEnd;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Newtonsoft.Json;
 using OtherService;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Web.Models.Params;
+using Web.Utilities;
 
 namespace Web.Controllers
 {
@@ -83,8 +87,33 @@ namespace Web.Controllers
             List<BE_AuditImage> lstAudits=new MemberRepository(connetStr).GetAuditImage(AuditIDNO);
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
+
+            BaseParams param = new BaseParams();
+            string returnMessage = "";
+            var parms = new object[]
+            {AuditIDNO};
+            DataSet ds = WebApiClient.SPRetB(ServerInfo.GetServerInfo(param), "LS..SP_LSQ270_P01", parms, ref returnMessage);
+
+            if (ds.Tables.Count > 0)
+            {
+                for(int i=0;i< ds.Tables[0].Rows.Count; i++)
+                {
+                    Data.RecommendHistory.Add(new BE_AuditRecommendHistory
+                    {
+                        gift_name = ds.Tables[0].Rows[i]["獎勵名稱"]==null?"":ds.Tables[0].Rows[i]["獎勵名稱"].ToString(),
+                        gift_mins = ds.Tables[0].Rows[i]["獎勵時數"] == null ? "" : ds.Tables[0].Rows[i]["獎勵時數"].ToString(),
+                        U_SYSDT = ds.Tables[0].Rows[i]["獎勵時間"] == null ? "" : ds.Tables[0].Rows[i]["獎勵時間"].ToString(),
+                        recommended = ds.Tables[0].Rows[i]["被推薦人"] == null ? "" : ds.Tables[0].Rows[i]["被推薦人"].ToString(),
+                        recommend = ds.Tables[0].Rows[i]["推薦人"] == null ? "" : ds.Tables[0].Rows[i]["推薦人"].ToString(),
+                        memrfbnr = ds.Tables[0].Rows[i]["推薦碼"] == null ? "" : ds.Tables[0].Rows[i]["推薦碼"].ToString()
+                    });
+                }
+            }
+
+
             Data.SameMobile = new List<BE_SameMobileData>();
             if (obj != null)
             {
