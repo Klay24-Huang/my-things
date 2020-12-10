@@ -61,7 +61,7 @@
                 dataType: 'json',           //'application/json',
                 success: function (data) {
                     $.busyLoadFull("hide");
-
+                    //console.log(data);
                     if (data.Result == "1") {
                         swal({
                             title: 'SUCCESS',
