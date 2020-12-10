@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Output.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -59,7 +60,7 @@ namespace WebAPI.Controllers
             {
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(apiInput.ToString(), ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
                 if (string.IsNullOrWhiteSpace(apiInput.OrderNo))
                 {
                     flag = false;
