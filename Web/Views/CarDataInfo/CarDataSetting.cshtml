@@ -111,7 +111,7 @@
     <!--查詢介面結束-->
     <!--輸出表格-->
     <div class="container mt-4">
-        <table class="table bg-white footable" data-filter="#filter" id="list">
+        <table class="table bg-white footable" data-filter="#filter" id="list" data-paging="true" data-limit-navigation="10">
             <thead class="text-white bg-primary">
                 <tr>
                     <th data-sort-ignore="true"></th>
@@ -124,7 +124,6 @@
                     <th scope="col">所屬庫位</th>
                     <th scope="col">備註</th>
                     <th data-sort-ignore="true">資訊</th>
-
                 </tr>
             </thead>
             <tbody>
@@ -153,7 +152,7 @@
                         }
                         <tr>
                             <td></td>
-                            <td scope="row">@(i+1)</td>
+                            <td scope="row">@(i + 1)</td>
                             <td scope="col">@(lstData[i].CarNo)</td>
                             <td scope="col">@(lstData[i].CarTypeName)</td>
                             <td scope="col">
@@ -182,12 +181,17 @@
                 else
                 {
                     <tr>
-
                         <td colspan="10">查無資料</td>
                     </tr>
                 }
-
             </tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="10" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     <!--輸出表格結束-->

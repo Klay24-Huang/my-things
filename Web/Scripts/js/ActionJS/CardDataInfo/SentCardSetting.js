@@ -1,4 +1,4 @@
-﻿$(function() {
+﻿$(function () {
     $("#btnSend").on("click", function () {
         ShowLoading("卡號發送中");
         var CardType = $("#CardType").val();
@@ -6,7 +6,7 @@
         var CarNo = $("#CarNo").val();
         var OrderNo = $("#OrderNo").val();
         var flag = true;
-        
+
         var errMsg = "";
         if (false == CheckStorageIsNull(CardType)) {
             flag = false;
@@ -23,7 +23,7 @@
                 errMsg = "卡號未填";
             }
         }
-       
+
         if (flag) {
             if (CardType == "0") { //萬用卡
                 if (CarNo == "") {
@@ -58,8 +58,10 @@
             disabledLoadingAndShowAlert(errMsg);
         }
 
- 
-    })
+
+    });
+
+    $("#CardType").val("1");
 });
 function DoSend(obj) {
     ShowLoading("資料處理中");

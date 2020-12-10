@@ -106,7 +106,8 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID,
                     UserId=apiInput.UserID,
-                    OrderNo = tmpOrder
+                    OrderNo = tmpOrder,
+                    CardNo= apiInput.CardNo
 
                 };
                 SPOutput_BE_GetCarMachineAndCheckOrderNoIDNO spOut = new SPOutput_BE_GetCarMachineAndCheckOrderNoIDNO();

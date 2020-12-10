@@ -10,14 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -44,20 +41,13 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             NullOutput apiInput = null;
             NullOutput outputApi = new NullOutput();
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
-            string Contentjson = "";
-            bool isGuest = true;
             string MochiToken = ""; //車麻吉token
-            string IDNO = "";
-
             #endregion
             #region 防呆
-
             if (flag)
             {
                 //寫入API Log
@@ -68,22 +58,22 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                 List<SyncMachiParkId> lstParkId = null;
-               MochiParkAPI webAPI = new MochiParkAPI();
+                List<SyncMachiParkId> lstParkId = null;
+                List<SyncMachiParkId> ListParkSend = new List<SyncMachiParkId>();   //要寄信通知的停車場清單
+                MochiParkAPI webAPI = new MochiParkAPI();
                 DateTime NowDate = DateTime.Now;
                 SPInput_GetMachiToken spIGetToken = new SPInput_GetMachiToken()
                 {
                     NowTime = DateTime.Now.ToString("yyyyMMddHHmmss"),
-                     LogID=LogID
+                    LogID = LogID
                 };
                 SPOutput_GetMachiToken spOGetToken = new SPOutput_GetMachiToken();
                 SQLHelper<SPInput_GetMachiToken, SPOutput_GetMachiToken> sqlGetHelp = new SQLHelper<SPInput_GetMachiToken, SPOutput_GetMachiToken>(connetStr);
                 string spName = new ObjType().GetSPName(ObjType.SPType.GetMochiToken);
-          
+
                 flag = sqlGetHelp.ExecuteSPNonQuery(spName, spIGetToken, ref spOGetToken, ref lstError);
                 if (spOGetToken.Token == "")
                 {
-                 
                     WebAPIOutput_MochiLogin wsOutLogin = new WebAPIOutput_MochiLogin();
                     flag = webAPI.DoLogin(ref wsOutLogin);
                     if (flag && wsOutLogin.data.access_token != "")
@@ -96,7 +86,7 @@ namespace WebAPI.Controllers
                             Token = wsOutLogin.data.access_token,
                             StartDate = NowDate,
                             EndDate = TokenEnd,
-                             LogID=LogID
+                            LogID = LogID
                         };
                         SPOutput_Base spMainOut = new SPOutput_Base();
                         SQLHelper<SPInput_MaintainMachiToken, SPOutput_Base> sqlMainHelp = new SQLHelper<SPInput_MaintainMachiToken, SPOutput_Base>(connetStr);
@@ -110,29 +100,29 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                  
                     MochiToken = spOGetToken.Token;
                 }
+
                 if (flag)
                 {
                     //取出目前所有的停車場
                     lstParkId = new ParkingRepository(connetStr).GetMachiParkId();
                 }
+
                 if (flag)
                 {
                     if (MochiToken != "")
                     {
                         WebAPIOutput_ParkData wsoutPark = new WebAPIOutput_ParkData();
                         flag = webAPI.DoSyncPark(MochiToken, ref wsoutPark);
-                    
+
                         if (flag)
                         {
                             int len = wsoutPark.data.Parkinglots.Count;
-                       
+
                             lstError = new List<ErrorInfo>();
                             for (int i = 0; i < len; i++)
                             {
-
                                 string detailStr = "";
                                 for (int j = 0; j < wsoutPark.data.Parkinglots[i].detail.Opening_Time.detail.Count; j++)
                                 {
@@ -167,12 +157,12 @@ namespace WebAPI.Controllers
                                             lat = Convert.ToDecimal(wsoutPark.data.Parkinglots[i].lat),
                                             lng = Convert.ToDecimal(wsoutPark.data.Parkinglots[i].lng),
                                             charge_mode = wsoutPark.data.Parkinglots[i].current_price.charge_mode,
-                                            price = Convert.ToInt32((wsoutPark.data.Parkinglots[i].current_price.price.HasValue)? wsoutPark.data.Parkinglots[i].current_price.price:0),
+                                            price = Convert.ToInt32((wsoutPark.data.Parkinglots[i].current_price.price.HasValue) ? wsoutPark.data.Parkinglots[i].current_price.price : 0),
                                             cooperation_state = wsoutPark.data.Parkinglots[i].cooperation_state,
                                             t_Operator = "",
                                             Name = wsoutPark.data.Parkinglots[i].name,
                                             Id = wsoutPark.data.Parkinglots[i].id,
-                                             LogID=LogID
+                                            LogID = LogID
                                         };
                                         SPOutput_Base spOut = new SPOutput_Base();
                                         spName = new ObjType().GetSPName(ObjType.SPType.MochiParkHandle);
@@ -181,25 +171,27 @@ namespace WebAPI.Controllers
                                         flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                                         if (!flag)
                                         {
-                                        
                                             break;
                                         }
+
+                                        // 新增的要通知
+                                        ListParkSend.Add(new SyncMachiParkId {
+                                            Id = wsoutPark.data.Parkinglots[i].id,
+                                            Name = wsoutPark.data.Parkinglots[i].name,
+                                            use_flag =1
+                                        });
                                     }
-                                    catch (Exception ex)
+                                    catch
                                     {
-                                        //Console.WriteLine("發生錯誤：{0}", ex.Message);
                                         flag = false;
-
                                     }
-                                 
-
                                 }
                                 else
                                 {
                                     lstParkId[index].use_flag = 1;
                                 }
                             }
-                      
+
                             lstParkId = lstParkId.FindAll(delegate (SyncMachiParkId ParkId) { return ParkId.use_flag == 0; });
                             if (lstParkId != null)
                             {
@@ -213,31 +205,51 @@ namespace WebAPI.Controllers
                                         SPInput_DisabledMochiPark spInputDisabled = new SPInput_DisabledMochiPark()
                                         {
                                             Id = lstParkId[k].Id,
-                                             LogID=LogID
+                                            LogID = LogID
                                         };
                                         SPOutput_Base spOutDisabled = new SPOutput_Base();
 
                                         SQLHelper<SPInput_DisabledMochiPark, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_DisabledMochiPark, SPOutput_Base>(connetStr);
                                         flag = sqlHelp.ExecuteSPNonQuery(spName, spInputDisabled, ref spOutDisabled, ref lstError);
-                                      
                                     }
-                                    //更新及寫入發mail
-                                    //20201209 ADAM =>有新增的再寄，寄送的對象浩宇再補
-
+                                    
+                                    // 停用的要通知
+                                    ListParkSend.AddRange(lstParkId);
                                 }
-                             
                             }
 
-                         
+                            if (flag)
+                            {
+                                if (ListParkSend != null && ListParkSend.Count > 0)
+                                {
+                                    //發mail
+                                    SendMail send = new SendMail();
+                                    string Body = string.Empty;
+                                    string Table = string.Empty;
+
+                                    Table += "<table border=1><tr style='background-color:#8DD26F;'><th>名稱</th><th>異動</th></tr>";
+
+                                    foreach (var Park in ListParkSend.OrderByDescending(x => x.use_flag))
+                                    {
+                                        Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", Park.Name, Park.use_flag == 1 ? "新增" : "停用");
+                                    }
+
+                                    Table += "</table>";
+
+                                    Body = string.Format("<p>{0}</p>", Table);
+
+                                    string Title = "車麻吉停車場異動清單";
+
+                                    flag = Task.Run(() => send.DoSendMail(Title, Body, ConfigurationManager.AppSettings["MachiStaionMailList"])).Result;
+                                }
+                            }
                         }
                     }
-
                 }
-            
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -246,7 +258,6 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
-
         }
     }
 }

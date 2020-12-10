@@ -506,27 +506,27 @@ namespace WebAPI.Models.BaseFunc
                 else
                 {
                     #region 機車
-                    FETCatAPI FetAPI = new FETCatAPI();
-                    string requestId = "";
-                    string CommandType = "";
-                    OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
+                    //FETCatAPI FetAPI = new FETCatAPI();
+                    //string requestId = "";
+                    //string CommandType = "";
+                    //OtherService.Enum.MachineCommandType.CommandType CmdType;
+                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    //{
+                    //    command = true,
+                    //    method = CommandType,
+                    //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //    _params = new Params()
 
-                    };
-                    requestId = input.requestId;
-                    string method = CommandType;
-                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    if (flag)
-                    {
-                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    }
+                    //};
+                    //requestId = input.requestId;
+                    //string method = CommandType;
+                    //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                    //if (flag)
+                    //{
+                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //}
 
                     if (flag)
                     {

@@ -160,9 +160,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
+    <Compile Include="Models\Params\BaseParams.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
     <Compile Include="Models\WebCommonFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ConvertHelper.cs" />
+    <Compile Include="Utilities\ServerInfo.cs" />
+    <Compile Include="Utilities\WebApiClient.cs" />
+    <Compile Include="Utilities\WebApiClientBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\bootstrap.min.css" />
