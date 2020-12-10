@@ -39,9 +39,25 @@
         }
     });
     $("#btnMap").on("click", function () {
-     
+
         $("#frmPolygon").submit();
-    })
+    });
+    $("#btnDelete").on("click", function () {
+        var sort = $("#sort").val();
+        if ($.trim(sort) == "") {
+            swal({
+                title: 'Fail',
+                text: "請選擇圖片",
+                icon: 'error'
+            });
+            return;
+        }
+        $("#PIC" + sort).attr('src',null);
+        $("#fileName" + sort).val('');
+        $("#fileDescript" + sort).val('');
+        $("#pic_descript").val('');
+        $("#sort").val('');
+    });
     $("#btnUpload").on("click", function () {
         var sort = $("#sort").val();
         console.log(sort);
@@ -53,11 +69,11 @@
                 icon: 'error'
             })
         } else {
-            if (typeof ($("#fileImport")[0].files) != "undefined") { 
+            if (typeof ($("#fileImport")[0].files) != "undefined") {
                 $("#fileDescript" + sort).val(descript);
                 $("#fileName" + sort).val($("#fileImport")[0].files[0].name);
                 handleFiles($("#fileImport")[0].files, sort);
-              
+
             } else {
                 swal({
                     title: 'Fail',
@@ -66,7 +82,7 @@
                 })
             }
         }
-    })
+    });
     $("#PIC1").on("click", function () {
         //console.log("aaa");
         if ($(this).attr("src") != "") {
