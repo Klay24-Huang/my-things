@@ -17,5 +17,6 @@ namespace Domain.SP.BE.Input
         public int Reson         {set;get;}
         public string Remark        {set;get;}
         public string UserID { set; get; }
+        public int PAYAMT { set; get; } //20201210唐加
     }
 }

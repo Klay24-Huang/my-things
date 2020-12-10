@@ -145,8 +145,8 @@ namespace WebAPI.Controllers
 
                             NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0;
 
-                        
-                           DiffFinalPrice = obj.final_price - NewFinalPrice;
+
+                            DiffFinalPrice = obj.final_price - NewFinalPrice;
                         }
                         else
                         {
@@ -157,7 +157,7 @@ namespace WebAPI.Controllers
 
                             NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0;
 
-                           DiffFinalPrice = obj.final_price - NewFinalPrice;
+                            DiffFinalPrice = obj.final_price - NewFinalPrice;
                         }
                     }
                     if (flag)
@@ -181,14 +181,15 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         string STATUS = "", CNTRNO = "", INVSTATUS = "";
-                       flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
+                        flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if(INVSTATUS != "Y")
+                            if (INVSTATUS != "Y")
                             {
                                 flag = false;
                                 errCode = "ERR760";
-                            }else if (Convert.ToInt32(STATUS) < 3)
+                            }
+                            else if (Convert.ToInt32(STATUS) < 3)
                             {
                                 flag = false;
                                 errCode = "ERR761";
@@ -196,23 +197,23 @@ namespace WebAPI.Controllers
                         }
                     }
                     /*判斷是否要取款或是刷退*/
-                    if (apiInput.DiffPrice == 0 || obj.Paid==0 || apiInput.DiffPrice<0)
+                    if (apiInput.DiffPrice == 0 || obj.Paid == 0 || apiInput.DiffPrice < 0)
                     {
                         //直接更新
                         flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
                         if (flag)
                         {
-                            flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice,apiInput.UserID, ref errCode, ref lstError);
+                            flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                         }
                     }
-                    else 
+                    else
                     {
                         //查詢有無綁卡
                         if (apiInput.DiffPrice > 0) //刷退，
                         {
                             int hasBind = 0;
                             List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
-                    
+
                             flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
                             if (flag)
                             {
@@ -258,7 +259,7 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-        public bool SaveToTB(BE_GetOrderModifyDataNew obj, IAPI_BE_HandleOrderModifyByDiscount apiInput,Int64 OrderNo,Int64 LogID,ref string errCode,ref List<ErrorInfo> lstError)
+        public bool SaveToTB(BE_GetOrderModifyDataNew obj, IAPI_BE_HandleOrderModifyByDiscount apiInput, Int64 OrderNo, Int64 LogID, ref string errCode, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleOrderModifyByDiscount);
@@ -272,16 +273,17 @@ namespace WebAPI.Controllers
                 OrderNo = OrderNo,
                 Remark = apiInput.Remark,
                 Reson = apiInput.UseStatus,
-                RNTAMT = ((obj.pure_price - apiInput.DiffPrice < 0) ? 0 : (obj.pure_price - apiInput.DiffPrice)) + obj.fine_price
+                RNTAMT = ((obj.pure_price - apiInput.DiffPrice < 0) ? 0 : (obj.pure_price - apiInput.DiffPrice)) + obj.fine_price,
+                PAYAMT = apiInput.PAYAMT //20201210唐加
             };
             SPOutput_Base spOut = new SPOutput_Base();
-      
+
             SQLHelper<SPInput_BE_HandleOrderModifyByDiscount, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleOrderModifyByDiscount, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        public bool DoSendNPR136(Int64 OrderNo,Int64 LogID,int DiffPrice,string UserID, ref string errCode, ref List<ErrorInfo> lstError)
+        public bool DoSendNPR136(Int64 OrderNo, Int64 LogID, int DiffPrice, string UserID, ref string errCode, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
             BE_NPR136Retry obj = new HiEasyRentRepository(connetStr).GetNPR136RetryByOrderNo(OrderNo);
@@ -357,12 +359,12 @@ namespace WebAPI.Controllers
                         string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
                         SPInput_BE_NPR136Success spInput = new SPInput_BE_NPR136Success()
                         {
-                           
+
                             LogID = LogID,
-                   
+
                             OrderNo = OrderNo,
-                             isRetry=1,
-                              UserID= UserID
+                            isRetry = 1,
+                            UserID = UserID
                         };
                         SPOutput_Base spOut = new SPOutput_Base();
 

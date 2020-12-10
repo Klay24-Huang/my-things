@@ -15,10 +15,24 @@ $(document).ready(function () {
         var flag = true;
         var errMsg = "";
         ShowLoading("資料查詢中…");
+        /*20201210唐註解
         if (OrderNo == "") {
             flag = false;
             errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字";
         }
+        */
+        //20201210唐加
+        if (OrderNo == "") {
+            flag = false;
+            errMsg = "訂單編號未填";
+        }
+        else {
+            if (false == RegexOrderNo(OrderNo)) {
+                flag = false;
+                errMsg = "訂單編號格式不符（格式：H+7碼數字，未滿7碼左補0)";
+            }
+        }
+
         if (flag) {
             var Account = $("#Account").val();
             var obj = new Object();
@@ -141,6 +155,7 @@ $(document).ready(function () {
                 if (CheckIsUndefined(Remark)) {
                     obj.Remark = Remark
                 }
+                obj.PAYAMT = 0 //20201210唐加
 
                 DoAjaxAfterReload(obj, "BE_HandleOrderModifyByDiscount", "修改資料發生錯誤");
             } else {

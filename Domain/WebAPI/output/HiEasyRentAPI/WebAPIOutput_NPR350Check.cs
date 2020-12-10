@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.WebAPI.output.HiEasyRentAPI
 {
-   public class WebAPIOutput_NPR350Check
+    public class WebAPIOutput_NPR350Check
     {
         /// <summary>
         /// 處理結果

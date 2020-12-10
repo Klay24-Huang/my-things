@@ -43,5 +43,6 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 備註
         /// </summary>
         public string Remark { set; get; }
+        public int PAYAMT { set; get; } //20201210唐加
     }
 }
