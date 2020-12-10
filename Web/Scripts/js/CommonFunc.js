@@ -288,7 +288,8 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
 function DoAjaxAfterGoBack(obj, API, FailMessage) {
     var json = JSON.stringify(obj);
     console.log(json);
-    var site = jsHost + API;
+    //var site = jsHost + API;
+    var site = "http://localhost:2061/api/BE_HandleStation"
     console.log("site:" + site);
     $.ajax({
         url: site,
@@ -311,7 +312,7 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
             } else {
 
                 swal({
-                    title: 'Fail',
+                    title: 'Fail1',
                     text: data.ErrorMessage,
                     icon: 'error'
                 });
@@ -320,7 +321,7 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
         error: function (e) {
             $.busyLoadFull("hide");
             swal({
-                title: 'Fail',
+                title: 'Fail2',
                 text: FailMessage,
                 icon: 'error'
             });
