@@ -13,8 +13,8 @@
 	  ,ISNULL(Detail.start_mile,-1) AS StartMile,ISNULL(Detail.end_mile,-1) AS StopMile,ISNULL(Detail.pure_price,0) AS CarRent,ISNULL(Detail.final_price,0) AS FinalPrice,ISNULL(Detail.fine_price,0) AS FinePrice,ISNULL(Detail.mileage_price,0) AS Mileage,ISNULL(Detail.Etag,0) AS eTag,ISNULL(Detail.TransDiscount,0) AS TransDiscount
 	  ,ISNULL(Detail.gift_point,0) AS CarPoint,ISNULL(Detail.gift_motor_point,0) AS MotorPoint
 	   ,ISNULL([fine_Time],'1911-01-01 00:00:00') AS FineTime,[Insurance],[InsurancePurePrice]
-	   ,ISNULL((SELECT descript FROM TB_FeedBack AS FeedBack WHERE FeedBack.OrderNo=OrderMain.order_number AND mode=0),'') AS LFeedBack
-	   ,ISNULL((SELECT descript FROM TB_FeedBack AS FeedBack WHERE FeedBack.OrderNo=OrderMain.order_number AND mode=1),'') AS RFeedBack
+	   ,ISNULL((SELECT TOP 1 descript FROM TB_FeedBack AS FeedBack WHERE FeedBack.OrderNo=OrderMain.order_number AND mode=0),'') AS LFeedBack
+	   ,ISNULL((SELECT TOP 1 descript FROM TB_FeedBack AS FeedBack WHERE FeedBack.OrderNo=OrderMain.order_number AND mode=1),'') AS RFeedBack
 	   ,ISNULL(MotorData.[P_LBA] ,0) AS [P_LBA] ,ISNULL(MotorData.[P_RBA] ,0) AS [P_RBA] ,ISNULL(MotorData.[P_TBA] ,0) AS [P_TBA] ,ISNULL(MotorData.[P_MBA] ,0) AS [P_MBA] 
 	   ,ISNULL(MotorData.[P_lon] ,0) AS [P_lon] ,ISNULL(MotorData.[P_lat] ,0) AS [P_lat] ,ISNULL(MotorData.[R_LBA] ,0) AS [R_LBA] ,ISNULL(MotorData.[R_RBA] ,0) AS [R_RBA] 
 	   ,ISNULL(MotorData.[R_TBA] ,0) AS [R_TBA] ,ISNULL(MotorData.[R_MBA] ,0) AS [R_MBA] ,ISNULL(MotorData.[R_lon] ,0) AS [R_lon] ,ISNULL(MotorData.[R_lat] ,0) AS [R_lat] 
@@ -23,7 +23,7 @@
 	   ,ISNULL(OrderOtherFee.[CleanFeeRemark]   ,'') AS [CleanFeeRemark],ISNULL(OrderOtherFee.[DestroyFee]       ,0) AS [DestroyFee] ,ISNULL(OrderOtherFee.[DestroyFeeRemark] ,'') AS [DestroyFeeRemark] 
 	   ,ISNULL(OrderOtherFee.[ParkingFee]       ,0) AS [ParkingFee],ISNULL(OrderOtherFee.[ParkingFeeRemark] ,'') AS [ParkingFeeRemark],ISNULL(OrderOtherFee.[DraggingFee]      ,0) AS [DraggingFee]      
 	   ,ISNULL(OrderOtherFee.[DraggingFeeRemark],'') AS [DraggingFeeRemark],ISNULL(OrderOtherFee.[OtherFee]         ,0) AS [OtherFee],ISNULL(OrderOtherFee.[OtherFeeRemark]   ,'') AS [OtherFeeRemark]   
-	   ,ISNULL((SELECT Amount FROM TB_OrderParkingFeeByMachi AS Machi WITH(NOLOCK) WHERE Machi.OrderNo=OrderMain.order_number),0) AS MachiFee
+	   ,ISNULL((SELECT SUM(Amount) FROM TB_OrderParkingFeeByMachi AS Machi WITH(NOLOCK) WHERE Machi.OrderNo=OrderMain.order_number),0) AS MachiFee
 	   --20201112 ADD BY JERRY 增加缺漏欄位
 	   ,ISNULL(CarDetail.EngineNO,'') AS EngineNO
 	   ,ISNULL(CarDetail.CarColor,'') AS CarColor

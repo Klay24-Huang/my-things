@@ -164,6 +164,15 @@
     </div>
     <!--end card-->
 </div>
+@using (Html.BeginForm("ContactQueryExplode", "ContactManage", FormMethod.Post, new { id = "formContactQueryExplode" }))
+{
+    <input type="hidden" id="ExplodeOrderNum" name="ExplodeOrderNum" value="">
+    <input type="hidden" id="ExplodeuserID" name="ExplodeuserID" value="">
+    <input type="hidden" id="ExplodeobjCar" name="ExplodeobjCar" value="">
+    <input type="hidden" id="ExplodeobjStation" name="ExplodeobjStation" value="">
+    <input type="hidden" id="ExplodeSDate" name="ExplodeSDate" value="">
+    <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
+}
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4" id="ShowSetCardPanel">
@@ -200,48 +209,48 @@
                         <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
                         <td scope="col">@(lstData[i].IDNO)</td>
                         <td scope="col">
-                           @if (lstData[i].cancel_status > 0)
-                           {
-                               OrderStatus = "已取消";
-                           }
-                           else
-                           {
-                               switch (lstData[i].car_mgt_status)
-                               {
-                                   case 0:
-                                   case 1:
-                                   case 2:
-                                   case 3:
-                                       OrderStatus = "未取車";
-                                       break;
-                                   case 4:
-                                       OrderStatus = "已取車";
-                                       break;
+                            @if (lstData[i].cancel_status > 0)
+                            {
+                                OrderStatus = "已取消";
+                            }
+                            else
+                            {
+                                switch (lstData[i].car_mgt_status)
+                                {
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                        OrderStatus = "未取車";
+                                        break;
+                                    case 4:
+                                        OrderStatus = "已取車";
+                                        break;
 
-                                   case 11:
-                                       OrderStatus = "已點擊還車";
-                                       break;
-                                   case 15:
-                                       OrderStatus = "已付款";
-                                       break;
-                                   case 16:
-                                       OrderStatus = "已完成還車";
-                                       break;
-                               }
-                           }
-                                       @OrderStatus
-                                   </td>
-           
-                                   <td scope="col">@(lstData[i].StationName)</td>
-           
-                                   <td scope="col">@(lstData[i].CarNo)</td>
-           
-                                   <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum),@(isMotor));">點我觀看</button></td>
+                                    case 11:
+                                        OrderStatus = "已點擊還車";
+                                        break;
+                                    case 15:
+                                        OrderStatus = "已付款";
+                                        break;
+                                    case 16:
+                                        OrderStatus = "已完成還車";
+                                        break;
+                                }
+                            }
+                            @OrderStatus
+                        </td>
+
+                        <td scope="col">@(lstData[i].StationName)</td>
+
+                        <td scope="col">@(lstData[i].CarNo)</td>
+
+                        <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum),@(isMotor));">點我觀看</button></td>
 
                     </tr>
                 }
 
-                           }
+            }
 
         </tbody>
         <tfoot class="hide-if-no-paging">
