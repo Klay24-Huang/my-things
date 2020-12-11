@@ -24,12 +24,15 @@ namespace OtherService
     public class FETCatAPI
     {
         private string BasePath = ConfigurationManager.AppSettings.Get("CatBaseURL");
+        private string SyncPath = ConfigurationManager.AppSettings.Get("CatSyncURL");
+        private string[] SyncCommand = ConfigurationManager.AppSettings.Get("CatSyncCommand").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public bool DoSendCmd(string deviceToken,string CID,OtherService.Enum.MachineCommandType.CommandType commandType,WSInput_Base<Params> Input, Int64 LogID)
         {
             bool flag = false;
             //寫入送出記錄
-            string URL = string.Format(BasePath, deviceToken);
+            //string URL = string.Format(BasePath, deviceToken);
+            string URL = GetUrl(deviceToken, commandType.ToString());
             string inputStr = JsonConvert.SerializeObject(Input).Replace("_params", "params");
             SPInput_InsSendCMD spInput = new SPInput_InsSendCMD()
             {
@@ -56,7 +59,8 @@ namespace OtherService
         {
             bool flag = false;
             //寫入送出記錄
-            string URL = string.Format(BasePath, deviceToken);
+            //string URL = string.Format(BasePath, deviceToken);
+            string URL = GetUrl(deviceToken, commandType.ToString());
             string inputStr = JsonConvert.SerializeObject(Input).Replace("_params", "params");
             SPInput_InsSendCMD spInput = new SPInput_InsSendCMD()
             {
@@ -83,7 +87,8 @@ namespace OtherService
         {
             bool flag = false;
             //寫入送出記錄
-            string URL = string.Format(BasePath, deviceToken);
+            //string URL = string.Format(BasePath, deviceToken);
+            string URL = GetUrl(deviceToken, commandType.ToString());
             string inputStr = JsonConvert.SerializeObject(Input).Replace("_params", "params");
             SPInput_InsSendCMD spInput = new SPInput_InsSendCMD()
             {
@@ -111,7 +116,8 @@ namespace OtherService
         {
             bool flag = false;
             //寫入送出記錄
-            string URL = string.Format(BasePath, deviceToken);
+            //string URL = string.Format(BasePath, deviceToken);
+            string URL = GetUrl(deviceToken, commandType.ToString());
             string inputStr = JsonConvert.SerializeObject(Input).Replace("_params", "params");
             SPInput_InsSendCMD spInput = new SPInput_InsSendCMD()
             {
@@ -218,6 +224,20 @@ namespace OtherService
                 flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
             }
             return flag;
+        }
+
+        private string GetUrl(string deviceToken, string method)
+        {
+            string url = "";
+            if (SyncCommand.Contains(method))
+            {
+                url = string.Format(SyncPath, deviceToken);
+            }
+            else
+            {
+                url = string.Format(BasePath, deviceToken);
+            }
+            return url;
         }
     }
 }
