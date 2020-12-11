@@ -52,7 +52,11 @@ namespace OtherService.Enum
             /// <summary>
             /// 新增解除綁定Log
             /// </summary>
-            InsUnBindLog
+            InsUnBindLog,
+            /// <summary>
+            /// 寫入呼叫興聯車機資料
+            /// </summary>
+            InsCensCMDLog
         }
         /// <summary>
         /// 取出SPName
@@ -94,6 +98,9 @@ namespace OtherService.Enum
 
                 case SPType.InsUnBindLog:
                     SPName = "usp_InsUnBindLog";
+                    break;
+                case SPType.InsCensCMDLog:
+                    SPName = "usp_InsCensCMDLog";
                     break;
 
             }

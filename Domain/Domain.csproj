@@ -162,6 +162,7 @@
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderDetail.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderList.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCarStatus.cs" />
+    <Compile Include="SP\Input\OtherService\CENS\SPInput_InsCensCMDLog.cs" />
     <Compile Include="SP\Input\OtherService\CENS\SPInput_UPDNFCStatus.cs" />
     <Compile Include="SP\Input\OtherService\Common\SPInput_InsReadCard.cs" />
     <Compile Include="SP\Input\OtherService\Common\SPInut_WebAPILog.cs" />

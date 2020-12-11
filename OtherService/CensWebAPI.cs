@@ -43,7 +43,7 @@ namespace OtherService
                 CID = CID
             };
             input.Add("para", wsInput);
-            output = doSendCmd(JsonConvert.SerializeObject(input), URL, Name).Result;
+            output = doSendCmd(JsonConvert.SerializeObject(input), URL, Name, CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -65,7 +65,7 @@ namespace OtherService
             string URL = BasePath + Name;
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", input);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, input.CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -87,7 +87,7 @@ namespace OtherService
 
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", input);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, input.CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -109,7 +109,7 @@ namespace OtherService
 
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", input);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, input.CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -134,7 +134,7 @@ namespace OtherService
             };
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", wsInput);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -158,7 +158,7 @@ namespace OtherService
             };
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", wsInput);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -191,7 +191,7 @@ namespace OtherService
             };
             Dictionary<string, object> inputObj = new Dictionary<string, object>();
             inputObj.Add("para", wsInput);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name).Result;
+            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, CID).Result;
             if (output.Result == 1)
             {
                 flag = false;
@@ -219,7 +219,7 @@ namespace OtherService
         /// <param name="input"></param>
         /// <param name="URL"></param>
         /// <returns></returns>
-        private async Task<WSOutput_Base> doSendCMD(string input, string URL, string Name)
+        private async Task<WSOutput_Base> doSendCMD(string input, string URL, string Name, string CID)
         {
             WSOutput_Base output = null;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
@@ -252,6 +252,8 @@ namespace OtherService
                     }
 
                 }
+
+                SaveCMDLog(Name, CID, input, JsonConvert.SerializeObject(output), MKTime, RTime);
             }
             catch (Exception ex)
             {
@@ -289,7 +291,7 @@ namespace OtherService
         /// <param name="URL"></param>
         /// <returns></returns>
 
-        private async Task<WSOutput_GetInfo> doSendCmd(string input, string URL, string Name)
+        private async Task<WSOutput_GetInfo> doSendCmd(string input, string URL, string Name, string CID)
         {
             WSOutput_GetInfo output = null;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
@@ -322,6 +324,8 @@ namespace OtherService
                     }
 
                 }
+
+                SaveCMDLog(Name, CID, input, JsonConvert.SerializeObject(output), MKTime, RTime);
             }
             catch (Exception ex)
             {
@@ -352,6 +356,32 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
             return output;
+        }
+
+        private void SaveCMDLog(string method, string cid, string sendParams, string recevieRawData, DateTime mkTime, DateTime updTTime)
+        {
+            try
+            {
+                SPOutput_Base spout = new SPOutput_Base();
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string SPName = new OtherService.Enum.ObjType().GetSPName(Enum.ObjType.SPType.InsCensCMDLog);
+
+                SPInput_InsCensCMDLog spInput = new SPInput_InsCensCMDLog()
+                {
+                    Method = method,
+                    CID = cid,
+                    SendParams = sendParams,
+                    ReceiveRawData = recevieRawData,
+                    MKTime = mkTime,
+                    UPDTime = updTTime,
+                    LogID = 0
+                };
+
+                SQLHelper<SPInput_InsCensCMDLog, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsCensCMDLog, SPOutput_Base>(connetStr);
+                SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
+            }
+            catch
+            { }
         }
     }
 }
