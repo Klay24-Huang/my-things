@@ -107,7 +107,7 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 	BEGIN
-		SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content,ContentForAPP	--據點相關
+		SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content,ContentForAPP,IsRequiredForReturn	--據點相關
             ,OperatorName,OperatorICon,Score	--營運商相關
             ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)	--車子相關, 20201006 eason ADD CarNo,IsMotor
             ,device3TBA,RemainingMilage						--機車電力相關

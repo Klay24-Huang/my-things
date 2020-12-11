@@ -48,6 +48,11 @@ namespace Domain.SP.Output.OrderList
         /// 據點描述（app顯示）
         /// </summary>
         public string ContentForAPP { get; set; }
+
+        /// <summary>
+        /// 還車位置資訊必填
+        /// </summary>
+        public int IsRequiredForReturn { get; set; }
         #endregion
         #region 營運商相關              
         /// <summary>

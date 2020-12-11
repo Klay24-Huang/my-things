@@ -90,6 +90,7 @@ AS
 		,Station.Tel
 		,Station.Area
         ,Station.ContentForAPP
+        ,Station.IsRequiredForReturn
 	FROM [dbo].[TB_OrderMain] AS OrderMain WITH(NOLOCK)
 	LEFT JOIN [dbo].[TB_OrderDetail] AS OrderDetil WITH(NOLOCK) ON OrderDetil.order_number=OrderMain.order_number 
 	LEFT JOIN [dbo].[TB_Car] AS Car WITH(NOLOCK) ON Car.CarNo=OrderMain.CarNo
