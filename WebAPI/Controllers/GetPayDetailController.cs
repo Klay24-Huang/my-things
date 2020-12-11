@@ -267,7 +267,6 @@ namespace WebAPI.Controllers
                 int car_payAllMins = 0; //全部計費租用分鐘
                 int car_payInMins = 0;//未超時計費分鐘
                 int car_payOutMins = 0;//超時分鐘-顯示用
-                int car_payOutMins_compute = 0;//超時分鐘-計費用
 
                 double car_pay_in_wMins = 0;//未超時平日計費分鐘
                 double car_pay_in_hMins = 0;//未超時假日計費分鐘
@@ -299,7 +298,7 @@ namespace WebAPI.Controllers
                                 car_pay_in_hMins = reInMins.Item2;
                             }
 
-                            var reOutMins = billCommon.GetCarRangeMins(ED, FED, 60, 600, lstHoliday);
+                            var reOutMins = billCommon.GetCarOutComputeMins(ED, FED, 60, 360, lstHoliday);
                             if (reOutMins != null)
                             {
                                 car_payOutMins = Convert.ToInt32(reOutMins.Item1 + reOutMins.Item2);
@@ -853,7 +852,7 @@ namespace WebAPI.Controllers
                             //逾時安心服務計算
                             if (TotalFineRentMinutes > 0)
                             {
-                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins_compute / 30.0) * InsurancePerHours / 2)));
+                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
                             }
                         }
 
