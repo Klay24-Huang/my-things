@@ -534,11 +534,12 @@ namespace WebAPI.Controllers
                     if (MonthlyLen > 0)
                     {
                         UseMonthMode = true;
+                        outputApi.IsMonthRent = 1;
+
                         if (flag)
                         {
                             if (ProjType == 4)
                             {
-                                outputApi.IsMonthRent = 1;
                                 if (MonthAll > 0)
                                 {
                                     //機車沒有分平假日，直接送即可
