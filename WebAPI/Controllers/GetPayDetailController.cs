@@ -440,7 +440,7 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-                if (flag && OrderDataLists[0].ProjType != 4)
+                if (flag && OrderDataLists[0].ProjType != 4 && 1==2)
                 {
                     //檢查有無車麻吉停車費用
                     WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
