@@ -693,7 +693,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <select class="form-control" name="NotAuditReason" id="NotAuditReason" disabled value="@(RejectExplain)">
+                                <select class="form-control" name="NotAuditReason" id="NotAuditReason" value="@(RejectExplain)">
                                     <option value="">請選擇</option>
                                     <option value="無上傳證件">無上傳證件</option>
                                     <option value="證件錯誤(駕照錯誤之類)">證件錯誤(駕照錯誤之類)</option>
@@ -789,9 +789,6 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-body">
-
-
-
                                 <ul class="list-group list-group-flush">
                                     <!--每一個li是一項查詢條件-->
                                     <li class="list-group-item">
@@ -823,7 +820,6 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-
                                                 <div class="col-md-10">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="radio" name="ID_1_AuditStatus" id="ID_1_AuditOK" value="1" @(obj.Images.ID_1_AuditResult==1 && obj.Images.ID_1_UPDTime!=null?"checked":"")>
@@ -831,10 +827,7 @@
                                                             通過
                                                         </label>
                                                     </div>
-
-
                                                 </div>
-
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-3">

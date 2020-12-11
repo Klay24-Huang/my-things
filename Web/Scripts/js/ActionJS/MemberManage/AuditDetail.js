@@ -26,7 +26,7 @@ $(function () {
         if ($(this).val() == "其他") {
             $("#RejectReason").prop("readonly", "");
         } else {
-            $("#RejectReason").prop("readonly", "readonly");
+            //$("#RejectReason").prop("readonly", "readonly");
         }
     });
     $("input[name='AuditStatus']").on("click", function () {
@@ -34,14 +34,14 @@ $(function () {
         if ($(this).val() == "-1") {
             $("#NotAuditReason").prop("disabled", "");
         } else {
-            $("#NotAuditReason").prop("disabled", "disabled");
+            //$("#NotAuditReason").prop("disabled", "disabled");
             $('#NotAuditReason').val('');
         }
         if ($('#NotAuditReason').val() == '其他') {
             $("#RejectReason").prop("readonly", "");
             $("#RejectReason").prop("disabled", "");
         } else {
-            $("#RejectReason").prop("readonly", "readonly");
+            //$("#RejectReason").prop("readonly", "readonly");
             $('#RejectReason').val('');
         }
     });
