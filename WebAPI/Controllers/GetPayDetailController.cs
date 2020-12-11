@@ -290,10 +290,6 @@ namespace WebAPI.Controllers
                     {
                         if (hasFine)
                         {
-                            var outc_re = billCommon.GetCarOutComputeMins(ED, FED, 60, 600, lstHoliday);
-                            if (outc_re != null)
-                                car_payOutMins_compute = Convert.ToInt32(outc_re.Item1 + outc_re.Item2);
-
                             var reInMins = billCommon.GetCarRangeMins(SD, ED, 60, 600, lstHoliday);
                             if (reInMins != null)
                             {
@@ -306,7 +302,7 @@ namespace WebAPI.Controllers
                             var reOutMins = billCommon.GetCarRangeMins(ED, FED, 60, 600, lstHoliday);
                             if (reOutMins != null)
                             {
-                                car_payOutMins = Convert.ToInt32(reInMins.Item1 + reInMins.Item2);
+                                car_payOutMins = Convert.ToInt32(reOutMins.Item1 + reOutMins.Item2);
                                 car_payAllMins += car_payOutMins;
                                 car_pay_out_wMins = reOutMins.Item1;
                                 car_pay_out_hMins = reOutMins.Item2;
@@ -430,10 +426,10 @@ namespace WebAPI.Controllers
                     WebAPIOutput_ETAG010 wsOutput = new WebAPIOutput_ETAG010();
                     HiEasyRentAPI wsAPI = new HiEasyRentAPI();
                     //ETAG查詢失敗也不影響流程
-                    flag = wsAPI.ETAG010Send(apiInput.OrderNo,"" , ref wsOutput);
+                    flag = wsAPI.ETAG010Send(apiInput.OrderNo, "", ref wsOutput);
                     if (flag)
                     {
-                        if (wsOutput.RtnCode=="0")
+                        if (wsOutput.RtnCode == "0")
                         {
                             //取出ETAG費用
                             if (wsOutput.Data.Length > 0)
@@ -887,14 +883,14 @@ namespace WebAPI.Controllers
                         {
                             outputApi.Rent.UseMonthlyTimeInterval = carMonthInfo.useMonthDisc.ToString();
                             outputApi.Rent.UseNorTimeInterval = carMonthInfo.useDisc.ToString();
-                            outputApi.Rent.RentalTimeInterval = (carMonthInfo.RentInMins + car_payOutMins).ToString();//租用時數
+                            outputApi.Rent.RentalTimeInterval = (carMonthInfo.RentInMins).ToString();//租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = carMonthInfo.DiscRentInMins.ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = carMonthInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
                         }
                         else
                         {
                             outputApi.Rent.UseNorTimeInterval = Discount.ToString();
-                            outputApi.Rent.RentalTimeInterval = car_payAllMins.ToString(); //租用時數
+                            outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
                         }
