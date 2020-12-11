@@ -224,8 +224,8 @@ namespace WebAPI.Controllers
                                 };
                                 obj.MotorPowerBaseObj = new Domain.TB.MotorPowerInfoBase()
                                 {
-                                    Power = OrderDataLists[i].device3TBA,
-                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToSingle(OrderDataLists[i].RemainingMilage)
+                                    Power = Convert.ToInt32(OrderDataLists[i].device3TBA),
+                                    RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToInt32(OrderDataLists[i].RemainingMilage)
                                 };
                             }
 

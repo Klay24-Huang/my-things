@@ -151,8 +151,8 @@ namespace WebAPI.Controllers
                                 PerMinutesPrice = lstData[0].PerMinutesPrice,
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
-                                Power = lstData[0].Power,
-                                RemainingMileage = lstData[0].RemainingMileage
+                                Power = Convert.ToInt32(lstData[0].Power),
+                                RemainingMileage = Convert.ToInt32(lstData[0].RemainingMileage)
                             });
                             if (DataLen > 1)
                             {
@@ -188,8 +188,8 @@ namespace WebAPI.Controllers
                                         PerMinutesPrice = lstData[i].PerMinutesPrice,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = lstData[i].Content,
-                                        Power = lstData[i].Power,
-                                        RemainingMileage = lstData[i].RemainingMileage
+                                        Power = Convert.ToInt32(lstData[i].Power),
+                                        RemainingMileage = Convert.ToInt32(lstData[i].RemainingMileage)
                                     });
                                 }
                             }
