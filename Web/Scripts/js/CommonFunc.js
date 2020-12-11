@@ -857,7 +857,7 @@ function initMenu() {
     console.log(MenuList);
 
 
-    var menuStr = '<ul class="navbar-nav m - auto">' + '\n';
+    var menuStr = '<ul class="navbar-nav m-auto">' + '\n';
     for (var i = 0; i < MenuList.length; i++) {
         var menuLi = '<li class="nav-item dropdown">' + '\n';
         if (MenuList[i].lstSubMenu.length > 0) {
@@ -869,7 +869,9 @@ function initMenu() {
                     //return 1 == 1;
                 });
                 if (checkList.length > 0) {
-                    menuLi += '<a class="dropdown-item" href="../' + MenuList[i].lstSubMenu[x].MenuController + '/' + MenuList[i].lstSubMenu[x].MenuAction + '" target="' + (MenuList[i].lstSubMenu[x].isNewWindow == 1 ? '_blank' : '_self') + '">' + MenuList[i].lstSubMenu[x].SubMenuName + '</a>' + '\n';
+                    if (MenuList[i].lstSubMenu[x].isNewWindow != 9) {
+                        menuLi += '<a class="dropdown-item" href="../' + MenuList[i].lstSubMenu[x].MenuController + '/' + MenuList[i].lstSubMenu[x].MenuAction + '" target="' + (MenuList[i].lstSubMenu[x].isNewWindow == 1 ? '_blank' : '_self') + '">' + MenuList[i].lstSubMenu[x].SubMenuName + '</a>' + '\n';
+                    }
                 }
             }
             menuLi += '</div>' + '\n';
