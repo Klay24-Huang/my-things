@@ -197,6 +197,7 @@
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
+    <Compile Include="Controllers\BE_QueryMenuByUserGroupController.cs" />
     <Compile Include="Controllers\BE_QueryFuncByUserGroupController.cs" />
     <Compile Include="Controllers\BE_QueryFuncController.cs" />
     <Compile Include="Controllers\BE_ReCalculateByDiscountController.cs" />

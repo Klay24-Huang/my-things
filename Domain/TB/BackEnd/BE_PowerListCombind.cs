@@ -25,5 +25,9 @@ namespace Domain.TB.BackEnd
         /// 名稱
         /// </summary>
         public string OPName { set; get; }
+        /// <summary>
+        /// 是否有權限
+        /// </summary>
+        public int hasPower { set; get; }
     }
 }
