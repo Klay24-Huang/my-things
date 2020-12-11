@@ -68,6 +68,7 @@ namespace Web.Controllers
                     Session["Account"] = UserId;
                     ViewData["Account"] = UserId; 
                     Session["UserGroup"] = SPOutput.UserGroup;
+                    ViewData["UserGroup"] = SPOutput.UserGroup;
                     ViewData["IsLogin"] = 1;
                     ViewData["LoginMessage"] = string.Format("{0}您好", SPOutput.UserName);
 

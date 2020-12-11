@@ -850,3 +850,38 @@ function setPostbackValue() {
         }
     });
 }
+
+//20201211 ADD BY JERRY 增加依權限產生Menu處理
+function initMenu() {
+    var MenuList = $.trim(localStorage.getItem("MenuList")) == '' ? [] : $.parseJSON(localStorage.getItem("MenuList"));
+    console.log(MenuList);
+
+
+    var menuStr = '<ul class="navbar-nav m - auto">' + '\n';
+    for (var i = 0; i < MenuList.length; i++) {
+        var menuLi = '<li class="nav-item dropdown">' + '\n';
+        if (MenuList[i].lstSubMenu.length > 0) {
+            menuLi += '<a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown' + MenuList[i].MenuCode+'" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' + MenuList[i].MenuName+'</a >' + '\n';
+            menuLi += '<div class="dropdown-menu" aria-labelledby="navbarDropdown">' + '\n';
+            for (var x = 0; x < MenuList[i].lstSubMenu.length; x++) {
+                var checkList = $.grep(MenuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc, function (row) {
+                    return row.hasPower == 1;
+                    //return 1 == 1;
+                });
+                if (checkList.length > 0) {
+                    menuLi += '<a class="dropdown-item" href="../' + MenuList[i].lstSubMenu[x].MenuController + '/' + MenuList[i].lstSubMenu[x].MenuAction + '" target="' + (MenuList[i].lstSubMenu[x].isNewWindow == 1 ? '_blank' : '_self') + '">' + MenuList[i].lstSubMenu[x].SubMenuName + '</a>' + '\n';
+                }
+            }
+            menuLi += '</div>' + '\n';
+        } else {
+            menuLi += '<a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">據點管理</a >' + '\n';
+        }
+        menuLi += '</li>' + '\n';
+        menuStr += menuLi;
+    }
+    menuStr += '</ul>' + '\n';
+    $('#navbarSupportedContent').html(menuStr);
+}
+$(function () {
+    initMenu();
+});

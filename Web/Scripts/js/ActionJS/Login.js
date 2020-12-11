@@ -11,6 +11,7 @@
     var UserID = $("#UserID").val();
     console.log("UserID:" + UserID);
     if (IsSuccess != "-1") {
+        GetFuncListData();
         showLogin(parseInt(IsSuccess), LoginMessage, UserID);
     }
     $("#frmLogin").on("submit", function () {
@@ -341,6 +342,49 @@ function GetManagerStationData() {
                     localStorage.setItem("ManagerStationList", JSON.stringify(data.Data.ManagerStationObj))
                     window.location.href = "../CarDataInfo/CarDashBoard";
                 //});
+            } else {
+
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                }).then(function (value) {
+                    window.location.href = "../CarDataInfo/CarDashBoard";
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "載入管轄據點資料發生錯誤",
+                icon: 'error'
+            });
+        }
+    });
+}
+
+function GetFuncListData() {
+    var site = jsHost + "BE_QueryMenuByUserGroup";
+    ShowLoading("開始載入權限資料");
+    var obj = {
+        UserID: $("#UserID").val(),
+        UserGroupID: $("#UserGroup").val()
+    }
+
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: JSON.stringify(obj),
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            console.log(data);
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                localStorage.setItem("MenuList", JSON.stringify(data.Data))
             } else {
 
                 swal({

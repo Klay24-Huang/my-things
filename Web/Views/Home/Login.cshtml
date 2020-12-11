@@ -85,6 +85,7 @@
         <input type="hidden" id="IsSuccess" name="IsSuccess" value="@((ViewData["IsLogin"] != null)?ViewData["IsLogin"].ToString() :"-1")" />
         <input type="hidden" id="LoginMessage" name="LoginMessage" value="@((ViewData["LoginMessage"] != null)?ViewData["LoginMessage"].ToString() :"")" />
         <input type="hidden" id="UserID" name="UserID" value="@((ViewData["Account"] == null)?"": ViewData["Account"].ToString())" />
+        <input type="hidden" id="UserGroup" name="UserGroup" value="@((ViewData["UserGroup"] == null)?"": ViewData["UserGroup"].ToString())" />
     </main>
 
     <!-- import js -->
