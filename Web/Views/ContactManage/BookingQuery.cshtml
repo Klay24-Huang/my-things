@@ -165,6 +165,15 @@
     </div>
     <!--end card-->
 </div>
+@using (Html.BeginForm("BookingQueryExplode", "ContactManage", FormMethod.Post, new { id = "formbookingExplode" }))
+{
+    <input type="hidden" id="ExplodeOrderNum" name="ExplodeOrderNum" value="">
+    <input type="hidden" id="ExplodeuserID" name="ExplodeuserID" value="">
+    <input type="hidden" id="ExplodeobjCar" name="ExplodeobjCar" value="">
+    <input type="hidden" id="ExplodeobjStation" name="ExplodeobjStation" value="">
+    <input type="hidden" id="ExplodeSDate" name="ExplodeSDate" value="">
+    <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
+}
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4" id="ShowSetCardPanel">
@@ -198,64 +207,64 @@
                 {
                     string cancel_msg = "無";
                     int isMotor = (lstData[i].CarNo.Substring(0, 1) == "E") ? 1 : 0;
-        <tr>
-            <td></td>
-            <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
-            <td scope="col">@(lstData[i].IDNO)</td>
-            <td scope="col">@(lstData[i].SD.ToString("yyyy-MM-dd HH:mm:ss"))</td>
-            <td scope="col">@(lstData[i].ED.ToString("yyyy-MM-dd HH:mm:ss"))</td>
-            <td scope="col">@(lstData[i].CarNo)</td>
-            <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum),@(isMotor));">點我觀看</button></td>
-            @if (lstData[i].cancel_status == 0)
-            {
-                <td scope="col"><Button class='btn btn-outline-secondary' onclick="CancelOrder('@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))');">取消預約</Button></td>
-                <td scope="col"><Button class='btn btn-outline-secondary' onclick="ReBook('@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))');">重新配車</Button></td>
-            }
-            else
-            {
-        <td scope="col">已過刪除時間</td>
-        <td scope="col">已過執行時間</td>
-            }
-        <td scope="col">
-            @switch (lstData[i].cancel_status)
-            {
-                case 0:
-                    {
-                        cancel_msg = "無";
-                        break;
-                    }
-                case 1:
-                    {
-                        cancel_msg = "修改指派車輛";
-                        break;
-                    }
-                case 2:
-                    {
-                        cancel_msg = "此訂單被人工介入過";
-                        break;
-                    }
-                case 3:
-                    {
-                        cancel_msg = "訂單已取消";
-                        break;
+                    <tr>
+                        <td></td>
+                        <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
+                        <td scope="col">@(lstData[i].IDNO)</td>
+                        <td scope="col">@(lstData[i].SD.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td scope="col">@(lstData[i].ED.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col"><button type="button" class="btn btn-outline-secondary" onclick="ViewDetail(@(lstData[i].OrderNum),@(isMotor));">點我觀看</button></td>
+                        @if (lstData[i].cancel_status == 0)
+                        {
+                            <td scope="col"><Button class='btn btn-outline-secondary' onclick="CancelOrder('@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))');">取消預約</Button></td>
+                            <td scope="col"><Button class='btn btn-outline-secondary' onclick="ReBook('@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))');">重新配車</Button></td>
+                        }
+                        else
+                        {
+                            <td scope="col">已過刪除時間</td>
+                            <td scope="col">已過執行時間</td>
+                        }
+                        <td scope="col">
+                            @switch (lstData[i].cancel_status)
+                            {
+                                case 0:
+                                    {
+                                        cancel_msg = "無";
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        cancel_msg = "修改指派車輛";
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        cancel_msg = "此訂單被人工介入過";
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        cancel_msg = "訂單已取消";
+                                        break;
 
-                    }
-                case 4:
-                    {
-                        cancel_msg = "訂單已取消";
-                        break;
+                                    }
+                                case 4:
+                                    {
+                                        cancel_msg = "訂單已取消";
+                                        break;
 
-                    }
-                case 5:
-                    {
-                        cancel_msg = "此訂單使用後台取消預約";
-                        break;
-                    }
-            }
-            @cancel_msg
-        </td>
+                                    }
+                                case 5:
+                                    {
+                                        cancel_msg = "此訂單使用後台取消預約";
+                                        break;
+                                    }
+                            }
+                            @cancel_msg
+                        </td>
 
-        </tr>
+                    </tr>
                 }
 
             }
