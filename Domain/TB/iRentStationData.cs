@@ -40,6 +40,11 @@ namespace Domain.TB
         public string ContentForAPP { get; set; }
 
         /// <summary>
+        /// 還車位置資訊必填
+        /// </summary>
+        public int IsRequiredForReturn { get; set; }
+
+        /// <summary>
         /// 據點照片
         /// </summary>
         public List<StationInfoObj> StationPic { get; set; }
