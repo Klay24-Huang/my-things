@@ -191,7 +191,14 @@ namespace WebAPI.Controllers
                             Millage = UseMile <= 0 ? 0 : UseMile,
                             CarOfArea = orderFinishDataLists[0].Area,
                             DiscountAmount = orderFinishDataLists[0].DiscountAmount,
-                            DiscountName = orderFinishDataLists[0].DiscountName
+                            DiscountName = orderFinishDataLists[0].DiscountName,
+                            //20201212 ADD BY ADAM REASON.增加營損費用，先用預設值
+                            CtrlBill = 0,
+                            ClearBill = 0,
+                            EquipBill = 0,
+                            ParkingBill2 = 0,
+                            TowingBill = 0,
+                            OtherBill = 0
                         };
                     }
                 }

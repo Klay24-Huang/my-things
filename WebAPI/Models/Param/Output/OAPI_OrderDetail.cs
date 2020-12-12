@@ -197,5 +197,35 @@
         /// 折抵專案名稱
         /// </summary>
         public string DiscountName { get; set; }
+
+        /// <summary>
+        /// 營損-車輛調度費 20201212 ADD BY ADAM
+        /// </summary>
+        public int CtrlBill { get; set; }
+
+        /// <summary>
+        /// 營損-清潔費 20201212 ADD BY ADAM
+        /// </summary>
+        public int ClearBill { get; set; }
+
+        /// <summary>
+        /// 營損-物品損壞 20201212 ADD BY ADAM
+        /// </summary>
+        public int EquipBill { get; set; }
+
+        /// <summary>
+        /// 營損-非約定停車費 20201212 ADD BY ADAM
+        /// </summary>
+        public int ParkingBill2 { get; set; }
+
+        /// <summary>
+        /// 營損-拖吊費 20201212 ADD BY ADAM
+        /// </summary>
+        public int TowingBill { get; set; }
+
+        /// <summary>
+        /// 營損-其他費用 20201212 ADD BY ADAM
+        /// </summary>
+        public int OtherBill { get; set; }
     }
 }
