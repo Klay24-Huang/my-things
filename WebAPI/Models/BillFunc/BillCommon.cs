@@ -789,7 +789,7 @@ namespace WebAPI.Models.BillFunc
         public List<DayPayMins> GetCarTypeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<DayPayMins> markDays)
         {//note:GetCarTypeMins
             var minsPro = new MinsProcess(GetCarPayMins);
-            return GetTypeMins(SD, ED, baseMinutes, dayMaxMins, markDays);
+            return GetTypeMins(SD, ED, baseMinutes, dayMaxMins, markDays,minsPro);
         }
 
         /// <summary>
