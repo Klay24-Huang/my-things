@@ -405,42 +405,80 @@ namespace WebAPI.Models.BaseFunc
                         }
                         #endregion
                         #region 判斷是否上鎖
+                        //if (flag)
+                        //{
+                        //    if (wsOutInfo.data.lockStatus != "1111")
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR232";
+                        //    }
+                        //}
+                        #endregion
+                        #region 車門
                         if (flag)
                         {
-                            if (wsOutInfo.data.lockStatus != "1111")
+                            //車門
+                            if (wsOutInfo.data.doorStatus == "N")
                             {
                                 flag = false;
-                                errCode = "ERR232";
+                                errCode = "ERR434";
+                            }
+                            else
+                            {
+                                int DoorOpen = wsOutInfo.data.doorStatus.IndexOf('0');
+                                if (DoorOpen > -1)
+                                {
+                                    flag = false;
+                                    errCode = "ERR429" + DoorOpen.ToString();
+                                }
                             }
                         }
                         #endregion
+                        #region 室內燈
+                        if (flag && wsOutInfo.data.IndoorLight != 0)
+                        {
+                            if (wsOutInfo.data.IndoorLight == 1)
+                            {
+                                flag = false;
+                                errCode = "ERR439";
+                            }
+                            //取不到狀態是車機問題，不應該去阻擋
+                            //else
+                            //{
+                            //    flag = false;
+                            //    errCode = "ERR440";
+                            //}
+                        }
+                        #endregion
+
                         #endregion
                     }
                     else
                     {
                         #region 遠傳車機
                         //取最新狀況, 先送getlast之後從tb捉最近一筆
-                        //FETCatAPI FetAPI = new FETCatAPI();
-                        //string requestId = "";
-                        //string CommandType = "";
-                        //OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        //{
-                        //    command = true,
-                        //    method = CommandType,
-                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //    _params = new Params()
+                        //20201212 ADD BY ADAM REASON.因為付款前只剩汽車需要檢核，但是汽車需要再付款前再取得一次狀態，因此這個REPORTNOW不可取消，有問題請洽企劃人員
+                        FETCatAPI FetAPI = new FETCatAPI();
+                        string requestId = "";
+                        string CommandType = "";
+                        OtherService.Enum.MachineCommandType.CommandType CmdType;
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
 
-                        //};
-                        //requestId = input.requestId;
-                        //string method = CommandType;
-                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        //if (flag)
-                        //{
-                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //}
+                        };
+                        requestId = input.requestId;
+                        string method = CommandType;
+                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
@@ -488,15 +526,52 @@ namespace WebAPI.Models.BaseFunc
                                 }
                                 #endregion
                                 #region 判斷是否上鎖
+                                //if (flag)
+                                //{
+                                //    if (info.LockStatus != "1111")
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR232";
+                                //    }
+                                //}
+                                #endregion
+                                #region 車門
                                 if (flag)
                                 {
-                                    if (info.LockStatus != "1111")
+                                    //車門
+                                    if (info.DoorStatus == "NA")
                                     {
                                         flag = false;
-                                        errCode = "ERR232";
+                                        errCode = "ERR434";
+                                    }
+                                    else
+                                    {
+                                        if (info.DoorStatus != "1111")
+                                        {
+                                            flag = false;
+                                            errCode = "ERR429";
+                                        }
                                     }
                                 }
                                 #endregion
+                                #region 室內燈
+                                //室內燈
+                                if (flag && info.IndoorLightStatus != 0)
+                                {
+                                    if (info.IndoorLightStatus == 1)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR439";
+                                    }
+                                    //取不到狀態是車機問題，不應該去阻擋
+                                    //else
+                                    //{
+                                    //    flag = false;
+                                    //    errCode = "ERR440";
+                                    //}
+                                }
+                                #endregion
+
                             }
                         }
                         #endregion
@@ -1121,6 +1196,7 @@ namespace WebAPI.Models.BaseFunc
                 lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(CID.ToUpper(), ref lstCarError);
             }
             #region 車機
+            //20201213 ADD BY ADAM REASON.車機付費後的指令集中在做解除租約的動作，原本應該檢核的項目轉到付費前檢核
             if (flag)
             {
                 #region 汽車
@@ -1149,82 +1225,83 @@ namespace WebAPI.Models.BaseFunc
                             }
                         }
                         #region 車門
-                        if (flag)
-                        {
-                            //車門
-                            if (wsOutInfo.data.doorStatus == "N")
-                            {
-                                flag = false;
-                                errCode = "ERR434";
-                            }
-                            else
-                            {
-                                int DoorOpen = wsOutInfo.data.doorStatus.IndexOf('0');
-                                if (DoorOpen > -1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR429" + DoorOpen.ToString();
-                                }
-                            }
-                        }
+                        //if (flag)
+                        //{
+                        //    //車門
+                        //    if (wsOutInfo.data.doorStatus == "N")
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR434";
+                        //    }
+                        //    else
+                        //    {
+                        //        int DoorOpen = wsOutInfo.data.doorStatus.IndexOf('0');
+                        //        if (DoorOpen > -1)
+                        //        {
+                        //            flag = false;
+                        //            errCode = "ERR429" + DoorOpen.ToString();
+                        //        }
+                        //    }
+                        //}
                         #endregion
                         #region 室內燈
                         //室內燈
-                        if (flag && wsOutInfo.data.IndoorLight != 0)
-                        {
-                            if (wsOutInfo.data.IndoorLight == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR439";
-                            }
-                            else
-                            {
-                                flag = false;
-                                errCode = "ERR440";
-                            }
-                        }
+                        //if (flag && wsOutInfo.data.IndoorLight != 0)
+                        //{
+                        //    if (wsOutInfo.data.IndoorLight == 1)
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR439";
+                        //    }
+                        //    //取不到狀態是車機問題，不應該去阻擋
+                        //    //else
+                        //    //{
+                        //    //    flag = false;
+                        //    //    errCode = "ERR440";
+                        //    //}
+                        //}
                         #endregion
                         #region 判斷是否熄火
-                        if (flag)
-                        {
+                        //if (flag)
+                        //{
 
-                            if (wsOutInfo.data.PowOn == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR186";
-                            }
-                        }
+                        //    if (wsOutInfo.data.PowOn == 1)
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR186";
+                        //    }
+                        //}
                         #endregion
                         #region 判斷是否關閉電源
-                        if (flag)
-                        {
-                            if (wsOutInfo.data.AccOn == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR187";
-                            }
-                        }
+                        //if (flag)
+                        //{
+                        //    if (wsOutInfo.data.AccOn == 1)
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR187";
+                        //    }
+                        //}
                         #endregion
                         #region 判斷是否在據點內
-                        if (flag)
-                        {
-                            Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                            {
-                                Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
-                                Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
-                            };
-                            flag = CheckInPolygon(Nowlatlng, StationID);
-                            #region 快樂模式
-                            if (ClosePolygonOpen == "0")
-                            {
-                                flag = true;
-                            }
-                            #endregion
-                            if (false == flag)
-                            {
-                                errCode = "ERR188";
-                            }
-                        }
+                        //if (flag)
+                        //{
+                        //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                        //    {
+                        //        Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
+                        //        Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
+                        //    };
+                        //    flag = CheckInPolygon(Nowlatlng, StationID);
+                        //    #region 快樂模式
+                        //    if (ClosePolygonOpen == "0")
+                        //    {
+                        //        flag = true;
+                        //    }
+                        //    #endregion
+                        //    if (false == flag)
+                        //    {
+                        //        errCode = "ERR188";
+                        //    }
+                        //}
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
@@ -1295,70 +1372,71 @@ namespace WebAPI.Models.BaseFunc
                         FETCatAPI FetAPI = new FETCatAPI();
                         string requestId = "";
                         string CommandType = "";
+                        string method = "";
                         OtherService.Enum.MachineCommandType.CommandType CmdType;
-                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                        WSInput_Base<Params> input = new WSInput_Base<Params>()
-                        {
-                            command = true,
-                            method = CommandType,
-                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            _params = new Params()
+                        //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        //{
+                        //    command = true,
+                        //    method = CommandType,
+                        //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                        //    _params = new Params()
 
-                        };
-                        requestId = input.requestId;
-                        string method = CommandType;
-                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                        if (flag)
-                        {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
+                        //};
+                        //requestId = input.requestId;
+                        //method = CommandType;
+                        //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
                         if (flag)
                         {
                             CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
                             if (info != null)
                             {
                                 #region 判斷是否熄火
-                                if (flag)
-                                {
+                                //if (flag)
+                                //{
 
-                                    if (info.PowerONStatus == 1)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR186";
-                                    }
-                                }
+                                //    if (info.PowerONStatus == 1)
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR186";
+                                //    }
+                                //}
                                 #endregion
                                 #region 判斷是否關閉電源
-                                if (flag)
-                                {
-                                    if (info.ACCStatus == 1)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR187";
-                                    }
-                                }
+                                //if (flag)
+                                //{
+                                //    if (info.ACCStatus == 1)
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR187";
+                                //    }
+                                //}
                                 #endregion
                                 #region 判斷是否在據點內
-                                if (flag)
-                                {
-                                    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                                    {
-                                        Latitude = info.Latitude,
-                                        Longitude = info.Longitude
-                                    };
-                                    flag = CheckInPolygon(Nowlatlng, StationID);
-                                    #region 快樂模式
-                                    if (ClosePolygonOpen == "0")
-                                    {
-                                        flag = true;
-                                    }
-                                    #endregion
-                                    if (false == flag)
-                                    {
-                                        errCode = "ERR188";
-                                    }
-                                }
+                                //if (flag)
+                                //{
+                                //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                                //    {
+                                //        Latitude = info.Latitude,
+                                //        Longitude = info.Longitude
+                                //    };
+                                //    flag = CheckInPolygon(Nowlatlng, StationID);
+                                //    #region 快樂模式
+                                //    if (ClosePolygonOpen == "0")
+                                //    {
+                                //        flag = true;
+                                //    }
+                                //    #endregion
+                                //    if (false == flag)
+                                //    {
+                                //        errCode = "ERR188";
+                                //    }
+                                //}
                                 #endregion
                             }
 
@@ -1489,24 +1567,25 @@ namespace WebAPI.Models.BaseFunc
                     FETCatAPI FetAPI = new FETCatAPI();
                     string requestId = "";
                     string CommandType = "";
+                    string method = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
+                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    //{
+                    //    command = true,
+                    //    method = CommandType,
+                    //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //    _params = new Params()
 
-                    };
-                    requestId = input.requestId;
-                    string method = CommandType;
-                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    if (flag)
-                    {
-                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    }
+                    //};
+                    //requestId = input.requestId;
+                    //method = CommandType;
+                    //flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                    //if (flag)
+                    //{
+                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //}
 
                     if (flag)
                     {
@@ -1514,47 +1593,47 @@ namespace WebAPI.Models.BaseFunc
                         if (info != null)
                         {
                             #region 判斷是否熄火
-                            if (flag)
-                            {
+                            //if (flag)
+                            //{
 
-                                if (info.ACCStatus == 1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR186";
-                                }
-                            }
+                            //    if (info.ACCStatus == 1)
+                            //    {
+                            //        flag = false;
+                            //        errCode = "ERR186";
+                            //    }
+                            //}
                             #endregion
                             #region 判斷是否關閉電池架
-                            if (flag)
-                            {
-                                if (info.deviceBat_Cover == 1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR189";
-                                }
-                            }
+                            //if (flag)
+                            //{
+                            //    if (info.deviceBat_Cover == 1)
+                            //    {
+                            //        flag = false;
+                            //        errCode = "ERR189";
+                            //    }
+                            //}
                             #endregion
                             #region 判斷是否在據點內
-                            if (flag)
-                            {
-                                Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                                {
-                                    Latitude = info.Latitude,
-                                    Longitude = info.Longitude
-                                };
-                                flag = CheckInPolygon(Nowlatlng, StationID);
-                                #region 快樂模式
-                                if (ClosePolygonOpen == "0")
-                                {
-                                    flag = true;
-                                }
-                                #endregion
-                                if (false == flag)
-                                {
-                                    errCode = "ERR188";
-                                }
+                            //if (flag)
+                            //{
+                            //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                            //    {
+                            //        Latitude = info.Latitude,
+                            //        Longitude = info.Longitude
+                            //    };
+                            //    flag = CheckInPolygon(Nowlatlng, StationID);
+                            //    #region 快樂模式
+                            //    if (ClosePolygonOpen == "0")
+                            //    {
+                            //        flag = true;
+                            //    }
+                            //    #endregion
+                            //    if (false == flag)
+                            //    {
+                            //        errCode = "ERR188";
+                            //    }
 
-                            }
+                            //}
                             #endregion
                         }
                         if (flag)

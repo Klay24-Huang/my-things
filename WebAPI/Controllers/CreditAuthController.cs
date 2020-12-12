@@ -68,7 +68,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CreditAuth apiInput = null;
-            NullOutput apiOutput = null;
+            //NullOutput apiOutput = null;
+            OAPI_CreditAuth apiOutput = null;
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -222,13 +223,13 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 檢查車機狀態
-                    if (flag)
+                    if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
                     {
                         flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
                     }
                     #endregion
                     #region 檢查iButton
-                    //if (flag)
+                    //if (flag && OrderDataLists[0].ProjType != 4)
                     //{
                     //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
                     //    {
@@ -472,6 +473,9 @@ namespace WebAPI.Controllers
                 }
                 #endregion
             }
+
+            //機車換電獎勵
+            apiOutput.RewardPoint = RewardPoint;
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
