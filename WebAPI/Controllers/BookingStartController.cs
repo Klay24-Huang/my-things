@@ -24,6 +24,7 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.WebAPI.output.HiEasyRentAPI;
 
 namespace WebAPI.Controllers
 {
@@ -153,6 +154,19 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+            #region 檢查欠費
+            if (flag)
+            {
+                int TAMT = 0;
+                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+                flag = contract.CheckNPR330(IDNO, ref TAMT);
+                if (TAMT > 0)
+                {
+                    flag = false;
+                    errCode = "ERR234";
+                }
+            }
+            #endregion
             //取車判斷
             if (flag)
             {

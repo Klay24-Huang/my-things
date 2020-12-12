@@ -59,5 +59,33 @@ namespace WebAPI.Models.ComboFunc
             }
             return flag;
         }
+
+        public bool CheckNPR330(string IDNO, ref int TAMT)
+        {
+            bool flag = false;
+            TAMT = 0;
+
+            WebAPIOutput_ArrearQuery WebAPIOutput = null;
+            flag = WebAPI.NPR330Query(IDNO, ref WebAPIOutput);
+            if (flag)
+            {
+                if (WebAPIOutput.Result)
+                {
+                    if (WebAPIOutput.RtnCode == "0")
+                    {
+                        flag = true;
+
+                        int DataLen = WebAPIOutput.Data.Length;
+
+                        for (int i = 0; i < DataLen; i++)
+                        {
+                            TAMT += Convert.ToInt32(WebAPIOutput.Data[i].TAMT);
+                        }
+                    }
+                }
+            }
+
+            return flag;
+        }
     }
 }

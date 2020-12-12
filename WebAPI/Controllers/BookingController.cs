@@ -111,6 +111,35 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 防呆第二段
+            //春節專案判斷，不得已先寫死，之後再回來調整
+            if (flag)
+            {
+                if (apiInput.ProjID == "R107")
+                {
+                    int nowdt = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+                    DateTime dt1 = Convert.ToDateTime(apiInput.SDate);
+                    DateTime dt2 = Convert.ToDateTime(apiInput.EDate);
+                    if (nowdt >= 20201217 && nowdt <= 20210131)     //step1 預約三天以上檢核
+                    {
+                        int Days = new TimeSpan(dt1.Ticks - dt2.Ticks).Days;
+                        if (Days < 3)
+                        {
+                            flag = false;
+                            errCode = "ERR235";
+                        }
+                    }
+                    else if (nowdt >= 20210201 && nowdt <= 20210209)    //step2 預約一天以上檢核
+                    {
+                        int Days = new TimeSpan(dt1.Ticks - dt2.Ticks).Days;
+                        if (Days < 1)
+                        {
+                            flag = false;
+                            errCode = "ERR235";
+                        }
+                    }
+                }
+            }
+
             if (flag)
             {
                
@@ -149,7 +178,9 @@ namespace WebAPI.Controllers
                     {
                         if (ProjType == 3)
                         {
-                            EDate = SDate.AddHours(1);
+                            //EDate = SDate.AddHours(1);
+                            //20201212 ADD BY ADAM REASON.路邊改預設一天
+                            EDate = SDate.AddDays(1);
                         }
                         else
                         {
@@ -226,7 +257,20 @@ namespace WebAPI.Controllers
             
             if (flag)
                 flag = CheckCard(IDNO, ref errCode);
-            
+
+            #endregion
+            #region 檢查欠費
+            if (flag)
+            {
+                int TAMT = 0;
+                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+                flag = contract.CheckNPR330(IDNO, ref TAMT);
+                if (TAMT > 0)
+                {
+                    flag = false;
+                    errCode = "ERR233";
+                }
+            }
             #endregion
             if (flag)
             {
@@ -282,7 +326,7 @@ namespace WebAPI.Controllers
                     Insurance = apiInput.Insurance,
                     CarType = CarType,
                     ED = EDate,
-                     StopPickTime=LastPickCarTime,
+                    StopPickTime=LastPickCarTime,
                     IDNO = IDNO,
                     InsurancePurePrice = InsurancePurePrice,
                     LogID = LogID,
@@ -372,5 +416,7 @@ namespace WebAPI.Controllers
 
             return flag;
         }
+
+        
     }
 }
