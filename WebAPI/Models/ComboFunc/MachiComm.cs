@@ -118,6 +118,7 @@ namespace WebAPI.Models.ComboFunc
         /// <returns></returns>
         public bool GetParkingBill(Int64 LogID,Int64 OrderNo, string CarNo, string StartDate, string EndDate, ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
         {
+            //車麻吉重大提示，日期要隔一天才有效果，且只能查當天的資料，去掉車號只能查這台車當年的資料
             bool flag = true;
             string Token = "";
             flag = GetToken(LogID, ref Token);

@@ -440,17 +440,7 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-                if (flag && OrderDataLists[0].ProjType != 4 && 1==2)
-                {
-                    //檢查有無車麻吉停車費用
-                    WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
-                    MachiComm mochi = new MachiComm();
-                    flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"), ref ParkingPrice, ref mochiOutput);
-                    if (flag)
-                    {
-                        outputApi.Rent.ParkingFee = ParkingPrice;
-                    }
-                }
+                
 
                 #region 建空模及塞入要輸出的值
                 if (flag)
@@ -505,6 +495,18 @@ namespace WebAPI.Controllers
                     
                     
                 }
+                if (flag && OrderDataLists[0].ProjType != 4)
+                {
+                    //檢查有無車麻吉停車費用
+                    WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
+                    MachiComm mochi = new MachiComm();
+                    flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD.ToString("yyyyMMdd"), FED.AddDays(1).ToString("yyyyMMdd"), ref ParkingPrice, ref mochiOutput);
+                    if (flag)
+                    {
+                        outputApi.Rent.ParkingFee = ParkingPrice;
+                    }
+                }
+
                 #endregion
                 #region 月租
                 //note: 月租GetPayDetail
