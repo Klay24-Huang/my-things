@@ -87,7 +87,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
         --0.再次檢核token
 		IF @Error=0
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -96,7 +96,7 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 			ELSE
 			BEGIN
 			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE Access_Token=@Token AND MEMIDNO=@LoginIDNO;
+				SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@LoginIDNO;
 				IF @hasData=0
 				BEGIN
 				   SET @Error=1;
@@ -108,16 +108,16 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 		--1.取得資料
 		IF @Error=0
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@DonateIDNO;
+			SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@DonateIDNO;
 			IF @hasData>0
 			BEGIN
-				SELECT @Name=ISNULL(MEMCNAME,''),@PhoneNo=MEMTEL
-				FROM TB_MemberData
+				SELECT @Name=dbo.FN_MASKSTR(ISNULL(MEMCNAME,''),1),@PhoneNo=MEMTEL
+				FROM TB_MemberData WITH(NOLOCK)
 				WHERE MEMIDNO=@DonateIDNO;
 			END
 			ELSE
 			BEGIN
-				SELECT @Name=MEMCNAME,@PhoneNo=MEMTEL FROM TB_MemberData WHERE MEMIDNO=@DonateIDNO;
+				SELECT @Name=dbo.FN_MASKSTR(MEMCNAME,1),@PhoneNo=MEMTEL FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@DonateIDNO;
 			END
 		END
 		
