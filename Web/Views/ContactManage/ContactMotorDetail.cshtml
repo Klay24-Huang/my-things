@@ -68,630 +68,634 @@
             </div>
             @using (Html.BeginForm("ContactMotorDetail", "ContactManage", FormMethod.Post, new { id = "frmContactMotorDetail", @class = "form-horizontal", enctype = "multipart/form-data" }))
             {
-                <ul class="list-group list-group-flush">
-                    <!--每一個li是一項查詢條件-->
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    合約編號
-                                </div>
-                                <div class="col-md-3">
-                                    @(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))
-                                </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                合約編號
+                            </div>
+                            <div class="col-md-3">
+                                @(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    會員帳號
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.IDNO)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員帳號
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.IDNO)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    會員姓名
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.UserName)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員姓名
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.UserName)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    訂單成立時間
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.BookingDate.ToString("yyyy-MM-dd HH:mm:ss"))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單成立時間
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.BookingDate.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    訂單類型
-                                </div>
-                                <div class="col-md-3">
-                                    @(OrderKind)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單類型
+                            </div>
+                            <div class="col-md-3">
+                                @(OrderKind)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    訂單修改狀態
-                                </div>
-                                <div class="col-md-3">
-                                    @(OrderModify)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單修改狀態
+                            </div>
+                            <div class="col-md-3">
+                                @(OrderModify)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    預計取車時間
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.SD.ToString("yyyy-MM-dd HH:mm:ss"))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                預計取車時間
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.SD.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    預計還車時間
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.ED.ToString("yyyy-MM-dd HH:mm:ss"))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                預計還車時間
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.ED.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    延長用車時間
-                                </div>
-                                <div class="col-md-3">
-                                    @((obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "無" : obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss")))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                延長用車時間
+                            </div>
+                            <div class="col-md-3">
+                                @((obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "無" : obj.Data.OStopTime.ToString("yyyy-MM-dd HH:mm:ss")))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    取/還車站
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.LStation)/@(obj.Data.RStation)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                取/還車站
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.LStation)/@(obj.Data.RStation)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    車型
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.CarTypeName)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車型
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.CarTypeName)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    車號
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.CarNo)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車號
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.CarNo)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    優惠方案
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.PRONAME)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                優惠方案
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.PRONAME)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    發票寄送方式
-                                </div>
-                                <div class="col-md-3">
-                                    @(InvoiceKind[obj.Data.InvoicKind])
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                發票寄送方式
+                            </div>
+                            <div class="col-md-3">
+                                @(InvoiceKind[obj.Data.InvoicKind])
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    統一編號
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.BCode)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                統一編號
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.BCode)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    聯絡電話
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.TEL)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                聯絡電話
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.TEL)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    預估租金
-                                </div>
-                                <div class="col-md-3">
-                                    @(obj.Data.PurePrice)
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                預估租金
+                            </div>
+                            <div class="col-md-3">
+                                @(obj.Data.PurePrice)
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    訂單/合約狀態(CMS)
-                                </div>
-                                <div class="col-md-3">
-                                    @(OrderKind)
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?OrderNum=@(obj.Data.OrderNo)','_blank','');">HTML</button>
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單/合約狀態(CMS)
+                            </div>
+                            <div class="col-md-3">
+                                @(OrderKind)
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?OrderNum=@(obj.Data.OrderNo)','_blank','');">HTML</button>
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item card-header bg-gray-400 text-white">
-                        <div class="container-fluid">
-                            <div class="row ml-1">
-                                合約完成明細
+                    </div>
+                </li>
+                <li class="list-group-item card-header bg-gray-400 text-white">
+                    <div class="container-fluid">
+                        <div class="row ml-1">
+                            合約完成明細
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                實際取車時間
+                            </div>
+                            <div class="col-md-3">
+                                @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    實際取車時間
-                                </div>
-                                <div class="col-md-3">
-                                    @((obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FS.ToString("yyyy-MM-dd HH:mm:ss"))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                取車資訊
                             </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    取車資訊
-                                </div>
-                                <div class="col-md-3">
-                                    @if (OrderStatus > 0)
+                            <div class="col-md-3">
+                                @if (OrderStatus > 0)
+                                {
+                                    if (obj.Data.P_lat > 0 && obj.Data.P_lon > 0)
                                     {
-                                        if (obj.Data.P_lat > 0 && obj.Data.P_lon > 0)
-                                        {
-                                            <span class="icon-1  text-danger" onclick="detailMap(@obj.Data.P_lon,@obj.Data.P_lon)"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="icon-1">無定位資訊</span>
-                                        }
-                                        <br><span class="icon-7  text-cyan"></span> @(string.Format("左邊電池電量{0}%", Math.Round(obj.Data.P_LBA, 0)))
-                                        <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.P_RBA, 0)))
-                                        <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.P_MBA, 0)))
-                                        <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.P_TBA, 0)))
+                                        <span class="icon-1  text-danger" onclick="detailMap(@obj.Data.P_lon,@obj.Data.P_lon)"></span>
                                     }
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    出車照片(含車損照)
-                                </div>
-                                <div class="col-md-3">
-                                    @if (OrderStatus > 0)
+                                    else
                                     {
-                                        if (obj.PickCarImage != null)
-                                        {
-                                            PickLen = obj.PickCarImage.Count;
-                                            if (PickLen > 0)
-                                            {
-                                                <button type="button" data-toggle="modal" data-target="#pick_modal" class="btn btn-primary">檢視照片</button>
-                                            }
-                                        }
+                                        <span class="icon-1">無定位資訊</span>
                                     }
-                                </div>
+                                    <br><span class="icon-7  text-cyan"></span> @(string.Format("左邊電池電量{0}%", Math.Round(obj.Data.P_LBA, 0)))
+                                    <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.P_RBA, 0)))
+                                    <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.P_MBA, 0)))
+                                    <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.P_TBA, 0)))
+                                }
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    實際還車時間
-                                </div>
-                                <div class="col-md-3">
-                                    @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                出車照片(含車損照)
                             </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    還車資訊
-                                </div>
-                                <div class="col-md-3">
-                                    @if (OrderStatus > 1)
+                            <div class="col-md-3">
+                                @if (OrderStatus > 0)
+                                {
+                                    if (obj.PickCarImage != null)
                                     {
-                                        if (obj.Data.R_lat > 0 && obj.Data.R_lon > 0)
+                                        PickLen = obj.PickCarImage.Count;
+                                        if (PickLen > 0)
                                         {
-                                            <span class="icon-1  text-danger" onclick="detailMap(@obj.Data.R_lat,@obj.Data.R_lon)"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="icon-1">無定位資訊</span>
-                                        }
-                                        <br><span class="icon-7 text-cyan"></span> @(string.Format("左邊電池電量{0}%", Math.Round(obj.Data.R_LBA, 0)))
-                                        <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.R_RBA, 0)))
-                                        <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.R_MBA, 0)))
-                                        <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.R_TBA, 0)))
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    還車照片(含車損照)
-                                </div>
-                                <div class="col-md-3">
-                                    @if (OrderStatus > 3)
-                                    {
-                                        if (obj.ReturnCarImage != null)
-                                        {
-                                            ReturnLen = obj.ReturnCarImage.Count;
-                                            if (ReturnLen > 0)
-                                            {
-                                                <button type="button" data-toggle="modal" data-target="#return_modal" class="btn btn-primary">檢視照片</button>
-                                            }
+                                            <button type="button" data-toggle="modal" data-target="#pick_modal" class="btn btn-primary">檢視照片</button>
                                         }
                                     }
-                                </div>
+                                }
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    取車里程
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 0) ? obj.Data.StartMile.ToString() : "")
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                實際還車時間
+                            </div>
+                            <div class="col-md-3">
+                                @((obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "" : obj.Data.FE.ToString("yyyy-MM-dd HH:mm:ss"))
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    還車里程
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 1) ? obj.Data.StopMile.ToString() : "")
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                還車資訊
                             </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    租金
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 1) ? obj.Data.CarRent.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    罰金
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 1) ? obj.Data.FinePrice.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    油資
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 1) ? obj.Data.Mileage.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    eTag費用
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 1) ? obj.Data.eTag.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    車輛調度
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.CarDispatch.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    清潔費
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.CleanFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    物品損壞/遺失
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.DestroyFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    代收停車費(車麻吉)
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.MachiFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    非配合場停車費
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.ParkingFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    拖吊費
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.DraggingFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    其他
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.OtherFee.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    轉乘優惠
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.TransDiscount.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    時數折抵
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.CarPoint.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    結算金額
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.FinalPrice.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    已付金額
-                                </div>
-                                <div class="col-md-3">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    取車回饋
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 0) ? obj.Data.LFeedBack.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    還車回饋
-                                </div>
-                                <div class="col-md-3">
-                                    @((OrderStatus > 3) ? obj.Data.RFeedBack.ToString() : "")
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    停車說明
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" type="text" name="parkingSpace" id="parkingSpace" value="@((OrderStatus > 3) ? (obj.Data.parkingSpace != "" && obj.Data.parkingSpace != null ? obj.Data.parkingSpace : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")" />
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    停車照片
-                                </div>
-                                <div class="col-md-3">
-                                    @if (OrderStatus > 3)
+                            <div class="col-md-3">
+                                @if (OrderStatus > 1)
+                                {
+                                    if (obj.Data.R_lat > 0 && obj.Data.R_lon > 0)
                                     {
-                                        if (obj.ParkingCarImage != null)
+                                        <span class="icon-1  text-danger" onclick="detailMap(@obj.Data.R_lat,@obj.Data.R_lon)"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="icon-1">無定位資訊</span>
+                                    }
+                                    <br><span class="icon-7 text-cyan"></span> @(string.Format("左邊電池電量{0}%", Math.Round(obj.Data.R_LBA, 0)))
+                                    <br><span class="icon-7 text-cyan"></span>@(string.Format("右邊電池電量{0}%", Math.Round(obj.Data.R_RBA, 0)))
+                                    <br><span class="icon-6 text-danger"></span>@(string.Format("核心電池電量{0}%", Math.Round(obj.Data.R_MBA, 0)))
+                                    <br><span class="icon-5 text-danger"></span>@(string.Format("平均電量{0}%", Math.Round(obj.Data.R_TBA, 0)))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                還車照片(含車損照)
+                            </div>
+                            <div class="col-md-3">
+                                @if (OrderStatus > 3)
+                                {
+                                    if (obj.ReturnCarImage != null)
+                                    {
+                                        ReturnLen = obj.ReturnCarImage.Count;
+                                        if (ReturnLen > 0)
                                         {
-                                            ParkingLen = obj.ParkingCarImage.Count;
-                                            if (ParkingLen > 0)
-                                            {
-                                                <button type="button" data-toggle="modal" data-target="#parking_modal" class="btn btn-primary">檢視照片</button>
-                                            }
+                                            <button type="button" data-toggle="modal" data-target="#return_modal" class="btn btn-primary">檢視照片</button>
                                         }
                                     }
-                                </div>
+                                }
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-3 offset-md-2">
-                                    <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-secondary" onclick="javascript: history.back();">返回</button>
-                                    <button type="submit" id="btnSave" name="btnSave" class="btn btn-outline-secondary">修改停車格</button>
-                                    <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
-                                    <input type="hidden" id="OrderNo" name="OrderNo" value="@(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))" />
-                                </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                取車里程
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 0) ? obj.Data.StartMile.ToString() : "")
                             </div>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                還車里程
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 1) ? obj.Data.StopMile.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                租金
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 1) ? obj.Data.CarRent.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                罰金
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 1) ? obj.Data.FinePrice.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                油資
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 1) ? obj.Data.Mileage.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                eTag費用
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 1) ? obj.Data.eTag.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車輛調度
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.CarDispatch.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                清潔費
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.CleanFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                物品損壞/遺失
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.DestroyFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                代收停車費(車麻吉)
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.MachiFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                非配合場停車費
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.ParkingFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                拖吊費
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.DraggingFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                其他
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.OtherFee.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                轉乘優惠
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.TransDiscount.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                時數折抵
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.CarPoint.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                結算金額
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.FinalPrice.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                已付金額
+                            </div>
+                            <div class="col-md-1">
+                                @((OrderStatus > 3) ? obj.Data.PayAmount.ToString() : "")
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnCreditList" name="btnCreditList" class="btn btn-outline-secondary" data-toggle="modal" data-target="#PaymentData_modal">交易明細</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                取車回饋
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 0) ? obj.Data.LFeedBack.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                還車回饋
+                            </div>
+                            <div class="col-md-3">
+                                @((OrderStatus > 3) ? obj.Data.RFeedBack.ToString() : "")
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                停車說明
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="parkingSpace" id="parkingSpace" value="@((OrderStatus > 3) ? (obj.Data.parkingSpace != "" && obj.Data.parkingSpace != null ? obj.Data.parkingSpace : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                停車照片
+                            </div>
+                            <div class="col-md-3">
+                                @if (OrderStatus > 3)
+                                {
+                                    if (obj.ParkingCarImage != null)
+                                    {
+                                        ParkingLen = obj.ParkingCarImage.Count;
+                                        if (ParkingLen > 0)
+                                        {
+                                            <button type="button" data-toggle="modal" data-target="#parking_modal" class="btn btn-primary">檢視照片</button>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-secondary" onclick="javascript: history.back();">返回</button>
+                                <button type="submit" id="btnSave" name="btnSave" class="btn btn-outline-secondary">修改停車格</button>
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="OrderNo" name="OrderNo" value="@(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
             }
-            </div>
+        </div>
         <!--end card-->
     </div>
     <!--查詢介面結束-->
@@ -746,6 +750,59 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="PaymentData_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">付款時間</th>
+                                <th scope="col">交易序號</th>
+                                <th scope="col">結果</th>
+                                <th scope="col">付款類別</th>
+                                <th scope="col">交易金額</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (obj.PaymentData.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < obj.PaymentData.Count; i++)
+                                {
+                                    <tr>
+                                        <td scope="col">@(obj.PaymentData[i].PayTime)</td>
+                                        <td scope="col">自訂：@(obj.PaymentData[i].MerchantTradeNo)<br>台新：@(obj.PaymentData[i].TaishinTradeNo)</td>
+                                        <td scope="col">@((obj.PaymentData[i].RetCode == "1000" ? "成功" : "失敗-" + obj.PaymentData[i].RetCode + "(" + obj.PaymentData[i].RetMsg + ")"))</td>
+                                        <td scope="col">@(obj.PaymentData[i].CreditType)</td>
+                                        <td scope="col" style="text-align:right;">@(obj.PaymentData[i].PayAmount)</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
                 </div>
             </div>
         </div>

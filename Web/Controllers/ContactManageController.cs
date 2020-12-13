@@ -601,7 +601,8 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }
@@ -647,7 +648,8 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }
@@ -690,7 +692,8 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }
@@ -734,7 +737,8 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }

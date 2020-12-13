@@ -337,5 +337,69 @@ namespace Domain.TB.BackEnd
         /// 合約狀態
         /// </summary>
         public int car_mgt_status { set; get; }
+        /// <summary>
+        /// 付款時間
+        /// </summary>
+        public string PayTime { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string RetCode { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string RetMsg { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string MerchantTradeNo { set; get; }
+        /// <summary>
+        /// 台新交易序號
+        /// </summary>
+        public string TaishinTradeNo { set; get; }
+        /// <summary>
+        /// 付款方式
+        /// </summary>
+        public string CreditType { set; get; }
+        /// <summary>
+        /// 付款金額
+        /// </summary>
+        public int PayAmount { set; get; }
+    }
+
+
+    /// <summary>
+    /// 訂單明細資料
+    /// </summary>
+    public class BE_OrderPaymentData
+    {
+        /// <summary>
+        /// 付款時間
+        /// </summary>
+        public string PayTime { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string RetCode { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string RetMsg { set; get; }
+        /// <summary>
+        /// StoreTradeNo
+        /// </summary>
+        public string MerchantTradeNo { set; get; }
+        /// <summary>
+        /// 台新交易序號
+        /// </summary>
+        public string TaishinTradeNo { set; get; }
+        /// <summary>
+        /// 付款方式
+        /// </summary>
+        public string CreditType { set; get; }
+        /// <summary>
+        /// 付款金額
+        /// </summary>
+        public int PayAmount { set; get; }
     }
 }

@@ -28,5 +28,9 @@ namespace Domain.TB.BackEnd
         /// 
         /// </summary>
         public BE_AuditImage CredentialImage { set; get; }
+        /// <summary>
+        /// 付款資料
+        /// </summary>
+        public List<BE_OrderPaymentData> PaymentData { set; get; }
     }
 }

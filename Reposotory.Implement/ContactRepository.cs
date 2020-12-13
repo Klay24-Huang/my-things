@@ -747,5 +747,50 @@ namespace Reposotory.Implement
 
             return flag;
         }
+
+
+        /// <summary>
+        /// 取出出還車照
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        public List<BE_OrderPaymentData> GetOrderPaymentData(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_OrderPaymentData> lstPayment = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT Convert(VARCHAR,process_date,111)+' '+Convert(VARCHAR,process_date,108) AS PayTime" +
+                ",RetCode" +
+                ",RetMsg" +
+                ",MerchantTradeNo" +
+                ",TaishinTradeNo" +
+                ",CreditType=CASE CreditType WHEN '0' THEN '租金' WHEN '1' THEN 'ETAG補繳' WHEN '2' THEN '補繳' WHEN '3' THEN '直接取款' ELSE '未定義' END " +
+                ",amount AS PayAmount " +
+                "FROM TB_Trade WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term += " OrderNo=@OrderNo";
+            para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            para[nowCount].Value = OrderNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            SQL += " ORDER BY process_date DESC;";
+
+            lstPayment = GetObjList<BE_OrderPaymentData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstPayment;
+        }
     }
 }
