@@ -648,7 +648,7 @@
                                 停車說明
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus > 3) ? (obj.Data.parkingSpace.ToString()!=""? obj.Data.parkingSpace.ToString() : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")
+                                @((OrderStatus > 3) ? (obj.Data.parkingSpace!="" && obj.Data.parkingSpace != null ? obj.Data.parkingSpace : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")
                             </div>
                         </div>
                     </div>
