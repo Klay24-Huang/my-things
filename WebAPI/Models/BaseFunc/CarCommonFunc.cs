@@ -393,10 +393,10 @@ namespace WebAPI.Models.BaseFunc
                             };
                             flag = CheckInPolygon(Nowlatlng, StationID);
                             #region 快樂模式
-                            if (ClosePolygonOpen == "0")
-                            {
-                                flag = true;
-                            }
+                            //if (ClosePolygonOpen == "0")
+                            //{
+                            //    flag = true;
+                            //}
                             #endregion
                             if (false == flag)
                             {
@@ -514,10 +514,10 @@ namespace WebAPI.Models.BaseFunc
                                     };
                                     flag = CheckInPolygon(Nowlatlng, StationID);
                                     #region 快樂模式
-                                    if (ClosePolygonOpen == "0")
-                                    {
-                                        flag = true;
-                                    }
+                                    //if (ClosePolygonOpen == "0")
+                                    //{
+                                    //    flag = true;
+                                    //}
                                     #endregion
                                     if (false == flag)
                                     {
@@ -1699,7 +1699,7 @@ namespace WebAPI.Models.BaseFunc
             for (int i = 0; i < DataLen; i++)
             {
                 string[] tmpLonGroup = lstData[i].Longitude.Split('⊙');
-                string[] tmpLatGroup = lstData[i].Longitude.Split('⊙');
+                string[] tmpLatGroup = lstData[i].Latitude.Split('⊙');
                 int tmpLonGroupLen = tmpLonGroup.Length;
 
                 for (int j = 0; j < tmpLonGroupLen; j++)

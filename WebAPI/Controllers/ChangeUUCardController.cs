@@ -59,6 +59,7 @@ namespace WebAPI.Controllers
             string CardNo = "";
             string IDNO = "";
             string CID = "";
+            string OldCardNo = "";
             List<CardList> lstCardList = new List<CardList>();
             #endregion
 
@@ -145,23 +146,26 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
+                    OldCardNo = spOut.CardNo;
                     #region 車機
-                    CarCommonFunc CarComm = new CarCommonFunc();
-                    if (spOut.IsCens == 1)
-                    {
-                        SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
-                        SendCarNoData obj = new SendCarNoData()
-                        {
-                            CardNo = spOut.CardNo,
-                            CardType = 1
-                        };
-                        sendCarNoDatas[0] = obj;
-                        flag = CarComm.DoSetCensCustomerCard(spOut.CID, sendCarNoDatas, 0, ref errCode);
-                    }
-                    else
-                    {
-                        flag = CarComm.DoSetFETCustomerCard(spOut.CID, spOut.deviceToken, new string[] { spOut.CardNo }, 0, LogID, ref errCode);
-                    }
+                    //CarCommonFunc CarComm = new CarCommonFunc();
+                    //if (spOut.IsCens == 1)
+                    //{
+
+                    //    SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
+                    //    SendCarNoData obj = new SendCarNoData()
+                    //    {
+                    //        CardNo = spOut.CardNo,
+                    //        CardType = 1
+                    //    };
+                    //    sendCarNoDatas[0] = obj;
+                    //    flag = CarComm.DoSetCensCustomerCard(spOut.CID, sendCarNoDatas, 0, ref errCode);
+                    //}
+                    //else
+                    //{
+
+                    //    flag = CarComm.DoSetFETCustomerCard(spOut.CID, spOut.deviceToken, new string[] { spOut.CardNo }, 0, LogID, ref errCode);
+                    //}
                     #endregion
                 }
                 else
@@ -212,6 +216,8 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                
+
                 if (flag)
                 {
                     int NowCount = 0;
@@ -235,7 +241,34 @@ namespace WebAPI.Controllers
                         outputApi.HasBind = 0;
                     }
 
-                    if (ReadFlag)
+                    //先讀卡再清卡
+                    if (ReadFlag && OldCardNo != "")
+                    {
+                        CarCommonFunc CarComm = new CarCommonFunc();
+                        if (spOut.IsCens == 1)
+                        {
+                            SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
+                            SendCarNoData obj = new SendCarNoData()
+                            {
+                                CardNo = OldCardNo,
+                                CardType = 1
+                            };
+                            sendCarNoDatas[0] = obj;
+                            flag = CarComm.DoSetCensCustomerCard(CID, sendCarNoDatas, 0, ref errCode);
+                        }
+                        else
+                        {
+
+                            flag = CarComm.DoSetFETCustomerCard(CID, spOut.deviceToken, new string[] { OldCardNo }, 0, LogID, ref errCode);
+                        }
+
+                        if (!flag)
+                        {
+                            outputApi.HasBind = 0;
+                        }
+                    }
+
+                    if (ReadFlag && flag)
                     {
                         string SPName2 = new ObjType().GetSPName(ObjType.SPType.BindUUCard);
                         SPInput_BindUUCard SPBindInput = new SPInput_BindUUCard()
@@ -372,6 +405,11 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
+                        else
+                        {
+                            outputApi.HasBind = 0;
+                        }
+
                     }
                 }
             }

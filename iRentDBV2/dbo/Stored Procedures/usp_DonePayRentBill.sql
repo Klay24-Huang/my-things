@@ -167,9 +167,9 @@ SET @ParkingSpace='';
 							UPDATE TB_OrderDataByMotor
 							SET R_lat=B.Latitude,R_lon=B.Longitude
 							,R_LBA=deviceLBA,R_RBA=deviceRBA,R_MBA=deviceMBA,R_TBA=device3TBA
-							,Reward=CASE WHEN R_TBA-P_TBA>=99 THEN 0
-										 WHEN R_TBA-P_TBA>=40 THEN 20
-										 WHEN R_TBA-P_TBA>=20 THEN 10
+							,Reward=CASE WHEN device3TBA-P_TBA>=99 THEN 0
+										 WHEN device3TBA-P_TBA>=40 THEN 20
+										 WHEN device3TBA-P_TBA>=20 THEN 10
 										 ELSE 0 END
 							FROM TB_CarStatus B WITH(NOLOCK)
 							WHERE B.CarNo=@CarNo AND TB_OrderDataByMotor.OrderNo=@OrderNo
