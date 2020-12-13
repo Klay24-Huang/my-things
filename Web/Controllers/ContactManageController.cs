@@ -291,12 +291,12 @@ namespace Web.Controllers
             }
             else if (StartDate == "" && EndDate != "")
             {
-                EndDate = EndDate + ":59";
+                EndDate = EndDate + " 23:59:59";
             }
             else if (StartDate != "" && EndDate != "")
             {
                 StartDate = StartDate + " 00:00:00";
-                EndDate = EndDate + ":59";
+                EndDate = EndDate + " 23:59:59";
             }
             if (OrderNo != "")
             {
