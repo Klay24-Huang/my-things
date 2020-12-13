@@ -66,6 +66,8 @@
             <div class="card-header bg-gray-400 text-white">
                 訂單/合約明細
             </div>
+            @using (Html.BeginForm("ContactMotorDetail", "ContactManage", FormMethod.Post, new { id = "frmContactMotorDetail", @class = "form-horizontal", enctype = "multipart/form-data" }))
+            {
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
                 <li class="list-group-item">
@@ -612,7 +614,11 @@
                             <div class="col-md-2">
                                 已付金額
                             </div>
+                            <div class="col-md-1">
+                                @((OrderStatus > 3) ? obj.Data.PayAmount.ToString() : "")
+                            </div>
                             <div class="col-md-3">
+                                <button type="button" id="btnCreditList" name="btnCreditList" class="btn btn-outline-secondary" data-toggle="modal" data-target="#PaymentData_modal">交易明細</button>
                             </div>
                         </div>
                     </div>
@@ -648,7 +654,7 @@
                                 停車說明
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus > 3) ? (obj.Data.parkingSpace!="" && obj.Data.parkingSpace != null ? obj.Data.parkingSpace : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")
+                                <input class="form-control" type="text" name="parkingSpace" id="parkingSpace" value="@((OrderStatus > 3) ? (obj.Data.parkingSpace != "" && obj.Data.parkingSpace != null ? obj.Data.parkingSpace : (obj.ParkingCarImage.Count > 0 ? obj.ParkingCarImage[0].ParkingSpace : "")) : "")" />
                             </div>
                         </div>
                     </div>
@@ -680,12 +686,15 @@
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-secondary" onclick="javascript: history.back();">返回</button>
+                                <button type="submit" id="btnSave" name="btnSave" class="btn btn-outline-secondary">修改停車格</button>
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="OrderNo" name="OrderNo" value="@(string.Format("H{0}", obj.Data.OrderNo.ToString().PadLeft(7, '0')))" />
                             </div>
                         </div>
                     </div>
                 </li>
             </ul>
+            }
         </div>
         <!--end card-->
     </div>
@@ -741,6 +750,59 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="PaymentData_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">付款時間</th>
+                                <th scope="col">交易序號</th>
+                                <th scope="col">結果</th>
+                                <th scope="col">付款類別</th>
+                                <th scope="col">交易金額</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (obj.PaymentData.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < obj.PaymentData.Count; i++)
+                                {
+                                    <tr>
+                                        <td scope="col">@(obj.PaymentData[i].PayTime)</td>
+                                        <td scope="col">自訂：@(obj.PaymentData[i].MerchantTradeNo)<br>台新：@(obj.PaymentData[i].TaishinTradeNo)</td>
+                                        <td scope="col">@((obj.PaymentData[i].RetCode == "1000" ? "成功" : "失敗-" + obj.PaymentData[i].RetCode + "(" + obj.PaymentData[i].RetMsg + ")"))</td>
+                                        <td scope="col">@(obj.PaymentData[i].CreditType)</td>
+                                        <td scope="col" style="text-align:right;">@(obj.PaymentData[i].PayAmount)</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
                 </div>
             </div>
         </div>

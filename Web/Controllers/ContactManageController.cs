@@ -291,12 +291,12 @@ namespace Web.Controllers
             }
             else if (StartDate == "" && EndDate != "")
             {
-                EndDate = EndDate + ":59";
+                EndDate = EndDate + " 23:59:59";
             }
             else if (StartDate != "" && EndDate != "")
             {
                 StartDate = StartDate + " 00:00:00";
-                EndDate = EndDate + ":59";
+                EndDate = EndDate + " 23:59:59";
             }
             if (OrderNo != "")
             {
@@ -575,6 +575,7 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="OrderNo"></param>
         /// <returns></returns>
+        [HttpGet]
         public ActionResult ContactDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
@@ -600,7 +601,8 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }
@@ -612,12 +614,59 @@ namespace Web.Controllers
             return View(obj);
     
         }
+
+
+        /// <summary>
+        /// 訂單（合約）明細修改停車格
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ContactDetail(string OrderNo, string parkingSpace, string Account)
+        {
+            BE_OrderDataCombind obj = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            Int64 tmpOrder = 0;
+            bool flag = true;
+            if (string.IsNullOrEmpty(OrderNo))
+            {
+                flag = false;
+
+            }
+            else
+            {
+                if (OrderNo != "")
+                {
+
+                    tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
+
+                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
+                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
+                    flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
+                    obj = new BE_OrderDataCombind()
+                    {
+                        Data = repository.GetOrderDetail(tmpOrder),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
+                    };
+
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            return View(obj);
+
+        }
         /// <summary>
         /// 訂單（合約）明細（機車）
         /// </summary>
         /// <param name="OrderNo"></param>
         /// <returns></returns>
-
+        [HttpGet]
         public ActionResult ContactMotorDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
@@ -643,7 +692,53 @@ namespace Web.Controllers
                         Data = repository.GetOrderDetail(tmpOrder),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
-                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder)
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
+                    };
+
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            return View(obj);
+        }
+        /// <summary>
+        /// 訂單（合約）明細（機車）
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ContactMotorDetail(string OrderNo, string parkingSpace, string Account)
+        {
+
+            BE_OrderDataCombind obj = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            Int64 tmpOrder = 0;
+            bool flag = true;
+            if (string.IsNullOrEmpty(OrderNo))
+            {
+                flag = false;
+
+            }
+            else
+            {
+                if (OrderNo != "")
+                {
+
+                    tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
+
+                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
+                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
+                    flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
+                    obj = new BE_OrderDataCombind()
+                    {
+                        Data = repository.GetOrderDetail(tmpOrder),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
+                        ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
+                        PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
                 }
