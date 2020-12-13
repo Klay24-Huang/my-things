@@ -217,7 +217,7 @@ namespace WebAPI.Controllers
 
             try
             {
-               string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrearsQuery);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrearsQuery);
                 int apiLen = apiList.Length;
                 object[] objparms = new object[apiLen == 0 ? 1 : apiLen];
                 if (apiLen > 0)

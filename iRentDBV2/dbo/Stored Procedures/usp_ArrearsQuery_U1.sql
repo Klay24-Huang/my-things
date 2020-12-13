@@ -54,11 +54,13 @@ BEGIN
 					a.PAYMENTTYPE AS ArrearsKind, --欠費種類 1:租金,2:罰單,3:停車費,4:ETAG
 					a.RNTDATE AS EndDate, --實際還車時間
 					a.GIVEDATE AS StartDate, --實際取車時間
-					OrderNo = a.IRENTORDNO,					         
-					a.CNTRNO AS ShortOrderNo, --短租合約編號
+					a.IRENTORDNO,	--IRENT訂單編號
+					a.ORDNO,	--短租預約編號
+					a.CNTRNO, --短租合約編號
+					a.POLNO,	--罰單編號
 					a.INBRNHCD AS StationID, --取車據點
-					CarType = ( SELECT TOP 1 c.CarType FROM TB_Car c WHERE c.CarNo = a.CARNO), --車型代碼
-					IsMotor = (SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WHERE c.CarNo = a.CARNO) ---是否是機車0否,1是
+					CarType = ( SELECT TOP 1 c.CarType FROM TB_Car c WITH(NOLOCK) WHERE c.CarNo = a.CARNO), --車型代碼
+					IsMotor = (SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WITH(NOLOCK) WHERE c.CarNo = a.CARNO) ---是否是機車0否,1是
 					INTO #tmp_ArrearsQuery
 					FROM  @ArrearsQuery a	
 
@@ -77,8 +79,10 @@ BEGIN
 						   t.ArrearsKind,
 						   t.StartDate,
 						   t.EndDate,
-						   t.OrderNo,
-						   t.ShortOrderNo,
+						   t.IRENTORDNO,
+						   t.ORDNO,
+						   t.CNTRNO,
+						   t.POLNO,
 						   t.StationID,
 						   t.CarType,
 						   t.IsMotor,
@@ -101,30 +105,30 @@ BEGIN
 
 						SELECT 
 						    NPR330Save_ID = ISNULL(@MasteId,0), --若IsSave為0, @MasteId為0
-							Rent_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo AND t0.ArrearsKind = 1),0), --租金
-							Ticket_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo AND t0.ArrearsKind = 2),0), --罰單
-							Park_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo AND t0.ArrearsKind = 3),0), --停車費
-							ETAG_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo AND t0.ArrearsKind = 4),0), --ETAG
-							OperatingLoss_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo AND t0.ArrearsKind = 5),0),	--營損 / 代收停車費						
-							Total_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo ),0), --欠費總和
-						    StartDate = (SELECT TOP 1 t0.StartDate FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo  ), --實際取車時間
-						    EndDate = (SELECT TOP 1 t0.EndDate FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo  ), --實際還車時間
-							OrderNo = CASE WHEN t.OrderNo IS NULL OR t.OrderNo = '' THEN '-'
+							Rent_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO AND t0.ArrearsKind = 1),0), --租金
+							Ticket_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO AND t0.ArrearsKind = 2),0), --罰單
+							Park_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO AND t0.ArrearsKind = 3),0), --停車費
+							ETAG_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO AND t0.ArrearsKind = 4),0), --ETAG
+							OperatingLoss_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO AND t0.ArrearsKind = 5),0),	--營損 / 代收停車費						
+							Total_Amount = ISNULL((SELECT SUM(t0.Amount) FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO ),0), --欠費總和
+						    StartDate = (SELECT TOP 1 t0.StartDate FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO  ), --實際取車時間
+						    EndDate = (SELECT TOP 1 t0.EndDate FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO  ), --實際還車時間
+							OrderNo = CASE WHEN t.IRENTORDNO IS NULL OR t.IRENTORDNO = '' THEN '-'
 										ELSE
-										  CASE WHEN LEN(t.OrderNo) <= 7 THEN
-										  'H' + RIGHT(REPLICATE('0', 7) + CAST(t.OrderNo as NVARCHAR), 7) 
-										  ELSE t.OrderNo END
+										  CASE WHEN LEN(t.IRENTORDNO) <= 7 THEN
+										  'H' + RIGHT(REPLICATE('0', 7) + CAST(t.IRENTORDNO as NVARCHAR), 7) 
+										  ELSE t.IRENTORDNO END
 										END,
-						    ShortOrderNo = (SELECT TOP 1 t0.ShortOrderNo FROM #tmp_ArrearsQuery t0 WHERE t0.OrderNo = t.OrderNo ), --短租合約編號
-							StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WHERE s.StationID = t.StationID),'-'), --取車據點
+						    ShortOrderNo = (SELECT TOP 1 t0.CNTRNO FROM #tmp_ArrearsQuery t0 WHERE t0.IRENTORDNO = t.IRENTORDNO ), --短租合約編號
+							StationName = ISNULL((SELECT TOP 1 s.StationName FROM TB_ManagerStation s WITH(NOLOCK) WHERE s.StationID = t.StationID),'-'), --取車據點
 							CarType = ISNULL(( --車型代碼
 							--SELECT TOP 1 ct.CarTypeName FROM TB_CarType ct WITH(NOLOCK)
 							SELECT TOP 1 ctg.CarTypeImg FROM TB_CarType ct WITH(NOLOCK)
 							LEFT JOIN TB_CarTypeGroupConsist ctgc WITH(NOLOCK) ON ct.CarType=ctgc.CarType
 							LEFT JOIN TB_CarTypeGroup ctg WITH(NOLOCK) ON ctgc.CarTypeGroupID=ctg.CarTypeGroupID
 						    ),''),		
-							IsMotor = ISNULL((SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WHERE c.CarNo = t.CarNo),0) ---是否是機車0否,1是				
-						FROM (SELECT DISTINCT tmp.OrderNo, tmp.StationID, tmp.CarNo FROM #tmp_ArrearsQuery tmp) t
+							IsMotor = ISNULL((SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WITH(NOLOCK) WHERE c.CarNo = t.CarNo),0) ---是否是機車0否,1是				
+						FROM (SELECT DISTINCT tmp.IRENTORDNO, tmp.StationID, tmp.CarNo FROM #tmp_ArrearsQuery tmp) t
 
 					END			     		
 			END
