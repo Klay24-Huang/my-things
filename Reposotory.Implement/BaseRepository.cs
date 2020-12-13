@@ -95,6 +95,36 @@ namespace Reposotory.Implement
             }
         
         }
+        //增加無回應存檔，參數傳入處理
+        public void ExecNonResponse(ref bool flag, string SQL, SqlParameter[] para)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(this.ConnectionString))
+                using (SqlCommand command = new SqlCommand(SQL, conn))
+                {
+                    for (int i = 0; i < para.Length; i++)
+                    {
+                        if (null != para[i])
+                        {
+                            command.Parameters.Add(para[i]);
+                        }
+
+                    }
+                    command.CommandType = CommandType.Text;
+                    command.CommandTimeout = 180;
+
+                    if (conn.State != ConnectionState.Open) conn.Open();
+
+                    int result = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+            }
+
+        }
         /// <summary>
         /// 取得經緯度最大範圍
         /// </summary>

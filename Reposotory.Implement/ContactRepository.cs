@@ -711,5 +711,41 @@ namespace Reposotory.Implement
             return lstBooking;
         }
 
+        /// <summary>
+        /// 後台訂單明細使用
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <returns></returns>
+        public bool UpdateOrderParking(Int64 OrderNo, string parkingSpace, string Account)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            int nowCount = 0;
+            string SQL = "UPDATE TB_OrderDetail SET ";
+
+
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+
+            term += (term == "") ? "" : " , ";
+            term += " parkingSpace=@parkingSpace";
+            para[nowCount] = new SqlParameter("@parkingSpace", SqlDbType.NVarChar);
+            para[nowCount].Value = parkingSpace;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+
+            term += " WHERE order_number=@OrderNo";
+            para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            para[nowCount].Value = OrderNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            SQL += term;
+            ExecNonResponse(ref flag, SQL, para);
+
+            return flag;
+        }
     }
 }
