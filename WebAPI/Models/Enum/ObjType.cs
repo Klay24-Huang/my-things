@@ -346,6 +346,11 @@ namespace WebAPI.Models.Enum
             /// 取得路邊租還車輛
             /// </summary>
             GetAnyRentCar,
+            /// <summary>
+            /// 欠款查詢ByNPR330ID
+            /// 20201213 ADD BY ADAM
+            /// </summary>
+            ArrearsQueryByNPR330ID,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -811,6 +816,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetAnyRentCar:      //取得路邊租還車輛
                     SPName = "usp_GetAnyRentCar";
+                    break;
+                case SPType.ArrearsQueryByNPR330ID: //20201213 ADD BY ADAM
+                    SPName = "usp_ArrearsQuery_Q1";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

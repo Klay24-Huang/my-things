@@ -562,6 +562,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NewsObj.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\NPR330SaveDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OAPI_GetCarTypeParam.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />

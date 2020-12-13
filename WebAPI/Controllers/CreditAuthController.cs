@@ -2,6 +2,7 @@
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Wallet;
 using Domain.SP.Input.Bill;
+using Domain.SP.Input.Arrears;
 using Domain.SP.Output;
 using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Wallet;
@@ -10,6 +11,7 @@ using Domain.TB;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -30,6 +32,7 @@ using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 using Domain.SP.Input.Car;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers
 {
@@ -68,8 +71,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CreditAuth apiInput = null;
-            //NullOutput apiOutput = null;
-            OAPI_CreditAuth apiOutput = null;
+            NullOutput apiOutput = null;
+            //OAPI_CreditAuth apiOutput = new OAPI_CreditAuth();
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -166,13 +169,7 @@ namespace WebAPI.Controllers
                     Token = Access_Token,
                     transaction_no = ""
                 };
-                SPInput_DonePayBack spInput_PayBack = new SPInput_DonePayBack()
-                {
-                    NPR330Save_ID = apiInput.NPR330Save_ID == null ? 0 : apiInput.NPR330Save_ID.Value,
-                    IDNO = IDNO,
-                    Token = Access_Token,
-                    LogID = LogID
-                };
+                
 
                 if (apiInput.PayType == 0)
                 {
@@ -229,21 +226,21 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 檢查iButton
-                    //if (flag && OrderDataLists[0].ProjType != 4)
-                    //{
-                    //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                    //    {
-                    //        OrderNo = tmpOrder,
-                    //        Token = Access_Token,
-                    //        IDNO = IDNO,
-                    //        LogID = LogID
-                    //    };
-                    //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
-                    //    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                    //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                    //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                    //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
-                    //}
+                    if (flag && OrderDataLists[0].ProjType != 4)
+                    {
+                        SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                        {
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            IDNO = IDNO,
+                            LogID = LogID
+                        };
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                        SPOutput_Base SPOutputBase = new SPOutput_Base();
+                        SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                    }
                     #endregion
                     #region 台新信用卡-Mark
                     //if (flag)
@@ -386,7 +383,8 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
+                        WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                        flag = TaishinCardTrade(apiInput, ref PayInput,ref WSAuthOutput, ref Amount, ref errCode);
                         if (flag)
                         {
                             string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
@@ -456,13 +454,92 @@ namespace WebAPI.Controllers
                 }
                 else if (apiInput.PayType == 1)
                 {
+                    //流水號改由cntrno轉入
+                    int NPR330Save_ID = apiInput.CNTRNO == null ? 0 : int.Parse(apiInput.CNTRNO);
+                    SPInput_DonePayBack spInput_PayBack = new SPInput_DonePayBack()
+                    {
+                        NPR330Save_ID = NPR330Save_ID,
+                        IDNO = IDNO,
+                        Token = Access_Token,
+                        LogID = LogID
+                    };
+
+                    string MSG = "";
+                    //先取出要繳的費用
+                    var sp_result = sp_ArrearsQueryByNPR330ID(NPR330Save_ID, LogID, ref MSG);
+                    
+                    if (sp_result.Count > 0)
+                    {
+                        for (int i=0;i<sp_result.Count;i++)
+                        {
+                            Amount += sp_result[i].Amount;
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                    }
+
                     if (flag)
                     {
-                        if (apiInput.NPR330Save_ID != null && apiInput.NPR330Save_ID > 0)
+                        if (NPR330Save_ID > 0)
                         {
-                            flag = TaishinCardTrade(apiInput, ref PayInput, ref Amount, ref errCode);
+                            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+
+                            flag = TaishinCardTrade(apiInput, ref PayInput,ref WSAuthOutput, ref Amount, ref errCode);
                             if (flag)
                                 flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
+
+                            if (flag)
+                            {
+                                HiEasyRentAPI webAPI = new HiEasyRentAPI();
+
+                                //最後再NPR340沖銷
+                                WebAPIInput_NPR340Save wsInput = null;
+                                WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
+                                string MerchantTradeNo = "";
+                                string ServiceTradeNo = "";
+                                wsInput = new WebAPIInput_NPR340Save()
+                                {
+                                    tbNPR340SaveServiceVar = new List<NPR340SaveServiceVar>(),
+                                    tbNPR340PaymentDetail = new List<NPR340PaymentDetail>()
+                                };
+
+                                for (int i = 0; i < sp_result.Count; i++)
+                                {
+                                    wsInput.tbNPR340SaveServiceVar.Add(new NPR340SaveServiceVar()
+                                    {
+                                        AMOUNT = sp_result[i].Amount.ToString(),
+                                        AUTH_CODE = WSAuthOutput.ResponseParams.ResultData.AuthIdResp,
+                                        CARDNO = WSAuthOutput.ResponseParams.ResultData.CardNumber,
+                                        CARNO = sp_result[i].CarNo,
+                                        CNTRNO = sp_result[i].CNTRNO,
+                                        CUSTID = IDNO,
+                                        ORDNO = sp_result[i].ORDNO,
+                                        POLNO = sp_result[i].POLNO,
+                                        PAYMENTTYPE = Convert.ToInt64(sp_result[i].PAYMENTTYPE),
+                                        PAYDATE = DateTime.Now.ToString("yyyyMMdd"),
+                                        NORDNO = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
+                                        CDTMAN = ""
+                                    });
+
+                                    wsInput.tbNPR340PaymentDetail.Add(new NPR340PaymentDetail()
+                                    {
+                                        CNTRNO = sp_result[i].CNTRNO,
+                                        PAYAMT = sp_result[i].Amount.ToString(),
+                                        PAYMENTTYPE = sp_result[i].PAYMENTTYPE,
+                                        PAYMEMO = "",
+                                        PORDNO = sp_result[i].IRENTORDNO,
+                                        PAYTCD = "1"
+                                    });
+                                }
+
+                                flag = webAPI.NPR340Save(wsInput, ref wsOutput);
+                                if (flag)
+                                {
+
+                                }
+                            }
                         }
                         else
                         {
@@ -475,7 +552,7 @@ namespace WebAPI.Controllers
             }
 
             //機車換電獎勵
-            apiOutput.RewardPoint = RewardPoint;
+            //apiOutput.RewardPoint = RewardPoint;
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
@@ -495,7 +572,8 @@ namespace WebAPI.Controllers
         private bool TaishinCardTrade(
             IAPI_CreditAuth apiInput,
             ref SPInput_DonePayRent PayInput,
-            ref int Amount, ref string errCode)
+            ref WebAPIOutput_Auth WSAuthOutput,
+        ref int Amount, ref string errCode)
         {
             bool flag = true;
 
@@ -590,7 +668,7 @@ namespace WebAPI.Controllers
                             };
                             WSAuthInput.RequestParams.Item.Add(item);
 
-                            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                            //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                             //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
                             flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
                             if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
@@ -668,6 +746,43 @@ namespace WebAPI.Controllers
             flag = SQLPayHelp.ExecuteSPNonQuery(SPName, spInput, ref spOutput, ref lstError);
             baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
             return flag;
+        }
+
+        private List<NPR330SaveDetail> sp_ArrearsQueryByNPR330ID(int NPR330Save_ID,long LogID, ref string errMsg)
+        {
+            List<NPR330SaveDetail> saveDetail = new List<NPR330SaveDetail>();
+
+            string SPName = new ObjType().GetSPName(ObjType.SPType.ArrearsQueryByNPR330ID);
+
+            object[] param = new object[2];
+            param[0] = NPR330Save_ID;
+            param[1] = LogID;
+
+            DataSet ds1 = null;
+            string returnMessage = "";
+            string messageLevel = "";
+            string messageType = "";
+
+            ds1 = WebApiClient.SPRetB(ServerInfo.GetServerInfo(), SPName, param, ref returnMessage, ref messageLevel, ref messageType);
+
+            if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+            {
+                if (ds1.Tables.Count >= 2)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        saveDetail = objUti.ConvertToList <NPR330SaveDetail>(ds1.Tables[0]);
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errMsg = re_db.ErrorMsg;
+                    }
+                }
+            }
+            else
+                errMsg = returnMessage;
+
+            return saveDetail;
         }
     }
 }

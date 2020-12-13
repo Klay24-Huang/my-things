@@ -6,8 +6,10 @@
 	[ArrearsKind] [varchar](5) NULL,
 	[StartDate] [varchar](16) NULL,
 	[EndDate] [varchar](16) NULL,
-	[OrderNo] [varchar](20) NULL,
-	[ShortOrderNo] [varchar](20) NULL,
+	[IRENTORDNO] [varchar](20) NULL,
+	[ORDERNO] [varchar](20) NULL,
+	[CNTRNO] [varchar](20) NULL,
+	[POLNO] [varchar](30) NULL,
 	[StationID] [varchar](10) NULL,
 	[CarType] [varchar](20) NULL,
 	[IsMotor] [tinyint] NULL,
@@ -56,10 +58,16 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'實際還車時間' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'EndDate'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'訂單編號,因api可能回傳非bigint,此處改字串' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'OrderNo'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'訂單編號,因api可能回傳非bigint,此處改字串' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'IRENTORDNO'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短租合約編號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'ShortOrderNo'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短租預約編號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'ORDNO'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短租合約編號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'CNTRNO'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短租罰單編號' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'POLNO'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'據點ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'StationID'

@@ -433,6 +433,27 @@
     <Build Include="dbo\Stored Procedures\usp_GetAnyRentCar.sql" />
     <Build Include="dbo\SQL Script\Azure會員資料轉入iRent2.sql" />
     <Build Include="dbo\SQL Script\訂單資料轉入Azure.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_FeedBackHandle.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleNews.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckCarIButton.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckTokenDeviceReturnID.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetIDUCmdDeviceName.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetUnBindLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsParkingFeeData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsUnBindLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SaveNPR380Result.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UpdNotification.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UnBindCard.sql" />
+    <Build Include="dbo\Tables\TB_MemberCardBinding.sql" />
+    <Build Include="dbo\Tables\TB_OrderParkingDetailByMachiOfSync.sql" />
+    <Build Include="dbo\Tables\TB_CardUnBindLog.sql" />
+    <Build Include="dbo\Functions\FN_MotoRentTrial.sql" />
+    <Build Include="dbo\Views\VW_BE_CleanDataQuery.sql" />
+    <Build Include="dbo\Views\VW_BE_CleanDataQueryWithOutPIC.sql" />
+    <Build Include="dbo\Views\VW_BE_GetMonthlyReportData.sql" />
+    <Build Include="dbo\Views\VW_BE_GetParkingDetail.sql" />
+    <Build Include="dbo\Views\VW_BE_GetRawDataOfMachi.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ArrearsQuery_Q1.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
