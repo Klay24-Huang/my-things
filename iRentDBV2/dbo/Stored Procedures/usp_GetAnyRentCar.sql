@@ -91,8 +91,8 @@ BEGIN TRY
 				   CONCAT([CarBrend], ' ', [CarTypeName]) AS CarTypeName,
 				   Area AS CarOfArea,
 				   [PRONAME] AS ProjectName,
-				   [PRICE]/10 AS Rental,
-				   2.5 AS Mileage,
+				   CASE WHEN H.[HolidayDate] IS NOT NULL THEN [PRICE_H]/10 ELSE [PRICE]/10 END AS Rental,
+				   M.MilageBase AS Mileage,
 				   0 AS ShowSpecial,
 				   '' AS SpecialInfo,
 				   [Latitude],
@@ -101,13 +101,15 @@ BEGIN TRY
 				   Score AS [OperatorScore],
 				   CarTypeImg AS [CarTypePic],
 				   Seat,
-				   [PROJID] AS ProjID,
+				   VW.[PROJID] AS ProjID,
 				   CASE WHEN ISNULL(BU.InsuranceLevel, 3) >= 4 THEN 0 ELSE 1 END AS Insurance,
-				   InsurancePrice=II.InsurancePerHours
+				   InsurancePrice=CASE WHEN K.InsurancePerHours IS NOT NULL THEN K.InsurancePerHours ELSE II.InsurancePerHours END
 			FROM [VW_GetAllAnyRentData] VW WITH(NOLOCK)
 			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 			LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+			LEFT JOIN TB_MilageSetting M WITH(NOLOCK) ON VW.PROJID=M.ProjID
+			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,GETDATE(),112) AND H.use_flag=1
 			WHERE GPSTime>=DATEADD(MINUTE, -30, GETDATE())
 			  AND available=1
 			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5);
@@ -119,8 +121,8 @@ BEGIN TRY
 				   CONCAT([CarBrend], ' ', [CarTypeName]) AS CarTypeName,
 				   Area AS CarOfArea,
 				   [PRONAME] AS ProjectName,
-				   [PRICE]/10 AS Rental,
-				   2.5 AS Mileage,
+				   CASE WHEN H.[HolidayDate] IS NOT NULL THEN [PRICE_H]/10 ELSE [PRICE]/10 END AS Rental,
+				   M.MilageBase AS Mileage,
 				   0 AS ShowSpecial,
 				   '' AS SpecialInfo,
 				   [Latitude],
@@ -129,13 +131,15 @@ BEGIN TRY
 				   Score AS [OperatorScore],
 				   CarTypeImg AS [CarTypePic],
 				   Seat,
-				   [PROJID] AS ProjID,
+				   VW.[PROJID] AS ProjID,
 				   CASE WHEN ISNULL(BU.InsuranceLevel, 3) >= 4 THEN 0 ELSE 1 END AS Insurance,
-				   InsurancePrice=II.InsurancePerHours
+				   InsurancePrice=CASE WHEN K.InsurancePerHours IS NOT NULL THEN K.InsurancePerHours ELSE II.InsurancePerHours END
 			FROM [VW_GetAllAnyRentData] VW WITH(NOLOCK)
 			LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 			LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
+			LEFT JOIN TB_MilageSetting M WITH(NOLOCK) ON VW.PROJID=M.ProjID
+			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,GETDATE(),112) AND H.use_flag=1
 			WHERE GPSTime>=DATEADD(MINUTE, -30, GETDATE())
 			  AND available=1
 			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5)

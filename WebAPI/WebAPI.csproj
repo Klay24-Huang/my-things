@@ -512,6 +512,7 @@
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_CreditAndWalletQuery.cs" />
+    <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />

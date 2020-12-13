@@ -157,8 +157,8 @@ namespace Domain.MemberData
         /// </summary>
         public string SigntureCode { get; set; }
         /// <summary>
-        /// 短租會員流水號
+        /// 短租會員IR+流水號
         /// </summary>
-        public int MEMRFNBR { get; set; }
+        public string MEMRFNBR { get; set; }
     }
 }
