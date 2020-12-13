@@ -154,6 +154,7 @@ namespace WebAPI.Controllers
                     IsCens = spOut.IsCens;
                     IsMotor = spOut.IsMotor;
                     deviceToken = spOut.deviceToken;
+                    
                 }
             }
 
@@ -214,10 +215,10 @@ namespace WebAPI.Controllers
                             };
                             flag = CheckInPolygon(Nowlatlng, StationID);
                             #region 快樂模式
-                            if (ClosePolygonOpen == "0")
-                            {
-                                flag = true;
-                            }
+                            //if (ClosePolygonOpen == "0")
+                            //{
+                            //    flag = true;
+                            //}
                             #endregion
                             if (false == flag)
                             {
@@ -226,21 +227,21 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                         #region 檢查iButton
-                        //if (flag)
-                        //{
-                        //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                        //    {
-                        //        OrderNo = tmpOrder,
-                        //        Token = Access_Token,
-                        //        IDNO = IDNO,
-                        //        LogID = LogID
-                        //    };
-                        //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
-                        //    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                        //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                        //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                        //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
-                        //}
+                        if (flag)
+                        {
+                            SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                            {
+                                OrderNo = tmpOrder,
+                                Token = Access_Token,
+                                IDNO = IDNO,
+                                LogID = LogID
+                            };
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                            SPOutput_Base SPOutputBase = new SPOutput_Base();
+                            SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                            flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                        }
                         #endregion
                         #endregion
                     }
@@ -316,22 +317,34 @@ namespace WebAPI.Controllers
                                 }
                                 #endregion
                                 #region 檢查iButton
-                                //if (flag)
-                                //{
-                                //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                                //    {
-                                //        OrderNo = tmpOrder,
-                                //        Token = Access_Token,
-                                //        IDNO = IDNO,
-                                //        LogID = LogID
-                                //    };
-                                //    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
-                                //    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                                //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                                //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                                //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
-                                //}
+                                if (flag)
+                                {
+                                    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                    {
+                                        OrderNo = tmpOrder,
+                                        Token = Access_Token,
+                                        IDNO = IDNO,
+                                        LogID = LogID
+                                    };
+                                    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                                    SPOutput_Base SPOutputBase = new SPOutput_Base();
+                                    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                                    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                                }
                                 #endregion
+                                //遠傳車機五秒內相同指令會出問題，必須洗指令
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo;
+                                WSInput_Base<Params> input2 = new WSInput_Base<Params>()
+                                {
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new Params()
+                                };
+                                FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+
                             }
                         }
                         #endregion
@@ -420,6 +433,18 @@ namespace WebAPI.Controllers
                                 }
                             }
                             #endregion
+
+                            //遠傳車機五秒內相同指令會出問題，必須洗指令
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                            WSInput_Base<Params> input2 = new WSInput_Base<Params>()
+                            {
+                                command = true,
+                                method = CommandType,
+                                requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                _params = new Params()
+                            };
+                            FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                         }
                     }
                     #endregion
