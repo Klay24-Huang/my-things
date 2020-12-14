@@ -194,11 +194,11 @@ namespace Reposotory.Implement
                     //term += " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
                     term += " (CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END between @SD AND @ED)";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = StartDate;
+                    para[nowCount].Value = StartDate+" 00:00:00";
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = EndDate;
+                    para[nowCount].Value = EndDate + " 23:59:59";
                     para[nowCount].Direction = ParameterDirection.Input;
                 }
                 else
@@ -209,7 +209,7 @@ namespace Reposotory.Implement
                     //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
                     term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = StartDate;
+                    para[nowCount].Value = StartDate + " 00:00:00";
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
@@ -224,7 +224,7 @@ namespace Reposotory.Implement
                     //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
                     term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = EndDate;
+                    para[nowCount].Value = EndDate + " 23:59:59";
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
