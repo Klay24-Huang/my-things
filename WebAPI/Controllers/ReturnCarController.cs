@@ -32,6 +32,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string ClosePolygonOpen = (ConfigurationManager.AppSettings["ClosePolygonOpen"] == null) ? "1" : ConfigurationManager.AppSettings["ClosePolygonOpen"].ToString();
+        private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
         [HttpPost]
         public Dictionary<string, object> DoBookingCancel(Dictionary<string, object> value)
         {
@@ -64,6 +65,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -227,7 +229,7 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                         #region 檢查iButton
-                        if (flag)
+                        if (flag && iButton == 1)
                         {
                             SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
                             {
@@ -317,7 +319,7 @@ namespace WebAPI.Controllers
                                 }
                                 #endregion
                                 #region 檢查iButton
-                                if (flag)
+                                if (flag && iButton == 1)
                                 {
                                     SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
                                     {

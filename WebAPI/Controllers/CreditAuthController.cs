@@ -52,6 +52,7 @@ namespace WebAPI.Controllers
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
+        private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
 
         private CommonFunc baseVerify { get; set; }
 
@@ -226,7 +227,7 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 檢查iButton
-                    if (flag && OrderDataLists[0].ProjType != 4)
+                    if (flag && OrderDataLists[0].ProjType != 4 && iButton == 1)
                     {
                         SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
                         {

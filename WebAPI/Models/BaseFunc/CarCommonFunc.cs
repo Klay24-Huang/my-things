@@ -26,6 +26,8 @@ namespace WebAPI.Models.BaseFunc
         private string isDebug = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["isDebug"])) ? "0" : ConfigurationManager.AppSettings["isDebug"].ToString();
         private string CENSCID = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MockCID"])) ? "90001" : ConfigurationManager.AppSettings["MockCID"].ToString();
         private string ClosePolygonOpen = (ConfigurationManager.AppSettings["ClosePolygonOpen"] == null) ? "1" : ConfigurationManager.AppSettings["ClosePolygonOpen"].ToString();
+        private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
+
         /// <summary>
         /// 後台強還使用
         /// </summary>
@@ -639,10 +641,10 @@ namespace WebAPI.Models.BaseFunc
                                 };
                                 flag = CheckInPolygon(Nowlatlng, StationID);
                                 #region 快樂模式
-                                if (ClosePolygonOpen == "0")
-                                {
-                                    flag = true;
-                                }
+                                //if (ClosePolygonOpen == "0")
+                                //{
+                                //    flag = true;
+                                //}
                                 #endregion
                                 if (false == flag)
                                 {
