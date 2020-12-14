@@ -197,52 +197,52 @@ namespace WebAPI.Controllers
                         }
                     }
                     /*判斷是否要取款或是刷退*/
-                    if (apiInput.DiffPrice == 0 || obj.Paid == 0 || apiInput.DiffPrice < 0)
-                    {
+                    //if (apiInput.DiffPrice == 0 || obj.Paid == 0 || apiInput.DiffPrice < 0)
+                    //{
                         //直接更新
                         flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
                         if (flag)
                         {
                             flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                         }
-                    }
-                    else
-                    {
-                        //查詢有無綁卡
-                        if (apiInput.DiffPrice > 0) //刷退，
-                        {
-                            int hasBind = 0;
-                            List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
+                    //}
+                    //else
+                    //{
+                    //    //查詢有無綁卡
+                    //    if (apiInput.DiffPrice > 0) //刷退，
+                    //    {
+                    //        int hasBind = 0;
+                    //        List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
 
-                            flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
-                            if (flag)
-                            {
-                                if (hasBind == 0)
-                                {
-                                    flag = false;
-                                    errCode = "ERR762";
-                                }
-                                else
-                                {
-                                    WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
-                                    flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
-                                    if (flag)
-                                    {
-                                        if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
-                                        {
-                                            WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
-                                            flag = Credit.DoCreditRefund(tmpOrder, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
-                                        }
-                                    }
-                                }
-                            }
-                            if (flag)
-                            {
-                                /*傳送短租136*/
-                                flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
-                            }
-                        }
-                    }
+                    //        flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
+                    //        if (flag)
+                    //        {
+                    //            if (hasBind == 0)
+                    //            {
+                    //                flag = false;
+                    //                errCode = "ERR762";
+                    //            }
+                    //            else
+                    //            {
+                    //                WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                    //                flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                    //                if (flag)
+                    //                {
+                    //                    if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
+                    //                    {
+                    //                        WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
+                    //                        flag = Credit.DoCreditRefund(tmpOrder, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //        if (flag)
+                    //        {
+                    //            /*傳送短租136*/
+                    //            flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
+                    //        }
+                    //    }
+                    //}
                 }
             }
 
