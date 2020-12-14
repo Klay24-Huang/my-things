@@ -352,10 +352,10 @@ namespace WebAPI.Controllers
                     };
 
                 }
-                else
-                {
-                    errCode = "ERR161";
-                }
+                //else
+                //{
+                //    errCode = "ERR161";
+                //}
             }
 
             #endregion
