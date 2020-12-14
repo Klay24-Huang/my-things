@@ -307,10 +307,10 @@ namespace WebAPI.Controllers
                                     };
                                     flag = CheckInPolygon(Nowlatlng, StationID);
                                     #region 快樂模式
-                                    if (ClosePolygonOpen == "0")
-                                    {
-                                        flag = true;
-                                    }
+                                    //if (ClosePolygonOpen == "0")
+                                    //{
+                                    //    flag = true;
+                                    //}
                                     #endregion
                                     if (false == flag)
                                     {
@@ -345,7 +345,7 @@ namespace WebAPI.Controllers
                                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                     _params = new Params()
                                 };
-                                FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                                FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
 
                             }
                         }
@@ -446,7 +446,7 @@ namespace WebAPI.Controllers
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                 _params = new Params()
                             };
-                            FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                            FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
                         }
                     }
                     #endregion
