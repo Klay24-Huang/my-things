@@ -31,5 +31,9 @@ namespace Domain.TB.BackEnd
         /// 統一編號
         /// </summary>
         public string UniCode { set; get; }
+        /// <summary>
+        /// 停車格
+        /// </summary>
+        public string ParkingSpace { set; get; }
     }
 }

@@ -201,7 +201,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<CityData> lstZip = null;
             int nowCount = 0;
-            string SQL = "SELECT * FROM TB_City ORDER BY CityID ASC";
+            string SQL = "SELECT * FROM TB_City WITH(NOLOCK) ORDER BY CityID ASC";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
          
@@ -218,9 +218,11 @@ namespace Reposotory.Implement
                 "CARRIERID = CASE WHEN B.CARRIERID = '' THEN A.CARRIERID ELSE B.CARRIERID END," +
                 "NPOBAN = CASE WHEN B.NPOBAN = '' THEN A.NPOBAN ELSE B.NPOBAN END," +
                 "InvoiceType = CASE WHEN B.bill_option = '' THEN A.MEMSENDCD ELSE B.bill_option END," +
-                "UniCode = CASE WHEN B.unified_business_no = '' THEN A.UNIMNO ELSE B.unified_business_no END  " +
+                "UniCode = CASE WHEN B.unified_business_no = '' THEN A.UNIMNO ELSE B.unified_business_no END,  " +
+                "ParkingSpace = ISNULL(C.ParkingSpace,ISNULL((SELECT TOP 1 ParkingSpace FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=B.order_number),'')) " +
                 "FROM TB_MemberData A WITH(NOLOCK) " +
-                "JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO ";
+                "JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO " +
+                "JOIN TB_OrderDetail C WITH(NOLOCK) ON B.order_number=C.order_number ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             
@@ -293,7 +295,7 @@ namespace Reposotory.Implement
             List<UPDList> lstUPDList = null;
             UPDList ObjUPDList = null;
             int nowCount = 0;
-            string SQL = "SELECT TOP 1 [AreaList],[LoveCode],[NormalRent],[Polygon],[Parking]  FROM [dbo].[TB_UPDDataWatchTable] ORDER BY Id DESC";
+            string SQL = "SELECT TOP 1 [AreaList],[LoveCode],[NormalRent],[Polygon],[Parking]  FROM [dbo].[TB_UPDDataWatchTable] WITH(NOLOCK) ORDER BY Id DESC";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
 
@@ -317,7 +319,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<LoveCodeListData> lstLoveCode = null;
             int nowCount = 0;
-            string SQL = "SELECT [LoveName],[LoveCode],[LoveShortName],[UNICode] FROM TB_LoveCode ORDER BY Id ASC";
+            string SQL = "SELECT [LoveName],[LoveCode],[LoveShortName],[UNICode] FROM TB_LoveCode WITH(NOLOCK) ORDER BY Id ASC";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
 
@@ -335,7 +337,7 @@ namespace Reposotory.Implement
 
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<LoveCodeListData> lstLoveCode = null;
-            string SQL = "SELECT TOP {0} [LoveName],[LoveCode],[LoveShortName],[UNICode] FROM TB_LoveCode ORDER BY Id ASC";
+            string SQL = "SELECT TOP {0} [LoveName],[LoveCode],[LoveShortName],[UNICode] FROM TB_LoveCode WITH(NOLOCK) ORDER BY Id ASC";
 
             string repWorld = "";
             if (TakeCount > 0) 
@@ -359,7 +361,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<Holiday> lstHoliday = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT HolidayDate FROM TB_Holiday  ";
+            string SQL = "SELECT HolidayDate FROM TB_Holiday WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             flag = (false == string.IsNullOrEmpty(SD));
@@ -403,7 +405,7 @@ namespace Reposotory.Implement
             List<BE_MenuList> lstMenu = null;
             List<BE_MenuCombind> lstData = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT * FROM VW_GetMenuList WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
+            string SQL = "SELECT * FROM VW_GetMenuList WITH(NOLOCK) WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstMenu = GetObjList<BE_MenuList>(ref flag, ref lstError, SQL, para, term);
@@ -495,7 +497,7 @@ namespace Reposotory.Implement
             List<BE_PowerListCombind> lstPower = GetMenuPowerList();
             List<BE_MenuCombindConsistPower> lstData = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT * FROM VW_GetMenuList WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
+            string SQL = "SELECT * FROM VW_GetMenuList WITH(NOLOCK) WHERE OperationPowerGroupId>0  ORDER BY [Sort] ASC,SubMenuSort asc  ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstMenu = GetObjList<BE_MenuList>(ref flag, ref lstError, SQL, para, term);
@@ -593,7 +595,7 @@ namespace Reposotory.Implement
             List<BE_PowerList> lstPower = null;
             List<BE_PowerListCombind> lstData = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT * FROM VW_GetDefPowerList WHERE OperationPowerGroupId>0  ORDER BY [OperationPowerGroupId] ASC,OperationPowerID asc  ";
+            string SQL = "SELECT * FROM VW_GetDefPowerList WITH(NOLOCK) WHERE OperationPowerGroupId>0  ORDER BY [OperationPowerGroupId] ASC,OperationPowerID asc  ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstPower = GetObjList<BE_PowerList>(ref flag, ref lstError, SQL, para, term);

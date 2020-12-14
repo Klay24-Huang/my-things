@@ -3,6 +3,7 @@ var LoveCodeList = [];
 $(function () {
     $("#divReturnDate").hide();
     $("#returnInvoiceType").hide();
+    $("#parkingSpaceSection").hide();
 
     $("#LoveCodeList").hide();
     $("#CARRIERID").hide();
@@ -19,13 +20,16 @@ $(function () {
             $("#StartDate").val($.format.date(new Date(), 'yyyy-MM-dd HH:mm'));
             if ($("#type").val() == '1' && $("#mode").val() == '0') {
                 $("#returnInvoiceType").show();
+                $("#parkingSpaceSection").show();
                 getMemberInvoice();
             } else {
                 $("#returnInvoiceType").hide();
+                $("#parkingSpaceSection").hide();
             }
         } else {
             $("#divReturnDate").hide();
             $("#returnInvoiceType").hide();
+            $("#parkingSpaceSection").hide();
 
             //console.log($("#StartDate").val());
             $("#StartDate").val('');
@@ -34,9 +38,11 @@ $(function () {
     $("#mode").on("change", function () {
         if ($("#type").val() == '1' && $("#mode").val() == '0') {
             $("#returnInvoiceType").show();
+            $("#parkingSpaceSection").show();
             getMemberInvoice();
         } else {
             $("#returnInvoiceType").hide();
+            $("#parkingSpaceSection").hide();
         }
     });
 
@@ -57,6 +63,7 @@ $(function () {
         var CARRIERID = $("#CARRIERID").val();
         var NPOBAN = $("#NPOBAN").val();
         var unified_business_no = $("#UniCode").val();
+        var parkingSpace = $("#parkingSpace").val();
         var flag = true;
         var errMsg = "";
         if (OrderNo == "") {
@@ -130,6 +137,7 @@ $(function () {
             obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
             obj.NPOBAN = NPOBAN;
             obj.unified_business_no = unified_business_no;
+            obj.parkingSpace = parkingSpace;
             var json = JSON.stringify(obj);
             console.log(json);
             DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
@@ -238,6 +246,7 @@ var initInvoData = function (invoiceType) {
 };
 var setInvoData = function () {
     $('#InvoiceType').val(MemberInvoice.InvoiceType);
+    $('#parkingSpace').val(MemberInvoice.ParkingSpace);
 
     initInvoData($("#InvoiceType").val());
     $('#CARRIERID').val(MemberInvoice.CARRIERID);

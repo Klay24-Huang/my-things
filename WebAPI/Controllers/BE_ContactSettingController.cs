@@ -333,7 +333,8 @@ namespace WebAPI.Controllers
                                             bill_option = apiInput.bill_option,
                                             NPOBAN = apiInput.NPOBAN,
                                             CARRIERID = apiInput.CARRIERID,
-                                            unified_business_no = apiInput.unified_business_no
+                                            unified_business_no = apiInput.unified_business_no,
+                                            ParkingSpace = apiInput.parkingSpace
                                         };
                                         string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                         SPOutput_Base PayOutput = new SPOutput_Base();
@@ -367,7 +368,8 @@ namespace WebAPI.Controllers
                                                 bill_option = apiInput.bill_option,
                                                 NPOBAN = apiInput.NPOBAN,
                                                 CARRIERID = apiInput.CARRIERID,
-                                                unified_business_no = apiInput.unified_business_no
+                                                unified_business_no = apiInput.unified_business_no,
+                                                ParkingSpace = apiInput.parkingSpace
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();

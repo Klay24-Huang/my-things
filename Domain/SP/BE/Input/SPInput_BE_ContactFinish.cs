@@ -42,5 +42,9 @@ namespace Domain.SP.BE.Input
         /// 統一編號
         /// </summary>
         public string unified_business_no { set; get; }
+        /// <summary>
+        /// 停車格
+        /// </summary>
+        public string ParkingSpace { set; get; }
     }
 }

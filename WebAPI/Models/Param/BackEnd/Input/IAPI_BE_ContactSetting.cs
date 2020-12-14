@@ -43,6 +43,10 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// </summary>
         public string unified_business_no { set; get; }
         /// <summary>
+        /// 停車格
+        /// </summary>
+        public string parkingSpace { set; get; }
+        /// <summary>
         /// 操作者
         /// </summary>
         public string UserID { set; get; }
