@@ -210,7 +210,7 @@ namespace WebAPI.Controllers
                     lstData = (from a in spList
                                select new StationAndProjectAndCarTypeData
                                {
-                                   ADDR = a.ADDR,
+                                   ADDR = string.Format("{0}{1}{2}", a.CityName, a.AreaName, a.ADDR),
                                    CarBrend = a.CarBrend,
                                    CarOfArea = a.CarOfArea,
                                    CarType = a.CarType,
