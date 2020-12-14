@@ -351,6 +351,10 @@ namespace WebAPI.Models.Enum
             /// 20201213 ADD BY ADAM
             /// </summary>
             ArrearsQueryByNPR330ID,
+            /// <summary>
+            /// 變更悠遊卡
+            /// </summary>
+            ReadUUCard,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -819,6 +823,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.ArrearsQueryByNPR330ID: //20201213 ADD BY ADAM
                     SPName = "usp_ArrearsQuery_Q1";
+                    break;
+                case SPType.ReadUUCard:     //變更悠遊卡
+                    SPName = "usp_ReadUUCard";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
