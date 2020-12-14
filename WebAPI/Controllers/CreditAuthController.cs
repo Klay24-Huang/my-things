@@ -71,8 +71,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CreditAuth apiInput = null;
-            NullOutput apiOutput = null;
-            //OAPI_CreditAuth apiOutput = new OAPI_CreditAuth();
+            //NullOutput apiOutput = null;
+            OAPI_CreditAuth apiOutput = new OAPI_CreditAuth();
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -498,7 +498,11 @@ namespace WebAPI.Controllers
                                 WebAPIInput_NPR340Save wsInput = null;
                                 WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
                                 string MerchantTradeNo = "";
-                                string ServiceTradeNo = "";
+                                string ServiceTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo; //
+                                string AuthCode = WSAuthOutput.ResponseParams == null ? "0000" : WSAuthOutput.ResponseParams.ResultData.AuthIdResp;   //
+                                string CardNo = WSAuthOutput.ResponseParams == null ? "XXXX-XXXX-XXXX-XXXX" : WSAuthOutput.ResponseParams.ResultData.CardNumber;
+
+
                                 wsInput = new WebAPIInput_NPR340Save()
                                 {
                                     tbNPR340SaveServiceVar = new List<NPR340SaveServiceVar>(),
@@ -510,16 +514,16 @@ namespace WebAPI.Controllers
                                     wsInput.tbNPR340SaveServiceVar.Add(new NPR340SaveServiceVar()
                                     {
                                         AMOUNT = sp_result[i].Amount.ToString(),
-                                        AUTH_CODE = WSAuthOutput.ResponseParams.ResultData.AuthIdResp,
-                                        CARDNO = WSAuthOutput.ResponseParams.ResultData.CardNumber,
+                                        AUTH_CODE = AuthCode,
+                                        CARDNO = CardNo,
                                         CARNO = sp_result[i].CarNo,
                                         CNTRNO = sp_result[i].CNTRNO,
                                         CUSTID = IDNO,
-                                        ORDNO = sp_result[i].ORDNO,
+                                        ORDNO = sp_result[i].IRENTORDNO,
                                         POLNO = sp_result[i].POLNO,
                                         PAYMENTTYPE = Convert.ToInt64(sp_result[i].PAYMENTTYPE),
                                         PAYDATE = DateTime.Now.ToString("yyyyMMdd"),
-                                        NORDNO = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
+                                        NORDNO = ServiceTradeNo,
                                         CDTMAN = ""
                                     });
 
@@ -535,9 +539,10 @@ namespace WebAPI.Controllers
                                 }
 
                                 flag = webAPI.NPR340Save(wsInput, ref wsOutput);
-                                if (flag)
+                                //if (!flag)
                                 {
-
+                                    flag = true;
+                                    errCode = "000000";
                                 }
                             }
                         }
@@ -552,7 +557,7 @@ namespace WebAPI.Controllers
             }
 
             //機車換電獎勵
-            //apiOutput.RewardPoint = RewardPoint;
+            apiOutput.RewardPoint = RewardPoint;
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)

@@ -104,7 +104,7 @@ BEGIN TRY
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -113,7 +113,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -126,13 +126,13 @@ BEGIN TRY
 	BEGIN
 		BEGIN TRAN
 		SET @hasData=0
-		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo 
+		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo 
 		AND (car_mgt_status<=4 AND cancel_status=0 AND booking_status<3) AND stop_pick_time>@NowTime;
 		IF @hasData>0
 		BEGIN
 			--寫入記錄
 			SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
-			FROM TB_OrderMain
+			FROM TB_OrderMain WITH(NOLOCK)
 			WHERE order_number=@OrderNo;
 			
 			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
