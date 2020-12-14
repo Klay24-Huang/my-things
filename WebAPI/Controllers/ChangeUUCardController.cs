@@ -298,7 +298,7 @@ namespace WebAPI.Controllers
                                 if (flag)
                                 {
                                     //要將卡號寫入車機
-                                    SendCarNoData[] CardData = new SendCarNoData[0];
+                                    SendCarNoData[] CardData = new SendCarNoData[1];
                                     //寫入顧客卡
                                     WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
                                     {
@@ -348,7 +348,7 @@ namespace WebAPI.Controllers
 
                                 if (flag)
                                 {
-                                    string[] CardStr = new string[0];
+                                    string[] CardStr = new string[1];
                                     CardStr[0] = CardNo;
 
                                     CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
