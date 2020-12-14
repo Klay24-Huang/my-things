@@ -207,6 +207,16 @@ namespace WebAPI.Controllers
                             }
                         }
                         #endregion
+                        #region 判斷是否關燈
+                        if (flag)
+                        {
+                            if (wsOutInfo.data.IndoorLight == 1)
+                            {
+                                flag = false;
+                                errCode = "ERR439";
+                            }
+                        }
+                        #endregion
                         #region 判斷是否在據點內
                         if (flag)
                         {
@@ -294,6 +304,16 @@ namespace WebAPI.Controllers
                                     {
                                         flag = false;
                                         errCode = "ERR187";
+                                    }
+                                }
+                                #endregion
+                                #region 判斷是否關燈
+                                if (flag)
+                                {
+                                    if (info.IndoorLightStatus == 1)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR439";
                                     }
                                 }
                                 #endregion
