@@ -131,6 +131,10 @@ namespace Domain.SP.BE.Input
         /// 安心服務
         /// </summary>
         public int Insurance_price { set; get; }
+        /// <summary>
+        /// 里程費用
+        /// </summary>
+        public int Mileage { set; get; }
         public string UserID { set; get; }
     }
 }

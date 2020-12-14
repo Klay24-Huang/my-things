@@ -58,6 +58,7 @@ $(document).ready(function () {
 
         var oldPrice = parseInt($("#spn_finalPrice").html());
         var final_price = $("#final_price_input").val();
+        var Mileage = $("#Mileage_input").val();
         var pure = $("#pure_price_input").val();
         var SM = $("#start_mile_input").val();
         var EM = $("#end_mile_input").val();
@@ -80,7 +81,7 @@ $(document).ready(function () {
             $("#start_mile_input").prop("readonly", "readonly");
             $("#end_mile_input").prop("readonly", "readonly");
             $("#fine_price_input").prop("readonly", "readonly");
-            $("#final_price_input").prop("readonly", "readonly");
+            $("#Mileage_input").prop("readonly", "readonly");
             $("#final_price_input").prop("readonly", "readonly");
             $("#StartDate").prop("disabled", "disabled");
             $("#EndDate").prop("disabled", "disabled");
@@ -165,6 +166,7 @@ $(document).ready(function () {
                 var ParkingFeeByMachi = $("#ParkingFeeByMachi_input").val();
                 var ParkingFeeByMachiRemark = $("#ParkingFeeByMachiRemark_input").val();
                 var Insurance_price = $("#Insurance_price_input").val();
+                var Mileage = $("#Mileage_input").val();
                 
                 if ($.trim(CarPoint) == "") {
                     $("#gift_point_select").val("0");
@@ -199,6 +201,7 @@ $(document).ready(function () {
                 obj.ParkingFeeByMachi = ParkingFeeByMachi;
                 obj.ParkingFeeByMachiRemark = ParkingFeeByMachiRemark;
                 obj.Insurance_price = Insurance_price;
+                obj.Mileage = Mileage;
 
                 if (OrderObj.PROJTYPE == 4) {
                     obj.CarPoint = CarPoint;
@@ -275,6 +278,7 @@ function SetData(data) {
 
 
             $("#spn_Mileage").html(OrderObj.mileage_price);
+            $("#Mileage_input").val(OrderObj.mileage_price).prop("readonly", "");
             $("#spn_finePrice").html(OrderObj.fine_price);
             $("#spn_payPrice").html(OrderObj.Paid)
 

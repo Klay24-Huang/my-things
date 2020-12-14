@@ -318,8 +318,9 @@ namespace WebAPI.Controllers
                 ProjType = apiInput.ProjType,
                 StartDate = apiInput.StartDate,
                 start_mile = apiInput.start_mile,
-                 PAYAMT=apiInput.DiffPrice,
-                  Insurance_price=apiInput.Insurance_price
+                PAYAMT = apiInput.DiffPrice,
+                Insurance_price = apiInput.Insurance_price,
+                Mileage = apiInput.Mileage
             };
             SPOutput_Base spOut = new SPOutput_Base();
 

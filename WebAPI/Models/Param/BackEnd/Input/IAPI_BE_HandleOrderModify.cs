@@ -125,5 +125,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 代收停車費說明
         /// </summary>
         public string ParkingFeeByMachiRemark { set; get; }
+        /// <summary>
+        /// 里程費用
+        /// </summary>
+        public int Mileage { set; get; }
     }
 }
