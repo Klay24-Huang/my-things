@@ -79,9 +79,9 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @IDNO=ISNULL (@IDNO,'');
-SET @DeviceID=ISNULL (@DeviceID,'');
-SET @MEMCNAME=ISNULL (@MEMCNAME,'');
+SET @IDNO=ISNULL(@IDNO,'');
+SET @DeviceID=ISNULL(@DeviceID,'');
+SET @MEMCNAME=ISNULL(@MEMCNAME,'');
 SET @MEMBIRTH=ISNULL(@MEMBIRTH,'');
 SET @MEMCITY =ISNULL(@MEMCITY ,0);
 SET @MEMADDR =ISNULL(@MEMADDR ,'');
@@ -197,6 +197,12 @@ BEGIN TRY
 			WHERE MEMIDNO=@IDNO;
 		END
 
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_BookingInsuranceOfUser WITH(NOLOCK) WHERE IDNO=@IDNO;
+		IF @hasData=0
+		BEGIN
+			INSERT INTO [TB_BookingInsuranceOfUser] VALUES(@IDNO,3,0,0,@NowTime,@NowTime);
+		END
 	END
 
 	--寫入錯誤訊息
