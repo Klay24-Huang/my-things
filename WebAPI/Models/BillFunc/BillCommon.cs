@@ -929,11 +929,11 @@ namespace WebAPI.Models.BillFunc
 
             if (MilageBase < 0)
             {
-                MilagePrice = Convert.ToInt32(Math.Floor((TotalHour * baseMil) * MilageDef));
+                MilagePrice = Convert.ToInt32(Math.Round((TotalHour * baseMil) * MilageDef, 0, MidpointRounding.AwayFromZero));
             }
             else
             {
-                MilagePrice = Convert.ToInt32(Math.Floor((TotalHour * baseMil) * MilageBase));
+                MilagePrice = Convert.ToInt32(Math.Round((TotalHour * baseMil) * MilageBase, 0, MidpointRounding.AwayFromZero));
             }
             return MilagePrice;
         }
