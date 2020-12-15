@@ -320,6 +320,7 @@ namespace WebAPI.Controllers
                                             {
                                                 //寫入車機錯誤
                                             }
+                                            errCode = "000000";
                                         }
                                         //已經付完款，直接更改狀態
                                         SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
@@ -355,6 +356,7 @@ namespace WebAPI.Controllers
                                                 {
                                                     //寫入車機錯誤
                                                 }
+                                                errCode = "000000";
                                             }
                                             //已經付完款，直接更改狀態
                                             SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
