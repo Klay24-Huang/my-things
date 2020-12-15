@@ -356,19 +356,19 @@ namespace WebAPI.Controllers
                                 }
                                 #endregion
                                 //遠傳車機五秒內相同指令會出問題，必須洗指令
-                                if (flag)
-                                {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo;
-                                    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
-                                    };
-                                    FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
-                                }
+                                //if (flag)
+                                //{
+                                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo);
+                                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo;
+                                //    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
+                                //    {
+                                //        command = true,
+                                //        method = CommandType,
+                                //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                //        _params = new Params()
+                                //    };
+                                //    FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
+                                //}
                             }
                         }
                         #endregion
@@ -458,20 +458,20 @@ namespace WebAPI.Controllers
                             }
                             #endregion
 
-                            if (flag)
-                            {
-                                //遠傳車機五秒內相同指令會出問題，必須洗指令
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
-                                WSInput_Base<Params> input2 = new WSInput_Base<Params>()
-                                {
-                                    command = true,
-                                    method = CommandType,
-                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    _params = new Params()
-                                };
-                                FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
-                            }
+                            //if (flag)
+                            //{
+                            //    //遠傳車機五秒內相同指令會出問題，必須洗指令
+                            //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                            //    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                            //    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
+                            //    {
+                            //        command = true,
+                            //        method = CommandType,
+                            //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            //        _params = new Params()
+                            //    };
+                            //    FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
+                            //}
                         }
                     }
                     #endregion

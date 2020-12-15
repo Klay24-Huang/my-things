@@ -360,11 +360,10 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
-                    else
-                    {
-                        flag = true;
-                        errCode = "000000";
-                    }
+                    
+                    flag = true;
+                    errCode = "000000";
+                    
                     //判斷輸入的點數有沒有超過總點數
                     if (ProjType == 4)
                     {
@@ -438,11 +437,8 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
-                    else
-                    {
-                        flag = true;
-                        errCode = "000000";
-                    }
+                    flag = true;
+                    errCode = "000000";
                 }
                 #endregion
                 
