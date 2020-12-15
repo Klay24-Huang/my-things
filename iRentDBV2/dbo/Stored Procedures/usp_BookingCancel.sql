@@ -107,10 +107,10 @@ SET @NowActiveOrderNum=0;
 		   SET @ErrorCode='ERR900'
  		 END
 		 
-				 --0.再次檢核token
+		 --0.再次檢核token
 		 IF @Error=0
 		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		 	SELECT @hasData=COUNT(1) FROM TB_Token with(nolock) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -119,7 +119,7 @@ SET @NowActiveOrderNum=0;
 			ELSE
 			BEGIN
 			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+				SELECT @hasData=COUNT(1) FROM TB_Token with(nolock) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 				IF @hasData=0
 				BEGIN
 				   SET @Error=1;
@@ -134,7 +134,7 @@ SET @NowActiveOrderNum=0;
 						,@MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount],0)
 						,@RentNowActiveType=ISNULL(RentNowActiveType,5)
 						,@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
-			FROM [dbo].[TB_BookingStatusOfUser]
+			FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 			WHERE IDNO=@IDNO;
 		 END
 		 --判斷訂單狀態
@@ -142,7 +142,7 @@ SET @NowActiveOrderNum=0;
 		 BEGIN
 			BEGIN TRAN
 				SET @hasData=0
-				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status<=3 AND cancel_status=0 AND booking_status<3);
+				SELECT @hasData=COUNT(order_number)  FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo AND (car_mgt_status<=3 AND cancel_status=0 AND booking_status<3);
 				IF @hasData>0
 				BEGIN
 					UPDATE TB_OrderMain SET cancel_status=3 WHERE IDNO=@IDNO AND order_number=@OrderNo
@@ -150,7 +150,7 @@ SET @NowActiveOrderNum=0;
 					BEGIN
 						COMMIT TRAN;
 							SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
-							FROM TB_OrderMain
+							FROM TB_OrderMain WITH(NOLOCK)
 							WHERE order_number=@OrderNo;
 							INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 							
@@ -163,11 +163,11 @@ SET @NowActiveOrderNum=0;
 							END
 							ELSE IF @ProjType=3
 							BEGIN
-								UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
+								UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=0,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
 							END
 							ELSE IF @ProjType=4
 							BEGIN
-								UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=MotorRentBookingNowCount-1,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
+								UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=0,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
 							END
 
 					END

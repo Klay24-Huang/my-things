@@ -130,7 +130,7 @@ SET @UserID=ISNULL(@UserID,'');
 								,@MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount],0)
 								,@RentNowActiveType=ISNULL(RentNowActiveType,5)
 								,@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
-					FROM [dbo].[TB_BookingStatusOfUser]
+					FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 					WHERE IDNO=@IDNO;
 				 END
 
@@ -138,8 +138,8 @@ SET @UserID=ISNULL(@UserID,'');
 			  IF @@ROWCOUNT=1
 			  BEGIN
 			    COMMIT TRAN;
-				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo
-			        FROM TB_OrderMain
+				     SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo
+			        FROM TB_OrderMain WITH(NOLOCK)
 			        WHERE order_number=@OrderNo;
 				   INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 				 --  UPDATE Car_201607 SET available=1 WHERE car_id=@CarNo;
@@ -154,11 +154,11 @@ SET @UserID=ISNULL(@UserID,'');
 					END
 					ELSE IF @ProjType=3
 					BEGIN
-						UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=[AnyRentBookingNowCount]-1,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
+						UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=0,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
 					END
 					ELSE IF @ProjType=4
 					BEGIN
-						UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=MotorRentBookingNowCount-1,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
+						UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=0,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
 					END
 
 
