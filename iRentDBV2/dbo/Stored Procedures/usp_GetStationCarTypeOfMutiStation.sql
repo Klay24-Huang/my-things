@@ -184,6 +184,16 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				--JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
 				WHERE A.TotalCount = B.NGCount
 
+				--測試春節專案(暫用1/1~1/3)，先用寫死方式之後再改
+				CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
+				INSERT INTO #SPDATE VALUES('2021-01-01','2021-01-04')
+				SELECT * INTO #TB_Project FROM TB_Project WITH(NOLOCK) WHERE ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd))
+				--IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE)))
+				--BEGIN
+				--	--在此時間的專案會只剩特殊專案
+				--	DELETE FROM #TB_Project WHERE PROJID<>'P996'
+				--END
+
 				--20201023 ADD BY ADAM REASON.調整邏輯
 				SELECT  DISTINCT StationID		= C.nowStationID
 						,PROJID					= P.PROJID
@@ -221,16 +231,13 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
 				JOIN TB_OperatorBase O WITH(NOLOCK) ON D.Operator=O.OperatorID
 				JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
-				JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
+				JOIN #TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
 				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
 				LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID = I.CityID --eason 2020-11-27
 				LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID = I.AreaID --eason 2020-11-27
 				LEFT JOIN #BookingList BL ON C.nowStationID=BL.nowStationID AND C.CarType=BL.CarType
 				LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
-				LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
-							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
-							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
-							WHERE II.useflg='Y') K ON E.CarTypeGroupCode=K.CarTypeGroupCode
+				LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=E.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel
 				LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=E.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 				LEFT JOIN TB_MilageSetting MS WITH(NOLOCK) ON MS.ProjID=P.PROJID AND MS.use_flag=1 AND @NowTime BETWEEN MS.SDate AND MS.EDate
 				--LEFT JOIN (SELECT CarNo FROM #TB_OrderMain GROUP BY CarNo) T ON C.CarNo=T.CarNo
