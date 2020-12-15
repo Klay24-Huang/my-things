@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -52,6 +53,14 @@ namespace WebAPI.Utils
         public static List<string> StrEmuList<T>()
         {
             return Enum.GetNames(typeof(T)).ToList();
+        }
+
+        public static T Clone<T>(T sour)
+        {
+            if (sour != null)
+                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(sour));
+            else
+                return default(T);
         }
     }
 }
