@@ -183,7 +183,12 @@ namespace WebAPI.Controllers
                     {
                         Thread.Sleep(1000);
                         ReadFlag = new CarCMDRepository(connetStr).CheckHasReadCard(spOut.CID, NowTime.ToString("yyyy-MM-dd HH:mm:ss"), ref CardNo);
+                        if (ReadFlag)
+                        {
+                            break;
+                        }
                         NowCount++;
+                        
                     }
                     
                     if (ReadFlag == false)

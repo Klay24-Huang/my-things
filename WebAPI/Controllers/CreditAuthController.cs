@@ -73,7 +73,7 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_CreditAuth apiInput = null;
             //NullOutput apiOutput = null;
-            OAPI_CreditAuth apiOutput = new OAPI_CreditAuth();
+            OAPI_CreditAuth apiOutput = null;
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -558,7 +558,12 @@ namespace WebAPI.Controllers
             }
 
             //機車換電獎勵
-            apiOutput.RewardPoint = RewardPoint;
+            if (flag)
+            {
+                apiOutput = new OAPI_CreditAuth();
+                apiOutput.RewardPoint = RewardPoint;
+            }
+            
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
