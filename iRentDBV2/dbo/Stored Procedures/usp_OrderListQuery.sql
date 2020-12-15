@@ -107,7 +107,9 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 	BEGIN
-		SELECT lend_place AS StationID,StationName,Tel,ADDR,Latitude,Longitude,Content,ContentForAPP,IsRequiredForReturn	--據點相關
+		SELECT lend_place AS StationID,StationName,Tel
+			,CT.CityName + AZ.AreaName + VW.ADDR AS ADDR
+			,Latitude,Longitude,Content,ContentForAPP,IsRequiredForReturn	--據點相關
             ,OperatorName,OperatorICon,Score	--營運商相關
             ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)	--車子相關, 20201006 eason ADD CarNo,IsMotor
             ,device3TBA,RemainingMilage						--機車電力相關
@@ -167,6 +169,8 @@ BEGIN TRY
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 		LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
+		LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID=VW.CityID
+		LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID=VW.AreaID
         WHERE VW.IDNO=@IDNO AND cancel_status=0
         AND (car_mgt_status<16    --排除已還車的
 			--針對汽機車已還車在15分鐘內的
