@@ -452,6 +452,14 @@ namespace WebAPI.Controllers
 
                     }
                     #endregion
+
+                    //機車換電獎勵
+                    if (flag)
+                    {
+                        apiOutput = new OAPI_CreditAuth();
+                        apiOutput.RewardPoint = RewardPoint;
+                    }
+
                 }
                 else if (apiInput.PayType == 1)
                 {
@@ -557,12 +565,7 @@ namespace WebAPI.Controllers
                 #endregion
             }
 
-            //機車換電獎勵
-            if (flag)
-            {
-                apiOutput = new OAPI_CreditAuth();
-                apiOutput.RewardPoint = RewardPoint;
-            }
+            
             
             #endregion
             #region 寫入錯誤Log
