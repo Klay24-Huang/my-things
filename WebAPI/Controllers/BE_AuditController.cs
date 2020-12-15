@@ -83,10 +83,16 @@ namespace WebAPI.Controllers
                 {
                     IDNO=apiInput.IDNO,
                     UserID = apiInput.UserID,
-                    Business_1 = apiInput.ImageData.Business_1_new,
-                    Business_1_Audit = (apiInput.ImageData.Business_1_Audit == 1) ? 2 : apiInput.ImageData.Business_1_Audit,
-                    Business_1_Reason = apiInput.ImageData.Business_1_Reason,
-                    Business_1_Image = (apiInput.ImageData.Business_1 == apiInput.ImageData.Business_1_new) ? RemoveSuff(apiInput.ImageData.Business_1_Image) : CheckNeedChangeName(apiInput.ImageData.Business_1, apiInput.ImageData.Business_1_new, RemoveSuff(apiInput.ImageData.Business_1_Image)),
+                    ID_1 = apiInput.ImageData.ID_1_new,
+                    ID_1_Audit = (apiInput.ImageData.ID_1_Audit == 1) ? 2 : apiInput.ImageData.ID_1_Audit,
+                    ID_1_Reason = apiInput.ImageData.ID_1_Reason,
+                    ID_1_Image = (apiInput.ImageData.ID_1 == apiInput.ImageData.ID_1_new) ? RemoveSuff(apiInput.ImageData.ID_1_Image) : CheckNeedChangeName(apiInput.ImageData.ID_1, apiInput.ImageData.ID_1_new, RemoveSuff(apiInput.ImageData.ID_1_Image)),
+
+                    ID_2 = apiInput.ImageData.ID_2_new,
+                    ID_2_Audit = (apiInput.ImageData.ID_2_Audit == 1) ? 2 : apiInput.ImageData.ID_2_Audit,
+                    ID_2_Reason = apiInput.ImageData.ID_2_Reason,
+                    ID_2_Image = (apiInput.ImageData.ID_2 == apiInput.ImageData.ID_2_new) ? RemoveSuff(apiInput.ImageData.ID_2_Image) : CheckNeedChangeName(apiInput.ImageData.ID_2, apiInput.ImageData.ID_2_new, RemoveSuff(apiInput.ImageData.ID_2_Image)),
+
                     Car_1 = apiInput.ImageData.Car_1_new,
                     Car_1_Audit = (apiInput.ImageData.Car_1_Audit == 1) ? 2 : apiInput.ImageData.Car_1_Audit,
                     Car_1_Reason = apiInput.ImageData.Car_1_Reason,
@@ -111,16 +117,6 @@ namespace WebAPI.Controllers
                     F01_Reason = apiInput.ImageData.F01_Reason,
                     F01_Image = (apiInput.ImageData.F01 == apiInput.ImageData.F01_new) ? RemoveSuff(apiInput.ImageData.F01_Image) : CheckNeedChangeName(apiInput.ImageData.F01, apiInput.ImageData.F01_new, RemoveSuff(apiInput.ImageData.F01_Image)),
 
-                    ID_1 = apiInput.ImageData.ID_1_new,
-                    ID_1_Audit = (apiInput.ImageData.ID_1_Audit == 1) ? 2 : apiInput.ImageData.ID_1_Audit,
-                    ID_1_Reason = apiInput.ImageData.ID_1_Reason,
-                    ID_1_Image = (apiInput.ImageData.ID_1 == apiInput.ImageData.ID_1_new) ? RemoveSuff(apiInput.ImageData.ID_1_Image) : CheckNeedChangeName(apiInput.ImageData.ID_1, apiInput.ImageData.ID_1_new, RemoveSuff(apiInput.ImageData.ID_1_Image)),
-
-                    ID_2 = apiInput.ImageData.ID_2_new,
-                    ID_2_Audit = (apiInput.ImageData.ID_2_Audit == 1) ? 2 : apiInput.ImageData.ID_2_Audit,
-                    ID_2_Reason = apiInput.ImageData.ID_2_Reason,
-                    ID_2_Image = (apiInput.ImageData.ID_2 == apiInput.ImageData.ID_2_new) ? RemoveSuff(apiInput.ImageData.ID_2_Image) : CheckNeedChangeName(apiInput.ImageData.ID_2, apiInput.ImageData.ID_2_new, RemoveSuff(apiInput.ImageData.ID_2_Image)),
-
                     Other_1 = apiInput.ImageData.Other_1_new,
                     Other_1_Audit = (apiInput.ImageData.Other_1_Audit == 1) ? 2 : apiInput.ImageData.Other_1_Audit,
                     Other_1_Reason = apiInput.ImageData.Other_1_Reason,
@@ -130,6 +126,11 @@ namespace WebAPI.Controllers
                     Self_1_Audit = (apiInput.ImageData.Self_1_Audit == 1) ? 2 : apiInput.ImageData.Self_1_Audit,
                     Self_1_Reason = apiInput.ImageData.Self_1_Reason,
                     Self_1_Image = (apiInput.ImageData.Self_1 == apiInput.ImageData.Self_1_new) ? RemoveSuff(apiInput.ImageData.Self_1_Image) : CheckNeedChangeName(apiInput.ImageData.Self_1, apiInput.ImageData.Self_1_new, RemoveSuff(apiInput.ImageData.Self_1_Image)),
+
+                    Business_1 = apiInput.ImageData.Business_1_new,
+                    Business_1_Audit = (apiInput.ImageData.Business_1_Audit == 1) ? 2 : apiInput.ImageData.Business_1_Audit,
+                    Business_1_Reason = apiInput.ImageData.Business_1_Reason,
+                    Business_1_Image = (apiInput.ImageData.Business_1 == apiInput.ImageData.Business_1_new) ? RemoveSuff(apiInput.ImageData.Business_1_Image) : CheckNeedChangeName(apiInput.ImageData.Business_1, apiInput.ImageData.Business_1_new, RemoveSuff(apiInput.ImageData.Business_1_Image)),
 
                     Signture_1 = apiInput.ImageData.Signture_1_new,
                     Signture_1_Audit = (apiInput.ImageData.Signture_1_Audit == 1) ? 2 : apiInput.ImageData.Signture_1_Audit,

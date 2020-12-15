@@ -130,7 +130,7 @@ namespace WebCommon
         {
             bool flag = true;
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-             CloudConfigurationManager.GetSetting("StorageConnectionString"));
+             CloudConfigurationManager.GetSetting("StorageConnectionStrings"));
 
             // Create the blob client.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();

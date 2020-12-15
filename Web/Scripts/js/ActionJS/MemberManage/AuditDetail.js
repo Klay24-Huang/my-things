@@ -5,8 +5,8 @@ var ID_1_Reason = "", ID_2_Reason = "", Car_1_Reason = "", Car_2_Reason = "", Mo
 var field = [ID_1, ID_2, Car_1, Car_2, Motor_1, Motor_2, Self_1, F01, Signture_1, Other_1, Business_1];
 var fieldAudit = [ID_1_Audit, ID_2_Audit, Car_1_Audit, Car_2_Audit, Motor_1_Audit, Motor_2_Audit, Self_1_Audit, F01_Audit, Signture_1_Audit, Other_1_Audit, Business_1_Audit];
 var fieldReason = [ID_1_Reason, ID_2_Reason, Car_1_Reason, Car_2_Reason, Motor_1_Reason, Motor_2_Reason, Self_1_Reason, F01_Reason, Signture_1_Reason, Other_1_Reason, Business_1_Reason];
-var fieldName = ["ID_1", "ID_2", "Car_1", "Car_2", "Motor_1", "Motor_2", "Self_1", "F01", "Signture_1", "Other_1", "Business_1"];
-var fieldCName = ["身份證正面", "身份證背面", "汽車駕照正面", "汽車駕照背面", "機車駕照正面", "機車駕照背面", "自拍照", "法定代理人同意書", "簽名檔", "其他證件", "企業用戶"];
+var fieldName = ["ID_1", "ID_2", "Car_1", "Car_2", "Motor_1", "Motor_2", "Self_1", "F01", "Other_1", "Business_1", "Signture_1"];
+var fieldCName = ["身份證正面", "身份證背面", "汽車駕照正面", "汽車駕照背面", "機車駕照正面", "機車駕照背面", "自拍照", "法定代理人同意書", "其他證件", "企業用戶", "簽名檔"];
 var fieldLen = field.length;
 var Account = "";
 $(function () {
@@ -376,77 +376,97 @@ function ShowPIC(site) {
     }
 }
 function setData() {
+    var ObjList = [];
     for (var i = 0; i < fieldLen; i++) {
         field[i] = $("#" + fieldName[i]).val();
         fieldAudit[i] = $("input[name='" + fieldName[i] + "_AuditStatus']:checked").val();
         fieldReason[i] = $("#" + fieldName[i] + "_RejectReason").val();
+        ObjList.push({
+            ID:i+1,
+            Audit: $("input[name='" + fieldName[i] + "_AuditStatus']:checked").val(),
+            Reason: $("#" + fieldName[i] + "_RejectReason").val(),
+            Image:''
+        });
     }
+    ObjList[0].Image = $("#ID_1_PIC").attr('src');
+    ObjList[1].Image = $("#ID_2_PIC").attr('src');
+    ObjList[2].Image = $("#Car_1_PIC").attr('src');
+    ObjList[3].Image = $("#Car_2_PIC").attr('src');
+    ObjList[4].Image = $("#Motor_1_PIC").attr('src');
+    ObjList[5].Image = $("#Motor_2_PIC").attr('src');
+    ObjList[6].Image = $("#Self_1_PIC").attr('src');
+    ObjList[7].Image = $("#F01_PIC").attr('src');
+    ObjList[8].Image = $("#Other_1_PIC").attr('src');
+    ObjList[9].Image = $("#Business_1_PIC").attr('src');
+    ObjList[10].Image = $("#Signture_1_PIC").attr('src');
+
     Obj = new Object();
     Obj.ID_1 = 1;
-    Obj.ID_1_new = change(field[0] );
-    Obj.ID_1_Audit =  fieldAudit[0] ;
-    Obj.ID_1_Reason = fieldReason[0];
-    Obj.ID_1_Image = $("#ID_1_PIC").attr('src');
+    Obj.ID_1_new = change(field[0]);
+    Obj.ID_1_Audit = ObjList[0].Audit;//fieldAudit[0] ;
+    Obj.ID_1_Reason = ObjList[0].Reason;//fieldReason[0];
+    Obj.ID_1_Image = ObjList[0].Image;//$("#ID_1_PIC").attr('src');
 
     Obj.ID_2 = 2;
     Obj.ID_2_new = change(field[1] );
-    Obj.ID_2_Audit = fieldAudit[1] ;
-    Obj.ID_2_Reason = fieldReason[1];
-    Obj.ID_2_Image = $("#ID_2_PIC").attr('src');
+    Obj.ID_2_Audit = ObjList[1].Audit;//fieldAudit[1] ;
+    Obj.ID_2_Reason = ObjList[1].Reason;//fieldReason[1];
+    Obj.ID_2_Image = ObjList[1].Image;//$("#ID_2_PIC").attr('src');
 
     Obj.Car_1 = 3;
     Obj.Car_1_new = change(field[2] );
-    Obj.Car_1_Audit = fieldAudit[2] ;
-    Obj.Car_1_Reason = fieldReason[2];
-    Obj.Car_1_Image = $("#Car_1_PIC").attr('src');
+    Obj.Car_1_Audit = ObjList[2].Audit;//fieldAudit[2] ;
+    Obj.Car_1_Reason = ObjList[2].Reason;//fieldReason[2];
+    Obj.Car_1_Image = ObjList[2].Image;//$("#Car_1_PIC").attr('src');
 
     Obj.Car_2 = 4;
     Obj.Car_2_new = change(field[3] );
-    Obj.Car_2_Audit = fieldAudit[3] ;
-    Obj.Car_2_Reason = fieldReason[3];
-    Obj.Car_2_Image = $("#Car_2_PIC").attr('src');
+    Obj.Car_2_Audit = ObjList[3].Audit;//fieldAudit[3] ;
+    Obj.Car_2_Reason = ObjList[3].Reason;//fieldReason[3];
+    Obj.Car_2_Image = ObjList[3].Image;//$("#Car_2_PIC").attr('src');
 
     Obj.Motor_1 = 5;
     Obj.Motor_1_new = change(field[4] );
-    Obj.Motor_1_Audit = fieldAudit[4] ;
-    Obj.Motor_1_Reason = fieldReason[4];
-    Obj.Motor_1_Image = $("#Motor_1_PIC").attr('src');
+    Obj.Motor_1_Audit = ObjList[4].Audit;//fieldAudit[4] ;
+    Obj.Motor_1_Reason = ObjList[4].Reason;//fieldReason[4];
+    Obj.Motor_1_Image = ObjList[4].Image;//$("#Motor_1_PIC").attr('src');
 
     Obj.Motor_2 = 6;
     Obj.Motor_2_new = change(field[5] );
-    Obj.Motor_2_Audit = fieldAudit[5] ;
-    Obj.Motor_2_Reason = fieldReason[5];
-    Obj.Motor_2_Image = $("#Motor_2_PIC").attr('src');
+    Obj.Motor_2_Audit = ObjList[5].Audit;//fieldAudit[5] ;
+    Obj.Motor_2_Reason = ObjList[5].Reason;//fieldReason[5];
+    Obj.Motor_2_Image = ObjList[5].Image;//$("#Motor_2_PIC").attr('src');
 
     Obj.Self_1 = 7;
     Obj.Self_1_new = change(field[6] );
-    Obj.Self_1_Audit = fieldAudit[6] ;
-    Obj.Self_1_Reason = fieldReason[6];
-    Obj.Self_1_Image = $("#Self_1_PIC").attr('src');
+    Obj.Self_1_Audit = ObjList[6].Audit;//fieldAudit[6] ;
+    Obj.Self_1_Reason = ObjList[6].Reason;//fieldReason[6];
+    Obj.Self_1_Image = ObjList[6].Image;//$("#Self_1_PIC").attr('src');
 
     Obj.F01 = 8;
     Obj.F01_new = change(field[7] );
-    Obj.F01_Audit =  fieldAudit[7] ;
-    Obj.F01_Reason = fieldReason[7];
-    Obj.F01_Image = $("#F01_PIC").attr('src');
+    Obj.F01_Audit = ObjList[7].Audit;//fieldAudit[7] ;
+    Obj.F01_Reason = ObjList[7].Reason;//fieldReason[7];
+    Obj.F01_Image = ObjList[7].Image;//$("#F01_PIC").attr('src');
 
     Obj.Other_1 = 9;
-    Obj.Other_1_new = change(field[9] );
-    Obj.Other_1_Audit =  fieldAudit[9] ;
-    Obj.Other_1_Reason = fieldReason[9];
-    Obj.Other_1_Image = $("#Other_1_PIC").attr('src');
+    Obj.Other_1_new = change(field[8] );
+    Obj.Other_1_Audit = ObjList[8].Audit;//fieldAudit[9] ;
+    Obj.Other_1_Reason = ObjList[8].Reason;//fieldReason[9];
+    Obj.Other_1_Image = ObjList[8].Image;//$("#Other_1_PIC").attr('src');
 
     Obj.Business_1 = 10;
-    Obj.Business_1_new = change(field[10] );
-    Obj.Business_1_Audit = fieldAudit[10];
-    Obj.Business_1_Reason =  fieldReason[10];
-    Obj.Business_1_Image = $("#Business_1_PIC").attr('src');
+    Obj.Business_1_new = change(field[9] );
+    Obj.Business_1_Audit = ObjList[9].Audit;//fieldAudit[10];
+    Obj.Business_1_Reason = ObjList[9].Reason;//fieldReason[10];
+    Obj.Business_1_Image = ObjList[9].Image;//$("#Business_1_PIC").attr('src');
 
     Obj.Signture_1 = 11;
-    Obj.Signture_1_new = change(field[8] );
-    Obj.Signture_1_Audit = fieldAudit[8] ;
-    Obj.Signture_1_Reason = fieldReason[8];
-    Obj.Signture_1_Image = $("#Signture_1_PIC").attr('src');
+    Obj.Signture_1_new = change(field[10]);
+    Obj.Signture_1_Audit = ObjList[10].Audit;//fieldAudit[8] ;
+    Obj.Signture_1_Reason = ObjList[10].Reason;//fieldReason[8];
+    Obj.Signture_1_Image = ObjList[10].Image;//$("#Signture_1_PIC").attr('src');
+
 }
 function change(NewKind) {
     var type=0
