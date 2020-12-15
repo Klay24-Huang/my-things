@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "ReceiveCarData2Controller";
+            string funName = "ReceiveCarDataController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CarData VehicleInput = null;
@@ -66,12 +66,12 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                if (Contentjson.IndexOf("para") > -1)
+                if (Contentjson.IndexOf("values") > -1)
                 {
                     //寫入API Log
 
-                    flag = baseVerify.InsAPLog(value["para"].ToString(), ClientIP, funName, ref errCode, ref LogID);
-                    Contentjson = value["para"].ToString();
+                    flag = baseVerify.InsAPLog(value["values"].ToString(), ClientIP, funName, ref errCode, ref LogID);
+                    Contentjson = value["values"].ToString();
                 }
                 else
                 {
