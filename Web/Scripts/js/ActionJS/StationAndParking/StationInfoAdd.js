@@ -92,6 +92,15 @@
         }
 
     });
+    $("#PIC5").on("click", function () {
+        //console.log("aaa");
+        if ($(this).attr("src") != "") {
+            //console.log($(this).attr("src"));
+            $("#tmpENVPIC").attr("src", $(this).attr("src"));
+            $("#surrounding_modal").modal();
+        }
+
+    });
     $("#fileImport").on("change", function () {
         var file = this.files[0];
         var flag = true;
@@ -220,14 +229,17 @@
             obj.fileName2 = $("#fileName2").val();
             obj.fileName3 = $("#fileName3").val();
             obj.fileName4 = $("#fileName4").val();
+            obj.fileName5 = $("#fileName5").val();
             obj.fileData1 = $("#fileData1").val();
             obj.fileData2 = $("#fileData2").val();
             obj.fileData3 = $("#fileData3").val();
             obj.fileData4 = $("#fileData4").val();
+            obj.fileData5 = $("#fileData5").val();
             obj.fileDescript1 = $("#fileDescript1").val();
             obj.fileDescript2 = $("#fileDescript2").val();
             obj.fileDescript3 = $("#fileDescript3").val();
             obj.fileDescript4 = $("#fileDescript4").val();
+            obj.fileDescript5 = $("#fileDescript5").val();
             obj.UserID = Account;
             obj.Mode = 0;
             DoAjaxAfterGoBack(obj, "BE_HandleStation", "新增據點發生錯誤")
@@ -429,6 +441,46 @@ document.getElementById('PIC4').addEventListener('change', function () {
     //以M為單位
     //this.files[0] 該資訊包含：圖片的大小，以byte計算 獲取size的方法如下：this.files[0].size;
 }, false);
+
+
+
+document.getElementById("PIC5").addEventListener('load', function () {
+
+    var cvs = document.createElement('canvas'),
+        ctx = cvs.getContext('2d');
+    var img = new Image(),
+        maxW = 640; //設定最大寬度
+    if (this.width > maxW) {
+        this.height *= maxW / img.width;
+        this.width = maxW;
+    }
+    // console.log(this.file)
+    cvs.width = 640; // this.width;
+    cvs.height = 480; // this.height;
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    //        ctx.drawImage(this, 0, 0, this.width, this.height);
+    ctx.drawImage(this, 0, 0, 640, 480);
+    var compressRate = getCompressRate(1, inPicSize);
+    var dataUrl = cvs.toDataURL('image/png', compressRate);
+    var base64 = dataUrl.split(",");
+
+
+
+});
+document.getElementById('PIC5').addEventListener('change', function () {
+    console.log("call PIC5 Change");
+    var reader = new FileReader();
+    var fileSize = Math.round(this.files[0].size / 1024 / 1024);
+    reader.onload = function (e) {
+        compress(this.files[0], fileSize);
+        //呼叫圖片壓縮方法：compress();
+    };
+    reader.readAsDataURL(this.files[0]);
+    //console.log(this.files[0]);
+    //以M為單位
+    //this.files[0] 該資訊包含：圖片的大小，以byte計算 獲取size的方法如下：this.files[0].size;
+}, false);
+
 //最終實現思路：
 //1、設定壓縮後的最大寬度 or 高度；
 //2、設定壓縮比例，根據圖片的不同size大小，設定不同的壓縮比。
