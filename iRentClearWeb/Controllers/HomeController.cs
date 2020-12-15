@@ -228,7 +228,7 @@ namespace iRentClearWeb.Controllers
             //FormsAuthentication.RedirectFromLoginPage(uAccount.UserName, false);
             //剛剛已導向，此行不會執行到
             //return Redirect(FormsAuthentication.GetRedirectUrl(uAccount.UserName, false));
-            if (uAccount.AUTHGPNO == "10" || uAccount.AUTHGPNO == "11")
+            if (uAccount.AUTHGPNO == "6" || uAccount.AUTHGPNO == "10" || uAccount.AUTHGPNO == "11" || uAccount.AUTHGPNO == "13" || uAccount.AUTHGPNO == "15" || uAccount.AUTHGPNO == "16" || uAccount.AUTHGPNO == "17")
             {
                 Session["UserName"] = uAccount.UserName;
                 Session["Account"] = uAccount.Account;
