@@ -83,6 +83,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
+DECLARE @CID VARCHAR(10);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -96,12 +97,13 @@ SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @CarNo='';
+SET @CarNo		  =ISNULL (@deviceName   ,'');
 SET @deviceCID    =ISNULL (@deviceCID    ,'');
+SET @CID= '';
 
 
 		BEGIN TRY
-		 IF @deviceCID='' 
+		 IF @deviceCID='' OR @CarNo = ''
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
@@ -109,8 +111,14 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 		 
 		IF @Error=0
 		BEGIN
-			SELECT @CarNo=ISNULL(CarNo,'') FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
-			SELECT @hasData=COUNT(1) FROM TB_CarStatus  WITH(NOLOCK) WHERE CID=@deviceCID;
+			--SELECT @CarNo=ISNULL(CarNo,'') FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
+			--20201214 車機維修後，CID可能會變更
+			SELECT @CID=ISNULL(CID,'') FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo;
+			IF @deviceCID <> @CID
+			BEGIN
+				UPDATE TB_CarInfo SET CID=@deviceCID WHERE CarNo=@CarNo;
+			END
+			SELECT @hasData=COUNT(1) FROM TB_CarStatus  WITH(NOLOCK) WHERE CarNo=@CarNo;
 			IF @hasData=0
 			BEGIN
 				INSERT INTO TB_CarStatus([CarNo],[CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
@@ -128,7 +136,8 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 			ELSE
 			BEGIN
 				UPDATE TB_CarStatus
-				SET  [ACCStatus]=@deviceACCStatus,
+				SET  [CID]=@deviceCID,
+						[ACCStatus]=@deviceACCStatus,
 						[GPSStatus]=@deviceGPSStatus,
 						[GPSTime]=@deviceGPSTime,
 						[OBDStatus]=@deviceOBDstatus,
@@ -151,7 +160,7 @@ SET @deviceCID    =ISNULL (@deviceCID    ,'');
 						[extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
 						[deviceName]=@deviceName,
 						UPDTime=@NowTime
-				WHERE CID=@deviceCID AND @deviceGPSTime>[GPSTime]
+				WHERE CarNo=@CarNo AND @deviceGPSTime>[GPSTime]
 			END
 						INSERT INTO TB_CarRawData([CarNo],[CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
 										,[OBDStatus],[GPRSStatus],[PowerOnStatus],[CentralLockStatus],[DoorStatus]
