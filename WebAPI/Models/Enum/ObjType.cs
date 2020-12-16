@@ -355,6 +355,7 @@ namespace WebAPI.Models.Enum
             /// 變更悠遊卡
             /// </summary>
             ReadUUCard,
+            SignatureUpdate,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -826,6 +827,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.ReadUUCard:     //變更悠遊卡
                     SPName = "usp_ReadUUCard";
+                    break;
+                case SPType.SignatureUpdate:     //更新簽名檔
+                    SPName = "usp_SignatureUpdate";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

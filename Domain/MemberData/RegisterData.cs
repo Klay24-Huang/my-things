@@ -160,5 +160,9 @@ namespace Domain.MemberData
         /// 短租會員IR+流水號
         /// </summary>
         public string MEMRFNBR { get; set; }
+        /// <summary>
+        /// 短租網站電子簽名
+        /// </summary>
+        public string SIGNATURE { get; set; }
     }
 }

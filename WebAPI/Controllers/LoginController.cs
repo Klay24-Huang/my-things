@@ -1,12 +1,16 @@
 ﻿using Domain.Common;
 using Domain.MemberData;
 using Domain.SP.Input.Login;
+using Domain.SP.Input.Register;
+using Domain.SP.Output;
 using Domain.SP.Output.Login;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -51,6 +55,7 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind=2;
             string Contentjson = "";
+            string FileName = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
@@ -138,6 +143,36 @@ namespace WebAPI.Controllers
                         UserData = (lstOut == null) ? null : (lstOut.Count == 0) ? null : lstOut[0]
                     };
                 }
+                if (flag)
+                {
+                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(lstOut[0].SIGNATURE);
+                    HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                    Stream dataStream = httpResponse.GetResponseStream();
+                    byte[] bytes;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        dataStream.CopyTo(memoryStream);
+                        bytes = memoryStream.ToArray();
+                    }
+                    string base64String = Convert.ToBase64String(bytes);
+                    FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(base64String, FileName, "credential");
+
+                }
+                if (flag)
+                {
+                    string spName1 = new ObjType().GetSPName(ObjType.SPType.SignatureUpdate);
+                    SPInput_SignatureUpdate spInput = new SPInput_SignatureUpdate()
+                    {
+                        LogID = LogID,
+                        IDNO = apiInput.IDNO,
+                        CrentialsFile = FileName
+                    };
+                    SPOutput_Base spOut = new SPOutput_Base();
+                    SQLHelper<SPInput_SignatureUpdate, SPOutput_Base> sqlHelp1 = new SQLHelper<SPInput_SignatureUpdate, SPOutput_Base>(connetStr);
+                    flag = sqlHelp1.ExecuteSPNonQuery(spName1, spInput, ref spOut, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                }
             }
             #endregion
             #region 寫入錯誤Log
@@ -151,5 +186,7 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+
     }
 }

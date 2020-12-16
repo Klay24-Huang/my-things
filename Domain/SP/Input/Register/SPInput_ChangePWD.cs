@@ -30,4 +30,23 @@ namespace Domain.SP.Input.Register
         public Int64 LogID { set; get; }
   
     }
+
+
+    public class SPInput_SignatureUpdate
+    {
+        /// <summary>
+        /// 帳號
+        /// </summary>
+        public string IDNO { set; get; }
+
+        ///// <summary>
+        /// CrentialsFile
+        /// </summary>
+        public string CrentialsFile { set; get; }
+        /// <summary>
+        /// 此筆呼叫的log id
+        /// </summary>
+        public Int64 LogID { set; get; }
+
+    }
 }
