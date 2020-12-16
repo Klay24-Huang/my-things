@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
@@ -202,6 +203,34 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
+            }
+            if (flag)
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
+
+                WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save()
+                {
+                    user_id= "HLC",
+                    MEMIDNO = apiInput.IDNO,
+                    //MEMCNAME = apiInput.MEMCNAME,
+
+                    //InvoiceType = apiInput.InvoiceType,
+                    //IsNew = apiInput.IsNew,
+                    MEMCEIL = apiInput.Mobile,
+                    SPCSTATUS = apiInput.SPECSTATUS,
+                    UNIMNO = apiInput.UniCode,
+                    MEMBIRTH = apiInput.Birth,
+                    MEMCITY = apiInput.Area.ToString(),
+                    MEMADDR = apiInput.Addr,
+                    MEMTEL = apiInput.MEMHTEL,
+                    MEMCOMTEL = apiInput.MEMCOMTEL,
+                    MEMCONTRACT = apiInput.MEMCONTRACT,
+                    MEMCONTEL = apiInput.MEMCONTEL,
+                    MEMMSG = apiInput.MEMMSG,
+                    tbExtSigninList = new List<ExtSigninList>()
+                };
+                flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }
             #endregion
 

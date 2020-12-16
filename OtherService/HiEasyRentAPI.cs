@@ -27,6 +27,7 @@ namespace OtherService
         protected string apikey;
         protected string BaseURL;
         protected string NPR013RegURL;     //新增短租會員 20201126 ADD BY ADAM
+        protected string NPR010SaveURL;     //新增短租會員 20201126 ADD BY ADAM
         protected string NPR060SaveURL; //060
         protected string NPR125SaveURL; //
         protected string NPR130SaveURL; //
@@ -86,6 +87,8 @@ namespace OtherService
             NPR013RegURL = (ConfigurationManager.AppSettings.Get("NPR013RegURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR013RegURL").ToString();
             //20201201 ADD BY ADAM REASON.換電獎勵
             NPR380SaveURL = (ConfigurationManager.AppSettings.Get("NPR380SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR380SaveURL").ToString();
+            //20201126 ADD BY Jerry REASON.同步會員資料
+            NPR010SaveURL = (ConfigurationManager.AppSettings.Get("NPR010SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR010SaveURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -1599,6 +1602,22 @@ namespace OtherService
             return flag;
         }
 
+
+
+        public bool NPR010Save(WebAPIInput_NPR010Save input, ref WebAPIOutput_NPR013Reg output)
+        {
+            bool flag = false;
+
+            input.sig = GenerateSig();
+
+            output = DoNPR010Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
         /// <summary>
         /// 點數查詢
         /// </summary>
@@ -1653,6 +1672,70 @@ namespace OtherService
                     WebAPIName = "NPR013Reg",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + NPR013RegURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// 點數查詢
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR013Reg> DoNPR010Save(WebAPIInput_NPR010Save input)
+        {
+            WebAPIOutput_NPR013Reg output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR010SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR013Reg>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR013Reg()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR010Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR010SaveURL
                 };
                 bool flag = true;
                 string errCode = "";

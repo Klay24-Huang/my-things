@@ -1,7 +1,10 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -140,6 +143,28 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_SetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetMemberData, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            }
+            if (flag)
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
+
+                WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save()
+                {
+                    user_id = "HLC",
+                    MEMIDNO = apiInput.IDNO,
+                    MEMCNAME = apiInput.MEMCNAME,
+                    MEMBIRTH = apiInput.MEMBIRTH,
+                    MEMCITY = apiInput.AreaID.ToString(),
+                    MEMADDR = apiInput.MEMADDR,
+                    MEMTEL = apiInput.MEMHTEL,
+                    MEMCOMTEL = apiInput.MEMCOMTEL,
+                    MEMCONTRACT = apiInput.MEMCONTRACT,
+                    MEMCONTEL = apiInput.MEMCONTEL,
+                    MEMMSG = apiInput.MEMMSG,
+                    tbExtSigninList = new List<ExtSigninList>()
+                };
+                flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }
             #endregion
 
