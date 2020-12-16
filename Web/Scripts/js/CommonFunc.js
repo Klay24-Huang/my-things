@@ -853,7 +853,9 @@ function setPostbackValue() {
 
 //20201211 ADD BY JERRY 增加依權限產生Menu處理
 function initMenu() {
+    var PowerList = $.trim(localStorage.getItem("PowerList")) == '' ? [] : $.parseJSON(localStorage.getItem("PowerList"));
     var MenuList = $.trim(localStorage.getItem("MenuList")) == '' ? [] : $.parseJSON(localStorage.getItem("MenuList"));
+    //console.log(PowerList);
     console.log(MenuList);
 
 
@@ -864,10 +866,16 @@ function initMenu() {
             menuLi += '<a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown' + MenuList[i].MenuCode+'" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' + MenuList[i].MenuName+'</a >' + '\n';
             menuLi += '<div class="dropdown-menu" aria-labelledby="navbarDropdown">' + '\n';
             for (var x = 0; x < MenuList[i].lstSubMenu.length; x++) {
-                var checkList = $.grep(MenuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc, function (row) {
-                    return row.hasPower == 1;
-                    //return 1 == 1;
+                var powerList = $.grep(PowerList, function (row) {
+                    return row.SubMenuCode == MenuList[i].lstSubMenu[x].SubMenuCode;
                 });
+                //console.log(powerList);
+                if (powerList.length > 0) {
+                    var checkList = $.grep(powerList[0].PowerList, function (row) {
+                        return row.hasPower == 1;
+                        //return 1 == 1;
+                    });
+                }
                 if (checkList.length > 0) {
                     if (MenuList[i].lstSubMenu[x].isNewWindow != 9) {
                         menuLi += '<a class="dropdown-item" href="../' + MenuList[i].lstSubMenu[x].MenuController + '/' + MenuList[i].lstSubMenu[x].MenuAction + '" target="' + (MenuList[i].lstSubMenu[x].isNewWindow == 1 ? '_blank' : '_self') + '">' + MenuList[i].lstSubMenu[x].SubMenuName + '</a>' + '\n';
@@ -883,6 +891,14 @@ function initMenu() {
     }
     menuStr += '</ul>' + '\n';
     $('#navbarSupportedContent').html(menuStr);
+
+    $('#navbarSupportedContent .dropdown-menu').each(function () {
+        //console.log($(this).html());
+        if ($.trim($(this).html()) == '') {
+            $(this).parent().css('display', 'none');
+            console.log($(this).parent())
+        }
+    });
 }
 $(function () {
     initMenu();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.TB.BackEnd;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -50,5 +51,11 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 權限列表
         /// </summary>
         public List<PowerList> PowerList { get; set; }
+    }
+
+    public class MenuList
+    {
+        public string beMenuList { set; get; }
+        public List<Power> PowerList { set; get; }
     }
 }

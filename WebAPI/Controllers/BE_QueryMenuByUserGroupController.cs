@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.TB.BackEnd;
+using Newtonsoft.Json;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,7 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             List<BE_MenuCombindConsistPower> menuList = null;
+            MenuList MenuList = new MenuList();
 
             #endregion
             #region 防呆
@@ -79,53 +81,56 @@ namespace WebAPI.Controllers
                 {
                     apiOutput = new OAPI_BE_GetFuncPower()
                     {
-                        Power = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Power>>(obj.FuncGroupPower)
+                        Power = JsonConvert.DeserializeObject<List<Power>>(obj.FuncGroupPower)
                     };
 
                 }
 
                 menuList = new CommonRepository(connetStr).GetMenuListConsistPower();
-                if (menuList != null)
-                {
-                    for(int i=0;i< menuList.Count; i++)
-                    {
-                        for (int x = 0; x < menuList[i].lstSubMenu.Count; x++)
-                        {
-                            List<Power> powers = apiOutput.Power.FindAll(delegate (Power power)
-                            {
-                                return power.SubMenuCode == menuList[i].lstSubMenu[x].SubMenuCode;
-                            });
-                            if (powers.Count > 0)
-                            {
-                                for (int y = 0; y < menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc.Count; y++)
-                                {
 
-                                    List<PowerList> powerList = powers[0].PowerList.FindAll(delegate (PowerList power)
-                                    {
-                                        return power.Code == menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].Code;
-                                    });
-                                    if (powerList.Count > 0)
-                                    {
-                                        menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = powerList[0].hasPower;
-                                    }
-                                    else
-                                    {
-                                        menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = 0;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int y = 0; y < menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc.Count; y++)
-                                {
-                                    menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = 0;
-                                }
-                            }
+                MenuList.beMenuList = JsonConvert.SerializeObject(menuList);
+                MenuList.PowerList = apiOutput.Power;
+                //if (menuList != null)
+                //{
+                //    for(int i=0;i< menuList.Count; i++)
+                //    {
+                //        for (int x = 0; x < menuList[i].lstSubMenu.Count; x++)
+                //        {
+                //            List<Power> powers = apiOutput.Power.FindAll(delegate (Power power)
+                //            {
+                //                return power.SubMenuCode == menuList[i].lstSubMenu[x].SubMenuCode;
+                //            });
+                //            if (powers.Count > 0)
+                //            {
+                //                for (int y = 0; y < menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc.Count; y++)
+                //                {
 
-                        }
-                    }
+                //                    List<PowerList> powerList = powers[0].PowerList.FindAll(delegate (PowerList power)
+                //                    {
+                //                        return power.Code == menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].Code;
+                //                    });
+                //                    if (powerList.Count > 0)
+                //                    {
+                //                        menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = powerList[0].hasPower;
+                //                    }
+                //                    else
+                //                    {
+                //                        menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = 0;
+                //                    }
+                //                }
+                //            }
+                //            else
+                //            {
+                //                for (int y = 0; y < menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc.Count; y++)
+                //                {
+                //                    menuList[i].lstSubMenu[x].lstPowerFunc[0].lstPowerFunc[y].hasPower = 0;
+                //                }
+                //            }
 
-                }
+                //        }
+                //    }
+
+                //}
             }
             #endregion
 
@@ -136,9 +141,10 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, menuList, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, MenuList, token);
             return objOutput;
             #endregion
         }
     }
+
 }

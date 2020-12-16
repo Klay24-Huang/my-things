@@ -380,11 +380,12 @@ function GetFuncListData() {
         contentType: 'application/json',
         dataType: 'json',           //'application/json',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             $.busyLoadFull("hide");
 
             if (data.Result == "1") {
-                localStorage.setItem("MenuList", JSON.stringify(data.Data))
+                localStorage.setItem("PowerList", JSON.stringify(data.Data.PowerList))
+                localStorage.setItem("MenuList", data.Data.beMenuList)
             } else {
 
                 swal({
