@@ -210,6 +210,7 @@
     <Content Include="Content\Contact\images\bg00001.jpg" />
     <Content Include="Content\Contact\images\car.jpg" />
     <Content Include="Content\Contact\images\logo.png" />
+    <Content Include="Content\Contact\images\logo_1.jpg" />
     <Content Include="Content\Contact\images\logo_big.jpg" />
     <Content Include="Content\Contact\js\jquery-1.10.2.min.js" />
     <Content Include="Content\Contact\js\jquery-ui.js" />
@@ -265,6 +266,9 @@
     <Content Include="Content\css\vis.css" />
     <Content Include="Content\css\web-font.css" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Content\image\CompanySign.jpg" />
+    <Content Include="Content\image\ManagerSign.png" />
+    <Content Include="Content\image\ManagerSign0.jpg" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.svg" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\footable.bootstrap.css" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\footable.bootstrap.min.css" />
