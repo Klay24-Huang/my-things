@@ -55,11 +55,11 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_Booking apiInput = null;
             OAPI_Booking outputApi = null;
-    
+
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            StationAndCarRepository _repository=new StationAndCarRepository(connetStr);
+            StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
             ProjectRepository projectRepository = new ProjectRepository(connetStr);
             Int16 APPKind = 2;
             string Contentjson = "";
@@ -74,18 +74,18 @@ namespace WebAPI.Controllers
             int NormalRentDefaultPickTime = 15;
             int AnyRentDefaultPickTime = 30;
             int MotorRentDefaultPickTime = 30;
-            int price = 0, InsurancePurePrice=0;
+            int price = 0, InsurancePurePrice = 0;
             int InsurancePerHours = 0;
             string IDNO = "";
             string CarTypeCode = "";
-            
+
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             BillCommon billCommon = new BillCommon();
             #endregion
             #region 防呆
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-           
+
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_Booking>(Contentjson);
@@ -116,22 +116,15 @@ namespace WebAPI.Controllers
             {
                 if (apiInput.ProjID == "R107")
                 {
-                    int nowdt = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
                     DateTime dt1 = Convert.ToDateTime(apiInput.SDate);
                     DateTime dt2 = Convert.ToDateTime(apiInput.EDate);
-                    if (nowdt >= 20201217 && nowdt <= 20210131)     //step1 預約三天以上檢核
+                    DateTime LimitSDate = new DateTime(2021, 2, 9);
+                    DateTime LimitEDate = new DateTime(2021, 2, 16);
+
+                    if (dt1.Date >= LimitSDate && dt1.Date <= LimitEDate)   // 起日落在春節專案區間才檢查租用天數要>=3天
                     {
-                        int Days = new TimeSpan(dt1.Ticks - dt2.Ticks).Days;
-                        if (Days < 3)
-                        {
-                            flag = false;
-                            errCode = "ERR235";
-                        }
-                    }
-                    else if (nowdt >= 20210201 && nowdt <= 20210209)    //step2 預約一天以上檢核
-                    {
-                        int Days = new TimeSpan(dt1.Ticks - dt2.Ticks).Days;
-                        if (Days < 1)
+                        var AllTime = billCommon.GetCarRangeMins(dt1, dt2, 60, 600, lstHoliday);
+                        if (AllTime.Item1 + AllTime.Item2 < 1800)
                         {
                             flag = false;
                             errCode = "ERR235";
@@ -142,7 +135,6 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-               
                 ProjectInfo obj = projectRepository.GetProjectInfo(apiInput.ProjID);
                 if (obj == null)
                 {
@@ -161,7 +153,7 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                    
+
                         CarData CarObj = _repository.GetCarData(apiInput.CarNo);
                         if (CarObj == null)
                         {
@@ -191,10 +183,10 @@ namespace WebAPI.Controllers
                 else
                 {
                     flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate);//同站
-                
+
                     if (flag)
                     {
-                        if(string.IsNullOrWhiteSpace(apiInput.StationID) || string.IsNullOrWhiteSpace(apiInput.CarType))
+                        if (string.IsNullOrWhiteSpace(apiInput.StationID) || string.IsNullOrWhiteSpace(apiInput.CarType))
                         {
                             flag = false;
                             errCode = "ERR900";
@@ -206,11 +198,9 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
-
             }
             #endregion
-            
+
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -254,7 +244,7 @@ namespace WebAPI.Controllers
                 }
             }
             #region 檢查信用卡是否綁卡
-            
+
             if (flag)
                 flag = CheckCard(IDNO, ref errCode);
 
@@ -278,7 +268,8 @@ namespace WebAPI.Controllers
                 if (ProjType == 3)
                 {
                     LastPickCarTime = SDate.AddMinutes(AnyRentDefaultPickTime);
-                }else if (ProjType == 4)
+                }
+                else if (ProjType == 4)
                 {
                     LastPickCarTime = SDate.AddMinutes(MotorRentDefaultPickTime);
                 }
@@ -291,30 +282,27 @@ namespace WebAPI.Controllers
             {
                 //InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
                 //20201103 ADD BY SS ADAM REASON.計算安心服務價格
-                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePerHours*10 , InsurancePerHours*10, lstHoliday)) : 0;
+                InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePerHours * 10, InsurancePerHours * 10, lstHoliday)) : 0;
                 //計算初始租金
                 if (ProjType < 4)
                 {
                     ProjectPriceBase priceBase = null;
                     if (ProjType == 0)
                     {
-                         priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, CarType, ProjType);
+                        priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, CarType, ProjType);
                     }
                     else
                     {
                         priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarNo, ProjType);
                     }
-                   
+
                     price = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday));
-        
                 }
                 else
                 {
                     ProjectPriceOfMinuteBase priceBase = projectRepository.GetProjectPriceBaseByMinute(apiInput.ProjID, apiInput.CarNo);
                     price = Convert.ToInt32(priceBase.Price);
                 }
-               
-
             }
             //開始做預約
             if (flag)
@@ -326,7 +314,7 @@ namespace WebAPI.Controllers
                     Insurance = apiInput.Insurance,
                     CarType = CarType,
                     ED = EDate,
-                    StopPickTime=LastPickCarTime,
+                    StopPickTime = LastPickCarTime,
                     IDNO = IDNO,
                     InsurancePurePrice = InsurancePurePrice,
                     LogID = LogID,
@@ -343,7 +331,7 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag && spOut.haveCar==1)
+                if (flag && spOut.haveCar == 1)
                 {
                     outputApi = new OAPI_Booking()
                     {
@@ -417,6 +405,6 @@ namespace WebAPI.Controllers
             return flag;
         }
 
-        
+
     }
 }
