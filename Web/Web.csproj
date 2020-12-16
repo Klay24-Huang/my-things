@@ -355,6 +355,7 @@
     <Content Include="Scripts\js\ActionJS\Manage\AuthAndPay.js" />
     <Content Include="Scripts\js\ActionJS\Manage\APILogQuery.js" />
     <Content Include="Scripts\js\ActionJS\Manage\HoildayMaintain.js" />
+    <Content Include="Scripts\js\ActionJS\Manage\InsCleanOrder.js" />
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCreditCard.js" />
@@ -651,6 +652,7 @@
     <Content Include="Views\Manage\APILogQuery.cshtml" />
     <Content Include="Views\News\NewsManage.cshtml" />
     <Content Include="Views\News\NewsList.cshtml" />
+    <Content Include="Views\Manage\InsCleanOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
