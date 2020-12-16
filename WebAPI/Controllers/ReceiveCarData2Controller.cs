@@ -275,7 +275,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR999";
                     errMsg = "";
-                    logger.Trace(value["para"].ToString());
+                    //logger.Trace(value["para"].ToString());
                     logger.Error(ex.Message);
                 }
             }
