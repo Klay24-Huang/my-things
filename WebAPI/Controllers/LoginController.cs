@@ -145,18 +145,24 @@ namespace WebAPI.Controllers
                 }
                 if (flag)
                 {
-                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(lstOut[0].SIGNATURE);
-                    HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                    Stream dataStream = httpResponse.GetResponseStream();
-                    byte[] bytes;
-                    using (var memoryStream = new MemoryStream())
+                    if (lstOut.Count > 0)
                     {
-                        dataStream.CopyTo(memoryStream);
-                        bytes = memoryStream.ToArray();
+                        if(lstOut[0].Signture_pic!=2 && lstOut[0].SIGNATURE != "")
+                        {
+                            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(lstOut[0].SIGNATURE);
+                            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                            Stream dataStream = httpResponse.GetResponseStream();
+                            byte[] bytes;
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                dataStream.CopyTo(memoryStream);
+                                bytes = memoryStream.ToArray();
+                            }
+                            string base64String = Convert.ToBase64String(bytes);
+                            FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(base64String, FileName, "credential");
+                        }
                     }
-                    string base64String = Convert.ToBase64String(bytes);
-                    FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
-                    flag = new AzureStorageHandle().UploadFileToAzureStorage(base64String, FileName, "credential");
 
                 }
                 if (flag)
