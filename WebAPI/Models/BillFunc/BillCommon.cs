@@ -610,9 +610,9 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                if (mOri.Any(x => x.WorkDayHours < 0 || x.WorkDayRateForCar < 0 ||
-                   x.HolidayHours < 0 || x.HoildayRateForCar < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 0
+                if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
+                   x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
+                   || x.Mode != 1
                 ))
                     throw new Exception("mOri資料內容錯誤");
 
@@ -692,6 +692,12 @@ namespace WebAPI.Models.BillFunc
                 }
             }
 
+            //dev: continue
+            if(norList != null && norList.Count() > 0)
+            {
+                norList = norList.OrderBy(x => x.xSTime).ThenByDescending(y => y.haveNext).ToList();
+            }
+
             //價高先折
             dpList = dayPayList.Where(v=>v.xMins>0).OrderByDescending(x => x.xRate).ThenBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
             dpList.ForEach(x =>
@@ -729,8 +735,8 @@ namespace WebAPI.Models.BillFunc
                 //折扣後租用時數
                 re.AfterDiscRentInMins = Convert.ToInt32(xre.Select(x => x.xMins).Sum());
 
-                //租金計算
-                xre.ForEach(x => dre += (x.xMins * x.xRate));
+                ////租金計算
+                //xre.ForEach(x => dre += (x.xMins * x.xRate));
             }
 
             re.useDisc = Convert.ToInt32(wDisc+hDisc);//使用一般折扣點數
@@ -791,22 +797,31 @@ namespace WebAPI.Models.BillFunc
                 norList = norList.OrderBy(x => x.xSTime).ThenByDescending(y => y.haveNext).ToList();
                 var fdate = norList.FirstOrDefault();//取出首日               
 
-                //首日199縮減
+                //費率回存
+                norList.ForEach(x =>
+                {
+                    if (x.DateType == eumDateType.wDay.ToString())
+                        x.xRate = priceNmin;
+                    else if (x.DateType == eumDateType.hDay.ToString())
+                        x.xRate = priceHmin;
+                });
+
+                
                 if (fdate.haveNext == 1)//首24H
                 {
                     var fds = norList.Take(2).ToList();
+                    //首日199縮減
                     if (fds.Select(x => x.xMins).Sum() > fDayMaxMins)
                     {
                         var fd1 = fds.FirstOrDefault();
                         var fd2 = fds.LastOrDefault();
 
-                        if (fd1.xMins > dayBaseMins)
-                            fd1.xMins -= 1;
-                        else if (fd2.xMins > dayBaseMins)
+                        if (fd2.xMins > dayBaseMins)
                             fd2.xMins -= 1;
-
-                        fList.AddRange(fds);
+                        else if (fd1.xMins > dayBaseMins)
+                            fd1.xMins -= 1;
                     }
+                    fList.AddRange(fds);                    
                 }
                 else
                 {
@@ -2683,9 +2698,9 @@ namespace WebAPI.Models.BillFunc
                         else
                         {
                             wDisc += x.DateType == wDay ? nowDisc : 0;
-                            hDisc += x.DateType == hDay ? nowDisc : 0;
-                            nowDisc = 0;
+                            hDisc += x.DateType == hDay ? nowDisc : 0;                            
                             x.xMins -= nowDisc;
+                            nowDisc = 0;
                         }
                     }
                 });
@@ -2837,21 +2852,25 @@ namespace WebAPI.Models.BillFunc
                     }
                 }
 
-                UseDisc = UseDisc - tmpUseDisc;//使用點數
-
-                if (UseDisc >= dayMaxMins)//使用點數超過上限
-                   f24Pay = 0;
-                else
-                   f24Pay = f24Pay > dayMaxPrice ? dayMaxPrice : f24Pay;//價格超過上限
-
                 f_wDisc = f1_wDisc + f2_wDisc;
                 f_hDisc = f1_hDisc + f2_hDisc;
 
-                #endregion
+                UseDisc = f_wDisc + f_hDisc;//使用點數
 
+                if (UseDisc >= dayMaxMins)//使用點數超過上限
+                   f24Pay = 0;
+                else if(f24Pay > dayMaxPrice)
+                   f24Pay = dayMaxPrice ;//價格超過上限
+                //else
+                //{
+                //    //193*1.5+10 = 299.5不足300          
+                //    f24Pay = f24Pay > 0 ? (f24Pay + 0.5) : 0;
+                //}
+
+                #endregion
             }
 
-            f24Pay = Convert.ToInt32(Math.Round(f24Pay, 0, MidpointRounding.AwayFromZero));
+            //f24Pay = Convert.ToInt32(Math.Round(f24Pay, 0, MidpointRounding.AwayFromZero));
 
             return new Tuple<double, double, double, double, double>(f_wDisc, f_hDisc, f24Pay, wLastMins, hLastMins);
         }
