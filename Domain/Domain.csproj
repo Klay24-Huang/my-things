@@ -86,6 +86,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarMachineData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMasterCardData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMotoData.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_InsCleanOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />

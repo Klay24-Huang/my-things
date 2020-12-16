@@ -188,6 +188,10 @@ namespace Web.Controllers
             ViewData["Season"] = Season;
             return View();
         }
+        public ActionResult InsCleanOrder()
+        {
+            return View();
+        }
         ///// <summary>
         ///// 卡號解除
         ///// </summary>
