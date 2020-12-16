@@ -602,7 +602,7 @@ namespace WebAPI.Models.BillFunc
             if (Discount > 0 && Discount < 6)
                 throw new Exception("折扣不可低於6分鐘");
 
-            double useDisc = Convert.ToDouble(Discount);
+            double nowDisc = Convert.ToDouble(Discount);
 
             SD = SD.AddSeconds(SD.Second * -1);
             ED = ED.AddSeconds(ED.Second * -1);
@@ -628,7 +628,29 @@ namespace WebAPI.Models.BillFunc
             var dpList = new List<DayPayMins>();//剩餘有分鐘數的
 
             if (dayPayList != null && dayPayList.Count() > 0)
+            {
                 re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());
+                //費率回存
+                dayPayList.ForEach(x =>
+                {
+                    if (x.DateType == eumDateType.wDay.ToString())
+                        x.xRate = priceNmin;
+                    else if (x.DateType == eumDateType.hDay.ToString())
+                        x.xRate = priceHmin;
+                    else if (x.DateType.Contains("h"))
+                    {
+                        var m = mFinal.Where(y => y.MonthlyRentId.ToString() == x.DateType.Replace("h", string.Empty).Trim()).FirstOrDefault();
+                        if (m != null)
+                            x.xRate = m.HoildayRateForMoto;
+                    }
+                    else
+                    {
+                        var m = mFinal.Where(y => y.MonthlyRentId.ToString() == x.DateType).FirstOrDefault();
+                        if (m != null)
+                            x.xRate = m.WorkDayRateForMoto;
+                    }
+                });
+            }
 
             if (norList != null && norList.Count() > 0)
                 re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());
@@ -638,50 +660,89 @@ namespace WebAPI.Models.BillFunc
             double m_wDisc = 0; //平日折扣(所有月租)
             double m_hDisc = 0; //假日則扣(所有月租) 
             var mList = dayPayList.Where(x => !norDates.Any(y => y == x.DateType)).OrderBy(z => z.xSTime).ThenByDescending(w => w.haveNext).ToList();
-            var mDiscs = new List<DayPayMins>();//有變動的日期             
 
             //月租內點數先折
             if (mFinal != null && mFinal.Count() > 0)
             {
                 foreach (var m in mFinal)
                 {
-                    var wdisc = Convert.ToDouble(m.WorkDayHours);//平日可折
-                    var hdisc = Convert.ToDouble(m.HolidayHours);//假日可折
-
+                    var m_disc = Convert.ToDouble(m.MotoTotalHours);//機車月租可折點數
                     var m_wType = m.MonthlyRentId.ToString();
                     var m_hType = m_wType + "h";
 
-                    var m_list = dayPayList.Where(x => x.DateType == m_wType || x.DateType == m_hType)
+                    var m_list = mList.Where(x => x.DateType == m_wType || x.DateType == m_hType)
                         .OrderBy(y => y.xSTime).ThenByDescending(w => w.haveNext).ToList();
 
-                    var mre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, m_list, useDisc, m_wType, m_hType);
+                    var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice,ref m_list, m_disc, m_wType, m_hType);
                     if (mre != null)
                     {
                         dre += mre.Item3;
                         m_wDisc += mre.Item1;
                         m_hDisc += mre.Item2;
-                        //useDisc -= 
-
-                        m.WorkDayHours = Convert.ToSingle(mre.Item1);//使用點數
-                        m.HolidayHours = Convert.ToSingle(mre.Item2);//使用點數
+                        m.MotoTotalHours -= Convert.ToSingle(mre.Item1 + mre.Item2);
                     }
-                }
 
-                //異動回存
-                if (mDiscs != null && mDiscs.Count() > 0)
-                {
+                    //還原變動
                     dayPayList.ForEach(x =>
                     {
-                        var md = mDiscs.Where(y => y.xDate == x.xDate && y.DateType == x.DateType).FirstOrDefault();
-                        if (md != null)
-                            x = md;
+                        var item = m_list.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                        if (item != null)
+                            x = item;
                     });
                 }
             }
 
+            //價高先折
+            dpList = dayPayList.Where(v=>v.xMins>0).OrderByDescending(x => x.xRate).ThenBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
+            dpList.ForEach(x =>
+            {
+                if (nowDisc > 0)
+                {
+                    var useDisc = nowDisc > x.xMins ? x.xMins : nowDisc;
+                    nowDisc -= useDisc;
+                    x.xMins = x.xMins - useDisc;
+                    if (x.DateType == eumDateType.wDay.ToString())
+                        wDisc += useDisc;
+                    else if (x.DateType == eumDateType.hDay.ToString())
+                        hDisc += useDisc;
+                    else if (x.DateType.Contains("h"))
+                    {
+                        m_hDisc += useDisc;
+                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType.Replace("h", string.Empty).Trim()).FirstOrDefault();
+                        mm.MotoTotalHours  -= Convert.ToSingle(useDisc);
+                    }
+                    else
+                    {
+                        m_wDisc += useDisc;
+                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType).FirstOrDefault();
+                        mm.MotoTotalHours -= Convert.ToSingle(useDisc);
+                    }
+                }
+            });
+
+            dpList = dpList.Where(x => x.xMins > 0).ToList();
+            if (dpList != null && dpList.Count() > 0)
+            {
+                //分類統計
+                var xre = dpList.GroupBy(x => x.DateType).Select(y => new DayPayMins { DateType = y.Key, xMins = y.Select(z => z.xMins).Sum(), xRate = y.Select(w => w.xRate).FirstOrDefault() }).ToList();
+
+                //折扣後租用時數
+                re.AfterDiscRentInMins = Convert.ToInt32(xre.Select(x => x.xMins).Sum());
+
+                //租金計算
+                xre.ForEach(x => dre += (x.xMins * x.xRate));
+            }
+
+            re.useDisc = Convert.ToInt32(wDisc+hDisc);//使用一般折扣點數
+            re.useMonthDisc = m_wDisc + m_hDisc;//使用月租折扣點數
+            re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
+
+            if (mFinal != null && mFinal.Count() > 0)//回傳monthData
+                re.mFinal = mFinal;
+
             dre = dre > 0 ? dre : 0;
 
-            re.RentInPay = Convert.ToInt32(dre);
+            re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
 
             return re;
         }
@@ -700,32 +761,34 @@ namespace WebAPI.Models.BillFunc
         /// <param name="hDateType">假日日期註記</param>
         public Tuple<double, double, double, double, double, double, double> MotoRentDiscComp(
             double priceNmin, double priceHmin, double dayBaseMins, double dayBasePrice,
-            List<DayPayMins> norList, double Discount,
+            ref List<DayPayMins> norList, double Discount,
             string wDateType, string hDateType
             )
         {//dev: MotoRentDiscComp
+            #region 變數宣告
             double fDayMaxMins = 199;//首24H最大計費分鐘
             double dayMaxPrice = 300;//每24H最大租金
             var fList = new List<DayPayMins>();//首24H資料
             var norListNoF = new List<DayPayMins>();//一般計費不計首日
+
             double wDisc = 0; //平日折扣
             double hDisc = 0; //假日則扣  
 
             double wLastMins = 0;//平日剩餘分
             double hLaseMins = 0;//假日剩餘分
 
-            double norUseDisc = 0;//使用折扣
+            double nowDisc = 0;//使用折扣
             double norMins = 0;//一般時段計費分鐘
             double norRentInPay = 0;//一般時段租金
 
             double useDisc = 0;//總使用折扣
             double AfterDiscRentInMins = 0;//折扣後剩餘分鐘          
+            #endregion
 
-            norUseDisc = Discount;
+            nowDisc = Discount;
             if (norList != null && norList.Count() > 0)
             {
                 norList = norList.OrderBy(x => x.xSTime).ThenByDescending(y => y.haveNext).ToList();
-
                 var fdate = norList.FirstOrDefault();//取出首日               
 
                 //首日199縮減
@@ -737,16 +800,12 @@ namespace WebAPI.Models.BillFunc
                         var fd1 = fds.FirstOrDefault();
                         var fd2 = fds.LastOrDefault();
 
-                        if (fd2.xMins > 1)
-                        {
+                        if (fd1.xMins > dayBaseMins)
+                            fd1.xMins -= 1;
+                        else if (fd2.xMins > dayBaseMins)
                             fd2.xMins -= 1;
-                            fList.AddRange(fds);
-                        }
-                        else if (fd2.xMins == 1)
-                        {
-                            fd1.haveNext = 0;
-                            fList.Add(fd1);
-                        }
+
+                        fList.AddRange(fds);
                     }
                 }
                 else
@@ -756,19 +815,27 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 norMins = norList.Select(x => x.xMins).Sum();//一般時段總租用分鐘
-                norUseDisc = norUseDisc > norMins ? norMins : norUseDisc;//自動縮減               
+                nowDisc = nowDisc > norMins ? norMins : nowDisc;//自動縮減               
 
-                var re_fday = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, dayMaxPrice, norUseDisc, fList, wDateType, hDateType);
-                if (re_fday != null)
+                var fd = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, dayMaxPrice, nowDisc, ref fList, wDateType, hDateType);
+                if (fd != null)
                 {
-                    wLastMins += re_fday.Item4;
-                    hLaseMins += re_fday.Item5;
-                    wDisc += re_fday.Item1;
-                    hDisc += re_fday.Item2;
-                    useDisc += re_fday.Item1 + re_fday.Item2;
-                    norUseDisc -= (re_fday.Item1 + re_fday.Item2);
-                    norRentInPay += re_fday.Item3;
-                    AfterDiscRentInMins += re_fday.Item4 + re_fday.Item5;
+                    wLastMins += fd.Item4;
+                    hLaseMins += fd.Item5;
+                    wDisc += fd.Item1;
+                    hDisc += fd.Item2;
+                    useDisc += fd.Item1 + fd.Item2;
+                    nowDisc -= (fd.Item1 + fd.Item2);
+                    norRentInPay += fd.Item3;
+                    AfterDiscRentInMins += fd.Item4 + fd.Item5;
+
+                    //還原變動
+                    norList.ForEach(x =>
+                    {
+                        var item = fList.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                        if (item != null)
+                            x = item;
+                    });
                 }
 
                 //去除首日
@@ -781,15 +848,23 @@ namespace WebAPI.Models.BillFunc
                     double hMins = 0;
                     double nof_wDisc = 0;
                     double nof_hDisc = 0;
-                    var discRe = discCompute(norUseDisc, wDateType, hDateType, norListNoF);
+                    var discRe = discCompute(nowDisc, wDateType, hDateType,ref norListNoF);
                     if (discRe != null)
                     {
                         nof_wDisc = discRe.Item1;
                         nof_hDisc = discRe.Item2;
                         wDisc += discRe.Item1;
                         hDisc += discRe.Item2;
-                        useDisc += nof_wDisc + nof_hDisc;
-                        norUseDisc -= useDisc;
+                        useDisc += (nof_wDisc + nof_hDisc);
+                        nowDisc -= (nof_wDisc+ nof_hDisc);
+
+                        //還原變動
+                        norList.ForEach(x =>
+                        {
+                            var item = norListNoF.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                            if (item != null)
+                                x = item;
+                        });
                     }
 
                     norListNoF.ForEach(x => {
@@ -797,11 +872,11 @@ namespace WebAPI.Models.BillFunc
                         hMins += x.DateType == hDateType ? x.xMins : 0;
                     });
 
-                    wLastMins += (wMins - nof_wDisc);
-                    hLaseMins += (hMins - nof_hDisc);
+                    wLastMins += wMins;
+                    hLaseMins += hMins;
 
-                    norRentInPay += (wMins - nof_wDisc) * priceNmin + (hMins - nof_hDisc) * priceHmin;
-                    AfterDiscRentInMins += (wMins - nof_wDisc) + (hMins - nof_hDisc);
+                    norRentInPay += wMins * priceNmin + hMins * priceHmin;
+                    AfterDiscRentInMins += wMins + hMins;
                 }
             }
 
@@ -2569,45 +2644,55 @@ namespace WebAPI.Models.BillFunc
         /// <param name="wDay">平日DateType</param>
         /// <param name="hDay">假日DateType</param>
         /// <param name="norList">折扣日期列表,須包含DateType, xDate, xMins</param>
-        /// <returns>平日折扣, 假日則扣, 使用的點數, 最大可折抵分鐘</returns>
+        /// <returns>平日折扣, 假日則扣, 最大可折抵分鐘</returns>
         /// <mark>2020-12-09 eason</mark>
-        public Tuple<double, double, double, double> discCompute(double disc, string wDay,string hDay, List<DayPayMins> norList)
-        {//dev: NorDisc
+        public Tuple<double, double, double> discCompute(double disc, string wDay, string hDay, ref List<DayPayMins> norList)
+        {//dev: discCompute
             double wDisc = 0;//平日折扣
             double hDisc = 0;//假日則扣
-            double useDisc = 0;//使用的點數
+            double nowDisc = 0;//現在點數
             double DiscRentInMins = 0;//最大可折抵分鐘
 
-            if (norList != null && norList.Count()>0 && disc > 0)
+            if (norList != null && norList.Count() > 0 && disc > 0)
             {
-                useDisc = disc;
-                norList = norList.OrderBy(x => x.xDate).ToList();
+                if (norList.Any(x => string.IsNullOrEmpty(x.DateType) || string.IsNullOrWhiteSpace(x.DateType)))
+                    throw new Exception("discCompute : DateType為必填");
+
+                if (norList.Any(x => x.xRate <= 0))
+                    throw new Exception("discCompute : xRate為必填");
+
+                nowDisc = disc;
+                norList = norList.OrderByDescending(x => x.xRate).ThenBy(y => y.xDate).ToList();//價高先折
                 double mins = norList.Select(x => x.xMins).Sum();
 
-                if (useDisc > mins)//自動縮減
-                    useDisc = mins;//實際使用點數
+                if (nowDisc > mins)//自動縮減
+                    nowDisc = mins;//實際使用點數
                 DiscRentInMins = mins;//最大可折抵分鐘
 
                 norList.ForEach(x =>
                 {
-                    if (useDisc > 0)
+                    if (nowDisc > 0)
                     {
-                        if (useDisc >= x.xMins)
+                        if (nowDisc >= x.xMins)
                         {
                             wDisc += x.DateType == wDay ? x.xMins : 0;
                             hDisc += x.DateType == hDay ? x.xMins : 0;
-                            useDisc -= x.xMins;
+                            nowDisc -= x.xMins;
+                            x.xMins = 0;
                         }
                         else
                         {
-                            wDisc += x.DateType == wDay ? useDisc : 0;
-                            hDisc += x.DateType == hDay ? useDisc : 0;
-                            useDisc = 0;
+                            wDisc += x.DateType == wDay ? nowDisc : 0;
+                            hDisc += x.DateType == hDay ? nowDisc : 0;
+                            nowDisc = 0;
+                            x.xMins -= nowDisc;
                         }
                     }
                 });
+            
             }
-            return new Tuple<double, double, double, double>(wDisc, hDisc, useDisc, DiscRentInMins);
+
+            return new Tuple<double, double, double>(wDisc, hDisc, DiscRentInMins);
         }
 
         /// <summary>
@@ -2626,7 +2711,7 @@ namespace WebAPI.Models.BillFunc
         public Tuple<double, double, double, double, double> MotoF24HDiscCompute(
             double priceNmin, double priceHmin, double dayBaseMins,
             double dayBasePrice, double dayMaxPrice, double Discount,
-            List<DayPayMins> fList,
+            ref List<DayPayMins> fList,
             string wDateType,
             string hDateType
             )
@@ -2648,13 +2733,16 @@ namespace WebAPI.Models.BillFunc
             UseDisc = Discount;
             if (fList != null && fList.Count() > 0)
             {
+                fList = fList.OrderBy(x => x.xDate).ThenByDescending(y => y.haveNext).ToList();
                 Mins = fList.Select(x => x.xMins).Sum();
-                UseDisc = UseDisc > Mins ? Mins : UseDisc;//自動縮減                
+                UseDisc = UseDisc > Mins ? Mins : UseDisc;//自動縮減      
+                UseDisc = UseDisc > dayMaxMins ? dayMaxMins : UseDisc;//對大分鐘縮減
+
                 var fdate = fList.FirstOrDefault();//取出首日
 
                 #region 首24h計算                    
 
-                double tmpUseDisc = UseDisc > dayMaxMins ? dayMaxMins : UseDisc;//首日折扣
+                double tmpUseDisc = UseDisc;//首日折扣
                 //首日計算(基消)
                 var useDisc01 = tmpUseDisc > fdate.xMins ? fdate.xMins : tmpUseDisc;//折扣自動縮減
                 var f01_over6 = fdate.xMins > dayBaseMins ? (fdate.xMins - dayBaseMins) : 0;//超過基本分鐘的部分                    
@@ -2668,19 +2756,15 @@ namespace WebAPI.Models.BillFunc
                     if (useDisc01 == 0)
                     {
                         wLastMins += fdate.xMins;
-                        f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;
+                        f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;                        
                     }
                     else
                     {
-                        if (useDisc01 == dayBaseMins)
-                        {
-                            wLastMins += dayBaseMins;
-                            f24Pay += (fdate.xMins * priceNmin) - dayBasePrice;
-                        }
-                        else if (useDisc01 > dayBaseMins)
+                        if (useDisc01 >= dayBaseMins)
                         {
                             wLastMins += (fdate.xMins - useDisc01);
                             f24Pay += (fdate.xMins - useDisc01) * priceNmin;
+                            fdate.xMins -= useDisc01;
                         }
                         else
                         {
@@ -2690,6 +2774,7 @@ namespace WebAPI.Models.BillFunc
                                 useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
                                 f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceNmin;
                                 wLastMins += (fdate.xMins - useDisc01);
+                                fdate.xMins -= useDisc01;
                             }
                         }
                         tmpUseDisc -= useDisc01;
@@ -2705,15 +2790,11 @@ namespace WebAPI.Models.BillFunc
                     }
                     else
                     {
-                        if (useDisc01 == dayBaseMins)
-                        {
-                            hLastMins += dayBaseMins;
-                            f24Pay += (fdate.xMins * priceHmin) - dayBasePrice;
-                        }
-                        else if (useDisc01 > dayBaseMins)
+                        if (useDisc01 >= dayBaseMins)
                         {
                             hLastMins += (fdate.xMins - useDisc01);
                             f24Pay += (fdate.xMins - useDisc01) * priceHmin;
+                            fdate.xMins -= useDisc01;
                         }
                         else
                         {
@@ -2723,6 +2804,7 @@ namespace WebAPI.Models.BillFunc
                                 //折扣小於基本分只能折扣超過基本分的部分
                                 f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
                                 hLastMins += (fdate.xMins - useDisc01);
+                                fdate.xMins -= useDisc01;
                             }
                         }
                         tmpUseDisc -= useDisc01;
@@ -2732,7 +2814,7 @@ namespace WebAPI.Models.BillFunc
 
                 if (fdate.haveNext == 1 && fList != null && fList.Count() >= 2)
                 {
-                    var fdate02 = fList.Skip(1).Take(1).FirstOrDefault();
+                    var fdate02 = fList.LastOrDefault();
                     double useDisc02 = 0;
                     if (tmpUseDisc > 0)
                         useDisc02 = tmpUseDisc > fdate02.xMins ? fdate02.xMins : tmpUseDisc;
@@ -2743,6 +2825,7 @@ namespace WebAPI.Models.BillFunc
                         f2_wDisc += useDisc02;
                         f24Pay += (fdate02.xMins - useDisc02) * priceNmin;
                         wLastMins += (fdate02.xMins - useDisc02);
+                        fdate02.xMins -= useDisc02;
                     }
                     else if (fdate02.DateType == hDateType)
                     {
@@ -2750,20 +2833,22 @@ namespace WebAPI.Models.BillFunc
                         f2_hDisc += useDisc02;
                         f24Pay += (fdate02.xMins - useDisc02) * priceHmin;
                         hLastMins += (fdate02.xMins - useDisc02);
+                        fdate02.xMins -= useDisc02;
                     }
                 }
 
-                if (UseDisc >= dayMaxMins)
-                    f24Pay = 0;
+                UseDisc = UseDisc - tmpUseDisc;//使用點數
 
-                f24Pay = f24Pay > dayMaxPrice ? dayMaxPrice : f24Pay;
-
-                UseDisc = tmpUseDisc;
+                if (UseDisc >= dayMaxMins)//使用點數超過上限
+                   f24Pay = 0;
+                else
+                   f24Pay = f24Pay > dayMaxPrice ? dayMaxPrice : f24Pay;//價格超過上限
 
                 f_wDisc = f1_wDisc + f2_wDisc;
                 f_hDisc = f1_hDisc + f2_hDisc;
 
                 #endregion
+
             }
 
             f24Pay = Convert.ToInt32(Math.Round(f24Pay, 0, MidpointRounding.AwayFromZero));
