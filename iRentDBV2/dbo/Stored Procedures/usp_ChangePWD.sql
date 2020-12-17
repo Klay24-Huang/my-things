@@ -58,7 +58,9 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @tmpPWD VARCHAR(20);
+DECLARE @tmpPWD VARCHAR(100);
+DECLARE @NowDate DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -69,68 +71,73 @@ SET @FunName='usp_ChangePWD';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
-SET @IDNO    =ISNULL (@IDNO    ,'');
-
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OldPWD=ISNULL (@OldPWD,'');
 SET @NewPWD=ISNULL (@NewPWD,'');
 SET @tmpPWD='';
-		BEGIN TRY
-		 IF  @IDNO='' OR @OldPWD='' OR @NewPWD='' 
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR100'
- 		 END
+SET @NowDate=DATEADD(HOUR,8,GETDATE());
+
+BEGIN TRY
+	IF  @IDNO='' OR @OldPWD='' OR @NewPWD='' 
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR100'
+	END
 		 
-		 IF @Error=0
-		 BEGIN
-			BEGIN TRAN
-		       SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO ;
-				IF @hasData=0
-				BEGIN
-					SET @Error=1;
-				    SET @ErrorCode='ERR132';
-				   COMMIT TRAN;
-				END
-				ELSE
-				BEGIN
-				   SELECT @tmpPWD=ISNULL(MEMPWD,'') FROM TB_MemberData WHERE MEMIDNO=@IDNO ;
-				     IF @tmpPWD=@OldPWD
-					 BEGIN
-						UPDATE TB_MemberData 
-						SET MEMPWD=@NewPWD
-						WHERE  MEMIDNO=@IDNO;
-					END
-					ELSE
-					BEGIN
-						SET @Error=1;
-						SET @ErrorCode='ERR146';
-					END
-				   COMMIT TRAN;
-				END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+	IF @Error=0
+	BEGIN
+		BEGIN TRAN
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO ;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR132';
+			COMMIT TRAN;
+		END
+		ELSE
+		BEGIN
+			SELECT @tmpPWD=ISNULL(MEMPWD,'') FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO ;
+			IF @tmpPWD=@OldPWD
 			BEGIN
-			   INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem)
+				UPDATE TB_MemberData 
+				SET MEMPWD=@NewPWD,
+					U_PRGID=9,
+					U_USERID=@IDNO,
+					U_SYSDT=@NowDate
+				WHERE  MEMIDNO=@IDNO;
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+			ELSE
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				SET @Error=1;
+				SET @ErrorCode='ERR146';
 			END
-			SET @IsSystem=1;
-			    SET @ErrorType=4;
-			    INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem)
-		END CATCH
+			COMMIT TRAN;
+		END
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem)
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem)
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';
