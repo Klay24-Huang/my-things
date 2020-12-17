@@ -14,8 +14,7 @@ namespace QueryWeb.Controllers
     public class HomeController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-
-        [AllowAnonymous]
+        
         public ActionResult Index(string ReturnUrl)
         {
             if ("" == ReturnUrl)
@@ -27,8 +26,7 @@ namespace QueryWeb.Controllers
                 ReturnUrl = ReturnUrl
             });
         }
-
-        [AllowAnonymous]
+        
         [HttpPost]
         public ActionResult Index(iRentNUser uAccount)
         {
@@ -42,7 +40,7 @@ namespace QueryWeb.Controllers
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, account, now, dateTime.AddMinutes(10), false, "NUser", FormsAuthentication.FormsCookiePath);
             string encTicket = FormsAuthentication.Encrypt(ticket);
             base.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
-            
+
             Session["Account"] = uAccount.Account;
 
             return base.RedirectToAction("QueryList");
@@ -68,7 +66,7 @@ namespace QueryWeb.Controllers
             //        base.Response.Redirect("Index");
             //    }
             //}
-            if (Session["Account"]!=null)
+            if (Session["Account"] != null)
             {
                 lstQuery = subScriptionRepository.GetSubScriptionForClients(Session["Account"].ToString());
             }
