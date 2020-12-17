@@ -316,7 +316,7 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string SQL = "SELECT [CarNo],[CarTypeName] as CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
-            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device3TBA>=30 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
@@ -335,7 +335,6 @@ namespace Reposotory.Implement
         /// <returns></returns>
         public List<MotorRentObj> GetAllMotorRent(double lat, double lng, double radius)
         {
-
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
             if (lng > 0 && lat > 0 && radius > 0)
@@ -347,7 +346,7 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string SQL = "SELECT [CarNo],[CarTypeName] AS CarType,CONCAT([CarBrend],' ',[CarTypeName]) AS CarTypeName,Area AS CarOfArea, ";
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
-            SQL += " ,[Latitude] ,[Longitude],device2TBA AS 'Power',deviceRDistance AS RemainingMileage ";
+            SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,GETDATE()) AND device3TBA>=30 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
