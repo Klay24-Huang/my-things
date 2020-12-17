@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
@@ -23,8 +24,8 @@ namespace WebCommon
             set { _connectionString = value; }
         }
         private const Int32 _LimitDbParameter = 100;
-        private const string QuerySpParameter = "SELECT PARAMETER_NAME,DATA_TYPE,ISNULL(CHARACTER_MAXIMUM_LENGTH,0) as 'LENGTH',PARAMETER_MODE "
-                                                + "FROM INFORMATION_SCHEMA.PARAMETERS "
+        private const string QuerySpParameter = "SELECT DISTINCT PARAMETER_NAME,DATA_TYPE,ISNULL(CHARACTER_MAXIMUM_LENGTH,0) as 'LENGTH',PARAMETER_MODE,ORDINAL_POSITION "
+                                                + "FROM INFORMATION_SCHEMA.PARAMETERS WITH(NOLOCK) "
                                                 + "WHERE SPECIFIC_NAME=@SPName "
                                                 + "ORDER BY ORDINAL_POSITION ASC ";
         private SqlConnection sqlConnection;
@@ -84,20 +85,22 @@ namespace WebCommon
             foreach (var prop in objOutput.GetType().GetProperties())
             {
                 SqlParameter p;
-
-                if (prop.Name == ParameterDirection.ReturnValue.ToString("G") || prop.Name == "Error")
+                if (SQL.IndexOf(prop.Name) == -1)
                 {
-                    p = CreateParameter("@" + prop.Name, 0, GetDbType(objOutput, prop.Name), ParameterDirection.ReturnValue);
-                    SQL = "DECLARE " + "@" + prop.Name + " int; " + " EXEC " + "@" + prop.Name + "=" + SQL;
-                }
-                else
-                {
-                    p = CreateParameter("@" + prop.Name, "", GetDbType(objOutput, prop.Name), ParameterDirection.Output);
-                    SQL += ",@" + prop.Name + " OUTPUT";
-                }
+                    if (prop.Name == ParameterDirection.ReturnValue.ToString("G") || prop.Name == "Error")
+                    {
+                        p = CreateParameter("@" + prop.Name, 0, GetDbType(objOutput, prop.Name), ParameterDirection.ReturnValue);
+                        SQL = "DECLARE " + "@" + prop.Name + " int; " + " EXEC " + "@" + prop.Name + "=" + SQL;
+                    }
+                    else
+                    {
+                        p = CreateParameter("@" + prop.Name, "", GetDbType(objOutput, prop.Name), ParameterDirection.Output);
+                        SQL += ",@" + prop.Name + " OUTPUT";
+                    }
 
                 tmpParameter[i] = p;
                 i++;
+                }
             }
 
             Array.Resize(ref tmpParameter, i);
@@ -190,46 +193,50 @@ namespace WebCommon
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
             while (sqlDataReader.Read())
             {
-                SqlParameter p;
-                string paraName = sqlDataReader["PARAMETER_NAME"].ToString().Remove(0, 1);
-                SqlDbType dtype = GetDbType(sqlDataReader["DATA_TYPE"].ToString());
-                int length = int.Parse(sqlDataReader["LENGTH"].ToString());
-                ParameterDirection PARAMETER_MODE = getParaDir(sqlDataReader["PARAMETER_MODE"].ToString());
-                for (int i = 0; i < inputLen; i++)
+                if (SQL.ToString().IndexOf(sqlDataReader["PARAMETER_NAME"].ToString() + " ") == -1)
                 {
-                    if (inputProp[i].Name == paraName)
+
+                    SqlParameter p;
+                    string paraName = sqlDataReader["PARAMETER_NAME"].ToString().Remove(0, 1);
+                    SqlDbType dtype = GetDbType(sqlDataReader["DATA_TYPE"].ToString());
+                    int length = int.Parse(sqlDataReader["LENGTH"].ToString());
+                    ParameterDirection PARAMETER_MODE = getParaDir(sqlDataReader["PARAMETER_MODE"].ToString());
+                    for (int i = 0; i < inputLen; i++)
                     {
-                        p = new SqlParameter("@" + paraName, dtype, length);
-                        p.Value = GetValue(objInput, inputProp[i].Name, true);
-                        p.Direction = PARAMETER_MODE;
-                        tmpParameter[nowCount] = p;
-                        nowCount++;
-                        break;
-                    }
-                }
-                if (ParameterDirection.InputOutput == PARAMETER_MODE)
-                {
-                    for (int i = 0; i < outputLen; i++)
-                    {
-                        if (outputProp[i].Name == paraName)
+                        if (inputProp[i].Name == paraName)
                         {
                             p = new SqlParameter("@" + paraName, dtype, length);
-                            p.Value = GetValue(objOutput, outputProp[i].Name, true);
+                            p.Value = GetValue(objInput, inputProp[i].Name, true);
                             p.Direction = PARAMETER_MODE;
                             tmpParameter[nowCount] = p;
                             nowCount++;
-                            suff = " OUTPUT ";
                             break;
                         }
                     }
+                    if (ParameterDirection.InputOutput == PARAMETER_MODE)
+                    {
+                        for (int i = 0; i < outputLen; i++)
+                        {
+                            if (outputProp[i].Name == paraName)
+                            {
+                                p = new SqlParameter("@" + paraName, dtype, length);
+                                p.Value = GetValue(objOutput, outputProp[i].Name, true);
+                                p.Direction = PARAMETER_MODE;
+                                tmpParameter[nowCount] = p;
+                                nowCount++;
+                                suff = " OUTPUT ";
+                                break;
+                            }
+                        }
 
-                }
-                else
-                {
-                    suff = "";
-                }
+                    }
+                    else
+                    {
+                        suff = "";
+                    }
 
-                SQL.Append("@" + paraName + " " + suff + ",");
+                    SQL.Append("@" + paraName + " " + suff + ",");
+                }
             }
 
             if (SQL.Length > 0)
@@ -930,16 +937,25 @@ namespace WebCommon
                 SqlParameter[] sqlPara = GenerateSQL(ref tmpSQL, SQL, objInputPara, objOutputPara, "Error", SqlDbType.Int, 0); //CreateParameter(objInputPara, objOutputPara,ref SQL);
 
                 sqlCommand = new SqlCommand();
+                sqlCommand.Parameters.Clear();
+                string sqlParaString = "";
                 for (int i = 0; i < sqlPara.Length; i++)
                 {
-                    sqlCommand.Parameters.Add(sqlPara[i]);
+                    if(sqlParaString.IndexOf(sqlPara[i].ParameterName + ",") == -1)
+                    {
+                        sqlCommand.Parameters.Add(sqlPara[i]);
+                        sqlParaString += sqlPara[i].ParameterName + ",";
+                    }
                 }
                 ConnectionDB();
                 sqlCommand.CommandText = tmpSQL.ToString();
                 sqlCommand.Connection = this.sqlConnection;
-
-                sqlCommand.ExecuteNonQuery(); //這行會掛
-                GetSQLReturnValue(sqlCommand.Parameters, ref objOutputPara);
+                //先避掉ErrorLog造成的錯誤，會有參數重複的問題看來文斌應該已經知道有這件事
+                if(SQL== "usp_InsErrorLog" && ConfigurationManager.AppSettings["InsErrorLog"]=="true")
+                {
+                    sqlCommand.ExecuteNonQuery(); //這行會掛
+                    GetSQLReturnValue(sqlCommand.Parameters, ref objOutputPara);
+                }
 
                 flag = true;
             }
