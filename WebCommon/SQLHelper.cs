@@ -193,6 +193,9 @@ namespace WebCommon
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
             while (sqlDataReader.Read())
             {
+                if (SQL.ToString().IndexOf(sqlDataReader["PARAMETER_NAME"].ToString() + " ") == -1)
+                {
+
                     SqlParameter p;
                     string paraName = sqlDataReader["PARAMETER_NAME"].ToString().Remove(0, 1);
                     SqlDbType dtype = GetDbType(sqlDataReader["DATA_TYPE"].ToString());
@@ -233,6 +236,7 @@ namespace WebCommon
                     }
 
                     SQL.Append("@" + paraName + " " + suff + ",");
+                }
             }
 
             if (SQL.Length > 0)
@@ -937,14 +941,17 @@ namespace WebCommon
                 string sqlParaString = "";
                 for (int i = 0; i < sqlPara.Length; i++)
                 {
+                    if(sqlParaString.IndexOf(sqlPara[i].ParameterName + ",") == -1)
+                    {
                         sqlCommand.Parameters.Add(sqlPara[i]);
                         sqlParaString += sqlPara[i].ParameterName + ",";
+                    }
                 }
                 ConnectionDB();
                 sqlCommand.CommandText = tmpSQL.ToString();
                 sqlCommand.Connection = this.sqlConnection;
                 //先避掉ErrorLog造成的錯誤，會有參數重複的問題看來文斌應該已經知道有這件事
-                if(SQL== "usp_InsErrorLog" && ConfigurationManager.AppSettings["InsErrorLog"]=="true")
+                if(SQL!= "usp_InsErrorLog")
                 {
                     sqlCommand.ExecuteNonQuery(); //這行會掛
                     GetSQLReturnValue(sqlCommand.Parameters, ref objOutputPara);
