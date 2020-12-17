@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
                 string Source = new AESEncrypt().doEncrypt(key, salt, apiInput.IDNO + "⊙" + apiInput.MEMEMAIL);
                 string Title = "iRent會員電子信箱認證通知信";
 
-                string url = "https://irentv2-app-api.irent-ase.p.azurewebsites.net/api/VerifyEMail?VerifyCode=" + Source;
+                string url = "https://irentcar.azurefd.net/api/VerifyEMail?VerifyCode=" + Source;
 
                 string Body =
                     "<img src='https://verify.irent-ase.p.azurewebsites.net/images/irent.png'>" +
