@@ -599,8 +599,8 @@ namespace WebAPI.Models.BillFunc
             if (Discount < 0)
                 throw new Exception("折扣不可為負數");
 
-            if (Discount > 0 && Discount < 6)
-                throw new Exception("折扣不可低於6分鐘");
+            //if (Discount > 0 && Discount < 6)
+            //    throw new Exception("折扣不可低於6分鐘");
 
             double nowDisc = Convert.ToDouble(Discount);
 
@@ -650,6 +650,8 @@ namespace WebAPI.Models.BillFunc
                             x.xRate = m.WorkDayRateForMoto;
                     }
                 });
+                //取GroupId跟起訖標記
+                dayPayList = GetDateGroup(norDates, "nor_", dayPayList);
             }
 
             if (norList != null && norList.Count() > 0)
@@ -673,6 +675,13 @@ namespace WebAPI.Models.BillFunc
                     var m_list = mList.Where(x => x.DateType == m_wType || x.DateType == m_hType)
                         .OrderBy(y => y.xSTime).ThenByDescending(w => w.haveNext).ToList();
 
+                    if (m_list != null && mList.Count() > 0)
+                    {
+                        m_list.FirstOrDefault().isStart = 1;
+                        m_list.LastOrDefault().isEnd = 1;
+                        m_list.ForEach(x => x.dayGroupId = "mon_" + m.MonthlyRentId.ToString());
+                    }
+
                     var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice,ref m_list, m_disc, m_wType, m_hType);
                     if (mre != null)
                     {
@@ -692,37 +701,81 @@ namespace WebAPI.Models.BillFunc
                 }
             }
 
-            //dev: continue
+            var allMins = dayPayList.Select(x => x.xMins).Sum();
+            nowDisc = nowDisc > allMins? allMins:nowDisc;//自動縮減
+
+            //一般計費日
             if(norList != null && norList.Count() > 0)
             {
-                norList = norList.OrderBy(x => x.xSTime).ThenByDescending(y => y.haveNext).ToList();
+                List<string> gIDs = norList.GroupBy(x => x.dayGroupId).Select(y => y.FirstOrDefault().dayGroupId).OrderBy(z=>z).ToList(); 
+                if(gIDs != null && gIDs.Count() > 0)
+                {
+                    foreach(var gID in gIDs)
+                    {
+                        var gList = norList.Where(x => x.dayGroupId == gID).OrderBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
+                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString());
+                        if(gre != null)
+                        {
+                            dre += gre.Item3;
+                            wDisc += gre.Item1;
+                            hDisc += gre.Item2;                           
+                        }
+
+                        //還原變動
+                        dayPayList.ForEach(x =>
+                        {
+                            var item = gList.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                            if (item != null)
+                                x = item;
+                        });
+                    }
+                }
             }
 
-            //價高先折
+            //價高先折,基本分計價及扣除
             dpList = dayPayList.Where(v=>v.xMins>0).OrderByDescending(x => x.xRate).ThenBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
             dpList.ForEach(x =>
             {
                 if (nowDisc > 0)
                 {
                     var useDisc = nowDisc > x.xMins ? x.xMins : nowDisc;
+                    //基本分鐘處理
+                    if (x.isStart == 1)
+                    {
+                        if(x.useBaseMins == 0)
+                        {
+                            if (useDisc >= dayBaseMins)
+                            {
+                                if (dayBasePrice > (dayBaseMins * x.xRate))//首6分鐘少1元":10-(1.5*6) = 1
+                                    dre -= (dayBasePrice - (dayBaseMins * x.xRate));
+                                else
+                                    dre += (dayBaseMins * x.xRate) - dayBasePrice;                                
+                                x.useBaseMins += dayBaseMins;
+                            }
+                            else
+                            {
+                                var f01_over6 = x.xMins - dayBaseMins;
+                                if (f01_over6 > 0)
+                                    useDisc = useDisc > f01_over6 ? f01_over6 : useDisc;
+                            }
+                        }
+                    }
+
+                    if(useDisc > 0)
+                    {
+                        if (x.DateType == eumDateType.wDay.ToString())
+                            wDisc += useDisc ;
+                        else if (x.DateType == eumDateType.hDay.ToString())
+                            hDisc += useDisc;
+                        else if (x.DateType.Contains("h"))
+                            hDisc += useDisc;
+                        else
+                            wDisc += useDisc;
+                    }
+
                     nowDisc -= useDisc;
-                    x.xMins = x.xMins - useDisc;
-                    if (x.DateType == eumDateType.wDay.ToString())
-                        wDisc += useDisc;
-                    else if (x.DateType == eumDateType.hDay.ToString())
-                        hDisc += useDisc;
-                    else if (x.DateType.Contains("h"))
-                    {
-                        m_hDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType.Replace("h", string.Empty).Trim()).FirstOrDefault();
-                        mm.MotoTotalHours  -= Convert.ToSingle(useDisc);
-                    }
-                    else
-                    {
-                        m_wDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType).FirstOrDefault();
-                        mm.MotoTotalHours -= Convert.ToSingle(useDisc);
-                    }
+                    x.xMins -= useDisc;
+                    dre -= useDisc * x.xRate;//減去折扣價
                 }
             });
 
@@ -734,9 +787,6 @@ namespace WebAPI.Models.BillFunc
 
                 //折扣後租用時數
                 re.AfterDiscRentInMins = Convert.ToInt32(xre.Select(x => x.xMins).Sum());
-
-                ////租金計算
-                //xre.ForEach(x => dre += (x.xMins * x.xRate));
             }
 
             re.useDisc = Convert.ToInt32(wDisc+hDisc);//使用一般折扣點數
@@ -744,7 +794,16 @@ namespace WebAPI.Models.BillFunc
             re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
+            {
+                mFinal.ForEach(x =>
+                {
+                    var mo = mOri.Where(y => y.MonthlyRentId == x.MonthlyRentId).FirstOrDefault();
+                    if (mo != null)
+                        x.MotoTotalHours = (mo.MotoTotalHours - x.MotoTotalHours);//使用的點數
+                });
+
                 re.mFinal = mFinal;
+            }         
 
             dre = dre > 0 ? dre : 0;
 
@@ -805,7 +864,6 @@ namespace WebAPI.Models.BillFunc
                     else if (x.DateType == eumDateType.hDay.ToString())
                         x.xRate = priceHmin;
                 });
-
                 
                 if (fdate.haveNext == 1)//首24H
                 {
@@ -1527,7 +1585,7 @@ namespace WebAPI.Models.BillFunc
         {
             double re = 0;
 
-            if (Mins < 6)
+            if (Mins>0 && Mins < 6 )
                 re = 6;
             else
                 re = Mins;
@@ -2780,6 +2838,7 @@ namespace WebAPI.Models.BillFunc
                             wLastMins += (fdate.xMins - useDisc01);
                             f24Pay += (fdate.xMins - useDisc01) * priceNmin;
                             fdate.xMins -= useDisc01;
+                            fdate.useBaseMins = dayBaseMins;
                         }
                         else
                         {
@@ -2810,6 +2869,7 @@ namespace WebAPI.Models.BillFunc
                             hLastMins += (fdate.xMins - useDisc01);
                             f24Pay += (fdate.xMins - useDisc01) * priceHmin;
                             fdate.xMins -= useDisc01;
+                            fdate.useBaseMins = dayBaseMins;
                         }
                         else
                         {
@@ -2952,6 +3012,54 @@ namespace WebAPI.Models.BillFunc
             re = re.OrderBy(x => x.xDate).ToList();            
 
             return re;
+        }
+
+        /// <summary>
+        /// 將指定時間類別給予GroupId及起訖
+        /// </summary>
+        /// <param name="dateTypes">時間類別</param>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public List<DayPayMins> GetDateGroup(List<string> dateTypes, string grpFNamg, List<DayPayMins> sour)
+        {//note: GetDateGroup
+            string funNm = "GetDateGroup : ";
+            if (dateTypes == null || dateTypes.Count() == 0)
+                throw new Exception(funNm + "dateTypes 為必填");
+
+            if(sour != null && sour.Count() > 0)
+            {
+                if(sour.Any(x=> string.IsNullOrWhiteSpace(x.DateType) || string.IsNullOrWhiteSpace(x.xSTime)))
+                    throw new Exception(funNm + "DateType 為必填");
+
+                sour = sour.OrderBy(x => x.xSTime).ThenByDescending(y => y.haveNext).ToList();
+
+                int grpId = 1;
+                bool doAdd = false;
+                for (int i = 0; i < sour.Count(); i++)
+                {
+                    var item = sour[i];
+                    if (dateTypes.Any(a => a == item.DateType))
+                    {
+                        if (!doAdd)
+                        {
+                            item.isStart = 1;
+                            doAdd = true;
+                        }
+                        item.dayGroupId = grpFNamg + grpId.ToString();
+                    }
+                    else
+                    {
+                        if (doAdd)
+                        {
+                            if (i > 0)
+                                sour[i - 1].isEnd = 1;
+                            doAdd = false;
+                        }
+                    }
+                }
+            }
+
+            return sour;
         }
 
         /// <summary>
@@ -3127,6 +3235,10 @@ namespace WebAPI.Models.BillFunc
         public double xRate { get; set; }//費率,汽車(每小時),機車每分鐘
         public bool isMarkDay { get; set; }//是否為註記日, 平日,假日,月租平日,月租假日
         public int haveNext { get; set; } //計費區段是否有下一日,1(有),0(沒有)
+        public int isStart { get; set; }//是否為時間區段起點,1是,0否
+        public int isEnd { get; set; }//是否為時間區段結束,1是,0否
+        public double useBaseMins { get; set; }//使用基本時間分鐘
+        public string dayGroupId { get; set; }//時間區段id
     }
 
     public enum eumDateType
