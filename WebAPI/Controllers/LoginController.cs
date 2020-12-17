@@ -143,41 +143,47 @@ namespace WebAPI.Controllers
                         UserData = (lstOut == null) ? null : (lstOut.Count == 0) ? null : lstOut[0]
                     };
                 }
-                if (flag)
+                try
                 {
-                    if (lstOut.Count > 0)
+                    if (flag)
                     {
-                        if(lstOut[0].Signture_pic!=2 && lstOut[0].SIGNATURE != "")
+                        if (lstOut.Count > 0)
                         {
-                            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(lstOut[0].SIGNATURE);
-                            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                            Stream dataStream = httpResponse.GetResponseStream();
-                            byte[] bytes;
-                            using (var memoryStream = new MemoryStream())
+                            if (lstOut[0].Signture_pic != 2 && lstOut[0].SIGNATURE != "")
                             {
-                                dataStream.CopyTo(memoryStream);
-                                bytes = memoryStream.ToArray();
+                                HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(lstOut[0].SIGNATURE);
+                                HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                                Stream dataStream = httpResponse.GetResponseStream();
+                                byte[] bytes;
+                                using (var memoryStream = new MemoryStream())
+                                {
+                                    dataStream.CopyTo(memoryStream);
+                                    bytes = memoryStream.ToArray();
+                                }
+                                string base64String = Convert.ToBase64String(bytes);
+                                FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                                flag = new AzureStorageHandle().UploadFileToAzureStorage(base64String, FileName, "credential");
                             }
-                            string base64String = Convert.ToBase64String(bytes);
-                            FileName = string.Format("{0}_{1}_{2}.png", apiInput.IDNO, "Signture", DateTime.Now.ToString("yyyyMMddHHmmss"));
-                            flag = new AzureStorageHandle().UploadFileToAzureStorage(base64String, FileName, "credential");
                         }
-                    }
 
-                }
-                if (flag)
-                {
-                    string spName1 = new ObjType().GetSPName(ObjType.SPType.SignatureUpdate);
-                    SPInput_SignatureUpdate spInput = new SPInput_SignatureUpdate()
+                    }
+                    if (flag)
                     {
-                        LogID = LogID,
-                        IDNO = apiInput.IDNO,
-                        CrentialsFile = FileName
-                    };
-                    SPOutput_Base spOut = new SPOutput_Base();
-                    SQLHelper<SPInput_SignatureUpdate, SPOutput_Base> sqlHelp1 = new SQLHelper<SPInput_SignatureUpdate, SPOutput_Base>(connetStr);
-                    flag = sqlHelp1.ExecuteSPNonQuery(spName1, spInput, ref spOut, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                        string spName1 = new ObjType().GetSPName(ObjType.SPType.SignatureUpdate);
+                        SPInput_SignatureUpdate spInput = new SPInput_SignatureUpdate()
+                        {
+                            LogID = LogID,
+                            IDNO = apiInput.IDNO,
+                            CrentialsFile = FileName
+                        };
+                        SPOutput_Base spOut = new SPOutput_Base();
+                        SQLHelper<SPInput_SignatureUpdate, SPOutput_Base> sqlHelp1 = new SQLHelper<SPInput_SignatureUpdate, SPOutput_Base>(connetStr);
+                        flag = sqlHelp1.ExecuteSPNonQuery(spName1, spInput, ref spOut, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                    }
+                }catch(Exception ex)
+                {
+                    //flag = false;
                 }
             }
             #endregion
