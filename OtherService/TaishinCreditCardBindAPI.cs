@@ -211,7 +211,7 @@ namespace OtherService
             bool flag = false;
             string cacheNm = "BankCardCache";
             string bankNm = "TSIB";
-            int cacheHour = 12;
+            int cacheMins = 10;
             bool reCall = false;
 
             List<BankCardCache> cItems = (List<BankCardCache>)_cache[cacheNm];
@@ -256,7 +256,7 @@ namespace OtherService
                     };
                     cItems = cItems.Where(x => x.BankNm == bankNm && x.IDNO != m.IDNO).ToList();
                     cItems.Add(newItem);
-                    CacheItemPolicy cacheItemPolicy = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Now.AddHours(cacheHour) };
+                    CacheItemPolicy cacheItemPolicy = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Now.AddMinutes(cacheMins) };
                     _cache.Add(cacheNm, cItems, cacheItemPolicy);
                 }
                 return xflag;
