@@ -4,14 +4,14 @@
     List<Domain.TB.SubScript.SubScriptionForClient> lstQuery = null;
     FormsIdentity id;
     FormsAuthenticationTicket ticket;
-    if (User.Identity.IsAuthenticated == false)
+    if (Session["Account"] == null)
     {
         Response.Redirect("Index");
     }
     else
     {
-        id = (FormsIdentity)User.Identity;
-        if (id == null)
+        //id = (FormsIdentity)User.Identity;
+        if (Session["Account"] == null)
         {
             Response.Redirect("Index");
         }

@@ -34,12 +34,12 @@ namespace QueryWeb.Controllers
             {
                 return base.View(uAccount);
             }
-            string account = uAccount.Account;
-            DateTime now = DateTime.Now;
-            DateTime dateTime = DateTime.Now;
-            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, account, now, dateTime.AddMinutes(10), false, "NUser", FormsAuthentication.FormsCookiePath);
-            string encTicket = FormsAuthentication.Encrypt(ticket);
-            base.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+            //string account = uAccount.Account;
+            //DateTime now = DateTime.Now;
+            //DateTime dateTime = DateTime.Now;
+            //FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, account, now, dateTime.AddMinutes(10), false, "NUser", FormsAuthentication.FormsCookiePath);
+            //string encTicket = FormsAuthentication.Encrypt(ticket);
+            //base.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
 
             Session["Account"] = uAccount.Account;
 
