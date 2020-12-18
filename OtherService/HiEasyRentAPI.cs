@@ -950,10 +950,17 @@ namespace OtherService
             output = DoNPR320Query(input).Result;
             if (output.Result)
             {
-                //if (output.Data == null)
-                //{
-                //    flag = false;
-                //}
+                if (output.Data == null)
+                {
+                    flag = false;
+                }
+                else
+                {
+                    if (output.RtnCode != "0")
+                    {
+                        flag = false;
+                    }
+                }
             }
             else
             {
