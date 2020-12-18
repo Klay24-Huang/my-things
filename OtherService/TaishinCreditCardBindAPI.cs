@@ -214,10 +214,14 @@ namespace OtherService
             int cacheMins = 10;
             bool reCall = false;
 
-            List<BankCardCache> cItems = (List<BankCardCache>)_cache[cacheNm];
-            BankCardCache m = new BankCardCache();
+            var cItems = new List<BankCardCache>();
+            var m = new BankCardCache();
+
+            if (_cache != null && _cache[cacheNm] != null)
+               cItems = (List<BankCardCache>)_cache[cacheNm];           
+
             if (cItems != null && cItems.Count() > 0)
-                m = cItems.Where(x => x.IDNO == wsInput.RequestParams.MemberId).FirstOrDefault();
+                m = cItems.Where(x => x.BankNm == bankNm && x.IDNO == wsInput.RequestParams.MemberId).FirstOrDefault();
 
             if (refresh == false)
             {
