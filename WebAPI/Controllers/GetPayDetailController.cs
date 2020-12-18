@@ -298,7 +298,7 @@ namespace WebAPI.Controllers
                                 car_pay_in_hMins = reInMins.Item2;
                             }
 
-                            var reOutMins = billCommon.GetCarOutComputeMins(ED, FED, 60, 360, lstHoliday);
+                            var reOutMins = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                             if (reOutMins != null)
                             {
                                 car_payOutMins = Convert.ToInt32(reOutMins.Item1 + reOutMins.Item2);
