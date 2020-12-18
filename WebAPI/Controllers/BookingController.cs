@@ -42,7 +42,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -61,7 +60,6 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
             ProjectRepository projectRepository = new ProjectRepository(connetStr);
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
@@ -69,7 +67,6 @@ namespace WebAPI.Controllers
             DateTime LastPickCarTime = SDate.AddMinutes(15);
             string CarType = "", StationID = "";
             Int16 PayMode = 0;
-            int QueryMode = 0;
             Int16 ProjType = 5;
             int NormalRentDefaultPickTime = 15;
             int AnyRentDefaultPickTime = 30;
@@ -99,6 +96,9 @@ namespace WebAPI.Controllers
                     errCode = "ERR900";
                 }
 
+                SDate = Convert.ToDateTime(apiInput.SDate);
+                EDate = Convert.ToDateTime(apiInput.EDate);
+                lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             }
             //不開放訪客
             if (flag)
@@ -153,7 +153,6 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-
                         CarData CarObj = _repository.GetCarData(apiInput.CarNo);
                         if (CarObj == null)
                         {
@@ -170,7 +169,6 @@ namespace WebAPI.Controllers
                     {
                         if (ProjType == 3)
                         {
-                            //EDate = SDate.AddHours(1);
                             //20201212 ADD BY ADAM REASON.路邊改預設一天
                             EDate = SDate.AddDays(1);
                         }
@@ -208,7 +206,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -244,10 +241,10 @@ namespace WebAPI.Controllers
                 }
             }
             #region 檢查信用卡是否綁卡
-
             if (flag)
+            {
                 flag = CheckCard(IDNO, ref errCode);
-
+            }
             #endregion
             #region 檢查欠費
             if (flag)
@@ -280,10 +277,9 @@ namespace WebAPI.Controllers
             }
             if (flag)
             {
-                //InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, 200, 200, lstHoliday)) : 0;
                 //20201103 ADD BY SS ADAM REASON.計算安心服務價格
                 InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePerHours * 10, InsurancePerHours * 10, lstHoliday)) : 0;
-                //計算初始租金
+                //計算預估租金
                 if (ProjType < 4)
                 {
                     ProjectPriceBase priceBase = null;
@@ -296,7 +292,7 @@ namespace WebAPI.Controllers
                         priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarNo, ProjType);
                     }
 
-                    price = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, lstHoliday));
+                    price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
                 }
                 else
                 {
@@ -338,18 +334,16 @@ namespace WebAPI.Controllers
                         OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(7, '0'),
                         LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss")
                     };
-
                 }
                 //else
                 //{
                 //    errCode = "ERR161";
                 //}
             }
-
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -360,6 +354,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        #region 是否有綁定信用卡
         /// <summary>
         /// 是否有綁定信用卡
         /// </summary>
@@ -404,7 +399,6 @@ namespace WebAPI.Controllers
 
             return flag;
         }
-
-
+        #endregion
     }
 }
