@@ -156,5 +156,6 @@ namespace Domain.TB.BackEnd
         public string OtherFeeRemark { set; get; }
         public int PARKINGAMT2 { set; get; }
         public string PARKINGMEMO2 { set; get; }
+        public int InsurancePerHours { set; get; }
     }
 }

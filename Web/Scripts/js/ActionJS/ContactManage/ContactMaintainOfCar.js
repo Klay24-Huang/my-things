@@ -264,6 +264,7 @@ function SetData(data) {
             $("#spn_CarRent").html(OrderObj.pure_price);
             $("#spn_Insurance_price").html(OrderObj.Insurance_price);
             $("#Insurance_price_input").val(OrderObj.Insurance_price).prop("readonly", "");
+            $('#spn_InsurancePerHours').html(OrderObj.InsurancePerHours);
 
             finalPrice = OrderObj.FinalPrice;
             if (LastOrderObj.LastStopTime != "") {
