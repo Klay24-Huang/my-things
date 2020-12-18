@@ -98,6 +98,13 @@ namespace WebAPI.Controllers
                 {
                     switch (apiInput.InvoiceType)
                     {
+                        case 1:
+                            if (string.IsNullOrWhiteSpace(apiInput.NOBAN))
+                            {
+                                flag = false;
+                                errCode = "ERR200";
+                            }
+                            break;
                         case 4:     // 統編
                             if (string.IsNullOrWhiteSpace(apiInput.UniCode))
                             {
