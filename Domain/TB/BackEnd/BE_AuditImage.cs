@@ -68,5 +68,7 @@ namespace Domain.TB.BackEnd
         /// 拒絕原因
         /// </summary>
         public string RejectReason { set; get; }
+        public string LSFLG { set; get; }
+        public string LSCrentialsFile { set; get; }
     }
 }
