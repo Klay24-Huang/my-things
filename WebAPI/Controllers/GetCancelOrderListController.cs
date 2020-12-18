@@ -152,7 +152,7 @@ namespace WebAPI.Controllers
                                 CarTypeImg = orderCancelDataLists[i].CarTypeImg,
                                 CarTypeName = orderCancelDataLists[i].CarTypeName,
                                 ED = orderCancelDataLists[i].stop_time,
-                                Milage = billCommon.CalMilagePay(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20),
+                                Milage = billCommon.CarMilageCompute(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>()),
                                 MilageUnit = (orderCancelDataLists[i].MilageUnit < 0) ? Mildef : orderCancelDataLists[i].MilageUnit,
                                 MilOfHours = (orderCancelDataLists[i].MilageUnit == 0) ? 0 : 20,
                                 OperatorICon = orderCancelDataLists[i].OperatorICon,
@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
                                 HoildayPriceByMinutes = orderCancelDataLists[i].HoildayPriceByMinutes,
                                 InsuranceBill = orderCancelDataLists[i].InsurancePurePrice,
                                 TransDiscount = (orderCancelDataLists[i].init_TransDiscount < 0) ? 0 : orderCancelDataLists[i].init_TransDiscount,
-                                MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(orderCancelDataLists[i].start_time), Convert.ToDateTime(orderCancelDataLists[i].stop_time), orderCancelDataLists[i].MilageUnit, Mildef, 20),
+                                MileageBill = billCommon.CarMilageCompute(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>()),
                             };
                             obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;
                             outputApi.CancelObj.Add(obj);

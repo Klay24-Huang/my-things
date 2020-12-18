@@ -4,6 +4,7 @@ using Domain.SP.Input.OrderList;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
+using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Newtonsoft.Json;
 using System;
@@ -212,7 +213,7 @@ namespace WebAPI.Controllers
                                 CarLongitude = OrderDataLists[i].CarLongitude,
                                 OpenDoorDeadLine = (string.IsNullOrWhiteSpace(OrderDataLists[i].OpenDoorDeadLine)) ? "" : Convert.ToDateTime(OrderDataLists[i].OpenDoorDeadLine).ToString("yyyy-MM-dd HH:mm:ss"),
                             };
-                            obj.MileageBill = billCommon.CalMilagePay(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20);
+                            obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20 , new List<Holiday>());
 
                             if (obj.ProjType == 4)  //機車
                             {

@@ -240,13 +240,10 @@ namespace WebAPI.Controllers
 
                             outputApi = new OAPI_GetEstimate()
                             {
-                                //CarRentBill = Convert.ToInt32(billCommon.CalSpread(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, lstHoliday)),
                                 CarRentBill = billCommon.CarRentCompute(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday),
-                                //InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, lstHoliday)) : 0,
                                 InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
                                 InsurancePerHour = priceBase[0].InsurancePerHours,
                                 MileagePerKM = (MilUnit < 0) ? Mildef : Math.Round(MilUnit,2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
-                                //MileageBill = billCommon.CalMilagePay(SDate, EDate, MilUnit, Mildef, 20)
                                 MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                             };
                             outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
