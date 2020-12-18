@@ -217,8 +217,14 @@ namespace OtherService
             var cItems = new List<BankCardCache>();
             var m = new BankCardCache();
 
+            string lastTime = DateTime.Now.AddMinutes(cacheMins*(-1)).ToString("yyyyMMddHHmmss"); 
+
             if (_cache != null && _cache[cacheNm] != null)
-               cItems = (List<BankCardCache>)_cache[cacheNm];           
+            {
+                cItems = (List<BankCardCache>)_cache[cacheNm];
+                if(cItems != null && cItems.Count()>0)
+                   cItems = cItems.Where(x => string.Compare(x.CacheTime, lastTime) >= 0).ToList();
+            }
 
             if (cItems != null && cItems.Count() > 0)
                 m = cItems.Where(x => x.BankNm == bankNm && x.IDNO == wsInput.RequestParams.MemberId).FirstOrDefault();
