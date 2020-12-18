@@ -199,9 +199,9 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,PROJID					= P.PROJID
 						,PRONAME				= P.PRONAME
 						,PRODESC				= P.PRODESC
-						,Price					= P.PROPRICE_N			--平日
-						,Price_H				= P.PROPRICE_H			--假日
-						,PriceBill              = dbo.FN_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H)
+						,Price					= IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N) --平日	--2020-12-17 eason
+						,Price_H				= IIF(PD.PRICE_H>0 , PD.PRICE_H, P.PROPRICE_H) --假日	--2020-12-17 eason
+						,PriceBill              = dbo.FN_CalSpread(@SD, @ED, IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N), IIF(PD.PRICE>0 , PD.PRICE_H, P.PROPRICE_H))
 												+ (@TotalHours * ISNULL(MS.MilageBase,0)*20)
 												+ CASE WHEN @Insurance=1 THEN (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END) ELSE 0 END
 						,CarBrend				= D.CarBrend
@@ -222,7 +222,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,PayMode				= P.PayMode
 						,CarOfArea				= I.Area
 						,IsRent					= CASE WHEN BL.CarType<>'' THEN 'N' ELSE 'Y' END
-						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >=4 THEN 0 ELSE 1 END		--安心服務 20201206改為等級4就是停權
+						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務  20201206改為等級4就是停權
 						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
 				FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
@@ -231,7 +231,8 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
 				JOIN TB_OperatorBase O WITH(NOLOCK) ON D.Operator=O.OperatorID
 				JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
-				JOIN #TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
+				JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
+				LEFT JOIN TB_ProjectDiscount PD WITH(NOLOCK) ON PD.ProjID = S.PROJID AND D.CarType = PD.CARTYPE --2020-12-17 eason
 				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
 				LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID = I.CityID --eason 2020-11-27
 				LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID = I.AreaID --eason 2020-11-27
