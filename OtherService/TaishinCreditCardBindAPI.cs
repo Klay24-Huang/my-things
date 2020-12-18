@@ -12,6 +12,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Caching;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,7 +37,11 @@ namespace OtherService
         private string GetPaymentInfo = ConfigurationManager.AppSettings["GetPaymentInfo"].ToString();              //查詢訂單狀態
         private string ECRefund = ConfigurationManager.AppSettings["ECRefund"].ToString();                          //退貨
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
-        private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();               //Azure Api URL
+        private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
+
+        private static MemoryCache _cache = MemoryCache.Default;
+
+        //Azure Api URL
         #region 取得綁卡網址
         /// <summary>
         /// 取得綁卡網址
@@ -169,11 +174,11 @@ namespace OtherService
         /// <param name="errCode"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoGetCreditCardList(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
+        public bool DoGetCreditCardList_ori(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
-            string checksum = GenerateSign(ori);
+            string checksum = GenerateSign(ori);          
 
             WebAPIInput_GetCreditCardList Input = new WebAPIInput_GetCreditCardList()
             {
@@ -185,7 +190,6 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp,
                 TransNo=wsInput.TransNo
             };
-
 
             output = DoGetCreditCardListSend(Input).Result;
             if (output.RtnCode == "1000")
@@ -201,6 +205,71 @@ namespace OtherService
             }
             return flag;
         }
+        
+        public bool DoGetCreditCardListCache(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output,bool refresh=false)
+        {//hack: DoGetCreditCardListCache
+            bool flag = false;
+            string cacheNm = "BankCardCache";
+            string bankNm = "TSIB";
+            int cacheHour = 12;
+            bool reCall = false;
+
+            List<BankCardCache> cItems = (List<BankCardCache>)_cache[cacheNm];
+            BankCardCache m = new BankCardCache();
+            if (cItems != null && cItems.Count() > 0)
+                m = cItems.Where(x => x.IDNO == wsInput.RequestParams.MemberId).FirstOrDefault();
+
+            if (refresh == false)
+            {
+                if (_cache != null && _cache[cacheNm] != null)
+                {
+                    if(m != null)
+                    {
+                        reCall = false;
+                        if (string.IsNullOrWhiteSpace(m.apiJson))
+                            output = JsonConvert.DeserializeObject<WebAPIOutput_GetCreditCardList>(m.apiJson);
+                        errCode = m.errCode;
+                        return true;
+                    }
+                    else
+                        reCall = true;                
+                }
+                else
+                    reCall = true;
+            }
+            else
+                reCall = true;
+
+            if (reCall)
+            {
+                bool xflag = DoGetCreditCardList_ori(wsInput, ref errCode, ref output);
+                if (xflag)
+                {
+                    _cache.Remove(cacheNm);
+                    BankCardCache newItem = new BankCardCache()
+                    {
+                        IDNO = wsInput.RequestParams.MemberId,
+                        BankNm = bankNm,
+                        CacheTime = DateTime.Now.ToString("yyyyMMddHHmmss"),
+                        apiJson = JsonConvert.SerializeObject(output),
+                        errCode = errCode
+                    };
+                    cItems = cItems.Where(x => x.BankNm == bankNm && x.IDNO != m.IDNO).ToList();
+                    cItems.Add(newItem);
+                    CacheItemPolicy cacheItemPolicy = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Now.AddHours(cacheHour) };
+                    _cache.Add(cacheNm, cItems, cacheItemPolicy);
+                }
+                return xflag;
+            }
+
+            return flag;
+        }
+
+        public bool DoGetCreditCardList(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
+        {
+            return DoGetCreditCardListCache(wsInput, ref errCode, ref output);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -964,5 +1033,15 @@ namespace OtherService
             string sign = Convert.ToBase64String(hash).ToUpper();
             return sign;
         }
+    }
+
+
+    public class BankCardCache
+    {
+        public string BankNm { get; set; }
+        public string CacheTime { get; set; }//yyyyMMddHHmmss
+        public string IDNO { get; set; }
+        public string apiJson { get; set; }//回傳字串
+        public string errCode { get; set; }        
     }
 }
