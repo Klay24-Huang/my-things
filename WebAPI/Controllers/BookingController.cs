@@ -114,8 +114,6 @@ namespace WebAPI.Controllers
             //春節專案判斷，不得已先寫死，之後再回來調整
             if (flag)
             {
-                if (apiInput.ProjID == "R107")
-                {
                     DateTime dt1 = Convert.ToDateTime(apiInput.SDate);
                     DateTime dt2 = Convert.ToDateTime(apiInput.EDate);
                     DateTime LimitSDate = new DateTime(2021, 2, 9);
@@ -130,7 +128,6 @@ namespace WebAPI.Controllers
                             errCode = "ERR235";
                         }
                     }
-                }
             }
 
             if (flag)
