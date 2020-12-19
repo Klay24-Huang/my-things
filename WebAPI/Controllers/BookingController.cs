@@ -247,6 +247,7 @@ namespace WebAPI.Controllers
                 if (ds.Tables.Count == 0)
                 {
                     flag = false;
+                    errCode = "ERR730";
                 }
                 ds.Dispose();
             }
