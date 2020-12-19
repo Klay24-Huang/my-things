@@ -620,10 +620,6 @@ namespace WebAPI.Controllers
                 //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
                 string errMsg = "";
                 DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
-                if (flag==false)
-                {
-                    ds.Dispose();
-                }
 
                 //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                 //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
@@ -643,7 +639,6 @@ namespace WebAPI.Controllers
                         CardToken = ds.Tables[0].Rows[0]["CardToken"].ToString();
                         hasFind = true;
                     }
-                    ds.Dispose();
 
                     #region 直接授權
                     if (hasFind)//有找到，可以做扣款
@@ -756,6 +751,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR730";
                 }
+                ds.Dispose();
             }
             #endregion
 
