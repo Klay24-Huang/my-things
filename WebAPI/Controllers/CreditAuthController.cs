@@ -382,26 +382,28 @@ namespace WebAPI.Controllers
                     //}
                     #endregion
 
-                    if (flag)
+                    if (flag && Amount>0)       //有錢才刷
                     {
                         WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                         flag = TaishinCardTrade(apiInput, ref PayInput,ref WSAuthOutput, ref Amount, ref errCode);
+                        
+                    }
+
+                    if (flag)
+                    {
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
+
+                        //20201201 ADD BY ADAM REASON.換電獎勵
+                        //SPOutput_Base PayOutput = new SPOutput_Base();
+                        //SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
+                        SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
+                        SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
+                        flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                        //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                        baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
                         if (flag)
                         {
-                            string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
-
-                            //20201201 ADD BY ADAM REASON.換電獎勵
-                            //SPOutput_Base PayOutput = new SPOutput_Base();
-                            //SQLHelper<SPInput_DonePayRent, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_Base>(connetStr);
-                            SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
-                            SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
-                            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
-                            baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
-                            if (flag)
-                            {
-                                RewardPoint = PayOutput.Reward;
-                            }
+                            RewardPoint = PayOutput.Reward;
                         }
                     }
 
