@@ -3,6 +3,8 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output.Common;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.output.Taishin;
+using Newtonsoft.Json;
+using NLog;
 using OtherService;
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,7 @@ namespace WebAPI.Controllers
     /// </summary>
     public class GetBindURLController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
 
         private string BindResultURL= ConfigurationManager.AppSettings["BindResultURL"].ToString();
@@ -140,7 +143,9 @@ namespace WebAPI.Controllers
 
                 };
                 WebAPIOutput_Base wsOutput = new WebAPIOutput_Base();
+                logger.Trace(IDNO + "Call:" + JsonConvert.SerializeObject(wsInput));
                 flag = WebAPI.DoBind(wsInput, ref errCode, ref wsOutput);
+                logger.Trace(IDNO + "Response:" + errCode + "," + JsonConvert.SerializeObject(wsOutput));
                 if (flag)
                 {
                     if (wsOutput.RtnCode == "1000")
