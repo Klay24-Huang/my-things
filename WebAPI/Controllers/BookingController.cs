@@ -96,8 +96,8 @@ namespace WebAPI.Controllers
                     errCode = "ERR900";
                 }
 
-                SDate = Convert.ToDateTime(apiInput.SDate);
-                EDate = Convert.ToDateTime(apiInput.EDate);
+                SDate = apiInput.SDate == "" ? DateTime.Now : Convert.ToDateTime(apiInput.SDate);
+                EDate = apiInput.SDate == "" ? DateTime.Now.AddHours(1) : Convert.ToDateTime(apiInput.EDate);
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             }
             //不開放訪客
@@ -114,8 +114,8 @@ namespace WebAPI.Controllers
             //春節專案判斷，不得已先寫死，之後再回來調整
             if (flag)
             {
-                    DateTime dt1 = Convert.ToDateTime(apiInput.SDate);
-                    DateTime dt2 = Convert.ToDateTime(apiInput.EDate);
+                    DateTime dt1 = Convert.ToDateTime(SDate);
+                    DateTime dt2 = Convert.ToDateTime(EDate);
                     DateTime LimitSDate = new DateTime(2021, 2, 9);
                     DateTime LimitEDate = new DateTime(2021, 2, 16);
 

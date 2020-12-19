@@ -277,7 +277,8 @@ namespace OtherService
 
         public bool DoGetCreditCardList(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
         {
-            return DoGetCreditCardListCache(wsInput, ref errCode, ref output);
+            //return DoGetCreditCardListCache(wsInput, ref errCode, ref output);
+            return DoGetCreditCardList_ori(wsInput, ref errCode, ref output);
         }
 
         /// <summary>
