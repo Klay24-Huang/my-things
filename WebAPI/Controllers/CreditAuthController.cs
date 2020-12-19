@@ -614,18 +614,36 @@ namespace WebAPI.Controllers
                     TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
 
                 };
-                WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+
+
+
+                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                string errMsg = "";
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (flag==false)
+                {
+                    ds.Dispose();
+                }
+
+                //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+                //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
                 if (flag)
                 {
-                    int Len = wsOutput.ResponseParams.ResultData.Count;
+                    //int Len = wsOutput.ResponseParams.ResultData.Count;
                     bool hasFind = false;
                     string CardToken = "";
-                    if (Len > 0)
+                    //if (Len > 0)
+                    //{
+                    //    CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                    //    hasFind = true;
+                    //}
+                    //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                        CardToken = ds.Tables[0].Rows[0]["CardToken"].ToString();
                         hasFind = true;
                     }
+                    ds.Dispose();
 
                     #region 直接授權
                     if (hasFind)//有找到，可以做扣款
