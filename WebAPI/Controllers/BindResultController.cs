@@ -98,8 +98,11 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    flag = false;
-                    errCode = "ERR197";
+                    if (OrderNo == null)
+                    {
+                        flag = false;
+                        errCode = "ERR197";
+                    }
                 }
             }
 
@@ -200,11 +203,11 @@ namespace WebAPI.Controllers
                         errCode = "ERR196";
                     }
                 }
-                else
-                {
-                    flag = false;
-                    errCode = "ERR195";
-                }
+                //else
+                //{
+                //    flag = false;
+                //    errCode = "ERR195";
+                //}
 
                 object[][] parms1 = {
                         new object[] {
