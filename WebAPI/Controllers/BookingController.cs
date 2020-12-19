@@ -24,6 +24,7 @@ using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.output.Taishin;
 using System.Data;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers
 {
@@ -240,7 +241,14 @@ namespace WebAPI.Controllers
             #region 檢查信用卡是否綁卡
             if (flag)
             {
-                flag = CheckCard(IDNO, ref errCode);
+                //flag = CheckCard(IDNO, ref errCode);
+                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count == 0)
+                {
+                    flag = false;
+                }
+                ds.Dispose();
             }
             #endregion
             #region 檢查欠費

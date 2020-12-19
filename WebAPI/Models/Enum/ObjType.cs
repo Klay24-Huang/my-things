@@ -558,6 +558,8 @@ namespace WebAPI.Models.Enum
             /// 使用者回饋處理
             /// </summary>
             BE_FeedBackHandle,
+
+            GetBindingCard,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -999,6 +1001,10 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_FeedBackHandle:
                     SPName = "usp_BE_FeedBackHandle";
                         break;
+
+                case SPType.GetBindingCard:
+                    SPName = "usp_GetBindingCard";
+                    break;
                 #endregion
                 #region 整備人員
                 case SPType.MA_CheckCarStatusByReturn:

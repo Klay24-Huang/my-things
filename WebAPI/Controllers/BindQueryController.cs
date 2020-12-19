@@ -6,11 +6,13 @@ using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -102,39 +104,65 @@ namespace WebAPI.Controllers
                     TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
 
                 };
-                WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
-                if (flag)
+
+                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count>0)
                 {
-                    int Len = wsOutput.ResponseParams.ResultData.Count;
                     apiOutput = new OAPI_GetCardBindList()
                     {
-                        HasBind = (Len == 0) ? 0 : 1,
+                        HasBind = (ds.Tables[0].Rows.Count == 0) ? 0 : 1,
                         BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
                     };
-                   for(int i = 0; i < Len; i++)
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
                         {
-                            AvailableAmount = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].AvailableAmount),
-                            BankNo = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].BankNo),
-                            CardName = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardName),
-                            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber),
-              
-                             CardToken = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardToken)
-
+                            AvailableAmount = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["AvailableAmount"].ToString()),
+                            BankNo = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["BankNo"].ToString()),
+                            CardName = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardName"].ToString()),
+                            CardNumber = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardNumber"].ToString()),
+                            CardToken = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardToken"].ToString())
                         };
                         apiOutput.BindListObj.Add(obj);
                     }
                 }
-                else
-                {
-                    errCode = wsOutput.RtnCode;
-                    errMsg = wsOutput.RtnMessage;
-                    
-                }
+                ds.Dispose();
+
+                //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+                //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+                //if (flag)
+                //{
+                //    int Len = wsOutput.ResponseParams.ResultData.Count;
+                //    apiOutput = new OAPI_GetCardBindList()
+                //    {
+                //        HasBind = (Len == 0) ? 0 : 1,
+                //        BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
+                //    };
+                //    for (int i = 0; i < Len; i++)
+                //    {
+                //        Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
+                //        {
+                //            AvailableAmount = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].AvailableAmount),
+                //            BankNo = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].BankNo),
+                //            CardName = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardName),
+                //            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber),
+
+                //            CardToken = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardToken)
+
+                //        };
+                //        apiOutput.BindListObj.Add(obj);
+                //    }
+                //}
+                //else
+                //{
+                //    errCode = wsOutput.RtnCode;
+                //    errMsg = wsOutput.RtnMessage;
+
+                //}
+
             }
-            
+
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
