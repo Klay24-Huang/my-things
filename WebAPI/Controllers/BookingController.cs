@@ -249,6 +249,17 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR730";
                 }
+                else if (ds.Tables[0].Rows.Count==0)
+                {
+                    flag = false;
+                    errCode = "ERR730";
+                }
+                else
+                {
+
+                }
+                    
+
                 ds.Dispose();
             }
             #endregion
