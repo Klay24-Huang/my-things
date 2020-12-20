@@ -460,4 +460,7 @@
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\Functions\GET_TWDATE.sql" />
+  </ItemGroup>
 </Project>

@@ -1,4 +1,9 @@
-/****** Object:  StoredProcedure [dbo].[usp_GetAnyRentCar]    Script Date: 2020/12/8 上午 09:58:50 ******/
+/****** Object:  StoredProcedure [dbo].[usp_GetAnyRentCar]    Script Date: 2020/12/20 下午 03:35:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 
 /****************************************************************
 ** Name: [dbo].[usp_GetAnyRentCar]
@@ -43,7 +48,7 @@
 ** 
 **
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_GetAnyRentCar]
+ALTER PROCEDURE [dbo].[usp_GetAnyRentCar]
 	@IDNO				VARCHAR(10)				,	--帳號
 	@ShowALL			INT						,	--是否顯示全部(0:否 1:是)
 	@MinLatitude		FLOAT					,	--最小緯度
@@ -109,10 +114,11 @@ BEGIN TRY
 			LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 			LEFT JOIN TB_MilageSetting M WITH(NOLOCK) ON VW.PROJID=M.ProjID
-			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,GETDATE(),112) AND H.use_flag=1
-			WHERE GPSTime>=DATEADD(MINUTE, -30, GETDATE())
+			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,dbo.GET_TWDATE(),112) AND H.use_flag=1
+			WHERE GPSTime>=DATEADD(MINUTE, -30, dbo.GET_TWDATE())
 			  AND available=1
-			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5);
+			  --AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5);
+			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 and (start_time > DATEADD(dAY,-7,dbo.GET_TWDATE()) OR  stop_pick_time > dbo.GET_TWDATE()) );
 		END
 		ELSE
 		BEGIN
@@ -139,10 +145,10 @@ BEGIN TRY
 			LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 			LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 			LEFT JOIN TB_MilageSetting M WITH(NOLOCK) ON VW.PROJID=M.ProjID
-			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,GETDATE(),112) AND H.use_flag=1
-			WHERE GPSTime>=DATEADD(MINUTE, -30, GETDATE())
+			LEFT JOIN TB_Holiday H WITH(NOLOCK) ON H.HolidayDate=CONVERT(VARCHAR,dbo.GET_TWDATE(),112) AND H.use_flag=1
+			WHERE GPSTime>=DATEADD(MINUTE, -30,dbo.GET_TWDATE())
 			  AND available=1
-			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5)
+			  AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 and (start_time > DATEADD(dAY,-7,dbo.GET_TWDATE()) OR stop_pick_time > dbo.GET_TWDATE()))
 			  AND (Latitude>=@MinLatitude AND Latitude<=@MaxLatitude)
 			  AND (Longitude>=@MinLongitude AND Longitude<=@MaxLongitude);
 		END
@@ -174,4 +180,3 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetAnyRentCar';
-GO
