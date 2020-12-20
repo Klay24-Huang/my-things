@@ -33,6 +33,7 @@ using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 using Domain.SP.Input.Car;
 using WebAPI.Utils;
+using NLog;
 
 namespace WebAPI.Controllers
 {
@@ -41,6 +42,7 @@ namespace WebAPI.Controllers
     /// </summary>
     public class CreditAuthController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
@@ -700,6 +702,8 @@ namespace WebAPI.Controllers
                             //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                             //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
                             flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
+
+                            logger.Trace("DoCreditCardAuthV2:" + JsonConvert.SerializeObject(WSAuthOutput));
                             if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
                             {
                                 flag = false;
