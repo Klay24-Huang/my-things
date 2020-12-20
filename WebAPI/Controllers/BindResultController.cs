@@ -139,6 +139,7 @@ namespace WebAPI.Controllers
                         logger.Trace("GetCreditCardList_Start:" + JsonConvert.SerializeObject(wsInput));
                         flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
                         Len = wsOutput.ResponseParams.ResultData.Count;
+                        logger.Trace("GetCreditCardList_End_Success:" + JsonConvert.SerializeObject(wsOutput));
                     }
                     catch (Exception ex)
                     {
