@@ -10,7 +10,6 @@
         });
     }
 
-    setPostbackValue();
 
     $('.btn-clear').click(function () {
         setTimeout(function () {
@@ -38,21 +37,23 @@
         }
     });
 
-    if ($('#StartDate').val() == '') {
-        $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
-    }
-    if ($('#EndDate').val() == '') {
-        $("#EndDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
-    }
-    if ($('#AuditType').val() == '' || $('#AuditType').val() == '-1') {
-        $('#AuditType').val('0');
+    if ($("#IDNO").val() == "") {
+        if ($('#StartDate').val() == '') {
+            $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
+        }
+        if ($('#EndDate').val() == '') {
+            $("#EndDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
+        }
+        if ($('#AuditType').val() == '' || $('#AuditType').val() == '-1') {
+            $('#AuditType').val('0');
+        }
     }
 
-    $('.IDNO').change(function () {
-        if ($(this).val().length >= 2) {
+    $('#IDNO').change(function () {
+        if ($("#IDNO").val()!="") {
             $("#StartDate").val('');
             $("#EndDate").val('');
-            $('#AuditType').val('');
+            $('#AuditType').val('-1');
         } else {
             if ($('#StartDate').val() == '') {
                 $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
@@ -64,6 +65,7 @@
         }
     });
 
+    setPostbackValue();
 
 });
 function GoDetail(IDNO) {

@@ -128,7 +128,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
             string term2 = "";
-            string SQL = " SELECT * FROM VW_GetAuditList WITH(NOLOCK) ";
+            string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
             {
@@ -147,12 +147,6 @@ namespace Reposotory.Implement
                 para[nowCount].Value = UserName;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-            }
-            if (false == string.IsNullOrWhiteSpace(IDNOSuff))
-            {
-                if (term != "") { term += " AND "; }
-                term += string.Format(" IDNOSUFF IN ({0}) ",IDNOSuff);
-
             }
             if (AuditMode>-1)
             {
@@ -228,6 +222,12 @@ namespace Reposotory.Implement
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
+            }
+            if (false == string.IsNullOrWhiteSpace(IDNOSuff))
+            {
+                if (term != "") { term += " AND "; }
+                term += string.Format(" IDNOSUFF IN ({0}) ", IDNOSuff);
+
             }
 
             if ("" != term)
