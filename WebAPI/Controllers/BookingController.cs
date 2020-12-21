@@ -1,15 +1,21 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
+using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
-using Domain.SP.Input.Bill;
 using Domain.TB;
+using Domain.WebAPI.Input.Taishin;
+using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
+using Domain.WebAPI.output.Taishin;
+using OtherService;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -17,14 +23,8 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebCommon;
-using Domain.SP.Output.Bill;
-using OtherService;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.Input.Taishin;
-using Domain.WebAPI.output.Taishin;
-using System.Data;
 using WebAPI.Utils;
+using WebCommon;
 
 namespace WebAPI.Controllers
 {
@@ -352,10 +352,11 @@ namespace WebAPI.Controllers
                         LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss")
                     };
                 }
-                //else
-                //{
-                //    errCode = "ERR161";
-                //}
+                else
+                {
+                    flag = false;
+                    errCode = "ERR161";
+                }
             }
             #endregion
 
