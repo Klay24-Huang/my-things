@@ -18,7 +18,7 @@ namespace WebAPI.Utils
             string messageType = "";
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetBindingCard);
 
-            ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+            ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, false, ref returnMessage, ref messageLevel, ref messageType);
 
             if (ds1.Tables.Count == 0)
             {
