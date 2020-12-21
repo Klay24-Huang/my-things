@@ -751,6 +751,11 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            //設定刷卡逾時設定15秒
+            //if (Site.ToUpper().Contains("AUTH"))
+            //{
+            //    request.Timeout = 15000;
+            //}
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
