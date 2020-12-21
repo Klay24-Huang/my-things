@@ -8,6 +8,7 @@ using NLog;
 using OtherService.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -81,6 +82,17 @@ namespace OtherService
             }
             return flag;
         }
+
+        public static void SetHeaderValue(WebHeaderCollection header, string name, string value)
+        {
+            var property = typeof(WebHeaderCollection).GetProperty("InnerCollection",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            if (property != null)
+            {
+                var collection = property.GetValue(header, null) as NameValueCollection;
+                collection[name] = value;
+            }
+        }
         /// <summary>
         /// 執行取得綁卡網址
         /// </summary>
@@ -96,6 +108,10 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
+
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -147,6 +163,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -296,6 +313,10 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
+            //request.Headers["Connection"] = "keep-alive";
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -347,6 +368,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -420,6 +442,9 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -461,6 +486,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -529,6 +555,9 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -567,6 +596,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -752,6 +782,8 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{
@@ -798,6 +830,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -928,6 +961,9 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 30000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -966,6 +1002,7 @@ namespace OtherService
             }
             finally
             {
+                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
