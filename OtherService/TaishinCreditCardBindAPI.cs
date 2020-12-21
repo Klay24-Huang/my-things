@@ -751,6 +751,7 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.KeepAlive = false;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{
