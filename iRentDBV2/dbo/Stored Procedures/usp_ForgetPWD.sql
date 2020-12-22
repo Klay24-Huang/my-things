@@ -98,8 +98,35 @@ BEGIN TRY
 		BEGIN
 			SELECT @Mobile=MEMTEL FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
-			INSERT INTO TB_VerifyCode(IDNO,VerifyNum,Mobile,Mode,DeadLine)
-			VALUES(@IDNO,@VerifyCode,@Mobile,1,DATEADD(MINUTE,15,DATEADD(HOUR,8,GETDATE())));
+			SET @hasData=0
+			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=1;
+			IF @hasData=0
+			BEGIN
+				--沒資料就寫一筆新的
+				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
+				VALUES(@IDNO,@Mobile,1,@VerifyCode,DATEADD(MINUTE,15,@NowDate));
+			END
+			ELSE
+			BEGIN
+				SET @hasData=0
+				SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=1 AND IsVerify=1;
+				IF @hasData >= 1
+				BEGIN
+					--有驗證過，寫一筆新的
+					INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
+					VALUES(@IDNO,@Mobile,1,@VerifyCode,DATEADD(MINUTE,15,@NowDate));
+				END
+				ELSE
+				BEGIN
+					--尚未驗證通過，更新原資料
+					UPDATE TB_VerifyCode 
+					SET VerifyNum=@VerifyCode,
+						IsVerify=0,
+						DeadLine=DATEADD(MINUTE,15,@NowDate),
+						SendTime=@NowDate
+					WHERE IDNO=@IDNO AND Mode=1 AND IsVerify=0;
+				END
+			END
 
 			UPDATE TB_MemberData 
 			SET NeedChangePWD=1,
@@ -107,6 +134,7 @@ BEGIN TRY
 				U_USERID=@IDNO,
 				U_SYSDT=@NowDate
 			WHERE MEMIDNO=@IDNO;
+
 			COMMIT TRAN;
 		END
 	END

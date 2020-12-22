@@ -183,10 +183,13 @@
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
     <Compile Include="SP\Input\Register\SPInput_ForgetPWD.cs" />
+    <Compile Include="SP\Input\Register\SPInput_GetMemberMobile.cs" />
+    <Compile Include="SP\Input\Register\SPInput_GetVerifyCode.cs" />
     <Compile Include="SP\Input\Register\SPInput_RegisterMemberData.cs" />
     <Compile Include="SP\Input\Register\SPInput_Register_Step1.cs" />
     <Compile Include="SP\Input\Register\SPInput_Register_Step2.cs" />
     <Compile Include="SP\Input\Register\SPInput_ReSendEMail.cs" />
+    <Compile Include="SP\Input\Register\SPInput_ReSendSMS.cs" />
     <Compile Include="SP\Input\Register\SPInput_UploadCredentials.cs" />
     <Compile Include="SP\Input\Register\SPInput_VerifyEMail.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingControl.cs" />
@@ -246,6 +249,8 @@
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
+    <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
+    <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />

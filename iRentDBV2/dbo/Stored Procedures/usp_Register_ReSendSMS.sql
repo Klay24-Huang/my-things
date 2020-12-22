@@ -80,12 +80,12 @@ SET @DeadLine=DATEADD(MINUTE,15,@DeadLine);
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
-	IF @DeviceID='' OR @IDNO=''  OR @Mobile=''
+	IF @DeviceID='' OR @IDNO='' OR @Mobile=''
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
 	END
-		 
+
 	IF @Error=0
 	BEGIN
 		--再次確認身份證是否存在
@@ -94,22 +94,33 @@ BEGIN TRY
 		IF @hasData=0
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=1;
-			IF @hasData=1
+			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=@Mode;
+			IF @hasData=0
 			BEGIN
-				--驗證過就寫新一筆資料
+				--沒資料就寫一筆新的
 				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
-				VALUES(@IDNO,@Mobile,0,@VerifyCode,@DeadLine);
+				VALUES(@IDNO,@Mobile,@Mode,@VerifyCode,@DeadLine);
 			END
 			ELSE
 			BEGIN
-				--沒驗證過則更新資料
-				UPDATE TB_VerifyCode
-				SET VerifyNum=@VerifyCode,
-					IsVerify=0,
-					DeadLine=@DeadLine,
-					SendTime=DATEADD(HOUR,8,GETDATE())
-				WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=0;
+				SET @hasData=0
+				SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=@Mode AND IsVerify=1;
+				IF @hasData >= 1
+				BEGIN
+					--有驗證過，寫一筆新的
+					INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
+					VALUES(@IDNO,@Mobile,@Mode,@VerifyCode,DATEADD(MINUTE,15,@NowDate));
+				END
+				ELSE
+				BEGIN
+					--尚未驗證通過，更新原資料
+					UPDATE TB_VerifyCode
+					SET VerifyNum=@VerifyCode,
+						IsVerify=0,
+						DeadLine=@DeadLine,
+						SendTime=@NowDate
+					WHERE IDNO=@IDNO AND Mode=@Mode AND IsVerify=0;
+				END
 			END
 			COMMIT TRAN;
 		END
@@ -117,7 +128,7 @@ BEGIN TRY
 		BEGIN
 			SET @hasData=0;
 			--判斷是否審核通過
-			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO --AND HasAudit=1;  --20201114 ADD BY ADAM REASON.改為待審只有一筆
+			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO --AND HasAudit=1;  --20201114 ADD BY ADAM REASON.改為待審只有一筆
 			IF @hasData=0
 			BEGIN
 				--會員資料存在，則從[TB_MemberData]取相關資料存至待審檔
@@ -131,7 +142,7 @@ BEGIN TRY
 					   MEMCONTEL,MEMMSG,CARDNO,UNIMNO,MEMSENDCD,
 					   CARRIERID,NPOBAN,0,0,1,
 					   @NowDate
-				FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+				FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 			END
 			ELSE
 			BEGIN
@@ -142,21 +153,35 @@ BEGIN TRY
 			END
 
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=1;
-			IF @hasData >= 1
+			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=@Mode;
+			IF @hasData=0
 			BEGIN
+				--沒資料就寫一筆新的
 				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
-				VALUES(@IDNO,@Mobile,0,@VerifyCode,@DeadLine);
+				VALUES(@IDNO,@Mobile,@Mode,@VerifyCode,@DeadLine);
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_VerifyCode
-				SET VerifyNum=@VerifyCode,
-					IsVerify=0,
-					DeadLine=@DeadLine,
-					SendTime=DATEADD(HOUR,8,GETDATE())
-				WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=0;
+				SET @hasData=0
+				SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=@Mode AND IsVerify=1;
+				IF @hasData >= 1
+				BEGIN
+					--有驗證過，寫一筆新的
+					INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)
+					VALUES(@IDNO,@Mobile,@Mode,@VerifyCode,DATEADD(MINUTE,15,@NowDate));
+				END
+				ELSE
+				BEGIN
+					--尚未驗證通過，更新原資料
+					UPDATE TB_VerifyCode
+					SET VerifyNum=@VerifyCode,
+						IsVerify=0,
+						DeadLine=@DeadLine,
+						SendTime=@NowDate
+					WHERE IDNO=@IDNO AND Mode=@Mode AND IsVerify=0;
+				END
 			END
+
 			COMMIT TRAN;
 		END
 	END

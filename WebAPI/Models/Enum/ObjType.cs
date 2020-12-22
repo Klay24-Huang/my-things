@@ -203,6 +203,9 @@ namespace WebAPI.Models.Enum
             /// 上傳取車回饋照
             /// </summary>
             UploadFeedBackImage,
+            /// <summary>
+            /// 
+            /// </summary>
             InsFeedBack,
             /// <summary>
             /// 上傳及設定停車格位置
@@ -355,7 +358,18 @@ namespace WebAPI.Models.Enum
             /// 變更悠遊卡
             /// </summary>
             ReadUUCard,
+            /// <summary>
+            /// 更新簽名檔
+            /// </summary>
             SignatureUpdate,
+            /// <summary>
+            /// 取得簡訊驗證碼
+            /// </summary>
+            GetVerifyCode,
+            /// <summary>
+            /// 取得會員手機號碼
+            /// </summary>
+            GetMemberMobile,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -832,6 +846,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SignatureUpdate:     //更新簽名檔
                     SPName = "usp_SignatureUpdate";
+                    break;
+                case SPType.GetVerifyCode:  //取得簡訊驗證碼
+                    SPName = "usp_GetVerifyCode";
+                    break;
+                case SPType.GetMemberMobile:    //取得會員手機號碼
+                    SPName = "usp_GetMemberMobile";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

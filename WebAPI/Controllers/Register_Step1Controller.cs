@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
+using Domain.SP.Output.Register;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
@@ -109,10 +110,30 @@ namespace WebAPI.Controllers
             #region 發送簡訊
             if (flag)
             {
-                VerifyCode = baseVerify.getRand(0, 999999);
+                // 判斷三分鐘內是否有未驗證的簡訊驗證碼，有的話取DB的驗證碼出來，沒有才隨機取號
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetVerifyCode);
+                SPInput_GetVerifyCode spInput = new SPInput_GetVerifyCode()
+                {
+                    IDNO = apiInput.IDNO,
+                    Mobile = apiInput.Mobile,
+                    Mode = 0,
+                    LogID = LogID
+                };
+                SPOutput_GetVerifyCode spOut = new SPOutput_GetVerifyCode();
+                SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode> sqlHelp = new SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    VerifyCode = spOut.VerifyCode;
+                }
+
+                if (string.IsNullOrEmpty(VerifyCode))
+                    VerifyCode = baseVerify.getRand(0, 999999);
+ 
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
-                string Message = string.Format("您的驗證碼是：{0}", VerifyCode);
+                string Message = string.Format("您的手機驗證碼是：{0}", VerifyCode);
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
             #endregion

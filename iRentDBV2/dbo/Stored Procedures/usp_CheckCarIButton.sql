@@ -120,13 +120,20 @@ BEGIN TRY
 		SELECT @CarNo=CarNo FROM TB_OrderMain WHERE order_number=@OrderNo;
 		IF @CarNo<>''
 		BEGIN
-			SELECT @DeviceStatus=extDeviceStatus2,@DeviceData=extDeviceData3 FROM TB_CarStatus WHERE CarNo=@CarNo;
+			SELECT @DeviceStatus=ISNULL(extDeviceStatus2,0),@DeviceData=ISNULL(extDeviceData3,'') FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 
-			SELECT @HasIButton=HasIButton,@iButtonKey=iButtonKey FROM TB_CarInfo WHERE CarNo=@CarNo;
+			SELECT @HasIButton=HasIButton,@iButtonKey=iButtonKey FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo;
 
 			IF @HasIButton=1
 			BEGIN
-				IF @DeviceStatus <> 1 OR @DeviceData <> @iButtonKey
+				--IF @DeviceStatus <> 1 OR @DeviceData <> @iButtonKey
+				--BEGIN
+				--	SET @Error=1;
+				--	SET @ErrorCode='ERR231';
+				--END
+
+				-- 20201222;因車機回傳有問題，暫時先判斷iButton扣壓=1&iButton編號有值就先過
+				IF @DeviceStatus <> 1 OR @DeviceData = ''
 				BEGIN
 					SET @Error=1;
 					SET @ErrorCode='ERR231';

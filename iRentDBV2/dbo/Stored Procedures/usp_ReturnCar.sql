@@ -67,6 +67,7 @@ DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -86,105 +87,130 @@ SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
-SET @Token    =ISNULL (@Token    ,'');
+SET @Token=ISNULL (@Token,'');
 
-	BEGIN TRY
-	
-		 
-		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+BEGIN TRY
+	IF @Token='' OR @IDNO=''  OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
-		 END
-		 IF @Error=0
-		 BEGIN
-			BEGIN TRAN;
-		    SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
+		END
+	END
+
+	IF @Error=0
+	BEGIN
+		BEGIN TRAN;
+		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
+		IF @hasData=0
+		BEGIN
+			ROLLBACK TRAN;
+			SET @Error=1;
+			SET @ErrorCode='ERR185';
+		END
+		
+		IF @Error=0
+		BEGIN
+			SELECT @hasData=COUNT(order_number) FROM TB_OrderDetail WITH(NOLOCK) WHERE  order_number=@OrderNo;
 			IF @hasData=0
 			BEGIN
-			    	ROLLBACK TRAN;
+				ROLLBACK TRAN;
 				SET @Error=1;
 				SET @ErrorCode='ERR185';
 			END
-		
-			IF @Error=0
+			ELSE
 			BEGIN
-				SELECT @hasData=COUNT(order_number) FROM TB_OrderDetail WHERE  order_number=@OrderNo;
-				IF @hasData=0
-				BEGIN
-					ROLLBACK TRAN;
-					SET @Error=1;
-					SET @ErrorCode='ERR185';
-				END
-				ELSE
-				BEGIN
-				
-				    SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
-					FROM TB_OrderMain
-					WHERE order_number=@OrderNo;
+				SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
+				FROM TB_OrderMain WITH(NOLOCK)
+				WHERE order_number=@OrderNo;
 				
 				--如果取不到里程，從tb取出
-					IF @NowMileage=0
-					BEGIN
-						SELECT @NowMileage=Millage FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
-					END
-
-					UPDATE TB_OrderDetail SET final_stop_time=@NowTime,end_mile=@NowMileage WHERE order_number=@OrderNo;
-					UPDATE TB_OrderMain SET car_mgt_status=11  WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
-
-					--寫入歷程
-					INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-
-					COMMIT TRAN;
+				IF @NowMileage=0
+				BEGIN
+					SELECT @NowMileage=Millage FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 				END
+
+				DECLARE @start_mile float;	--起始里程
+				DECLARE @temp_time Datetime = DATEADD(MINUTE,-10,@NowTime);
+				DECLARE @CarRawData_Millage float;
+
+				SELECT @start_mile=start_mile FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
+
+				-- 還車里程 < 起始里程 才做其他判斷
+				IF @NowMileage < @start_mile
+				BEGIN
+					-- 取TB_CarRawData的最後一筆資料 條件下：GPSTime介於(系統時間-10分)~系統時間 & 里程數>0 & (里程數 > 起始里程)
+					SET @CarRawData_Millage = ISNULL((SELECT top 1 Millage FROM [TB_CarRawData] WITH(NOLOCK)
+														WHERE CarNo=@CarNo AND OBDStatus=1
+														AND GPSTime <= @NowTime AND GPSTime >= @temp_time 
+														AND Millage > 0 AND Millage > @start_mile
+														ORDER BY GPSTime DESC),0);
+
+					-- CarRawData取出來的里程數 < 起始里程的話，就把還車里程押上起始里程，暫時當異常狀況處理
+					IF @CarRawData_Millage < @start_mile
+					BEGIN
+						SET @NowMileage = @start_mile;
+					END
+				END
+
+				UPDATE TB_OrderDetail SET final_stop_time=@NowTime,end_mile=@NowMileage WHERE order_number=@OrderNo;
+
+				UPDATE TB_OrderMain SET car_mgt_status=11 
+				WHERE IDNO=@IDNO AND order_number=@OrderNo AND car_mgt_status>=4 AND car_mgt_status<15 AND cancel_status=0;
+
+				--寫入歷程
+				INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+				VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
+				COMMIT TRAN;
 			END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		END
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ReturnCar';

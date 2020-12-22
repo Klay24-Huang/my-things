@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -19,11 +17,12 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 忘記密碼 20200812 recheck ok
+    /// 忘記密碼
     /// </summary>
     public class ForgetPwdController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
         /// <summary>
         /// 忘記密碼
         /// </summary>
@@ -43,17 +42,16 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_ForgetPWD apiInput = null;
             OPAI_ForgetPwd apiOuptut = null;
-            OAPI_Login CheckAccountAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_ForgetPWD spOut = new SPOutput_ForgetPWD();
             Int16 APPKind = 2;
             string Contentjson = "";
-            string VerifyCode = baseVerify.getRand(0, 999999);
+            string VerifyCode = "";
+            string Mobile = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -62,7 +60,7 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO,  apiInput.DeviceID, apiInput.APPVersion };
+                string[] checkList = { apiInput.IDNO, apiInput.DeviceID, apiInput.APPVersion };
                 string[] errList = { "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -74,7 +72,6 @@ namespace WebAPI.Controllers
                     {
                         errCode = "ERR103";
                     }
-
                 }
                 if (flag)
                 {
@@ -107,16 +104,65 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-              
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberMobile);
+                SPInput_GetMemberMobile spInput = new SPInput_GetMemberMobile()
+                {
+                    IDNO = apiInput.IDNO,
+                    DeviceID = apiInput.DeviceID,
+                    LogID = LogID
+                };
+                SPOuput_GetMemberMobile spOut_Mobile = new SPOuput_GetMemberMobile();
+                SQLHelper<SPInput_GetMemberMobile, SPOuput_GetMemberMobile> sqlHelp = new SQLHelper<SPInput_GetMemberMobile, SPOuput_GetMemberMobile>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut_Mobile, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut_Mobile.Error, spOut_Mobile.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    Mobile = spOut_Mobile.Mobile;
+                }
+            }
+
+            #region 發送簡訊
+            if (flag)
+            {
+                // 判斷三分鐘內是否有未驗證的簡訊驗證碼，有的話取DB的驗證碼出來，沒有才隨機取號
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetVerifyCode);
+                SPInput_GetVerifyCode spInput = new SPInput_GetVerifyCode()
+                {
+                    IDNO = apiInput.IDNO,
+                    Mobile = Mobile,
+                    Mode = 1,
+                    LogID = LogID
+                };
+                SPOutput_GetVerifyCode spOut_VerifyCode = new SPOutput_GetVerifyCode();
+                SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode> sqlHelp = new SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut_VerifyCode, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut_VerifyCode.Error, spOut_VerifyCode.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    VerifyCode = spOut_VerifyCode.VerifyCode;
+                }
+
+                if (string.IsNullOrEmpty(VerifyCode))
+                    VerifyCode = baseVerify.getRand(0, 999999);
+
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
+                string Message = string.Format("您的手機驗證碼是：{0}", VerifyCode);
+                flag = hiEasyRentAPI.NPR260Send(Mobile, Message, "", ref wsOutput);
+            }
+            #endregion
+
+            if (flag)
+            {
                 string spName = new ObjType().GetSPName(ObjType.SPType.ForgetPWD);
                 SPInput_ForgetPWD spInput = new SPInput_ForgetPWD()
                 {
                     LogID = LogID,
                     IDNO = apiInput.IDNO,
                     DeviceID = apiInput.DeviceID,
-                     VerifyCode= VerifyCode
+                    VerifyCode = VerifyCode
                 };
-              
+
                 SQLHelper<SPInput_ForgetPWD, SPOutput_ForgetPWD> sqlHelp = new SQLHelper<SPInput_ForgetPWD, SPOutput_ForgetPWD>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -128,22 +174,11 @@ namespace WebAPI.Controllers
                         Mobile = spOut.Mobile
                     };
                 }
-
             }
             #endregion
-            #region 發送簡訊
-            if (flag)
-            {
             
-                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
-                WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
-                string Message = string.Format("您的手機驗證碼是：{0}", VerifyCode);
-                flag = hiEasyRentAPI.NPR260Send(spOut.Mobile, Message, "", ref wsOutput);
-
-            }
-            #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

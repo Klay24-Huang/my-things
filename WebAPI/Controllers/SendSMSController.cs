@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
+using Domain.SP.Output.Register;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
@@ -36,7 +37,7 @@ namespace WebAPI.Controllers
             string funName = "SendSMSController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_Register_Step1 apiInput = null;
+            IAPI_SendSMS apiInput = null;
             OAPI_Login CheckAccountAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -49,7 +50,7 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_Register_Step1>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SendSMS>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -106,7 +107,27 @@ namespace WebAPI.Controllers
             #region 發送簡訊
             if (flag)
             {
-                VerifyCode = baseVerify.getRand(0, 999999);
+                // 判斷三分鐘內是否有未驗證的簡訊驗證碼，有的話取DB的驗證碼出來，沒有才隨機取號
+                string spName = new ObjType().GetSPName(ObjType.SPType.GetVerifyCode);
+                SPInput_GetVerifyCode spInput = new SPInput_GetVerifyCode()
+                {
+                    IDNO = apiInput.IDNO,
+                    Mobile = apiInput.Mobile,
+                    Mode = apiInput.Mode.HasValue ? apiInput.Mode.Value : 0,
+                    LogID = LogID
+                };
+                SPOutput_GetVerifyCode spOut = new SPOutput_GetVerifyCode();
+                SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode> sqlHelp = new SQLHelper<SPInput_GetVerifyCode, SPOutput_GetVerifyCode>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    VerifyCode = spOut.VerifyCode;
+                }
+
+                if (string.IsNullOrEmpty(VerifyCode))
+                    VerifyCode = baseVerify.getRand(0, 999999);
+
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
                 string Message = string.Format("您的手機驗證碼是：{0}", VerifyCode);
@@ -117,16 +138,17 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.RegisterReSendSMS);
-                SPInput_Register_Step1 spInput = new SPInput_Register_Step1()
+                SPInput_ReSendSMS spInput = new SPInput_ReSendSMS()
                 {
-                    LogID = LogID,
                     IDNO = apiInput.IDNO,
                     Mobile = apiInput.Mobile,
                     DeviceID = apiInput.DeviceID,
-                    VerifyCode = VerifyCode
+                    VerifyCode = VerifyCode,
+                    Mode = apiInput.Mode.HasValue ? apiInput.Mode.Value : 0,
+                    LogID = LogID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_Register_Step1, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_Register_Step1, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_ReSendSMS, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReSendSMS, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
