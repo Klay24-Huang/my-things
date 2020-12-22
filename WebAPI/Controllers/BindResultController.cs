@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
                             AvailableAmount = "",
                             CardToken = apiInput.RequestParams.CardToken
                         };
-                    }
+                        }
                     }
                 }catch(Exception ex)
                 {
@@ -205,18 +205,7 @@ namespace WebAPI.Controllers
                             };
                         }
                     }
-                    else
-                    {
-                        objparms[0] = new
-                        {
-                            BankNo = "",
-                            CardNumber = "",
-                            CardName = "",
-                            AvailableAmount = "",
-                            CardToken = ""
-                        };
-
-                    }
+      
                     if (hasFind)//有找到，可以做刪除
                     {
                         Thread.Sleep(1000);
