@@ -371,8 +371,8 @@ namespace WebAPI.Controllers
                     {
                         if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
                         {
-                            flag = false;
-                            errCode = "ERR205";
+                            //flag = false;
+                            //errCode = "ERR205";
                         }
                         else
                         {
