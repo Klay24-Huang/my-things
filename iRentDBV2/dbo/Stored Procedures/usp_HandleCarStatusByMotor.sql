@@ -117,6 +117,9 @@ DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
 DECLARE @CID VARCHAR(10);
+DECLARE @deviceMBA_Cal FLOAT
+DECLARE @deviceRBA_Cal FLOAT
+DECLARE @deviceLBA_Cal FLOAT
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -137,6 +140,9 @@ SET @CarNo		  =ISNULL (@deviceName   ,'');
 SET @ProjType=5;
 SET @deviceCID    =ISNULL (@deviceCID    ,'');
 SET @CID= '';
+SET @deviceMBA_Cal = 0
+SET @deviceRBA_Cal = 0
+SET @deviceLBA_Cal = 0
 
 
 		BEGIN TRY
@@ -148,10 +154,15 @@ SET @CID= '';
 		 
 		--20201124 UPD BY Jerry	增加預估里程計算
 		IF @deviceRDistance='NA'
-		IF @deviceMBA>0 or @deviceLBA>0 or @deviceRBA>0
-		SET @deviceRDistance=Round((@deviceMBA*9600+@deviceLBA*12000+@deviceRBA*12000)/(CASE @deviceMBA WHEN 0 THEN 0 ELSE 9600 END+CASE @deviceLBA WHEN 0 THEN 0 ELSE 12000 END+CASE @deviceRBA WHEN 0 THEN 0 ELSE 12000 END)*0.45,1);
-		ELSE
-		SET @deviceRDistance=0;
+		BEGIN
+			SET @deviceMBA_Cal = IIF(@deviceMBA < 0, 0, @deviceMBA)
+			SET @deviceRBA_Cal = IIF(@deviceRBA < 0, 0, @deviceRBA)
+			SET @deviceLBA_Cal = IIF(@deviceLBA < 0, 0, @deviceLBA)
+			IF @deviceMBA_Cal>0 or @deviceLBA_Cal>0 or @deviceRBA_Cal>0
+				SET @deviceRDistance=Round((@deviceMBA_Cal*9600+@deviceLBA_Cal*12000+@deviceRBA_Cal*12000)/(CASE @deviceMBA_Cal WHEN 0 THEN 0 ELSE 9600 END+CASE @deviceLBA_Cal WHEN 0 THEN 0 ELSE 12000 END+CASE @deviceRBA_Cal WHEN 0 THEN 0 ELSE 12000 END)*0.45,1);
+			ELSE
+				SET @deviceRDistance=0;
+		END
 
 		IF @Error=0
 		BEGIN

@@ -450,7 +450,7 @@ namespace WebAPI.Controllers
                             #region 檢核兩顆電池完整
                             if (flag)
                             {
-                                if (info.deviceLBA == -999 || info.deviceMBA == -999)
+                                if (info.deviceLBA == -999 || info.deviceRBA == -999)
                                 {
                                     flag = false;
                                     errCode = "ERR230";
