@@ -3013,11 +3013,11 @@ namespace WebAPI.Models.BillFunc
                     f24Pay = 0;
                 else if (f24Pay > dayMaxPrice)
                     f24Pay = dayMaxPrice;//價格超過上限
-                else 
-                {
-                    //193*1.5+10 = 299.5不足300          
-                    f24Pay = f24Pay > 0 ? (f24Pay + 0.5) : 0;
-                }
+                //else 
+                //{
+                //    //193*1.5+10 = 299.5不足300          
+                //    f24Pay = f24Pay > 0 ? (f24Pay + 0.5) : 0;
+                //}
             }
 
             //f24Pay = Convert.ToInt32(Math.Round(f24Pay, 0, MidpointRounding.AwayFromZero));
