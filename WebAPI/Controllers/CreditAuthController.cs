@@ -476,7 +476,7 @@ namespace WebAPI.Controllers
                         Token = Access_Token,
                         LogID = LogID
                     };
-
+                    apiInput.OrderNo = NPR330Save_ID.ToString();    //20201222 ADD BY ADAM REASON.欠費補上id
                     string MSG = "";
                     //先取出要繳的費用
                     var sp_result = sp_ArrearsQueryByNPR330ID(NPR330Save_ID, LogID, ref MSG);
