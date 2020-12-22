@@ -554,7 +554,7 @@ namespace WebAPI.Controllers
 
                                 if (carInfo != null)
                                 {
-                                    CarRentPrice += carInfo.RentInPay;
+                                    outputApi.Rent.CarRental += carInfo.RentInPay;
                                     if (carInfo.mFinal != null && carInfo.mFinal.Count > 0)
                                         motoMonth = carInfo.mFinal;
                                     Discount = carInfo.useDisc;
