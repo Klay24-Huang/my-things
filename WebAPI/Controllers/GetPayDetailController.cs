@@ -743,7 +743,7 @@ namespace WebAPI.Controllers
 
                             carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, Discount);
                             if (carInfo != null)
-                                CarRentPrice = carInfo.RentInPay;
+                                outputApi.Rent.CarRental = carInfo.RentInPay;
                         }
 
                         //outputApi.Rent.CarRental = CarRentPrice;
