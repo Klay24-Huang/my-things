@@ -897,7 +897,8 @@ namespace OtherService
                         UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
                         UpdInput.process_date = process;
                         UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.PayAmount) / 100;
-                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
+                        //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
+                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
                         UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
                         UpdInput.RetCode = output.RtnCode;
                         UpdInput.RetMsg = output.RtnMessage;
