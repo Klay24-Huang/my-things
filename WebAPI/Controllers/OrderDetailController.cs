@@ -158,9 +158,9 @@ namespace WebAPI.Controllers
                         var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
                         if(xre != null)
                         {
-                            td = Convert.ToInt32(xre.Item1);
-                            th = Convert.ToInt32(xre.Item2);
-                            tm = Convert.ToInt32(xre.Item3);
+                            ud = Convert.ToInt32(xre.Item1);
+                            uh = Convert.ToInt32(xre.Item2);
+                            um = Convert.ToInt32(xre.Item3);
                         }
 
                         outputApi = new OAPI_OrderDetail()
