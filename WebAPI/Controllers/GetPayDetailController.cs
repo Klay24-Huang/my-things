@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
             bool UseMonthMode = false;  //false:無月租;true:有月租
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
-            CarRentInfo carMonthInfo = new CarRentInfo();//汽車月租資料
+            CarRentInfo carInfo = new CarRentInfo();//車資料
             int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
             #endregion
 
@@ -550,14 +550,14 @@ namespace WebAPI.Controllers
                                 var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
 
                                 int motoDisc = Discount;
-                                carMonthInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, lstHoliday, motoMonth, motoDisc);
+                                carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, lstHoliday, motoMonth, motoDisc);
 
-                                if (carMonthInfo != null)
+                                if (carInfo != null)
                                 {
-                                    CarRentPrice += carMonthInfo.RentInPay;
-                                    if (carMonthInfo.mFinal != null && carMonthInfo.mFinal.Count > 0)
-                                        motoMonth = carMonthInfo.mFinal;
-                                    Discount = carMonthInfo.useDisc;
+                                    CarRentPrice += carInfo.RentInPay;
+                                    if (carInfo.mFinal != null && carInfo.mFinal.Count > 0)
+                                        motoMonth = carInfo.mFinal;
+                                    Discount = carInfo.useDisc;
                                 }
 
                                 motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
@@ -631,26 +631,26 @@ namespace WebAPI.Controllers
                                 if (hasFine)
                                 {
                                     //CarRentPrice = billCommon.CalBillBySubScription(SD, ED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
-                                    carMonthInfo = billCommon.CarRentInCompute(SD, ED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
-                                    if (carMonthInfo != null)
+                                    carInfo = billCommon.CarRentInCompute(SD, ED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
+                                    if (carInfo != null)
                                     {
-                                        CarRentPrice += carMonthInfo.RentInPay;
-                                        if (carMonthInfo.mFinal != null && carMonthInfo.mFinal.Count > 0)
-                                            UseMonthlyRent = carMonthInfo.mFinal;
-                                        Discount = carMonthInfo.useDisc;
+                                        CarRentPrice += carInfo.RentInPay;
+                                        if (carInfo.mFinal != null && carInfo.mFinal.Count > 0)
+                                            UseMonthlyRent = carInfo.mFinal;
+                                        Discount = carInfo.useDisc;
                                     }
                                     CarRentPrice += car_outPrice;                                    
                                 }
                                 else
                                 {
                                     //CarRentPrice = billCommon.CalBillBySubScription(SD, FED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
-                                    carMonthInfo = billCommon.CarRentInCompute(SD, FED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
-                                    if (carMonthInfo != null)
+                                    carInfo = billCommon.CarRentInCompute(SD, FED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
+                                    if (carInfo != null)
                                     {
-                                        CarRentPrice += carMonthInfo.RentInPay;
-                                        if (carMonthInfo.mFinal != null && carMonthInfo.mFinal.Count > 0)
-                                            UseMonthlyRent = carMonthInfo.mFinal;
-                                        Discount = carMonthInfo.useDisc;
+                                        CarRentPrice += carInfo.RentInPay;
+                                        if (carInfo.mFinal != null && carInfo.mFinal.Count > 0)
+                                            UseMonthlyRent = carInfo.mFinal;
+                                        Discount = carInfo.useDisc;
                                     }
                                 }
 
@@ -740,7 +740,10 @@ namespace WebAPI.Controllers
                             //billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
                             var item = OrderDataLists[0];
                             var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
-                            CarRentPrice = billCommon.MotoRentCompute(SD, ED, item.MinuteOfPrice, item.BaseMinutes, item.MaxPrice, Discount);
+
+                            carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, Discount);
+                            if (carInfo != null)
+                                CarRentPrice = carInfo.RentInPay;
                         }
 
                         //outputApi.Rent.CarRental = CarRentPrice;
@@ -937,26 +940,21 @@ namespace WebAPI.Controllers
                     //note: 修正輸出欄位PayDetail
                     if (ProjType == 4)
                     {
-                        if (UseMonthMode)
-                        {
-                            outputApi.Rent.UseMonthlyTimeInterval = carMonthInfo.useMonthDisc.ToString();
-                            outputApi.Rent.UseNorTimeInterval = carMonthInfo.useDisc.ToString();
-                            outputApi.Rent.RentalTimeInterval = (carMonthInfo.RentInMins).ToString();//租用時數(未逾時)
-                            outputApi.Rent.ActualRedeemableTimeInterval = carMonthInfo.DiscRentInMins.ToString();//可折抵租用時數
-                            outputApi.Rent.RemainRentalTimeInterval = carMonthInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
-                        }
-                        else
-                            outputApi.Rent.UseNorTimeInterval = Discount.ToString();
+                        outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
+                        outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
+                        outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
+                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                        outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
                     }
                     else
                     {
                         if (UseMonthMode)
                         {
-                            outputApi.Rent.UseMonthlyTimeInterval = carMonthInfo.useMonthDisc.ToString();
-                            outputApi.Rent.UseNorTimeInterval = carMonthInfo.useDisc.ToString();
-                            outputApi.Rent.RentalTimeInterval = (carMonthInfo.RentInMins).ToString();//租用時數(未逾時)
-                            outputApi.Rent.ActualRedeemableTimeInterval = carMonthInfo.DiscRentInMins.ToString();//可折抵租用時數
-                            outputApi.Rent.RemainRentalTimeInterval = carMonthInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+                            outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
+                            outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
+                            outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
+                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                            outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
                         }
                         else
                         {

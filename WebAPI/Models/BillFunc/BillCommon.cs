@@ -771,7 +771,9 @@ namespace WebAPI.Models.BillFunc
 
             re.useDisc = Convert.ToInt32(wDisc + hDisc);//使用一般折扣點數
             re.useMonthDisc = m_wDisc + m_hDisc;//使用月租折扣點數
-            re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
+
+            if(mOri != null && mOri.Count()>0)//剩餘月租點數
+              re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
             {
