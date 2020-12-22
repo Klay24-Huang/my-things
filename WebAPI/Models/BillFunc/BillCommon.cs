@@ -3363,7 +3363,7 @@ namespace WebAPI.Models.BillFunc
             double mins = 0;
             var proTys = new List<int>() { 0, 3, 4 };
 
-            if (sd == null && ed == null && sd > ed)
+            if (sd == null || ed == null || sd > ed)
                 throw new Exception(funNM + "sd,ed 格式錯誤");
 
             if (!proTys.Any(x => x == ProjType))
