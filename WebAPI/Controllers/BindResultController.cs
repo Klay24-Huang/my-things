@@ -116,6 +116,27 @@ namespace WebAPI.Controllers
                 #region 送台新查詢
                 bool hasFind = false;
                 object[] objparms = new object[1];
+                try
+                {
+
+                if(apiInput.RequestParams.CardToken != null)
+                {
+                    if (apiInput.RequestParams.CardToken != "")
+                    {
+                        objparms[0] = new
+                        {
+                            BankNo = apiInput.RequestParams.BankNo,
+                            CardNumber = apiInput.RequestParams.CardNumber,
+                            CardName = apiInput.RequestParams.CardName,
+                            AvailableAmount = "",
+                            CardToken = apiInput.RequestParams.CardToken
+                        };
+                    }
+                    }
+                }catch(Exception ex)
+                {
+                    logger.Trace("setRequestParams Error:" + ex.Message);
+                }
                 if (flag)
                 {
                     TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
