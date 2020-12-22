@@ -737,7 +737,10 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                            //billCommon.CalFinalPriceByMinutes(TotalRentMinutes, OrderDataLists[0].BaseMinutes, OrderDataLists[0].BaseMinutesPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MinuteOfPrice, OrderDataLists[0].MaxPrice, ref CarRentPrice);
+                            var item = OrderDataLists[0];
+                            var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
+                            CarRentPrice = billCommon.MotoRentCompute(SD, ED, item.MinuteOfPrice, item.BaseMinutes, item.MaxPrice, Discount);
                         }
 
                         //outputApi.Rent.CarRental = CarRentPrice;
