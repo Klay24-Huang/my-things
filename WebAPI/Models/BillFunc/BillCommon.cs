@@ -998,12 +998,11 @@ namespace WebAPI.Models.BillFunc
         /// <param name="overTime">是否為逾時</param>
         /// <returns></returns>
         /// <mark>eason-2020-11-19</mark>
-        public int CarRentCompute(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, bool overTime = false)
+        public int CarRentCompute(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, bool overTime = false, double baseMinutes = 60)
         {
             int re = 0;
             var minsPro = new MinsProcess(GetCarPayMins);
-            var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null;
-            double baseMinutes = 60;
+            var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null;           
 
             double wPriceHour = 0; //平日每小時價格
             double hPriceHour = 0; //假日每小時價格
@@ -3346,6 +3345,68 @@ namespace WebAPI.Models.BillFunc
             }
 
             return re;
+        }
+
+        /// <summary>
+        /// 取得幾天幾小時幾分
+        /// </summary>
+        /// <param name="sd">起</param>
+        /// <param name="ed">迄</param>
+        /// <param name="ProjType">專案類別</param>
+        /// <returns></returns>
+        /// <mark>2020-12-22 eason</mark>
+        public Tuple<double, double, double> GetTimePart(DateTime sd, DateTime ed, int ProjType)
+        {
+            string funNM = "GetTimePart : ";
+            double days = 0;
+            double hours = 0;
+            double mins = 0;
+            var proTys = new List<int>() { 0, 3, 4 };
+
+            if (sd == null && ed == null && sd > ed)
+                throw new Exception(funNM + "sd,ed 格式錯誤");
+
+            if (!proTys.Any(x => x == ProjType))
+                throw new Exception(funNM + "ProjType 錯誤");
+
+            var bill = new BillCommon();
+
+            if (ProjType == 4)
+            {
+                double dayBasMins = 6;
+                double dayMaxMins = 200;
+                var xre = bill.GetMotoRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
+                if (xre != null)
+                {
+                    var allMins = xre.Item1;
+                    if (allMins > 0)
+                    {
+                        days = Math.Floor(allMins / dayMaxMins);
+                        var h_mins = allMins % dayMaxMins;
+                        hours = Math.Floor(h_mins / 60);
+                        mins = h_mins % 60;
+                    }
+                }
+            }
+            else if (ProjType == 0 || ProjType == 3)
+            {
+                double dayBasMins = 60;
+                double dayMaxMins = 600;
+                var xre = bill.GetCarRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
+                if (xre != null)
+                {
+                    var allMins = xre.Item1;
+                    if (allMins > 0)
+                    {
+                        days = Math.Floor(allMins / dayMaxMins);
+                        var h_mins = allMins % dayMaxMins;
+                        hours = Math.Floor(h_mins / 60);
+                        mins = h_mins % 60;
+                    }
+                }
+            }
+
+            return new Tuple<double, double, double>(days, hours, mins);
         }
     }
 

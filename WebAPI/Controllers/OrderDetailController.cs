@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -152,6 +153,16 @@ namespace WebAPI.Controllers
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
                         billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
                         float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
+
+                        var item = orderFinishDataLists[0];
+                        var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
+                        if(xre != null)
+                        {
+                            td = Convert.ToInt32(xre.Item1);
+                            th = Convert.ToInt32(xre.Item2);
+                            tm = Convert.ToInt32(xre.Item3);
+                        }
+
                         outputApi = new OAPI_OrderDetail()
                         {
                             OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(7, '0')),
@@ -215,6 +226,7 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion
-        }
+        }   
+    
     }
 }

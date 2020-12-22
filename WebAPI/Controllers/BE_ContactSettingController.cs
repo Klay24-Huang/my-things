@@ -1014,7 +1014,7 @@ namespace WebAPI.Controllers
                             car_pay_in_hMins = reInMins.Item2;
                         }
 
-                        var reOutMins = billCommon.GetCarOutComputeMins(ED, FED, 60, 360, lstHoliday);
+                        var reOutMins = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                         if (reOutMins != null)
                         {
                             car_payOutMins = Convert.ToInt32(reOutMins.Item1 + reOutMins.Item2);
@@ -1024,7 +1024,7 @@ namespace WebAPI.Controllers
                         }
 
                         car_inPrice = billCommon.CarRentCompute(SD, ED, car_n_price * 10, car_h_price * 10, 10, lstHoliday);
-                        car_outPrice = billCommon.CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true);
+                        car_outPrice = billCommon.CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true,0);
                     }
                     else
                     {
