@@ -87,10 +87,13 @@ namespace Web.Controllers
             BE_AuditDetail obj = new MemberRepository(connetStr).GetAuditDetail(AuditIDNO);
             List<BE_AuditImage> lstAudits=new MemberRepository(connetStr).GetAuditImage(AuditIDNO);
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
+            List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
+
+            Data.InsuranceData = lstInsuranceData;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";

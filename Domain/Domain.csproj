@@ -334,6 +334,7 @@
     <Compile Include="TB\BackEnd\BE_RawDataOfMachi.cs" />
     <Compile Include="TB\BackEnd\BE_ReadCardLog.cs" />
     <Compile Include="TB\BackEnd\BE_ReturnControl.cs" />
+    <Compile Include="TB\BackEnd\BE_InsuranceData.cs" />
     <Compile Include="TB\BackEnd\BE_SameMobileData.cs" />
     <Compile Include="TB\BackEnd\BE_StationDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_UserGroup.cs" />
