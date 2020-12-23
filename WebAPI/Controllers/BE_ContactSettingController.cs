@@ -1280,7 +1280,7 @@ namespace WebAPI.Controllers
                         var item = OrderDataLists[0];
                         var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
 
-                        carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, Discount);
+                        carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, 0);
                         if (carInfo != null)
                             outputApi.Rent.CarRental = carInfo.RentInPay;
                     }
