@@ -288,24 +288,11 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_AuditImage> lstAudits = null;
             BE_AuditDetail obj = null;
-            SqlParameter[] para = new SqlParameter[10];
+            SqlParameter[] para = new SqlParameter[0];
             string term = "";
             string term2 = "";
-            string SQL = " SELECT * FROM VW_GetAuditImage ";
+            string SQL = " EXEC usp_BE_GetAuditImage  '"+ IDNO + "'";
             int nowCount = 0;
-            if (false == string.IsNullOrWhiteSpace(IDNO))
-            {
-                if (term != "") { term += " AND "; }
-                term += " IDNO=@IDNO";
-                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
-                para[nowCount].Value = IDNO;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if ("" != term)
-            {
-                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
-            }
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
     
             return lstAudits;
