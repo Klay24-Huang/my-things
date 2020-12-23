@@ -840,10 +840,19 @@ namespace WebAPI.Controllers
                     outputApi.Rent.ETAGRental = etagPrice;
 
                     var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
-
-                    outputApi.Rent.TotalRental = xTotalRental < 0 ? 0 : xTotalRental;
+                    xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
+                    outputApi.Rent.TotalRental = xTotalRental;
 
                     #region 修正輸出欄位
+
+                    var tra = OrderDataLists[0].init_TransDiscount;
+                    if(xTotalRental == 0)
+                    {
+                        var carPri = outputApi.Rent.CarRental;
+                        if (carPri > 0)
+                            outputApi.Rent.TransferPrice = carPri;
+                    }
+
                     //note: 修正輸出欄位PayDetail
                     if (ProjType == 4)
                     {
