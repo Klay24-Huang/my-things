@@ -804,15 +804,7 @@ namespace WebAPI.Controllers
                         InsurancePerHours = OrderDataLists[0].Insurance == 1 ? Convert.ToInt32(OrderDataLists[0].InsurancePerHours) : 0;
                         if (InsurancePerHours > 0)
                         {
-                            //基消1小時，之後每半小時計價
-                            if (TotalRentMinutes < 60)
-                            {
-                                outputApi.Rent.InsurancePurePrice = InsurancePerHours;
-                            }
-                            else
-                            {
-                                outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((TotalRentMinutes / 30.0) * InsurancePerHours / 2)));
-                            }
+                            outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
 
                             //逾時安心服務計算
                             if (TotalFineRentMinutes > 0)
