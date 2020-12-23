@@ -226,7 +226,7 @@ namespace Reposotory.Implement
        
 
             int nowCount = 0;
-            string SQL = "SELECT OrderNum,IDNO,[CarNo],[car_mgt_status],cancel_status,StationName ";
+            string SQL = "SELECT OrderNum,IDNO,[CarNo],[car_mgt_status],cancel_status,StationName,SD,ED,FS,FE ";
             SQL += " FROM VW_BE_GetOrderQueryForWeb WITH(NOLOCK)  ";
 
 

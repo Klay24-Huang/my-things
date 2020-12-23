@@ -15,5 +15,9 @@ namespace Domain.TB.BackEnd
         //public int booking_status { set; get; }
         public int cancel_status { set; get; }
         public string StationName { set; get; }
+        public DateTime SD { set; get; }
+        public DateTime ED { set; get; }
+        public DateTime FS { set; get; }
+        public DateTime FE { set; get; }
     }
 }
