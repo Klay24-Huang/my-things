@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
                         flag = Int16.TryParse(apiInput.Mode.Value.ToString(), out Mode);
                         if (flag)
                         {
-                            if (Mode < 0 || Mode > 2)
+                            if (Mode < 0 || Mode > 3)
                             {
                                 flag = false;
                                 errCode = "ERR144";
