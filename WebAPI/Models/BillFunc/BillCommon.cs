@@ -2851,6 +2851,13 @@ namespace WebAPI.Models.BillFunc
                                     wLastMins += (fdate.xMins - useDisc01);
                                     fdate.xMins -= useDisc01;
                                 }
+                                else
+                                {
+                                    useDisc01 = 0;
+                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                    wLastMins += fdate.xMins - useDisc01;
+                                    fdate.xMins -= useDisc01;
+                                }
                             }
                             tmpUseDisc -= useDisc01;
                             f1_wDisc += useDisc01;
@@ -2880,6 +2887,13 @@ namespace WebAPI.Models.BillFunc
                                     //折扣小於基本分只能折扣超過基本分的部分
                                     f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
                                     hLastMins += (fdate.xMins - useDisc01);
+                                    fdate.xMins -= useDisc01;
+                                }
+                                else
+                                {
+                                    useDisc01 = 0;
+                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                    wLastMins += fdate.xMins - useDisc01;
                                     fdate.xMins -= useDisc01;
                                 }
                             }
@@ -2947,6 +2961,13 @@ namespace WebAPI.Models.BillFunc
                                     wLastMins += (fdate.xMins - useDisc);
                                     fdate.xMins -= useDisc;
                                 }
+                                else
+                                {
+                                    useDisc = 0;
+                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                    wLastMins += fdate.xMins - useDisc;
+                                    fdate.xMins -= useDisc;
+                                }
                             }
                             tmpUseDisc -= useDisc;
                             f_wDisc += useDisc;
@@ -2976,6 +2997,13 @@ namespace WebAPI.Models.BillFunc
                                     //折扣小於基本分只能折扣超過基本分的部分
                                     f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc) * priceHmin;
                                     hLastMins += (fdate.xMins - useDisc);
+                                    fdate.xMins -= useDisc;
+                                }
+                                else
+                                {
+                                    useDisc = 0;
+                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                    wLastMins += fdate.xMins - useDisc;
                                     fdate.xMins -= useDisc;
                                 }
                             }
