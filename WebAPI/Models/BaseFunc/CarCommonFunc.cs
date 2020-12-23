@@ -73,7 +73,6 @@ namespace WebAPI.Models.BaseFunc
                 #region 汽車
                 if (IsMotor == 0)
                 {
-
                     if (IsCens == 1)
                     {
                         #region 興聯車機
@@ -84,12 +83,10 @@ namespace WebAPI.Models.BaseFunc
                         if (false == flag)
                         {
                             errCode = wsOutInfo.ErrorCode;
-
                         }
                         else
                         {
                             if (wsOutInfo.data.CID != CID)
-
                             {
                                 flag = false;
                                 errCode = "ERR400";
@@ -98,7 +95,6 @@ namespace WebAPI.Models.BaseFunc
                         #region 判斷是否熄火
                         if (flag)
                         {
-
                             if (wsOutInfo.data.PowOn == 1)
                             {
                                 flag = false;
@@ -172,7 +168,6 @@ namespace WebAPI.Models.BaseFunc
                                 #region 判斷是否熄火
                                 if (flag)
                                 {
-
                                     if (info.PowerONStatus == 1)
                                     {
                                         flag = false;
@@ -250,7 +245,6 @@ namespace WebAPI.Models.BaseFunc
                             #region 判斷是否熄火
                             if (flag)
                             {
-
                                 if (info.ACCStatus == 1)
                                 {
                                     flag = false;
@@ -287,7 +281,6 @@ namespace WebAPI.Models.BaseFunc
                                 {
                                     errCode = "ERR188";
                                 }
-
                             }
                             #endregion
                         }

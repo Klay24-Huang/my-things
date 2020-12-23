@@ -51,7 +51,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -69,7 +68,6 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string IDNO = "";
             bool isGuest = true;
-            Int16 APPKind = 2;
             string Contentjson = "";
             Int64 tmpOrder = 0;
             bool clearFlag = false;
@@ -206,7 +204,8 @@ namespace WebAPI.Controllers
                             }
                         }
                         else if (apiInput.type == 0)
-                        { //取車
+                        {
+                            //取車
                             if (lstOrder[0].car_mgt_status > 4)
                             {
                                 flag = false;
@@ -223,19 +222,20 @@ namespace WebAPI.Controllers
                                 {
                                     if (lstOrder[0].CarNo.Substring(0, 1) == "E")
                                     {
-                                        flag = DoPickMotor(tmpOrder, lstOrder[0].IDNO, LogID, apiInput.UserID, ref errCode, ref errMsg, baseVerify);
                                         //機車
+                                        flag = DoPickMotor(tmpOrder, lstOrder[0].IDNO, LogID, apiInput.UserID, ref errCode, ref errMsg, baseVerify);
                                     }
                                     else
                                     {
-                                        flag = DoPickCar(tmpOrder, lstOrder[0].IDNO, LogID, apiInput.UserID, ref errCode, ref errMsg, baseVerify);
                                         //汽車
+                                        flag = DoPickCar(tmpOrder, lstOrder[0].IDNO, LogID, apiInput.UserID, ref errCode, ref errMsg, baseVerify);
                                     }
                                 }
                             }
                         }
                         else
                         {
+                            //還車
                             if (lstOrder[0].car_mgt_status < 4)
                             {
                                 flag = false;
@@ -252,8 +252,7 @@ namespace WebAPI.Controllers
                             #region 強還，先判斷目前是不是相同訂單，要不要下車機cmd
                             if (flag)
                             {
-
-                                #region 各類型判斷
+                                #region 發票各類型判斷
                                 if (flag)
                                 {
                                     switch (apiInput.bill_option)
@@ -310,6 +309,9 @@ namespace WebAPI.Controllers
                                     {
                                         flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
                                     }
+                                    // 20201223;不管檢核結果，強還照做
+                                    flag = true;
+                                    errCode = "000000";
                                 }
                                 if (flag)
                                 {
@@ -484,7 +486,6 @@ namespace WebAPI.Controllers
                     //寫入顧客卡
                     if (flag)
                     {
-
                         //要將卡號寫入車機
                         int count = 0;
                         int CardLen = lstCardList.Count;
@@ -496,7 +497,6 @@ namespace WebAPI.Controllers
                             {
                                 CID = CID,
                                 mode = 1
-
                             };
                             for (int i = 0; i < CardLen; i++)
                             {
@@ -504,7 +504,6 @@ namespace WebAPI.Controllers
                                 CardData[i].CardNo = lstCardList[i].CardNO;
                                 CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
                                 count++;
-
                             }
                             //  Array.Resize(ref CardData, count + 1);
                             wsInput.data = new SendCarNoData[CardLen];
@@ -582,7 +581,6 @@ namespace WebAPI.Controllers
                             errMsg = wsOut.ErrMsg;
                         }
                     }
-
                     #endregion
                 }
                 else
@@ -601,7 +599,6 @@ namespace WebAPI.Controllers
                         method = CommandType,
                         requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                         _params = new Params()
-
                     };
                     requestId = input.requestId;
                     string method = CommandType;
@@ -623,14 +620,12 @@ namespace WebAPI.Controllers
                     {
                         if (lstCardList != null)
                         {
-
                             int CardLen = lstCardList.Count;
                             if (CardLen > 0)
                             {
                                 string[] CardStr = new string[CardLen];
                                 for (int i = 0; i < CardLen; i++)
                                 {
-
                                     CardStr[i] = lstCardList[i].CardNO;
                                 }
                                 if (CardStr.Length > 0)
@@ -646,7 +641,6 @@ namespace WebAPI.Controllers
                                         {
                                             ClientCardNo = CardStr
                                         }
-
                                     };
                                     requestId = SetCardInput.requestId;
                                     method = CommandType;
@@ -655,15 +649,11 @@ namespace WebAPI.Controllers
                                     {
                                         flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                     }
-
                                 }
                             }
-
                         }
 
-
                         //執行sp合約
-
                         if (flag)
                         {
                             string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BE_BookingStart);
@@ -694,7 +684,6 @@ namespace WebAPI.Controllers
                                     method = CommandType,
                                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                     _params = new Params()
-
                                 };
 
                                 requestId = SetRentInput.requestId;
@@ -719,7 +708,6 @@ namespace WebAPI.Controllers
                                     method = CommandType,
                                     requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                     _params = new Params()
-
                                 };
 
                                 requestId = SetAlertOffInput.requestId;
@@ -731,7 +719,6 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-
                     }
                     #endregion
                 }
@@ -741,7 +728,6 @@ namespace WebAPI.Controllers
         private bool DoPickMotor(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref string errMsg, CommonFunc baseVerify)
         {
             bool flag = true;
-
             string CID = "";
             string deviceToken = "";
             int IsMotor = 0;
@@ -787,7 +773,6 @@ namespace WebAPI.Controllers
                     method = CommandType,
                     requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                     _params = new Params()
-
                 };
                 requestId = input.requestId;
                 string method = CommandType;
@@ -835,7 +820,6 @@ namespace WebAPI.Controllers
                             method = CommandType,
                             requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                             _params = new BLECode()
-
                         };
                         RentInput._params.BLE_Code = IDNO.Substring(0, 9);
                         requestId = RentInput.requestId;
@@ -844,15 +828,10 @@ namespace WebAPI.Controllers
                         if (flag)
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-
                         }
-
-
                     }
-
                 }
                 #endregion
-
             }
             return flag;
         }
@@ -896,7 +875,6 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 取出訂單資訊
-
             if (flag)
             {
                 SPInput_BE_GetOrderStatusByOrderNo spInput = new SPInput_BE_GetOrderStatusByOrderNo()
@@ -923,7 +901,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
             #endregion
             //取得專案狀態
             if (flag)
@@ -1026,7 +1003,7 @@ namespace WebAPI.Controllers
                         }
 
                         car_inPrice = billCommon.CarRentCompute(SD, ED, car_n_price * 10, car_h_price * 10, 10, lstHoliday);
-                        car_outPrice = billCommon.CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true,0);
+                        car_outPrice = billCommon.CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true, 0);
                     }
                     else
                     {
@@ -1043,7 +1020,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
             #endregion
 
             #region 與短租查時數
@@ -1101,7 +1077,6 @@ namespace WebAPI.Controllers
                         if (wsOutput.Data.Length > 0)
                         {
                             etagPrice = wsOutput.Data[0].TAMT == "" ? 0 : int.Parse(wsOutput.Data[0].TAMT);
-
                         }
                     }
                 }
@@ -1202,7 +1177,7 @@ namespace WebAPI.Controllers
                             {
                                 outputApi.Rent.CarRental += carInfo.RentInPay;
                                 if (carInfo.mFinal != null && carInfo.mFinal.Count > 0)
-                                    motoMonth = carInfo.mFinal;                                
+                                    motoMonth = carInfo.mFinal;
                             }
 
                             motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
