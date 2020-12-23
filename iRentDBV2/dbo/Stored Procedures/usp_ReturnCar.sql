@@ -151,28 +151,44 @@ BEGIN TRY
 					SELECT @NowMileage=Millage FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo;
 				END
 
+				-- 因應車機訊號回應資料不穩，增加這段判斷 START
 				DECLARE @start_mile float;	--起始里程
 				DECLARE @temp_time Datetime = DATEADD(MINUTE,-10,@NowTime);
 				DECLARE @CarRawData_Millage float;
+				DECLARE @Start_Date Datetime;
+				DECLARE @WMin int;	--平日時數
+				DECLARE @HMin int;	--假日時數
+				DECLARE @TotalDay int;	--總使用天數
 
-				SELECT @start_mile=start_mile FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
+				SELECT @start_mile=start_mile,@Start_Date=final_start_time FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
 
-				-- 還車里程 < 起始里程 才做其他判斷
-				IF @NowMileage < @start_mile
+				-- 取TB_CarRawData的最後一筆資料 條件下：GPSTime介於(系統時間-10分)~系統時間 & 里程數>0 & (里程數 >= 起始里程)
+				SET @CarRawData_Millage = ISNULL((SELECT top 1 Millage FROM [TB_CarRawData] WITH(NOLOCK)
+													WHERE CarNo=@CarNo AND OBDStatus=1
+													AND GPSTime <= @NowTime AND GPSTime >= @temp_time 
+													AND Millage > 0 AND Millage >= @start_mile
+													ORDER BY GPSTime DESC),0);
+
+				select top 1 @WMin = g.w_mins, @HMin = g.h_mins from dbo.FN_GetRangeMins(@Start_Date, @NowTime, 60, 600, 'car', '') g
+				SET @TotalDay = IIF(Round((@WMin + @HMin)/600,0)=0, 1, Round((@WMin + @HMin)/600,0));
+
+				IF @NowMileage > @start_mile
 				BEGIN
-					-- 取TB_CarRawData的最後一筆資料 條件下：GPSTime介於(系統時間-10分)~系統時間 & 里程數>0 & (里程數 > 起始里程)
-					SET @CarRawData_Millage = ISNULL((SELECT top 1 Millage FROM [TB_CarRawData] WITH(NOLOCK)
-														WHERE CarNo=@CarNo AND OBDStatus=1
-														AND GPSTime <= @NowTime AND GPSTime >= @temp_time 
-														AND Millage > 0 AND Millage > @start_mile
-														ORDER BY GPSTime DESC),0);
-
-					-- CarRawData取出來的里程數 < 起始里程的話，就把還車里程押上起始里程，暫時當異常狀況處理
+					-- (CarRawData取出來的里程數-起始里程) > 1天1000公里上限時，就把還車里程押上起始里程，暫時當異常狀況處理
+					IF ABS(@CarRawData_Millage - @start_mile) > (@TotalDay * 1000)
+					BEGIN
+						SET @NowMileage = @start_mile;
+					END
+				END
+				ELSE
+				BEGIN
+					-- CarRawData取出來的里程數 < 起始里程，就把還車里程押上起始里程，暫時當異常狀況處理
 					IF @CarRawData_Millage < @start_mile
 					BEGIN
 						SET @NowMileage = @start_mile;
 					END
 				END
+				-- 因應車機訊號回應資料不穩，增加這段判斷 END
 
 				UPDATE TB_OrderDetail SET final_stop_time=@NowTime,end_mile=@NowMileage WHERE order_number=@OrderNo;
 
