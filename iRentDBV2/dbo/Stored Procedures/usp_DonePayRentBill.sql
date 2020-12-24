@@ -134,7 +134,8 @@ BEGIN TRY
 			SELECT [OrderNo],[ParkingImage],[ParkingSpace] FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 
 			DELETE FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
-			SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WITH(NOLOCK) WHERE OrderNo=@OrderNo;
+			--取出停車位置
+			--SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WITH(NOLOCK) WHERE OrderNo=@OrderNo AND SEQNO=1;
 		END
 
 		--寫入歷程
@@ -143,12 +144,16 @@ BEGIN TRY
 					
 		--更新訂單主檔
 		UPDATE TB_OrderMain
-		SET booking_status=5,car_mgt_status=16
+		SET booking_status=5,
+			car_mgt_status=16
 		WHERE order_number=@OrderNo;
 					
 		--更新訂單明細
 		UPDATE TB_OrderDetail
-		SET transaction_no=@transaction_no,trade_status=1,[already_return_car]=1,[already_payment]=1
+		SET transaction_no=@transaction_no,
+			trade_status=1,
+			[already_return_car]=1,
+			[already_payment]=1
 		WHERE order_number=@OrderNo;
 
 		--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理

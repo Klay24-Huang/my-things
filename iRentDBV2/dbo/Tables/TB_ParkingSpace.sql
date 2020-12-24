@@ -1,9 +1,10 @@
 ﻿CREATE TABLE [dbo].[TB_ParkingSpace]
 (
 	[OrderNo] BIGINT NOT NULL, 
+    [SEQNO] [tinyint] NOT NULL DEFAULT 0,
     [ParkingImage] VARCHAR(MAX) NOT NULL DEFAULT '', 
     [ParkingSpace] NVARCHAR(256) NOT NULL DEFAULT N'' ,
-      [HasUpload] TINYINT NOT NULL DEFAULT 0,
+    [HasUpload] TINYINT NOT NULL DEFAULT 0,
     [MKTime] DATETIME NULL DEFAULT(DATEADD(HOUR,8,GETDATE())),
     [UPDTime] DATETIME NULL, 
     CONSTRAINT [PK_TB_ParkingSpace] PRIMARY KEY ([OrderNo]),

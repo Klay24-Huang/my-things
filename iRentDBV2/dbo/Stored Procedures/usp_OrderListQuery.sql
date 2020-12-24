@@ -107,62 +107,79 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 	BEGIN
-		SELECT lend_place AS StationID,StationName,Tel
+		SELECT VW.lend_place AS StationID
+			,VW.StationName
+			,VW.Tel
 			,CT.CityName + AZ.AreaName + VW.ADDR AS ADDR
-			,Latitude,Longitude,Content,ContentForAPP,IsRequiredForReturn	--據點相關
-            ,OperatorName,OperatorICon,Score	--營運商相關
-            ,CarNo,CarBrend,CarOfArea,CarTypeName,CarTypeImg,Seat,parkingSpace,IsMotor=ISNULL(IsMotor,0)	--車子相關, 20201006 eason ADD CarNo,IsMotor
-            ,device3TBA,RemainingMilage						--機車電力相關
-            ,ProjType,PRONAME								--專案基本資料
-            ,IIF(PayMode=0,PRICE/10,PRICE) as PRICE			--平日每小時價 20201003 ADD BY ADAM
-            ,IIF(PayMode=0,PRICE_H/10,PRICE_H) as PRICE_H	--假日每小時價 20201003 ADD BY ADAM
-            ,BaseMinutes
-            ,BaseMinutesPrice
-            ,MinuteOfPrice
-            ,MaxPrice
-            ,MaxPriceH			--當ProjType=4才有值, 20201006 eason ADD MaxPriceH
-            ,order_number
-            ,start_time
-            ,final_start_time
-            ,final_stop_time
-            ,stop_pick_time
-            ,stop_time
-            ,init_price
+			,VW.Latitude
+			,VW.Longitude
+			,VW.Content
+			,VW.ContentForAPP
+			,VW.IsRequiredForReturn	--據點相關
+            ,VW.OperatorName
+			,VW.OperatorICon
+			,VW.Score	--營運商相關
+            ,VW.CarNo
+			,VW.CarBrend
+			,VW.CarOfArea
+			,VW.CarTypeName
+			,VW.CarTypeImg
+			,VW.Seat
+			,IsMotor=ISNULL(VW.IsMotor,0)	--車子相關, 20201006 eason ADD CarNo,IsMotor
+            ,VW.device3TBA
+			,VW.RemainingMilage						--機車電力相關
+            ,VW.ProjType
+			,VW.PRONAME								--專案基本資料
+            ,IIF(VW.PayMode=0,VW.PRICE/10,VW.PRICE) as PRICE			--平日每小時價 20201003 ADD BY ADAM
+            ,IIF(VW.PayMode=0,VW.PRICE_H/10,VW.PRICE_H) as PRICE_H	--假日每小時價 20201003 ADD BY ADAM
+            ,VW.BaseMinutes
+            ,VW.BaseMinutesPrice
+            ,VW.MinuteOfPrice
+            ,VW.MaxPrice
+            ,VW.MaxPriceH			--當ProjType=4才有值, 20201006 eason ADD MaxPriceH
+            ,VW.order_number
+            ,VW.start_time
+            ,VW.final_start_time
+            ,VW.final_stop_time
+            ,VW.stop_pick_time
+            ,VW.stop_time
+            ,VW.init_price
 			,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務   20201206改為等級4就是停權
 			,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 
 									  WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours 
 									  WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours 
 									  ELSE 0 END		--安心服務每小時價
             ,VW.InsurancePurePrice
-            ,init_TransDiscount
-            ,car_mgt_status
-            ,booking_status
-            ,cancel_status
+            ,VW.init_TransDiscount
+            ,VW.car_mgt_status
+            ,VW.booking_status
+            ,VW.cancel_status
             ,ISNULL(Setting.MilageBase,IIF(VW.ProjType=4,0,-1)) AS MilageUnit
-            ,already_lend_car
-            ,IsReturnCar
+            ,VW.already_lend_car
+            ,VW.IsReturnCar
 			--20201026 ADD BY ADAM REASON.增加AppStatus
-            ,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND car_mgt_status=0 THEN 1		--1:尚未到取車時間(取車時間半小時前)
+            ,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND VW.car_mgt_status=0 THEN 1	--1:尚未到取車時間(取車時間半小時前)
                               WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
-                                   AND VW.NowOrderNo>0 AND car_mgt_status=0 THEN 2							--2:立即換車(取車前半小時，前車尚未完成還車)
-							  WHEN car_mgt_status=0 AND @NowTime > VW.stop_pick_time THEN 9					--9:未取車
+                                   AND VW.NowOrderNo>0 AND VW.car_mgt_status=0 THEN 2						--2:立即換車(取車前半小時，前車尚未完成還車)
+							  WHEN VW.car_mgt_status=0 AND @NowTime > VW.stop_pick_time THEN 9				--9:未取車
                               WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
-                                   AND car_mgt_status=0    THEN 3											--3:開始使用(取車時間半小時前)
+                                   AND VW.car_mgt_status=0    THEN 3										--3:開始使用(取車時間半小時前)
                               WHEN VW.start_time < @NowTime AND @NowTime < VW.stop_pick_time 
-                                   AND car_mgt_status=0    THEN 4											--4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)
-                              WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) > @NowTime 
-								   AND car_mgt_status >0	THEN 5											--5:操作車輛(取車後) 取車時間改實際取車時間
-                              WHEN car_mgt_status<=11 AND DATEADD(mi,-30,stop_time) < @NowTime THEN 6		--6:操作車輛(準備還車)-
-							  WHEN car_mgt_status<=11 AND stop_time < @NowTime THEN 6
-							  WHEN car_mgt_status=16 AND DATEADD(mi,15,final_stop_time) > @NowTime 
+                                   AND VW.car_mgt_status=0    THEN 4										--4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)
+                              WHEN VW.car_mgt_status<=11 AND DATEADD(mi,-30,VW.stop_time) > @NowTime 
+								   AND VW.car_mgt_status >0	THEN 5											--5:操作車輛(取車後) 取車時間改實際取車時間
+                              WHEN VW.car_mgt_status<=11 AND DATEADD(mi,-30,VW.stop_time) < @NowTime THEN 6	--6:操作車輛(準備還車)-
+							  WHEN VW.car_mgt_status<=11 AND stop_time < @NowTime THEN 6
+							  WHEN VW.car_mgt_status=16 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime 
 								   AND OD.nowStatus=0 THEN 7												--7:物品遺漏(再開一次車門)
-							  WHEN car_mgt_status=16 AND OD.nowStatus=1 THEN 8								--8:鎖門並還車(一次性開門申請後)
+							  WHEN VW.car_mgt_status=16 AND OD.nowStatus=1 THEN 8							--8:鎖門並還車(一次性開門申請後)
                               ELSE 0 END
-			,[CarLatitude]
-			,[CarLongitude]
-			,Area
+			,VW.CarLatitude
+			,VW.CarLongitude
+			,VW.Area
 			,StationPicJson = ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
 			,OD.DeadLine AS OpenDoorDeadLine
+			,LOD.parkingSpace AS parkingSpace
         FROM VW_GetOrderData AS VW WITH(NOLOCK)
         LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
@@ -171,14 +188,14 @@ BEGIN TRY
 		LEFT JOIN TB_OpenDoor OD WITH(NOLOCK) ON OD.OrderNo=VW.order_number
 		LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID=VW.CityID
 		LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID=VW.AreaID
-        WHERE VW.IDNO=@IDNO AND cancel_status=0
-        AND (car_mgt_status<16    --排除已還車的
+		LEFT JOIN TB_OrderDetail LOD WITH(NOLOCK) ON LOD.order_number=VW.LastOrderNo
+        WHERE VW.IDNO=@IDNO AND VW.cancel_status=0
+        AND (VW.car_mgt_status<16    --排除已還車的
 			--針對汽機車已還車在15分鐘內的
-			OR (car_mgt_status=16 AND final_stop_time is not null AND OD.nowStatus<2 AND DATEADD(mi,15,final_stop_time) > @NowTime)
+			OR (VW.car_mgt_status=16 AND VW.final_stop_time is not null AND OD.nowStatus<2 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime)
 			)
-        AND order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN order_number ELSE @OrderNo END
-
-        ORDER BY start_time ASC 
+        AND VW.order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN VW.order_number ELSE @OrderNo END
+        ORDER BY VW.start_time ASC 
 	END
 
 	--寫入錯誤訊息
