@@ -97,7 +97,7 @@ namespace WebAPI.Models.ComboFunc
                         int len = wsOut.data.Count();
                         for(int i = 0; i < len; i++)
                         {
-                            ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
+                            ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
                         }
                     }
                 }
