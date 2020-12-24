@@ -944,6 +944,10 @@
       <Project>{ec8cf1d8-b569-4b3f-9c8e-4ab95622961c}</Project>
       <Name>Reposotory.Implement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WebAPI\WebAPI.csproj">
+      <Project>{9769C278-31F4-47ED-8011-1F27E10847A6}</Project>
+      <Name>WebAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">
       <Project>{2a4a3c9d-372f-4f8b-af38-911acff3fb2e}</Project>
       <Name>WebCommon</Name>
