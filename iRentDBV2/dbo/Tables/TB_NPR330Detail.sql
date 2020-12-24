@@ -7,7 +7,7 @@
 	[StartDate] [varchar](16) NULL,
 	[EndDate] [varchar](16) NULL,
 	[IRENTORDNO] [varchar](20) NULL,
-	[ORDERNO] [varchar](20) NULL,
+	[ORDNO] [varchar](20) NULL,
 	[CNTRNO] [varchar](20) NULL,
 	[POLNO] [varchar](30) NULL,
 	[StationID] [varchar](10) NULL,
@@ -24,10 +24,13 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_IsPay]  DEFAULT ((0)) FOR [IsPay]
+ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_ORDNO]  DEFAULT ('') FOR [ORDNO]
 GO
 
-ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_useFlag]  DEFAULT ((1)) FOR [useFlag]
+ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_CNTRNO]  DEFAULT ('') FOR [CNTRNO]
+GO
+
+ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330Detail_POLNO]  DEFAULT ('') FOR [POLNO]
 GO
 
 ALTER TABLE [dbo].[TB_NPR330Detail] ADD  CONSTRAINT [DF_TB_NPR330_MKTime]  DEFAULT (dateadd(hour,(8),getdate())) FOR [MKTime]
@@ -79,12 +82,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'是否為機車（0:否;1:是)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'IsMotor'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'是否已付款,0(未付款),1(已付款)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'IsPay'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'是否啟用0(否),1(是)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'useFlag'
-GO
-
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'建立時間' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail', @level2type=N'COLUMN',@level2name=N'MKTime'
 GO
 
@@ -93,5 +90,3 @@ GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'欠費查詢紀錄-子表' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_NPR330Detail'
 GO
-
-

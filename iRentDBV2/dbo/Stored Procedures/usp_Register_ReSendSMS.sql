@@ -44,15 +44,16 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_Register_ReSendSMS]
-	@IDNO                   VARCHAR(10)           , --帳號
-	@Mobile                 VARCHAR(20)           , --手機
-	@DeviceID               VARCHAR(128)          ,
-	@VerifyCode             VARCHAR(6)            , --驗證碼
-	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@IDNO                   VARCHAR(10)				,	--帳號
+	@Mobile                 VARCHAR(20)				,	--手機
+	@DeviceID               VARCHAR(128)			,	--機碼
+	@VerifyCode             VARCHAR(6)				,	--驗證碼
+	@Mode					INT						,	--模式(0:註冊;1:忘記密碼;2:一次性開門;3:更換手機)
+	@LogID                  BIGINT					,
+	@ErrorCode 				VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT		--回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -75,6 +76,7 @@ SET @hasData=0;
 SET @IDNO=ISNULL (@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @Mobile=ISNULL (@Mobile,'');
+SET @Mode=ISNULL(@Mode,0);
 SET @DeadLine=DATEADD(HOUR,8,GETDATE());
 SET @DeadLine=DATEADD(MINUTE,15,@DeadLine);
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
@@ -212,19 +214,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_ReSendSMS';
-
-
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_ReSendSMS';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'註冊重新發送簡訊', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_ReSendSMS';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_ReSendSMS';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Register_ReSendSMS';

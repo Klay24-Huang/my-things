@@ -1,10 +1,3 @@
-/****** Object:  StoredProcedure [dbo].[usp_GetAnyRentCar]    Script Date: 2020/12/20 下午 03:35:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-
 /****************************************************************
 ** Name: [dbo].[usp_GetAnyRentCar]
 ** Desc: 
@@ -48,7 +41,7 @@ GO
 ** 
 **
 *****************************************************************/
-ALTER PROCEDURE [dbo].[usp_GetAnyRentCar]
+CREATE PROCEDURE [dbo].[usp_GetAnyRentCar]
 	@IDNO				VARCHAR(10)				,	--帳號
 	@ShowALL			INT						,	--是否顯示全部(0:否 1:是)
 	@MinLatitude		FLOAT					,	--最小緯度

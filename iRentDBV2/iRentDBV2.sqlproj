@@ -457,6 +457,7 @@
     <Build Include="dbo\Stored Procedures\usp_ReadUUCard.sql" />
     <Build Include="dbo\SQL Script\照片對應移轉TB_Credentials.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetVerifyCode.sql" />
+    <Build Include="dbo\User Defined Types\TY_BindList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
