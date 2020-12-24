@@ -1335,6 +1335,15 @@ namespace WebAPI.Controllers
                 outputApi.Rent.TotalRental = xTotalRental < 0 ? 0 : xTotalRental;
 
                 #region 修正輸出欄位
+
+                var tra = OrderDataLists[0].init_TransDiscount;
+                if (xTotalRental == 0)
+                {
+                    var carPri = outputApi.Rent.CarRental;
+                    if (carPri > 0)
+                        outputApi.Rent.TransferPrice = carPri;
+                }
+
                 //note: 修正輸出欄位PayDetail
                 if (ProjType == 4)
                 {
