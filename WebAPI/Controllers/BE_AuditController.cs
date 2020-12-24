@@ -3,6 +3,8 @@ using Domain.SP.BE.Input;
 using Domain.SP.Output;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Newtonsoft.Json;
+using NLog;
 using OtherService;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,7 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BE_AuditController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
@@ -198,9 +201,12 @@ namespace WebAPI.Controllers
                     HasVaildEMail = apiInput.HasVaildEMail,
                     MEMMSG = apiInput.MEMMSG
                 };
+
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
+                logger.Trace("AuditSave:" + JsonConvert.SerializeObject(spInput));
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                logger.Trace("AuditSaveResult:" + JsonConvert.SerializeObject(spOut)+",Error:"+ JsonConvert.SerializeObject(lstError));
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
             }

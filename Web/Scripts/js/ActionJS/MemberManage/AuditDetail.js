@@ -78,7 +78,7 @@ $(function () {
         var errMsg = "";
         var SendObj = new Object();
         var Driver = new Array();
-        var SPECSTATUS = $("#SPECSTATUS").val();
+        var SPECSTATUS = $.trim($("#SPECSTATUS").val());
         var SPSD = $("#StartDate").val().replace(/\-/g,'');
         var SPED = $("#EndDate").val().replace(/\-/g, '');
         var Birth = $("#Birth").val();
@@ -93,6 +93,7 @@ $(function () {
         //var SendMessage = (CheckStorageIsNull($("#SendMessage").val())) ? parseInt($("#SendMessage").val()) : 0;
         //20201124 UPD BY JERRY 修改發送簡訊判斷
         var SendMessage = $("#SendMessage").prop("checked") ? 1 : 0;
+        //console.log($("#SPECSTATUS").val())
 
 
         //20201125 UPD BY JERRY 增加欄位處理
@@ -124,7 +125,7 @@ $(function () {
         //    });
         //}
         if (flag) {
-            if (SPECSTATUS != "00") {
+            if (SPECSTATUS != "00" && SPECSTATUS != "" && SPECSTATUS != "01") {
                 if (SPSD == "" && SPED == "") {
                     flag = false;
                     errMsg = "請選擇特殊身份有效日期(起迄)";
