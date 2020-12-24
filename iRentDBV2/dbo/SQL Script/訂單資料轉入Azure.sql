@@ -41,6 +41,8 @@ SELECT TOP 10 [order_number]
   LEFT JOIN TB_Project D WITH(NOLOCK) ON A.premium=D.PROJID
   LEFT JOIN LSIRENTINVTF_SYNC_AZURE F WITH(NOLOCK) ON A.order_number=F.IRENTORDNO 
 
+  
+
 SELECT TOP 10 A.[order_number]
       ,[already_lend_car]
       ,[already_return_car]
@@ -75,3 +77,5 @@ SELECT TOP 10 A.[order_number]
   JOIN TB_OrderParkingData_202001 C WITH(NOLOCK) ON A.order_number=C.order_number
   JOIN TB_SubScriptionHistory_201907 D WITH(NOLOCK) ON A.order_number=D.OrderNum
   JOIN TB_ParkingSpace_201701 E WITH(NOLOCK) ON B.assigned_car_id=E.CarNo
+
+  GO
