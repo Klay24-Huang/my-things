@@ -1090,7 +1090,10 @@ namespace WebAPI.Controllers
                 flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"), ref ParkingPrice, ref mochiOutput);
                 if (flag)
                 {
-                    outputApi.Rent.ParkingFee = ParkingPrice;
+                    if (outputApi.Rent != null)
+                    {
+                        outputApi.Rent.ParkingFee = ParkingPrice;
+                    }
                 }
             }
 
