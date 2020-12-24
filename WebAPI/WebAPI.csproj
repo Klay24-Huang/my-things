@@ -296,6 +296,7 @@
     <Compile Include="Controllers\RegisterMemberDataController.cs" />
     <Compile Include="Controllers\Register_Step1Controller.cs" />
     <Compile Include="Controllers\Register_Step2Controller.cs" />
+    <Compile Include="Controllers\RePayDetailController.cs" />
     <Compile Include="Controllers\ReSendEMailController.cs" />
     <Compile Include="Controllers\ResponseInfoController.cs" />
     <Compile Include="Controllers\ReturnCarController.cs" />
@@ -461,6 +462,7 @@
     <Compile Include="Models\Param\Input\IAPI_RegisterMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
+    <Compile Include="Models\Param\Input\IAPI_RePayDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchMotor.cs" />
@@ -587,7 +589,11 @@
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-CarMachine-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-App-api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irent-test-for-fet - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">

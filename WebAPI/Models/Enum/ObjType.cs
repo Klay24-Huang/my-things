@@ -370,6 +370,10 @@ namespace WebAPI.Models.Enum
             /// 取得會員手機號碼
             /// </summary>
             GetMemberMobile,
+            /// <summary>
+            /// 重新計價
+            /// </summary>
+            CalFinalPrice_Re,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -852,6 +856,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberMobile:    //取得會員手機號碼
                     SPName = "usp_GetMemberMobile";
+                    break;
+                case SPType.CalFinalPrice_Re:   //重新計算租金 20201224 ADD BY ADAM 
+                    SPName = "usp_CalFinalPrice_Re";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
