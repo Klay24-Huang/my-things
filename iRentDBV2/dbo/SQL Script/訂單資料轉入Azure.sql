@@ -1,4 +1,4 @@
-
+﻿
 
 SELECT TOP 10 [order_number]
       ,[IDNO]=citizen_id
