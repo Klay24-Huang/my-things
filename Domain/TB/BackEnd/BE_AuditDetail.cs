@@ -87,6 +87,7 @@ namespace Domain.TB.BackEnd
         public string SPECSTATUS { set; get; }
         public string SPSD { set; get; }
         public string SPED { set; get; }
+        public int Audit { set; get; }
         /// <summary>
         /// MEMO
         /// </summary>

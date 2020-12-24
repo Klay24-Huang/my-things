@@ -54,6 +54,7 @@
             $("#StartDate").val('');
             $("#EndDate").val('');
             $('#AuditType').val('-1');
+            $('#AuditError').val('');
         } else {
             if ($('#StartDate').val() == '') {
                 $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
