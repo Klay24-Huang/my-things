@@ -143,9 +143,16 @@
                             Cmd = 2;
                             HasDisabled = "";
                         }
-                        else
+                        else if (lstData[i].NowStatus == 2)
                         {
                             NowStr = "待上線";
+                            SettingOnline = "上線";
+                            Cmd = 1;
+                            HasDisabled = "";
+                        }
+                        else if (lstData[i].NowStatus == 0)
+                        {
+                            NowStr = "出租中";
                             SettingOnline = "上線";
                             Cmd = 1;
                             HasDisabled = "";
