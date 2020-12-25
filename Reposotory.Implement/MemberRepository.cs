@@ -374,5 +374,34 @@ namespace Reposotory.Implement
 
             return lstAudits;
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AuditMode"></param>
+        /// <param name="AuditType"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="AuditReuslt"></param>
+        /// <param name="UserName"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="IDNOSuff"></param>
+        /// <returns></returns>
+        public List<BE_GetAuditList> ChangePassword(string IDNO, string Password)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetAuditList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+            //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
+            string SQL = " EXEC usp_BE_ChangePassword  '" + IDNO +"','" + Password + "'";
+            int nowCount = 0;
+
+            lstAudits = GetObjList<BE_GetAuditList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
     }
 }

@@ -339,5 +339,32 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
         }
+
+        /// <summary>
+        /// 會員審核
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ChangePassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ChangePassword( string IDNO, string Password)
+        {
+            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
+            try
+            {
+                ViewData["IDNO"] = IDNO;
+                ViewData["Password"] = Password;
+
+                lstData = new MemberRepository(connetStr).ChangePassword(IDNO, Password);
+                ViewData["ErrorMessage"] = "修改成功";
+            }catch(Exception ex)
+            {
+                ViewData["ErrorMessage"] = ex.Message;
+            }
+
+            return View(lstData);
+        }
     }
 }

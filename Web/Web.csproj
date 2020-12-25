@@ -653,6 +653,7 @@
     <Content Include="Views\News\NewsManage.cshtml" />
     <Content Include="Views\News\NewsList.cshtml" />
     <Content Include="Views\Manage\InsCleanOrder.cshtml" />
+    <Content Include="Views\MemberManage\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
