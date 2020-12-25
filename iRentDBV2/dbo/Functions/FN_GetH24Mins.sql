@@ -65,8 +65,8 @@ AS
 		begin
 		   if @str_sd = @str_ed
 		   begin		     
-			 if @minsPro <> '' and @mins >0 and @mins < 60
-			    set @xmins = dbo.FN_minsPro(@minsPro, @mins)
+			 if @minsPro <> '' and @xmins >0 and @xmins < 60
+			    set @xmins = dbo.FN_minsPro(@minsPro, @xmins)
              
 			 declare @allPayMins int = @xhours * 60 + @xmins
 			 set @allPayMins = iif(@allPayMins > @dayMaxMins, @dayMaxMins, @allPayMins)
