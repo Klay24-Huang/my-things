@@ -92,6 +92,15 @@ namespace WebAPI.Controllers
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//車資料
             int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
+
+            double nor_car_wDisc = 0;//只有一般時段時平日折扣
+            double nor_car_hDisc = 0;//只有一般時段時價日折扣
+            int nor_car_PayDisc = 0;//只有一般時段時總折扣
+            int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
+
+            int gift_point = 0;//使用時數(汽車)
+            int gift_motor_point = 0;//使用時數(機車)
+
             #endregion
 
             #region 防呆
@@ -727,9 +736,9 @@ namespace WebAPI.Controllers
 
                         #region 非月租折扣計算
                         //note: 折扣計算
-                        double wDisc = 0;
-                        double hDisc = 0;
-                        int PayDisc = 0;
+                        //double wDisc = 0;
+                        //double hDisc = 0;
+                        //int PayDisc = 0;
                         if (!UseMonthMode)
                         {
                             if (hasFine)
@@ -737,9 +746,9 @@ namespace WebAPI.Controllers
                                 var xre = new BillCommon().CarDiscToPara(SD, ED, 60, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
-                                    PayDisc = Convert.ToInt32(xre.Item1);
-                                    wDisc = xre.Item2;
-                                    hDisc = xre.Item3;
+                                    nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
+                                    nor_car_wDisc = xre.Item2;
+                                    nor_car_hDisc = xre.Item3;
                                 }
                             }
                             else
@@ -747,12 +756,15 @@ namespace WebAPI.Controllers
                                 var xre = new BillCommon().CarDiscToPara(SD, FED, 60, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
-                                    PayDisc = Convert.ToInt32(xre.Item1);
-                                    wDisc = xre.Item2;
-                                    hDisc = xre.Item3;
+                                    nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
+                                    nor_car_wDisc = xre.Item2;
+                                    nor_car_hDisc = xre.Item3;
                                 }
                             }
-                            Discount = PayDisc;
+
+                            var discPrice = Convert.ToDouble(car_n_price) * (nor_car_wDisc/60) + Convert.ToDouble(car_h_price) * (nor_car_hDisc/60);
+                            nor_car_PayDiscPrice = Convert.ToInt32(Math.Floor(discPrice));
+                            Discount = nor_car_PayDisc;
                         }                         
 
                         #endregion
@@ -795,7 +807,7 @@ namespace WebAPI.Controllers
                             else
                             {     
                                 //非月租折扣
-                                DiscountPrice = Convert.ToInt32(((wDisc / 60) * n_price) + ((hDisc / 60) * h_price));
+                                DiscountPrice = Convert.ToInt32(((nor_car_wDisc / 60) * n_price) + ((nor_car_hDisc / 60) * h_price));
                                 CarRentPrice -= DiscountPrice;
                                 CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
                             }
@@ -861,6 +873,22 @@ namespace WebAPI.Controllers
                         outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
                         outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
                         outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+
+                        var cDisc = apiInput.Discount;
+                        var mDisc = apiInput.MotorDiscount;
+                        if (carInfo.useDisc > 0)
+                        {
+                            int lastDisc = carInfo.useDisc;
+                            var useMdisc = mDisc > carInfo.useDisc ? carInfo.useDisc : mDisc;
+                            lastDisc -= useMdisc;
+                            gift_motor_point = useMdisc;
+                            if (lastDisc>0)
+                            {
+                                var useCdisc = cDisc > lastDisc ? lastDisc : cDisc;
+                                lastDisc -= useCdisc;
+                                gift_point = useCdisc;
+                            }                      
+                        }
                     }
                     else
                     {
@@ -879,6 +907,11 @@ namespace WebAPI.Controllers
                             outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
                         }
+
+                        if(carInfo != null && carInfo.useDisc > 0)
+                           gift_point = carInfo.useDisc;
+
+                        gift_motor_point = 0;
                         outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
                     }
 
@@ -894,8 +927,11 @@ namespace WebAPI.Controllers
                         mileage_price = outputApi.Rent.MileageRent,
                         Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
                         fine_price = outputApi.Rent.OvertimeRental,
-                        gift_point = apiInput.Discount,
-                        gift_motor_point = apiInput.MotorDiscount,
+                        //gift_point = apiInput.Discount,
+                        //gift_motor_point = apiInput.MotorDiscount,
+                        gift_point = gift_point,
+                        gift_motor_point = gift_motor_point,
+
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,
