@@ -899,6 +899,8 @@ namespace WebAPI.Controllers
                             outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+                            if (carInfo != null && carInfo.useDisc > 0)
+                                gift_point = carInfo.useDisc;
                         }
                         else
                         {
@@ -906,10 +908,8 @@ namespace WebAPI.Controllers
                             outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
+                            gift_point = nor_car_PayDisc;
                         }
-
-                        if(carInfo != null && carInfo.useDisc > 0)
-                           gift_point = carInfo.useDisc;
 
                         gift_motor_point = 0;
                         outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
