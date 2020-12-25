@@ -49,8 +49,10 @@ namespace WebAPI.Controllers
             bool isGuest = true;
 
             string IDNO = "";
-            DateTime StopTime = new DateTime();
+            DateTime StopTime = new DateTime();     //延長用車時間
             DateTime SD = new DateTime();
+            DateTime StartTime = new DateTime();    //實際出車時間
+            DateTime EndTime = new DateTime();      //預計還車時間
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -153,6 +155,9 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
+                    StartTime = spOut.SD;
+                    EndTime = spOut.ED;
+
                     if (StopTime.Subtract(spOut.SD).TotalDays == 7)
                     {
                         if (StopTime.Subtract(spOut.SD).TotalHours > 0 || StopTime.Subtract(spOut.SD).TotalMinutes > 0)
@@ -165,6 +170,13 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR179";
+                    }
+
+                    var DiffMinute = StopTime.Subtract(EndTime).TotalMinutes;
+                    if (DiffMinute < 60)
+                    {
+                        flag = false;
+                        errCode = "ERR237";
                     }
                 }
                 else
