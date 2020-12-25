@@ -503,7 +503,7 @@ namespace WebAPI.Controllers
                     //檢查有無車麻吉停車費用
                     WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
                     MachiComm mochi = new MachiComm();
-                    flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD.ToString("yyyyMMdd"), FED.AddDays(1).ToString("yyyyMMdd"), ref ParkingPrice, ref mochiOutput);
+                    flag = mochi.GetParkingBill(LogID, OrderDataLists[0].CarNo, SD, FED.AddDays(1), ref ParkingPrice, ref mochiOutput);
                     if (flag)
                     {
                         outputApi.Rent.ParkingFee = ParkingPrice;

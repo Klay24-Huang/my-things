@@ -81,7 +81,7 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="EndDate"></param>
         /// <param name="wsOut"></param>
         /// <returns></returns>
-        public bool GetParkingBill(Int64 LogID, string CarNo,string StartDate,string EndDate,ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
+        public bool GetParkingBill(Int64 LogID, string CarNo, DateTime StartDate, DateTime EndDate, ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
         {
             bool flag = true;
             string Token = "";
@@ -89,20 +89,24 @@ namespace WebAPI.Models.ComboFunc
             ParkingBill = 0;
             if (flag)
             {
-                flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate, EndDate, ref wsOut);
+                flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate.ToString("yyyyMMdd"), EndDate.ToString("yyyyMMdd"), ref wsOut);
                 if (wsOut != null)
                 {
                     if (wsOut.data.Count() > 0)
                     {
-                        int len = wsOut.data.Count();
-                        for(int i = 0; i < len; i++)
-                        {
-                            ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
-                        }
+                        //int len = wsOut.data.Count();                      
+                        //for(int i = 0; i < len; i++)
+                        //{
+                        //    ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
+                        //}
+
+                        var xre = wsOut.data.Where(x => StartDate >= x.details.parking_checked_in_at && EndDate <= x.details.parking_checked_out_at).ToList();
+                        if (xre != null && xre.Count() > 0)
+                            ParkingBill += xre.Select(x => Convert.ToInt32(Convert.ToDouble(x.amount))).Sum();
                     }
                 }
             }
-         
+
             return flag;
         }
         /// <summary>
