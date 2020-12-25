@@ -57,7 +57,7 @@ $(document).ready(function () {
         hasReCal = true;
 
         var oldPrice = parseInt($("#spn_finalPrice").html());
-        var final_price = $("#final_price_input").val();
+        var Insurance_price = $("#Insurance_price_input").val();
         var Mileage = $("#Mileage_input").val();
         var pure = $("#pure_price_input").val();
         var SM = $("#start_mile_input").val();
@@ -72,9 +72,15 @@ $(document).ready(function () {
         var Other_5 = $("#DraggingFee_input").val();
         var Other_6 = $("#OtherFee_input").val();
         var Other_7 = $("#ParkingFeeByMachi_input").val();
+        var finalPrice = $("#spn_finalPrice").html();
+
+        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP);
+        $("#final_price_input").val(totalAmt);
+        var final_price = $("#final_price_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
             var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice); //(oldPrice ) - (parseInt(final_price) + OtherPrice);
+
 
 
             $("#pure_price_input").prop("readonly", "readonly");
@@ -92,7 +98,7 @@ $(document).ready(function () {
             $("#DraggingFee_input").prop("readonly", "readonly");
             $("#OtherFee_input").prop("readonly", "readonly");
             $("#ParkingFeeByMachi_input").prop("readonly", "readonly");
-            $("#Insurance_price_input").val(OrderObj.Insurance_price).prop("readonly", "readonly");
+            $("#Insurance_price_input").prop("readonly", "readonly");
             $("#final_amt").val(final_amt);
             console.log(oldPrice);
             disabledLoading();

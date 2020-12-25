@@ -58,6 +58,7 @@ $(document).ready(function () {
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
             var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice);
+            //var final_amt = (parseInt(final_price) - (oldPrice)) + (OtherPrice - oldOtherPrice);
             
 
             $("#pure_price_input").prop("readonly", "readonly");
