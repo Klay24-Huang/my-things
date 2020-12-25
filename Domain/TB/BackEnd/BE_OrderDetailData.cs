@@ -365,6 +365,7 @@ namespace Domain.TB.BackEnd
         /// 付款金額
         /// </summary>
         public int PayAmount { set; get; }
+        public int InsurancePerHours { set; get; }
     }
 
 
