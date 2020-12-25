@@ -48,11 +48,12 @@ namespace Web.Controllers
             {
                 if (IDNOSuff.Length > 0)
                 {
-                    IDNoSuffCombind += string.Format("'{0}'", IDNOSuff[0]);
+                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
                     int IDLEN = IDNOSuff.Length;
                     for (int i = 1; i < IDLEN; i++)
                     {
-                        IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
                     }
                 }
             }

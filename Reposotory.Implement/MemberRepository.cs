@@ -128,112 +128,121 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
             string term2 = "";
-            string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
+            //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
+            string SQL = " EXEC usp_BE_GetAuditList  '" + AuditMode.ToString() + 
+                "','" + AuditType.ToString() +
+                "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
+                "','" + AuditReuslt.ToString() + 
+                "','" + UserName + 
+                "','" + IDNO +
+                "','" + IDNOSuff +
+                "','" + AuditError + "'";
             int nowCount = 0;
-            if (false == string.IsNullOrWhiteSpace(IDNO))
-            {
-                if (term != "") { term += " AND "; }
-                term += " MEMIDNO=@IDNO";
-                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
-                para[nowCount].Value = IDNO;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if (false == string.IsNullOrWhiteSpace(UserName))
-            {
-                if (term != "") { term += " AND "; }
-                term += " MEMCNAME=@UserName";
-                para[nowCount] = new SqlParameter("@UserName", SqlDbType.NVarChar, 20);
-                para[nowCount].Value = UserName;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if (AuditMode>-1)
-            {
-                if (term != "") { term += " AND "; }
-                term += " IsNew =@IsNew ";
-                para[nowCount] = new SqlParameter("@IsNew", SqlDbType.TinyInt);
-                para[nowCount].Value = AuditMode;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if (AuditType > -1)
-            {
-                if (term != "") { term += " AND "; }
-                term += " HasAudit =@HasAudit";
-                para[nowCount] = new SqlParameter("@HasAudit", SqlDbType.TinyInt);
-                para[nowCount].Value = AuditType;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if (AuditError != "")
-            {
-                if (term != "") { term += " AND "; }
-                if (AuditError == "Y")
-                {
-                    term += " MEMO =''";
-                }
-                else
-                {
-                    term += " MEMO <>''";
-                }
-            }
-            if (string.IsNullOrEmpty(StartDate) == false)
-            {
-                if (string.IsNullOrEmpty(EndDate) == false)
-                {
-                    //term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
-                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    if (term != "") { term += " AND "; }
-                    //term += " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
-                    term += " (CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END between @SD AND @ED)";
-                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = StartDate+" 00:00:00";
-                    para[nowCount].Direction = ParameterDirection.Input;
-                    nowCount++;
-                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = EndDate + " 23:59:59";
-                    para[nowCount].Direction = ParameterDirection.Input;
-                }
-                else
-                {
-                    //term2 = " AND ApplyDate = @SD";
-                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    if (term != "") { term += " AND "; }
-                    //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
-                    term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @SD";
-                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = StartDate + " 00:00:00";
-                    para[nowCount].Direction = ParameterDirection.Input;
-                    nowCount++;
-                }
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(EndDate) == false)
-                {
-                    //term2 = " AND ApplyDate = @ED";
-                    //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
-                    if (term != "") { term += " AND "; }
-                    //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
-                    term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @ED";
-                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = EndDate + " 23:59:59";
-                    para[nowCount].Direction = ParameterDirection.Input;
-                    nowCount++;
-                }
-            }
-            if (false == string.IsNullOrWhiteSpace(IDNOSuff))
-            {
-                if (term != "") { term += " AND "; }
-                term += string.Format(" IDNOSUFF IN ({0}) ", IDNOSuff);
+            //if (false == string.IsNullOrWhiteSpace(IDNO))
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    term += " MEMIDNO=@IDNO";
+            //    para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+            //    para[nowCount].Value = IDNO;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (false == string.IsNullOrWhiteSpace(UserName))
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    term += " MEMCNAME=@UserName";
+            //    para[nowCount] = new SqlParameter("@UserName", SqlDbType.NVarChar, 20);
+            //    para[nowCount].Value = UserName;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (AuditMode>-1)
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    term += " IsNew =@IsNew ";
+            //    para[nowCount] = new SqlParameter("@IsNew", SqlDbType.TinyInt);
+            //    para[nowCount].Value = AuditMode;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (AuditType > -1)
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    term += " HasAudit =@HasAudit";
+            //    para[nowCount] = new SqlParameter("@HasAudit", SqlDbType.TinyInt);
+            //    para[nowCount].Value = AuditType;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (AuditError != "")
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    if (AuditError == "Y")
+            //    {
+            //        term += " MEMO =''";
+            //    }
+            //    else
+            //    {
+            //        term += " MEMO <>''";
+            //    }
+            //}
+            //if (string.IsNullOrEmpty(StartDate) == false)
+            //{
+            //    if (string.IsNullOrEmpty(EndDate) == false)
+            //    {
+            //        //term2 = " AND ((ApplyDate between @SD AND @ED) OR (ApplyDate between @SD AND @ED))";
+            //        //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+            //        if (term != "") { term += " AND "; }
+            //        //term += " ((" + (AuditMode==1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED) OR (" + (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " between @SD AND @ED))";
+            //        term += " (CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END between @SD AND @ED)";
+            //        para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+            //        para[nowCount].Value = StartDate+" 00:00:00";
+            //        para[nowCount].Direction = ParameterDirection.Input;
+            //        nowCount++;
+            //        para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+            //        para[nowCount].Value = EndDate + " 23:59:59";
+            //        para[nowCount].Direction = ParameterDirection.Input;
+            //    }
+            //    else
+            //    {
+            //        //term2 = " AND ApplyDate = @SD";
+            //        //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+            //        if (term != "") { term += " AND "; }
+            //        //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @SD";
+            //        term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @SD";
+            //        para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+            //        para[nowCount].Value = StartDate + " 00:00:00";
+            //        para[nowCount].Direction = ParameterDirection.Input;
+            //        nowCount++;
+            //    }
+            //}
+            //else
+            //{
+            //    if (string.IsNullOrEmpty(EndDate) == false)
+            //    {
+            //        //term2 = " AND ApplyDate = @ED";
+            //        //20201114 ADD BY ADAM REASON.申請加入看MKTime身分變更看UPDTime
+            //        if (term != "") { term += " AND "; }
+            //        //term += (AuditMode == 1 ? "ApplyDate" : "ModifyDate") + " = @ED";
+            //        term += " CASE WHEN IsNew=1 THEN ApplyDate ELSE ModifyDate END = @ED";
+            //        para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+            //        para[nowCount].Value = EndDate + " 23:59:59";
+            //        para[nowCount].Direction = ParameterDirection.Input;
+            //        nowCount++;
+            //    }
+            //}
+            //if (false == string.IsNullOrWhiteSpace(IDNOSuff))
+            //{
+            //    if (term != "") { term += " AND "; }
+            //    term += string.Format(" IDNOSUFF IN ({0}) ", IDNOSuff);
 
-            }
+            //}
 
-            if ("" != term)
-            {
-                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
-            }
+            //if ("" != term)
+            //{
+            //    SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            //}
             //if ("" != term2)
             //{
             //    SQL += term2;
