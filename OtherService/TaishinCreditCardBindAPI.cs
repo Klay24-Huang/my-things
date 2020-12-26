@@ -898,7 +898,15 @@ namespace OtherService
                         UpdInput.process_date = process;
                         UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.PayAmount) / 100;
                         //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
-                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                        try
+                        {
+                            UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                        }
+                        catch(Exception ex)
+                        {
+                            UpdInput.AuthIdResp = 0;
+                            logger.Trace("更新刷卡結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
+                        }
                         UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
                         UpdInput.RetCode = output.RtnCode;
                         UpdInput.RetMsg = output.RtnMessage;
