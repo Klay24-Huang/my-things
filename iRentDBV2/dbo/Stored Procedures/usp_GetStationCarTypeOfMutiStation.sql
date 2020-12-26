@@ -149,7 +149,8 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 		   BEGIN
 				--找出被預約的車輛
 				IF OBJECT_ID('tempdb..#TB_OrderMain') IS NOT NULL DROP TABLE #TB_OrderMain
-				SELECT order_number,IDNO,CarNo
+				--SELECT order_number,IDNO,CarNo
+				SELECT DISTINCT CarNo	--排除重複以免造成問題
 				INTO #TB_OrderMain
 				FROM TB_OrderMain WITH(NOLOCK)
 				WHERE 1=1
@@ -184,15 +185,16 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				--JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
 				WHERE A.TotalCount = B.NGCount
 
-				--測試春節專案(暫用1/1~1/3)，先用寫死方式之後再改
+				--測試春節專案(暫用2/1~1/3)，先用寫死方式之後再改
 				CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
-				INSERT INTO #SPDATE VALUES('2021-01-01','2021-01-04')
+				INSERT INTO #SPDATE VALUES('2021-02-09','2021-02-16')
 				SELECT * INTO #TB_Project FROM TB_Project WITH(NOLOCK) WHERE ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd))
 				--IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE)))
 				--BEGIN
 				--	--在此時間的專案會只剩特殊專案
-				--	DELETE FROM #TB_Project WHERE PROJID<>'P996'
+				--	DELETE FROM #TB_Project WHERE PROJID<>'R107'
 				--END
+
 
 				--20201023 ADD BY ADAM REASON.調整邏輯
 				SELECT  DISTINCT StationID		= C.nowStationID
