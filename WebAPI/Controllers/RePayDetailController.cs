@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using Domain.SP.Input.Common;
+using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
@@ -94,10 +96,18 @@ namespace WebAPI.Controllers
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//車資料
             int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
+
+            double nor_car_wDisc = 0;//只有一般時段時平日折扣
+            double nor_car_hDisc = 0;//只有一般時段時價日折扣
+            int nor_car_PayDisc = 0;//只有一般時段時總折扣
+            int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
+
+            int gift_point = 0;//使用時數(汽車)
+            int gift_motor_point = 0;//使用時數(機車)
             #endregion
 
             #region 防呆
-            flag =  baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             flag = true;
             errCode = "000000";
 
@@ -133,7 +143,8 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-                
+
+                Discount = apiInput.Discount + apiInput.MotorDiscount;
 
                 //不開放訪客
                 //if (flag)
@@ -149,7 +160,7 @@ namespace WebAPI.Controllers
             #endregion
             #region 取出基本資料
             //Token判斷
-            if (flag )
+            if (flag)
             {
                 IDNO = apiInput.IDNO == null ? "" : apiInput.IDNO;
 
@@ -354,6 +365,59 @@ namespace WebAPI.Controllers
                     }
                     flag = true;
                     errCode = "000000";
+
+                    //判斷輸入的點數有沒有超過總點數
+                    if (ProjType == 4)
+                    {
+                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
+                        {
+                            //flag = false;
+                            //errCode = "ERR205";
+                        }
+                        else
+                        {
+                            if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
+                            {
+                                flag = false;
+                                errCode = "ERR207";
+                            }
+                        }
+
+                        if (TotalRentMinutes <= 6 && Discount == 6)
+                        {
+
+                        }
+                        else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
+                        {
+                            flag = false;
+                            errCode = "ERR303";
+                        }
+
+                        if (flag)
+                        {
+                            billCommon.CalPointerToDayHourMin(MotorPoint + CarPoint, ref PDays, ref PHours, ref PMins);
+                        }
+                    }
+                    else
+                    {
+                        if (Discount > 0 && Discount % 30 > 0)
+                        {
+                            flag = false;
+                            errCode = "ERR206";
+                        }
+                        else
+                        {
+                            if (Discount > CarPoint)
+                            {
+                                flag = false;
+                                errCode = "ERR207";
+                            }
+                        }
+                        if (flag)
+                        {
+                            billCommon.CalPointerToDayHourMin(CarPoint, ref PDays, ref PHours, ref PMins);
+                        }
+                    }
                 }
                 #endregion
 
@@ -466,9 +530,9 @@ namespace WebAPI.Controllers
 
                         #region 非月租折扣計算
                         //note: 折扣計算
-                        double wDisc = 0;
-                        double hDisc = 0;
-                        int PayDisc = 0;
+                        //double wDisc = 0;
+                        //double hDisc = 0;
+                        //int PayDisc = 0;
                         if (!UseMonthMode)
                         {
                             if (hasFine)
@@ -476,9 +540,9 @@ namespace WebAPI.Controllers
                                 var xre = new BillCommon().CarDiscToPara(SD, ED, 60, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
-                                    PayDisc = Convert.ToInt32(xre.Item1);
-                                    wDisc = xre.Item2;
-                                    hDisc = xre.Item3;
+                                    nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
+                                    nor_car_wDisc = xre.Item2;
+                                    nor_car_hDisc = xre.Item3;
                                 }
                             }
                             else
@@ -486,12 +550,15 @@ namespace WebAPI.Controllers
                                 var xre = new BillCommon().CarDiscToPara(SD, FED, 60, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
-                                    PayDisc = Convert.ToInt32(xre.Item1);
-                                    wDisc = xre.Item2;
-                                    hDisc = xre.Item3;
+                                    nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
+                                    nor_car_wDisc = xre.Item2;
+                                    nor_car_hDisc = xre.Item3;
                                 }
                             }
-                            Discount = PayDisc;
+
+                            var discPrice = Convert.ToDouble(car_n_price) * (nor_car_wDisc / 60) + Convert.ToDouble(car_h_price) * (nor_car_hDisc / 60);
+                            nor_car_PayDiscPrice = Convert.ToInt32(Math.Floor(discPrice));
+                            Discount = nor_car_PayDisc;
                         }
 
                         #endregion
@@ -534,7 +601,7 @@ namespace WebAPI.Controllers
                             else
                             {
                                 //非月租折扣
-                                DiscountPrice = Convert.ToInt32(((wDisc / 60) * n_price) + ((hDisc / 60) * h_price));
+                                DiscountPrice = Convert.ToInt32(((nor_car_wDisc / 60) * n_price) + ((nor_car_hDisc / 60) * h_price));
                                 CarRentPrice -= DiscountPrice;
                                 CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
                             }
@@ -600,6 +667,22 @@ namespace WebAPI.Controllers
                         outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
                         outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
                         outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+
+                        var cDisc = apiInput.Discount;
+                        var mDisc = apiInput.MotorDiscount;
+                        if (carInfo.useDisc > 0)
+                        {
+                            int lastDisc = carInfo.useDisc;
+                            var useMdisc = mDisc > carInfo.useDisc ? carInfo.useDisc : mDisc;
+                            lastDisc -= useMdisc;
+                            gift_motor_point = useMdisc;
+                            if (lastDisc > 0)
+                            {
+                                var useCdisc = cDisc > lastDisc ? lastDisc : cDisc;
+                                lastDisc -= useCdisc;
+                                gift_point = useCdisc;
+                            }
+                        }
                     }
                     else
                     {
@@ -610,6 +693,8 @@ namespace WebAPI.Controllers
                             outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+                            if (carInfo != null && carInfo.useDisc > 0)
+                                gift_point = carInfo.useDisc;
                         }
                         else
                         {
@@ -617,14 +702,17 @@ namespace WebAPI.Controllers
                             outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
                             outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
+                            gift_point = nor_car_PayDisc;
                         }
+
+                        gift_motor_point = 0;
                         outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
                     }
 
                     #endregion
 
                     string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice_Re);
-                    SPInput_BE_CalFinalPrice SPInput = new SPInput_BE_CalFinalPrice()
+                    SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                     {
                         IDNO = IDNO,
                         OrderNo = tmpOrder,
@@ -633,20 +721,20 @@ namespace WebAPI.Controllers
                         mileage_price = outputApi.Rent.MileageRent,
                         Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
                         fine_price = outputApi.Rent.OvertimeRental,
-                        gift_point = 0,
+                        gift_point = apiInput.Discount,
+                        gift_motor_point = apiInput.MotorDiscount,
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,
-                        LogID = LogID,
-                        UserID = "99998"
+                        LogID = LogID
                     };
                     SPOutput_Base SPOutput = new SPOutput_Base();
-                    SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base>(connetStr);
+                    SQLHelper<SPInput_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_CalFinalPrice, SPOutput_Base>(connetStr);
                     flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
                     baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                 }
                 #endregion
-                
+
             }
             #endregion
 
