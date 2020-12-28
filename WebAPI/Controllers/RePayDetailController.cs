@@ -587,9 +587,8 @@ namespace WebAPI.Controllers
 
                         if (Discount > 0)
                         {
-                            var result = new BillCommon().GetCarRangeMins(SD, ED, 60, 10 * 60, lstHoliday);
-
-                            int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
+                            //var result = new BillCommon().GetCarRangeMins(SD, ED, 60, 10 * 60, lstHoliday);
+                            //int DiscountPrice = Convert.ToInt32(Math.Floor(((Discount / 60.0) * OrderDataLists[0].PRICE)));
 
                             double n_price = Convert.ToDouble(OrderDataLists[0].PRICE);
                             double h_price = Convert.ToDouble(OrderDataLists[0].PRICE_H);
@@ -601,8 +600,7 @@ namespace WebAPI.Controllers
                             else
                             {
                                 //非月租折扣
-                                DiscountPrice = Convert.ToInt32(((nor_car_wDisc / 60) * n_price) + ((nor_car_hDisc / 60) * h_price));
-                                CarRentPrice -= DiscountPrice;
+                                CarRentPrice -= nor_car_PayDiscPrice;
                                 CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
                             }
                         }
