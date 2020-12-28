@@ -87,9 +87,9 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string term = "";
             string SQL = " SELECT * FROM VW_BE_GetSameMobile ";
-            if (false == string.IsNullOrWhiteSpace(IDNO) && false == string.IsNullOrWhiteSpace(TEL))
-            {
-                term += " IDNO<>@IDNO AND  MEMTEL=@MEMTEL";
+            //if (false == string.IsNullOrWhiteSpace(IDNO) && false == string.IsNullOrWhiteSpace(TEL))
+            //{
+                term += " IDNO<>@IDNO AND MEMTEL=@MEMTEL AND MEMTEL<>''";
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
@@ -98,7 +98,7 @@ namespace Reposotory.Implement
                 para[nowCount].Value = TEL;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-            }
+            //}
 
             if ("" != term)
             {
