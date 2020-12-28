@@ -3270,7 +3270,7 @@ namespace WebAPI.Models.BillFunc
             if (sour != null && sour.Count() > 0)
                 re = sour;
 
-            if (sd != null && ed != null && ed > sd)
+            if (sd != null && ed != null && ed >= sd)
             {
                 DateTime sct = Convert.ToDateTime(sd.ToString("yyyy-MM-dd"));
                 DateTime ect = Convert.ToDateTime(ed.ToString("yyyy-MM-dd"));
