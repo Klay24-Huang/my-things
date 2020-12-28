@@ -332,6 +332,7 @@
     <Compile Include="Models\BaseFunc\CarCommonFunc.cs" />
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
     <Compile Include="Models\BillFunc\BillCommon.cs" />
+    <Compile Include="Models\BillFunc\CarRentCommon.cs" />
     <Compile Include="Models\ComboFunc\ContactComm.cs" />
     <Compile Include="Models\ComboFunc\CreditAuthComm.cs" />
     <Compile Include="Models\ComboFunc\MachiComm.cs" />
