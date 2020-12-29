@@ -100,6 +100,8 @@ namespace WebAPI.Controllers
 
             int gift_point = 0;//使用時數(汽車)
             int gift_motor_point = 0;//使用時數(機車)
+            int motoBaseMins = 6;//機車基本分鐘數
+            int carBaseMins = 60;//汽車基本分鐘數
 
             #endregion
 
@@ -216,6 +218,9 @@ namespace WebAPI.Controllers
                 }
 
                 #endregion
+
+                if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                    motoBaseMins = OrderDataLists[0].BaseMinutes > 0 ? OrderDataLists[0].BaseMinutes : motoBaseMins;
             }
             #endregion
 
@@ -301,7 +306,7 @@ namespace WebAPI.Controllers
                     {
                         if (hasFine)
                         {
-                            var reInMins = billCommon.GetCarRangeMins(SD, ED, 60, 600, lstHoliday);
+                            var reInMins = billCommon.GetCarRangeMins(SD, ED, carBaseMins, 600, lstHoliday);
                             if (reInMins != null)
                             {
                                 car_payInMins = Convert.ToInt32(reInMins.Item1 + reInMins.Item2);
@@ -324,7 +329,7 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            var reAllMins = billCommon.GetCarRangeMins(SD, FED, 60, 600, lstHoliday);
+                            var reAllMins = billCommon.GetCarRangeMins(SD, FED, carBaseMins, 600, lstHoliday);
                             if (reAllMins != null)
                             {
                                 car_payAllMins = Convert.ToInt32(reAllMins.Item1 + reAllMins.Item2);
@@ -560,7 +565,7 @@ namespace WebAPI.Controllers
                                 var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
 
                                 int motoDisc = Discount;
-                                carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, lstHoliday, motoMonth, motoDisc);
+                                carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, dayMaxMinns, lstHoliday, motoMonth, motoDisc);
 
                                 if (carInfo != null)
                                 {
@@ -641,7 +646,7 @@ namespace WebAPI.Controllers
                                 if (hasFine)
                                 {
                                     //CarRentPrice = billCommon.CalBillBySubScription(SD, ED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
-                                    carInfo = billCommon.CarRentInCompute(SD, ED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
+                                    carInfo = billCommon.CarRentInCompute(SD, ED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, carBaseMins, 10, lstHoliday, UseMonthlyRent, xDiscount);
                                     if (carInfo != null)
                                     {
                                         CarRentPrice += carInfo.RentInPay;
@@ -654,7 +659,7 @@ namespace WebAPI.Controllers
                                 else
                                 {
                                     //CarRentPrice = billCommon.CalBillBySubScription(SD, FED, lstHoliday, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, ref errCode, ref monthlyRentDatas, ref UseMonthlyRent);
-                                    carInfo = billCommon.CarRentInCompute(SD, FED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, OrderDataLists[0].BaseMinutes, 10, lstHoliday, UseMonthlyRent, xDiscount);
+                                    carInfo = billCommon.CarRentInCompute(SD, FED, OrderDataLists[0].PRICE, OrderDataLists[0].PRICE_H, carBaseMins, 10, lstHoliday, UseMonthlyRent, xDiscount);
                                     if (carInfo != null)
                                     {
                                         CarRentPrice += carInfo.RentInPay;
@@ -699,7 +704,7 @@ namespace WebAPI.Controllers
                             var item = OrderDataLists[0];
                             var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
 
-                            carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, Discount);
+                            carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, dayMaxMinns, null, null, Discount);
                             if (carInfo != null)
                                 outputApi.Rent.CarRental = carInfo.RentInPay;
                         }
@@ -744,7 +749,7 @@ namespace WebAPI.Controllers
                         {
                             if (hasFine)
                             {
-                                var xre = new BillCommon().CarDiscToPara(SD, ED, 60, 600, lstHoliday, Discount);
+                                var xre = new BillCommon().CarDiscToPara(SD, ED, carBaseMins, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
                                     nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
@@ -754,7 +759,7 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                var xre = new BillCommon().CarDiscToPara(SD, FED, 60, 600, lstHoliday, Discount);
+                                var xre = new BillCommon().CarDiscToPara(SD, FED, carBaseMins, 600, lstHoliday, Discount);
                                 if (xre != null)
                                 {
                                     nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
