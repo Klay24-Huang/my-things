@@ -512,8 +512,8 @@ namespace WebAPI.Controllers
                     //預約的資料，似乎走排程比較好
                     //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
                 }
-                #endregion
             }
+            #endregion
             #region 寫取車照片到azure
             if (flag)
             {

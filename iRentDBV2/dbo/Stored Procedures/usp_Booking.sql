@@ -226,6 +226,28 @@ BEGIN TRY
 			END
 		END
 	END
+
+	--2.5 春節卡預約
+	IF (@SD>=CAST('2021-02-09' AS DATETIME) AND @SD<= CAST('2021-02-16' AS DATETIME))
+	BEGIN
+		SET @Error=1
+		SET @ErrorCode='ERR235'
+	END
+
+	--跨年交通管制，X0IU、X0IF、X0LL、X1Q9這四站12/31 12:00-1/1 05:00，這區間內限制無法預約
+	IF @Error=0
+	BEGIN
+		IF (@SD>=CAST('2020-12-31 12:00:00' AS DATETIME) AND @SD<=CAST('2021-01-01 05:00:00' AS DATETIME)) OR
+			(@ED>=CAST('2020-12-31 12:00:00' AS DATETIME) AND @ED<=CAST('2021-01-01 05:00:00' AS DATETIME))
+		BEGIN
+			IF @StationID='X0IU' OR @StationID='X0IF' OR @StationID='X0LL' OR @StationID='X1Q9'
+			BEGIN
+				SET @Error=1
+				SET @ErrorCode='ERR161'
+			END
+		END
+	END
+
 	--3.判斷有沒有車可預約
 	IF @Error=0
 	BEGIN
