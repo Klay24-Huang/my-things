@@ -223,11 +223,12 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 //判斷狀態
-                if (OrderDataLists[0].car_mgt_status < 11 || OrderDataLists[0].cancel_status > 0)
+                if (OrderDataLists[0].car_mgt_status == 16 || OrderDataLists[0].car_mgt_status < 11 || OrderDataLists[0].cancel_status > 0)
                 {
                     flag = false;
                     errCode = "ERR204";
                 }
+
                 //取得專案狀態
                 if (flag)
                 {
