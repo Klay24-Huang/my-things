@@ -74,147 +74,161 @@ SET @hasData=0;
 
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
-	BEGIN TRY
-        IF @Token='' OR @IDNO=''
+BEGIN TRY
+    IF @Token='' OR @IDNO=''
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+		        
+    --0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+		IF @hasData=0
 		BEGIN
 			SET @Error=1;
-			SET @ErrorCode='ERR900'
+			SET @ErrorCode='ERR101';
 		END
-		        
-        --0.再次檢核token
-		IF @Error=0
+		ELSE
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
 		END
+	END
 
-		--1.取得資料
-		IF @Error=0
-		BEGIN
-			--統計在線案件數量
-			SELECT ProjType,COUNT(ProjType) AS Total
-			INTO #OrderProjCount
-			FROM TB_OrderMain WITH(NOLOCK)
-			WHERE IDNO=@IDNO
-			AND cancel_status < 3
-			AND car_mgt_status < 16 --AND car_mgt_status > 3
-			GROUP BY ProjType
+	--1.取得資料
+	IF @Error=0
+	BEGIN
+		--統計在線案件數量
+		SELECT ProjType,COUNT(ProjType) AS Total
+		INTO #OrderProjCount
+		FROM TB_OrderMain WITH(NOLOCK)
+		WHERE IDNO=@IDNO
+		AND cancel_status =0
+		AND car_mgt_status < 16 --AND car_mgt_status > 3
+		AND stop_time > DATEADD(DAY,-90,GETDATE())
+		GROUP BY ProjType
 
-			SELECT 
-				 MEMIDNO
-				,MEMCNAME AS MEMNAME
-				,Login				= 'Y'		--登入
-				,Register			= IrFlag	--註冊
-				,Audit 
-				,Audit_ID			= ISNULL(C.ID_1,0)				--身分證
-				,Audit_Car			= ISNULL(C.CarDriver_1,0)		--汽車駕照
-				,Audit_Motor		= ISNULL(C.MotorDriver_1,0)		--機車駕照
-				,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
-				,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
-				,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
-				--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
-				,MenuCTRL			= CASE WHEN IrFlag=0 THEN 1
-										   --身分證未上傳,駕照只要上其中一個
-										   WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR C.Self_1=0 THEN 2
-										   WHEN Audit=0 THEN 3
-										   WHEN Audit=2 THEN 4
-										   WHEN Audit=1 AND C.ID_1=1 THEN 5
-										   WHEN Audit=1 AND C.CarDriver_1=1 THEN 5
-										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN 5
-										   WHEN Audit=1 AND C.Self_1=1 THEN 5
-										   WHEN Audit=1 AND C.Signture=1 THEN 5
-										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-														AND C.Law_Agent=1 THEN 5
-										   WHEN Audit=1 AND C.ID_1=-1 THEN 6
-										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN 6
-										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN 6
-										   WHEN Audit=1 AND C.Self_1=-1 THEN 6
-										   WHEN Audit=1 AND C.Signture=-1 THEN 6
-										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-														AND C.Law_Agent=-1 THEN 6
-										   ELSE 0 END
-				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
-				,MenuStatusText		= CASE WHEN Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
-										   WHEN Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
-										   WHEN Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
-										   WHEN Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
-										   WHEN Audit=1 AND C.Signture=1 THEN '身分變更審核中'
-										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-														AND C.Law_Agent=1 THEN '身分變更審核中'
+		SELECT MEMIDNO
+			,MEMCNAME AS MEMNAME
+			,Login				= 'Y'		--登入
+			,Register			= IrFlag	--註冊
+			,Audit 
+			,Audit_ID			= ISNULL(C.ID_1,0)				--身分證
+			,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+										WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+										WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+										WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+										ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
+			,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+										WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+										WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+										WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+										ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
+			,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
+			,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
+			,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
+			--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
+			,MenuCTRL			= CASE WHEN IrFlag=0 THEN 1
+										--身分證未上傳,駕照只要上其中一個
+										WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR C.Self_1=0 THEN 2
+										WHEN Audit=0 THEN 3
+										WHEN Audit=2 THEN 4
+										WHEN Audit=1 AND C.ID_1=1 THEN 5
+										WHEN Audit=1 AND C.CarDriver_1=1 THEN 5
+										WHEN Audit=1 AND C.MotorDriver_1=1 THEN 5
+										WHEN Audit=1 AND C.Self_1=1 THEN 5
+										WHEN Audit=1 AND C.Signture=1 THEN 5
+										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+													AND C.Law_Agent=1 THEN 5
+										WHEN Audit=1 AND C.ID_1=-1 THEN 6
+										WHEN Audit=1 AND C.CarDriver_1=-1 THEN 6
+										WHEN Audit=1 AND C.MotorDriver_1=-1 THEN 6
+										WHEN Audit=1 AND C.Self_1=-1 THEN 6
+										WHEN Audit=1 AND C.Signture=-1 THEN 6
+										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+													AND C.Law_Agent=-1 THEN 6
+										ELSE 0 END
+			--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
+			,MenuStatusText		= CASE WHEN Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND C.Signture=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+													AND C.Law_Agent=1 THEN '身分變更審核中'
+										WHEN Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
+										WHEN Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
+										WHEN Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
+										WHEN Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
+										WHEN Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
+										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+													AND C.Law_Agent=-1 THEN '身分變更審核失敗'
+										ELSE '' END
+			,BlackList			= 'N'
+			,StatusTextCar		= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+										WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+										WHEN C.CarDriver_1=1 THEN '身分審核中~'
+										WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
+										ELSE '' END
+			,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+										WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+										WHEN C.MotorDriver_1=1 THEN '身分審核中~'
+										WHEN C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
+										ELSE '' END
+			--20201204 ADD BY ADAM REASON.改為線上統計
+			--,NormalRentCount	= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0)
+			--,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
+			--,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
+			--,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
 
-										   WHEN Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
-										   WHEN Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
-										   WHEN Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
-										   WHEN Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
-										   WHEN Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
-										   WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
-										   ELSE '' END
-				,BlackList			= 'N'
-				,StatusTextCar			= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
-										   WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
-										   WHEN C.CarDriver_1=1 THEN '身分審核中~'
-										   WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
-										   ELSE '' END
-				,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
-										   WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
-										   WHEN C.MotorDriver_1=1 THEN '身分審核中~'
-										   WHEN C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
-										   ELSE '' END
-				,NormalRentCount	= ISNULL(B.NormalRentBookingNowCount,0)
-				,AnyRentCount		= ISNULL(B.AnyRentBookingNowCount,0)
-				,MotorRentCount		= ISNULL(B.MotorRentBookingNowCount,0)
-				--,TotalRentCount		= ISNULL(B.NormalRentBookingNowCount,0) + ISNULL(B.AnyRentBookingNowCount,0) + ISNULL(B.MotorRentBookingNowCount,0)
-				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)		--20201204 ADD BY ADAM REASON.改為線上統計
-			FROM TB_MemberData A WITH(NOLOCK)
-			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
-			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
-			WHERE A.MEMIDNO=@IDNO
+			-- 20201229 期間限定：因應舊資料進來有漏，但有預約就無法修改會員資料，因此判斷在白名單中可以修正，訂單數強制給0
+			,NormalRentCount	= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0))
+			,AnyRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0))
+			,MotorRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0))
+			,TotalRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0))
+		FROM TB_MemberData A WITH(NOLOCK)
+		LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
+		LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+		LEFT JOIN TB_MemberDataWhiteList D WITH(NOLOCK) ON A.MEMIDNO=D.IDNO AND D.StartDate <= @NowTime AND D.EndDate >= @NowTime
+		WHERE A.MEMIDNO=@IDNO
 
-			DROP TABLE #OrderProjCount
-		END
+		DROP TABLE #OrderProjCount
+	END
 		
-		--寫入錯誤訊息
-		IF @Error=1
-		BEGIN
-			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END
-	END TRY
-	BEGIN CATCH
-		SET @Error=-1;
-		SET @ErrorCode='ERR999';
-		SET @ErrorMsg='我要寫錯誤訊息';
-		SET @SQLExceptionCode=ERROR_NUMBER();
-		SET @SQLExceptionMsg=ERROR_MESSAGE();
-		IF @@TRANCOUNT > 0
-		BEGIN
-			print 'rolling back transaction' /* <- this is never printed */
-			ROLLBACK TRAN
-		END
-		SET @IsSystem=1;
-		SET @ErrorType=4;
-			INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
