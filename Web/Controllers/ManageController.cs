@@ -236,5 +236,28 @@ namespace Web.Controllers
             lstData = repository.GetAPILog(IPAddress, StartDate+" 00:00:00.000", EndDate + " 23:59:59.999");
             return View(lstData);
         }
+
+
+
+        /// <summary>
+        /// 查詢APILog
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult RealtimeSale()
+        {
+            List<BE_RealtimeSale> lstData = null;
+            APILogRepository repository = new APILogRepository(connetStr);
+            lstData = repository.GetRealtimeSale("");
+            return View(lstData);
+        }
+        [HttpPost]
+        public ActionResult RealtimeSale( string StartDate)
+        {
+            ViewData["StartDate"] = StartDate;
+            List<BE_RealtimeSale> lstData = null;
+            APILogRepository repository = new APILogRepository(connetStr);
+            lstData = repository.GetRealtimeSale(StartDate.Replace("-",""));
+            return View(lstData);
+        }
     }
 }

@@ -25,4 +25,19 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string APIInput { set; get; }
     }
+
+
+
+    public class BE_RealtimeSale
+    {
+        public string ProjType1 { set; get; }
+        public string TIME1 { set; get; }
+        public int Count1 { set; get; }
+        public string ProjType2 { set; get; }
+        public string TIME2 { set; get; }
+        public int Count2 { set; get; }
+        public string ProjType3 { set; get; }
+        public string TIME3 { set; get; }
+        public int Count3 { set; get; }
+    }
 }

@@ -44,5 +44,22 @@ namespace Reposotory.Implement
             lstAPILog = GetObjList<BE_APILog>(ref flag, ref lstError, SQL, para, term);
             return lstAPILog;
         }
+
+
+        /// <summary>
+        /// 取得所有有效的停車場
+        /// </summary>
+        /// <returns></returns>
+        public List<BE_RealtimeSale> GetRealtimeSale(string StartDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_RealtimeSale> lstAPILog = null;
+            string SQL = string.Format("usp_BE_RealtimeSale '', '{0}' ", StartDate);
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            lstAPILog = GetObjList<BE_RealtimeSale>(ref flag, ref lstError, SQL, para, term);
+            return lstAPILog;
+        }
     }
 }
