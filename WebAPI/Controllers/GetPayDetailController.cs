@@ -869,7 +869,11 @@ namespace WebAPI.Controllers
                         outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                         outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
                         outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
-                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                       
+                        //2020-12-29 所有點數改成皆可折抵
+                        //outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
+                        
                         outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
 
                         var cDisc = apiInput.Discount;
@@ -895,7 +899,11 @@ namespace WebAPI.Controllers
                             outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                             outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
                             outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
-                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+
+                            //2020 - 12 - 29 所有點數改成皆可折抵
+                            //outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
+
                             outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
                             if (carInfo != null && carInfo.useDisc > 0)
                                 gift_point = carInfo.useDisc;
