@@ -44,16 +44,16 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetProjectPriceBase]
-	@ProjID			VARCHAR(20),
-	@CarNo			VARCHAR(10),
-	@CarType		VARCHAR(20),
-	@ProjType		INT,
-	@IDNO			VARCHAR(10),
-	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@ProjID				VARCHAR(20),			--專案代號
+	@CarNo				VARCHAR(10),			--車號
+	@CarType			VARCHAR(20),			--車型
+	@ProjType			INT,					--專案類型
+	@IDNO				VARCHAR(10),			--帳號
+	@LogID				BIGINT                ,
+	@ErrorCode			VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
+	@ErrorMsg			NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
+	@SQLExceptionCode	VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
+	@SQLExceptionMsg	NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -93,20 +93,18 @@ BEGIN TRY
 		BEGIN
 			INSERT INTO #TB_Car SELECT CarNo,CarType,nowStationID FROM TB_Car WITH(NOLOCK) WHERE CarNo=@CarNo
 		END
-		SELECT TOP 1  ProjID,PRICE,PRICE_H  ,II.InsurancePerHours
-		FROM VW_GetFullProjectCollectionOfCarTypeGroup  AS VW
-		LEFT JOIN #TB_Car AS Car WITH(NOLOCK) ON Car.CarType=VW.CarType AND Car.nowStationID=VW.StationID
-		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.InsuranceLevel=3
-		LEFT JOIN TB_BookingInsuranceOfUser BOU WITH(NOLOCK) ON BOU.InsuranceLevel=II.InsuranceLevel 
-		LEFT JOIN (SELECT BU.InsuranceLevel,II.CarTypeGroupCode,II.InsurancePerHours
-							FROM TB_BookingInsuranceOfUser BU WITH(NOLOCK)
-							LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON BU.IDNO=@IDNO AND ISNULL(BU.InsuranceLevel,3)=II.InsuranceLevel
-							WHERE II.useflg='Y') K ON VW.CarTypeGroupCode=K.CarTypeGroupCode
+
+		SELECT TOP 1 PROJID,PRICE,PRICE_H  
+		,InsurancePerHours=CASE WHEN BU.IDNO IS NULL THEN II.InsurancePerHours ELSE K.InsurancePerHours END	--20201228 ADD BY ADAM REASON.多判斷訪客
+		FROM VW_GetFullProjectCollectionOfCarTypeGroup  AS VW WITH(NOLOCK)
+		LEFT JOIN #TB_Car AS Car WITH(NOLOCK) ON Car.CarType=VW.CARTYPE AND Car.nowStationID=VW.StationID
+		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
+		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
+		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 		WHERE VW.SPCLOCK='Z' 
 		AND ISNULL(CarNo,'') = CASE WHEN @CarNo<>'' THEN @CarNo ELSE ISNULL(CarNo,'') END
 		AND VW.CarTypeGroupCode=CASE WHEN @CarType<>'' THEN @CarType ELSE VW.CarTypeGroupCode END
-		--AND ISNULL(II.InsuranceLevel,3) = CASE WHEN @IDNO='' THEN 3 ELSE ISNULL(II.InsuranceLevel,3) END
-		--AND ISNULL(BOU.IDNO,'')=CASE WHEN @IDNO='' THEN ISNULL(BOU.IDNO,'') ELSE @IDNO END
+		AND VW.PROJID=@ProjID
 		ORDER BY PRICE DESC
 
 		DROP TABLE #TB_Car
