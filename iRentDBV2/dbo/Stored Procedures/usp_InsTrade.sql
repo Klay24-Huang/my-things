@@ -138,7 +138,12 @@ SET @amount          =ISNULL(@amount          ,0);
 			 BEGIN
 				INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken)VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken);
 			 END
-		  
+			
+				--20201230 ADD BY ADAM REASON.交易編號有機率漏掉，遇到空的要補資料
+				IF EXISTS(SELECT * FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo AND transaction_no='')
+				BEGIN
+					UPDATE TB_OrderDetail SET transaction_no=@MerchantTradeNo WHERE order_number=@OrderNo
+				END
 		 END
 		--寫入錯誤訊息
 		    IF @Error=1

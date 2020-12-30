@@ -126,6 +126,11 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 			END
 		END
 		 
+		 --20201230 ADD BY ADAM REASON.交易編號有機率漏掉，遇到空的要補資料
+		IF EXISTS(SELECT * FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo AND transaction_no='')
+		BEGIN
+			UPDATE TB_OrderDetail SET transaction_no=@MerchantTradeNo WHERE order_number=@OrderNo
+		END
 
 		--寫入錯誤訊息
 		    IF @Error=1
