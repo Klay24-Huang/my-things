@@ -369,6 +369,14 @@ namespace WebAPI.Controllers
                     //}
                     #endregion
 
+                    
+
+                    if (flag && Amount > 0)       //有錢才刷
+                    {
+                        WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                        flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+                    }
+
                     //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
                     //                            所以把存檔功能先提早完成再進行信用卡授權
                     if (flag)
@@ -385,12 +393,6 @@ namespace WebAPI.Controllers
                             RewardPoint = PayOutput.Reward;
                         }
                     }
-
-                    if (flag && Amount > 0)       //有錢才刷
-                    {
-                        WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                        flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-                    }                    
 
                     //20201201 ADD BY ADAM REASON.換電獎勵
                     if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
