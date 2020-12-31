@@ -150,10 +150,12 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				--找出被預約的車輛
 				IF OBJECT_ID('tempdb..#TB_OrderMain') IS NOT NULL DROP TABLE #TB_OrderMain
 				--SELECT order_number,IDNO,CarNo
-				SELECT DISTINCT CarNo	--排除重複以免造成問題
+				SELECT DISTINCT A.CarNo	--排除重複以免造成問題
 				INTO #TB_OrderMain
-				FROM TB_OrderMain WITH(NOLOCK)
+				FROM TB_OrderMain A WITH(NOLOCK)
+				JOIN TB_CarInfo I WITH(NOLOCK) ON A.CarNo=I.CarNo		--20201231 ADD BY ADAM REASON.排除車機未設定
 				WHERE 1=1
+				AND I.CID<>''				--20201231 ADD BY ADAM REASON.排除車機未設定
 				AND booking_status<5		--未完成合約
 				AND car_mgt_status<16		--未完成合約
 				AND cancel_status=0			--未刪除訂單
@@ -169,14 +171,17 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				SELECT A.nowStationID,A.CarType
 				INTO #BookingList
 				FROM (
-					SELECT nowStationID,CarType,TotalCount=COUNT(CarType) 
+					SELECT nowStationID,c.CarType,TotalCount=COUNT(c.CarType) 
 					FROM TB_Car c WITH(NOLOCK) 
 					JOIN @tb_StationID s ON c.nowStationID=s.StationID 
+					JOIN TB_CarInfo I WITH(NOLOCK) ON c.CarNo=I.CarNo		--20201231 ADD BY ADAM REASON.排除車機未設定
 					WHERE c.available < 2 
-					GROUP BY nowStationID,CarType
+					AND I.CID<>''		--20201231 ADD BY ADAM REASON.排除車機未設定
+					GROUP BY nowStationID,c.CarType
 					) AS A
 				JOIN (
-					SELECT  nowStationID,c.CarType,NGCount = COUNT(c.CarType) FROM TB_Car c WITH(NOLOCK)
+					SELECT  nowStationID,c.CarType,NGCount = COUNT(c.CarType) 
+					FROM TB_Car c WITH(NOLOCK)
 					JOIN #TB_OrderMain o ON c.CarNo = o.CarNo
 					GROUP BY nowStationID,c.CarType
 					) AS B ON A.nowStationID=B.nowStationID AND A.CarType=B.CarType
@@ -194,7 +199,6 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				--	--在此時間的專案會只剩特殊專案
 				--	DELETE FROM #TB_Project WHERE PROJID<>'R107'
 				--END
-
 
 				--20201023 ADD BY ADAM REASON.調整邏輯
 				SELECT  DISTINCT StationID		= C.nowStationID
@@ -227,7 +231,12 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務  20201206改為等級4就是停權
 						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
-				FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
+				--FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
+				--20201231 ADD BY ADAM REASON.排除車機未設定
+				FROM (SELECT nowStationID,c.CarType,CarOfArea,c.CarNo FROM TB_Car c WITH(NOLOCK) 
+						JOIN @tb_StationID s ON c.nowStationID=s.StationID 
+						JOIN TB_CarInfo I WITH(NOLOCK) ON c.CarNo=I.CarNo
+						WHERE c.available < 2 AND I.CID<>'') C
 				JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
 				JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=C.CarType
 				JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
