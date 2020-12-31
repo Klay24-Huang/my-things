@@ -203,7 +203,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,PRODESC				= P.PRODESC
 						,Price					= IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N) --平日	--2020-12-17 eason
 						,Price_H				= IIF(PD.PRICE_H>0 , PD.PRICE_H, P.PROPRICE_H) --假日	--2020-12-17 eason
-						,PriceBill              = dbo.FN_CalSpread(@SD, @ED, IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N), IIF(PD.PRICE>0 , PD.PRICE_H, P.PROPRICE_H))
+						,PriceBill              = dbo.FN_CarRentCompute(@SD, @ED, IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N), IIF(PD.PRICE>0 , PD.PRICE_H, P.PROPRICE_H), 10, 0)
 												+ (@TotalHours * ISNULL(MS.MilageBase,0)*20)
 												+ CASE WHEN @Insurance=1 THEN (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END) ELSE 0 END
 						,CarBrend				= D.CarBrend
