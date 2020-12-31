@@ -150,7 +150,8 @@ BEGIN TRY
 				  AND isDelete=0
 				  AND car_mgt_status=16
 				  AND booking_status=5
-				  AND YEAR(OrderDetail.final_start_time)=@ShowYear
+				  --AND YEAR(OrderDetail.final_start_time)=@ShowYear
+				AND OrderDetail.final_start_time > DATEADD(year,-1,dbo.GET_TWDATE())		--20210101 ADD BY ADAM REASON.歷史訂單跟著跨年，先改為一年內訂單
 				),
 			T2 AS (
 				SELECT COUNT(1) TotalCount FROM T
