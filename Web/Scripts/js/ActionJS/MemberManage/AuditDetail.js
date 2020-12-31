@@ -118,7 +118,9 @@ $(function () {
         //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
             console.log($(this).val());
-            Driver.push($(this).val());
+            if ($(this).val() != 'CarDriver1') {
+                Driver.push($(this).val());
+            }
         });
         if (AuditStatus != -1) {
             if (Driver.length == 0) {
