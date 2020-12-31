@@ -92,5 +92,6 @@ namespace Domain.TB.BackEnd
         /// MEMO
         /// </summary>
         public string MEMO { set; get; }
+        public string isBlock { set; get; }
     }
 }

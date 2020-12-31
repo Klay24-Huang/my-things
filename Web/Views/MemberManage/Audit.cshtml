@@ -263,6 +263,7 @@
                 <th scope="col">處理區分</th>
                 <th scope="col" style="width:150px;">審核備註</th>
                 <th scope="col">審核結果</th>
+                <th scope="col">黑名單</th>
                 <th data-sort-ignore="true">審核</th>
             </tr>
         </thead>
@@ -281,7 +282,7 @@
                 {
                 <tr>
                     <td data-sort="false"></td>
-                    <td scope="col">@(Convert.ToDateTime(lstData[i].IsNew=="1"?lstData[i].ApplyDate:lstData[i].ModifyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                    <td scope="col">@(Convert.ToDateTime(lstData[i].IsNew == "1" ? lstData[i].ApplyDate : lstData[i].ModifyDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
                     <td scope="col">@(lstData[i].MEMCNAME)</td>
                     <td scope="col">@(lstData[i].MEMIDNO)</td>
                     <td scope="col">@((lstData[i].SEX == "1") ? "男" : "女")</td>
@@ -304,8 +305,9 @@
                         }
                         @(AuditStr)
                     </td>
-                    <td scope="col" style="color:red;">@(lstData[i].MEMO.ToString().Replace(",",", "))</td>
+                    <td scope="col" style="color:red;">@(lstData[i].MEMO.ToString().Replace(",", ", "))</td>
                     <td scope="col">@(AuditResultStr)</td>
+                    <td scope="col">@(lstData[i].isBlock=="Y"?"是":"否")</td>
                     <td scope="col"><button name="btnAudit_@(i)" id="btnAudit_@(i)" onclick="GoDetail('@(lstData[i].MEMIDNO)')" class="btn btn-outline-info">審核</button></td>
                 </tr>
                 }
