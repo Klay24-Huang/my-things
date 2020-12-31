@@ -62,5 +62,11 @@ namespace WebAPI.Utils
             else
                 return default(T);
         }
+    
+        public static T2 TTMap<T1,T2>(T1 sour)
+        {
+            var re = JsonConvert.DeserializeObject<T2>(JsonConvert.SerializeObject(sour));
+            return re;
+        } 
     }
 }

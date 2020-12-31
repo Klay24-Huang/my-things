@@ -31,6 +31,10 @@
     if (Model != null)
     {
         obj = Model;
+        if (obj.detail.isBlock == "Y")
+        {
+            obj.block = new Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR172QueryData();
+        }
         if (obj.detail.IsNew == 0)
         {
             if (obj.Images.ID_1_IsNew == 2)
@@ -234,7 +238,7 @@
                                 中文姓名
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)"  @(obj.detail.MEMCNAME==""?"":"readonly") />
+                                <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)" @(obj.detail.MEMCNAME == "" ? "" : "readonly") />
                             </div>
                         </div>
                     </div>
@@ -807,7 +811,6 @@
                                                     身份證正面
                                                 </div>
                                                 <div class="col-md-4">
-                                                        <iframe src='@(obj.Images.ID_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_1)")' style="display:none;"></iframe>
                                                         <img id='ID_1_PIC' name='ID_1_PIC' src='@(obj.Images.ID_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_1)")' />
                                                     <span>@(ID_1_str)</span>
                                                     <span><br>@(obj.Images.ID_1_UPDTime)</span>
@@ -870,7 +873,6 @@
                                                     身份證反面
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.ID_2)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_2)")' style="display:none;"></iframe>
                                                     <img id="ID_2_PIC" name="ID_2_PIC" src="@(obj.Images.ID_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.ID_2)')" />   <span>@(ID_2_str)</span>
                                                     <span><br>@(obj.Images.ID_2_UPDTime)</span>
                                                 </div>
@@ -933,7 +935,6 @@
                                                     汽車駕照正面
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Car_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Car_1)")' style="display:none;"></iframe>
                                                     <img id="Car_1_PIC" name="Car_1_PIC" src="@(obj.Images.Car_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_1)')" />   <span>@(Car_1_str)</span>
                                                     <span><br>@(obj.Images.Car_1_UPDTime)</span>
                                                 </div>
@@ -995,7 +996,6 @@
                                                     汽車駕照反面
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Car_2)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Car_2)")' style="display:none;"></iframe>
                                                     <img id="Car_2_PIC" name="Car_2_PIC" src="@(obj.Images.Car_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_2)')" />   <span>@(Car_2_str)</span>
                                                     <span><br>@(obj.Images.Car_2_UPDTime)</span>
                                                 </div>
@@ -1058,7 +1058,6 @@
                                                     機車駕照正面
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Motor_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Motor_1)")' style="display:none;"></iframe>
                                                     <img id="Motor_1_PIC" name="Motor_1_PIC" src="@(obj.Images.Motor_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_1)')" />   <span>@(Motor_1_str)</span>
                                                     <span><br>@(obj.Images.Motor_1_UPDTime)</span>
                                                 </div>
@@ -1121,7 +1120,6 @@
                                                     機車駕照反面
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Motor_2)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Motor_2)")' style="display:none;"></iframe>
                                                     <img id="Motor_2_PIC" name="Motor_2_PIC" src="@(obj.Images.Motor_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_2)')" />   <span>@(Motor_2_str)</span>
                                                     <span><br>@(obj.Images.Motor_2_UPDTime)</span>
                                                 </div>
@@ -1184,7 +1182,6 @@
                                                     自拍照
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Self_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Self_1)")' style="display:none;"></iframe>
                                                     <img id="Self_1_PIC" name="Self_1_PIC" src="@(obj.Images.Self_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Self_1)')" />   <span>@(Self_1_str)</span>
                                                     <span><br>@(obj.Images.Self_1_UPDTime)</span>
                                                 </div>
@@ -1247,7 +1244,6 @@
                                                     簽名檔
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Signture_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Signture_1)")' style="display:none;"></iframe>
                                                     <img id="Signture_1_PIC" name="Signture_1_PIC" src="@(obj.Images.Signture_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Signture_1)')" />   <span>@(Signture_1_str)</span>
                                                     <span><br>@(obj.Images.Signture_1_UPDTime)</span>
                                                 </div>
@@ -1310,7 +1306,6 @@
                                                     法定代理人
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.F01)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.F01)")' style="display:none;"></iframe>
                                                     <img id="F01_PIC" name="F01_PIC" src="@(obj.Images.F01)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.F01)')" />   <span>@(F01_str)</span>
                                                     <span><br>@(obj.Images.F01_UPDTime)</span>
                                                 </div>
@@ -1373,7 +1368,6 @@
                                                     其他證件
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Other_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Other_1)")' style="display:none;"></iframe>
                                                     <img id="Other_1_PIC" name="Other_1_PIC" src="@(obj.Images.Other_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Other_1)')" />   <span>@(Other_1_str)</span>
                                                     <span><br>@(obj.Images.Other_1_UPDTime)</span>
                                                 </div>
@@ -1435,7 +1429,6 @@
                                                     企業用戶
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <iframe src='@(obj.Images.Business_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.Business_1)")' style="display:none;"></iframe>
                                                     <img id="Business_1_PIC" name="Business_1_PIC" src="@(obj.Images.Business_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Business_1)')" />   <span>@(Business_1_str)</span>
                                                     <span><br>@(obj.Images.Business_1_UPDTime)</span>
                                                 </div>
@@ -1494,6 +1487,7 @@
                                 </ul>
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn btn-info" id="btnAllCheckPIC" name="btnAllCheckPIC" style="position:absolute;left:20px;">全部通過</button>
                                 <button type="button" class="btn btn-info" id="btnSavePIC" name="btnSavePIC">儲存設定</button>
                                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
                                 <input type="hidden" name="tmpPicData" id="tmpPicData" value="" />

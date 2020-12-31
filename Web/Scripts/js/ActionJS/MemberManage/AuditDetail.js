@@ -61,9 +61,9 @@ $(function () {
     for (var i = 0; i < fieldLen; i++) {
         $("input[name='" + fieldName[i] + "_AuditStatus']").on("click", function () {
             var textName = $(this).attr("name").replace("AuditStatus", "RejectReason");
-            console.log(textName);
+            //console.log(textName);
             if ($(this).val() == "-1") {
-                console.log($(this).attr("name"));
+                //console.log($(this).attr("name"));
                 $("#" + textName).prop("readonly", "");
             } else {
                 $("#" + textName).val("");
@@ -71,6 +71,16 @@ $(function () {
             }
         });
     }
+
+    $('#btnAllCheckPIC').click(function () {
+        for (var i = 0; i < fieldLen; i++) {
+            //console.log("#" + fieldName[i] + "_AuditOK")
+            $("#" + fieldName[i] + "_AuditOK").prop("checked", true);
+            $("#" + fieldName[i] + "_RejectReason").val("");
+            $("#" + fieldName[i] + "_RejectReason").prop("readonly", "readonly");
+        }
+    });
+
     $("#btnSend").on("click", function () {
         ShowLoading("資料處理中…");
         Account = $("#Account").val();
@@ -108,7 +118,9 @@ $(function () {
         //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
             console.log($(this).val());
-            Driver.push($(this).val());
+            if ($(this).val() != 'CarDriver1') {
+                Driver.push($(this).val());
+            }
         });
         if (AuditStatus != -1) {
             if (Driver.length == 0) {
