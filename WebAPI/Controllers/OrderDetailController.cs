@@ -177,7 +177,9 @@ namespace WebAPI.Controllers
                             OperatorScore = orderFinishDataLists[0].OperatorScore,
                             ProjName = orderFinishDataLists[0].ProjName,
                             CarRentBill = orderFinishDataLists[0].pure_price,
-                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
+                            //TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
+                            TotalHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
+
                             MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),
                             GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),
                             PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
