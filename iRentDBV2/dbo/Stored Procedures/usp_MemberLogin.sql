@@ -104,6 +104,16 @@ BEGIN TRY
 	BEGIN
 		EXEC @Error=usp_GenerateToken @MEMIDNO ,	@DeviceID,@Rxpires_in,@Refrash_Rxpires_in,@LogID,@APPVersion,@APP,@Access_Token OUTPUT,@Refrash_Token OUTPUT,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
 	END
+
+	--鎖黑名單
+	IF EXISTS(SELECT MEMIDNO FROM TB_MemberDataBlock WITH(NOLOCK) WHERE MEMIDNO=@MEMIDNO AND CONVERT(VARCHAR,dbo.GET_TWDATE(),112) BETWEEN STADT AND ENDDT)
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR113';
+		SET @ErrorType=1;
+	END
+
+
 	--3.回傳基本資料
 	IF @Error=0
 	BEGIN
