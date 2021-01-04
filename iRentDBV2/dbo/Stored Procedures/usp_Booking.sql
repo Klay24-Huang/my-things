@@ -234,6 +234,14 @@ BEGIN TRY
 		SET @ErrorCode='ERR235'
 	END
 
+	--維修鎖定
+	--IF (@SD>=CAST('2020-12-24 03:00:00' AS DATETIME) AND @SD<=CAST('2020-12-24 05:00:00' AS DATETIME)) OR
+	--(@ED>=CAST('2020-12-24 03:00:00' AS DATETIME) AND @ED<=CAST('2020-12-24 05:00:00' AS DATETIME))
+	--BEGIN
+	--	SET @Error=1
+	--	SET @ErrorCode='ERR906'
+	--END
+
 	--跨年交通管制，X0IU、X0IF、X0LL、X1Q9這四站12/31 12:00-1/1 05:00，這區間內限制無法預約
 	IF @Error=0
 	BEGIN
@@ -247,7 +255,15 @@ BEGIN TRY
 			END
 		END
 	END
-
+	--2.6 卡會員狀態 20210104 ADD BY ADAM REASON.審核不通過不可預約
+	IF @Error=0
+	BEGIN
+		IF EXISTS(SELECT Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND Audit=2)
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+	END
 	--3.判斷有沒有車可預約
 	IF @Error=0
 	BEGIN

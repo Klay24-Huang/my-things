@@ -134,6 +134,18 @@ BEGIN TRY
 			END
 		END
 	END
+
+	--檢核會員狀態 20210104 ADD BY ADAM
+	IF @Error=0
+	BEGIN
+		--審核不通過不可取車
+		IF EXISTS(SELECT Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND Audit=2)
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR239';
+		END
+	END
+
 	IF @Error=0
 	BEGIN
 		SELECT @RentNowActiveType=ISNULL(RentNowActiveType,5),@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
@@ -141,8 +153,18 @@ BEGIN TRY
 		WHERE IDNO=@IDNO;
 		IF @RentNowActiveType NOT IN(0,5) AND @NowActiveOrderNum>0
 		BEGIN
-			SET @Error=1;
-			SET @ErrorCode='ERR172';
+			--20210104 ADD BY ADAM REASON.針對還在目前案件做判斷
+			IF EXISTS(SELECT order_number FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@NowActiveOrderNum AND car_mgt_status=16)
+			BEGIN
+				--已還車要更新
+				UPDATE TB_BookingStatusOfUser SET @NowActiveOrderNum=0 WHERE IDNO=@IDNO;
+				SET @NowActiveOrderNum=0;
+			END
+			ELSE
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR172';
+			END
 		END
 	END
 	IF @Error=0
@@ -204,6 +226,25 @@ BEGIN TRY
 				--設定可折抵金額
 				SELECT @TransferPrice = CASE WHEN @PrevRentPrice>=46 THEN 46 ELSE @PrevRentPrice END
 			END
+
+			-- 20201220 by EDWARD 因車機有時候回傳錯誤的[取車里程]，所以暫時查詢上一筆合約的還車里程來取代[取車里程]
+			declare @pre_end_mile float=0
+			set @pre_end_mile = isnull((select top 1 D.end_mile 
+										  from IRENT_V2..TB_OrderMain C with(nolock)
+										  join IRENT_V2..TB_OrderDetail D with(nolock) ON D.order_number=C.order_number
+										 where C.CarNo=@CarNo and D.final_start_time<@NowTime
+										 order by D.final_start_time desc),0)
+			--if (@NowMileage<>@pre_end_mile)
+			if @pre_end_mile>0 and ABS(@NowMileage-@pre_end_mile)>3  -- 差距超過3公里時才用上一筆合約的還車里程來取代
+			begin
+				set @SQLExceptionMsg = @CarNo+' ('+cast(@OrderNo as varchar)+') 錯誤的[取車里程]:'+cast(@NowMileage as varchar) +'=>'+cast(@pre_end_mile as varchar)
+				insert into TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
+				values (@FunName,'ErrMil',@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				-- select top 50 * from TB_ErrorLog with(nolock) where ErrorCode ='ErrMil' order by DTime desc
+				set @NowMileage=@pre_end_mile
+			end
+			-- end of 錯誤的[取車里程]
+
 
 			--寫入訂單明細
 			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile
