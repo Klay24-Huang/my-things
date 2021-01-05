@@ -462,7 +462,8 @@ function SetCityHasSelected(obj,selectValue,triggerObj,triggerObjSelectValue) {
         obj.val(selectValue);
     }
     triggerObj.empty();
-    if (AreaList.length > 0) {
+    //20210105 ADD BY ADAM REASON.排除地區為空的情況
+    if (AreaList.length > 0 && triggerObjSelectValue != "0") {
         
         var tmpArea = AreaList.filter(function (Area) { return Area.CityID == selectValue });
         var tmpAreaLen = tmpArea.length;

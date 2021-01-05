@@ -12,10 +12,12 @@ var Account = "";
 $(function () {
     Account = $("#Account").val();
 
-    if (CityID != "0" && AreaID != "0") {
+    //20210105 ADD BY ADAM REASON.city有值就綁定
+    //if (CityID != "0" && AreaID != "0") {
+    if (CityID != "0") {
         SetCityHasSelected($("#City"), CityID, $("#Area"), AreaID);
     } else {
-        if (CityID == 0) {
+        if (CityID == "0") {
             SetCity($("#City"));
         }
     }
