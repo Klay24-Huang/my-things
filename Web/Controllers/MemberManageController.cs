@@ -63,8 +63,12 @@ namespace Web.Controllers
             return View(lstData);
         }
         [HttpPost]
-        public ActionResult AuditDetail(string AuditIDNO)
+        public ActionResult AuditDetail(string AuditIDNO, string UserName)
         {
+            if (UserName != null && Session["Account"]!=null)
+            {
+                List<BE_AuditImage> lstAuditsxx = new MemberRepository(connetStr).UpdateMemberName(AuditIDNO, UserName, Session["Account"].ToString());
+            }
             string ImgURL = StorageBaseURL + credentialContainer + "/";
             string lsURL = ConfigurationManager.AppSettings["LS_FTP_URL_RESOLVE"];
             BE_AuditDetailCombind Data = new BE_AuditDetailCombind();

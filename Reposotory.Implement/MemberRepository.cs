@@ -306,6 +306,21 @@ namespace Reposotory.Implement
     
             return lstAudits;
         }
+        public List<BE_AuditImage> UpdateMemberName(string IDNO, string MEMNAME,string USERID)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditImage> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+            string term2 = "";
+            string SQL = " EXEC usp_BE_UpdateMemberName  '" + IDNO + "','"+ MEMNAME + "','" + USERID + "'";
+            int nowCount = 0;
+            lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
         /// <summary>
         /// 取得審核歷史
         /// </summary>

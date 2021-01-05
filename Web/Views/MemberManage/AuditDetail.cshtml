@@ -27,6 +27,7 @@
     string CarDriver = "", CarDriver1 = "", MotoDriver2 = "", MotorDriver1 = "";
     int MobileLen = 0;
     int HistoryLen = 0;
+    string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
 
     if (Model != null)
     {
@@ -238,7 +239,10 @@
                                 中文姓名
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)" @(obj.detail.MEMCNAME == "" ? "" : "readonly") />
+                                <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)"  />
+                            </div>
+                            <div class="col-md-3" style="display:@(obj.detail.MEMCNAME == "" || UPD_MEMBER_NAME_USER.IndexOf(Session["Account"].ToString().Trim() + ",") > -1 ? "" : "none")">
+                                <button type="submit" class="btn btn-primary">修改姓名</button>
                             </div>
                         </div>
                     </div>
@@ -251,6 +255,7 @@
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control" type="text" name="IDNO" id="IDNO" value="@(obj.detail.MEMIDNO)" readonly />
+                                <input type="hidden" name="AuditIDNO" id="AuditIDNO" value="@(obj.detail.MEMIDNO)" />
                             </div>
                             @*<div class="col-md-3">
                         <button type="button" class="btn btn-primary" id="btnShow" name="btnShow">快速預覽取車證件</button>
