@@ -377,6 +377,16 @@ namespace WebAPI.Controllers
                         flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                     }
 
+                    //20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
+                    if (flag)
+                    {
+                        bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                        if (CarFlag == false)
+                        {
+                            //寫入車機錯誤
+                        }
+                    }
+
                     //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
                     //                            所以把存檔功能先提早完成再進行信用卡授權
                     if (flag)
@@ -393,6 +403,8 @@ namespace WebAPI.Controllers
                             RewardPoint = PayOutput.Reward;
                         }
                     }
+
+
 
                     //20201201 ADD BY ADAM REASON.換電獎勵
                     if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
@@ -439,6 +451,8 @@ namespace WebAPI.Controllers
                         }
                     }
                     #endregion
+
+                    
 
                     //機車換電獎勵
                     if (flag)
@@ -700,14 +714,15 @@ namespace WebAPI.Controllers
                             //    }
                             //}
 
-                            if (apiInput.PayType == 0)
-                            {
-                                bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                                if (CarFlag == false)
-                                {
-                                    //寫入車機錯誤
-                                }
-                            }
+                            //20210101 ADD BY ADAM REASON.這段語法移到外面，目前常會遇到此段語法被跳過的
+                            //if (apiInput.PayType == 0)
+                            //{
+                            //    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                            //    if (CarFlag == false)
+                            //    {
+                            //        //寫入車機錯誤
+                            //    }
+                            //}
                         }
                     }
                     else
