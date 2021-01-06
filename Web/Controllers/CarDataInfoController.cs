@@ -592,33 +592,46 @@ namespace Web.Controllers
                     {
                         string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
                         string SPName = new ObjType().GetSPName(ObjType.SPType.ImportCarMachineData);
+                        //20210105_Eric_增加防呆，若全部空白則跳開
                         for (int i = 1; i <= sheetLen; i++)
                         {
-
-                            //20210105Eric加存放地點
-                            SPInput_BE_ImportCarMachineData data = new SPInput_BE_ImportCarMachineData()
+                            bool CheckNotAllNull = false;
+                            for(int j = 0; j < 5; j++)
                             {
-
-                                CID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                MobileNum = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                SIMCardNo = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
-                                deviceToken= sheet.GetRow(i).GetCell(3).ToString().Replace(" ", ""),
-                                depositary=sheet.GetRow(i).GetCell(4).ToString().Replace(" ",""),
-                                UserID = UserId,
-                                LogID = 0
-                            };
-
-
-                            if (flag)
-                            {
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SPInput_BE_ImportCarMachineData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
+                                if(false==string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {
-                                    errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    CheckNotAllNull = true;
+                                    break;
                                 }
+                            }
+                            if (CheckNotAllNull)
+                            {
+                                //20210105Eric加存放地點
+                                SPInput_BE_ImportCarMachineData data = new SPInput_BE_ImportCarMachineData()
+                                {
+
+                                    CID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    MobileNum = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                    SIMCardNo = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
+                                    deviceToken = sheet.GetRow(i).GetCell(3).ToString().Replace(" ", ""),
+                                    depositary = sheet.GetRow(i).GetCell(4).ToString().Replace(" ", ""),
+                                    UserID = UserId,
+                                    LogID = 0
+                                };
+
+
+                                if (flag)
+                                {
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SPInput_BE_ImportCarMachineData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
+                                }
+
                             }
 
                         }
