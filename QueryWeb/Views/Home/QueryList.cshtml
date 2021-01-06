@@ -57,9 +57,9 @@
                 <tbody>
                     @for (int i = 0; i < Len; i++)
                     {
-                        string kindName = (lstQuery[i].RateType == 0) ? "汽車-平日：" + lstQuery[i].WorkDayHours.ToString() + "小時" : "機車：" + (lstQuery[i].MotoTotalHours*60).ToString() + "分鐘";
-                        string alreadyUse = (lstQuery[i].RateType == 0) ? (lstQuery[i].WorkDayHours-lstQuery[i].NowWorkDayHours).ToString() + "小時" : ((lstQuery[i].MotoTotalHours-lstQuery[i].NowMotoTotalHours) * 60).ToString() + "分鐘";
-                        string nowHours = (lstQuery[i].RateType == 0) ? lstQuery[i].NowWorkDayHours.ToString() + "小時" : (lstQuery[i].NowMotoTotalHours*60).ToString()+"分鐘";
+                        string kindName = (lstQuery[i].RateType == 0) ? "汽車-平日：" + lstQuery[i].WorkDayHours.ToString() + "小時" : "機車：" + (lstQuery[i].MotoTotalHours).ToString() + "分鐘";
+                        string alreadyUse = (lstQuery[i].RateType == 0) ? (lstQuery[i].WorkDayHours-lstQuery[i].NowWorkDayHours).ToString() + "小時" : ((lstQuery[i].MotoTotalHours-lstQuery[i].NowMotoTotalHours) ).ToString() + "分鐘";
+                        string nowHours = (lstQuery[i].RateType == 0) ? lstQuery[i].NowWorkDayHours.ToString() + "小時" : (lstQuery[i].NowMotoTotalHours).ToString()+"分鐘";
                     <tr>
                         <td>@lstQuery[i].ProjNM</td>
                         <td>@lstQuery[i].StartDate.ToString("yyyy/MM/dd HH:mm")</td>
