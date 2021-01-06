@@ -762,7 +762,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_ContactFinish";
                     break;
                 case SPType.DonePayBack:
-                    SPName = "usp_DonePayBack";
+                    SPName = "usp_DonePayBack_V2";
                     break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";

@@ -469,10 +469,13 @@ namespace WebAPI.Controllers
                     {
                         NPR330Save_ID = NPR330Save_ID,
                         IDNO = IDNO,
+                        MerchantTradeNo = "",
+                        TaishinTradeNo = "",
                         Token = Access_Token,
                         LogID = LogID
                     };
                     apiInput.OrderNo = NPR330Save_ID.ToString();    //20201222 ADD BY ADAM REASON.欠費補上id
+                    PayInput.OrderNo = NPR330Save_ID;
                     string MSG = "";
                     //先取出要繳的費用
                     var sp_result = sp_ArrearsQueryByNPR330ID(NPR330Save_ID, LogID, ref MSG);
@@ -496,10 +499,15 @@ namespace WebAPI.Controllers
                             WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
 
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-                            if (flag)
+                            //if (flag)
+                            if (flag && WSAuthOutput.RtnCode == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
+                            {
+                                spInput_PayBack.MerchantTradeNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
+                                spInput_PayBack.TaishinTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
                                 flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
+                            }
 
-                            if (flag)
+                            if (flag && WSAuthOutput.RtnCode == "1000")
                             {
                                 HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
@@ -647,7 +655,8 @@ namespace WebAPI.Controllers
                             Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
                             {
                                 Amount = Amount.ToString() + "00",
-                                Name = string.Format("{0}租金", apiInput.OrderNo),
+                                //20210106 ADD BY ADAM REASON.切分租金跟補繳項目
+                                Name = apiInput.PayType == 0 ? string.Format("{0}租金", apiInput.OrderNo) : string.Format("{0}補繳", apiInput.OrderNo),
                                 NonPoint = "N",
                                 NonRedeem = "N",
                                 Price = Amount.ToString() + "00",
@@ -665,7 +674,8 @@ namespace WebAPI.Controllers
                                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                    MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),   //20201209 ADD BY ADAM REASON.財務又說要改回來
+                                    //MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),   //20201209 ADD BY ADAM REASON.財務又說要改回來
+                                    MerchantTradeNo = string.Format(apiInput.PayType == 0 ? "{0}F_{1}" : "{0}G_{1}", apiInput.PayType==0 ? tmpOrder.ToString() : PayInput.IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),     //20210106 ADD BY ADAM REASON.
                                     //MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyMMddHHmm")),      //20201130 ADD BY ADAM 因應短租財務長度20進行調整
                                     NonRedeemAmt = Amount.ToString() + "00",
                                     NonRedeemdescCode = "",

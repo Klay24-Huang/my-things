@@ -13,6 +13,8 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public int NPR330Save_ID { get; set; }
         public string IDNO { get; set; }
+        public string MerchantTradeNo { get; set; }     //20210106 ADD BY ADAM REASON.增加關聯存檔
+        public string TaishinTradeNo { get; set; }      //20210106 ADD BY ADAM REASON.增加關聯存檔
         public string Token { get; set; }
     }
 }
