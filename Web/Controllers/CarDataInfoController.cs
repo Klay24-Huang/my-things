@@ -572,7 +572,8 @@ namespace Web.Controllers
                     ISheet sheet = workBook.GetSheetAt(0);
                     int sheetLen = sheet.LastRowNum;
                     //20201207唐改大寫
-                    string[] field = { "車機編號", "門號(遠傳)", "卡號(遠傳)","DEVICETOKEN" };
+                    //20210105Eric加存放地點
+                    string[] field = { "車機編號", "門號(遠傳)", "卡號(遠傳)","DEVICETOKEN","存放地點" };
                     int fieldLen = field.Length;
                     //第一關，判斷位置是否相等
                     for (int i = 0; i < fieldLen; i++)
@@ -594,7 +595,7 @@ namespace Web.Controllers
                         for (int i = 1; i <= sheetLen; i++)
                         {
 
-
+                            //20210105Eric加存放地點
                             SPInput_BE_ImportCarMachineData data = new SPInput_BE_ImportCarMachineData()
                             {
 
@@ -602,6 +603,7 @@ namespace Web.Controllers
                                 MobileNum = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
                                 SIMCardNo = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
                                 deviceToken= sheet.GetRow(i).GetCell(3).ToString().Replace(" ", ""),
+                                depositary=sheet.GetRow(i).GetCell(4).ToString().Replace(" ",""),
                                 UserID = UserId,
                                 LogID = 0
                             };
