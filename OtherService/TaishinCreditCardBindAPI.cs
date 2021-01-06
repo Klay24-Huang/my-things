@@ -718,20 +718,37 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-            string[] tmp;
+            //string[] tmp;
+            string tmp="";
             Int64 tmpOrder = 0;
             int creditType = 99;
-            if (Input.RequestParams.MerchantTradeNo.IndexOf('F') > -1)
+            if (Input.RequestParams.MerchantTradeNo.IndexOf("F_") > -1)
             {
-                tmp = Input.RequestParams.MerchantTradeNo.Split('F');
-                tmpOrder = Convert.ToInt64(tmp[0]);
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("F_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                tmpOrder = Convert.ToInt64(tmp);
                 creditType = 0;
             }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf('P') > -1)
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("P_") > -1)
             {
-                tmp = Input.RequestParams.MerchantTradeNo.Split('P');
-                tmpOrder = Convert.ToInt64(tmp[0]);
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("P_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
                 creditType = 1;
+            }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("E_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("E_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                // tmpOrder = Convert.ToInt64(tmp);
+                creditType = 2;
+            }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("G_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("G_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
+                creditType = 3;
             }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
@@ -791,6 +808,7 @@ namespace OtherService
             //}
             try
             {
+                
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
                 byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
@@ -800,7 +818,7 @@ namespace OtherService
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
 
-
+                
 
                 //發出Request
                 string responseStr = "";
@@ -818,6 +836,8 @@ namespace OtherService
                     }
 
                 }
+                
+
             }
             catch (Exception ex)
             {
@@ -893,10 +913,20 @@ namespace OtherService
                     {
                         DateTime process;
                         DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate+ output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
-                        UpdInput.IsSuccess = 1;
-                        UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
+                        if (output.ResponseParams.ResultCode == "1000")
+                        {
+                            UpdInput.IsSuccess = 1;
+                            
+                        }
+                        else
+                        {
+                            UpdInput.IsSuccess = -1;
+
+                        }
+                        UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId == null ? "" : output.ResponseParams.ResultData.MemberId;
                         UpdInput.process_date = process;
                         UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.PayAmount) / 100;
+
                         //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
                         try
                         {
@@ -908,8 +938,9 @@ namespace OtherService
                             logger.Trace("更新刷卡結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
                         }
                         UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
-                        UpdInput.RetCode = output.RtnCode;
-                        UpdInput.RetMsg = output.RtnMessage;
+                        UpdInput.RetCode = output.ResponseParams.ResultCode;
+                        //UpdInput.RetMsg = output.RtnMessage;
+                        UpdInput.RetMsg = output.ResponseParams.ResultMessage;      //20210106 ADD BY ADAM REASON.
                         UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
                     }
                     else

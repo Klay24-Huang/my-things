@@ -499,15 +499,28 @@ namespace WebAPI.Controllers
                             WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
 
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-                            //if (flag)
-                            if (flag && WSAuthOutput.RtnCode == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
+
+                            string RTNCODE = "";
+                            string RESULTCODE = "";
+                            try
                             {
-                                spInput_PayBack.MerchantTradeNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
-                                spInput_PayBack.TaishinTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                                RTNCODE = WSAuthOutput.RtnCode == null ? "" : WSAuthOutput.RtnCode;
+                                RESULTCODE = WSAuthOutput.ResponseParams.ResultCode == null ? "" : WSAuthOutput.ResponseParams.ResultCode;
+                            }
+                            catch (Exception ex)
+                            { }
+
+                            
+
+                            //if (flag)
+                            if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
+                            {
+                                spInput_PayBack.MerchantTradeNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
+                                spInput_PayBack.TaishinTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
                                 flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
                             }
 
-                            if (flag && WSAuthOutput.RtnCode == "1000")
+                            if (flag && RTNCODE == "1000" && RESULTCODE == "1000")  //20210106 ADD BY ADAM REASON.有成功才呼叫
                             {
                                 HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
@@ -699,7 +712,13 @@ namespace WebAPI.Controllers
                             flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
 
                             logger.Trace("DoCreditCardAuthV2:" + JsonConvert.SerializeObject(WSAuthOutput));
-                            if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
+                            if (WSAuthOutput.RtnCode != "1000")
+                            {
+                                flag = false;
+                                errCode = "ERR197";
+                            }
+                            //修正錯誤偵測
+                            if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
                             {
                                 flag = false;
                                 errCode = "ERR197";
