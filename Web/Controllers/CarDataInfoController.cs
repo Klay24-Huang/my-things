@@ -332,36 +332,49 @@ namespace Web.Controllers
                         for (int i = 1; i <= sheetLen; i++)
                         {
 
-
-                            SPInput_BE_ImportMotoData data = new SPInput_BE_ImportMotoData()
+                            //20210105_Eric_增加防呆，若全部空白則跳開
+                            bool CheckNotAllNull = false;
+                            for (int j = 0; j < 8; j++)
                             {
-
-                                CarNo = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                TSEQNO = Convert.ToInt32(sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")),
-                                CarType = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "").PadLeft(6,'0'),
-                                Seat = Convert.ToInt16(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
-                                FactoryYear = sheet.GetRow(i).GetCell(4).ToString().Replace(" ", ""),
-                                CarColor = sheet.GetRow(i).GetCell(5).ToString().Replace(" ", ""),
-                                EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
-                                BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
-                                CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
-                                IsMotor=1,
-                                UserID = UserId,
-                                LogID = 0
-                            };
-
-
-                            if (flag)
-                            {
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SPInput_BE_ImportMotoData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
+                                if (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {
-                                    errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    CheckNotAllNull = true;
+                                    break;
                                 }
                             }
+                            if (CheckNotAllNull)
+                            {
+                                 SPInput_BE_ImportMotoData data = new SPInput_BE_ImportMotoData()
+                                {
+
+                                    CarNo = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    TSEQNO = Convert.ToInt32(sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")),
+                                    CarType = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "").PadLeft(6,'0'),
+                                    Seat = Convert.ToInt16(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                    FactoryYear = sheet.GetRow(i).GetCell(4).ToString().Replace(" ", ""),
+                                    CarColor = sheet.GetRow(i).GetCell(5).ToString().Replace(" ", ""),
+                                    EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
+                                    BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
+                                    CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
+                                    IsMotor=1,
+                                    UserID = UserId,
+                                    LogID = 0
+                                };
+
+
+                                if (flag)
+                                {
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SPInput_BE_ImportMotoData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
+                                }
+                            }
+                         
 
                         }
 
@@ -462,37 +475,49 @@ namespace Web.Controllers
                         string SPName = new ObjType().GetSPName(ObjType.SPType.ImportCarData);
                         for (int i = 1; i <= sheetLen; i++)
                         {
-
-
-                            SPInput_BE_ImportCarData data = new SPInput_BE_ImportCarData()
+                            //20210105_Eric_增加防呆，若全部空白則跳開
+                            bool CheckNotAllNull = false;
+                            for (int j = 0; j < 8; j++)
                             {
-
-                                CarNo = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                TSEQNO = Convert.ToInt32(sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")),
-                                CarType = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "").PadLeft(6, '0'),
-                                Seat = Convert.ToInt16(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
-                                FactoryYear = sheet.GetRow(i).GetCell(4).ToString().Replace(" ", ""),
-                                CarColor = sheet.GetRow(i).GetCell(5).ToString().Replace(" ", ""),
-                                EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
-                                BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
-                                CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
-                                IsMotor = 0,
-                                UserID = UserId,
-                                LogID = 0
-                            };
-
-
-                            if (flag)
-                            {
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SPInput_BE_ImportCarData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
+                                if (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {
-                                    errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    CheckNotAllNull = true;
+                                    break;
                                 }
                             }
+                            if (CheckNotAllNull)
+                            {
+                                SPInput_BE_ImportCarData data = new SPInput_BE_ImportCarData()
+                                {
+
+                                    CarNo = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    TSEQNO = Convert.ToInt32(sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")),
+                                    CarType = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "").PadLeft(6, '0'),
+                                    Seat = Convert.ToInt16(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                    FactoryYear = sheet.GetRow(i).GetCell(4).ToString().Replace(" ", ""),
+                                    CarColor = sheet.GetRow(i).GetCell(5).ToString().Replace(" ", ""),
+                                    EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
+                                    BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
+                                    CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
+                                    IsMotor = 0,
+                                    UserID = UserId,
+                                    LogID = 0
+                                };
+
+
+                                if (flag)
+                                {
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SPInput_BE_ImportCarData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
+                                }
+                            }
+                         
 
                         }
 
