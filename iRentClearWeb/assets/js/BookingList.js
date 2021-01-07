@@ -95,8 +95,7 @@ function doReturnCar(UserName) {
         SendObj.outcarPic = $("#hidoutcarPic").val();
         SendObj.outcarPicType = $("#hidoutcarPicType").val();
         var jdata = JSON.stringify( SendObj );
-        console.log(jdata);
-        return;
+ 
         $.ajax({
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
@@ -1200,10 +1199,10 @@ function SetLock(CID, deviceToken, Action) {
     var userName = $('#Account').val();
     console.log(userName);
     var obj = new Object();
-    obj.CID = machineNo;
+    obj.CID = CID;
     obj.deviceToken = deviceToken;
     obj.UserId = $("#Account").val();
-    if (machineNo.length > 4) {
+    if (CID.length > 4) {
         obj.IsCens = 1;
     
     } else {
