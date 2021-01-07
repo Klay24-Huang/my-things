@@ -16,6 +16,7 @@ $(function () {
     //if (CityID != "0" && AreaID != "0") {
     if (CityID != "0") {
         SetCityHasSelected($("#City"), CityID, $("#Area"), AreaID);
+        SetArea($("#Area"), $("#City").val())
     } else {
         if (CityID == "0") {
             SetCity($("#City"));
@@ -176,6 +177,12 @@ $(function () {
             if (InvoiceType == "0") {
                 flag = false;
                 errMsg = "請選擇發票寄送方式";
+            }
+        }
+        if (flag) {
+            if ($.trim(Area) == "") {
+                flag = false;
+                errMsg = "請輸入地區";
             }
         }
         if (flag) {
@@ -403,17 +410,17 @@ function setData() {
             Image:''
         });
     }
-    ObjList[0].Image = $("#ID_1_PIC").attr('src');
-    ObjList[1].Image = $("#ID_2_PIC").attr('src');
-    ObjList[2].Image = $("#Car_1_PIC").attr('src');
-    ObjList[3].Image = $("#Car_2_PIC").attr('src');
-    ObjList[4].Image = $("#Motor_1_PIC").attr('src');
-    ObjList[5].Image = $("#Motor_2_PIC").attr('src');
-    ObjList[6].Image = $("#Self_1_PIC").attr('src');
-    ObjList[7].Image = $("#F01_PIC").attr('src');
-    ObjList[8].Image = $("#Other_1_PIC").attr('src');
-    ObjList[9].Image = $("#Business_1_PIC").attr('src');
-    ObjList[10].Image = $("#Signture_1_PIC").attr('src');
+    ObjList[0].Image = $("#ID_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#ID_1_PIC").attr('src').substr($("#ID_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#ID_1_PIC").attr('src');
+    ObjList[1].Image = $("#ID_2_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#ID_2_PIC").attr('src').substr($("#ID_2_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#ID_2_PIC").attr('src');
+    ObjList[2].Image = $("#Car_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Car_1_PIC").attr('src').substr($("#Car_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Car_1_PIC").attr('src');
+    ObjList[3].Image = $("#Car_2_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Car_2_PIC").attr('src').substr($("#Car_2_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Car_2_PIC").attr('src');
+    ObjList[4].Image = $("#Motor_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Motor_1_PIC").attr('src').substr($("#Motor_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Motor_1_PIC").attr('src');
+    ObjList[5].Image = $("#Motor_2_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Motor_2_PIC").attr('src').substr($("#Motor_2_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Motor_2_PIC").attr('src');
+    ObjList[6].Image = $("#Self_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Self_1_PIC").attr('src').substr($("#Self_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Self_1_PIC").attr('src');
+    ObjList[7].Image = $("#F01_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#F01_PIC").attr('src').substr($("#F01_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#F01_PIC").attr('src');
+    ObjList[8].Image = $("#Other_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Other_1_PIC").attr('src').substr($("#Other_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Other_1_PIC").attr('src');
+    ObjList[9].Image = $("#Business_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Business_1_PIC").attr('src').substr($("#Business_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Business_1_PIC").attr('src');
+    ObjList[10].Image = $("#Signture_1_PIC").attr('src').toUpperCase().indexOf('FTP') > -1 ? $("#Signture_1_PIC").attr('src').substr($("#Signture_1_PIC").attr('src').toUpperCase().indexOf('FTP'), 8000) : $("#Signture_1_PIC").attr('src');
 
     Obj = new Object();
     Obj.ID_1 = 1;
