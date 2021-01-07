@@ -287,16 +287,11 @@ namespace WebAPI.Models.BillFunc
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
                         if (motoMonth.Count > 0)
                         {
-                            re.UseMonthMode = true;
                             int UseLen = motoMonth.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
                                 re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId, 0, 0, Convert.ToInt32(motoMonth[i].MotoTotalHours), sour.LogID, ref errCode); //寫入記錄
                             }
-                        }
-                        else
-                        {
-                            re.UseMonthMode = false;
                         }
                     }
                     else
