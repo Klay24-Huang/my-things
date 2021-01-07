@@ -119,21 +119,22 @@ namespace WebAPI.Controllers
                 try
                 {
 
-                if(apiInput.RequestParams.CardToken != null)
-                {
-                    if (apiInput.RequestParams.CardToken != "")
+                    if (apiInput.RequestParams.CardToken != null && apiInput.RequestParams.CardStatus != null)
                     {
-                        objparms[0] = new
+                        if (apiInput.RequestParams.CardToken != "" && apiInput.RequestParams.CardStatus == "1")
                         {
-                            BankNo = apiInput.RequestParams.BankNo,
-                            CardNumber = apiInput.RequestParams.CardNumber,
-                            CardName = apiInput.RequestParams.CardName,
-                            AvailableAmount = "",
-                            CardToken = apiInput.RequestParams.CardToken
-                        };
+                            objparms[0] = new
+                            {
+                                BankNo = apiInput.RequestParams.BankNo,
+                                CardNumber = apiInput.RequestParams.CardNumber,
+                                CardName = apiInput.RequestParams.CardName,
+                                AvailableAmount = "",
+                                CardToken = apiInput.RequestParams.CardToken
+                            };
                         }
                     }
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     logger.Trace("setRequestParams Error:" + ex.Message);
                 }
