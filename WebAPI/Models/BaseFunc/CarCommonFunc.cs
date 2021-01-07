@@ -2073,25 +2073,25 @@ namespace WebAPI.Models.BaseFunc
                         }
                         #endregion
                         #region 判斷是否在據點內
-                        if (flag)
-                        {
-                            Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                            {
-                                Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
-                                Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
-                            };
-                            flag = CheckInPolygon(Nowlatlng, StationID);
-                            #region 快樂模式
-                            if (ClosePolygonOpen == "0")
-                            {
-                                flag = true;
-                            }
-                            #endregion
-                            if (false == flag)
-                            {
-                                errCode = "ERR188";
-                            }
-                        }
+                        //if (flag)
+                        //{
+                        //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                        //    {
+                        //        Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
+                        //        Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
+                        //    };
+                        //    flag = CheckInPolygon(Nowlatlng, StationID);
+                        //    #region 快樂模式
+                        //    if (ClosePolygonOpen == "0")
+                        //    {
+                        //        flag = true;
+                        //    }
+                        //    #endregion
+                        //    if (false == flag)
+                        //    {
+                        //        errCode = "ERR188";
+                        //    }
+                        //}
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
@@ -2207,25 +2207,25 @@ namespace WebAPI.Models.BaseFunc
                                 }
                                 #endregion
                                 #region 判斷是否在據點內
-                                if (flag)
-                                {
-                                    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                                    {
-                                        Latitude = info.Latitude,
-                                        Longitude = info.Longitude
-                                    };
-                                    flag = CheckInPolygon(Nowlatlng, StationID);
-                                    #region 快樂模式
-                                    if (ClosePolygonOpen == "0")
-                                    {
-                                        flag = true;
-                                    }
-                                    #endregion
-                                    if (false == flag)
-                                    {
-                                        errCode = "ERR188";
-                                    }
-                                }
+                                //if (flag)
+                                //{
+                                //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                                //    {
+                                //        Latitude = info.Latitude,
+                                //        Longitude = info.Longitude
+                                //    };
+                                //    flag = CheckInPolygon(Nowlatlng, StationID);
+                                //    #region 快樂模式
+                                //    if (ClosePolygonOpen == "0")
+                                //    {
+                                //        flag = true;
+                                //    }
+                                //    #endregion
+                                //    if (false == flag)
+                                //    {
+                                //        errCode = "ERR188";
+                                //    }
+                                //}
                                 #endregion
                             }
 
@@ -2402,26 +2402,26 @@ namespace WebAPI.Models.BaseFunc
                             }
                             #endregion
                             #region 判斷是否在據點內
-                            if (flag)
-                            {
-                                Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                                {
-                                    Latitude = info.Latitude,
-                                    Longitude = info.Longitude
-                                };
-                                flag = CheckInPolygon(Nowlatlng, StationID);
-                                #region 快樂模式
-                                if (ClosePolygonOpen == "0")
-                                {
-                                    flag = true;
-                                }
-                                #endregion
-                                if (false == flag)
-                                {
-                                    errCode = "ERR188";
-                                }
+                            //if (flag)
+                            //{
+                            //    Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                            //    {
+                            //        Latitude = info.Latitude,
+                            //        Longitude = info.Longitude
+                            //    };
+                            //    flag = CheckInPolygon(Nowlatlng, StationID);
+                            //    #region 快樂模式
+                            //    if (ClosePolygonOpen == "0")
+                            //    {
+                            //        flag = true;
+                            //    }
+                            //    #endregion
+                            //    if (false == flag)
+                            //    {
+                            //        errCode = "ERR188";
+                            //    }
 
-                            }
+                            //}
                             #endregion
                         }
                         if (flag)

@@ -95,7 +95,7 @@ function doReturnCar(UserName) {
         SendObj.outcarPic = $("#hidoutcarPic").val();
         SendObj.outcarPicType = $("#hidoutcarPicType").val();
         var jdata = JSON.stringify( SendObj );
-  
+ 
         $.ajax({
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
