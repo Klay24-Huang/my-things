@@ -180,7 +180,9 @@ namespace WebAPI.Controllers
                     SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
                     OrderDataLists = new List<OrderQueryFullData>();
                     DataSet ds = new DataSet();
-                    flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
+                    flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref ds, ref lstError);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                        OrderDataLists = objUti.ConvertToList<OrderQueryFullData>(ds.Tables[0]);
                     baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
                     //判斷訂單狀態
                     if (flag)
