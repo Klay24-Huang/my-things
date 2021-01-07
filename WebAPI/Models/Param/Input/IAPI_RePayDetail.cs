@@ -29,10 +29,18 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 重計價模式 0:只算租金 1:租金+月租(暫不開)
         /// </summary>
-        public int RePayMode { set; get; }
+        public int RePayMode { set; get; } = 0;
         /// <summary>
-        /// 是否儲存結果
+        /// 是否儲存最後結果,1存,0不存
         /// </summary>
-        public int IsSave { set; get; }
+        public int IsSave { set; get; } = 0;
+        /// <summary>
+        /// 月租是否存檔,1存,0不存
+        /// </summary>
+        public int IsMontnSave { get; set; } = 0;
+        /// <summary>
+        /// 是否輸出json
+        /// </summary>
+        public int jsonOut { get; set; } = 0;
     }
 }

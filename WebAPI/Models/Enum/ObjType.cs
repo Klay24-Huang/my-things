@@ -371,6 +371,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMemberMobile,
             /// <summary>
+            /// 取得重新計價資料
+            /// </summary>
+            GetRePayList,
+            /// <summary>
             /// 重新計價
             /// </summary>
             CalFinalPrice_Re,
@@ -856,6 +860,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberMobile:    //取得會員手機號碼
                     SPName = "usp_GetMemberMobile";
+                    break;
+                case SPType.GetRePayList:
+                    SPName = "usp_GetRePayList_Q01";
                     break;
                 case SPType.CalFinalPrice_Re:   //重新計算租金 20201224 ADD BY ADAM 
                     SPName = "usp_CalFinalPrice_Re";
