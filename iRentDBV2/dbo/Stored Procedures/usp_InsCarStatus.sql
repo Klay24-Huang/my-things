@@ -128,7 +128,8 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 					,[LockStatus]=@LockStatus,[IndoorLightStatus]=@LightStatus,[SecurityStatus]=@SecurityStatus,[Speed]=@SPEED,[Volt]=@Volt
 					,[Latitude]=@Lat,[Longitude]=@Lng,[Millage]=@Milage,[extDeviceStatus2]=@iButton,[extDeviceData3]=@iButtonKey,UPDTime=@NowTime
 					,[extDeviceStatus1]=@OrderStatus
-				WHERE CID=@MachineNo AND @GPSTime>[GPSTime]
+				WHERE CID=@MachineNo 
+					  --AND @GPSTime>[GPSTime]	--20210107因GPSTime回傳資料有異常(2032年)，會造成後續不會更新，所以不比對GPSTime
 			END
 			--寫入rawdata
 					INSERT INTO TB_CarRawData([CID],deviceType,[ACCStatus],[GPSStatus],[GPSTime]
