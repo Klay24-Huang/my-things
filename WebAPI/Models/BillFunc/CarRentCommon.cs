@@ -474,7 +474,7 @@ namespace WebAPI.Models.BillFunc
         public OBIZ_InCheck InCheck(IBIZ_InCheck sour)
         {
             var re = new OBIZ_InCheck();
-            re.flag = true;
+            re.flag = true;            
             var baseVerify = new CommonFunc();
 
             if (string.IsNullOrWhiteSpace(sour.OrderNo))
@@ -524,6 +524,19 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        /// <summary>
+        /// 避免db回傳0
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public OrderQueryFullData dbValeFix(OrderQueryFullData sour)
+        {
+            sour.MaxPrice = sour.MaxPrice == 0 ? 300 : sour.MaxPrice;
+            sour.MinuteOfPrice = Convert.ToSingle(sour.MinuteOfPrice == 0 ? 1.5 : sour.MinuteOfPrice);
+            sour.PRICE = sour.PRICE == 0 ? 99 : sour.PRICE;
+            sour.PRICE_H = sour.PRICE_H == 0 ? 168 : sour.PRICE_H;
+            return sour;
+        }
     }
 
     public class CarRentRepo: BaseRepository

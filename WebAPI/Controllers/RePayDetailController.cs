@@ -212,8 +212,6 @@ namespace WebAPI.Controllers
                 {
                     flag = inck_re.flag;
                     errCode = inck_re.errCode;
-                    errMsg = inck_re.errMsg;
-                    lstError = inck_re.lstError;
                     Discount = inck_re.Discount;
                     tmpOrder = inck_re.longOrderNo;
                 }
@@ -485,8 +483,8 @@ namespace WebAPI.Controllers
                 if (flag && apiInput.RePayMode == 1)
                 {
                     var item = OrderDataLists[0];
+                    item = cr_com.dbValeFix(item);
                     var motoDayMaxMins = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
-
                     var input = new IBIZ_MonthRent()
                     {
                         IDNO = IDNO,

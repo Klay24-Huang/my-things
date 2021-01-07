@@ -536,6 +536,9 @@ namespace WebAPI.Models.BillFunc
 
             dre = dre > 0 ? dre : 0;
 
+            re.useMonthDiscW = m_wDisc;
+            re.useMonthDiscH = m_hDisc;
+
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
 
             return re;
@@ -789,6 +792,9 @@ namespace WebAPI.Models.BillFunc
             }
 
             dre = dre > 0 ? dre : 0;
+
+            re.useMonthDiscW = m_wDisc;
+            re.useMonthDiscH = m_hDisc;
 
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
 
@@ -3473,6 +3479,14 @@ namespace WebAPI.Models.BillFunc
         /// 使用月租折抵點數
         /// </summary>
         public double useMonthDisc { get; set; }
+        /// <summary>
+        /// 使用月租平日折扣
+        /// </summary>
+        public double useMonthDiscW { get; set; }
+        /// <summary>
+        /// 使用月租假日折扣
+        /// </summary>
+        public double useMonthDiscH { get; set; }
         /// <summary>
         /// 剩餘月租點數
         /// </summary>

@@ -129,11 +129,8 @@ namespace WebAPI.Controllers
                 {
                     flag = inck_re.flag;
                     errCode = inck_re.errCode;
-                    errMsg = inck_re.errMsg;
-                    lstError = inck_re.lstError;
                     Discount = inck_re.Discount;
                     tmpOrder = inck_re.longOrderNo;
-
                 }
 
                 //不開放訪客
@@ -452,8 +449,8 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     var item = OrderDataLists[0];
+                    item = cr_com.dbValeFix(item);
                     var motoDayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
-
                     var input = new IBIZ_MonthRent()
                     {
                         IDNO = IDNO,
@@ -689,7 +686,6 @@ namespace WebAPI.Controllers
                         //gift_motor_point = apiInput.MotorDiscount,
                         gift_point = gift_point,
                         gift_motor_point = gift_motor_point,
-
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,

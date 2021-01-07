@@ -1169,8 +1169,8 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 var item = OrderDataLists[0];
+                item = cr_com.dbValeFix(item);
                 var motoDayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
-
                 var input = new IBIZ_MonthRent()
                 {
                     IDNO = IDNO,
