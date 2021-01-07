@@ -6,6 +6,7 @@
     [UUID]         VARCHAR (30)   DEFAULT ('') NULL,
     [NFCIsOpen]    INT            DEFAULT ((0)) NOT NULL, 
     [deviceToken] VARCHAR(1024) NOT NULL DEFAULT '', 
+    [depositary]   NVARCHAR(255) NOT NULL DEFAULT N'',
       [last_Opt] [NVARCHAR](10) NOT NULL DEFAULT 'SYS',
 	[MKTime] [datetime] NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()),
 	[UPDTime] [datetime] NULL, 
@@ -44,3 +45,12 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'車機機�
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'PK', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_CarMachine', @level2type = N'COLUMN', @level2name = N'CarMachineID';
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'存放地點',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_CarMachine',
+    @level2type = N'COLUMN',
+    @level2name = N'depositary'

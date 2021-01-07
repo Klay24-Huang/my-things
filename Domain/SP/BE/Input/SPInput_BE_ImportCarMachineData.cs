@@ -25,6 +25,11 @@ namespace Domain.SP.BE.Input
         /// 遠傳車機編號
         /// </summary>
         public string deviceToken { set; get; }
+        //20210105Eric加存放地點
+        /// <summary>
+        /// 存放地點
+        /// </summary>
+        public string depositary { set; get; }
         /// <summary>
         /// 操作者
         /// </summary>

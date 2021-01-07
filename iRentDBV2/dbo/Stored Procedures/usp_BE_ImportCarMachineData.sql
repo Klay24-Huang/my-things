@@ -40,7 +40,8 @@
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/16 下午 02:49:49    |  Eric|          First Release
+** 2020/10/16|  Eric      |          First Release
+** 2021/01/05|  Eric      |			增加@depositary存放地點             
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_ImportCarMachineData]
@@ -48,6 +49,7 @@ CREATE PROCEDURE [dbo].[usp_BE_ImportCarMachineData]
 	@MobileNum              VARCHAR(50)           ,
 	@SIMCardNo              VARCHAR(128)          ,
 	@deviceToken            VARCHAR(128)          ,
+	@depositary             NVARCHAR(255)         ,
 	@UserID                 NVARCHAR(10)          ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -83,6 +85,7 @@ SET @CID      =ISNULL(@CID      ,'');
 SET @MobileNum=ISNULL(@MobileNum,'');
 SET @SIMCardNo=ISNULL(@SIMCardNo,'');
 SET @UserID   =ISNULL(@UserID   ,'');
+SET @depositary=ISNULL(@depositary,'');
 
 		BEGIN TRY
 
@@ -120,7 +123,7 @@ SET @UserID   =ISNULL(@UserID   ,'');
 				SET @MobileID=@@IDENTITY;
 				IF @MobileID>0
 				BEGIN
-					INSERT INTO TB_CarMachine(MachineNo,MobileID,deviceToken,last_Opt,UPDTime)VALUES(@CID,@MobileID,@deviceToken,@UserID,@NowTime);
+					INSERT INTO TB_CarMachine(MachineNo,MobileID,deviceToken,depositary,last_Opt,UPDTime)VALUES(@CID,@MobileID,@deviceToken,@depositary,@UserID,@NowTime);
 				END
 				ELSE
 				BEGIN
