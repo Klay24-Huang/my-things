@@ -135,11 +135,11 @@ BEGIN TRY
 		END
 	END
 
-	--檢核會員狀態 20210104 ADD BY ADAM
+	--檢核會員狀態
 	IF @Error=0
 	BEGIN
 		--審核不通過不可取車
-		IF EXISTS(SELECT Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND Audit=2)
+		IF EXISTS(SELECT Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND (Audit=2 OR HasCheckMobile=0))
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode='ERR239';
