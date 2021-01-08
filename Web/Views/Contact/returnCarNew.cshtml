@@ -18,6 +18,7 @@
         obj = Model.Data;
         if (Model.CredentialImage != null)
         {
+            /*
             if (obj.car_mgt_status >= 2)
             {
                 outSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
@@ -26,6 +27,10 @@
             {
                 inSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
             }
+            */
+            //20210108唐改，上面的if都進不去，造成簽名檔路徑沒被設定。所以我直接拿掉if判斷，反正兩個圖設定都一樣
+            outSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
+            inSign = StorageBaseURL + CredentialContainer + "/" + (Model.CredentialImage.AlreadyType == 11 ? Model.CredentialImage.AlreadyFile : Model.CredentialImage.CrentialsFile);
         }
     }
 }
