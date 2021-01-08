@@ -28,31 +28,31 @@ namespace Domain.TB
         /// <summary>
         /// 汽車平日剩餘時數
         /// </summary>
-         public float WorkDayHours {set;get;}
+        public float WorkDayHours { set; get; } = 0;
         /// <summary>
         /// 汽車假日剩餘時數
         /// </summary>
-         public float HolidayHours {set;get;}
+        public float HolidayHours { set; get; } = 0;
         /// <summary>
         /// 機車剩餘總時數
         /// </summary>
-         public float MotoTotalHours {set;get;} 
+        public float MotoTotalHours { set; get; } = 0;
         /// <summary>
         /// 汽車平日優惠費率
         /// </summary>
-         public float WorkDayRateForCar {set;get;} 
+        public float WorkDayRateForCar { set; get; } = 0;
         /// <summary>
         /// 汽車假日優惠費率
         /// </summary>
-         public float HoildayRateForCar {set;get;} 
+        public float HoildayRateForCar { set; get; } = 0;
         /// <summary>
         /// 機車平日優惠費率
         /// </summary>
-         public float WorkDayRateForMoto {set;get;} 
+        public float WorkDayRateForMoto { set; get; } = 0;
         /// <summary>
         /// 機車假日優惠費率
         /// </summary>
-         public float HoildayRateForMoto {set;get;} 
+        public float HoildayRateForMoto { set; get; } = 0;
         /// <summary>
         /// 開始時間
         /// </summary>

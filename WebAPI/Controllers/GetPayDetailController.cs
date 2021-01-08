@@ -476,14 +476,17 @@ namespace WebAPI.Controllers
                         flag = mon_re.flag;
                         UseMonthMode = mon_re.UseMonthMode;
                         outputApi.IsMonthRent = mon_re.IsMonthRent;
-                        carInfo = mon_re.carInfo;
-                        Discount = mon_re.useDisc;
-                        monthlyRentDatas = mon_re.monthlyRentDatas;
+                        if (UseMonthMode)
+                        {
+                            carInfo = mon_re.carInfo;
+                            Discount = mon_re.useDisc;
+                            monthlyRentDatas = mon_re.monthlyRentDatas;
 
-                        if(ProjType == 4)
-                          outputApi.Rent.CarRental = mon_re.CarRental;//機車用
-                        else
-                          CarRentPrice += mon_re.CarRental;//汽車用
+                            if (ProjType == 4)
+                                outputApi.Rent.CarRental = mon_re.CarRental;//機車用
+                            else
+                                CarRentPrice += mon_re.CarRental;//汽車用
+                        }
                     }
 
                 }

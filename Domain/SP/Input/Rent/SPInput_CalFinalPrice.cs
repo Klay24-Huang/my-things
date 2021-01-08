@@ -43,6 +43,16 @@ namespace Domain.SP.Input.Rent
         public int gift_motor_point { get; set; } = 0;
 
         /// <summary>
+        /// 使用的月租平日時數（含機車）
+        /// </summary>
+        public double monthly_workday { get; set; } = 0;
+
+        /// <summary>
+        /// 使用的月租假日時數
+        /// </summary>
+        public double monthly_holiday { get; set; } = 0;
+
+        /// <summary>
         /// ETAG費用
         /// </summary>
         public int Etag { set; get; } = 0;
