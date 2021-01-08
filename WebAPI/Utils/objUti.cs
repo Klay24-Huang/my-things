@@ -26,7 +26,14 @@ namespace WebAPI.Utils
                         if (columnNames.Contains(pro.Name))
                         {
                             PropertyInfo pI = objT.GetType().GetProperty(pro.Name);
-                            pro.SetValue(objT, row[pro.Name] == DBNull.Value ? null : Convert.ChangeType(row[pro.Name], pI.PropertyType));
+                            var oType =  pI.PropertyType; 
+                            if (oType == typeof(string))
+                                pro.SetValue(objT, row[pro.Name] == DBNull.Value ? "" : Convert.ChangeType(row[pro.Name], pI.PropertyType));
+                            else
+                            {
+                                var defv = Activator.CreateInstance(oType);
+                                pro.SetValue(objT, row[pro.Name] == DBNull.Value ? defv : Convert.ChangeType(row[pro.Name], pI.PropertyType));
+                            } 
                         }
                     }
                     return objT;
