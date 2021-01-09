@@ -645,6 +645,15 @@ namespace WebAPI.Models.BillFunc
         public string errMsg { get; set; } 
         public string errCode { get; set; }
         public List<ErrorInfo> lstError { get; set; }
+
+        //20210109 ADD BY ADAM REASON.增加constructor
+        public BIZ_CRBase()
+        {
+            flag = false;
+            errMsg = "";
+            errCode = "000000";
+            lstError = new List<ErrorInfo>();
+        }
     }
     public class IBIZ_TokenCk
     {
