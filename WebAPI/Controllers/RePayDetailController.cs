@@ -256,6 +256,12 @@ namespace WebAPI.Controllers
 
                 #endregion
 
+                if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                {
+                    var item = OrderDataLists[0];
+                    motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
+                    ProjType = item.ProjType;
+                }
             }
             #endregion
 
@@ -334,6 +340,22 @@ namespace WebAPI.Controllers
                             car_outPrice = car_re.car_outPrice;
                         }
                     }
+                }
+                #endregion
+
+                #region 補outputApi
+                if (flag)
+                {
+                    if (ProjType == 4)
+                    {
+                        var MaxPrice = OrderDataLists[0].MaxPrice > 0 ? OrderDataLists[0].MaxPrice : 300;
+                        var motoMaxMins = Convert.ToDouble(MaxPrice) / Convert.ToDouble(motoBaseMins);
+                        var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, motoMaxMins, new List<Holiday>());
+                        if (xre != null)
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));
+                    }
+                    else
+                        TotalRentMinutes = car_payAllMins;
                 }
                 #endregion
 

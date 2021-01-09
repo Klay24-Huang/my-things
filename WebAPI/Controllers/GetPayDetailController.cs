@@ -195,7 +195,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 if (OrderDataLists != null && OrderDataLists.Count() > 0)
-                    motoBaseMins = OrderDataLists[0].BaseMinutes > 0 ? OrderDataLists[0].BaseMinutes : motoBaseMins;
+                {
+                    var item = OrderDataLists[0];
+                    motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;                   
+                    ProjType = item.ProjType;
+                }
             }
             #endregion
 
@@ -291,6 +295,22 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                #endregion
+
+                #region 補outputApi
+                if (flag)
+                {
+                    if (ProjType == 4)
+                    {
+                        var MaxPrice = OrderDataLists[0].MaxPrice > 0 ? OrderDataLists[0].MaxPrice : 300;
+                        var motoMaxMins = Convert.ToDouble(MaxPrice) / Convert.ToDouble(motoBaseMins);
+                        var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, motoMaxMins, new List<Holiday>());
+                        if (xre != null)
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));
+                    }
+                    else
+                        TotalRentMinutes = car_payAllMins;
+                }
                 #endregion
 
                 #region 與短租查時數
@@ -685,10 +705,10 @@ namespace WebAPI.Controllers
                         mileage_price = outputApi.Rent.MileageRent,
                         Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
                         fine_price = outputApi.Rent.OvertimeRental,
-                        //gift_point = apiInput.Discount,
-                        //gift_motor_point = apiInput.MotorDiscount,
                         gift_point = gift_point,
                         gift_motor_point = gift_motor_point,
+                        //monthly_workday = carInfo.useMonthDiscW,
+                        //monthly_holiday = carInfo.useMonthDiscH,
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,

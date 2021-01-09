@@ -3397,7 +3397,9 @@ namespace WebAPI.Models.BillFunc
             double days = 0;
             double hours = 0;
             double mins = 0;
-            var proTys = new List<int>() { 0, 3, 4 };
+            double dayBasMins = 0;
+            double dayMaxMins = 0;
+            var proTys = new List<int>() { 0, 3, 4 };            
 
             if (sd == null || ed == null || sd > ed)
                 throw new Exception(funNM + "sd,ed 格式錯誤");
@@ -3405,43 +3407,88 @@ namespace WebAPI.Models.BillFunc
             if (!proTys.Any(x => x == ProjType))
                 throw new Exception(funNM + "ProjType 錯誤");
 
-            var bill = new BillCommon();
+            var vsd = Convert.ToDateTime(sd.ToString("yyyy-MM-dd HH:mm"));
+            var ved = Convert.ToDateTime(ed.ToString("yyyy-MM-dd HH:mm"));
+            var vMins = ved.Subtract(vsd).TotalMinutes;
+            var vDays = ved.Subtract(vsd).TotalDays;
 
             if (ProjType == 4)
             {
-                double dayBasMins = 6;
-                double dayMaxMins = 200;
-                var xre = bill.GetMotoRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
-                if (xre != null)
+                double firstDayMaxMins = 199;
+                dayBasMins = 6;
+                dayMaxMins = 200;
+
+                if(vDays > 1)
                 {
-                    var allMins = xre.Item1;
-                    if (allMins > 0)
+                    days += 1;
+                    vsd = vsd.AddDays(1);//去除首日
+                    var xre = GetMotoRangeMins(vsd, ved, dayBasMins, dayMaxMins, new List<Holiday>());
+                    if (xre != null)
                     {
-                        days = Math.Floor(allMins / dayMaxMins);
-                        var h_mins = allMins % dayMaxMins;
-                        hours = Math.Floor(h_mins / 60);
-                        mins = h_mins % 60;
+                        var vre = GetTimePart(xre.Item1, dayMaxMins);
+                        if (vre != null)
+                        {
+                            days += vre.Item1;
+                            hours = vre.Item2;
+                            mins = vre.Item3;
+                        }
+                    }
+                }
+                else
+                {
+                    if(vMins >= 199)
+                    {
+                        days = 1;
+                        hours = 0;
+                        mins = 0;
+                    }
+                    else
+                    {
+                        var vre = GetTimePart(vMins, firstDayMaxMins);
+                        days = vre.Item1;
+                        hours = vre.Item2;
+                        mins = vre.Item3;
                     }
                 }
             }
             else if (ProjType == 0 || ProjType == 3)
             {
-                double dayBasMins = 60;
-                double dayMaxMins = 600;
-                var xre = bill.GetCarRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
+                dayBasMins = 60;
+                dayMaxMins = 600;
+                var xre = GetCarRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
                 if (xre != null)
                 {
-                    var allMins = xre.Item1;
-                    if (allMins > 0)
+                    var vre = GetTimePart(xre.Item1, dayMaxMins);
+                    if(vre != null)
                     {
-                        days = Math.Floor(allMins / dayMaxMins);
-                        var h_mins = allMins % dayMaxMins;
-                        hours = Math.Floor(h_mins / 60);
-                        mins = h_mins % 60;
+                        days = vre.Item1;
+                        hours = vre.Item2;
+                        mins = vre.Item3;
                     }
                 }
             }
 
+            return new Tuple<double, double, double>(days, hours, mins);
+        }
+
+        /// <summary>
+        /// 取得幾天幾小時幾分
+        /// </summary>
+        /// <param name="allMins"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <returns></returns>
+        public Tuple<double, double, double> GetTimePart(double allMins, double dayMaxMins)
+        {
+            double days = 0;
+            double hours = 0;
+            double mins = 0;
+            if (allMins > 0)
+            {
+                days = Math.Floor(allMins / dayMaxMins);
+                var h_mins = allMins % dayMaxMins;
+                hours = Math.Floor(h_mins / 60);
+                mins = h_mins % 60;                    
+            }         
             return new Tuple<double, double, double>(days, hours, mins);
         }
     }

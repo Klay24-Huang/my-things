@@ -148,20 +148,130 @@ namespace WebAPI.Controllers
                         int useHour = Convert.ToInt32(total - orderFinishDataLists[0].GiftPoint - orderFinishDataLists[0].GiftMotorPoint - (orderFinishDataLists[0].MonthlyHours * 60));
                         BillCommon billComm = new BillCommon();
                         var GiftPoint = orderFinishDataLists[0].GiftPoint + orderFinishDataLists[0].GiftMotorPoint;
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(GiftPoint), ref gd, ref gh, ref gm);
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].MonthlyHours * 60), ref md, ref mh, ref mm);
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
-                        billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
+                        //billComm.CalMinuteToDayHourMin(Convert.ToInt32(GiftPoint), ref gd, ref gh, ref gm);
+                        //billComm.CalMinuteToDayHourMin(Convert.ToInt32(orderFinishDataLists[0].MonthlyHours * 60), ref md, ref mh, ref mm);
+                        //billComm.CalMinuteToDayHourMin(Convert.ToInt32(useHour), ref ud, ref uh, ref um);
+                        //billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
                         float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
 
                         var item = orderFinishDataLists[0];
                         var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
                         if(xre != null)
                         {
-                            ud = Convert.ToInt32(xre.Item1);
-                            uh = Convert.ToInt32(xre.Item2);
-                            um = Convert.ToInt32(xre.Item3);
+                            td = Convert.ToInt32(xre.Item1);
+                            th = Convert.ToInt32(xre.Item2);
+                            tm = Convert.ToInt32(xre.Item3);
                         }
+                        if(item.MonthlyHours > 0)
+                        {
+                            if(item.ProjType == 4)
+                            {
+                                var vre = billComm.GetTimePart(item.MonthlyHours, 200);
+                                md = Convert.ToInt32(Math.Floor(vre.Item1));
+                                mh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                mm = Convert.ToInt32(Math.Floor(vre.Item3));
+                            }
+                            else
+                            {
+                                var vre = billComm.GetTimePart(item.MonthlyHours*60, 600);
+                                md = Convert.ToInt32(Math.Floor(vre.Item1));
+                                mh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                mm = Convert.ToInt32(Math.Floor(vre.Item3));
+                            }
+                        }
+                        if(item.GiftPoint > 0 || item.GiftMotorPoint > 0)
+                        {
+                            if (item.ProjType == 4)
+                            {
+                                var allPoints = item.GiftPoint + item.GiftMotorPoint;
+                                var vre = billComm.GetTimePart(allPoints, 200);
+                                gd = Convert.ToInt32(Math.Floor(vre.Item1));
+                                gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                            }
+                            else
+                            {
+                                var vre = billComm.GetTimePart(item.GiftPoint, 600);
+                                gd = Convert.ToInt32(Math.Floor(vre.Item1));
+                                gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                            }
+                        }
+
+                        #region 折扣完剩餘日時分
+
+                        int vtd = td;
+                        int vth = th;
+                        int vtm = tm;
+
+                        double oriPayMins = 0;
+                        double lastPayMins = 0;
+                        if(item.ProjType == 4)
+                        {
+                            if(vtd > 1)
+                            {
+                                oriPayMins += 199;
+                                vtd -= 1;
+                                oriPayMins += vtd * 200;
+                                oriPayMins += vth * 60;
+                                oriPayMins += vtm;
+                            }
+                            else
+                            {
+                                oriPayMins += vth * 60;
+                                oriPayMins += vtm;
+                            }
+                            lastPayMins = oriPayMins - (md + gd) * 200 - (mh + gh) * 60 - (mm + gm);                           
+                        }
+                        else
+                        {
+                            oriPayMins += vtd * 600;
+                            oriPayMins += vth * 60;
+                            oriPayMins += vtm;
+                            lastPayMins = oriPayMins - (md + gd) * 600 - (mh + gh) * 60 - (mm + gm);
+                        }
+                        lastPayMins = lastPayMins < 0 ? 0 : lastPayMins;
+                        if(lastPayMins > 0)
+                        {
+                            double laPayMins = lastPayMins;
+                            if(item.ProjType == 4)
+                            {
+                                if(laPayMins >= 199)
+                                {
+                                    laPayMins -= 199;//去除首日
+                                    ud += 1;
+                                    var vre = billComm.GetTimePart(laPayMins, 200);
+                                    if(vre != null)
+                                    {
+                                        ud += Convert.ToInt32(Math.Floor(vre.Item1));
+                                        uh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                        um = Convert.ToInt32(Math.Floor(vre.Item3));
+                                    }
+                                }
+                                else
+                                {
+                                    var vre = billComm.GetTimePart(laPayMins, 199);
+                                    if (vre != null)
+                                    {
+                                        ud = Convert.ToInt32(Math.Floor(vre.Item1));
+                                        uh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                        um = Convert.ToInt32(Math.Floor(vre.Item3));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var vre = billComm.GetTimePart(laPayMins, 600);
+                                if (vre != null)
+                                {
+                                    ud = Convert.ToInt32(Math.Floor(vre.Item1));
+                                    uh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                    um = Convert.ToInt32(Math.Floor(vre.Item3));
+                                }
+                            }
+                        }
+
+                        #endregion
 
                         outputApi = new OAPI_OrderDetail()
                         {
@@ -177,12 +287,12 @@ namespace WebAPI.Controllers
                             OperatorScore = orderFinishDataLists[0].OperatorScore,
                             ProjName = orderFinishDataLists[0].ProjName,
                             CarRentBill = orderFinishDataLists[0].pure_price,
-                            //TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),
-                            TotalHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
 
-                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),
-                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),
-                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),
+                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),//未折抵計費時數
+                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),//月租折抵
+                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),//點數折抵
+                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),//折抵計費時數
+
                             MileageBill = orderFinishDataLists[0].mileage_price,
                             InsuranceBill = orderFinishDataLists[0].Insurance_price,
                             EtagBill = orderFinishDataLists[0].Etag,
@@ -229,6 +339,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }   
-    
     }
 }
