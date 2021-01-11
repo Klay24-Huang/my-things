@@ -588,7 +588,9 @@ namespace WebAPI.Models.Enum
             #endregion
 
             GetOrderAuthList,
-            UpdateOrderAuthList
+            UpdateOrderAuthList,
+            GetOrderAuthReturnList,
+            UpdateOrderAuthReturnList
         }
         /// <summary>
         /// 取出SPName
@@ -875,6 +877,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UpdateOrderAuthList:   //更新批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_UpdateOrderAuthList";
+                    break;
+                case SPType.GetOrderAuthReturnList:   //取得批次授權明細 20210108 ADD BY JERRY 
+                    SPName = "usp_GetOrderAuthReturnList";
+                    break;
+                case SPType.UpdateOrderAuthReturnList:   //更新批次授權明細 20210108 ADD BY JERRY 
+                    SPName = "usp_UpdateOrderAuthReturnList";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

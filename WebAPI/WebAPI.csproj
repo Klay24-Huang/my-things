@@ -229,6 +229,7 @@
     <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
+    <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
     <Compile Include="Controllers\GetMemberInvoiceSettingController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
@@ -593,8 +594,11 @@
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
