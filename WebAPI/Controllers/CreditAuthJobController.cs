@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
                         OrderNo = OrderAuthList[i].order_number.ToString()
                     };
 
-                    Amount = OrderAuthList[0].final_price;
+                    Amount = OrderAuthList[i].final_price;
                     WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                     if (Amount > 0)       //有錢才刷
                     {
