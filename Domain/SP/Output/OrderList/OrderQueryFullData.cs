@@ -233,4 +233,33 @@ namespace Domain.SP.Output.OrderList
         public int HoildayPrice { get; set; }
         #endregion
     }
+
+
+
+    /// <summary>
+    /// 批次授權明細
+    /// </summary>
+    public class OrderAuthList
+    {
+        /// <summary>
+        /// 批次授權序號
+        /// </summary>
+        public int authSeq { set; get; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int order_number { set; get; }
+        /// <summary>
+        /// 授權金額
+        /// </summary>
+        public int final_price { set; get; }
+        /// <summary>
+        /// 會員編號
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
+        /// CardToken
+        /// </summary>
+        public string CardToken { set; get; }
+    }
 }

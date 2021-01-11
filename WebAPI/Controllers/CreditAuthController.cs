@@ -370,12 +370,12 @@ namespace WebAPI.Controllers
                     #endregion
 
                     
-
-                    if (flag && Amount > 0)       //有錢才刷
-                    {
-                        WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                        flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-                    }
+                    //Mark By Jerry 改為排程取款
+                    //if (flag && Amount > 0)       //有錢才刷
+                    //{
+                    //    WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                    //    flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+                    //}
 
                     //20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
                     if (flag)

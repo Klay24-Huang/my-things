@@ -21,4 +21,13 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public string Token { set; get; }
     }
+
+
+    public class SPInput_GetOrderAuthList : SPInput_Base
+    {
+        /// <summary>
+        /// 逾時重送時間
+        /// </summary>
+        public int MINUTES { set; get; }
+    }
 }

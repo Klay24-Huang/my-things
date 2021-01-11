@@ -229,6 +229,7 @@
     <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
+    <Compile Include="Controllers\CreditAuthJobController.cs" />
     <Compile Include="Controllers\GetMemberInvoiceSettingController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />

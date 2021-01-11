@@ -586,6 +586,9 @@ namespace WebAPI.Models.Enum
             #region 整備人員
             MA_CheckCarStatusByReturn,
             #endregion
+
+            GetOrderAuthList,
+            UpdateOrderAuthList
         }
         /// <summary>
         /// 取出SPName
@@ -760,7 +763,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CalFinalPrice";
                     break;
                 case SPType.DonePayRentBill:
-                    SPName = "usp_DonePayRentBill";
+                    SPName = "usp_DonePayRentBillNew";
                     break;
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";
@@ -866,6 +869,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.CalFinalPrice_Re:   //重新計算租金 20201224 ADD BY ADAM 
                     SPName = "usp_CalFinalPrice_Re";
+                    break;
+                case SPType.GetOrderAuthList:   //取得批次授權明細 20210108 ADD BY JERRY 
+                    SPName = "usp_GetOrderAuthList";
+                    break;
+                case SPType.UpdateOrderAuthList:   //更新批次授權明細 20210108 ADD BY JERRY 
+                    SPName = "usp_UpdateOrderAuthList";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

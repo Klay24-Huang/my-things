@@ -25,4 +25,37 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public string Token { set; get; }
     }
+
+
+    public class SPInput_UpdateOrderAuthList : SPInput_Base
+    {
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public Int64 authSeq { set; get; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int AuthFlg { set; get; }
+        /// <summary>
+        /// 身份證
+        /// </summary>
+        public string AuthCode { set; get; }
+        /// <summary>
+        /// 身份證
+        /// </summary>
+        public string AuthMessage { set; get; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public Int64 OrderNo { set; get; }
+        /// <summary>
+        /// 金流交易序號
+        /// </summary>
+        public string transaction_no { set; get; }
+        /// <summary>
+        /// 金流交易序號
+        /// </summary>
+        public int Reward { set; get; }
+    }
 }
