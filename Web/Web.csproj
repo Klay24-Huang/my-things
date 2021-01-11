@@ -344,7 +344,9 @@
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainByDiscount.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfCar.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfCarNew.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfMotor.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainOfMotorNew.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMotorDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactSetting.js" />
@@ -654,6 +656,8 @@
     <Content Include="Views\News\NewsList.cshtml" />
     <Content Include="Views\Manage\InsCleanOrder.cshtml" />
     <Content Include="Views\MemberManage\ChangePassword.cshtml" />
+    <Content Include="Views\ContactManage\ContactMaintainOfMotorNew.cshtml" />
+    <Content Include="Views\ContactManage\ContactMaintainOfCarNew.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

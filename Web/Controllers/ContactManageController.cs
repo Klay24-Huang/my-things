@@ -533,10 +533,26 @@ namespace Web.Controllers
             return View();
         }
         /// <summary>
+        /// 新版合約修改-機車(2021)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactMaintainOfMotorNew()
+        {
+            return View();
+        }
+        /// <summary>
         /// 汽車合約修改
         /// </summary>
         /// <returns></returns>
         public ActionResult ContactMaintainOfCar()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 新版合約修改-汽車(2021)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactMaintainOfCarNew()
         {
             return View();
         }
