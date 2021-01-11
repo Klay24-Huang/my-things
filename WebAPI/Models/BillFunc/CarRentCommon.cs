@@ -557,6 +557,48 @@ namespace WebAPI.Models.BillFunc
             return mHis;
         }
     
+        public List<OrderQueryFullData> GetOrders(string orderNos)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            var re = new List<OrderQueryFullData>();
+
+            if (!string.IsNullOrWhiteSpace(orderNos))
+            {
+                string SQL = "select o.order_number[OrderNo], o.ProjType, o.start_time, o.stop_time, o.init_price from TB_OrderMain o where o.order_number in (" + orderNos + ")";
+                re = GetObjList<OrderQueryFullData>(ref flag, ref lstError, SQL, null, "");
+            }
+            return re;
+        }
+
+        public bool SetInitPriceByOrderNo(OrderQueryFullData sour) 
+        {
+            bool flag = true;
+            string SQL = "";
+
+            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE OrderNo = " + sour.OrderNo.ToString() ;
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+
+        public bool AddErrLog(string FunName, string ErrorCode, int ErrType, int SQLErrorCode, string SQLErrorDesc)
+        {
+            if (string.IsNullOrWhiteSpace(FunName))
+                FunName = "x";
+            if (string.IsNullOrWhiteSpace(ErrorCode))
+                FunName = "x";
+            if (string.IsNullOrWhiteSpace(SQLErrorDesc))
+                FunName = "x";
+
+            bool flag = true;
+            string SQL = "";
+            SQL = "INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])";
+            SQL += " VALUES ('" + FunName + "'," +
+                "'" + ErrorCode + "'," + ErrType.ToString() + "," + SQLErrorCode.ToString() + "," +
+                "'" + SQLErrorDesc + "',9999,1)";                
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
     }
 
     public class IBIZ_GetPayDetail

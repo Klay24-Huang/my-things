@@ -339,6 +339,7 @@ namespace WebAPI.Controllers
                         {
                             if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
                             {
+
                                 flag = false;
                                 errCode = "ERR207";
                             }
@@ -352,6 +353,18 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR303";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(errCode))
+                        {
+                            List<string> errCk = new List<string>() { "ERR207", "ERR303" };
+                            if(errCk.Any(x=>x == errCode))
+                            {
+                                string bugMsg = JsonConvert.SerializeObject(apiInput) 
+                                    + "TotalRentMinutes : " + TotalRentMinutes 
+                                    + "Discount : " + Discount;
+                                new CarRentRepo(connetStr).AddErrLog(funName, errCode, 1, 1, bugMsg);
+                            }
                         }
 
                     }
