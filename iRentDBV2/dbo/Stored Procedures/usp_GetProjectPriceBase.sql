@@ -101,10 +101,11 @@ BEGIN TRY
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
-		WHERE VW.SPCLOCK='Z' 
+		WHERE VW.PROJID=@ProjID
 		AND ISNULL(CarNo,'') = CASE WHEN @CarNo<>'' THEN @CarNo ELSE ISNULL(CarNo,'') END
 		AND VW.CarTypeGroupCode=CASE WHEN @CarType<>'' THEN @CarType ELSE VW.CarTypeGroupCode END
-		AND VW.PROJID=@ProjID
+		-- 因應多專案，此條件非必要
+		--AND VW.SPCLOCK='Z' 
 		ORDER BY PRICE DESC
 
 		DROP TABLE #TB_Car
