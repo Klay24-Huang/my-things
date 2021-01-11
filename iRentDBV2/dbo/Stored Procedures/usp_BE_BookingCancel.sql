@@ -96,104 +96,122 @@ SET @tmpOrderNum=0;
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @UserID=ISNULL(@UserID,'');
 
-		BEGIN TRY
-
+BEGIN TRY
+	IF @UserID=''  OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @UserID=''  OR @OrderNo=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-			SET @Descript=CONCAT(N'後台操作【取消訂單】，操作者【',@UserID,'】');
-			BEGIN TRAN
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SET @Descript=CONCAT(N'後台操作【取消訂單】，操作者【',@UserID,'】');
+		BEGIN TRAN
 	
-		     SELECT @tmpOrderNum=COUNT(order_number)  FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND (car_mgt_status=0 AND cancel_status=0 AND booking_status<3);
+		SELECT @tmpOrderNum=COUNT(order_number) 
+		FROM TB_OrderMain WITH(NOLOCK) 
+		WHERE order_number=@OrderNo AND (car_mgt_status=0 AND cancel_status=0 AND booking_status<3);
 		  
-		   IF @tmpOrderNum=0
-		   BEGIN
-		      SET @Error=1;
-			  SET @ErrorCode='ERR129'
-			   ROLLBACK TRAN;
-		   END
-		   ELSE
-		   BEGIN
-				IF @Error=0
-				 BEGIN
-					SELECT @IDNO=IDNO FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
-
-					SELECT @NormalRentBookingNowCount=ISNULL([NormalRentBookingNowCount],0)
-								,@AnyRentBookingNowCount=ISNULL([AnyRentBookingNowCount],0)
-								,@MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount],0)
-								,@RentNowActiveType=ISNULL(RentNowActiveType,5)
-								,@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
-					FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
-					WHERE IDNO=@IDNO;
-				 END
-
-		       UPDATE TB_OrderMain SET cancel_status=5 WHERE  order_number=@OrderNo
-			  IF @@ROWCOUNT=1
-			  BEGIN
-			    COMMIT TRAN;
-				     SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo
-			        FROM TB_OrderMain WITH(NOLOCK)
-			        WHERE order_number=@OrderNo;
-				   INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-				 --  UPDATE Car_201607 SET available=1 WHERE car_id=@CarNo;
-				  -- SELECT @RstationID=return_place,@ProjID=premium FROM TB_BookingMain_201609 WHERE order_number=@OrderNum;
-
-					UPDATE TB_CarInfo SET RentCount=RentCount-1 WHERE CarNo=@CarNo AND RentCount>0;
-
-					--更新總表
-					IF @ProjType=0
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser] SET  [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,NormalRentBookingCancelCount=NormalRentBookingCancelCount+1 WHERE IDNO=@IDNO AND NormalRentBookingNowCount>0;
-					END
-					ELSE IF @ProjType=3
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser] SET  [AnyRentBookingNowCount]=0,AnyRentBookingCancelCount=AnyRentBookingCancelCount+1 WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
-					END
-					ELSE IF @ProjType=4
-					BEGIN
-						UPDATE [TB_BookingStatusOfUser] SET  MotorRentBookingNowCount=0,MotorRentBookingCancelCount=MotorRentBookingCancelCount+1 WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
-					END
-
-
-			  END
-			  ELSE
-			  BEGIN
-			     SET @Error=1;
-				 SET @ErrorCode='ERR132'
-				  ROLLBACK TRAN;
-			  END
-		   END 
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
+		IF @tmpOrderNum=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR129'
+			ROLLBACK TRAN;
+		END
+		ELSE
+		BEGIN
+			IF @Error=0
 			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+				SELECT @IDNO=IDNO,@ProjType=ProjType FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
+
+				SELECT @NormalRentBookingNowCount=ISNULL([NormalRentBookingNowCount],0)
+					,@AnyRentBookingNowCount=ISNULL([AnyRentBookingNowCount],0)
+					,@MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount],0)
+					,@RentNowActiveType=ISNULL(RentNowActiveType,5)
+					,@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
+				FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
+				WHERE IDNO=@IDNO;
 			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
+
+			UPDATE TB_OrderMain SET cancel_status=5 WHERE  order_number=@OrderNo;
+
+			IF @@ROWCOUNT=1
 			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
+				COMMIT TRAN;
+				SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo
+				FROM TB_OrderMain WITH(NOLOCK)
+				WHERE order_number=@OrderNo;
+
+				INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+				VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
+				--  UPDATE Car_201607 SET available=1 WHERE car_id=@CarNo;
+				-- SELECT @RstationID=return_place,@ProjID=premium FROM TB_BookingMain_201609 WHERE order_number=@OrderNum;
+
+				UPDATE TB_CarInfo 
+				SET RentCount=RentCount-1,
+					UPDTime=@NowTime 
+				WHERE CarNo=@CarNo AND RentCount>0;
+
+				--更新總表
+				IF @ProjType=0
+				BEGIN
+					UPDATE [TB_BookingStatusOfUser] 
+					SET [NormalRentBookingNowCount]=[NormalRentBookingNowCount]-1,
+						NormalRentBookingCancelCount=NormalRentBookingCancelCount+1,
+						UPDTime=@NowTime
+					WHERE IDNO=@IDNO AND NormalRentBookingNowCount>0;
+				END
+				ELSE IF @ProjType=3
+				BEGIN
+					UPDATE [TB_BookingStatusOfUser] 
+					SET [AnyRentBookingNowCount]=0,
+						AnyRentBookingCancelCount=AnyRentBookingCancelCount+1,
+						UPDTime=@NowTime
+					WHERE IDNO=@IDNO AND [AnyRentBookingNowCount]>0;
+				END
+				ELSE IF @ProjType=4
+				BEGIN
+					UPDATE [TB_BookingStatusOfUser] 
+					SET MotorRentBookingNowCount=0,
+						MotorRentBookingCancelCount=MotorRentBookingCancelCount+1,
+						UPDTime=@NowTime 
+					WHERE IDNO=@IDNO AND MotorRentBookingNowCount>0;
+				END
 			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+			ELSE
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR132'
+				ROLLBACK TRAN;
+			END
+		END 
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_BookingCancel';
