@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
             var inApi = new IAPI_RePayDetailAll();
             var outApi = new OAPI_RePayDetailAll();
             var objOutput = new Dictionary<string, object>();    //輸出
-            string errMsg = "ok";            
+            string errMsg = "ok";
             #endregion
 
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -184,6 +184,7 @@ namespace WebAPI.Controllers
             int gift_point = 0;//使用時數(汽車)
             int gift_motor_point = 0;//使用時數(機車)
             int motoBaseMins = 6;//機車基本分鐘數
+            int motoMaxMins = 200;//機車單日最大分鐘數 
             int carBaseMins = 60;//汽車基本分鐘數
             #endregion
 
@@ -348,8 +349,6 @@ namespace WebAPI.Controllers
                 {
                     if (ProjType == 4)
                     {
-                        var MaxPrice = OrderDataLists[0].MaxPrice > 0 ? OrderDataLists[0].MaxPrice : 300;
-                        var motoMaxMins = Convert.ToDouble(MaxPrice) / Convert.ToDouble(motoBaseMins);
                         var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, motoMaxMins, new List<Holiday>());
                         if (xre != null)
                             TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));

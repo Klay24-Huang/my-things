@@ -103,6 +103,7 @@ namespace WebAPI.Controllers
             int gift_point = 0;//使用時數(汽車)
             int gift_motor_point = 0;//使用時數(機車)
             int motoBaseMins = 6;//機車基本分鐘數
+            int motoMaxMins = 200;//機車單日最大分鐘數
             int carBaseMins = 60;//汽車基本分鐘數
 
             #endregion
@@ -302,11 +303,9 @@ namespace WebAPI.Controllers
                 {
                     if (ProjType == 4)
                     {
-                        var MaxPrice = OrderDataLists[0].MaxPrice > 0 ? OrderDataLists[0].MaxPrice : 300;
-                        var motoMaxMins = Convert.ToDouble(MaxPrice) / Convert.ToDouble(motoBaseMins);
                         var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, motoMaxMins, new List<Holiday>());
                         if (xre != null)
-                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));                        
                     }
                     else
                         TotalRentMinutes = car_payAllMins;
