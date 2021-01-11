@@ -738,6 +738,12 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
+            if(!flag)
+            {
+                string erMsg = JsonConvert.SerializeObject(apiInput) + JsonConvert.SerializeObject(outputApi);
+                new CarRentRepo(connetStr).AddErrLog(funName, errCode, 1, 1, erMsg);
+            }
+
             if (false == flag && false == isWriteError)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
