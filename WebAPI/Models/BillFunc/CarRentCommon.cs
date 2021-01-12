@@ -631,6 +631,12 @@ namespace WebAPI.Models.BillFunc
        
         public bool AddTraceLog(TraceLogVM sour)
         {
+            if(sour != null && !string.IsNullOrWhiteSpace(sour.ApiMsg))
+                sour.ApiMsg = HttpUtility.JavaScriptStringEncode(sour.ApiMsg);
+
+            if (sour != null && !string.IsNullOrWhiteSpace(sour.FlowStep))
+                sour.FlowStep = HttpUtility.JavaScriptStringEncode(sour.FlowStep);
+
             bool flag = true;
             string SQL = "";
             SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
@@ -1058,7 +1064,9 @@ namespace WebAPI.Models.BillFunc
         public string FlowStep { get; set; } = "x";
         public eumTraceType TraceType { get; set; } = eumTraceType.none;
     }
-   
+    #endregion
+
+    #region TraceVm
     public class TraceBase
     {
         public TraceBase()
@@ -1107,6 +1115,22 @@ namespace WebAPI.Models.BillFunc
         public OBIZ_InCheck InCheck { get; set; }
         public OAPI_GetPayDetail outputApi { get; set; }
         public SPInput_CalFinalPrice SPInput { get; set; }
+    }
+
+    public class ContactSetTrace: PayTraceBase
+    {
+        #region input
+        public Int64 in_tmpOrder { get; set; }
+        public string in_IDNO { get; set; }
+        public Int64 in_LogID { get; set; }
+        public string in_UserID { get; set; }
+        public string in_returnDate { get; set; }
+        public string in_errCode { get; set; }
+        #endregion
+        public int TotalPoint { get; set; }
+        public int TransferPrice { get; set; }
+        public OAPI_GetPayDetail outputApi { get; set; }
+        public SPInput_BE_CalFinalPrice SPInput { get; set; }
     }
     #endregion
 }
