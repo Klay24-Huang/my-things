@@ -581,6 +581,11 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
+        public bool AddErrLog(string FunName,string Msg, string ErrorCode="")
+        {
+            return AddErrLog(FunName, ErrorCode, 0, 999, Msg);
+        }
+
         public bool AddErrLog(string FunName, string ErrorCode, int ErrType, int SQLErrorCode, string SQLErrorDesc)
         {
             if (string.IsNullOrWhiteSpace(FunName))
@@ -599,8 +604,47 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
+
+        public bool AddApiLog(int APIID, string Msg,string OrderNo="")
+        {
+            return AddApiLog(APIID, "99999", Msg, OrderNo);
+        }
+        
+        public bool AddApiLog(int APIID, string CLIENTIP, string APIInput, string ORDNO)
+        {
+            if (string.IsNullOrWhiteSpace(CLIENTIP))
+                CLIENTIP = "x";
+            if (string.IsNullOrWhiteSpace(APIInput))
+                APIInput = "x";
+            if (string.IsNullOrWhiteSpace(ORDNO))
+                ORDNO = "x";
+
+            bool flag = true;
+            string SQL = "";
+            SQL = "INSERT INTO TB_APILog(APIID,CLIENTIP,APIInput,ORDNO)";
+            SQL += " VALUES (" + APIID + "," +
+                "'" + CLIENTIP + "','" + APIInput + "','" + ORDNO + "'" +
+              ")";
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+       
+        public bool AddTraceLog(TraceLogVM sour)
+        {
+            bool flag = true;
+            string SQL = "";
+            SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
+            SQL += " VALUES ('" + sour.CodeVersion + "'," 
+                + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
+                "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'"+ 
+              ")";
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+
     }
 
+    #region VM
     public class IBIZ_GetPayDetail
     {
         /// <summary>
@@ -988,4 +1032,72 @@ namespace WebAPI.Models.BillFunc
         GetPayDetail,
         ContactSetting
     }
+    public enum eumTraceType
+    {
+        none,
+        exception,
+        followErr,
+        logicErr
+    } 
+
+    public class TraceLogVM
+    {
+        public string CodeVersion { get; set; } = "x";
+        public long OrderNo { get; set; } = 0;
+        public int ApiId { get; set; } = 0;
+        public string ApiNm { get; set; } = "x";
+        public string ApiMsg { get; set; } = "x";
+        public string FlowStep { get; set; } = "x";
+        public eumTraceType TraceType { get; set; } = eumTraceType.none;
+    }
+   
+    public class TraceBase
+    {
+        /// <summary>
+        /// 版號,程式有修改請務必變更
+        /// </summary>
+        public string codeVersion { get; set; }
+        public Int64 OrderNo { set; get; }
+        public new List<string> FlowList { get; set; } = new List<string>();
+        public string FlowStep()
+        {
+            string re = "";
+            if(FlowList != null && FlowList.Count() > 0)
+            {
+                re = string.Join("=>", FlowList);
+            }
+            return re;
+        }
+    }
+    public class PayTraceBase: TraceBase
+    {
+        public string errCode { get; set; }
+        public int TotalRentMinutes { get; set; }
+        public int Discount { get; set; }
+        public int CarPoint { get; set; }
+        public int MotorPoint { get; set; }
+        public List<OrderQueryFullData> OrderDataLists { get; set; }
+        public OBIZ_CRNoMonth CRNoMonth { get; set; }
+        public OBIZ_NPR270Query NPR270Query { get; set; }
+        public OBIZ_ETagCk ETagCk { get; set; }
+        public OBIZ_CarMagi CarMagi { get; set; }
+        public OBIZ_MonthRent MonthRent { get; set; }
+        public CarRentInfo carInfo { get; set; }
+        public OBIZ_CRNoMonthDisc CRNoMonthDisc { get; set; }
+    }
+    public class GetPayDetailTrace : PayTraceBase
+    {
+        public GetPayDetailTrace()
+        {
+            codeVersion = "202101121200";
+        }
+        public int TotalPoint { get; set; }
+        public int TransferPrice { get; set; }
+        public OBIZ_TokenCk TokenCk { get; set; }
+        public IAPI_GetPayDetail apiInput { get; set; }
+        public OBIZ_InCheck InCheck { get; set; }
+        public OAPI_GetPayDetail outputApi { get; set; }
+        public SPInput_CalFinalPrice SPInput { get; set; }
+    }
+    #endregion
 }
