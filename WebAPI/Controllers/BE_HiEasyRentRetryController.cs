@@ -334,7 +334,8 @@ namespace WebAPI.Controllers
                                     input.tbPaymentDetail = new PaymentDetail[2];
                                     input.tbPaymentDetail[0] = new PaymentDetail()
                                     {
-                                        PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        //PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                         PAYTYPE = "1",
                                         PAYMENTTYPE = "1",
                                         PAYMEMO = "租金",
@@ -354,7 +355,8 @@ namespace WebAPI.Controllers
                                     input.tbPaymentDetail = new PaymentDetail[1];
                                     input.tbPaymentDetail[0] = new PaymentDetail()
                                     {
-                                        PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        //PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                         PAYTYPE = "1",
                                         PAYMENTTYPE = "1",
                                         PAYMEMO = "租金",
