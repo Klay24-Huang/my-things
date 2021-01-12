@@ -1043,50 +1043,51 @@ namespace WebAPI.Controllers
                     CarPoint = re270.CarPoint;
                 }
 
+                #region mark-判斷輸入的點數有沒有超過總點數
                 //判斷輸入的點數有沒有超過總點數
-                if (ProjType == 4)
-                {
-                    if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
-                    {
-                        //flag = false;
-                        //errCode = "ERR205";
-                    }
-                    else
-                    {
-                        if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
-                        {
-                            flag = false;
-                            errCode = "ERR207";
-                        }
-                    }
+                //if (ProjType == 4)
+                //{
+                //    if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
+                //    {
+                //        //flag = false;
+                //        //errCode = "ERR205";
+                //    }
+                //    else
+                //    {
+                //        if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
+                //        {
+                //            flag = false;
+                //            errCode = "ERR207";
+                //        }
+                //    }
 
-                    if (TotalRentMinutes <= 6 && Discount == 6)
-                    {
+                //    if (TotalRentMinutes <= 6 && Discount == 6)
+                //    {
 
-                    }
-                    else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
-                    {
-                        flag = false;
-                        errCode = "ERR303";
-                    }
-                }
-                else
-                {
-                    if (Discount > 0 && Discount % 30 > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR206";
-                    }
-                    else
-                    {
-                        if (Discount > CarPoint)
-                        {
-                            flag = false;
-                            errCode = "ERR207";
-                        }
-                    }
-                }
-
+                //    }
+                //    else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
+                //    {
+                //        flag = false;
+                //        errCode = "ERR303";
+                //    }
+                //}
+                //else
+                //{
+                //    if (Discount > 0 && Discount % 30 > 0)
+                //    {
+                //        flag = false;
+                //        errCode = "ERR206";
+                //    }
+                //    else
+                //    {
+                //        if (Discount > CarPoint)
+                //        {
+                //            flag = false;
+                //            errCode = "ERR207";
+                //        }
+                //    }
+                //}
+                #endregion
             }
             #endregion
             #region 查ETAG 20201202 ADD BY ADAM
