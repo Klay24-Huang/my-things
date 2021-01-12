@@ -614,6 +614,7 @@ namespace WebAPI.Controllers
                                     //非月租折扣
                                     CarRentPrice -= nor_car_PayDiscPrice;
                                     CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
+                                    trace.FlowList.Add("汽車非月租折扣扣除");
                                 }
                             }
                             //安心服務
@@ -660,6 +661,7 @@ namespace WebAPI.Controllers
                         var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                         outputApi.Rent.TotalRental = xTotalRental;
+                        trace.FlowList.Add("總價計算");
 
                         #region 修正輸出欄位
                         //note: 修正輸出欄位PayDetail
