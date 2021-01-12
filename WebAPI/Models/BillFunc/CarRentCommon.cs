@@ -644,6 +644,14 @@ namespace WebAPI.Models.BillFunc
 
     }
 
+    public static class SiteUV
+    {
+        /// <summary>
+        /// 版號
+        /// </summary>
+        public static readonly string codeVersion = "202101121200";//hack: 修改程式請修正此版號
+    }
+
     #region VM
     public class IBIZ_GetPayDetail
     {
@@ -1053,6 +1061,11 @@ namespace WebAPI.Models.BillFunc
    
     public class TraceBase
     {
+        public TraceBase()
+        {
+            codeVersion = SiteUV.codeVersion;
+        }
+
         /// <summary>
         /// 版號,程式有修改請務必變更
         /// </summary>
@@ -1087,10 +1100,6 @@ namespace WebAPI.Models.BillFunc
     }
     public class GetPayDetailTrace : PayTraceBase
     {
-        public GetPayDetailTrace()
-        {
-            codeVersion = "202101121200";
-        }
         public int TotalPoint { get; set; }
         public int TransferPrice { get; set; }
         public OBIZ_TokenCk TokenCk { get; set; }

@@ -42,8 +42,7 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var cr_com = new CarRentCommon();
             var trace = new GetPayDetailTrace();
-            var carRepo = new CarRentRepo(connetStr);
-            var flowStep = new List<string>();
+            var carRepo = new CarRentRepo(connetStr);           
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
