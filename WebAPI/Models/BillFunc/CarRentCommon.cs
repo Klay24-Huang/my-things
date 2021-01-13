@@ -628,8 +628,26 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-       
+        
         public bool AddTraceLog(TraceLogVM sour)
+        {
+            if(sour != null)
+            {
+                var def = new TraceLogVM();
+                if (string.IsNullOrWhiteSpace(sour.CodeVersion))
+                    sour.CodeVersion = def.CodeVersion;
+                if (string.IsNullOrWhiteSpace(sour.ApiNm))
+                    sour.ApiNm = def.ApiNm;
+                if (string.IsNullOrWhiteSpace(sour.ApiMsg))
+                    sour.ApiMsg = def.ApiMsg;
+                if (string.IsNullOrWhiteSpace(sour.FlowStep))
+                    sour.FlowStep = def.FlowStep;
+                return xAddTraceLog(sour);
+            }
+            return false;
+        }
+
+        private bool xAddTraceLog(TraceLogVM sour)
         {
             bool flag = true;
             string SQL = "";
@@ -637,6 +655,40 @@ namespace WebAPI.Models.BillFunc
             SQL += " VALUES ('" + sour.CodeVersion + "'," 
                 + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
                 "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'"+ 
+              ")";
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+
+        public bool AddGoldFlowLog(GoldFlowLog sour)
+        {
+            if (sour != null)
+            {
+                var def = new GoldFlowLog();
+                if (string.IsNullOrWhiteSpace(sour.CodeVersion))
+                    sour.CodeVersion = def.CodeVersion;
+                if (string.IsNullOrWhiteSpace(sour.ApiNm))
+                    sour.ApiNm = def.ApiNm;
+                if (string.IsNullOrWhiteSpace(sour.ApiMsg))
+                    sour.ApiMsg = def.ApiMsg;
+                if (string.IsNullOrWhiteSpace(sour.FlowStep))
+                    sour.FlowStep = def.FlowStep;
+                if (string.IsNullOrWhiteSpace(sour.FlowType))
+                    sour.FlowType = def.FlowType;
+
+                return xAddGoldFlowLog(sour);
+            }
+            return false;
+        }
+
+        private bool xAddGoldFlowLog(GoldFlowLog sour)
+        {
+            bool flag = true;
+            string SQL = "";
+            SQL = "INSERT INTO Tb_GoldFlowLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, FlowType)";
+            SQL += " VALUES ('" + sour.CodeVersion + "',"
+                + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
+                "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.FlowType.ToString() + "'" +
               ")";
             ExecNonResponse(ref flag, SQL);
             return flag;
@@ -1058,6 +1110,17 @@ namespace WebAPI.Models.BillFunc
         public string FlowStep { get; set; } = "x";
         public eumTraceType TraceType { get; set; } = eumTraceType.none;
     }
+    public class GoldFlowLog
+    {
+        public string CodeVersion { get; set; } = "x";
+        public long OrderNo { get; set; } = 0;
+        public int ApiId { get; set; } = 0;
+        public string ApiNm { get; set; } = "x";
+        public string ApiMsg { get; set; } = "x";
+        public string FlowStep { get; set; } = "x";
+        public string FlowType { get; set; } = "x";
+    }
+   
     #endregion
 
     #region TraceVm
