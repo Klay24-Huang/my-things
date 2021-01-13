@@ -315,7 +315,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
             string term2 = "";
-            string SQL = " EXEC usp_BE_UpdateMemberName  '" + IDNO + "','"+ MEMNAME + "','" + USERID + "'";
+            string SQL = " EXEC usp_BE_UpdateMemberName  '" + IDNO + "',"+ "N'" + MEMNAME + "','" + USERID + "'"; //20210113唐改，強制改unicode解決難字出現?問題
             int nowCount = 0;
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
 
