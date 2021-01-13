@@ -800,7 +800,7 @@ namespace OtherService
             request.ContentType = "application/json";
             request.KeepAlive = false;
             SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 30000;
+            request.Timeout = 78000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{
