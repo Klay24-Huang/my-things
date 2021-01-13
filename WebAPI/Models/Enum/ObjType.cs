@@ -759,7 +759,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_GetOrderStatusByOrderNo";
                     break;
                 case SPType.CalFinalPrice:
-                    SPName = "usp_CalFinalPrice";
+                    //SPName = "usp_CalFinalPrice";
+                    SPName = "usp_CalFinalPrice_0107";
                     break;
                 case SPType.BE_CalFinalPrice:
                     SPName = "usp_BE_CalFinalPrice";
