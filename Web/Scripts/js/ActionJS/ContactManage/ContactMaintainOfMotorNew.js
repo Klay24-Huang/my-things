@@ -29,7 +29,7 @@ $(document).ready(function () {
             var obj = new Object();
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
-            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfo", "查詢資料發生錯誤", SetData);
+            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfoNew", "查詢資料發生錯誤", SetData);
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
@@ -101,7 +101,7 @@ $(document).ready(function () {
             var obj = new Object();
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
-            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfo", "查詢資料發生錯誤", SetData);
+            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfoNew", "查詢資料發生錯誤", SetData);
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
@@ -247,10 +247,10 @@ function SetData(data) {
             $("#spn_IDNO").html(OrderObj.IDNO)
             $("#spn_UserName").html(OrderObj.UserName)
             $("#spn_PRONAME").html(OrderObj.PRONAME)
-            $("#spn_FS").html(FS)
-            $("#spn_FE").html(FE)
-            $("#StartDate").val(FS).prop("disabled", "");
-            $("#EndDate").val(FE).prop("disabled", "");
+            $("#spn_FS").html(OrderObj.FS)
+            $("#spn_FE").html(OrderObj.FE)
+            $("#StartDate").val(OrderObj.FS).prop("disabled", "");
+            $("#EndDate").val(OrderObj.FE).prop("disabled", "");
             $("#spn_CarRent").html(OrderObj.pure_price);
             $("#spn_Insurance_price").html(OrderObj.Insurance_price);
             $("#Insurance_price_input").val(OrderObj.Insurance_price).prop("readonly", "");

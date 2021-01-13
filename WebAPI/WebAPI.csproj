@@ -173,6 +173,7 @@
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
     <Compile Include="Controllers\BE_GetManagerStationController.cs" />
     <Compile Include="Controllers\BE_GetOrderModifyInfoController.cs" />
+    <Compile Include="Controllers\BE_GetOrderModifyInfoNewController.cs" />
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
@@ -390,6 +391,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetManagerList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfo.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />

@@ -47,7 +47,7 @@ $(document).ready(function () {
             var obj = new Object();
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
-            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfo", "查詢資料發生錯誤", SetData);
+            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfoNew", "查詢資料發生錯誤", SetData);
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
@@ -123,7 +123,7 @@ $(document).ready(function () {
             var obj = new Object();
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
-            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfo", "查詢資料發生錯誤", SetData);
+            DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfoNew", "查詢資料發生錯誤", SetData);
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
