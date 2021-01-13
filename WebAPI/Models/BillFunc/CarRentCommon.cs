@@ -631,12 +631,6 @@ namespace WebAPI.Models.BillFunc
        
         public bool AddTraceLog(TraceLogVM sour)
         {
-            if(sour != null && !string.IsNullOrWhiteSpace(sour.ApiMsg))
-                sour.ApiMsg = HttpUtility.JavaScriptStringEncode(sour.ApiMsg);
-
-            if (sour != null && !string.IsNullOrWhiteSpace(sour.FlowStep))
-                sour.FlowStep = HttpUtility.JavaScriptStringEncode(sour.FlowStep);
-
             bool flag = true;
             string SQL = "";
             SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
