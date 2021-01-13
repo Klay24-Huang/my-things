@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var cr_com = new CarRentCommon();
             var trace = new GetPayDetailTrace();
-            var carRepo = new CarRentRepo(connetStr);           
+            var carRepo = new CarRentRepo(connetStr);
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -388,7 +388,7 @@ namespace WebAPI.Controllers
                                     errCode = "ERR207";
                                 }
                             }
-                            trace.FlowList.Add("f汽車一般點數檢查");
+                            trace.FlowList.Add("汽車一般點數檢查");
                         }
                     }
                     #endregion
@@ -461,7 +461,6 @@ namespace WebAPI.Controllers
                         }
                         //20201201 ADD BY ADAM REASON.轉乘優惠
                         TransferPrice = OrderDataLists[0].init_TransDiscount;
-
                         trace.FlowList.Add("建空模");
                     }
                     if (flag && OrderDataLists[0].ProjType != 4 && false) //20201224 add by adam 問題未確定前先關掉車麻吉
@@ -649,7 +648,7 @@ namespace WebAPI.Controllers
                             {
                                 outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                             }
-                            trace.FlowList.Add("非月租里程費計算");
+                            trace.FlowList.Add("里程費計算");
                         }
 
                         outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
@@ -737,8 +736,8 @@ namespace WebAPI.Controllers
                             fine_price = outputApi.Rent.OvertimeRental,
                             gift_point = gift_point,
                             gift_motor_point = gift_motor_point,
-                            //monthly_workday = carInfo.useMonthDiscW,
-                            //monthly_holiday = carInfo.useMonthDiscH,
+                            monthly_workday = carInfo.useMonthDiscW,
+                            monthly_holiday = carInfo.useMonthDiscH,
                             Etag = outputApi.Rent.ETAGRental,
                             parkingFee = outputApi.Rent.ParkingFee,
                             TransDiscount = outputApi.Rent.TransferPrice,
@@ -751,7 +750,7 @@ namespace WebAPI.Controllers
                         trace.Discount = Discount;
                         trace.CarPoint = CarPoint;
                         trace.MotorPoint = MotorPoint;
-                        trace.SPInput = SPInput;                        
+                        trace.SPInput = SPInput;
                         trace.outputApi = outputApi;
                         trace.carInfo = carInfo;
                         #endregion
@@ -768,7 +767,7 @@ namespace WebAPI.Controllers
 
                 #region 寫入錯誤Log
                 if (!flag)
-                {                   
+                {
                     trace.errCode = errCode;
                     trace.TotalPoint = TotalPoint;
                     trace.TransferPrice = TransferPrice;
@@ -810,7 +809,7 @@ namespace WebAPI.Controllers
                 };
                 carRepo.AddTraceLog(errItem);
                 throw;
-            }           
+            }
         }
 
         #region mark

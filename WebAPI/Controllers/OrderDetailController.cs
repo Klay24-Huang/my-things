@@ -154,6 +154,7 @@ namespace WebAPI.Controllers
                         //billComm.CalMinuteToDayHourMin(Convert.ToInt32(total), ref td, ref th, ref tm);
                         float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
 
+                        #region 日時分計算
                         var item = orderFinishDataLists[0];
                         var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
                         if(xre != null)
@@ -183,20 +184,56 @@ namespace WebAPI.Controllers
                         {
                             if (item.ProjType == 4)
                             {
-                                var allPoints = item.GiftPoint + item.GiftMotorPoint;
-                                var vre = billComm.GetTimePart(allPoints, 200);
-                                gd = Convert.ToInt32(Math.Floor(vre.Item1));
-                                gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                if(item.MonthlyHours > 0)
+                                {
+                                    var allPoints = item.GiftPoint + item.GiftMotorPoint;
+                                    var vre = billComm.GetTimePart(allPoints, 200);
+                                    if(vre != null)
+                                    {
+                                        gd = Convert.ToInt32(Math.Floor(vre.Item1));
+                                        gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                        gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                    }
+                                }
+                                else
+                                {
+                                    var allPoints = item.GiftPoint + item.GiftMotorPoint;
+                                    if (allPoints > 199)
+                                    {
+                                        allPoints -= 199;
+                                        gd += 1;
+                                        var vre = billComm.GetTimePart(allPoints, 200);
+                                        if(vre != null)
+                                        {
+                                            gd += Convert.ToInt32(Math.Floor(vre.Item1));
+                                            gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                            gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var vre = billComm.GetTimePart(allPoints, 199);
+                                        if(vre != null)
+                                        {
+                                            gd = Convert.ToInt32(Math.Floor(vre.Item1));
+                                            gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                            gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                        }
+                                    }
+                                }
                             }
                             else
                             {
                                 var vre = billComm.GetTimePart(item.GiftPoint, 600);
-                                gd = Convert.ToInt32(Math.Floor(vre.Item1));
-                                gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                if(vre != null)
+                                {
+                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));
+                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                }
                             }
                         }
+                        #endregion
 
                         #region 折扣完剩餘日時分
 
