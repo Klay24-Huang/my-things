@@ -766,11 +766,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 寫入錯誤Log
-
+                bool logicCk = false;
                 if (trace != null && trace.SPInput != null && trace.SPInput.pure_price == 0)
-                    flag = false;
+                    logicCk = true;
 
-                if (!flag)
+                if (!flag || logicCk)
                 {
                     trace.errCode = errCode;
                     trace.TotalPoint = TotalPoint;
