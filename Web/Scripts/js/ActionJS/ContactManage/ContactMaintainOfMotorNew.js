@@ -206,7 +206,7 @@ $(document).ready(function () {
                     obj.Remark = Remark
                 }
 
-                DoAjaxAfterReload(obj, "BE_HandleOrderModify", "修改資料發生錯誤");
+                DoAjaxAfterReload(obj, "BE_HandleOrderModifyNew", "修改資料發生錯誤");
             } else {
                 disabledLoadingAndShowAlert(errMsg);
             }
@@ -269,7 +269,13 @@ function SetData(data) {
             $("#spn_Mileage").html(OrderObj.mileage_price);
             $("#Mileage_input").val(OrderObj.mileage_price).prop("readonly", "");
             $("#spn_finePrice").html(OrderObj.fine_price);
-            $("#spn_payPrice").html(OrderObj.Paid)
+            if (parseInt(OrderObj.Paid) == 0 && parseInt(OrderObj.ArrearAMT) > 0) {
+                $("#spn_payPrice").html(OrderObj.ArrearAMT +"<font color='red'>使用補繳</font>")
+            } else {
+                $("#spn_payPrice").html(OrderObj.Paid)
+            }
+          
+
             $("#spn_eTag").html(OrderObj.eTag);
             $("#spn_finalPrice").html(OrderObj.final_price + oldOtherPrice);
             $("#pure_price_input").val(OrderObj.pure_price).prop("readonly", "");

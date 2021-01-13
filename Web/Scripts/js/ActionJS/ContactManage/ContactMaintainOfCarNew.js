@@ -24,13 +24,7 @@ $(document).ready(function () {
         var flag = true;
         var errMsg = "";
         ShowLoading("資料查詢中…");
-        /*20201209唐註解
-        if (OrderNo == "") {
-            flag = false;
-            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字a";
-        }
-        */
-        //20201209唐加
+
         if (OrderNo == "") {
             flag = false;
             errMsg = "訂單編號未填";
@@ -223,7 +217,7 @@ $(document).ready(function () {
                     obj.Remark = Remark
                 }
 
-                DoAjaxAfterReload(obj, "BE_HandleOrderModify", "修改資料發生錯誤");
+                DoAjaxAfterReload(obj, "BE_HandleOrderModifyNew", "修改資料發生錯誤");
             } else {
                 disabledLoadingAndShowAlert(errMsg);
             }
@@ -288,7 +282,11 @@ function SetData(data) {
             $("#spn_Mileage").html(OrderObj.mileage_price);
             $("#Mileage_input").val(OrderObj.mileage_price).prop("readonly", "");
             $("#spn_finePrice").html(OrderObj.fine_price);
-            $("#spn_payPrice").html(OrderObj.Paid)
+            if (parseInt(OrderObj.Paid) == 0 && parseInt(OrderObj.ArrearAMT) > 0) {
+                $("#spn_payPrice").html(OrderObj.ArrearAMT + "<font color='red'>使用補繳</font>")
+            } else {
+                $("#spn_payPrice").html(OrderObj.Paid)
+            }
 
             $("#spn_eTag").html(OrderObj.eTag);
             $("#spn_finalPrice").html(OrderObj.final_price + oldOtherPrice);

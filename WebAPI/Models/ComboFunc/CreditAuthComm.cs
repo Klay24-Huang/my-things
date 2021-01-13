@@ -128,7 +128,7 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="errCode"></param>
         /// <param name="errMsg"></param>
         /// <returns></returns>
-        public bool DoCreditRefund(Int64 tmpOrder,int RefundAmount,string Remark,string CardToken,string OriMerchantTradeNo,ref WebAPIOutput_ECRefund WSRefundOutput,ref string errCode,ref string errMsg)
+        public bool DoCreditRefund(Int64 tmpOrder,string IDNO,int RefundAmount,string Remark,string CardToken,string OriMerchantTradeNo,ref WebAPIOutput_ECRefund WSRefundOutput,ref string errCode,ref string errMsg)
         {
             bool flag = true;
             PartOfECRefund WSRefundInput = new PartOfECRefund()
@@ -154,7 +154,7 @@ namespace WebAPI.Models.ComboFunc
                 Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                 TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString()
             };
-            flag = WebAPI.DoCreditRefund(WSRefundInput, ref errCode, ref WSRefundOutput);
+            flag = WebAPI.DoCreditRefund(WSRefundInput,tmpOrder,IDNO, ref errCode, ref WSRefundOutput);
             return flag;
         }
         /// <summary>

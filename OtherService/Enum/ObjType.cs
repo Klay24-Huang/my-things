@@ -49,6 +49,8 @@ namespace OtherService.Enum
             /// 更新刷卡結果
             /// </summary>
             UpdTrade,
+            InsTradeRefund,
+            UpdTradeRefund,
             /// <summary>
             /// 新增解除綁定Log
             /// </summary>
@@ -94,6 +96,12 @@ namespace OtherService.Enum
                     break;
                 case SPType.UpdTrade:
                     SPName = "usp_UpdTrade";
+                    break;
+                case SPType.InsTradeRefund:
+                    SPName = "usp_InsTradeRefund";
+                    break;
+                case SPType.UpdTradeRefund:
+                    SPName = "usp_UpdTradeRefund";
                     break;
 
                 case SPType.InsUnBindLog:
