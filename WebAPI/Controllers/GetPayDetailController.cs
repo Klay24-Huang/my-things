@@ -766,11 +766,7 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 寫入錯誤Log
-                bool logicCk = false;
-                if (trace != null && trace.SPInput != null && trace.SPInput.pure_price == 0)
-                    logicCk = true;
-
-                if (!flag || logicCk)
+                if (!flag || logicCk(trace))
                 {
                     trace.errCode = errCode;
                     trace.TotalPoint = TotalPoint;
@@ -814,6 +810,17 @@ namespace WebAPI.Controllers
                 carRepo.AddTraceLog(errItem);
                 throw;
             }
+        }
+
+        private bool logicCk(GetPayDetailTrace sour)
+        {
+            if (sour != null)
+            {
+                if(sour.SPInput != null && sour.SPInput.pure_price == 0)
+                    return true;
+            }
+                
+            return false;
         }
 
         #region mark
