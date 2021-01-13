@@ -766,6 +766,10 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 寫入錯誤Log
+
+                if (trace != null && trace.SPInput != null && trace.SPInput.pure_price == 0)
+                    flag = false;
+
                 if (!flag)
                 {
                     trace.errCode = errCode;
