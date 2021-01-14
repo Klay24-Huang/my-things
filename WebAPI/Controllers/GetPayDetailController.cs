@@ -784,7 +784,8 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 寫入錯誤Log
-                if (!flag || logicCk(trace))
+                bool mark = logicCk(trace);
+                if (!flag || mark)
                 {
                     trace.errCode = errCode;
                     trace.TotalPoint = TotalPoint;
@@ -798,7 +799,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = eumTraceType.followErr
+                        TraceType = mark ? eumTraceType.mark : eumTraceType.followErr
                     };
                     carRepo.AddTraceLog(errItem);
                 }

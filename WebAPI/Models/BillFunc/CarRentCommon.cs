@@ -1097,7 +1097,8 @@ namespace WebAPI.Models.BillFunc
         none,
         exception,
         followErr,
-        logicErr
+        logicErr,
+        mark
     } 
 
     public class TraceLogVM
