@@ -19,13 +19,12 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 【後台】合約修改(汽機車整合新版)
+    /// 【後台】合約修改(汽機車整合2021新版)
     /// </summary>
-    public class BE_HandleOrderModifyController : ApiController
+    public class BE_HandleOrderModifyNewController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
@@ -60,7 +59,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             Int64 tmpOrder = 0;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
-            BE_GetOrderModifyDataNew obj = null;
+            BE_GetOrderModifyDataNewV2 obj = null;
             ContactComm contact = new ContactComm();
             int NewFinalPrice = 0;
             int DiffFinalPrice = 0;
@@ -125,7 +124,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                obj = new ContactRepository(connetStr).GetModifyData(tmpOrder);
+                obj = new ContactRepository(connetStr).GetModifyDataNew(tmpOrder);
                 BillCommon billCommon = new BillCommon();
                 int totalPointer = 0;
                 if (obj == null)
@@ -147,50 +146,7 @@ namespace WebAPI.Controllers
                             errCode = "ERR207";
                         }
                     }
-                    /*遵從1.0版，合約修改不重新計算，一切以客服人員輸入為主*/
-                    //if (flag)
-                    //{
-                    //    int days = 0, hours = 0, minutes = 0;
-                    //    if (obj.PROJTYPE == 4)
-                    //    {
-                    //        totalPointer = apiInput.CarPoint + apiInput.MotorPoint;
-                    //        billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
-                    //        int discount = Convert.ToInt32(Math.Round((obj.MaxPrice * days) + (obj.WeekdayPriceByMinutes * 60 * hours) + (obj.WeekdayPriceByMinutes * minutes), 0));
 
-                    //        NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0;
-
-
-                    //        DiffFinalPrice = obj.final_price - NewFinalPrice;
-                    //    }
-                    //    else
-                    //    {
-                    //        totalPointer = apiInput.CarPoint;
-                    //        billCommon.CalPointerToDayHourMin(totalPointer, ref days, ref hours, ref minutes);
-                    //        double hour = hours + Convert.ToDouble(minutes / 60.0);
-                    //        int discount = (obj.WeekdayPrice * days) + Convert.ToInt32((obj.WeekdayPrice / 10) * hour);
-
-                    //        NewFinalPrice = ((obj.final_price - discount) > 0) ? (obj.final_price - discount) : 0;
-
-                    //        DiffFinalPrice = obj.final_price - NewFinalPrice;
-                    //    }
-                    //}
-                    //if (flag)
-                    //{
-                    //    if (DiffFinalPrice != apiInput.DiffPrice)
-                    //    {
-                    //        flag = false;
-                    //        errCode = "ERR758";
-                    //    }
-
-                    //}
-                    //if (flag)
-                    //{
-                    //    if (NewFinalPrice != apiInput.FinalPrice)
-                    //    {
-                    //        flag = false;
-                    //        errCode = "ERR759";
-                    //    }
-                    //}
                     /*查詢短租訂單狀態*/
                     if (flag)
                     {
@@ -213,59 +169,75 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-
-                    }
-                    /*判斷是否要取款或是刷退*/
-                    if (apiInput.DiffPrice == 0 || obj.Paid == 0 || apiInput.DiffPrice < 0)
-                    {
-                        //直接更新
-                        flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
-                        if (flag)
+                        /*判斷是否要取款或是刷退*/
+                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT==0) || apiInput.DiffPrice < 0)
                         {
-                            flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
-                        }
-                    }
-                    else
-                    {
-                        //查詢有無綁卡
-                        if (apiInput.DiffPrice > 0) //刷退，
-                        {
-                            int hasBind = 0;
-                            List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
-
-                            flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
+                            //直接更新
+                            flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
                             if (flag)
                             {
-                                if (hasBind == 0)
-                                {
-                                    flag = false;
-                                    errCode = "ERR762";
-                                }
-                                else
-                                {
-
-                                    WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
-                                    flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
-                                    if (flag)
-                                    {
-                                        if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
-                                        {
-                                            WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
-                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
-                                        }
-                                    }
-                                }
-                            }
-                            if (flag)
-                            {
-                                /*傳送短租136*/
                                 flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                             }
                         }
+                        else
+                        {
+                            //查詢有無綁卡
+                            if (apiInput.DiffPrice > 0) //刷退，
+                            {
+                                int hasBind = 0;
+                                List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
+
+                                flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
+                                if (flag)
+                                {
+                                    if (hasBind == 0)
+                                    {
+                                        flag = false;
+                                        errCode = "ERR762";
+                                    }
+                                    else
+                                    {
+
+                                        WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                                        if (obj.ServerOrderNo != "")
+                                        {
+                                            flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        }
+                                        else
+                                        {
+                                            if (obj.TaishinTradeNo != "")
+                                            {
+                                                flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                            }
+                                            else
+                                            {
+                                                flag = false;
+                                                errCode = "";
+                                            }
+                                        }
+                                     
+                                        if (flag)
+                                        {
+                                            if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
+                                            {
+                                                WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
+                                                flag = Credit.DoCreditRefund(tmpOrder,obj.IDNO, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (flag)
+                                {
+                                    /*傳送短租136*/
+                                    flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
+                                }
+                            }
 
 
 
+                        }
                     }
+                   
 
 
 

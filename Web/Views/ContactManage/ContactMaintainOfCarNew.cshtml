@@ -1,10 +1,9 @@
-﻿
-<!--查詢介面-->
+﻿<!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            汽車合約修改
+            汽車合約修改(新版)
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
@@ -15,7 +14,7 @@
                             訂單編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="^(H|h)[0-9]{7}$" value="" /> <!--20201208唐改pattern-->
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="^(H|h)[0-9]{7}$" value="" />
                         </div>
                     </div>
                 </div>
@@ -52,7 +51,7 @@
                             合約編號
                         </div>
                         <div class="col-md-3">
-                            <span id="spn_OrderNo">我是合約編號</span>
+                            <span id="spn_OrderNo"></span>
                         </div>
                     </div>
                 </div>
@@ -64,7 +63,7 @@
                             會員帳號
                         </div>
                         <div class="col-md-3">
-                            <span id="spn_IDNO">我是合約編號</span>
+                            <span id="spn_IDNO"></span>
                         </div>
                     </div>
                 </div>
@@ -76,7 +75,7 @@
                             會員姓名
                         </div>
                         <div class="col-md-3">
-                            <span id="spn_UserName">我是合約編號</span>
+                            <span id="spn_UserName"></span>
                         </div>
                     </div>
                 </div>
@@ -88,7 +87,7 @@
                             訂單專案
                         </div>
                         <div class="col-md-3">
-                            <span id="spn_PRONAME">我是合約編號</span>
+                            <span id="spn_PRONAME"></span>
                         </div>
                     </div>
                 </div>
@@ -112,7 +111,7 @@
                             實際取車時間
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_FS">我是合約編號</span>
+                            <span id="spn_FS"></span>
                         </div>
                         <div class="col-md-3">
                             <div class="custom-datepicker">
@@ -143,7 +142,7 @@
                             實際還車時間
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_FE">我是合約編號</span>
+                            <span id="spn_FE"></span>
                         </div>
                         <div class="col-md-3">
                             <div class="custom-datepicker">
@@ -174,7 +173,7 @@
                             租金
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_CarRent">我是合約編號</span>
+                            <span id="spn_CarRent"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="pure_price_input" id="pure_price_input" value="" readonly />
@@ -205,27 +204,13 @@
                             <span id="spn_gift">0</span>
                         </div>
                         <div class="col-md-4">
-                      
+
                             <input class="form-control" type="number" min="0" max="99999" name="gift_point_input" id="gift_point_input" value="" placeholder="" />
                         </div>
                     </div>
                 </div>
             </li>
-            @*<li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        時數折抵(機車)
-                    </div>
-                    <div class="col-md-2">
-                        <span id="spn_gift_moto">0</span>
-                    </div>
-                    <div class="col-md-4">
-                        <input class="form-control" type="text" name="gift_point_moto_input" id="gift_point_moto_input" value="" readonly />
-                    </div>
-                </div>
-            </div>
-        </li>*@
+
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
@@ -245,7 +230,7 @@
                             取車里程
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_StartMile">我是合約編號</span>
+                            <span id="spn_StartMile"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="start_mile_input" id="start_mile_input" value="" readonly />
@@ -260,7 +245,7 @@
                             還車里程
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_StopMile">我是合約編號</span>
+                            <span id="spn_StopMile"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="end_mile_input" id="end_mile_input" value="" readonly />
@@ -287,7 +272,7 @@
                             安心服務
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_Insurance_price">我是合約編號</span>
+                            <span id="spn_Insurance_price"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="Insurance_price_input" id="Insurance_price_input" value="" readonly />
@@ -302,7 +287,7 @@
                             里程費用
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_Mileage">我是合約編號</span>
+                            <span id="spn_Mileage"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="Mileage_input" id="Mileage_input" value="" readonly />
@@ -317,7 +302,7 @@
                             逾時費用
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_finePrice">我是合約編號</span>
+                            <span id="spn_finePrice"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="fine_price_input" id="fine_price_input" value="" readonly />
@@ -332,7 +317,7 @@
                             eTag費用
                         </div>
                         <div class="col-md-3">
-                            <span id="spn_eTag">我是合約編號</span>
+                            <span id="spn_eTag"></span>
                         </div>
                     </div>
                 </div>
@@ -344,7 +329,7 @@
                             結算金額
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_finalPrice">我是合約編號</span>
+                            <span id="spn_finalPrice"></span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="final_price_input" id="final_price_input" value="" readonly />
@@ -359,7 +344,7 @@
                             已付金額
                         </div>
                         <div class="col-md-2">
-                            <span id="spn_payPrice">我是合約編號</span>
+                            <span id="spn_payPrice"></span>
                         </div>
                     </div>
                 </div>

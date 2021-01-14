@@ -75,5 +75,34 @@ namespace OtherService.Common
                 }
             }
         }
+
+        public void InsCreditRefundData(SPInput_InsTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTrade, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.InsTradeRefund);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+        }
+        public void UpdCreditRefundData(SPInput_UpdTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_UpdTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_UpdTrade, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.UpdTradeRefund);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace WebAPI.Models.Param.BackEnd.Output
     }
     public class ModifyInfo
     {
-        public Int16 hasModify { set; get; }
+        public Int64 hasModify { set; get; }
         public string ModifyTime { set; get; }
         public string ModifyUserID { set; get; }
     }

@@ -960,11 +960,12 @@ namespace OtherService
         }
         #endregion
         #region 退貨（刷退）
-        public bool DoCreditRefund(PartOfECRefund wsInput, ref string errCode, ref WebAPIOutput_ECRefund output)
+        public bool DoCreditRefund(PartOfECRefund wsInput,Int64 tmpOrder,string IDNO, ref string errCode, ref WebAPIOutput_ECRefund output)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
             string checksum = GenerateSign(ori);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
 
             WebAPIInput_EC_Refund Input = new WebAPIInput_EC_Refund()
             {
@@ -976,7 +977,18 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
                  
             };
+            SPInput_InsTrade SPInput = new SPInput_InsTrade()
+            {
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額
+                OrderNo = tmpOrder,
+                CreditType = 66,
+                LogID = 0,
+                MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
+                MemberID = IDNO,
+                CardToken = Input.RequestParams.CardToken
+            };
 
+            new WebAPILogCommon().InsCreditRefundData(SPInput, ref flag, ref errCode, ref lstError);
 
             output = DoCreditRefundSend(Input).Result;
             if (output.RtnCode == "1000")
@@ -1042,6 +1054,7 @@ namespace OtherService
             }
             finally
             {
+
                 //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
@@ -1056,6 +1069,49 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                Int64 tmpOrder = 0;
+                int Index = input.RequestParams.MerchantTradeNo.IndexOf("R_");
+                string tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                  tmpOrder = Convert.ToInt64(tmp);
+                int creditType = 66;
+                SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
+                {
+                    LogID = 0,
+                    OrderNo = tmpOrder,
+                    MerchantTradeNo = input.RequestParams.MerchantTradeNo
+                };
+
+                //更新刷退結果
+                if (output.RtnCode == "1000")
+                {
+                    DateTime process;
+                    DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate + output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
+                    UpdInput.IsSuccess = 1;
+                    UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
+                    UpdInput.process_date = process;
+                    UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.TradeAmount) / 100;
+                    //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
+                    try
+                    {
+                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                    }
+                    catch (Exception ex)
+                    {
+                        UpdInput.AuthIdResp = 0;
+                        logger.Trace("更新刷退結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
+                    }
+                    UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
+                    UpdInput.RetCode = output.RtnCode;
+                    UpdInput.RetMsg = output.RtnMessage;
+                    UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
+                }
+                else
+                {
+                    UpdInput.IsSuccess = -2;
+                    UpdInput.RetCode = output.RtnCode;
+                    UpdInput.RetMsg = output.RtnMessage;
+                }
+                new WebAPILogCommon().UpdCreditRefundData(UpdInput, ref flag, ref errCode, ref lstError);
             }
 
 

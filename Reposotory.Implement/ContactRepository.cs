@@ -673,6 +673,45 @@ namespace Reposotory.Implement
 
             return tmp;
         }
+        public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
+            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Detail.Amount,0) AS ArrearAMT ";
+
+            SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
+    
+            SQL +=" LEFT JOIN[dbo].[TB_NPR330Save] AS Main WITH(NOLOCK) ON VW.IDNO = Main.IDNO";
+
+            SQL +=" INNER JOIN[dbo].[TB_NPR330Detail] AS Detail WITH(NOLOCK) ON Main.NPR330Save_ID = Detail.NPR330Save_ID AND IRENTORDNO = '"+string.Format("H{0}",OrderNo.ToString().PadLeft(7,'0'))+"' AND Main.IsPay = 1";
+
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            int nowCount = 0;
+            if (OrderNo > 0)
+            {
+                term = "  OrderNo = @OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + "  ";
+            }
+
+            lstOrderData = GetObjList<BE_GetOrderModifyDataNewV2>(ref flag, ref lstError, SQL, para, term);
+            BE_GetOrderModifyDataNewV2 tmp = null;
+            if (lstOrderData.Count > 0)
+            {
+                tmp = lstOrderData[0];
+            }
+
+            return tmp;
+        }
         /// <summary>
         /// 整備人員用
         /// </summary>

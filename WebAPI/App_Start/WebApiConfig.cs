@@ -10,16 +10,12 @@ namespace WebAPI
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API 設定和服務
-  
-            // Web API 路由
             config.MapHttpAttributeRoutes();
             config.EnableCors(new EnableCorsAttribute("*", "*", "*"));
             config.Routes.MapHttpRoute(
                     name: "ApiByController",
                     routeTemplate: "api/{controller}"
-
-                );
+            );
             config.Routes.MapHttpRoute(
                name: "ApiByControllerAction",
                routeTemplate: "api/{controller}/{action}"

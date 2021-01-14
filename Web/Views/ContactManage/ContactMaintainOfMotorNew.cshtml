@@ -1,10 +1,9 @@
-﻿
-<!--查詢介面-->
+﻿<!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            汽車合約修改
+            機車合約修改
         </div>
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
@@ -15,11 +14,15 @@
                             訂單編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="^(H|h)[0-9]{7}$" value="" /> <!--20201208唐改pattern-->
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
                         </div>
                     </div>
                 </div>
             </li>
+
+
+
+
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
@@ -146,6 +149,7 @@
                             <span id="spn_FE">我是合約編號</span>
                         </div>
                         <div class="col-md-3">
+
                             <div class="custom-datepicker">
                                 <input class="dateTimePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
@@ -173,12 +177,14 @@
                         <div class="col-md-2">
                             租金
                         </div>
+
                         <div class="col-md-2">
                             <span id="spn_CarRent">我是合約編號</span>
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="pure_price_input" id="pure_price_input" value="" readonly />
                         </div>
+
 
                     </div>
                 </div>
@@ -205,27 +211,27 @@
                             <span id="spn_gift">0</span>
                         </div>
                         <div class="col-md-4">
-                      
+                            <select class="form-control" type="text" name="gift_point_select" id="gift_point_select"></select>
                             <input class="form-control" type="number" min="0" max="99999" name="gift_point_input" id="gift_point_input" value="" placeholder="" />
                         </div>
                     </div>
                 </div>
             </li>
-            @*<li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        時數折抵(機車)
-                    </div>
-                    <div class="col-md-2">
-                        <span id="spn_gift_moto">0</span>
-                    </div>
-                    <div class="col-md-4">
-                        <input class="form-control" type="text" name="gift_point_moto_input" id="gift_point_moto_input" value="" readonly />
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            時數折抵(機車)
+                        </div>
+                        <div class="col-md-2">
+                            <span id="spn_gift_moto">0</span>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" name="gift_point_moto_input" id="gift_point_moto_input" value="" readonly />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </li>*@
+            </li>
             <li class="list-group-item">
                 <div class="container-fluid">
                     <div class="row">
@@ -264,18 +270,6 @@
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="end_mile_input" id="end_mile_input" value="" readonly />
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-2">
-                            安心服務費率
-                        </div>
-                        <div class="col-md-2">
-                            <span id="spn_InsurancePerHours"></span>
                         </div>
                     </div>
                 </div>
@@ -361,6 +355,7 @@
                         <div class="col-md-2">
                             <span id="spn_payPrice">我是合約編號</span>
                         </div>
+
                     </div>
                 </div>
             </li>
@@ -409,6 +404,7 @@
                     </div>
                 </div>
             </li>
+
         </ul>
         <div class="card-header bg-secondary text-white">
             新增待繳費用
