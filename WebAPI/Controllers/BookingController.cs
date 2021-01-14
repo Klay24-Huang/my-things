@@ -355,7 +355,11 @@ namespace WebAPI.Controllers
                 else
                 {
                     flag = false;
-                    errCode = "ERR161";
+                    //20210113 ADD BY ADAM REASON.修正預約顯示錯誤
+                    if (errCode == "000000")
+                        errCode = "ERR161";
+                    
+
                 }
             }
             #endregion
