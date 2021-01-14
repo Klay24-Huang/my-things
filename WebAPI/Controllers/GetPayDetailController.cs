@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
             DateTime SD = new DateTime();
             DateTime ED = new DateTime();
             DateTime FED = new DateTime();
-            DateTime FineDate = new DateTime();
+            DateTime? FineDate = null;
             bool hasFine = false; //是否逾時
             DateTime NowTime = DateTime.Now;
             int TotalRentMinutes = 0; //總租車時數
@@ -233,10 +233,18 @@ namespace WebAPI.Controllers
                         SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                         SD = SD.AddSeconds(SD.Second * -1); //去秒數
                                                             //機車路邊不計算預計還車時間
-                        if (OrderDataLists[0].ProjType == 4)
+                        if (!string.IsNullOrWhiteSpace(OrderDataLists[0].fine_Time))
+                        {
+                            FineDate = Convert.ToDateTime(OrderDataLists[0].fine_Time);
+                            FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
+                        }
+
+                        var neverHasFine = new List<int>() { 3, 4 };//路邊機車不會逾時
+                        if (neverHasFine.Contains(OrderDataLists[0].ProjType))
                         {
                             ED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                             ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                            FineDate = null;
                         }
                         else
                         {
@@ -246,11 +254,21 @@ namespace WebAPI.Controllers
                         FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                         FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                         lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
-                        if (FED.Subtract(ED).Ticks > 0)
+                          
+                        if(FineDate != null)
                         {
-                            FineDate = ED;
-                            hasFine = true;
+                            if (FED > FineDate)
+                            {
+                                hasFine = true;
+                                ED = FineDate.Value;
+                            }
                         }
+                        else
+                        {
+                            if (FED.Subtract(ED).Ticks > 0)
+                                hasFine = true;
+                        }
+                        trace.hasFine = hasFine;
                         trace.FlowList.Add("SD,ED,FD計算");
                     }
                     if (flag)
@@ -816,7 +834,18 @@ namespace WebAPI.Controllers
         {
             if (sour != null)
             {
-                if(sour.SPInput != null && sour.SPInput.pure_price == 0)
+                if (sour.SPInput != null && sour.SPInput.pure_price == 0)
+                    return true;
+                else if (sour.hasFine)
+                    return true;
+                //有使用月租加入trace
+                else if (sour.MonthRent != null && sour.MonthRent.monthlyRentDatas != null
+                    && sour.MonthRent.monthlyRentDatas.Count() > 0 &&
+                    sour.MonthRent.carInfo != null &&
+                    sour.MonthRent.carInfo.mFinal != null &&
+                    sour.MonthRent.carInfo.mFinal.Any(x => x.WorkDayHours > 0 ||
+                    x.HolidayHours > 0 || x.MotoTotalHours >0)
+                    )
                     return true;
             }
                 

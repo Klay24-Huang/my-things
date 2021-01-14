@@ -660,11 +660,11 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
-        public bool AddGoldFlowLog(GoldFlowLog sour)
+        public bool AddGoldFlowLog(GoldFlowLogVM sour)
         {
             if (sour != null)
             {
-                var def = new GoldFlowLog();
+                var def = new GoldFlowLogVM();
                 if (string.IsNullOrWhiteSpace(sour.CodeVersion))
                     sour.CodeVersion = def.CodeVersion;
                 if (string.IsNullOrWhiteSpace(sour.ApiNm))
@@ -681,7 +681,7 @@ namespace WebAPI.Models.BillFunc
             return false;
         }
 
-        private bool xAddGoldFlowLog(GoldFlowLog sour)
+        private bool xAddGoldFlowLog(GoldFlowLogVM sour)
         {
             bool flag = true;
             string SQL = "";
@@ -701,7 +701,7 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202101121200";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202101141500";//hack: 修改程式請修正此版號
     }
 
     #region VM
@@ -1110,7 +1110,7 @@ namespace WebAPI.Models.BillFunc
         public string FlowStep { get; set; } = "x";
         public eumTraceType TraceType { get; set; } = eumTraceType.none;
     }
-    public class GoldFlowLog
+    public class GoldFlowLogVM
     {
         public string CodeVersion { get; set; } = "x";
         public long OrderNo { get; set; } = 0;
@@ -1165,6 +1165,7 @@ namespace WebAPI.Models.BillFunc
     }
     public class GetPayDetailTrace : PayTraceBase
     {
+        public bool hasFine { get; set; } = false; //是否逾時
         public int TotalPoint { get; set; }
         public int TransferPrice { get; set; }
         public OBIZ_TokenCk TokenCk { get; set; }

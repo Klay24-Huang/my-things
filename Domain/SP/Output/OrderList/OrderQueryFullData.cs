@@ -158,7 +158,7 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 逾時
         /// </summary>
-        public string fine_time { set; get; }
+        public string fine_Time { set; get; }
         /// <summary>
         /// 預估租金
         /// </summary>
