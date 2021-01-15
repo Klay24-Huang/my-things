@@ -679,7 +679,7 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202101141500";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202101151740";//hack: 修改程式請修正此版號
     }
 
     #region repo
