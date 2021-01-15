@@ -648,13 +648,14 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 re = bill.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, 60, 10, sour.lstHoliday, monRents, 0);
+                apiMsg += JsonConvert.SerializeObject(re);
                 trace.FlowList.Add("月租計算");               
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
                 traceLog.TraceType = eumTraceType.exception;
-                traceLog.ApiMsg = apiMsg;
+                traceLog.ApiMsg = apiMsg+JsonConvert.SerializeObject(trace.FlowList);
                 carReo.AddTraceLog(traceLog);
                 throw;
             }
