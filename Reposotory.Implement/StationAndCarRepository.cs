@@ -825,9 +825,9 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false)
                 {
-                    term2 = " AND SD >= @ED AND  ED <= @ED";
-                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = ED;
+                    term2 = " AND SD >= @SD AND  ED <= @SD";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }

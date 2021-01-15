@@ -493,6 +493,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_BookingCancel,
             /// <summary>
+            /// 【整備人員】取消訂單
+            /// </summary>
+            BE_CancelCleanOrder,
+            /// <summary>
             /// 換車
             /// </summary>
             BE_ChangeCar,
@@ -1068,6 +1072,9 @@ namespace WebAPI.Models.Enum
                 #region 整備人員
                 case SPType.MA_CheckCarStatusByReturn:
                     SPName = "usp_MA_CheckCarStatusByReturn";
+                    break;
+                case SPType.BE_CancelCleanOrder:
+                    SPName = "usp_BE_CancelCleanOrder";
                     break;
                     #endregion
             }
