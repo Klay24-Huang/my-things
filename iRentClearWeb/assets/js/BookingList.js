@@ -55,7 +55,7 @@ function doReturnCar(UserName) {
         flag = false;
         msg = "備註未填寫";
     }
-    if (incarPIC == "") {
+    if (incarPIC == "" && incarclean==1) {
         if (flag) {
             msg = "車內照未選擇";
         } else {
@@ -64,7 +64,7 @@ function doReturnCar(UserName) {
         flag = false;
     }
 
-    if (outcarPIC == "") {
+    if (outcarPIC == "" && outcarclean==1) {
         if (flag) {
             msg = "車外照未選擇";
         } else {
@@ -94,7 +94,8 @@ function doReturnCar(UserName) {
         SendObj.incarPicType = $("#hidincarPicType").val();
         SendObj.outcarPic = $("#hidoutcarPic").val();
         SendObj.outcarPicType = $("#hidoutcarPicType").val();
-        var jdata = JSON.stringify( SendObj );
+        var jdata = JSON.stringify(SendObj);
+        console.log(jdata);
  
         $.ajax({
             type: 'POST',
@@ -127,13 +128,13 @@ function doReturnCar(UserName) {
                     if (flag) {
                         swal({
                             title: "",
-                            text: JsonData.ErrMsg,
-                            html: JsonData.ErrMsg,
+                            text: JsonData.ErrorMessage,
+                            html: JsonData.ErrorMessage,
                             type: "error",
                             confirmButtonColor: '#ff0000',
                             confirmButtonText: '確定',
                             closeOnConfirm: true
-                        });
+                        }, function (isConfirm) { window.location.href = "BookingList"; });
                     }
                 }
             }
@@ -316,7 +317,7 @@ function cancelCar(OrderNum, MachineNo, isCar, CarNo) {
     SendObj.Mode = 1;
     SendObj.returnDate = returnDate;
     SendObj.UserID = $("#Account").val();
-    console.log(SendObj);
+  //  console.log(SendObj);
     var jdata = JSON.stringify( SendObj);
     carControlComplete(jdata);
 }
@@ -324,6 +325,8 @@ function cancelCar(OrderNum, MachineNo, isCar, CarNo) {
 function carControlComplete(encryptData) {
     var jdata =  encryptData ;
     var URL = jsHost + "BE_ContactSetting";
+    console.log("URL=" + URL);
+    console.log("data:" + jdata);
     $.ajax({
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -332,15 +335,15 @@ function carControlComplete(encryptData) {
         url: URL,
         error: function (xhr, error) { console.log(xhr.responseText + "," + xhr.status + "," + error); },
         success: function (JsonData) {
-            console.log(JsonData.Result + "," + JsonData.ErrMsg);
+            console.log(JsonData.Result + "," + JsonData.ErrorMessage);
             if (JsonData.Result === "1") {
                 console.log("true");
                 //   $.unblockUI();
-                warningAlertSubMit(JsonData.ErrMsg, 1, 1, "BookingList");
+                warningAlertSubMit(JsonData.ErrorMessage, 1, 1, "BookingList");
             } else {
                 console.log("false");
                 //    $.unblockUI();
-                warningAlert(JsonData.ErrMsg, false, 0, "");
+                warningAlert(JsonData.ErrorMessage, false, 0, "");
             }
         }
     });

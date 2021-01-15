@@ -390,6 +390,19 @@ namespace WebAPI.Controllers
                             #endregion
                         }
                     }
+                }else if (apiInput.Mode == 1 && apiInput.type==2)
+                {
+                    string spName = new ObjType().GetSPName(ObjType.SPType.BE_CancelCleanOrder);
+                    SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
+                    {
+                        LogID = LogID,
+                        OrderNo = tmpOrder,
+                        UserID = apiInput.UserID
+                    };
+                    SPOutput_Base spOut = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base>(connetStr);
+                    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 }
             }
             #endregion
