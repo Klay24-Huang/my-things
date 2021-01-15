@@ -384,13 +384,17 @@ function showList(obj) {
     
      $('#carDetailBody').html(tmpHtml);
   //  $('#myDataTalbe tbody').html(tmpHtml).trigger('footable_redraw');
+  
     if (isFirst) {
         $('#myDataTalbe').footable({ "paging": { "limit": 4 } });
     } else {
+        $('#myDataTable').addClass("footable-filtering-search");
         $('#myDataTalbe').trigger('footable_redraw');
+
     }
  
-
+    //$('#myDataTalbe').footable({ "paging": { "limit": 4 } });
+    //$('#myDataTable').addClass("footable-filtering-search");
   
 
 }
@@ -417,7 +421,7 @@ function getList() {
     
 }
 function getCarData() {
-
+    
     var URL = jsHost + "MA_GetCleanCarByList";// GetCleanCar
     var NowType = 0;
     if (nowSelMode == "any") {
@@ -427,7 +431,7 @@ function getCarData() {
     } else if (nowSelMode == "maintain") {
         NowType = 5;
     }
-    var jsonData = JSON.stringify({ "para": { "Account": $("#Account").val(),"NowType":NowType } });
+    var jsonData = JSON.stringify({ "Account": $("#Account").val(),"NowType":NowType } );
     console.log(jsonData);
 
     console.log(URL);

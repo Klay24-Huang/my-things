@@ -55,7 +55,7 @@ function doReturnCar(UserName) {
         flag = false;
         msg = "備註未填寫";
     }
-    if (incarPIC == "") {
+    if (incarPIC == "" && incarclean==1) {
         if (flag) {
             msg = "車內照未選擇";
         } else {
@@ -64,7 +64,7 @@ function doReturnCar(UserName) {
         flag = false;
     }
 
-    if (outcarPIC == "") {
+    if (outcarPIC == "" && outcarclean==1) {
         if (flag) {
             msg = "車外照未選擇";
         } else {
@@ -127,8 +127,8 @@ function doReturnCar(UserName) {
                     if (flag) {
                         swal({
                             title: "",
-                            text: JsonData.ErrMsg,
-                            html: JsonData.ErrMsg,
+                            text: JsonData.ErrorMessage,
+                            html: JsonData.ErrorMessage,
                             type: "error",
                             confirmButtonColor: '#ff0000',
                             confirmButtonText: '確定',
