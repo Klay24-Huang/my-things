@@ -207,6 +207,29 @@ namespace WebAPI.Controllers
                 var spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
                 if (spList != null && spList.Count > 0)
                 {
+                    #region 春節租金                    
+                 
+                    var spItem = spList.FirstOrDefault();
+                    int PriceBill = spItem.PriceBill;//先給sp值
+                    var cr_com = new CarRentCommon();
+                    var bizIn = new IBIZ_SpringInit()
+                    {
+                        ProjID = spItem.PROJID ,
+                        CarType = spItem.CarType,
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        lstHoliday = lstHoliday,
+                        SD = Convert.ToDateTime(apiInput.SDate),
+                        ED = Convert.ToDateTime(apiInput.EDate),
+                        PRICE = Convert.ToDouble(spItem.Price) / 10,
+                        PRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
+                    };
+                    var xre = cr_com.GetSpringInit(bizIn, connetStr);
+                    if (xre != null)
+                        PriceBill = xre.RentInPay;
+
+                    #endregion
+
                     lstData = (from a in spList
                                select new StationAndProjectAndCarTypeData
                                {
@@ -228,7 +251,10 @@ namespace WebAPI.Controllers
                                    Operator = a.Operator,
                                    OperatorScore = a.OperatorScore,
                                    PayMode = a.PayMode,
-                                   Price = a.PriceBill, //租金改抓sp
+
+                                   //Price = a.PriceBill, //租金改抓sp
+                                   Price = PriceBill,
+
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
                                    PRICE_H = a.PRICE_H, //目前用不到
                                    PRODESC = a.PRODESC,

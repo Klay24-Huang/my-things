@@ -595,6 +595,7 @@ namespace WebAPI.Models.Enum
             MA_CheckCarStatusByReturn,
             #endregion
 
+            GetEstimate,
             GetOrderAuthList,
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
@@ -892,6 +893,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UpdateOrderAuthReturnList:   //更新批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_UpdateOrderAuthReturnList";
+                    break;
+                case SPType.GetEstimate:
+                    SPName = "usp_GetEstimate_Q1";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

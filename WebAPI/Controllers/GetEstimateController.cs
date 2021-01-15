@@ -18,6 +18,8 @@ using Domain.SP.Input.Bill;
 using Domain.SP.Output.Bill;
 using WebCommon;
 using System.Data;
+using SSAPI.Client.Local;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers
 {
@@ -32,6 +34,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetProject(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var CarRepo = new CarRentRepo(connetStr);
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -236,16 +239,50 @@ namespace WebAPI.Controllers
                     {
                         if (priceBase.Count > 0)
                         {
-                            int InsurancePer10Hours = priceBase[0].InsurancePerHours * 10;
-
-                            outputApi = new OAPI_GetEstimate()
+                            var pr = priceBase[0];
+                            if (ProjType == 0 || ProjType== 3)
+                            {                               
+                                var cr_com = new CarRentCommon();
+                                var bizIn = new IBIZ_SpringInit()
+                                {
+                                    ProjID = apiInput.ProjID,
+                                    CarType = apiInput.CarType,
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    lstHoliday = lstHoliday,
+                                    SD = Convert.ToDateTime(apiInput.SDate),
+                                    ED = Convert.ToDateTime(apiInput.EDate),
+                                    ProDisPRICE = Convert.ToDouble(pr.PRICE)/10,
+                                    ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H)/10                                    
+                                };
+                               
+                                var xre = cr_com.GetSpringInit(bizIn, connetStr);
+                                if (xre != null)
+                                {
+                                    double InsurBill = Convert.ToDouble(pr.InsurancePerHours) * (Convert.ToDouble(xre.RentInMins) / 60);
+                                    outputApi = new OAPI_GetEstimate()
+                                    {
+                                        CarRentBill = xre.RentInPay,
+                                        InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(Math.Floor(InsurBill)) : 0,
+                                        InsurancePerHour = priceBase[0].InsurancePerHours,
+                                        MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
+                                        MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
+                                    };
+                                }
+                            }
+                            else
                             {
-                                CarRentBill = billCommon.CarRentCompute(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday),
-                                InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
-                                InsurancePerHour = priceBase[0].InsurancePerHours,
-                                MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit,2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
-                                MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
-                            };
+                                int InsurancePer10Hours = priceBase[0].InsurancePerHours * 10;
+                                outputApi = new OAPI_GetEstimate()
+                                {
+                                    CarRentBill = billCommon.CarRentCompute(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday),
+                                    InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
+                                    InsurancePerHour = priceBase[0].InsurancePerHours,
+                                    MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
+                                    MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
+                                };
+                            }
+
                             outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
                         }
                     }
@@ -268,5 +305,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+    
+    
     }
+
 }

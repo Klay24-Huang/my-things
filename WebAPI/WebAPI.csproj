@@ -569,6 +569,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\DetailData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\FeedBackKind.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\GetFullProjectVM.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetNotification.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />

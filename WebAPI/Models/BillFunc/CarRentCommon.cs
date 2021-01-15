@@ -25,6 +25,7 @@ using Domain.WebAPI.output.Mochi;
 using WebAPI.Models.ComboFunc;
 using Domain.SP.BE.Input;
 using System.Data.SqlClient;
+using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -537,9 +538,153 @@ namespace WebAPI.Models.BillFunc
             sour.PRICE_H = sour.PRICE_H == 0 ? 168 : sour.PRICE_H;
             return sour;
         }
+
+        /// <summary>
+        /// 春節專案
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <param name="conStr"></param>
+        /// <returns></returns>
+        public CarRentInfo GetSpringInit(IBIZ_SpringInit sour, string conStr)
+        {           
+            if (sour == null || string.IsNullOrWhiteSpace(conStr))
+                throw new Exception("sour, conStr不可為空");
+            var xsour = objUti.Clone(sour);
+            if (sour.PRICE <= 0 || sour.PRICE_H <= 0)
+            {//一般平假日價格
+                string errMsg = "";
+                //P735暫時寫死:GetEstimate使用
+                var norPri = new CarRentSp().sp_GetEstimate("P735", sour.CarType, sour.LogID, ref errMsg);
+                if (norPri != null)
+                {
+                    xsour.PRICE = norPri.PRICE/10;
+                    xsour.PRICE_H = norPri.PRICE_H/10;
+                }
+            }
+            if(sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H <0)
+            {//春節專案平假日價格
+                if(!string.IsNullOrWhiteSpace(sour.ProjID) && !string.IsNullOrWhiteSpace(sour.CarType))
+                {
+                    if (isSpring(sour.SD, sour.ED))
+                    {
+                        //春節期間增加:GetProgect使用
+                        var xre = new CarRentRepo(conStr).GetFirstProDisc("R129", sour.CarType);
+                        if (xre != null)
+                        {
+                            xsour.ProDisPRICE = xre.PRICE / 10;
+                            xsour.ProDisPRICE_H = xre.PRICE_H / 10;
+                        }
+                    }
+                }
+            }
+            return xGetSpringInit(xsour, conStr);
+        }
+
+        /// <summary>
+        /// 春節月租
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <param name="conStr"></param>
+        /// <returns></returns>
+        private CarRentInfo xGetSpringInit(IBIZ_SpringInit sour, string conStr)
+        {
+            var re = new CarRentInfo();
+            string funNm = "xGetSpringInit";
+            var carReo = new CarRentRepo(connetStr);
+            var monRents = new List<MonthlyRentData>();
+            var traceLog = new TraceLogVM()
+            {
+                ApiId = 99901,
+                ApiNm = funNm,
+                CodeVersion = SiteUV.codeVersion                
+            };
+            var trace = new TraceBase();
+            string apiMsg = "";
+
+            try
+            {
+                var monRepo = new MonthlyRentRepository(conStr);
+                var carRentSp = new CarRentSp();
+                var bill = new BillCommon();
+                if (string.IsNullOrWhiteSpace(conStr))
+                    throw new Exception("連線字串必填");
+
+                if (sour == null || string.IsNullOrWhiteSpace(sour.ProjID)
+                    || string.IsNullOrWhiteSpace(sour.CarType)
+                    || sour.SD == null || sour.ED == null || sour.SD > sour.ED
+                    || string.IsNullOrWhiteSpace(sour.IDNO)
+                    )
+                    throw new Exception("sour資料錯誤");
+                trace.FlowList.Add("sour檢核完成");
+                apiMsg += JsonConvert.SerializeObject(sour);
+
+                if (sour.PRICE <= 0)  sour.PRICE = 99;
+                if (sour.PRICE_H <= 0) sour.PRICE_H = 168;
+                if (sour.ProDisPRICE <= 0) sour.ProDisPRICE = 99;
+                if (sour.ProDisPRICE_H <= 0) sour.ProDisPRICE = 168;
+
+                //一般月租
+                var month = monRepo.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), 0);
+                if (month != null && month.Count() > 0)
+                    monRents.AddRange(month);
+                trace.FlowList.Add("一般月租");
+
+                //春節期間才會加入虛擬春節月租
+                var monSpring = new MonthlyRentData();
+                if (isSpring(sour.SD, sour.ED))
+                {
+                    monSpring = new MonthlyRentData()
+                    {
+                        MonthlyRentId = 99999,
+                        StartDate = Convert.ToDateTime("2021-02-09 00:00:00"),
+                        EndDate = Convert.ToDateTime("2021-02-17 00:00:00"),
+                        WorkDayRateForCar = Convert.ToSingle(sour.ProDisPRICE),
+                        HoildayRateForCar = Convert.ToSingle(sour.ProDisPRICE_H),
+                        Mode = 0
+                    };
+                    monRents.Add(monSpring);
+                    trace.FlowList.Add("加入春節月租");
+                    apiMsg += JsonConvert.SerializeObject(monSpring); 
+                }
+
+                re = bill.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, 60, 10, sour.lstHoliday, monRents, 0);
+                trace.FlowList.Add("月租計算");               
+            }
+            catch (Exception ex)
+            {
+                trace.BaseMsg = ex.Message;
+                traceLog.TraceType = eumTraceType.exception;
+                traceLog.ApiMsg = apiMsg;
+                carReo.AddTraceLog(traceLog);
+                throw;
+            }
+
+            return re;
+        }
+
+        private bool isSpring(DateTime SD, DateTime ED)
+        {
+            DateTime vsd = Convert.ToDateTime("2021-02-09 00:00:00");
+            DateTime ved = Convert.ToDateTime("2021-02-17 00:00:00");
+            if (ED > vsd && ED <= ved)
+                return true;
+            else if (SD >= vsd && SD < ved)
+                return true;
+            return false;
+        }
     }
 
-    public class CarRentRepo: BaseRepository
+    public static class SiteUV
+    {
+        /// <summary>
+        /// 版號
+        /// </summary>
+        public static readonly string codeVersion = "202101141500";//hack: 修改程式請修正此版號
+    }
+
+    #region repo
+    //note: repo
+    public class CarRentRepo : BaseRepository
     {
         private string _connectionString;
 
@@ -547,7 +692,7 @@ namespace WebAPI.Models.BillFunc
         {
             this.ConnectionString = ConnStr;
         }
-        public List<MonthlyRentHis> GetMonthlyRentHistory(string MonthlyRentIds,string OrderNo)
+        public List<MonthlyRentHis> GetMonthlyRentHistory(string MonthlyRentIds, string OrderNo)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -556,7 +701,7 @@ namespace WebAPI.Models.BillFunc
             mHis = GetObjList<MonthlyRentHis>(ref flag, ref lstError, SQL, null, "");
             return mHis;
         }
-    
+
         public List<OrderQueryFullData> GetOrders(string orderNos)
         {
             bool flag = false;
@@ -571,17 +716,50 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
-        public bool SetInitPriceByOrderNo(OrderQueryFullData sour) 
+        public  ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            var re = new ProjectDiscountTBVM();
+
+            string SQL = @"
+                SELECT TOP 1
+                       p.ProjID
+                      ,p.CARTYPE
+                      ,p.CUSTOMIZE
+                      ,p.CUSDAY
+                      ,p.DISTYPE
+                      ,p.DISRATE
+                      ,p.PRICE
+                      ,p.PRICE_H
+                      ,p.DISCOUNT
+                      ,p.PHOURS
+                  FROM dbo.TB_ProjectDiscount p
+                  JOIN TB_CarType t on t.CarType = p.CARTYPE 
+                  WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(ProjID))
+                SQL += " AND ProjID = '" + ProjID + "' ";
+            if(!string.IsNullOrWhiteSpace(CarTypeNm))
+                SQL += " AND LOWER(t.CarTypeName) = LOWER('" + CarTypeNm + "')";
+
+            var xre = GetObjList<ProjectDiscountTBVM>(ref flag, ref lstError, SQL, null, "");
+            if (xre != null && xre.Count() > 0)
+                re = xre.FirstOrDefault();
+            return re;
+        }
+
+        public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
         {
             bool flag = true;
             string SQL = "";
 
-            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE OrderNo = " + sour.OrderNo.ToString() ;
+            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE OrderNo = " + sour.OrderNo.ToString();
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
 
-        public bool AddErrLog(string FunName,string Msg, string ErrorCode="")
+        public bool AddErrLog(string FunName, string Msg, string ErrorCode = "")
         {
             return AddErrLog(FunName, ErrorCode, 0, 999, Msg);
         }
@@ -600,16 +778,16 @@ namespace WebAPI.Models.BillFunc
             SQL = "INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])";
             SQL += " VALUES ('" + FunName + "'," +
                 "'" + ErrorCode + "'," + ErrType.ToString() + "," + SQLErrorCode.ToString() + "," +
-                "'" + SQLErrorDesc + "',9999,1)";                
+                "'" + SQLErrorDesc + "',9999,1)";
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
 
-        public bool AddApiLog(int APIID, string Msg,string OrderNo="")
+        public bool AddApiLog(int APIID, string Msg, string OrderNo = "")
         {
             return AddApiLog(APIID, "99999", Msg, OrderNo);
         }
-        
+
         public bool AddApiLog(int APIID, string CLIENTIP, string APIInput, string ORDNO)
         {
             if (string.IsNullOrWhiteSpace(CLIENTIP))
@@ -628,10 +806,10 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-        
+
         public bool AddTraceLog(TraceLogVM sour)
         {
-            if(sour != null)
+            if (sour != null)
             {
                 var def = new TraceLogVM();
                 if (string.IsNullOrWhiteSpace(sour.CodeVersion))
@@ -652,9 +830,9 @@ namespace WebAPI.Models.BillFunc
             bool flag = true;
             string SQL = "";
             SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
-            SQL += " VALUES ('" + sour.CodeVersion + "'," 
+            SQL += " VALUES ('" + sour.CodeVersion + "',"
                 + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
-                "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'"+ 
+                "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'" +
               ")";
             ExecNonResponse(ref flag, SQL);
             return flag;
@@ -696,15 +874,114 @@ namespace WebAPI.Models.BillFunc
 
     }
 
-    public static class SiteUV
+    public class CarRentSp
     {
-        /// <summary>
-        /// 版號
-        /// </summary>
-        public static readonly string codeVersion = "202101141500";//hack: 修改程式請修正此版號
+        public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg)
+        {
+            var re = new GetFullProjectVM();
+            if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
+                throw new Exception("PROJID, CARTYPE 必填");
+
+            List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
+
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetEstimate);
+
+            object[] param = new object[3];
+            param[0] = PROJID;
+            param[1] = CARTYPE;
+            param[2] = LogID;
+
+            DataSet ds1 = null;
+            string returnMessage = "";
+            string messageLevel = "";
+            string messageType = "";
+
+            ds1 = WebApiClient.SPRetB(ServerInfo.GetServerInfo(), SPName, param, ref returnMessage, ref messageLevel, ref messageType);
+
+            if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+            {
+                if (ds1.Tables.Count >= 2)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        GetFullProjectVMs = objUti.ConvertToList<GetFullProjectVM>(ds1.Tables[0]);
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errMsg = re_db.ErrorMsg;
+                    }
+                }
+
+                if (GetFullProjectVMs != null && GetFullProjectVMs.Count() > 0)
+                    re = GetFullProjectVMs.FirstOrDefault();
+            }
+            else
+                errMsg = returnMessage;
+
+            return re;
+        }
+
     }
 
+    #endregion
+
     #region VM
+    //note: vm
+
+    #region 春節月租
+
+    public class IBIZ_SpringInit
+    {
+        public string IDNO { get; set; }
+        public long LogID { set; get; }
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjID { set; get; }
+        /// <summary>
+        /// 車型
+        /// </summary>
+        public string CarType { set; get; }
+        /// <summary>
+        /// 預計取車時間
+        /// </summary>
+        public DateTime SD { set; get; }
+        /// <summary>
+        /// 預計還車時間
+        /// </summary>
+        public DateTime ED { set; get; }
+        /// <summary>
+        /// 平日價-小時
+        /// </summary>
+        public double PRICE { set; get; }
+        /// <summary>
+        /// 假日價-小時
+        /// </summary>
+        public double PRICE_H { set; get; }
+        /// <summary>
+        /// 專案平日價-小時
+        /// </summary>
+        public double ProDisPRICE { set; get; }
+        /// <summary>
+        /// 專案假日價-小時
+        /// </summary>
+        public double ProDisPRICE_H { set; get; }
+        /// <summary>
+        /// 假日列表
+        /// </summary>
+        public List<Holiday> lstHoliday { get; set; } = new List<Holiday>();
+    }
+    //public class OBIZ_SpringInit
+    //{
+
+    //}
+    //public class MonRentDataVM: MonthlyRentData
+    //{
+    //    public string CarType { get; set; }
+    //}
+
+    #endregion
+
     public class IBIZ_GetPayDetail
     {
         /// <summary>
@@ -1087,20 +1364,6 @@ namespace WebAPI.Models.BillFunc
         public double UseHolidayHours { get; set; }
         public double UseMotoTotalHours { get; set; }
     }
-    public enum eumOrderData
-    {
-        GetPayDetail,
-        ContactSetting
-    }
-    public enum eumTraceType
-    {
-        none,
-        exception,
-        followErr,
-        logicErr,
-        mark
-    } 
-
     public class TraceLogVM
     {
         public string CodeVersion { get; set; } = "x";
@@ -1121,17 +1384,62 @@ namespace WebAPI.Models.BillFunc
         public string FlowStep { get; set; } = "x";
         public string FlowType { get; set; } = "x";
     }
-   
+
+    #endregion
+
+    #region TBVM
+    //note: tbvm
+
+    public class ProjectDiscountTBVM
+    {
+        public string ProjID { get; set; }
+        public string CARTYPE { get; set; }
+        public string CUSTOMIZE { get; set; }
+        public string CUSDAY { get; set; }
+        public int DISTYPE { get; set; }//短整數
+        public double DISRATE { get; set; }
+        public double PRICE { get; set; }
+        public double PRICE_H { get; set; }
+        public double DISCOUNT { get; set; }
+        public double PHOURS { get; set; }
+    }
+
+    #endregion
+
+    #region eunm
+    //note: eunm
+    public enum eumOrderData
+    {
+        GetPayDetail,
+        ContactSetting
+    }
+    public enum eumTraceType
+    {
+        none,
+        exception,
+        followErr,
+        logicErr,
+        mark
+    }
+
+    public enum eumFlowType
+    {
+        none,
+        gold,
+    }
+
     #endregion
 
     #region TraceVm
+    //note: tracevm
+
     public class TraceBase
     {
         public TraceBase()
         {
             codeVersion = SiteUV.codeVersion;
         }
-
+        public string BaseMsg { get; set; }
         /// <summary>
         /// 版號,程式有修改請務必變更
         /// </summary>

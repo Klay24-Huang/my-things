@@ -340,10 +340,10 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         /// <param name="SD">起</param>
         /// <param name="ED">迄</param>
-        /// <param name="priceN">一般平日</param>
-        /// <param name="priceH">一般假日</param>
-        /// <param name="daybaseMins">基本分鐘</param>
-        /// <param name="dayMaxHour">計費單日最大小時數</param>
+        /// <param name="priceN">一般平日99</param>
+        /// <param name="priceH">一般假日168</param>
+        /// <param name="daybaseMins">基本分鐘60</param>
+        /// <param name="dayMaxHour">計費單日最大小時數10</param>
         /// <param name="lstHoliday">假日列表</param>
         /// <param name="monthData">月租列表,</param>
         /// <param name="Discount">折扣</param>
