@@ -678,13 +678,12 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
-            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Detail.Amount,0) AS ArrearAMT ";
+            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ";
 
             SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
     
-            SQL +=" LEFT JOIN[dbo].[TB_NPR330Save] AS Main WITH(NOLOCK) ON VW.IDNO = Main.IDNO";
+            SQL += " LEFT JOIN VW_BE_GetNPR330Data AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
 
-            SQL +=" INNER JOIN[dbo].[TB_NPR330Detail] AS Detail WITH(NOLOCK) ON Main.NPR330Save_ID = Detail.NPR330Save_ID AND IRENTORDNO = '"+string.Format("H{0}",OrderNo.ToString().PadLeft(7,'0'))+"' AND Main.IsPay = 1";
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";

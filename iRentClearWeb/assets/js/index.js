@@ -363,7 +363,7 @@ function showList(obj) {
             }
         }
         var isNeedMaintain = (parseInt(obj[i].isNeedMaintenance, 10) == 1) ? "√" : "";
-        var isLongTime = (parseInt(obj[i].afterRentDays, 10) > 3) ? "三天以上未租" : "";
+        var isLongTime = (parseInt(obj[i].afterRentDays, 10) > 3) ? "√" : "";
         if (parseInt(obj[i].OrderStatus, 10) != 0) {
             OrderStatus = "租約中【H" + obj[i].OrderStatus + "】";
             bgColor = "background-color:#f7c22a";

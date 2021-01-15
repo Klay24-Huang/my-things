@@ -322,7 +322,7 @@ function SetData(data) {
 
             /*營損結束*/
 
-            $("#gift_point_input").val(OdderObj.CarPoint);
+            $("#gift_point_input").val(OrderObj.CarPoint);
             if (BonusObj) {
                 MaxPointer = BonusObj.CanUseTotalCarPoint;
             }
