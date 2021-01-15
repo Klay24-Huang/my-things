@@ -199,8 +199,9 @@ namespace WebAPI.Controllers
                     MEMCONTEL = apiInput.MEMCONTEL,
                     MEMEMAIL = apiInput.MEMEMAIL,
                     HasVaildEMail = apiInput.HasVaildEMail,
-                    MEMMSG = apiInput.MEMMSG
-                };
+                    MEMMSG = apiInput.MEMMSG,
+                    MEMONEW = apiInput.MEMONEW //20210115唐加
+            };
 
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);

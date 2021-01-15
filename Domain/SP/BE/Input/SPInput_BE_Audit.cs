@@ -79,5 +79,7 @@ namespace Domain.SP.BE.Input
         public string MEMEMAIL { get; set; }
         public int HasVaildEMail { get; set; }
         public string MEMMSG { get; set; }
+        //20201125 UPD BY 堂尾鰭 增加欄位處理
+        public string MEMONEW { get; set; }
     }
 }

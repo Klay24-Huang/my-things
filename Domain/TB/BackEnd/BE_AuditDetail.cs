@@ -93,5 +93,7 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string MEMO { set; get; }
         public string isBlock { set; get; }
+        //20210115唐加
+        public string MEMONEW { set; get; }
     }
 }

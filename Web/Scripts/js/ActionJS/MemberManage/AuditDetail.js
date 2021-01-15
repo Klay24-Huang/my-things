@@ -117,6 +117,9 @@ $(function () {
         var MEMEMAIL = $("#MEMEMAIL").val();
         var HasVaildEMail = $("#HasVaildEMail_OK").prop("checked") ? 1 : 0;
         var MEMMSG = $("#MEMMSG_OK").prop("checked") ? 'Y' : 'N';
+
+        //20210115 UPD BY 堂尾鰭 增加備註欄位處理
+        var MEMONEW = $("#MEMO_NEW").val();
         
         //console.log("AuditStatus=" + AuditStatus);
         $("input[name='Driver']:checked").each(function () {
@@ -274,6 +277,9 @@ $(function () {
             SendObj.MEMEMAIL = MEMEMAIL;
             SendObj.HasVaildEMail = HasVaildEMail;
             SendObj.MEMMSG = MEMMSG;
+
+            //20210115 UPD BY 堂尾鰭 增加備註欄位處理
+            SendObj.MEMONEW = MEMONEW;
             
 
             DoAjaxAfterGoBack(SendObj, "BE_Audit", "審核發生錯誤");

@@ -14,6 +14,11 @@ $(document).ready(function () {
             $("#remark_input").prop("readonly", "readonly");
         }
     });
+
+/*
+合約編號不是只有7碼，是從1開始累積到現在有700多萬筆單，所以才是7碼數字，
+程式判斷輸入空值就跳提醒，若不是H開頭就參數遺漏，若H開頭但後面不是純數字就fail
+*/
     $("#btnQuery").on("click", function () {
         var OrderNo = $("#OrderNo").val();
 
