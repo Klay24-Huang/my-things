@@ -188,6 +188,7 @@ namespace WebAPI.Controllers
                                 List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
 
                                 flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
+                                
                                 if (flag)
                                 {
                                     if (hasBind == 0)
