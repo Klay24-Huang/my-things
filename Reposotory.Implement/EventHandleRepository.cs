@@ -68,31 +68,35 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            string SQL = " SELECT  ET.[CarNo],[FactoryYear],[CCNum],[GPSStatus],[Speed],[Latitude],[Longitude] ";
-            SQL += "  ,[GPSTime],ISNULL([OrderNo],0) AS CarStatus  ";
-            SQL += "  FROM   VW_BE_GetOrderForTimeLine AS OT ";
-            SQL += "  INNER JOIN VW_BE_GetEVTimeLine AS ET ON ET.CarNo=OT.CarNo AND GPSTime BETWEEN FS AND FE ";
-            int nowCount = 0;
+            //string SQL = " SELECT  ET.[CarNo],[FactoryYear],[CCNum],[GPSStatus],[Speed],[Latitude],[Longitude] ";
+            //SQL += "  ,[GPSTime],ISNULL([OrderNo],0) AS CarStatus  ";
+            //SQL += "  FROM   VW_BE_GetOrderForTimeLine AS OT ";
+            //SQL += "  INNER JOIN VW_BE_GetEVTimeLine AS ET ON ET.CarNo=OT.CarNo AND GPSTime BETWEEN FS AND FE ";
+            //int nowCount = 0;
+            //string term = "";
+
+            //SqlParameter[] para = new SqlParameter[3];
+            //if (OrderNo != null)
+            //{
+            //    Int64 OrderNum = Convert.ToInt64(OrderNo);
+            //    if (OrderNum > 0)
+            //    {
+            //        term += "  OrderNo=@OrderNo ";
+            //        para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            //        para[nowCount].Value = OrderNum;
+            //        para[nowCount].Direction = ParameterDirection.Input;
+            //    }
+
+            //}
+            //if (term != "")
+            //{
+            //    SQL += " Where " + term;
+            //}
+            //SQL += "  ORDER BY GPSTime ASC";
+
+            SqlParameter[] para = new SqlParameter[0];
+            string SQL = " EXEC usp_BE_GetMapDataByTimeLine '"+ OrderNo.ToString() + "'";
             string term = "";
-
-            SqlParameter[] para = new SqlParameter[3];
-            if (OrderNo != null)
-            {
-                Int64 OrderNum = Convert.ToInt64(OrderNo);
-                if (OrderNum > 0)
-                {
-                    term += "  OrderNo=@OrderNo ";
-                    para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
-                    para[nowCount].Value = OrderNum;
-                    para[nowCount].Direction = ParameterDirection.Input;
-                }
-
-            }
-            if (term != "")
-            {
-                SQL += " Where " + term;
-            }
-            SQL += "  ORDER BY GPSTime ASC";
 
             lstEV = GetObjList<BE_EvTimeLine>(ref flag, ref lstError, SQL, para, term);
             return lstEV;
