@@ -281,6 +281,7 @@
     <Compile Include="TB\BackEnd\BE_CleanDataWithoutPIC.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMainDetail.cs" />
+    <Compile Include="TB\BackEnd\BE_GetCleanFixQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />

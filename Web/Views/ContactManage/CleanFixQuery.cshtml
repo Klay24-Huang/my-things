@@ -1,1 +1,362 @@
 ﻿
+@model IEnumerable<Domain.TB.BackEnd.BE_GetCleanFixQueryForWeb>
+@{
+    string CarNo = (ViewData["CarNo"] == null) ? "" : ViewData["CarNo"].ToString();
+    string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
+    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
+    string SDate = (ViewData["SDate"] == null) ? "" : ViewData["SDate"].ToString();
+    string EDate = (ViewData["EDate"] == null) ? "" : ViewData["EDate"].ToString();
+    string OrderNo = (ViewData["OrderNo"] == null) ? "" : ViewData["OrderNo"].ToString();
+    string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
+
+    int ResultLen = -1;
+    List<Domain.TB.BackEnd.BE_GetCleanFixQueryForWeb> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.TB.BackEnd.BE_GetCleanFixQueryForWeb>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+}
+<div class="container mt-4">
+    <!--card start-->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            查詢保修/清潔預約
+        </div>
+        @using (Html.BeginForm("CleanFixQuery", "ContactManage", FormMethod.Post, new { id = "frmBookingQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                訂單編號
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id='OrderNo' name='OrderNo' pattern="(H)[0-9]{1,7}" value="@(OrderNo)">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                員編
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@(IDNO)" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                服務據點
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
+                            </div>
+
+                        </div>
+                        @*<div class="row">
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-10">
+
+                                <input type="button" name="btnAll" class="btn btn-outline-info" value="設定all" onclick=setStation("all");>
+                                <input type="button" name="btnX0SR" class="btn btn-outline-info" value="雙北【機車】" onclick=setStation("X0WR");>
+                                <input type="button" name="btnX1JT" class="btn btn-outline-info" value="台南【機車】" onclick=setStation("X1JT");>
+                                <input type="button" name="btnX1ZZ" class="btn btn-outline-info" value="宜蘭【機車】" onclick=setStation("X1ZZ");>
+                                <input type="button" name="btnX1KZ" class="btn btn-outline-info" value="高雄【機車】" onclick=setStation("X1KZ");>
+                                <input type="button" name="btnX1KZ" class="btn btn-outline-info" value="台中【機車】" onclick=setStation("X1KY");>
+
+                            </div>
+                        </div>*@
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                *車牌號碼
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="CarNo" id="CarNo" value="@(CarNo)" />
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                *訂單類型
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" id="Mode" name="Mode">
+                                    <option value="-1">請選擇</option>
+                                    <option value="1">清潔租約(後台)</option>
+                                    <option value="2">保修租約</option>
+                                    <option value="4">清潔租約(整備人員)</option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                取車時間
+                            </div>
+                            <div class="col-md-3">
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="StartDate" name="StartDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                還車時間
+                            </div>
+                            <div class="col-md-3">
+                                <div class="custom-datepicker">
+                                    <input class="dateTimePicker form-control" type="text" id="EndDate" name="EndDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+
+                                <button type="submit" name="btnSend" id="btnSend" class="btn btn-primary">確定送出</button>
+                                @*<button type="button" name="btnReset" id="btnReset" class="btn btn-secondary">取消</button>*@
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+        <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+        <input type="hidden" id="SpecCode" name="SpecCode" value="@(Mode)" />
+        <input type="hidden" id="len" name="len" value="@ResultLen" />
+    </div>
+
+</div>
+
+<!--輸出表格-->
+<div class="container mt-4" id="ShowSetCardPanel">
+    <table class="table bg-white" data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+
+                <th scope="col" data-sort-inital="descending" data-class="expand">預約編號</th>
+                <th scope="col">員編</th>
+                <th scope="col">訂單類型</th>
+                <th data-hide="all" scope="col">姓名</th>
+                <th scope="col">車號</th>
+                <th data-hide="all" scope="col">預計取車時間</th>
+                <th data-hide="all" scope="col">預計還車時間</th>
+                <th data-hide="all" scope="col">實際取車時間</th>
+                <th data-hide="all" scope="col">實際還車時間</th>
+
+                <th>目前狀態</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="10" class="text-center">查無結果</td>
+
+
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    string cancel_msg = "無";
+                    int isMotor = (lstData[i].CarNo.Substring(0, 1) == "E") ? 1 : 0;
+                    string bookingStart = "";
+                    string bookingEnd = "";
+
+                    <tr>
+
+                        <td scope="row">@(string.Format("H{0}",lstData[i].OrderNum.PadLeft(7,'0')))</td>
+                        <td scope="col">@(lstData[i].IDNO)</td>
+                        <td scope="col">
+                            @{
+                                string OrderMode = "清潔租約(整備)";
+                                if (lstData[i].spec_status == "1")
+                                {
+                                    OrderMode = "清潔租約(後台)";
+                                }
+                                else if (lstData[i].spec_status == "2")
+                                {
+                                    OrderMode = "保修租約(後台)";
+                                }
+
+                            }
+                            @(OrderMode)
+                        </td>
+                        <td scope="col">@(lstData[i].UName)</td>
+                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col">@(lstData[i].SD.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td scope="col">@(lstData[i].ED.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td scope="col">
+                            @switch (lstData[i].OrderStatus)
+                            {
+                                case 0:
+                                    if (lstData[i].cancel_status == 5)
+                                    {
+                                        bookingStart = "已取消";
+                                    }
+                                    else
+                                    {
+                                        bookingStart = "未取車";
+                                    }
+                                    break;
+                                case 1:
+                                case 2:
+                                    bookingStart = lstData[i].FS.ToString("yyyy-MM-dd HH:mm:ss");
+                                    break;
+
+                            }
+                            @bookingStart
+                        </td>
+                        <td scope="col">
+                            @switch (lstData[i].OrderStatus)
+                            {
+                                case 0:
+                                    if (lstData[i].cancel_status == 5)
+                                    {
+                                        bookingEnd = "已取消";
+                                    }
+                                    else
+                                    {
+                                        bookingEnd = "未取車";
+                                    }
+                                    break;
+                                case 1:
+                                    bookingEnd = "未還車";
+                                    break;
+                                case 2:
+                                    bookingEnd = lstData[i].FE.ToString("yyyy-MM-dd HH:mm:ss");
+                                    break;
+
+                            }
+                            @bookingEnd
+                        </td>
+
+
+
+                        <td scope="col">
+                            @if (lstData[i].cancel_status == 5 && lstData[i].OrderStatus == 0)
+                            {
+                                cancel_msg = "取消預約";
+                            }
+                            else
+                            {
+
+                                switch (lstData[i].OrderStatus)
+                                {
+                                    case 0:
+                                        if (lstData[i].cancel_status == 5)
+                                        {
+                                            cancel_msg = "已取消";
+                                        }
+                                        else
+                                        {
+                                            cancel_msg = "未取車";
+                                        }
+                                        break;
+                                    case 1:
+                                        cancel_msg = "已取車";
+                                        break;
+                                    case 2:
+                                        cancel_msg = "已還車";
+                                        break;
+
+                                }
+                            }
+
+                            @cancel_msg
+                        </td>
+
+
+
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="10" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<form action="" id="showDetail" name="showDetail" method="get">
+    <input type="hidden" id="DetailOrderNo" name="DetailOrderNo" />
+</form>
+<!--輸出表格結束-->
+
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+                var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>
+
+
