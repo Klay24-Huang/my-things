@@ -300,7 +300,15 @@
                             }
                             else
                             {
-                                AuditResultStr = "已通過";
+                                if (lstData[i].HasAudit == "-1")
+                                {
+                                    AuditResultStr = "未申請";
+                                    AuditStr = "未處理";
+                                }
+                                else
+                                {
+                                    AuditResultStr = "已通過";
+                                }
                             }
                         }
                         @(AuditStr)
