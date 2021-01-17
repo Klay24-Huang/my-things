@@ -767,5 +767,49 @@ namespace Web.Controllers
             }
             return View(obj);
         }
+        /// <summary>
+        /// 作廢合約
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactCancel()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 新增保修清潔合約
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult InsertClean()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 清潔保修查詢
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CleanFixQuery()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 清潔保修查詢
+        /// </summary>
+        /// <param name="OrderNo">訂單編號</param>
+        /// <param name="IDNO">員編或密碼</param>
+        /// <param name="StationID">據點</param>
+        /// <param name="CarNo">車號</param>
+        /// <param name="StartDate">起日</param>
+        /// <param name="EndDate">迄日</param>
+        /// <param name="Mode">模式
+        /// <para>0:清潔</para>
+        /// <para>1:保修</para>
+        /// </param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult CleanFixQuery(string OrderNo, string IDNO, string StationID, string CarNo, string StartDate, string EndDate, string Mode)
+        {
+            return View();
+        }
     }
 }
