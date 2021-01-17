@@ -340,6 +340,7 @@
     <Content Include="Scripts\js\ActionJS\ContactManage\BookingQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\CleanFixQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactBooking.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactCancel.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactExtend.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
