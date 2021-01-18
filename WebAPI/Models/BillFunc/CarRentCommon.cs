@@ -142,7 +142,8 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 var discPrice = Convert.ToDouble(sour.car_n_price) * (re.nor_car_wDisc / 60) + Convert.ToDouble(sour.car_h_price) * (re.nor_car_hDisc / 60);
-                re.nor_car_PayDiscPrice = Convert.ToInt32(Math.Floor(discPrice));
+                //re.nor_car_PayDiscPrice = Convert.ToInt32(Math.Floor(discPrice));
+                re.nor_car_PayDiscPrice = Convert.ToInt32(Math.Round(discPrice, 0, MidpointRounding.AwayFromZero));
                 re.UseDisc = re.nor_car_PayDisc;
             }
 
@@ -1452,6 +1453,12 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     }
+
+    public class TraceCom : TraceBase
+    {
+        public Dictionary<string, object> Trace = new Dictionary<string, object>();
+    }
+
     public class PayTraceBase: TraceBase
     {
         public string errCode { get; set; }
