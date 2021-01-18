@@ -626,7 +626,10 @@ namespace WebAPI.Models.BillFunc
                 //一般月租
                 var month = monRepo.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), 0);
                 if (month != null && month.Count() > 0)
+                {
                     monRents.AddRange(month);
+                    monRents.ForEach(x => { x.WorkDayHours = 0; x.HolidayHours = 0; x.MotoTotalHours = 0; });
+                }
                 trace.FlowList.Add("一般月租");
 
                 //春節期間才會加入虛擬春節月租
