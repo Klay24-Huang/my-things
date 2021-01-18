@@ -28,12 +28,12 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
-        /// 【後台】儲存合約修改變更(點數折抵模式)
+        /// 【後台】合約修改(汽機車整合2021新版)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> BE_HandleOrderModifyByDiscount(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_HandleOrderModifyNew(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_HandleOrderModifyController";
+            string funName = "BE_HandleOrderModifyNewController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BE_HandleOrderModify apiInput = null;
