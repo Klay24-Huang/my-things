@@ -731,7 +731,7 @@ namespace WebAPI.Models.BillFunc
             v.CarTypeGroupCode,
             v.PRICE,
             v.PRICE_H
-            FROM dbo.VW_GetFullProjectCollectionOfCarTypeGroup v                 
+            FROM dbo.VW_GetFullProjectCollectionOfCarTypeGroup v WITH(NOLOCK)                 
             WHERE 1=1 ";
 
             if (!string.IsNullOrWhiteSpace(ProjID))
