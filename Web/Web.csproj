@@ -338,7 +338,9 @@
     <Content Include="Scripts\js\ActionJS\CardDataInfo\SentCardSetting.js" />
     <Content Include="Scripts\js\ActionJS\CardDataInfo\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\BookingQuery.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\CleanFixQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactBooking.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactCancel.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactExtend.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactHistoryQuery.js" />
@@ -350,6 +352,7 @@
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMotorDetail.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactQuery.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactSetting.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\InsertClean.js" />
     <Content Include="Scripts\js\ActionJS\CustomerArea\CustomerDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\Home\ChangePWD.js" />
     <Content Include="Scripts\js\ActionJS\Login.js" />
@@ -659,6 +662,9 @@
     <Content Include="Views\Manage\RealtimeSale.cshtml" />
     <Content Include="Views\ContactManage\ContactMaintainOfMotorNew.cshtml" />
     <Content Include="Views\ContactManage\ContactMaintainOfCarNew.cshtml" />
+    <Content Include="Views\ContactManage\CleanFixQuery.cshtml" />
+    <Content Include="Views\ContactManage\InsertClean.cshtml" />
+    <Content Include="Views\ContactManage\ContactCancel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

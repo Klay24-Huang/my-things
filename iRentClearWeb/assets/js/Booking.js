@@ -92,6 +92,10 @@ $(document).ready(function () {
                 errMsg = "未輸入管理者帳號";
             }
         }
+        if (CarNo === "") {
+            flag = false;
+            errMsg="未輸入車號"
+        }
         if (flag) {
             blockUI();
             var SendObj = new Object();
