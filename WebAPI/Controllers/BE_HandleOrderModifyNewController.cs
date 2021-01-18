@@ -298,7 +298,9 @@ namespace WebAPI.Controllers
                 start_mile = apiInput.start_mile,
                 PAYAMT = apiInput.DiffPrice,
                 Insurance_price = apiInput.Insurance_price,
-                Mileage = apiInput.Mileage
+                Mileage = apiInput.Mileage,
+                 Pure=apiInput.Pure
+
             };
             SPOutput_Base spOut = new SPOutput_Base();
 
@@ -375,37 +377,41 @@ namespace WebAPI.Controllers
                 };
                 WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
+                SPInput_BE_NPR136Success spInput = new SPInput_BE_NPR136Success()
+                {
+
+                    LogID = LogID,
+
+                    OrderNo = OrderNo,
+                    isRetry = 0,
+                    UserID = UserID
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base>(connetStr);
+
                 flag = hiEasyRentAPI.NPR136Save(wsInput, ref wsOutput);
                 if (flag)
                 {
                     if (wsOutput.Result)
                     {
-                        string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
-                        SPInput_BE_NPR136Success spInput = new SPInput_BE_NPR136Success()
-                        {
-
-                            LogID = LogID,
-
-                            OrderNo = OrderNo,
-                            isRetry = 1,
-                            UserID = UserID
-                        };
-                        SPOutput_Base spOut = new SPOutput_Base();
-
-                        SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base>(connetStr);
-                        flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                        new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                        spInput.isRetry = 0;
                     }
                     else
                     {
+                        spInput.isRetry = 1;
                         flag = false;
                         errCode = "ERR767";
                     }
                 }
                 else
                 {
+                    spInput.isRetry = 1;
                     errCode = "ERR767";
                 }
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
             }
             else
             {

@@ -707,4 +707,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HistoryID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d921f095-e5d6-4309-95aa-f77e71fed50d" ChangeDateTime="01/17/2021 22:19:39">
+    <Property Name="ElementName" Value="[dbo].[TB_ReturnCarErrorLog].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ReturnCarErrorLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ErrorLog" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="459bb287-647a-4644-a132-cc9f14cb1a6a" ChangeDateTime="01/17/2021 22:19:49">
+    <Property Name="ElementName" Value="[dbo].[TB_ReturnCarErrorLog].[ErrorLog]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_ReturnCarErrorLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ErrorLogId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d3dc0df5-055e-46cd-8134-e873d08844b3" ChangeDateTime="01/17/2021 22:24:22">
+    <Property Name="ElementName" Value="[dbo].[TB_AlertMailLog].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_AlertMailLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AlertID" />
+  </Operation>
 </Operations>

@@ -56,7 +56,11 @@ $(document).ready(function () {
         var Other_6 = $("#OtherFee_input").val();
         var Other_7 = $("#ParkingFeeByMachi_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
+            var totalAmt = parseInt(pure)  + parseInt(FP);
+            $("#final_price_input").val(totalAmt);
+
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
+            final_price = $("#final_price_input").val();
             var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice);
             //var final_amt = (parseInt(final_price) - (oldPrice)) + (OtherPrice - oldOtherPrice);
 
@@ -152,6 +156,7 @@ $(document).ready(function () {
                 var ParkingFeeByMachiRemark = $("#ParkingFeeByMachiRemark_input").val();
                 var Insurance_price = $("#Insurance_price_input").val();
                 var Mileage = $("#Mileage_input").val();
+                var PurePrice = $("#pure_price_input").val();
 
                 if (MotorPoint == "") {
                     $("#gift_point_moto_input").val("0");
@@ -191,7 +196,7 @@ $(document).ready(function () {
                 obj.fine_price = fine_price;
                 obj.Insurance_price = Insurance_price
                 obj.Mileage = Mileage;
-
+                obj.Pure = PurePrice;
 
                 if (OrderObj.PROJTYPE == 4) {
                     obj.CarPoint = CarPoint;
@@ -205,7 +210,7 @@ $(document).ready(function () {
                 if (CheckIsUndefined(Remark)) {
                     obj.Remark = Remark
                 }
-
+     
                 DoAjaxAfterReload(obj, "BE_HandleOrderModifyNew", "修改資料發生錯誤");
             } else {
                 disabledLoadingAndShowAlert(errMsg);
