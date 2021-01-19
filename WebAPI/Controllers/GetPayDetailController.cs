@@ -233,13 +233,13 @@ namespace WebAPI.Controllers
                         SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                         SD = SD.AddSeconds(SD.Second * -1); //去秒數
                                                             //機車路邊不計算預計還車時間
-                        
+
                         if (!string.IsNullOrWhiteSpace(OrderDataLists[0].fine_Time) && Convert.ToDateTime(OrderDataLists[0].fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
                         {
                             FineDate = Convert.ToDateTime(OrderDataLists[0].fine_Time);
                             FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
                         }
-                        
+
 
                         var neverHasFine = new List<int>() { 3, 4 };//路邊機車不會逾時
                         if (neverHasFine.Contains(OrderDataLists[0].ProjType))
@@ -256,8 +256,8 @@ namespace WebAPI.Controllers
                         FED = Convert.ToDateTime(OrderDataLists[0].final_stop_time);
                         FED = FED.AddSeconds(FED.Second * -1);  //去秒數
                         lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
-                          
-                        if(FineDate != null)
+
+                        if (FineDate != null)
                         {
                             if (FED > FineDate)
                             {
@@ -656,11 +656,8 @@ namespace WebAPI.Controllers
                             //里程費計算修改，遇到取不到里程數的先以0元為主
                             //outputApi.Rent.MileageRent = OrderDataLists[0].end_mile == 0 ? 0 : Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                             // 20201218 因應車機回應異常，因此判斷起始里程/結束里程有一個是0或里程數>1000公里，均先列為異常，不計算里程費，待系統穩定後再將這段判斷移除
-                            if (OrderDataLists[0].start_mile == 0 ||
-                                OrderDataLists[0].end_mile == 0 ||
-                                ((OrderDataLists[0].end_mile - OrderDataLists[0].start_mile) > 1000) ||
-                                ((OrderDataLists[0].end_mile - OrderDataLists[0].start_mile) < 0)
-                                )
+                            // 20210119 里程數>1000公里的判斷移除
+                            if (OrderDataLists[0].start_mile == 0 || OrderDataLists[0].end_mile == 0 || ((OrderDataLists[0].end_mile - OrderDataLists[0].start_mile) < 0))
                             {
                                 outputApi.Rent.MileageRent = 0;
                             }
@@ -801,7 +798,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = !flag ? eumTraceType.followErr: eumTraceType.mark
+                        TraceType = !flag ? eumTraceType.followErr : eumTraceType.mark
                     };
                     carRepo.AddTraceLog(errItem);
                 }
@@ -853,11 +850,11 @@ namespace WebAPI.Controllers
                     sour.MonthRent.carInfo != null &&
                     sour.MonthRent.carInfo.mFinal != null &&
                     sour.MonthRent.carInfo.mFinal.Any(x => x.WorkDayHours > 0 ||
-                    x.HolidayHours > 0 || x.MotoTotalHours >0)
+                    x.HolidayHours > 0 || x.MotoTotalHours > 0)
                     )
                     return true;
             }
-                
+
             return false;
         }
 
@@ -1801,5 +1798,4 @@ namespace WebAPI.Controllers
         #endregion
 
     }
-
 }
