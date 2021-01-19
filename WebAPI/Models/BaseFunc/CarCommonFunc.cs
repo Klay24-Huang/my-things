@@ -1,6 +1,7 @@
 ﻿using Domain.CarMachine;
 using Domain.SP.BE.Input;
 using Domain.SP.Input.Rent;
+using Domain.SP.Output;
 using Domain.SP.Output.Rent;
 using Domain.TB;
 using Domain.WebAPI.Input.CENS;
@@ -655,13 +656,14 @@ namespace WebAPI.Models.BaseFunc
             #endregion
             return flag;
         }
-        public bool DoBECloseRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode)
+        public bool DoBECloseRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode,int ByPass)
         {
             int IsCens = 0;
             int IsMotor = 0;
             string deviceToken = "";
             string StationID = "";
             string CID = "";
+            string tmpErrCode = "";
             List<CardList> lstCardList = new List<CardList>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             CommonFunc baseVerify = new CommonFunc();
@@ -787,7 +789,17 @@ namespace WebAPI.Models.BaseFunc
                             #endregion
                             if (false == flag)
                             {
-                                errCode = "ERR188";
+                                if (ByPass == 1)
+                                {
+                                    tmpErrCode = "ERR188";
+                                    flag = true;
+
+                                }
+                                else
+                                {
+                                    errCode = "ERR188";
+                                }
+                               
                             }
                         }
                         #endregion
@@ -920,7 +932,16 @@ namespace WebAPI.Models.BaseFunc
                                     #endregion
                                     if (false == flag)
                                     {
-                                        errCode = "ERR188";
+                                        if (ByPass == 1)
+                                        {
+                                            tmpErrCode = "ERR188";
+                                            flag = true;
+
+                                        }
+                                        else
+                                        {
+                                            errCode = "ERR188";
+                                        }
                                     }
                                 }
                                 #endregion
@@ -1103,7 +1124,16 @@ namespace WebAPI.Models.BaseFunc
                                 #endregion
                                 if (false == flag)
                                 {
-                                    errCode = "ERR188";
+                                    if (ByPass == 1)
+                                    {
+                                        tmpErrCode = "ERR188";
+                                        flag = true;
+
+                                    }
+                                    else
+                                    {
+                                        errCode = "ERR188";
+                                    }
                                 }
 
                             }
@@ -1153,6 +1183,30 @@ namespace WebAPI.Models.BaseFunc
                         }
                     }
                     #endregion
+                }
+            }
+            #endregion
+            #region 判斷bypass
+            if (ByPass == 1 && tmpErrCode!="")
+            {
+                //寫入tb
+                //BE_InsCarReturnError
+                SPName = new ObjType().GetSPName(ObjType.SPType.BE_InsCarReturnError);
+                SPInput_BE_InsCarReturnError CarErrorInput = new SPInput_BE_InsCarReturnError()
+                {
+                    CarError = tmpErrCode,
+                    LogID = LogID,
+                    OrderNo = tmpOrder,
+                    UserID = UserID
+                };
+                SPOutput_Base CarErrorOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_InsCarReturnError, SPOutput_Base> CarErrorHelp = new SQLHelper<SPInput_BE_InsCarReturnError, SPOutput_Base>(connetStr);
+                flag = CarErrorHelp.ExecuteSPNonQuery(SPName, CarErrorInput, ref CarErrorOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag == false)
+                {
+                    flag = true;
+                    
                 }
             }
             #endregion

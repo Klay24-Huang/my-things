@@ -327,23 +327,25 @@ namespace WebAPI.Controllers
                                         clearFlag = (tmp.Flag == 0);    //true目前沒有其他訂單，要下車機cmd
                                     }
                                 }
-                                if (flag)
-                                {
-                                    if (clearFlag)
-                                    {
-                                        flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
-                                    }
-                                    // 20201223;不管檢核結果，強還照做
-                                    flag = true;
-                                    errCode = "000000";
-                                }
+                                /*2021.01.19 ↓下方已抽離成一支api，於前端若是選擇前強已先處理，不需重覆做*/
+                                //if (flag)
+                                //{
+                                //    if (clearFlag)
+                                //    {
+                                //        flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
+                                //    }
+                                //    // 20201223;不管檢核結果，強還照做
+
+                                //    flag = true;
+                                //    errCode = "000000";
+                                //}
                                 if (flag)
                                 {
                                     if (lstOrder[0].car_mgt_status == 15)
                                     {
                                         if (clearFlag)
                                         {
-                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
+                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
                                             if (CarFlag == false)
                                             {
                                                 //寫入車機錯誤
@@ -379,7 +381,7 @@ namespace WebAPI.Controllers
                                         {
                                             if (clearFlag)
                                             {
-                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
+                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
                                                 if (CarFlag == false)
                                                 {
                                                     //寫入車機錯誤

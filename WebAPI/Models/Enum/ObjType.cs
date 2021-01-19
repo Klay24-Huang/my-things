@@ -172,6 +172,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_CheckCarStatusByReturn,
             /// <summary>
+            /// 後台強還，寫入bypass記錄
+            /// </summary>
+            BE_InsCarReturnError,
+            /// <summary>
             /// 通過檢查，寫入還車時間
             /// </summary>
             ReturnCar,
@@ -733,6 +737,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_CheckCarStatusByReturn:
                     SPName = "usp_BE_CheckCarStatusByReturn";
+                    break;
+                case SPType.BE_InsCarReturnError:
+                    SPName = "usp_BE_InsCarReturnError";
                     break;
                 case SPType.ReturnCar:
                     SPName = "usp_ReturnCar";
