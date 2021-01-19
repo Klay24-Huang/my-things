@@ -124,29 +124,168 @@ $(function () {
                 }
             }
         }
+        //增加是否要bypass流程
         if (flag) {
-            var Account = $("#Account").val();
-            var obj = new Object();
-            obj.UserID = Account;
-            obj.OrderNo = OrderNo;
-            obj.type = parseInt(type);
-            //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
-            obj.Mode = parseInt(mode);
-            obj.returnDate = ReturnDate;
-            obj.bill_option = bill_option;
-            obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
-            obj.NPOBAN = NPOBAN;
-            obj.unified_business_no = unified_business_no;
-            obj.parkingSpace = parkingSpace;
-            var json = JSON.stringify(obj);
-            console.log(json);
-            DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
+            if (parseInt(mode) == 0 && parseInt(type) == 1) {
+                var Account = $("#Account").val();
+                var obj = new Object();
+                obj.UserID = Account;
+                obj.OrderNo = OrderNo;
+                DoAjaxAfterCallBackWithOutMessage(obj,"BE_ContactSettingCheck","執行強還前確認發生錯誤",ByPass)
+            } else {
+                var Account = $("#Account").val();
+                var obj = new Object();
+                obj.UserID = Account;
+                obj.OrderNo = OrderNo;
+                obj.type = parseInt(type);
+                //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
+                obj.Mode = parseInt(mode);
+                obj.returnDate = ReturnDate;
+                obj.bill_option = bill_option;
+                obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
+                obj.NPOBAN = NPOBAN;
+                obj.unified_business_no = unified_business_no;
+                obj.parkingSpace = parkingSpace;
+                var json = JSON.stringify(obj);
+                console.log(json);
+                DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
+            }
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
+ 
 
     });
+    function ByPass(data) {
+        console.log(data);
+       // data.ErrorCode="ERR188"
+        if (data.ErrorCode == "ERR188") {
+            disabledLoading();
+            swal({
+                title: '車機檢核發生錯誤，請問是否忽略，繼續強還',
+                buttons: {
+                    cancel: {
+                        text: "取消",
+                        value: false,
+                        visible: true,
+                        className: "",
+                        closeModal: true,
+                    },
+                    confirm: {
+                        text: "繼續",
+                        value: true,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    }
+                },
+                text: data.ErrorMessage,
+                icon: 'info'
+            }).then(function (value) {
+                console.log(value)
+                if (value) {
+                    SendData(ByPass);
+                }
+            })
+        } else {
+            disabledLoadingAndShowAlert(data.ErrorMessage);
+        }
+    }
+    function SendData(ByPassFlag) {
+        ShowLoading("繼續執行強還…");
+        var OrderNo = $("#OrderNo").val();
+        var type = $("#type").val();
+        //var ParkInfo = $("#ParkInfo").val(); //20201209唐加
+        var mode = $("#mode").val();
+        var ReturnDate = $("#StartDate").val();
+        var bill_option = $("#InvoiceType").val();
+        var CARRIERID = $("#CARRIERID").val();
+        var NPOBAN = $("#NPOBAN").val();
+        var unified_business_no = $("#UniCode").val();
+        var parkingSpace = $("#parkingSpace").val();
+        var flag = true;
+        var errMsg = "";
+        if (OrderNo == "") {
+            flag = false;
+            errMsg = "訂單編號未填";
+        }
+        if (flag) {
+            if (parseInt(type) < 0) {
+                flag = false;
+                errMsg = "動作類型未填";
+            }
+        }
+        if (flag) {
+            if (parseInt(mode) < 0) {
+                flag = false;
+                errMsg = "動作用途未填";
+            }
+        }
+        if (flag) {
+            if (type == "1" && ReturnDate == "") {
+                flag = false;
+                errMsg = "還車時間未填"
+            } else {
+                ReturnDate = ReturnDate + ":00";
+            }
+            if (type == "1" && (InvoiceType == "0" || InvoiceType == "")) {
+                flag = false;
+                errMsg = "發票寄送方式未填"
+            }
+        }
+        if (flag) {
+            if (type == "1" && mode == "0") {
+                switch (bill_option) {
+                    case '1':   //捐贈
+                        if ($("#LoveCodeList").val() == '') {
+                            flag = false;
+                            errMsg = "還車時間未填";
+                        }
+                        break;
+                    case '2':   //EMAIL
+                    case '3':   //EMAIL
+                        break;
+                    case '4':   //三聯式發票，請至官網查詢下載
+                        if ($("#UniCode").val() == '') {
+                            flag = false;
+                            errMsg = "統一編號未填";
+                        }
+                        break;
+                    case '5':   //手機條碼載具
+                    case '6':   //自然人憑證載具
+                        if ($("#CARRIERID").val() == '') {
+                            flag = false;
+                            errMsg = bill_option == '4' ? '手機條碼載具未填' : '自然人憑證載具未填';
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        if (flag) {
+                var Account = $("#Account").val();
+                var obj = new Object();
+                obj.UserID = Account;
+                obj.OrderNo = OrderNo;
+                obj.type = parseInt(type);
+                //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
+                obj.Mode = parseInt(mode);
+                obj.returnDate = ReturnDate;
+                obj.bill_option = bill_option;
+                obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
+                obj.NPOBAN = NPOBAN;
+                obj.unified_business_no = unified_business_no;
+            obj.parkingSpace = parkingSpace;
+            obj.ByPass = (ByPassFlag)?1:0
+            var json = JSON.stringify(obj);
+                console.log(json);
+            DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
 
+        } else {
+            disabledLoadingAndShowAlert(errMsg);
+        }
+    }
     var getMemberInvoice = function () {
         if ($('#type').val() != "1") {
 
