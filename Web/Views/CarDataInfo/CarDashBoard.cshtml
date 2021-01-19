@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarDashBoardData>
+@using System.Text;
 @{
 
     string StationID = "";
@@ -289,19 +290,19 @@
                             @(lstMotoData[i].Speed)/@(lstMotoData[i].Millage)
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', '0','2')">發動</button>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 3,1)">熄火</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', '0','2')">發動</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd2('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', 3,1)">熄火</button>
                             <br>
                             @*<button type="button" class="btn btn-outline-secondary mb-2">key on</button>*@
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 2)">key on</button>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 6)">開坐墊</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', 2)">key on</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', 6)">開坐墊</button>
                             <br>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 7)">開/關電池架</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', 7)">開/關電池架</button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)', 5)">頭燈</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))', 5)">頭燈</button>
                             <br>
-                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(lstMotoData[i].BLE_DeviceKey)',4)">喇叭</button>
+                            <button type="button" class="btn btn-outline-secondary mb-2" onclick="SendMotoCmd('@(lstMotoData[i].CID)','@(lstMotoData[i].deviceToken)','@(Encoding.Default.GetString(Convert.FromBase64String(lstMotoData[i].BLE_DeviceKey)))',4)">喇叭</button>
                         </td>
                         <td>
                             @((lstMotoData[i].LastUpdate == "") ? "無回應" : Convert.ToDateTime(lstMotoData[i].LastUpdate).ToString("yyyy-MM-dd HH:mm:ss"))

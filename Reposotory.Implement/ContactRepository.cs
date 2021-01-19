@@ -208,6 +208,117 @@ namespace Reposotory.Implement
 
             return lstOrderPart;
         }
+        public List<BE_GetCleanFixQueryForWeb> GetCleanFixQueryForWeb(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED,string Mode)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetCleanFixQueryForWeb> lstOrderPart = null;
+
+
+            int nowCount = 0;
+            string SQL = "SELECT * ";
+            SQL += " FROM VW_BE_GetCleanFixQueryForWeb WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string term2 = "";
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " OrderNum=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (IDNO != "")
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (StationID != "" && StationID != "all")
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " StationID=@StationID";
+                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 20);
+                para[nowCount].Value = StationID;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (CarNo != "")
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (Mode != "" )
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " spec_status=@spec_status";
+                para[nowCount] = new SqlParameter("@spec_status", SqlDbType.VarChar, 20);
+                para[nowCount].Value = Mode;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (string.IsNullOrEmpty(SD) == false && SD != "")
+            {
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
+                {
+                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = ED;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                }
+                else
+                {
+                    term2 = " AND SD >= @SD AND  ED <= @SD";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = SD;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(ED) == false && ED != "")
+                {
+                    term2 = " AND SD >= @ED AND  ED <= @ED";
+                    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
+                    para[nowCount].Value = ED;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+            if ("" != term2)
+            {
+                SQL += term2;
+            }
+            SQL += " ORDER BY OrderNum ASC;";
+
+            lstOrderPart = GetObjList<BE_GetCleanFixQueryForWeb>(ref flag, ref lstError, SQL, para, term);
+
+
+            return lstOrderPart;
+        }
         /// <summary>
         /// 後台訂單查詢使用
         /// </summary>
@@ -678,13 +789,12 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
-            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Detail.Amount,0) AS ArrearAMT ";
+            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ";
 
             SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
     
-            SQL +=" LEFT JOIN[dbo].[TB_NPR330Save] AS Main WITH(NOLOCK) ON VW.IDNO = Main.IDNO";
+            SQL += " LEFT JOIN VW_BE_GetNPR330Data AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
 
-            SQL +=" INNER JOIN[dbo].[TB_NPR330Detail] AS Detail WITH(NOLOCK) ON Main.NPR330Save_ID = Detail.NPR330Save_ID AND IRENTORDNO = '"+string.Format("H{0}",OrderNo.ToString().PadLeft(7,'0'))+"' AND Main.IsPay = 1";
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";

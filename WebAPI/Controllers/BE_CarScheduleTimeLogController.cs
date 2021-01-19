@@ -175,15 +175,15 @@ namespace WebAPI.Controllers
 
                     //}
 
-                    for (int i = 1; i < lstCar.Count; i++)
+                    for (int i = 0; i < lstCar.Count; i++)
                     {
                         List<BE_CarScheduleTimeLog> orders = lstCarSchedule.FindAll(delegate (BE_CarScheduleTimeLog car)
                         {
-                            return car.CarNo == lstCar[i].CarNo;
+                            return car.CarNo.Replace(" ","") == lstCar[i].CarNo;
                         });
                         List<BE_OrderInfo> tmpOrderInfo=new List<BE_OrderInfo>();
 
-                        for (int x = 1; x < orders.Count; x++)
+                        for (int x = 0; x < orders.Count; x++)
                         {
                             tmpOrderInfo.Add(new BE_OrderInfo()
                             {

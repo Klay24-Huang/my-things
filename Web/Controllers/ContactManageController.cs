@@ -767,5 +767,118 @@ namespace Web.Controllers
             }
             return View(obj);
         }
+        /// <summary>
+        /// 作廢合約
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactCancel()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 新增保修清潔合約
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult InsertClean()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 清潔保修查詢
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CleanFixQuery()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 清潔保修查詢
+        /// </summary>
+        /// <param name="OrderNo">訂單編號</param>
+        /// <param name="IDNO">員編或密碼</param>
+        /// <param name="StationID">據點</param>
+        /// <param name="CarNo">車號</param>
+        /// <param name="StartDate">起日</param>
+        /// <param name="EndDate">迄日</param>
+        /// <param name="Mode">模式
+        /// <para>0:清潔</para>
+        /// <para>1:保修</para>
+        /// </param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult CleanFixQuery(string OrderNo, string IDNO, string CarNo,string StationID, string StartDate, string EndDate, string Mode)
+        {
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            ContactRepository repository = new ContactRepository(connetStr);
+            ViewData["CarNo"] = CarNo;
+            ViewData["StationID"] = StationID;
+            ViewData["IDNO"] = IDNO;
+            ViewData["Mode"] = Mode;
+            ViewData["SDate"] = StartDate;
+            ViewData["EDate"] = EndDate;
+            ViewData["OrderNo"] = OrderNo;
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
+            string errCode = "";
+            Int64 tmpOrder = 0;
+
+            if (StartDate != "" && EndDate == "")
+            {
+
+                StartDate = StartDate + " 00:00:00";
+            }
+            else if (StartDate == "" && EndDate != "")
+            {
+                EndDate = EndDate + " 23:59:59";
+            }
+            else if (StartDate != "" && EndDate != "")
+            {
+                StartDate = StartDate + " 00:00:00";
+                EndDate = EndDate + " 23:59:59";
+            }
+            if (OrderNo != "")
+            {
+                if (OrderNo.IndexOf("H") < 0)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                    errorMsg = "訂單編號格式不符";
+                }
+                if (flag)
+                {
+                    flag = Int64.TryParse(OrderNo.Replace("H", ""), out tmpOrder);
+                    if (flag)
+                    {
+                        if (tmpOrder <= 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            errorMsg = "訂單編號格式不符";
+                        }
+
+                    }
+                }
+            }
+            if (Mode == "-1")
+            {
+                Mode = "";
+            }
+            List<BE_GetCleanFixQueryForWeb> lstData = null;
+            if (flag)
+            {
+                ViewData["errorLine"] = "ok";
+                lstData = repository.GetCleanFixQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate,Mode);
+            }
+            else
+            {
+                ViewData["errorMsg"] = errorMsg;
+                ViewData["errorLine"] = errCode.ToString();
+            }
+
+            return View(lstData);
+        }
     }
 }

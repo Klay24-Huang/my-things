@@ -63,6 +63,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @TotalHours FLOAT;
+DECLARE @SpecStatus VARCHAR(2);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -147,6 +148,9 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 		IF @Error = 0
 		BEGIN
 		   BEGIN
+				--取得特殊身分
+				SELECT @SpecStatus=ISNULL(SPECSTATUS,'') FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+				
 				--找出被預約的車輛
 				IF OBJECT_ID('tempdb..#TB_OrderMain') IS NOT NULL DROP TABLE #TB_OrderMain
 				--SELECT order_number,IDNO,CarNo
@@ -194,11 +198,16 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
 				INSERT INTO #SPDATE VALUES('2021-02-09','2021-02-16')
 				SELECT * INTO #TB_Project FROM TB_Project WITH(NOLOCK) WHERE ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd))
-				--IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE)))
-				--BEGIN
-				--	--在此時間的專案會只剩特殊專案
-				--	DELETE FROM #TB_Project WHERE PROJID<>'R107'
-				--END
+				IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE))) AND @SpecStatus='99'
+				BEGIN
+					--在此時間的專案會只剩特殊專案
+					DELETE FROM #TB_Project WHERE PROJID<>'R129' 
+
+				END
+				ELSE
+				BEGIN
+					DELETE FROM #TB_Project WHERE PROJID='R129'
+				END
 
 				--20201023 ADD BY ADAM REASON.調整邏輯
 				SELECT  DISTINCT StationID		= C.nowStationID
@@ -210,6 +219,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,PriceBill              = dbo.FN_CarRentCompute(@SD, @ED, IIF(PD.PRICE>0 , PD.PRICE, P.PROPRICE_N), IIF(PD.PRICE>0 , PD.PRICE_H, P.PROPRICE_H), 10, 0)
 												+ (@TotalHours * ISNULL(MS.MilageBase,0)*20)
 												+ CASE WHEN @Insurance=1 THEN (@TotalHours *  CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END) ELSE 0 END
+						,MilageBase             = ISNULL(MS.MilageBase,0)
 						,CarBrend				= D.CarBrend
 						,CarType				= E.CarTypeGroupCode
 						,CarTypeName			= D.CarBrend + ' ' + D.CarTypeName		--廠牌+車型
@@ -242,7 +252,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				JOIN TB_CarTypeGroup E WITH(NOLOCK) ON F.CarTypeGroupID=E.CarTypeGroupID
 				JOIN TB_OperatorBase O WITH(NOLOCK) ON D.Operator=O.OperatorID
 				JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
-				JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
+				JOIN #TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
 				LEFT JOIN TB_ProjectDiscount PD WITH(NOLOCK) ON PD.ProjID = S.PROJID AND D.CarType = PD.CARTYPE --2020-12-17 eason
 				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
 				LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID = I.CityID --eason 2020-11-27

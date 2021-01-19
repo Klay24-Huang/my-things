@@ -493,6 +493,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_BookingCancel,
             /// <summary>
+            /// 強制取消(新版)
+            /// </summary>
+            BE_BookingCancelNew,
+            /// <summary>
             /// 【整備人員】取消訂單
             /// </summary>
             BE_CancelCleanOrder,
@@ -809,6 +813,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";
+                    //SPName = "usp_GetStationCarTypeOfMutiStation_20210118";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -998,6 +1003,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_BookingCancel:
                     SPName = "usp_BE_BookingCancel";
+                    break;
+                case SPType.BE_BookingCancelNew:
+                    SPName = "usp_BE_BookingCancelNew";
                     break;
                 case SPType.BE_ChangeCar:
                     SPName = "usp_BE_ChangeCar";

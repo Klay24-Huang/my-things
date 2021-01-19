@@ -114,5 +114,9 @@ namespace Domain.SP.Output.Project
         /// 站點照片
         /// </summary>
         public string StationPicJson { get; set; }
+        /// <summary>
+        /// 每公里多少錢
+        /// </summary>
+        public float MilageBase { set; get; }
     }
 }

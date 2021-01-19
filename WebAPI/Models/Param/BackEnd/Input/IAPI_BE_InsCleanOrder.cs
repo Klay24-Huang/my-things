@@ -11,5 +11,6 @@ namespace WebAPI.Models.Param.BackEnd.Input
         public string CarNo { set; get; }
         public string SD { set; get; }
         public string ED { set; get; }
+
     }
 }

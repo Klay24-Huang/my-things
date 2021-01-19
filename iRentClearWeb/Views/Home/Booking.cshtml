@@ -20,13 +20,13 @@
 
         if (ViewData["BookingStart"] != null)
         {
-            BookingStartTime = Convert.ToDateTime(ViewData["BookingStart"]).AddHours(8);
+            BookingStartTime = Convert.ToDateTime(ViewData["BookingStart"]);
             BookingStart = BookingStartTime.Value.ToString("yyyy-MM-dd HH:mm");
         }
 
         if (ViewData["BookingEnd"] != null)
         {
-            BookingStartTime = Convert.ToDateTime(ViewData["BookingEnd"]).AddHours(8);
+            BookingStartTime = Convert.ToDateTime(ViewData["BookingEnd"]);
             BookingEnd = BookingStartTime.Value.ToString("yyyy-MM-dd HH:mm");
         }
 

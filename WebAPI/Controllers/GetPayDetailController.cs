@@ -233,11 +233,13 @@ namespace WebAPI.Controllers
                         SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                         SD = SD.AddSeconds(SD.Second * -1); //去秒數
                                                             //機車路邊不計算預計還車時間
-                        if (!string.IsNullOrWhiteSpace(OrderDataLists[0].fine_Time))
+                        
+                        if (!string.IsNullOrWhiteSpace(OrderDataLists[0].fine_Time) && Convert.ToDateTime(OrderDataLists[0].fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
                         {
                             FineDate = Convert.ToDateTime(OrderDataLists[0].fine_Time);
                             FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
                         }
+                        
 
                         var neverHasFine = new List<int>() { 3, 4 };//路邊機車不會逾時
                         if (neverHasFine.Contains(OrderDataLists[0].ProjType))
@@ -809,8 +811,8 @@ namespace WebAPI.Controllers
                 }
                 #endregion
                 #region 輸出
-                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
-                return objOutput;
+                //baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+                //return objOutput;
                 #endregion
             }
             catch (Exception ex)
@@ -827,8 +829,14 @@ namespace WebAPI.Controllers
                     TraceType = eumTraceType.exception
                 };
                 carRepo.AddTraceLog(errItem);
-                throw;
+                errCode = "ERR902";
+                //errMsg = "";
+                //throw;
             }
+            #region 輸出
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            return objOutput;
+            #endregion
         }
 
         private bool logicCk(GetPayDetailTrace sour)

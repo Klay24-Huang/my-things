@@ -2232,75 +2232,75 @@ namespace WebAPI.Models.BaseFunc
                         }
                         if (flag)
                         {
-                            if (lstCardList != null)
-                            {
+                          //  if (lstCardList != null)
+                          //  {
 
-                                int CardLen = lstCardList.Count;
+                             //   int CardLen = lstCardList.Count;
                                 //清空顧客卡
-                                if (flag)
-                                {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard;
-                                    WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
+                                //if (flag)
+                                //{
+                                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
+                                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard;
+                                //    WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
+                                //    {
+                                //        command = true,
+                                //        method = CommandType,
+                                //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                //        _params = new Params()
 
-                                    };
-                                    requestId = ClearInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
-                                }
+                                //    };
+                                //    requestId = ClearInput.requestId;
+                                //    method = CommandType;
+                                //    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
+                                //    if (flag)
+                                //    {
+                                //        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                //    }
+                                //}
                                 //寫入萬用卡
-                                if (CardLen > 0)
-                                {
+                                //if (CardLen > 0)
+                                //{
 
 
 
-                                    string[] CardStr = new string[CardLen];
-                                    int NowCount = -1;
-                                    for (int i = 0; i < CardLen; i++)
-                                    {
-                                        if (lstCardList[i].CardType == "M")
-                                        {
-                                            NowCount++;
-                                            CardStr[NowCount] = lstCardList[i].CardNO;
+                                //    string[] CardStr = new string[CardLen];
+                                //    int NowCount = -1;
+                                //    for (int i = 0; i < CardLen; i++)
+                                //    {
+                                //        if (lstCardList[i].CardType == "M")
+                                //        {
+                                //            NowCount++;
+                                //            CardStr[NowCount] = lstCardList[i].CardNO;
 
-                                        }
+                                //        }
 
-                                    }
+                                //    }
 
-                                    if (NowCount >= 0)
-                                    {
-                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo);
-                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo;
-                                        WSInput_Base<UnivCardNoObj> SetCardInput = new WSInput_Base<UnivCardNoObj>()
-                                        {
-                                            command = true,
-                                            method = CommandType,
-                                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                            _params = new UnivCardNoObj()
-                                            {
-                                                UnivCardNo = CardStr
-                                            }
+                                //    if (NowCount >= 0)
+                                //    {
+                                //        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo);
+                                //        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo;
+                                //        WSInput_Base<UnivCardNoObj> SetCardInput = new WSInput_Base<UnivCardNoObj>()
+                                //        {
+                                //            command = true,
+                                //            method = CommandType,
+                                //            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                //            _params = new UnivCardNoObj()
+                                //            {
+                                //                UnivCardNo = CardStr
+                                //            }
 
-                                        };
-                                        requestId = SetCardInput.requestId;
-                                        method = CommandType;
-                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                                        if (flag)
-                                        {
-                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                        }
+                                //        };
+                                //        requestId = SetCardInput.requestId;
+                                //        method = CommandType;
+                                //        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                                //        if (flag)
+                                //        {
+                                //            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                //        }
 
-                                    }
-                                }
+                                //    }
+                                //}
                                 //清除租約
                                 if (flag)
                                 {
@@ -2344,7 +2344,7 @@ namespace WebAPI.Models.BaseFunc
                                     }
                                 }
 
-                            }
+                           // }
                         }
                         #endregion
                     }
