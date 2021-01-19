@@ -81,7 +81,6 @@ namespace WebAPI.Controllers
             BillCommon billCommon = new BillCommon();
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -112,25 +111,6 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 防呆第二段
-            //春節專案判斷，不得已先寫死，之後再回來調整
-            if (flag)
-            {
-                    DateTime dt1 = Convert.ToDateTime(SDate);
-                    DateTime dt2 = Convert.ToDateTime(EDate);
-                    DateTime LimitSDate = new DateTime(2021, 2, 9);
-                    DateTime LimitEDate = new DateTime(2021, 2, 16);
-
-                    if (dt1.Date >= LimitSDate && dt1.Date <= LimitEDate)   // 起日落在春節專案區間才檢查租用天數要>=3天
-                    {
-                        var AllTime = billCommon.GetCarRangeMins(dt1, dt2, 60, 600, lstHoliday);
-                        if (AllTime.Item1 + AllTime.Item2 < 1800)
-                        {
-                            flag = false;
-                            errCode = "ERR235";
-                        }
-                    }
-            }
-
             if (flag)
             {
                 ProjectInfo obj = projectRepository.GetProjectInfo(apiInput.ProjID);
@@ -249,7 +229,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR730";
                 }
-                else if (ds.Tables[0].Rows.Count==0)
+                else if (ds.Tables[0].Rows.Count == 0)
                 {
                     flag = false;
                     errCode = "ERR730";
@@ -258,8 +238,6 @@ namespace WebAPI.Controllers
                 {
 
                 }
-                    
-
                 ds.Dispose();
             }
             #endregion
@@ -310,9 +288,7 @@ namespace WebAPI.Controllers
                     }
 
                     //price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
-                    var xre = GetPriceBill(apiInput.ProjID, apiInput.CarType, IDNO, LogID, lstHoliday, 
-                        SDate, EDate, 
-                        priceBase.PRICE, priceBase.PRICE_H);                   
+                    var xre = GetPriceBill(apiInput.ProjID, apiInput.CarType, IDNO, LogID, lstHoliday, SDate, EDate, priceBase.PRICE, priceBase.PRICE_H);
                     price = xre;
                 }
                 else
@@ -362,8 +338,6 @@ namespace WebAPI.Controllers
                     //20210113 ADD BY ADAM REASON.修正預約顯示錯誤
                     if (errCode == "000000")
                         errCode = "ERR161";
-                    
-
                 }
             }
             #endregion
@@ -431,11 +405,9 @@ namespace WebAPI.Controllers
         /// 春節租金
         /// </summary>
         /// <returns></returns>
-        private int GetPriceBill(string ProjID, string CarType,
-            string IDNO, long LogID, List<Holiday> lstHoliday,
-            DateTime SD, DateTime ED,double Price, double PRICE_H)
+        private int GetPriceBill(string ProjID, string CarType, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, double Price, double PRICE_H)
         {
-            int re = 0;           
+            int re = 0;
             var cr_com = new CarRentCommon();
             var bizIn = new IBIZ_SpringInit()
             {
