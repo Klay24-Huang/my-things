@@ -311,7 +311,7 @@ namespace WebAPI.Controllers
 
                     //price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
                     var xre = GetPriceBill(apiInput.ProjID, apiInput.CarType, IDNO, LogID, lstHoliday, 
-                        Convert.ToDateTime(apiInput.SDate), Convert.ToDateTime(apiInput.EDate), 
+                        SDate, EDate, 
                         priceBase.PRICE, priceBase.PRICE_H);                   
                     price = xre;
                 }
