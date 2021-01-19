@@ -734,5 +734,86 @@ namespace Web.Controllers
            // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代收停車費明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+
+        /// <summary>
+        /// 光陽維運APP報表 - 20210119唐加
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult KymcoQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult KymcoQuery(int AuditMode, string StartDate, string EndDate)
+        {
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+
+            List<BE_GetKymcoList> lstData = new OtherRepository(connetStr).GetKymcoLists(AuditMode, StartDate, EndDate);
+
+            return View(lstData);
+        }
+
+        public ActionResult ExplodeKymcoQuery(string ExplodeSDate, string ExplodeEDate, int ExplodeAuditMode)
+        {
+            List<BE_GetKymcoList> lstRawDataOfMachi = new List<BE_GetKymcoList>();
+            OtherRepository _repository = new OtherRepository(connetStr);
+
+            string tSDate = "", tEDate = "";
+            int tCarNo = 0;
+
+            /*
+            if (ExplodeSDate.HasValue)
+            {
+                tSDate = ExplodeSDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            if (ExplodeEDate.HasValue)
+            {
+                tEDate = ExplodeEDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            */
+            tSDate = ExplodeSDate;
+            tEDate = ExplodeEDate;
+            tCarNo = ExplodeAuditMode;
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "員工代號", "員工姓名", "區域", "種類", "車號", "經銷商(整備項目)", "地址(備註)", "維修方", "原因次分類", "車輛是否下線", "修改時間" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstRawDataOfMachi = _repository.GetKymcoLists(tCarNo,tSDate, tEDate);
+            int len = lstRawDataOfMachi.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);  
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName); 
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);   
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
+                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].MaintainType);
+                content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].Reason);
+                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Offline);
+                content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
     }
 }

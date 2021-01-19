@@ -374,6 +374,7 @@
     <Content Include="Scripts\js\ActionJS\News\NewsManage.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarFeedBackQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ChargeParkingDetailQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\KymcoQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MaintainLogReport.js" />
     <Content Include="Scripts\js\ActionJS\Report\MonthlyDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MonthlyMainQuery.js" />
@@ -665,6 +666,7 @@
     <Content Include="Views\ContactManage\CleanFixQuery.cshtml" />
     <Content Include="Views\ContactManage\InsertClean.cshtml" />
     <Content Include="Views\ContactManage\ContactCancel.cshtml" />
+    <Content Include="Views\Report\KymcoQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

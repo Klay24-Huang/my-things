@@ -92,7 +92,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult BookingQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
-          
+
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
             ContactRepository repository = new ContactRepository(connetStr);
             bool flag = true;
@@ -175,12 +175,12 @@ namespace Web.Controllers
             if (flag)
             {
 
-            
-                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate,true);
+
+                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
-                   
+
                     int DataLen = lstBook.Count();
                     for (int i = 0; i < DataLen; i++)
                     {
@@ -205,7 +205,7 @@ namespace Web.Controllers
                         content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));    //合約
                         content.CreateCell(1).SetCellValue(lstBook[i].IDNO);                                  //會員帳號
                         content.CreateCell(2).SetCellValue(lstBook[i].UserName);                                     //會員姓名
-                   
+
                         content.CreateCell(3).SetCellValue(OrderStatus);                                                    //訂單類型
                         content.CreateCell(4).SetCellValue(lstBook[i].LStation + "/" + lstBook[i].RStation);                                     //取/還車站
                         content.CreateCell(5).SetCellValue(lstBook[i].CarTypeName);                                     //車型
@@ -233,7 +233,7 @@ namespace Web.Controllers
                         content.CreateCell(25).SetCellValue(lstBook[i].CarPoint);                                     //時數折抵(分)
                         content.CreateCell(26).SetCellValue(lstBook[i].MotorPoint);                                     //時數折抵(分)
                         content.CreateCell(27).SetCellValue(lstBook[i].FinalPrice);                                     //會員姓名
-                      
+
                     }
                 }
             }
@@ -242,7 +242,7 @@ namespace Web.Controllers
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
-           // workbook.Close();
+            // workbook.Close();
             //   return View();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
@@ -266,18 +266,18 @@ namespace Web.Controllers
         /// <param name="Mode"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult ContactQuery(string OrderNo,string IDNO,string StationID,string CarNo,string StartDate,string EndDate,string Mode)
+        public ActionResult ContactQuery(string OrderNo, string IDNO, string StationID, string CarNo, string StartDate, string EndDate, string Mode)
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
             ContactRepository repository = new ContactRepository(connetStr);
-              ViewData["CarNo"] = CarNo;
-              ViewData["StationID"] = StationID;
+            ViewData["CarNo"] = CarNo;
+            ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
             ViewData["Mode"] = Mode;
-           ViewData["SDate"] = StartDate;
-           ViewData["EDate"] = EndDate;
-          ViewData["OrderNo"] = OrderNo;
+            ViewData["SDate"] = StartDate;
+            ViewData["EDate"] = EndDate;
+            ViewData["OrderNo"] = OrderNo;
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
@@ -286,7 +286,7 @@ namespace Web.Controllers
 
             if (StartDate != "" && EndDate == "")
             {
-              
+
                 StartDate = StartDate + " 00:00:00";
             }
             else if (StartDate == "" && EndDate != "")
@@ -332,7 +332,7 @@ namespace Web.Controllers
                 ViewData["errorMsg"] = errorMsg;
                 ViewData["errorLine"] = errCode.ToString();
             }
-            
+
             return View(lstData);
         }
         /// <summary>
@@ -346,14 +346,14 @@ namespace Web.Controllers
             {
                 ContactRepository repository = new ContactRepository(connetStr);
                 List<BE_OrderHistoryData> lstData = new List<BE_OrderHistoryData>();
-                lstData = repository.GetOrderHistory(Convert.ToInt64(OrderNo.Replace("H","")));
+                lstData = repository.GetOrderHistory(Convert.ToInt64(OrderNo.Replace("H", "")));
                 return View(lstData);
             }
             else
             {
                 return View();
             }
-          
+
         }
         /// <summary>
         /// 合約匯出
@@ -617,8 +617,8 @@ namespace Web.Controllers
                     obj = new BE_OrderDataCombind()
                     {
                         Data = repository.GetOrderDetail(tmpOrder),
-                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
-                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
                         ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
@@ -630,7 +630,7 @@ namespace Web.Controllers
                 }
             }
             return View(obj);
-    
+
         }
 
 
@@ -708,8 +708,8 @@ namespace Web.Controllers
                     obj = new BE_OrderDataCombind()
                     {
                         Data = repository.GetOrderDetail(tmpOrder),
-                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0,false),
-                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1,false),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
                         ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
@@ -807,7 +807,7 @@ namespace Web.Controllers
         /// </param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult CleanFixQuery(string OrderNo, string IDNO, string CarNo,string StationID, string StartDate, string EndDate, string Mode)
+        public ActionResult CleanFixQuery(string OrderNo, string IDNO, string CarNo, string StationID, string StartDate, string EndDate, string Mode)
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
@@ -870,7 +870,7 @@ namespace Web.Controllers
             if (flag)
             {
                 ViewData["errorLine"] = "ok";
-                lstData = repository.GetCleanFixQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate,Mode);
+                lstData = repository.GetCleanFixQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate, Mode);
             }
             else
             {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using WebCommon;
+using Domain.TB.BackEnd;
 
 namespace Reposotory.Implement
 {
@@ -172,6 +173,26 @@ namespace Reposotory.Implement
             SQL = "UPDATE TB_tmpFeedBackPIC SET FeedBackFile='"+FileName+ "',UPDTime='"+ DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' WHERE tmpFeedBackPICID =" + FeedBackPICID + ";";
             ExecNonResponse(ref flag, SQL);
             return flag;
+        }
+
+
+        /// <summary>
+        /// 光陽維運app查詢
+        /// </summary>
+        public List<BE_GetKymcoList> GetKymcoLists(int AuditMode, string StartDate, string EndDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetKymcoList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
+            string SQL = " EXEC usp_BE_GetKymcoList  '" + AuditMode.ToString() +
+                "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") + "'";
+
+            lstAudits = GetObjList<BE_GetKymcoList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
         }
     }
 }

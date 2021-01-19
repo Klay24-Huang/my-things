@@ -285,6 +285,7 @@
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />
+    <Compile Include="TB\BackEnd\BE_GetKymcoList.cs" />
     <Compile Include="TB\BackEnd\BE_GetOrderModifyDataNew.cs" />
     <Compile Include="TB\BackEnd\BE_GetOrderModifyDataNewV2.cs" />
     <Compile Include="TB\BackEnd\BE_GetPolygonData.cs" />
