@@ -801,7 +801,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = mark ? eumTraceType.mark : eumTraceType.followErr
+                        TraceType = !flag ? eumTraceType.followErr: eumTraceType.mark
                     };
                     carRepo.AddTraceLog(errItem);
                 }
