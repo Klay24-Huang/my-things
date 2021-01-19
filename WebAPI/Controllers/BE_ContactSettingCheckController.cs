@@ -113,18 +113,38 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                BE_CheckHasOrder tmp = new ContactRepository(this.connetStr).CheckCanClear(tmpOrder.ToString());
-                if (tmp != null)
+                StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
+
+                lstOrder = _repository.GetOrderStatus(tmpOrder);
+                if (lstOrder == null)
                 {
-                    clearFlag = (tmp.Flag == 0);    //true目前沒有其他訂單，要下車機cmd
+                    flag = false;
+                    errCode = "ERR900";
+                }
+                else
+                {
+                    if (lstOrder.Count <= 0)
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
                 }
                 if (flag)
                 {
-                    if (clearFlag)
+                    IDNO = lstOrder[0].IDNO;
+                    BE_CheckHasOrder tmp = new ContactRepository(this.connetStr).CheckCanClear(tmpOrder.ToString());
+                    if (tmp != null)
                     {
-                        flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
+                        clearFlag = (tmp.Flag == 0);    //true目前沒有其他訂單，要下車機cmd
                     }
-                  
+                    if (flag)
+                    {
+                        if (clearFlag)
+                        {
+                            flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
+                        }
+
+                    }
                 }
             }
             #endregion
