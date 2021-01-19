@@ -600,6 +600,7 @@ namespace WebAPI.Models.BillFunc
                 CodeVersion = SiteUV.codeVersion                
             };
             var trace = new TraceCom();
+            trace.objs.Add(nameof(sour), sour);
             try
             {
                 var monRepo = new MonthlyRentRepository(conStr);
@@ -614,9 +615,7 @@ namespace WebAPI.Models.BillFunc
                     || string.IsNullOrWhiteSpace(sour.IDNO)
                     )
                     throw new Exception("sour資料錯誤");
-                trace.FlowList.Add("sour檢核完成");
-                trace.objs.Add(nameof(sour), sour);
-
+                trace.FlowList.Add("sour檢核完成");            
                 if (sour.PRICE <= 0)  sour.PRICE = 99;
                 if (sour.PRICE_H <= 0) sour.PRICE_H = 168;
                 if (sour.ProDisPRICE <= 0) sour.ProDisPRICE = 99;
