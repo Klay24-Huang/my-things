@@ -129,5 +129,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 里程費用
         /// </summary>
         public int Mileage { set; get; }
+        /// <summary>
+        /// 純租金
+        /// </summary>
+        public int Pure { set; get; }
     }
 }

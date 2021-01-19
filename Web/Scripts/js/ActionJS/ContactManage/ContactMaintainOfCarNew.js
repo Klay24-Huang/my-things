@@ -168,7 +168,7 @@ $(document).ready(function () {
                 var ParkingFeeByMachiRemark = $("#ParkingFeeByMachiRemark_input").val();
                 var Insurance_price = $("#Insurance_price_input").val();
                 var Mileage = $("#Mileage_input").val();
-
+                var PurePrice = $("#pure_price_input").val()
                 if ($.trim(CarPoint) == "") {
                     $("#gift_point_input").val("0");
                     CarPoint = 0;
@@ -203,6 +203,7 @@ $(document).ready(function () {
                 obj.ParkingFeeByMachiRemark = ParkingFeeByMachiRemark;
                 obj.Insurance_price = Insurance_price;
                 obj.Mileage = Mileage;
+                obj.Pure = PurePrice;
 
                 if (OrderObj.PROJTYPE == 4) {
                     obj.CarPoint = CarPoint;
@@ -216,7 +217,7 @@ $(document).ready(function () {
                 if (CheckIsUndefined(Remark)) {
                     obj.Remark = Remark
                 }
-
+               
                 DoAjaxAfterReload(obj, "BE_HandleOrderModifyNew", "修改資料發生錯誤");
             } else {
                 disabledLoadingAndShowAlert(errMsg);
