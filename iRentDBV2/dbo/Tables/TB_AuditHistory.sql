@@ -10,6 +10,7 @@
     [RejectReason]  NVARCHAR(1024) NOT NULL DEFAULT N'', 
     [RejectExplain] NVARCHAR(1024) NOT NULL DEFAULT N'', 
      [MKTime] DATETIME NOT NULL DEFAULT DATEADD(HOUR,8,GETDATE()), 
+    [RentType] TINYINT NOT NULL DEFAULT 0, 
     CONSTRAINT [PK_TB_AuditHistory] PRIMARY KEY ([AuditHistoryID]) 
 )
 

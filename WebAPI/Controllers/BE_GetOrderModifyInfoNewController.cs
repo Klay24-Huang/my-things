@@ -146,11 +146,9 @@ namespace WebAPI.Controllers
                         if (OrderDataLists.Count > 0)
                         {
                             apiOutput.OrderData = OrderDataLists[0];
-
                         }
                     }
                 }
-
             }
 
             #endregion

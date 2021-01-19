@@ -399,7 +399,6 @@ function DoAjaxAfterCallBackWithOutMessage(obj, API, FailMessage, CallBack) {
             if (data.Result == "1") {
                CallBack(data);
             } else {
-
                 swal({
                     title: 'Fail',
                     text: data.ErrorMessage,
