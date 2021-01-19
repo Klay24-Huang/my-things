@@ -262,7 +262,7 @@ namespace WebAPI.Controllers
                         else
                         {
                             apiOutput.Bonus.CanUseTotalMotorPoint = 0;
-                            needPointer -= (needPointer % 30);
+                            //needPointer -= (needPointer % 30);
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
 
                         }
