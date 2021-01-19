@@ -331,6 +331,7 @@
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
     <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
+    <Compile Include="GetMachiParkTokenController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -442,6 +443,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetMachiParkToken.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
