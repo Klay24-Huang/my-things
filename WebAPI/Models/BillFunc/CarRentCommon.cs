@@ -599,9 +599,8 @@ namespace WebAPI.Models.BillFunc
                 ApiNm = funNm,
                 CodeVersion = SiteUV.codeVersion                
             };
-            var trace = new TraceBase();
-            string apiMsg = "";
-
+            var trace = new TraceCom();
+            trace.objs.Add(nameof(sour), sour);
             try
             {
                 var monRepo = new MonthlyRentRepository(conStr);
@@ -616,9 +615,7 @@ namespace WebAPI.Models.BillFunc
                     || string.IsNullOrWhiteSpace(sour.IDNO)
                     )
                     throw new Exception("sour資料錯誤");
-                trace.FlowList.Add("sour檢核完成");
-                apiMsg += JsonConvert.SerializeObject(sour);
-
+                trace.FlowList.Add("sour檢核完成");            
                 if (sour.PRICE <= 0)  sour.PRICE = 99;
                 if (sour.PRICE_H <= 0) sour.PRICE_H = 168;
                 if (sour.ProDisPRICE <= 0) sour.ProDisPRICE = 99;
@@ -628,10 +625,11 @@ namespace WebAPI.Models.BillFunc
                 var month = monRepo.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), 0);
                 if (month != null && month.Count() > 0)
                 {
+                    trace.objs.Add(nameof(month), month);
                     monRents.AddRange(month);
                     monRents.ForEach(x => { x.WorkDayHours = 0; x.HolidayHours = 0; x.MotoTotalHours = 0; });
-                }
-                trace.FlowList.Add("一般月租");
+                    trace.FlowList.Add("一般月租");
+                }                
 
                 //春節期間才會加入虛擬春節月租
                 var monSpring = new MonthlyRentData();
@@ -648,18 +646,26 @@ namespace WebAPI.Models.BillFunc
                     };
                     monRents.Add(monSpring);
                     trace.FlowList.Add("加入春節月租");
-                    apiMsg += JsonConvert.SerializeObject(monSpring); 
+                    trace.objs.Add(nameof(monSpring), monSpring);
                 }
 
                 re = bill.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, 60, 10, sour.lstHoliday, monRents, 0);
-                apiMsg += JsonConvert.SerializeObject(re);
-                trace.FlowList.Add("月租計算");               
+                trace.objs.Add(nameof(re), re);
+                trace.FlowList.Add("月租計算");  
+                
+                if(re == null || re.RentInPay == 0)
+                {
+                    trace.BaseMsg = "租金為0";
+                    traceLog.TraceType = eumTraceType.mark;
+                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace);
+                    carReo.AddTraceLog(traceLog);
+                }
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
                 traceLog.TraceType = eumTraceType.exception;
-                traceLog.ApiMsg = apiMsg+JsonConvert.SerializeObject(trace.FlowList);
+                traceLog.ApiMsg = JsonConvert.SerializeObject(trace);
                 carReo.AddTraceLog(traceLog);
                 throw;
             }
@@ -684,7 +690,7 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202101151740";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202101190950";//hack: 修改程式請修正此版號
     }
 
     #region repo
@@ -1456,7 +1462,7 @@ namespace WebAPI.Models.BillFunc
 
     public class TraceCom : TraceBase
     {
-        public Dictionary<string, object> Trace = new Dictionary<string, object>();
+        public Dictionary<string, object> objs = new Dictionary<string, object>();
     }
 
     public class PayTraceBase: TraceBase

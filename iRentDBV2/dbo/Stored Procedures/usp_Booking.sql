@@ -95,6 +95,7 @@ DECLARE  @INVKIND		TINYINT		--發票寄送方式 1:捐贈;2:email;3:二聯;4:三
 		,@CARRIERID		VARCHAR(20)	--手機條碼
 		,@NPOBAN		VARCHAR(20)	--愛心碼
 		,@UNIMNO		VARCHAR(10)	--統編
+DECLARE @BeforeDate		DATETIME;
 
 /*初始設定*/
 SET @Error=0;
@@ -130,6 +131,7 @@ SET @NowActiveOrderNum=0;
 SET @Insurance=ISNULL(@Insurance,0);
 SET @InsurancePurePrice=ISNULL(@InsurancePurePrice,0);
 SET @PayMode=ISNULL(@PayMode,0);
+SET @BeforeDate = DATEADD(Month,-1,@NowTime);
 
 BEGIN TRY
 	IF @Token='' OR @IDNO='' 
@@ -140,7 +142,7 @@ BEGIN TRY
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -149,7 +151,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -165,7 +167,7 @@ BEGIN TRY
 			   @MotorRentBookingNowCount=ISNULL([MotorRentBookingNowCount], 0) ,
 			   @RentNowActiveType=ISNULL(RentNowActiveType, 5) ,
 			   @NowActiveOrderNum=ISNULL(NowActiveOrderNum, 0)
-		FROM [dbo].[TB_BookingStatusOfUser]
+		FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
 
 		--1.1三個相加>=5
@@ -208,7 +210,7 @@ BEGIN TRY
 		IF @ProjType=0
 		BEGIN
 			SELECT @hasData=COUNT(1)
-			FROM TB_OrderMain
+			FROM TB_OrderMain WITH(NOLOCK)
 			WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0)
 			  AND IDNO=@IDNO
 			  AND ProjType=@ProjType
@@ -226,21 +228,69 @@ BEGIN TRY
 			END
 		END
 	END
-
 	--2.5 春節卡預約
-	IF (@SD>=CAST('2021-02-09' AS DATETIME) AND @SD<= CAST('2021-02-16' AS DATETIME))
+	IF @Error = 0
+	BEGIN
+		IF (@SD>=CAST('2021-02-09' AS DATETIME) AND @SD<= CAST('2021-02-16' AS DATETIME))
+		OR (@ED>=CAST('2021-02-09' AS DATETIME) AND @ED<= CAST('2021-02-16' AS DATETIME))
+		BEGIN
+			--測試人員不卡春節
+			IF NOT EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND SPECSTATUS='99')
+			BEGIN
+				SET @Error=1
+				SET @ErrorCode='ERR235'
+			END
+		END
+	END
+	--春節專案預約日期判斷
+	IF @Error = 0 
+	BEGIN
+		IF @ProjID='R129'
+		BEGIN
+			DECLARE @ChineseNewYearBeginDate DATETIME = CONVERT(datetime,'2021/2/9 00:00:00');	--春節專案起日
+			DECLARE @ChineseNewYearEndDate DATETIME = CONVERT(datetime,'2021/2/16 23:59:59');	--春節專案迄日
+
+			DECLARE @TempBeginDate DATETIME;	--春節專案使用起日
+			DECLARE @TempEndDate DATETIME;		--春節專案使用迄日
+			SET @TempBeginDate = @SD;
+			SET @TempEndDate = @ED;
+
+			IF @SD < @ChineseNewYearBeginDate
+			BEGIN
+				SET @TempBeginDate = @ChineseNewYearBeginDate;
+			END
+
+			IF @ED > @ChineseNewYearEndDate
+			BEGIN
+				SET @TempEndDate = @ChineseNewYearEndDate
+			END
+
+			DECLARE @TotalHours FLOAT;	--春節專案總使用時數
+			SELECT @TotalHours = dbo.FN_CalHours(@TempBeginDate,@TempEndDate)
+
+			--早鳥須預約三天以上
+			--IF dbo.GET_TWDATE() < '2021-01-31 23:59:59' AND DATEDIFF(day,@SD,@ED) < 3
+			IF GET_TWDATE() < '2021-01-31 23:59:59' AND @TotalHours < 30
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR241';
+			END
+			--ELSE IF dbo.GET_TWDATE() < '2021-02-09 23:59:59' AND DATEDIFF(day,@SD,@ED) < 1
+			ELSE IF GET_TWDATE() < '2021-02-09 23:59:59' AND @TotalHours < 10
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR242';
+			END
+		END
+	END
+	
+	--維修鎖定
+	IF (@SD>=CAST('2021-01-21 02:00:00' AS DATETIME) AND @SD<=CAST('2021-01-21 03:00:00' AS DATETIME)) OR
+	(@ED>=CAST('2021-01-21 02:00:00' AS DATETIME) AND @ED<=CAST('2021-01-21 03:00:00' AS DATETIME))
 	BEGIN
 		SET @Error=1
-		SET @ErrorCode='ERR235'
+		SET @ErrorCode='ERR906'
 	END
-
-	--維修鎖定
-	--IF (@SD>=CAST('2020-12-24 03:00:00' AS DATETIME) AND @SD<=CAST('2020-12-24 05:00:00' AS DATETIME)) OR
-	--(@ED>=CAST('2020-12-24 03:00:00' AS DATETIME) AND @ED<=CAST('2020-12-24 05:00:00' AS DATETIME))
-	--BEGIN
-	--	SET @Error=1
-	--	SET @ErrorCode='ERR906'
-	--END
 
 	-- 據點特殊判斷
 	IF @Error=0
@@ -261,6 +311,17 @@ BEGIN TRY
 		BEGIN
 			IF (@SD>=CAST('2021-01-29 00:00:00' AS DATETIME) AND @SD<=CAST('2021-06-01 00:00:00' AS DATETIME)) OR
 				(@ED>=CAST('2021-01-29 00:00:00' AS DATETIME) AND @ED<=CAST('2021-06-01 00:00:00' AS DATETIME))
+			BEGIN
+				SET @Error=1
+				SET @ErrorCode='ERR161'
+			END
+		END
+
+		-- 20210119;天霖說X1VS要擋預約
+		IF @StationID='X1VS'
+		BEGIN
+			IF (@SD>=CAST('2021-01-31 00:00:00' AS DATETIME) AND @SD<=CAST('2021-04-01 00:00:00' AS DATETIME)) OR
+				(@ED>=CAST('2021-01-31 00:00:00' AS DATETIME) AND @ED<=CAST('2021-04-01 00:00:00' AS DATETIME))
 			BEGIN
 				SET @Error=1
 				SET @ErrorCode='ERR161'
@@ -289,27 +350,29 @@ BEGIN TRY
 			--將車號及出租次數先寫入暫存
 			INSERT INTO @tmpCar
 			SELECT  Car.CarNo,CarInfo.RentCount
-			FROM  [TB_Car] AS Car
-			INNER JOIN  [TB_CarInfo] AS CarInfo ON CarInfo.CarNo=Car.CarNo AND Car.CarType IN (
-				SELECT VW.CARTYPE FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW 
+			FROM  [TB_Car] AS Car WITH(NOLOCK)
+			INNER JOIN  [TB_CarInfo] AS CarInfo WITH(NOLOCK) ON CarInfo.CarNo=Car.CarNo AND Car.CarType IN (
+				SELECT VW.CARTYPE FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] AS VW WITH(NOLOCK)
 				WHERE CarTypeGroupCode =UPPER(@CarType) AND VW.PROJID=@ProjID AND VW.StationID=@StationID
 			)
-			WHERE available<=1   AND nowStationID=@StationID AND CarInfo.CID<>'';
+			WHERE available<=1 AND nowStationID=@StationID AND CarInfo.CID<>'';
 
 			--由暫存取出是否有符合的車輛
 			SELECT TOP 1 @tmpCarNo=CarNo
 			FROM @tmpCar
-			WHERE CarNO NOT IN
-				(SELECT CarNo
-				 FROM TB_OrderMain
-				 WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0)
-				   AND CarNo IN (SELECT CarNo FROM @tmpCar)
-				   AND ((start_time BETWEEN @SD AND @ED)
-						OR (stop_time BETWEEN @SD AND @ED)
-						OR (@SD BETWEEN start_time AND stop_time)
-						OR (@ED BETWEEN start_time AND stop_time)
-						OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
-						OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time)) )
+			WHERE CarNO NOT IN (SELECT CarNo
+								FROM TB_OrderMain WITH(NOLOCK)
+								WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0)
+								  AND CarNo IN (SELECT CarNo FROM @tmpCar)
+								  AND ((start_time BETWEEN @SD AND @ED)
+										OR (stop_time BETWEEN @SD AND @ED)
+										OR (@SD BETWEEN start_time AND stop_time)
+										OR (@ED BETWEEN start_time AND stop_time)
+										OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
+										OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time)) )
+			AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain WITH(NOLOCK)	-- 排除逾時未還的車
+								WHERE start_time>@BeforeDate AND cancel_status=0 AND (car_mgt_status>=4 and car_mgt_status<16) 
+								AND stop_time < dbo.GET_TWDATE() )		--20210115 ADD BY ADAM REASON.增加逾時才阻擋
 			ORDER BY RentCount ASC;
 
 			--判斷有沒有預約到車
@@ -370,7 +433,7 @@ BEGIN TRY
 
 					--更新預約列表
 					SET @hasData=0;
-					SELECT @hasData=COUNT(1) FROM TB_BookingStatusOfUser WHERE IDNO=@IDNO;
+					SELECT @hasData=COUNT(1) FROM TB_BookingStatusOfUser WITH(NOLOCK) WHERE IDNO=@IDNO;
 					IF @hasData=0
 					BEGIN								
 						SET @NormalRentBookingNowCount=1;
@@ -387,6 +450,13 @@ BEGIN TRY
 					END
 					--寫入歷史記錄
 					INSERT INTO TB_OrderHistory(OrderNum)VALUES(@OrderNum);
+
+					--20210110 ADD BY ADAM REASON.春節專案寫入預約轉檔
+					IF @ProjID='R129'
+					BEGIN
+						EXEC usp_BookingControl_NY @IDNO,@OrderNum,'',@LogID,'','','',''
+					END
+
 					COMMIT TRAN;
 				END
 				ELSE
@@ -403,7 +473,7 @@ BEGIN TRY
 			BEGIN TRAN
 			SET @hasData=0;
 			SELECT @hasData=COUNT(CarNo)
-			FROM TB_OrderMain
+			FROM TB_OrderMain WITH(NOLOCK)
 			WHERE (booking_status<5 AND car_mgt_status<16 AND cancel_status=0)
 			  AND CarNo=@CarNo
 			  AND ((start_time BETWEEN @SD AND @ED)
@@ -469,7 +539,7 @@ BEGIN TRY
 
 					--更新預約列表
 					SET @hasData=0;
-					SELECT @hasData=COUNT(1) FROM TB_BookingStatusOfUser WHERE IDNO=@IDNO;
+					SELECT @hasData=COUNT(1) FROM TB_BookingStatusOfUser WITH(NOLOCK) WHERE IDNO=@IDNO;
 					IF @hasData=0
 					BEGIN	
 						IF @ProjType=3
