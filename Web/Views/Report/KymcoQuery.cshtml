@@ -1,0 +1,218 @@
+﻿@{
+    ViewBag.Title = "KymcoQuery";
+}
+<!--<h2>KymcoQuery</h2>-->
+
+@model IEnumerable<Domain.TB.BackEnd.BE_GetKymcoList>
+
+@{
+    string AuditMode = (ViewData["AuditMode"] == null) ? "1" : ViewData["AuditMode"].ToString();
+    string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
+    string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
+    string[] AuditModeCheck = { "", "", "" };
+    if (AuditMode != "")
+    {
+        if (AuditMode != "0")
+        {
+            //AuditModeCheck[Convert.ToInt32(AuditMode)] = " checked";
+            AuditModeCheck[Convert.ToInt32(AuditMode)] = " selected";
+        }
+        else
+        {
+            //AuditModeCheck[2] = " checked";
+            AuditModeCheck[2] = " selected";
+        }
+
+    }
+    int ResultLen = -1;
+    List<Domain.TB.BackEnd.BE_GetKymcoList> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.TB.BackEnd.BE_GetKymcoList>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            會員審核
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <!--card start-->
+
+    <div class="card">
+        <div class="card-header text-white" style="background-color: #9fa4ac;">
+            查詢條件
+        </div>
+        @using (Html.BeginForm("KymcoQuery", "Report", FormMethod.Post, new { id = "frmKymco", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理項目
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
+                                    <option value="1"></option>
+                                    <option value="1">異常回報</option>
+                                    <option value="0">整備項目</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                報表日期
+                            </div>
+                            <div class="col-md-3">
+                                <!-- datepicker -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@SDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            -
+                            <div class="col-md-3">
+                                <!-- datepicker with time -->
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@EDate" readonly="false">
+                                    <svg width="22" height="22" viewBox="0 0 22 22">
+                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                            <rect width="22" height="19" rx="3" stroke="none" />
+                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                        </g>
+                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                        </g>
+                                        <g transform="translate(3.633 -0.005)">
+                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
+                                <button type="submit" class="btn btn-info">查詢</button>
+                                <button type="reset" class="btn btn-outline-secondary">清除</button>
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+    <!--end card-->
+</div>
+
+@using (Html.BeginForm("ExplodeKymcoQuery", "Report", FormMethod.Post, new { id = "frmKymcoExplode" }))
+{
+    <input type="hidden" id="ExplodeSDate" name="ExplodeSDate" value="">
+    <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
+    <input type="hidden" id="ExplodeAuditMode" name="ExplodeAuditMode" value="">
+}
+
+<!--查詢介面結束-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header  text-white" style="background-color: #9fa4ac;">
+            查詢結果
+        </div>
+    </div>
+</div>
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort-ignore="true">
+                </th>
+                <th scope="col">員工代號</th>
+                <th scope="col">員工姓名</th>
+                <th scope="col">區域</th>
+                <th scope="col">種類</th>
+                <th scope="col">車號</th>
+                <th scope="col" style="width:150px;">經銷商(整備項目)</th>
+                <th scope="col">地址(備註)</th>
+                <th scope="col">維修方</th>
+                <th scope="col">原因次分類</th>
+                <th scope="col">車輛是否下線</th>
+                <th scope="col">修改時間</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="12" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false"></td>
+                        <td scope="col">@(lstData[i].UserID)</td>
+                        <td scope="col">@(lstData[i].UserName)</td>
+                        <td scope="col">@(lstData[i].Area)</td>
+                        <td scope="col">@(lstData[i].TypeK)</td>
+                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col" style="color:red;">@(lstData[i].DealerCodeValue)</td>
+                        <td scope="col">@(lstData[i].MemoAddr)</td>
+                        <td scope="col">@(lstData[i].MaintainType)</td>
+                        <td scope="col">@(lstData[i].Reason)</td>
+                        <td scope="col">@(lstData[i].Offline)</td>
+                        <td scope="col">@(lstData[i].UpdTime)</td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="8" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+<!--輸出表格結束-->
