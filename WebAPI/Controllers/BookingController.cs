@@ -446,8 +446,8 @@ namespace WebAPI.Controllers
                 lstHoliday = lstHoliday,
                 SD = SD,
                 ED = ED,
-                PRICE = Price / 10,
-                PRICE_H = PRICE_H / 10
+                ProDisPRICE = Price / 10,
+                ProDisPRICE_H = PRICE_H / 10
             };
             var xre = cr_com.GetSpringInit(bizIn, connetStr);
             if (xre != null)
