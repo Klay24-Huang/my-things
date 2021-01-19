@@ -309,7 +309,11 @@ namespace WebAPI.Controllers
                         priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarNo, ProjType);
                     }
 
-                    price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                    //price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                    var xre = GetPriceBill(apiInput.ProjID, apiInput.CarType, IDNO, LogID, lstHoliday, 
+                        Convert.ToDateTime(apiInput.SDate), Convert.ToDateTime(apiInput.EDate), 
+                        priceBase.PRICE, priceBase.PRICE_H);                   
+                    price = xre;
                 }
                 else
                 {
@@ -422,5 +426,33 @@ namespace WebAPI.Controllers
             return flag;
         }
         #endregion
+
+        /// <summary>
+        /// 春節租金
+        /// </summary>
+        /// <returns></returns>
+        private int GetPriceBill(string ProjID, string CarType,
+            string IDNO, long LogID, List<Holiday> lstHoliday,
+            DateTime SD, DateTime ED,double Price, double PRICE_H)
+        {
+            int re = 0;           
+            var cr_com = new CarRentCommon();
+            var bizIn = new IBIZ_SpringInit()
+            {
+                ProjID = ProjID,
+                CarType = CarType,
+                IDNO = IDNO,
+                LogID = LogID,
+                lstHoliday = lstHoliday,
+                SD = SD,
+                ED = ED,
+                PRICE = Price / 10,
+                PRICE_H = PRICE_H / 10
+            };
+            var xre = cr_com.GetSpringInit(bizIn, connetStr);
+            if (xre != null)
+                re = xre.RentInPay;
+            return re;
+        }
     }
 }
