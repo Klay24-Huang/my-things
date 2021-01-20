@@ -136,15 +136,17 @@ function setCarSchedule(JsonData) {
         });
         timeline.setGroups(groups);
         itemLen = JsonData.Data[i].lstOrder.length;
+        console.log(itemLen)
         for (j = 0; j < itemLen; j++) {
+            console.log(JsonData.Data[i].lstOrder[j].car_mgt_status + ",BS=" + JsonData.Data[i].lstOrder[j].booking_status + ",CS=" + JsonData.Data[i].lstOrder[j].cancel_status)
             if (JsonData.Data[i].lstOrder[j].car_mgt_status < 17) {
                 var className = 'bg-danger';
                 var start = new Date(JsonData.Data[i].lstOrder[j].SD);
                 var end = new Date(JsonData.Data[i].lstOrder[j].ED);
                 console.log("start:" + start + ",end:" + end);
-                if (JsonData.Data[i].lstOrder[j].cancel_status > 0) {
+                if (JsonData.Data[i].lstOrder[j].cancel_status > 0 && (JsonData.Data[i].lstOrder[j].booking_status < 1 || JsonData.Data[i].lstOrder[j].booking_status>2)) {
                     className = 'bg-secondary';
-                } else if (JsonData.Data[i].lstOrder[j].booking_status === 1) {
+                } else if (JsonData.Data[i].lstOrder[j].booking_status === 1 || JsonData.Data[i].lstOrder[j].booking_status === 2 && JsonData.Data[i].lstOrder[j].car_mgt_status==0) {
                     className = 'bg-outline-danger';
                     start = new Date(JsonData.Data[i].lstOrder[j].SD);
                 } else if (JsonData.Data[i].lstOrder[j].booking_status === 3 || JsonData.Data[i].lstOrder[j].booking_status === 4) {
@@ -173,8 +175,8 @@ function setCarSchedule(JsonData) {
 
         }
     }
-    timeline.setGroups(groups);
-   // drawVisualization();
+  timeline.setGroups(groups);
+ //drawVisualization();
 }
 //初始化TimeLine object
 function drawVisualization() {

@@ -27,3 +27,14 @@
 
 
 })
+function DoCancel(OrderNo) {
+    ShowLoading("執行取消…");
+    var obj = new Object();
+    var Account = $("#Account").val();
+    obj.UserID = Account;
+    obj.OrderNo = OrderNo;
+    obj.type = 2;
+    obj.Mode = 1;
+  
+    DoAjaxAfterReload(obj, "BE_ContactSetting", "執行取消發生錯誤");
+}
