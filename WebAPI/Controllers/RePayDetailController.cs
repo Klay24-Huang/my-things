@@ -52,74 +52,84 @@ namespace WebAPI.Controllers
             #endregion
 
             #region mark-多筆租金計算
-
 //            string vipJsonSour = @"
 //[
 //	{
 //		'orderNo': 7052691,
 //		'idNo': 'C220861844',
 //		'strSd': '2021-02-13 09:00:00.000',
-//		'strEd': '2021/2/18 9:00 AM'
+//		'strEd': '2021/2/18 9:00 AM',
+//        'insPrice':40
 //	},
 //	{
 //		'orderNo': 7052792,
 //		'idNo': 'T122771818',
 //		'strSd': '2021-02-13 09:50:00.000',
-//		'strEd': '2021/2/18 9:50 AM'
+//		'strEd': '2021/2/18 9:50 AM',
+//        'insPrice':30
 //	},
 //	{
 //		'orderNo': 7052902,
 //		'idNo': 'F123872199',
 //		'strSd': '2021-02-11 17:30:00.000',
-//		'strEd': '2021/2/16 5:30 PM'
+//		'strEd': '2021/2/16 5:30 PM',
+//        'insPrice':30
 //	},
 //	{
 //		'orderNo': 7055509,
 //		'idNo': 'S121033452',
 //		'strSd': '2021-02-12 09:10:00.000',
-//		'strEd': '2021/2/17 9:10 AM'
+//		'strEd': '2021/2/17 9:10 AM',
+//        'insPrice':40
 //	},
 //	{
 //		'orderNo': 7057046,
 //		'idNo': 'F127828839',
 //		'strSd': '2021-02-13 08:30:00.000',
-//		'strEd': '2021/2/18 8:30 AM'
+//		'strEd': '2021/2/18 8:30 AM',
+//        'insPrice':50
 //	},
 //	{
 //		'orderNo': 7058172,
 //		'idNo': 'F227037732',
 //		'strSd': '2021-02-15 10:00:00.000',
-//		'strEd': '2021/2/20 10:00 AM'
+//		'strEd': '2021/2/20 10:00 AM',
+//        'insPrice':40
 //	},
 //	{
 //		'orderNo': 7058403,
 //		'idNo': 'F129034915',
 //		'strSd': '2021-02-13 08:00:00.000',
-//		'strEd': '2021/2/18 8:00 AM'
+//		'strEd': '2021/2/18 8:00 AM',
+//        'insPrice':50
 //	},
 //	{
 //		'orderNo': 7059139,
 //		'idNo': 'K222820688',
 //		'strSd': '2021-02-12 07:30:00.000',
-//		'strEd': '2021/2/17 7:30 AM'
+//		'strEd': '2021/2/17 7:30 AM',
+//        'insPrice':50
 //	},
 //	{
 //		'orderNo': 7059268,
 //		'idNo': 'H220713713',
 //		'strSd': '2021-02-12 09:00:00.000',
-//		'strEd': '2021/2/17 9:00 AM'
+//		'strEd': '2021/2/17 9:00 AM',
+//        'insPrice':50
 //	},
 //	{
 //		'orderNo': 7064045,
 //		'idNo': 'A126766693',
 //		'strSd': '2021-02-16 12:30:00.000',
-//		'strEd': '2021/2/21 12:30 PM'
+//		'strEd': '2021/2/21 12:30 PM',
+//        'insPrice':30
 //	},
 //	{
 //		'orderNo': 7169386,
 //		'idNo': 'R124797032',
 //		'strSd': '2021-02-08 08:30:00.000',
-//		'strEd': '2021/2/13 8:30 AM'
+//		'strEd': '2021/2/13 8:30 AM',
+//        'insPrice':50
 //	}
 //]
 //            ";
@@ -128,10 +138,28 @@ namespace WebAPI.Controllers
 //            vips = JsonConvert.DeserializeObject<List<IBIZ_ListRentCompute>>(vipJsonSour);
 //            var list = vips.OrderBy(x => x.orderNo).ToList();
 //            string orderNos = string.Join(",", list.Select(x => x.orderNo.ToString()).ToList());
-//            var vipre = ListRentCompute(vips);          
-//            string vipJson = JsonConvert.SerializeObject(vipre);
+//            var vipre = ListRentCompute(vips);
+//            if(vipre != null && vipre.Count() > 0)
+//            {
+//                var carRepo = new CarRentRepo(connetStr);
+//                var see = (from a in vipre
+//                           select new
+//                           {
+//                               init_price = Convert.ToInt32(a.caRent),
+//                               OrderNo = a.orderNo
+//                           }).ToList();
 
-            int vipp = 1;
+//                var ins = (from a in vipre
+//                           select new OrderQueryFullData
+//                           {
+//                               init_price = Convert.ToInt32(a.caRent),
+//                               OrderNo = a.orderNo
+//                           }).ToList();
+//                ins.ForEach(x => {
+//                    carRepo.SetInitPriceByOrderNo(x);
+//                });                
+//            }
+//            int vipp = 1;
             #endregion
 
             #region 參數宣告
@@ -990,10 +1018,12 @@ namespace WebAPI.Controllers
                     var lstHoliday = new CommonRepository(connetStr).GetHolidays(sd.ToString("yyyyMMdd"), ed.ToString("yyyyMMdd"));
 
                     var xre = bill.CarRentCompute(sd, ed, 990, 1680, 10, lstHoliday);
+
                     var item = objUti.Clone(s);
-                    item.caRent = xre;
-                    var tre = bill.GetCarRangeMins(sd, ed, 60, 600, new List<Holiday>());
+                    item.caRent += xre;
+                    var tre = bill.GetCarRangeMins(sd, ed, 60, 600, new List<Holiday>());                    
                     item.payMins = tre.Item1;
+                    item.caRent += (item.payMins/60) * s.InsPrice;
                     re.Add(item);
                 }
             }
@@ -1009,6 +1039,7 @@ namespace WebAPI.Controllers
         public string strEd { get; set; }
         public double caRent { get; set; }
         public double payMins { get; set; }
+        public double InsPrice { get; set; }
     }
 
     public class IAPI_RePayDetailAll

@@ -757,7 +757,7 @@ namespace WebAPI.Models.BillFunc
             bool flag = true;
             string SQL = "";
 
-            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE OrderNo = " + sour.OrderNo.ToString();
+            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE order_number = " + sour.OrderNo.ToString();
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
