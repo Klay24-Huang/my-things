@@ -47,6 +47,12 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// </summary>
         public string parkingSpace { set; get; }
         /// <summary>
+        /// 車機出錯是否bypass
+        /// <para>1:是</para>
+        /// <para>0:否</para>
+        /// </summary>
+        public int ByPass { set; get; }
+        /// <summary>
         /// 操作者
         /// </summary>
         public string UserID { set; get; }

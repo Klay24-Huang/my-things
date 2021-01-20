@@ -293,6 +293,7 @@ function SetData(data) {
             $("#end_mile_input").val(OrderObj.EM).prop("readonly", "");
             $("#fine_price_input").val(OrderObj.fine_price).prop("readonly", "");
             $("#final_price_input").val(OrderObj.final_price + oldOtherPrice).prop("readonly", "");
+            $("#final_price_input").prop("readonly", "readonly");
             $("#final_amt").val();
             /*營損開始*/
             $("#CarDispatch_input").val(OrderObj.CarDispatch).prop("readonly", "");
