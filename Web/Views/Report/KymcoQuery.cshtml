@@ -6,24 +6,10 @@
 @model IEnumerable<Domain.TB.BackEnd.BE_GetKymcoList>
 
 @{
-    string AuditMode = (ViewData["AuditMode"] == null) ? "1" : ViewData["AuditMode"].ToString();
+    int AuditMode = (ViewData["AuditMode"] == null) ? 0 : Int32.Parse(ViewData["AuditMode"].ToString());
     string SDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
-    string[] AuditModeCheck = { "", "", "" };
-    if (AuditMode != "")
-    {
-        if (AuditMode != "0")
-        {
-            //AuditModeCheck[Convert.ToInt32(AuditMode)] = " checked";
-            AuditModeCheck[Convert.ToInt32(AuditMode)] = " selected";
-        }
-        else
-        {
-            //AuditModeCheck[2] = " checked";
-            AuditModeCheck[2] = " selected";
-        }
 
-    }
     int ResultLen = -1;
     List<Domain.TB.BackEnd.BE_GetKymcoList> lstData = null;
     if (Model != null)
@@ -37,7 +23,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            會員審核
+            光陽維運資料查詢
         </div>
     </div>
 </div>
@@ -59,10 +45,10 @@
                                 處理項目
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
-                                    <option value="1"></option>
-                                    <option value="1">異常回報</option>
-                                    <option value="0">整備項目</option>
+                                <select class="form-control" name="AuditMode" id="AuditMode" value=@AuditMode>
+                                    <option value=0></option>
+                                    <option value=1>異常回報</option>
+                                    <option value=2>整備項目</option>
                                 </select>
                             </div>
                         </div>
@@ -123,8 +109,10 @@
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
-                                <button type="submit" class="btn btn-info">查詢</button>
-                                <button type="reset" class="btn btn-outline-secondary">清除</button>
+                                <!--type改成button讓js控制是否submmit出去，因為我要等js端判斷完再決定是否送出-->
+                                <!--<button type="submit" id="btnSubmit" class="btn btn-info">查詢</button>-->
+                                <button type="button" id="btnSubmit" class="btn btn-info">查詢</button>
+                                <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
@@ -134,8 +122,8 @@
             </ul>
         }
     </div>
-    <!--end card-->
-</div>
+        <!--end card-->
+        </div>
 
 @using (Html.BeginForm("ExplodeKymcoQuery", "Report", FormMethod.Post, new { id = "frmKymcoExplode" }))
 {

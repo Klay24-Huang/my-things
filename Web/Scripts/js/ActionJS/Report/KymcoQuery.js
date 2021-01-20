@@ -1,11 +1,43 @@
 ﻿$(function () {
-    /*
-    setTimeout(function () {
-        if ($.trim($('AuditMode').val()) != '') {
-            $('.btn-submit').click();
+    //html type="reset"還是不會清除，所以多加這個
+    $('.btn-clear').click(function () {
+        setTimeout(function () {
+            $('.datePicker').val('');
+            $('#AuditMode').val(0); //若設定''會產生奇怪的格式轉換問題，什麼null能怎樣啊....，我就改設int
+        }, 100);
+    });
+
+    $("#btnSubmit").on("click", function () {
+        ShowLoading("資料查詢中…");
+        var flag = true;
+        var errMsg = "";
+        var SD = $("#StartDate").val();
+        var ED = $("#EndDate").val();
+        if (SD !== "" && ED !== "") {
+            if (SD > ED) {
+                flag = false;
+                errMsg = "起始日期大於結束日期";
+            } else {
+                var GetDateDiff = DateDiff(SD, ED);
+                if (GetDateDiff > 3) {
+                    flag = false;
+                    errMsg = "時間區間不可大於3天";
+                }
+            }
+        } else {
+            flag = false;
+            errMsg = "未選擇日期";
         }
-    }, 500);
-    */
+        if (flag) {
+            disabledLoading();
+            $("#frmKymco").submit();
+        } else {
+            disabledLoadingAndShowAlert(errMsg);
+            $('.datePicker').val('');
+            $('#AuditMode').val(0);
+        }
+
+    });
 
     $("#btnExplode").on("click", function () {
         ShowLoading("資料查詢中…");
@@ -21,7 +53,7 @@
                 var GetDateDiff = DateDiff(SD, ED);
                 if (GetDateDiff > 3) {
                     flag = false;
-                    errMsg = "時間區間大於3天";
+                    errMsg = "時間區間不可大於3天";
                 }
             }
         } else {
@@ -36,10 +68,10 @@
             $("#frmKymcoExplode").submit();
         } else {
             disabledLoadingAndShowAlert(errMsg);
-            //ShowFailMessage(errMsg);
         }
     });
 });
+
 var DateDiff = function (sDate1, sDate2) { // sDate1 和 sDate2 是 2016-06-18 格式
     var aDate, oDate1, oDate2, iDays
     aDate = sDate1.split("/")

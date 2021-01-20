@@ -749,9 +749,7 @@ namespace Web.Controllers
             ViewData["AuditMode"] = AuditMode;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
-
             List<BE_GetKymcoList> lstData = new OtherRepository(connetStr).GetKymcoLists(AuditMode, StartDate, EndDate);
-
             return View(lstData);
         }
 
@@ -761,21 +759,11 @@ namespace Web.Controllers
             OtherRepository _repository = new OtherRepository(connetStr);
 
             string tSDate = "", tEDate = "";
-            int tCarNo = 0;
+            int tAuditMode = 0;
 
-            /*
-            if (ExplodeSDate.HasValue)
-            {
-                tSDate = ExplodeSDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            }
-            if (ExplodeEDate.HasValue)
-            {
-                tEDate = ExplodeEDate.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            }
-            */
             tSDate = ExplodeSDate;
             tEDate = ExplodeEDate;
-            tCarNo = ExplodeAuditMode;
+            tAuditMode = ExplodeAuditMode;
 
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
@@ -788,7 +776,7 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 sheet.AutoSizeColumn(j);
             }
-            lstRawDataOfMachi = _repository.GetKymcoLists(tCarNo,tSDate, tEDate);
+            lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
             int len = lstRawDataOfMachi.Count;
             for (int k = 0; k < len; k++)
             {
