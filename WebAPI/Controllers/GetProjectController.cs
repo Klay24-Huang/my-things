@@ -38,7 +38,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -146,23 +145,17 @@ namespace WebAPI.Controllers
             #region TB
             //Token判斷
             //20201103 ADD BY ADAM REASON.TOKEN判斷修改
-            //if (flag && isGuest == false)
-            if(flag && Access_Token_string.Split(' ').Length >= 2)
+            if (flag && Access_Token_string.Split(' ').Length >= 2)
             {
-                //string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
                     LogID = LogID,
-                    //Token = Access_Token
                     Token = Access_Token_string.Split(' ')[1].ToString()
                 };
-                //SPOutput_Base spOut = new SPOutput_Base();
                 SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                //SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 //訪客機制BYPASS
                 if (spOut.ErrorCode == "ERR101")
@@ -184,7 +177,7 @@ namespace WebAPI.Controllers
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
                 List<StationAndProjectAndCarTypeData> lstData = new List<StationAndProjectAndCarTypeData>();
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-                
+
                 SPInput_GetStationCarTypeOfMutiStation spInput = new SPInput_GetStationCarTypeOfMutiStation()
                 {
                     StationIDs = apiInput.StationID,
@@ -231,9 +224,12 @@ namespace WebAPI.Controllers
                                    Operator = a.Operator,
                                    OperatorScore = a.OperatorScore,
                                    PayMode = a.PayMode,
+                                   // 預估金額 = 租金 + 里程費 + 安心服務費
                                    //Price = a.PriceBill, //租金改抓sp
-                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate) + bill.CarMilageCompute(SDate,EDate,a.MilageBase, Mildef, 20, new List<Holiday>()),
-                                   
+                                   //20210115;因應春節專案，預估金額改用特殊算法
+                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate) + 
+                                            bill.CarMilageCompute(SDate, EDate, a.MilageBase, Mildef, 20, new List<Holiday>()) +
+                                            ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, a.InsurancePerHours * 10, a.InsurancePerHours * 10, 10, lstHoliday) : 0),
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
                                    PRICE_H = a.PRICE_H, //目前用不到
                                    PRODESC = a.PRODESC,
@@ -446,10 +442,8 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return re;
         }
-    
-        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem,
-            string IDNO, long LogID, List<Holiday> lstHoliday,
-            DateTime SD, DateTime ED)
+
+        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED)
         {
             int re = 0;
             #region 春節租金                    
@@ -471,7 +465,7 @@ namespace WebAPI.Controllers
             };
             var xre = cr_com.GetSpringInit(bizIn, connetStr);
             if (xre != null)
-               re = xre.RentInPay;
+                re = xre.RentInPay;
 
             #endregion
             return re;
