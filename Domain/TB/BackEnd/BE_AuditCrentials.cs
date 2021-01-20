@@ -52,16 +52,16 @@ namespace Domain.TB.BackEnd
         public string Other_1_UPDTime { set; get; } = "";
         public string Business_1_UPDTime { set; get; } = "";
 
-        public int ID_1_AuditResult { set; get; } = 1;
-        public int ID_2_AuditResult { set; get; } = 1;
-        public int Car_1_AuditResult { set; get; } = 1;
-        public int Car_2_AuditResult { set; get; } = 1;
-        public int Motor_1_AuditResult { set; get; } = 1;
-        public int Motor_2_AuditResult { set; get; } = 1;
-        public int Self_1_AuditResult { set; get; } = 1;
-        public int Signture_1_AuditResult { set; get; } = 1;
-        public int F01_AuditResult { set; get; } = 1;
-        public int Other_1_AuditResult { set; get; } = 1;
+        public int ID_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int ID_2_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Car_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Car_2_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Motor_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Motor_2_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Self_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Signture_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int F01_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
+        public int Other_1_AuditResult { set; get; } = 0; //20210120唐改1為0，未審核的會顯示通過
         public int Business_1_AuditResult { set; get; } = 1;
 
         public string ID_1_RejectReason { set; get; } = "";

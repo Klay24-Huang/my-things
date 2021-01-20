@@ -222,7 +222,9 @@ namespace Web.Controllers
                                 Data.Images.Signture_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Signture_1_IsNew = 1;
                                 Data.Images.Signture_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                //20210120唐改，簽名檔沒有UPDTIME會產生BUG，所以拿掉UPDTIME判定
+                                //Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0;
                                 Data.Images.Signture_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                         }
