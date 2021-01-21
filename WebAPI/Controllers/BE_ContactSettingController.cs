@@ -882,8 +882,8 @@ namespace WebAPI.Controllers
             var cr_com = new CarRentCommon();
             bool flag = true;
             float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
-            var trace = new ContactSetTrace();
             var carRepo = new CarRentRepo(connetStr);
+            var trace = new TraceCom();
             string funName = "DoReCalRent";
             List<Holiday> lstHoliday = null; //假日列表
             List<OrderQueryFullData> OrderDataLists = null;
@@ -935,13 +935,16 @@ namespace WebAPI.Controllers
 
             #endregion
             #region trace-in
-            trace.OrderNo = tmpOrder;
-            trace.in_tmpOrder = tmpOrder;
-            trace.in_IDNO = IDNO;
-            trace.in_LogID = LogID;
-            trace.in_UserID = UserID;
-            trace.in_returnDate = returnDate;
-            trace.in_errCode = errCode;
+            var funInput = new
+            {
+                tmpOrder = tmpOrder,
+                IDNO = IDNO,
+                LogID = LogID,
+                UserID = UserID,
+                returnDate = returnDate,
+                errCode = errCode
+            };
+            trace.objs.Add(nameof(funInput), funInput);
             #endregion
             try
             {
@@ -964,7 +967,7 @@ namespace WebAPI.Controllers
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         OrderDataLists = objUti.ConvertToList<OrderQueryFullData>(ds.Tables[0]);
-                        trace.OrderDataLists = OrderDataLists;
+                        trace.objs.Add(nameof(OrderDataLists), OrderDataLists);
                     }
                     trace.FlowList.Add("取出訂單資訊");
                     baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
@@ -1019,7 +1022,18 @@ namespace WebAPI.Controllers
                             hasFine = true;
                         }
                     }
+
+                    #region trace
+                    var timeMark = new
+                    {
+                        SD = SD,
+                        ED = ED,
+                        FineDate = FineDate,
+                        hasFine = hasFine
+                    };
+                    trace.objs.Add(nameof(timeMark), timeMark);
                     trace.FlowList.Add("SD,ED,FD計算");
+                    #endregion
                 }
 
                 #region 汽車計費資訊 
@@ -1056,7 +1070,7 @@ namespace WebAPI.Controllers
                         var car_re = cr_com.CRNoMonth(input);
                         if (car_re != null)
                         {
-                            trace.CRNoMonth = car_re;
+                            trace.objs.Add(nameof(car_re), car_re);
                             flag = car_re.flag;
                             car_payAllMins = car_re.car_payAllMins;
                             car_payInMins = car_re.car_payInMins;
@@ -1097,7 +1111,7 @@ namespace WebAPI.Controllers
                     var re270 = cr_com.NPR270Query(inp);
                     if (re270 != null)
                     {
-                        trace.NPR270Query = re270;
+                        trace.objs.Add(nameof(re270), re270);
                         flag = re270.flag;
                         MotorPoint = re270.MotorPoint;
                         CarPoint = re270.CarPoint;
@@ -1166,7 +1180,7 @@ namespace WebAPI.Controllers
                     var etag_re = cr_com.ETagCk(input);
                     if (etag_re != null)
                     {
-                        trace.ETagCk = etag_re;
+                        trace.objs.Add(nameof(etag_re), etag_re);
                         flag = etag_re.flag;
                         errCode = etag_re.errCode;
                         etagPrice = etag_re.etagPrice;
@@ -1241,7 +1255,7 @@ namespace WebAPI.Controllers
                     var magi_Re = cr_com.CarMagi(input);
                     if (magi_Re != null)
                     {
-                        trace.CarMagi = magi_Re;
+                        trace.objs.Add(nameof(magi_Re), magi_Re);
                         flag = magi_Re.flag;
                         outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
                     }
@@ -1276,8 +1290,8 @@ namespace WebAPI.Controllers
                     };
                     var mon_re = cr_com.MonthRentSave(input);
                     if (mon_re != null)
-                    {
-                        trace.MonthRent = mon_re;
+                    {                        
+                        trace.objs.Add(nameof(mon_re), mon_re);
                         flag = mon_re.flag;
                         UseMonthMode = mon_re.UseMonthMode;
                         outputApi.IsMonthRent = mon_re.IsMonthRent;
@@ -1339,7 +1353,7 @@ namespace WebAPI.Controllers
                         var disc_re = cr_com.CRNoMonthDisc(input);
                         if (disc_re != null)
                         {
-                            trace.CRNoMonthDisc = disc_re;
+                            trace.objs.Add(nameof(disc_re), disc_re);
                             nor_car_PayDisc = disc_re.nor_car_PayDisc;
                             nor_car_wDisc = disc_re.nor_car_wDisc;
                             nor_car_hDisc = disc_re.nor_car_hDisc;
@@ -1510,13 +1524,15 @@ namespace WebAPI.Controllers
                     };
 
                     #region trace
-                    trace.TotalRentMinutes = TotalRentMinutes;
-                    trace.Discount = Discount;
-                    trace.CarPoint = CarPoint;
-                    trace.MotorPoint = MotorPoint;
-                    trace.SPInput = SPInput;
-                    trace.outputApi = outputApi;
-                    trace.carInfo = carInfo;
+
+                    trace.objs.Add(nameof(TotalRentMinutes), TotalRentMinutes);
+                    trace.objs.Add(nameof(Discount), Discount);
+                    trace.objs.Add(nameof(CarPoint), CarPoint);
+                    trace.objs.Add(nameof(MotorPoint), MotorPoint);
+                    trace.objs.Add(nameof(SPInput), SPInput);
+                    trace.objs.Add(nameof(outputApi), outputApi);
+                    trace.objs.Add(nameof(carInfo), carInfo);
+
                     #endregion
 
                     SPOutput_Base SPOutput = new SPOutput_Base();
@@ -1528,11 +1544,13 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 寫入錯誤Log
-                if (!flag)
+                bool mark = true;
+                if (!flag || mark)
                 {
-                    trace.errCode = errCode;
-                    trace.TotalPoint = TotalPoint;
-                    trace.TransferPrice = TransferPrice;
+                    trace.objs.Add(nameof(errCode), errCode);
+                    trace.objs.Add(nameof(TotalPoint), TotalPoint);
+                    trace.objs.Add(nameof(TransferPrice), TransferPrice);
+
                     string traceMsg = JsonConvert.SerializeObject(trace);
                     var errItem = new TraceLogVM()
                     {
@@ -1542,7 +1560,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = eumTraceType.followErr
+                        TraceType = !flag ? eumTraceType.followErr: eumTraceType.mark
                     };
                     carRepo.AddTraceLog(errItem);
                 }
@@ -1550,14 +1568,14 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                string exMsg = tmpOrder.ToString() + ex.Message;
+                trace.BaseMsg = ex.Message;
                 var errItem = new TraceLogVM()
                 {
                     ApiId = 127,
-                    ApiMsg = exMsg,
+                    ApiMsg = JsonConvert.SerializeObject(trace),
                     ApiNm = funName,
                     CodeVersion = trace.codeVersion,
-                    FlowStep = JsonConvert.SerializeObject(trace),
+                    FlowStep = JsonConvert.SerializeObject(trace.FlowStep()),
                     OrderNo = trace.OrderNo,
                     TraceType = eumTraceType.exception
                 };
