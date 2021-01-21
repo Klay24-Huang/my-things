@@ -146,7 +146,7 @@ $(document).ready(function () {
 
             if (flag) {
                 var MotorPoint = 0;
-                var CarPoint = $("#gift_point_select").val();
+                var CarPoint = $("#gift_point_input").val();
                 var StartDate = $("#StartDate").val();
                 var EndDate = $("#EndDate").val();
                 var start_mile = $("#start_mile_input").val();
@@ -273,6 +273,7 @@ function SetData(data) {
                 $("#spn_LastMile").html(LastOrderObj.LastEndMile)
             }
             $("#spn_gift").html(OrderObj.CarPoint);
+
             $("#spn_moto_gift").html(OrderObj.MotorPoint);
             $("#gift_point_moto_input").val(OrderObj.MotorPoint)
             $("#spn_StartMile").html(OrderObj.SM);
@@ -324,10 +325,15 @@ function SetData(data) {
 
             /*營損結束*/
 
-            $("#gift_point_input").val(OrderObj.CarPoint);
+            if (parseInt(OrderObj.CarPoint) > 0) {
+                $("#gift_point_input").val(OrderObj.CarPoint);
+            }
+           
             if (BonusObj) {
                 MaxPointer = BonusObj.CanUseTotalCarPoint;
+                $("#spn_MaxCarPoint").html("<font color='red'>點數使用上限:"+(BonusObj == null ? '0' : BonusObj.CanUseTotalCarPoint)+"</font>");
             }
+         
             $("#gift_point_input").on("change", function () {
                 var tmp = $(this).val();
                 var tmpValue = 0;
