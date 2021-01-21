@@ -985,7 +985,8 @@ namespace OtherService
                 LogID = 0,
                 MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
                 MemberID = IDNO,
-                CardToken = Input.RequestParams.CardToken
+                CardToken = Input.RequestParams.CardToken,
+
             };
 
             new WebAPILogCommon().InsCreditRefundData(SPInput, ref flag, ref errCode, ref lstError);
@@ -1084,26 +1085,35 @@ namespace OtherService
                 //更新刷退結果
                 if (output.RtnCode == "1000")
                 {
-                    DateTime process;
-                    DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate + output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
-                    UpdInput.IsSuccess = 1;
-                    UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
-                    UpdInput.process_date = process;
-                    UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.TradeAmount) / 100;
-                    //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
-                    try
+                    if (output.ResponseParams.ResultCode == "1000")
                     {
-                        UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                        DateTime process;
+                        DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate + output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
+                        UpdInput.IsSuccess = 1;
+                        UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId;
+                        UpdInput.process_date = process;
+                        UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.TradeAmount) / 100;
+                        //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
+                        try
+                        {
+                            UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                        }
+                        catch (Exception ex)
+                        {
+                            UpdInput.AuthIdResp = 0;
+                            logger.Trace("更新刷退結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
+                        }
+                        UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
+                        UpdInput.RetCode = output.RtnCode;
+                        UpdInput.RetMsg = output.RtnMessage;
+                        UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        UpdInput.AuthIdResp = 0;
-                        logger.Trace("更新刷退結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
+                        UpdInput.IsSuccess = -2;
+                        UpdInput.RetCode = output.ResponseParams.ResultCode;
+                        UpdInput.RetMsg = output.ResponseParams.ResultMessage;
                     }
-                    UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
-                    UpdInput.RetCode = output.RtnCode;
-                    UpdInput.RetMsg = output.RtnMessage;
-                    UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
                 }
                 else
                 {

@@ -78,8 +78,8 @@ namespace OtherService.Common
 
         public void InsCreditRefundData(SPInput_InsTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
         {
-            SQLHelper<SPInput_InsTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTrade, SPOutput_Base>(connetStr);
-            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_InsTrade, SPOutput_RefundBase> SqlHelper = new SQLHelper<SPInput_InsTrade, SPOutput_RefundBase>(connetStr);
+            SPOutput_RefundBase spOut = new SPOutput_RefundBase();
             string SPName = new ObjType().GetSPName(ObjType.SPType.InsTradeRefund);
             flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
             if (flag)

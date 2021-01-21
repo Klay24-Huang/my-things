@@ -375,6 +375,16 @@ namespace WebAPI.Controllers
                     TSEQNO = obj.TSEQNO,
                     UNIMNO = obj.UNIMNO
                 };
+                wsInput.tbPaymentDetail.Add(new PaymentDetail()
+                {
+                    //PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
+                    PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                    PAYTYPE = "1",
+                    PAYMENTTYPE = "1",
+                    PAYMEMO = "租金",
+                    PORDNO = obj.REMARK
+                });
+
                 WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
