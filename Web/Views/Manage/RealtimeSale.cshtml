@@ -84,14 +84,12 @@
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sortable="false"></th>
-                <th>同站</th>
                 <th>時間</th>
+                <th>同站</th>
                 <th>數量</th>
                 <th>路邊</th>
-                <th>時間</th>
                 <th>數量</th>
                 <th>機車</th>
-                <th>時間</th>
                 <th>數量</th>
             </tr>
         </thead>
@@ -106,58 +104,50 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                    <tr>
-                        <td></td>
-                        <td>
-                            @(lstData[i].ProjType1)
-                        </td>
-                        <td>
-                            @(lstData[i].TIME1)
-                        </td>
-                        <td>
-                            @(lstData[i].Count1)
-                        </td>
-                        <td>
-                            @(lstData[i].ProjType2)
-                        </td>
-                        <td>
-                            @(lstData[i].TIME2)
-                        </td>
-                        <td>
-                            @(lstData[i].Count2)
-                        </td>
-                        <td>
-                            @(lstData[i].ProjType3)
-                        </td>
-                        <td>
-                            @(lstData[i].TIME3)
-                        </td>
-                        <td>
-                            @(lstData[i].Count3)
-                        </td>
-                    </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        @(lstData[i].TIME1)
+                    </td>
+                    <td>
+                        @(lstData[i].ProjType1)
+                    </td>
+                    <td>
+                        @(lstData[i].Count1)
+                    </td>
+                    <td>
+                        @(lstData[i].ProjType2)
+                    </td>
+                    <td>
+                        @(lstData[i].Count2)
+                    </td>
+                    <td>
+                        @(lstData[i].ProjType3)
+                    </td>
+                    <td>
+                        @(lstData[i].Count3)
+                    </td>
+                </tr>
                 }
 
                 <tr>
                     <td></td>
+                    <td></td>
                     <td>
                         同站總業績
                     </td>
-                    <td></td>
                     <td>
                         @(totalProjTypeCount1)
                     </td>
                     <td>
                         路邊總業績
                     </td>
-                    <td></td>
                     <td>
                         @(totalProjTypeCount2)
                     </td>
                     <td>
                         機車總業績
                     </td>
-                    <td></td>
                     <td>
                         @(totalProjTypeCount3)
                     </td>
@@ -166,12 +156,10 @@
                     <td></td>
                     <td>
                     </td>
-                    <td></td>
                     <td>
                     </td>
                     <td>
                     </td>
-                    <td></td>
                     <td>
                     </td>
                     <td>
