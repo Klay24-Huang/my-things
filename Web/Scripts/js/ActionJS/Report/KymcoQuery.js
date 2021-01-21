@@ -13,6 +13,8 @@
         var errMsg = "";
         var SD = $("#StartDate").val();
         var ED = $("#EndDate").val();
+        var mode = $("#AuditMode").val();
+
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
@@ -28,6 +30,12 @@
             flag = false;
             errMsg = "未選擇日期";
         }
+
+        if (mode == 0) {
+            flag = false;
+            errMsg = "處理項目項目是空的，是要我查什麼?";
+        }
+
         if (flag) {
             disabledLoading();
             $("#frmKymco").submit();
@@ -36,7 +44,20 @@
             $('.datePicker').val('');
             $('#AuditMode').val(0);
         }
-
+        /*
+        if ($('#AuditMode').val() == 1) {
+            document.getElementById("bu").textContent = "ddd";
+            console.log('1');
+        }
+        else if ($('#AuditMode').val() == 2) {
+            document.getElementById("bu").innerHTML = "kkk";
+            console.log('2');
+        }
+        else {
+            document.getElementById("bu").innerHTML = $('#AuditMode').val();
+            console.log('3');
+        }
+        */
     });
 
     $("#btnExplode").on("click", function () {
