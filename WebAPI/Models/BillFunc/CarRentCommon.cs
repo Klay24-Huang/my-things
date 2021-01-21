@@ -1550,7 +1550,48 @@ namespace WebAPI.Models.BillFunc
 
     public class TraceCom : TraceBase
     {
-        public Dictionary<string, object> objs = new Dictionary<string, object>();
+        private Dictionary<string, object> _objs { get; set; }
+        public Dictionary<string, object> objs { get; set; }
+        public TraceCom()
+        {
+            _objs = new Dictionary<string, object>();
+            objs = new Dictionary<string, object>();
+        }
+        /// <summary>
+        /// 避免重複名稱-新增
+        /// </summary>
+        /// <param name="xKey"></param>
+        /// <param name="xValue"></param>
+        public void traceAdd(string xKey,object xValue)
+        {
+            if (_objs.ContainsKey(xKey))
+            {
+                string ikey = xKey;
+                int itemLoop = 1;
+                bool hasItem = true;
+                while (hasItem == true && itemLoop <= 100)
+                {
+                    ikey = xKey + itemLoop.ToString();
+                    hasItem = _objs.ContainsKey(ikey);
+                    if (!hasItem)
+                    {
+                        _objs.Add(ikey, xValue);
+                        break;
+                    }
+                    itemLoop += 1;
+                }
+            }
+            else
+                _objs.Add(xKey, xValue);
+        }
+        /// <summary>
+        /// 避免重複名稱-取得
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, object> getObjs()
+        {
+            return _objs;
+        }
     }
 
     public class PayTraceBase: TraceBase
