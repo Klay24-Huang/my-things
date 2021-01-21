@@ -656,7 +656,7 @@ namespace WebAPI.Models.BaseFunc
             #endregion
             return flag;
         }
-        public bool DoBECloseRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode,int ByPass)
+        public bool DoBECloseRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, int ByPass)
         {
             int IsCens = 0;
             int IsMotor = 0;
@@ -799,7 +799,7 @@ namespace WebAPI.Models.BaseFunc
                                 {
                                     errCode = "ERR188";
                                 }
-                               
+
                             }
                         }
                         #endregion
@@ -1187,7 +1187,7 @@ namespace WebAPI.Models.BaseFunc
             }
             #endregion
             #region 判斷bypass
-            if (ByPass == 1 && tmpErrCode!="")
+            if (ByPass == 1 && tmpErrCode != "")
             {
                 //寫入tb
                 //BE_InsCarReturnError
@@ -1206,7 +1206,7 @@ namespace WebAPI.Models.BaseFunc
                 if (flag == false)
                 {
                     flag = true;
-                    
+
                 }
             }
             #endregion
@@ -2286,119 +2286,119 @@ namespace WebAPI.Models.BaseFunc
                         }
                         if (flag)
                         {
-                          //  if (lstCardList != null)
-                          //  {
+                            //  if (lstCardList != null)
+                            //  {
 
-                             //   int CardLen = lstCardList.Count;
-                                //清空顧客卡
-                                //if (flag)
-                                //{
-                                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
-                                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard;
-                                //    WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
-                                //    {
-                                //        command = true,
-                                //        method = CommandType,
-                                //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                //        _params = new Params()
+                            //   int CardLen = lstCardList.Count;
+                            //清空顧客卡
+                            //if (flag)
+                            //{
+                            //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard);
+                            //    CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllClientCard;
+                            //    WSInput_Base<Params> ClearInput = new WSInput_Base<Params>()
+                            //    {
+                            //        command = true,
+                            //        method = CommandType,
+                            //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            //        _params = new Params()
 
-                                //    };
-                                //    requestId = ClearInput.requestId;
-                                //    method = CommandType;
-                                //    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
-                                //    if (flag)
-                                //    {
-                                //        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                //    }
-                                //}
-                                //寫入萬用卡
-                                //if (CardLen > 0)
-                                //{
+                            //    };
+                            //    requestId = ClearInput.requestId;
+                            //    method = CommandType;
+                            //    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, ClearInput, LogID);
+                            //    if (flag)
+                            //    {
+                            //        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            //    }
+                            //}
+                            //寫入萬用卡
+                            //if (CardLen > 0)
+                            //{
 
 
 
-                                //    string[] CardStr = new string[CardLen];
-                                //    int NowCount = -1;
-                                //    for (int i = 0; i < CardLen; i++)
-                                //    {
-                                //        if (lstCardList[i].CardType == "M")
-                                //        {
-                                //            NowCount++;
-                                //            CardStr[NowCount] = lstCardList[i].CardNO;
+                            //    string[] CardStr = new string[CardLen];
+                            //    int NowCount = -1;
+                            //    for (int i = 0; i < CardLen; i++)
+                            //    {
+                            //        if (lstCardList[i].CardType == "M")
+                            //        {
+                            //            NowCount++;
+                            //            CardStr[NowCount] = lstCardList[i].CardNO;
 
-                                //        }
+                            //        }
 
-                                //    }
+                            //    }
 
-                                //    if (NowCount >= 0)
-                                //    {
-                                //        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo);
-                                //        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo;
-                                //        WSInput_Base<UnivCardNoObj> SetCardInput = new WSInput_Base<UnivCardNoObj>()
-                                //        {
-                                //            command = true,
-                                //            method = CommandType,
-                                //            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                //            _params = new UnivCardNoObj()
-                                //            {
-                                //                UnivCardNo = CardStr
-                                //            }
+                            //    if (NowCount >= 0)
+                            //    {
+                            //        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo);
+                            //        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetUnivCardNo;
+                            //        WSInput_Base<UnivCardNoObj> SetCardInput = new WSInput_Base<UnivCardNoObj>()
+                            //        {
+                            //            command = true,
+                            //            method = CommandType,
+                            //            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            //            _params = new UnivCardNoObj()
+                            //            {
+                            //                UnivCardNo = CardStr
+                            //            }
 
-                                //        };
-                                //        requestId = SetCardInput.requestId;
-                                //        method = CommandType;
-                                //        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                                //        if (flag)
-                                //        {
-                                //            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                //        }
+                            //        };
+                            //        requestId = SetCardInput.requestId;
+                            //        method = CommandType;
+                            //        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                            //        if (flag)
+                            //        {
+                            //            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            //        }
 
-                                //    }
-                                //}
-                                //清除租約
+                            //    }
+                            //}
+                            //清除租約
+                            if (flag)
+                            {
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetNoRent);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetNoRent;
+                                WSInput_Base<Params> SetNoRentInput = new WSInput_Base<Params>()
+                                {
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new Params()
+
+                                };
+                                requestId = SetNoRentInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                 if (flag)
                                 {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetNoRent);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetNoRent;
-                                    WSInput_Base<Params> SetNoRentInput = new WSInput_Base<Params>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
-
-                                    };
-                                    requestId = SetNoRentInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                 }
-                                //全車上鎖
+                            }
+                            //全車上鎖
+                            if (flag)
+                            {
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn;
+                                WSInput_Base<Params> SetNoRentInput = new WSInput_Base<Params>()
+                                {
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new Params()
+
+                                };
+                                requestId = SetNoRentInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
                                 if (flag)
                                 {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn;
-                                    WSInput_Base<Params> SetNoRentInput = new WSInput_Base<Params>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
-
-                                    };
-                                    requestId = SetNoRentInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, SetNoRentInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                 }
+                            }
 
-                           // }
+                            // }
                         }
                         #endregion
                     }
@@ -2528,5 +2528,118 @@ namespace WebAPI.Models.BaseFunc
             #endregion
             return flag;
         }
+
+        #region 汽車取得還車里程
+        /// <summary>
+        /// 汽車取得還車里程
+        /// </summary>
+        /// <param name="tmpOrder"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="LogID"></param>
+        /// <param name="UserID"></param>
+        /// <param name="errCode"></param>
+        /// <param name="end_mile"></param>
+        /// <returns></returns>
+        public bool BE_GetReturnCarMilage(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref int end_mile)
+        {
+            int IsCens = 0;
+            int IsMotor = 0;
+            string deviceToken = "";
+            string StationID = "";
+            string CID = "";
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            CommonFunc baseVerify = new CommonFunc();
+            bool flag = false;
+            SPInput_BE_CheckCarByReturn spInput = new SPInput_BE_CheckCarByReturn()
+            {
+                OrderNo = tmpOrder,
+                IDNO = IDNO,
+                LogID = LogID,
+                UserID = UserID
+            };
+            string SPName = new ObjType().GetSPName(ObjType.SPType.BE_CheckCarStatusByReturn);
+            SPOutput_CheckCarStatusByReturn spOut = new SPOutput_CheckCarStatusByReturn();
+            SQLHelper<SPInput_BE_CheckCarByReturn, SPOutput_CheckCarStatusByReturn> sqlHelp = new SQLHelper<SPInput_BE_CheckCarByReturn, SPOutput_CheckCarStatusByReturn>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                CID = spOut.CID;
+                StationID = spOut.StationID;
+                IsCens = spOut.IsCens;
+                IsMotor = spOut.IsMotor;
+                deviceToken = spOut.deviceToken;
+            }
+
+            #region 車機
+            if (flag)
+            {
+                #region 汽車
+                if (IsMotor == 0)
+                {
+                    if (IsCens == 1)
+                    {
+                        #region 興聯車機
+                        CensWebAPI webAPI = new CensWebAPI();
+                        //取最新狀況
+                        WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
+                        flag = webAPI.GetInfo(CID, ref wsOutInfo);
+                        if (flag == false)
+                        {
+                            errCode = wsOutInfo.ErrorCode;
+                        }
+                        else
+                        {
+                            if (wsOutInfo.data.CID != CID)
+                            {
+                                flag = false;
+                                errCode = "ERR400";
+                            }
+
+                            end_mile = wsOutInfo.data.Milage != -1 ? Convert.ToInt32(wsOutInfo.data.Milage) : 0;
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        #region 遠傳車機
+                        //取最新狀況, 先送getlast之後從tb捉最近一筆
+                        FETCatAPI FetAPI = new FETCatAPI();
+                        string requestId = "";
+                        string CommandType = "";
+                        OtherService.Enum.MachineCommandType.CommandType CmdType;
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        string method = CommandType;
+                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
+                        if (flag)
+                        {
+                            CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                            if (info != null)
+                            {
+                                end_mile = info.Millage;
+                            }
+                        }
+                        #endregion
+                    }
+                }
+                #endregion
+            }
+            #endregion
+            return flag;
+        }
+        #endregion
     }
 }

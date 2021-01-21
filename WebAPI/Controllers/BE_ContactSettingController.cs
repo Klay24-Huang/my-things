@@ -203,7 +203,7 @@ namespace WebAPI.Controllers
                             //    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                             //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                             //}
-                            if (lstOrder[0].car_mgt_status <4 )
+                            if (lstOrder[0].car_mgt_status < 4)
                             {
                                 flag = false;
                                 errCode = "ERR773";
@@ -346,7 +346,7 @@ namespace WebAPI.Controllers
                                     {
                                         if (clearFlag)
                                         {
-                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
+                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
                                             if (CarFlag == false)
                                             {
                                                 //寫入車機錯誤
@@ -382,7 +382,7 @@ namespace WebAPI.Controllers
                                         {
                                             if (clearFlag)
                                             {
-                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
+                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
                                                 if (CarFlag == false)
                                                 {
                                                     //寫入車機錯誤
@@ -416,7 +416,8 @@ namespace WebAPI.Controllers
                             #endregion
                         }
                     }
-                }else if (apiInput.Mode == 1 && apiInput.type==2)
+                }
+                else if (apiInput.Mode == 1 && apiInput.type == 2)
                 {
                     string spName = new ObjType().GetSPName(ObjType.SPType.BE_CancelCleanOrder);
                     SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
@@ -931,10 +932,12 @@ namespace WebAPI.Controllers
             int gift_motor_point = 0;//使用時數(機車)
             int motoBaseMins = 6;//機車基本分鐘數
             int carBaseMins = 60;//汽車基本分鐘數
-            int motoMaxMins = 200;//機車單日最大分鐘數 
+            int motoMaxMins = 200;//機車單日最大分鐘數
 
+            int End_Mile = 0;   //還車里程
             #endregion
             #region trace-in
+            trace.OrderNo = tmpOrder;
             var funInput = new
             {
                 tmpOrder = tmpOrder,
@@ -1035,6 +1038,13 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("SD,ED,FD計算");
                     #endregion
                 }
+
+                #region 取還車里程
+                if (ProjType != 4)
+                {
+                    bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                }
+                #endregion
 
                 #region 汽車計費資訊 
                 //note:汽車計費資訊PayDetail
@@ -1290,7 +1300,7 @@ namespace WebAPI.Controllers
                     };
                     var mon_re = cr_com.MonthRentSave(input);
                     if (mon_re != null)
-                    {                        
+                    {
                         trace.objs.Add(nameof(mon_re), mon_re);
                         flag = mon_re.flag;
                         UseMonthMode = mon_re.UseMonthMode;
@@ -1411,21 +1421,15 @@ namespace WebAPI.Controllers
                         outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                         outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit <= 0) ? Mildef : OrderDataLists[0].MilageUnit;
-                        //outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
-                        //里程費計算修改，遇到取不到里程數的先以0元為主
-                        //outputApi.Rent.MileageRent = OrderDataLists[0].end_mile == 0 ? 0 : Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                         // 20201218 因應車機回應異常，因此判斷起始里程/結束里程有一個是0或里程數>1000公里，均先列為異常，不計算里程費，待系統穩定後再將這段判斷移除
-                        if (OrderDataLists[0].start_mile == 0 ||
-                            OrderDataLists[0].end_mile == 0 ||
-                            ((OrderDataLists[0].end_mile - OrderDataLists[0].start_mile) > 1000) ||
-                            ((OrderDataLists[0].end_mile - OrderDataLists[0].start_mile) < 0)
-                            )
+                        // 20210121;里程數>1000公里的判斷移除
+                        if (OrderDataLists[0].start_mile == 0 || End_Mile == 0 || ((End_Mile - OrderDataLists[0].start_mile) < 0))
                         {
                             outputApi.Rent.MileageRent = 0;
                         }
                         else
                         {
-                            outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
+                            outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (End_Mile - OrderDataLists[0].start_mile));
                         }
                         trace.FlowList.Add("里程費計算");
                     }
@@ -1560,7 +1564,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = !flag ? eumTraceType.followErr: eumTraceType.mark
+                        TraceType = !flag ? eumTraceType.followErr : eumTraceType.mark
                     };
                     carRepo.AddTraceLog(errItem);
                 }
