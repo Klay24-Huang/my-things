@@ -838,24 +838,26 @@ namespace WebAPI.Controllers
 
         private bool logicCk(GetPayDetailTrace sour)
         {
-            if (sour != null)
-            {
-                if (sour.SPInput != null && sour.SPInput.pure_price == 0)
-                    return true;
-                else if (sour.hasFine)
-                    return true;
-                //有使用月租加入trace
-                else if (sour.MonthRent != null && sour.MonthRent.monthlyRentDatas != null
-                    && sour.MonthRent.monthlyRentDatas.Count() > 0 &&
-                    sour.MonthRent.carInfo != null &&
-                    sour.MonthRent.carInfo.mFinal != null &&
-                    sour.MonthRent.carInfo.mFinal.Any(x => x.WorkDayHours > 0 ||
-                    x.HolidayHours > 0 || x.MotoTotalHours > 0)
-                    )
-                    return true;
-            }
+            //if (sour != null)
+            //{
+            //    if (sour.SPInput != null &&
+            //        (sour.SPInput.pure_price == 0 ||
+            //         sour.SPInput.mileage_price == 0 ||
+            //         sour.SPInput.TransDiscount > 0 ||
+            //         sour.SPInput.gift_point > 0 ||
+            //         sour.SPInput.gift_motor_point > 0
+            //         )
+            //        )
+            //        return true;
+            //    else if (sour.hasFine)
+            //        return true;
+            //    //有使用月租加入trace
+            //    else if (sour.MonthRent != null && sour.MonthRent.monthlyRentDatas != null
+            //        && sour.MonthRent.monthlyRentDatas.Count() > 0)
+            //        return true;
+            //}
 
-            return false;
+            return true;
         }
 
         #region mark

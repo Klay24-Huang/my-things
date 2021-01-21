@@ -139,25 +139,21 @@ namespace WebAPI.Controllers
 //            var list = vips.OrderBy(x => x.orderNo).ToList();
 //            string orderNos = string.Join(",", list.Select(x => x.orderNo.ToString()).ToList());
 //            var vipre = ListRentCompute(vips);
-//            if(vipre != null && vipre.Count() > 0)
+//            if (vipre != null && vipre.Count() > 0)
 //            {
 //                var carRepo = new CarRentRepo(connetStr);
-//                var see = (from a in vipre
+//                var ins = (from a in vipre
 //                           select new
 //                           {
-//                               init_price = Convert.ToInt32(a.caRent),
+//                               init_price = a.caRent,
+//                               InsPrice = a.InsPrice,
 //                               OrderNo = a.orderNo
 //                           }).ToList();
 
-//                var ins = (from a in vipre
-//                           select new OrderQueryFullData
-//                           {
-//                               init_price = Convert.ToInt32(a.caRent),
-//                               OrderNo = a.orderNo
-//                           }).ToList();
-//                ins.ForEach(x => {
-//                    carRepo.SetInitPriceByOrderNo(x);
-//                });                
+//                ins.ForEach(x =>
+//                {
+//                    carRepo.UpdOrderMainByOrderNo(x.OrderNo, x.init_price, x.InsPrice);
+//                });
 //            }
 //            int vipp = 1;
             #endregion
@@ -1018,12 +1014,11 @@ namespace WebAPI.Controllers
                     var lstHoliday = new CommonRepository(connetStr).GetHolidays(sd.ToString("yyyyMMdd"), ed.ToString("yyyyMMdd"));
 
                     var xre = bill.CarRentCompute(sd, ed, 990, 1680, 10, lstHoliday);
-
                     var item = objUti.Clone(s);
-                    item.caRent += xre;
+                    item.caRent = xre;
                     var tre = bill.GetCarRangeMins(sd, ed, 60, 600, new List<Holiday>());                    
                     item.payMins = tre.Item1;
-                    item.caRent += (item.payMins/60) * s.InsPrice;
+                    item.InsPrice = (item.payMins/60) * s.InsPrice;
                     re.Add(item);
                 }
             }

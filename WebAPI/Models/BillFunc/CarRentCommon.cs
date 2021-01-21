@@ -752,6 +752,66 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        /// <summary>
+        /// 取得里程費
+        /// </summary>
+        /// <param name="ProjID"></param>
+        /// <param name="BkTime"></param>
+        /// <returns></returns>
+        public double GetMilageBase(string ProjID, DateTime BkTime)
+        {
+            double re = 0;
+            var xre = GetMilageSetting(ProjID, BkTime);
+            if(xre != null && xre.Count()>0)
+            {
+                var fItem = xre.FirstOrDefault();
+                re = fItem.MilageBase;
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// 取得里程資全部資訊
+        /// </summary>
+        /// <param name="ProjID"></param>
+        /// <param name="BkTime"></param>
+        /// <returns></returns>
+        public List<MilageSettingTBVM> GetMilageSetting(string ProjID, DateTime BkTime)
+        {
+            var re = new List<MilageSettingTBVM>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (string.IsNullOrWhiteSpace(ProjID) || BkTime == null)
+                throw new Exception("ProjID, BkTime為必填");
+            string SQL = @"
+            select ProjID, CarType ,SDate ,EDate ,MilageBase ,use_flag from TB_MilageSetting m
+            where m.use_flag = 1  
+            AND '{0}' BETWEEN m.SDate AND m.EDate
+            and UPPER(m.ProjID) = UPPER('{1}') ";
+            string strBkTime = BkTime.ToString("yyyy-MM-dd HH:mm:ss");
+            SQL = String.Format(SQL, strBkTime, ProjID);
+            re = GetObjList<MilageSettingTBVM>(ref flag, ref lstError, SQL, null, "");
+            return re;
+        }
+
+        public bool UpdOrderMainByOrderNo(int orderNo, double init_price, double InsPrice)
+        {
+            if (orderNo == 0)
+                throw new Exception("orderNo必填");
+
+            bool flag = true;
+            string SQL = @"
+                UPDATE o
+                SET o.init_price= {0},
+                o.InsurancePurePrice = {1}
+                from TB_OrderMain o WHERE 
+                o.order_number in ({2})";
+            SQL = String.Format(SQL, init_price.ToString(), InsPrice.ToString(), orderNo.ToString());
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+
         public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
         {
             bool flag = true;
@@ -1405,6 +1465,34 @@ namespace WebAPI.Models.BillFunc
         public double PRICE_H { get; set; }
         public double DISCOUNT { get; set; }
         public double PHOURS { get; set; }
+    }
+
+    public class MilageSettingTBVM
+    {
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjID { get; set; }
+        /// <summary>
+        /// 車型
+        /// </summary>
+        public string CarType { get; set; }
+        /// <summary>
+        /// 起始日期
+        /// </summary>
+        public DateTime SDate { get; set; }
+        /// <summary>
+        /// 結束日期
+        /// </summary>
+        public DateTime EDate { get; set; }
+        /// <summary>
+        /// 每公里費用
+        /// </summary>
+        public double MilageBase { get; set; }
+        /// <summary>
+        /// 是否啟用(0:否;1:是;2:待上線)
+        /// </summary>
+        public Int16 use_flag { get; set; }
     }
 
     #endregion
