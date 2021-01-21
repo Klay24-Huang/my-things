@@ -114,22 +114,21 @@ BEGIN TRY
 			SELECT   [MEMIDNO] = A.MEMIDNO
 					--,[MEMPWD]	--20201024 ADD BY ADAM REASON.安全考量移除
 					,[MEMCNAME] = ISNULL(AA.MEMCNAME,'')
-					,[MEMTEL] = ISNULL(AA.MEMTEL,'')
-					,[MEMHTEL] = ISNULL(AA.MEMHTEL,'')
+					,[MEMTEL] = ISNULL(A.MEMTEL,'')
+					,[MEMHTEL] = ISNULL(A.MEMHTEL,'')
 					,[MEMBIRTH] = CASE WHEN AA.MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),AA.MEMBIRTH,120) END
-					--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
 					,[MEMAREAID] = ISNULL(AA.MEMCITY,0)
 					,[MEMADDR] = ISNULL(AA.MEMADDR,'')
-					,[MEMEMAIL] = ISNULL(AA.MEMEMAIL,'')
-					,[MEMCOMTEL] = ISNULL(AA.MEMCOMTEL,'')
-					,[MEMCONTRACT] = ISNULL(AA.MEMCONTRACT,'')
-					,[MEMCONTEL] = ISNULL(AA.MEMCONTEL,'')
-					,[MEMMSG] = ISNULL(AA.MEMMSG,'')
-					,[CARDNO] = ISNULL(AA.CARDNO,'')
-					,[UNIMNO] = ISNULL(AA.UNIMNO,'')
-					,[MEMSENDCD] = ISNULL(AA.MEMSENDCD,'')
-					,[CARRIERID] = ISNULL(AA.CARRIERID,'')
-					,[NPOBAN] = ISNULL(AA.NPOBAN,'')
+					,[MEMEMAIL] = ISNULL(A.MEMEMAIL,'')
+					,[MEMCOMTEL] = ISNULL(A.MEMCOMTEL,'')
+					,[MEMCONTRACT] = ISNULL(A.MEMCONTRACT,'')
+					,[MEMCONTEL] = ISNULL(A.MEMCONTEL,'')
+					,[MEMMSG] = ISNULL(A.MEMMSG,'')
+					,[CARDNO] = ISNULL(A.CARDNO,'')
+					,[UNIMNO] = ISNULL(A.UNIMNO,'')
+					,[MEMSENDCD] = ISNULL(A.MEMSENDCD,'')
+					,[CARRIERID] = ISNULL(A.CARRIERID,'')
+					,[NPOBAN] = ISNULL(A.NPOBAN,'')
 					,[HasCheckMobile]
 					,[NeedChangePWD] 
 					,[HasBindSocial]
@@ -153,24 +152,28 @@ BEGIN TRY
 					,ISNULL([Self_1],0) As AA_pic 
 					,ISNULL([Law_Agent],0) As F01_pic
 					,ISNULL([Signture],0) AS Signture_pic
-					--,'' as SigntureCode
-					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
-					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)			--20201126 ADD BY ADAM REASON.增加短租流水號
+					-- 20210121;電子簽名先撈主檔，主檔沒有撈待審檔，都沒有才回空白，以利APP可以操作
+					,CASE WHEN ISNULL(C.CrentialsFile,'')<>'' THEN 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(C.CrentialsFile)
+						  WHEN ISNULL(E.CrentialsFile,'') <> '' THEN 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(E.CrentialsFile)
+						  ELSE '' END AS SigntureCode
+					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)		--20201126 ADD BY ADAM REASON.增加短租流水號
+					,D.[SIGNATURE]
 			FROM TB_MemberData A WITH(NOLOCK)
-			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
-			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+			LEFT JOIN TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND C.CrentialsType=11
 			LEFT JOIN #TB_MemberDataOfAudit AA WITH(NOLOCK) ON A.MEMIDNO=AA.MEMIDNO
+			LEFT JOIN IRENT_SIGNATURE D WITH(NOLOCK) ON A.MEMIDNO=D.MEMIDNO
+			LEFT JOIN TB_tmpCrentialsPIC E WITH(NOLOCK) ON A.MEMIDNO=E.IDNO AND E.CrentialsType=11
 			WHERE A.MEMIDNO=@IDNO
 		END
 		ELSE
 		BEGIN
-			SELECT   [MEMIDNO]
+			SELECT   A.[MEMIDNO]
 					--,[MEMPWD]  --20201024 ADD BY ADAM REASON.安全考量移除
 					,[MEMCNAME]
 					,[MEMTEL]
 					,[MEMHTEL]
 					,CASE WHEN MEMBIRTH IS NULL THEN '' ELSE CONVERT(VARCHAR(10),MEMBIRTH,120) END AS [MEMBIRTH]
-					--,ISNULL([MEMBIRTH],'') AS [MEMBIRTH]
 					,[MEMCITY] AS MEMAREAID
 					,[MEMADDR]
 					,[MEMEMAIL]
@@ -206,11 +209,17 @@ BEGIN TRY
 					,ISNULL([Self_1],0) As AA_pic 
 					,ISNULL([Law_Agent],0) As F01_pic
 					,ISNULL([Signture],0) AS Signture_pic
-					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
-					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)		--20201126 ADD BY ADAM REASON.增加短租流水號
+					-- 20210121;電子簽名先撈主檔，主檔沒有撈待審檔，都沒有才回空白，以利APP可以操作
+					,CASE WHEN ISNULL(C.CrentialsFile,'') <> '' THEN 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(C.CrentialsFile) 
+						  WHEN ISNULL(E.CrentialsFile,'') <> '' THEN 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(E.CrentialsFile) 
+						  ELSE '' END AS SigntureCode
+					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)			--20201126 ADD BY ADAM REASON.增加短租流水號
+					,D.[SIGNATURE]
 			FROM TB_MemberData A WITH(NOLOCK)
-			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
+			LEFT JOIN TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
 			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
+			LEFT JOIN IRENT_SIGNATURE D WITH(NOLOCK) ON A.MEMIDNO=D.MEMIDNO
+			LEFT JOIN TB_tmpCrentialsPIC E WITH(NOLOCK) ON A.MEMIDNO=E.IDNO AND E.CrentialsType=11
 			WHERE A.MEMIDNO=@IDNO
 		END
 

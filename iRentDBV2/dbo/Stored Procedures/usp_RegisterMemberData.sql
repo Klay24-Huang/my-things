@@ -98,7 +98,7 @@ BEGIN TRY
 		 
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -107,7 +107,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND HasCheckMobile=1;
+			SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND HasCheckMobile=1;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -126,21 +126,22 @@ BEGIN TRY
 		WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
-		SELECT @hasData=COUNT(1) FROM TB_Credentials WHERE IDNO=@IDNO;
+		SELECT @hasData=COUNT(1) FROM TB_Credentials WITH(NOLOCK) WHERE IDNO=@IDNO;
 		IF @hasData=0
 		BEGIN
 			INSERT INTO TB_Credentials(IDNO,Signture)VALUES(@IDNO,1);
 
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;	--改為查TB_tmpCrentialsPIC
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11;	--改為查TB_tmpCrentialsPIC
 			IF @hasData=0
 			BEGIN
-				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@FileName);
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile,UPDTime)VALUES(@IDNO,11,@FileName,@NowTime);
 			END
 			ELSE
 			BEGIN
 				UPDATE TB_tmpCrentialsPIC
-				SET CrentialsFile=@FileName,UPDTime=@NowTime
+				SET CrentialsFile=@FileName,
+					UPDTime=@NowTime
 				WHERE IDNO=@IDNO AND CrentialsType=11;
 			END
 		END
@@ -149,15 +150,16 @@ BEGIN TRY
 			UPDATE TB_Credentials SET Signture=1 WHERE IDNO=@IDNO;
 					
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WHERE IDNO=@IDNO AND CrentialsType=11;
+			SELECT @hasData=COUNT(1) FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11;
 			IF @hasData=0
 			BEGIN
-				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile)VALUES(@IDNO,11,@FileName);
+				INSERT INTO TB_tmpCrentialsPIC(IDNO,CrentialsType,CrentialsFile,UPDTime)VALUES(@IDNO,11,@FileName,@NowTime);
 			END
 			ELSE
 			BEGIN
 				UPDATE TB_tmpCrentialsPIC
-				SET CrentialsFile=@FileName,UPDTime=@NowTime
+				SET CrentialsFile=@FileName,
+					UPDTime=@NowTime
 				WHERE IDNO=@IDNO AND CrentialsType=11;
 			END
 		END
