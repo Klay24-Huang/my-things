@@ -188,7 +188,9 @@ $(function () {
                 }
             })
         } else {
-            disabledLoadingAndShowAlert(data.ErrorMessage);
+            //disabledLoadingAndShowAlert(data.ErrorMessage);
+            //正常應該要繼續執行
+            SendData(ByPass);
         }
     }
     function SendData(ByPassFlag) {
