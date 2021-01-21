@@ -126,13 +126,14 @@ $(function () {
         }
         //增加是否要bypass流程
         if (flag) {
+            /* 20200121 ADD BY ADAM REASON.測過沒問題再走這流程
             if (parseInt(mode) == 0 && parseInt(type) == 1) {
                 var Account = $("#Account").val();
                 var obj = new Object();
                 obj.UserID = Account;
                 obj.OrderNo = OrderNo;
                 DoAjaxAfterCallBackWithOutMessage(obj,"BE_ContactSettingCheck","執行強還前確認發生錯誤",ByPass)
-            } else {
+            } else { */
                 var Account = $("#Account").val();
                 var obj = new Object();
                 obj.UserID = Account;
@@ -149,7 +150,7 @@ $(function () {
                 var json = JSON.stringify(obj);
                 console.log(json);
                 DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
-            }
+            //}
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
