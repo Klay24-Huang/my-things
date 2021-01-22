@@ -56,12 +56,17 @@ $(document).ready(function () {
         var Other_6 = $("#OtherFee_input").val();
         var Other_7 = $("#ParkingFeeByMachi_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
-            var totalAmt = parseInt(pure)  + parseInt(FP);
+            var totalAmt = parseInt(pure) + parseInt(FP);
             $("#final_price_input").val(totalAmt);
 
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
             final_price = $("#final_price_input").val();
-            var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice);
+            //console.log(oldPrice);
+            //console.log(final_price);
+            //console.log(oldOtherPrice);
+            //console.log(OtherPrice);
+            //console.log((parseInt(final_price)) + OtherPrice);
+            var final_amt = (oldPrice ) - (parseInt(final_price) + OtherPrice);
             //var final_amt = (parseInt(final_price) - (oldPrice)) + (OtherPrice - oldOtherPrice);
 
 
@@ -246,7 +251,7 @@ function SetData(data) {
             var FS = new Date(OrderObj.FS).Format("yyyy-MM-dd HH:mm:ss")
             var FE = new Date(OrderObj.FE).Format("yyyy-MM-dd HH:mm:ss")
             var FineTime = new Date(OrderObj.FineTime).Format("yyyy-MM-dd HH:mm:ss")
-            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.parkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
+            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.OtherParkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
             $("#panelResult").show();
             $("#spn_OrderNo").html("H" + pad(OrderObj.OrderNo, 7))
             $("#spn_IDNO").html(OrderObj.IDNO)
