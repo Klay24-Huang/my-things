@@ -483,7 +483,8 @@ namespace WebAPI.Controllers
                         TransferPrice = OrderDataLists[0].init_TransDiscount;
                         trace.FlowList.Add("建空模");
                     }
-                    if (flag && OrderDataLists[0].ProjType != 4 && false) //20201224 add by adam 問題未確定前先關掉車麻吉
+                    //20201224 add by adam 問題未確定前先關掉車麻吉 20210122 開啟
+                    if (flag && OrderDataLists[0].ProjType != 4) 
                     {
                         var input = new IBIZ_CarMagi()
                         {
