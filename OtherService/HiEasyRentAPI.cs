@@ -145,6 +145,8 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR260SendURL);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.Timeout = 15000;    //設定TIMEOUT時間
+
             try
             {
                 string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
@@ -323,6 +325,7 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR271QueryURL);
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.Timeout = 15000;    //設定TIMEOUT時間
             try
             {
                 string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
@@ -657,7 +660,7 @@ namespace OtherService
         #endregion
         #region 欠費查詢
         /// <summary>
-        /// 點數查詢
+        /// 欠費查詢
         /// </summary>
         /// <param name="IDNO"></param>
         /// <param name="output"></param>
@@ -680,7 +683,7 @@ namespace OtherService
             return flag;
         }
         /// <summary>
-        /// 點數查詢
+        /// 欠費查詢
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
@@ -690,8 +693,11 @@ namespace OtherService
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR330QueryURL);
+
             request.Method = "POST";
             request.ContentType = "application/json";
+            request.Timeout = 15000;    //設定TIMEOUT時間
+
             try
             {
                 string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
