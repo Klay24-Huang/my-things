@@ -20,9 +20,9 @@ namespace Domain.TB.BackEnd
         public int Maintenance { set; get; }
         public int OrderStatus { set; get; }
         public string remark { set; get; }
-        public string BookingStart { set; get; }
-        public string BookingEnd { set; get; }
-        public string lastCleanTime { set; get; }
+        public DateTime BookingStart { set; get; }
+        public DateTime BookingEnd { set; get; }
+        public DateTime lastCleanTime { set; get; }
         public int lastRentTimes { set; get; }
         public string CarNo { set; get; }
         public string lend_place { set; get; }

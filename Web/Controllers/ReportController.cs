@@ -97,7 +97,7 @@ namespace Web.Controllers
             data = new CarClearRepository(connetStr).GetCleanDataWithOutPic(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "帳號", "整備人員", "訂單編號", "車號", "據點", "狀態", "實際取車", "實際還車", "車外清潔", "車內清潔", "車輛救援", "車輛調度", "車輛調度(路邊租還)", "保養", "清潔時幾天未清", ",出租次數", "備註" };
+            string[] headerField = { "帳號", "整備人員", "訂單編號", "車號", "據點", "狀態", "實際取車", "實際還車", "車外清潔", "車內清潔", "車輛救援", "車輛調度", "車輛調度(路邊租還)", "保養", "清潔時幾天未清", "出租次數", "備註" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -128,8 +128,8 @@ namespace Web.Controllers
                     OrderStatus = "逾時未取車(排程取消)";
                 }
 
-                double totalDay = ((data[k].lastCleanTime != "" && data[k].lastCleanTime != "1900/1/1 上午 12:00:00") ? Convert.ToDateTime(data[k].BookingStart).Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays : -1);
-                string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(Convert.ToDateTime(data[k].BookingStart).Subtract(Convert.ToDateTime(data[k].lastCleanTime)).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
+                string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
                 if (data[k].OrderStatus < 2)
                 {
                     totalDayStr = DateTime.Now.Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays.ToString();
@@ -141,8 +141,8 @@ namespace Web.Controllers
                 content.CreateCell(3).SetCellValue(data[k].CarNo);                                               //車號
                 content.CreateCell(4).SetCellValue(data[k].lend_place);                                          //據點
                 content.CreateCell(5).SetCellValue(OrderStatus);                                                 //狀態
-                content.CreateCell(6).SetCellValue(data[k].BookingStart.Replace("1900/1/1 上午 12:00:00", ""));  //實際取車
-                content.CreateCell(7).SetCellValue(data[k].BookingEnd.Replace("1900/1/1 上午 12:00:00", ""));    //實際還車
+                content.CreateCell(6).SetCellValue(data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車"));  //實際取車
+                content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));    //實際還車
                 content.CreateCell(8).SetCellValue((data[k].outsideClean == 1) ? "✔" : "✖");                                                 //車外清潔
                 content.CreateCell(9).SetCellValue((data[k].insideClean == 1) ? "✔" : "✖");                                                 //車內清潔
                 content.CreateCell(10).SetCellValue((data[k].rescue == 1) ? "✔" : "✖");                                                 //車輛救援
