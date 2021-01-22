@@ -78,56 +78,58 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL(@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
-SET @APP    =ISNULL(@APP    ,2);
-SET @APPVersion   =ISNULL(@APPVersion,'');
+SET @APP=ISNULL(@APP,2);
+SET @APPVersion=ISNULL(@APPVersion,'');
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-		BEGIN TRY
-		 IF @DeviceID='' OR @IDNO='' 
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
+BEGIN TRY
+	IF @DeviceID='' OR @IDNO='' 
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @Error=0
-		 BEGIN
-		     SET @hasData=0;
-		    SELECT @hasData=COUNT(1) FROM TB_Token WHERE MEMIDNO=@IDNO AND Refrash_Token=@RefrashToken AND APP=@APP AND APPVersion=@APPVersion AND DeviceID=@DeviceID AND Refrash_Rxpires_in>=@NowTime;
-			IF @hasData=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR101';
-			END
-		 END
-		  --2.產生Token
-		 IF @Error=0
-		 BEGIN
-		    EXEC @Error=usp_GenerateToken @IDNO ,	@DeviceID,@Rxpires_in,@Refrash_Rxpires_in,@LogID,@APPVersion,@APP,@Access_Token OUTPUT,@Refrash_Token OUTPUT,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+	IF @Error=0
+	BEGIN
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND Refrash_Token=@RefrashToken AND APP=@APP AND APPVersion=@APPVersion AND DeviceID=@DeviceID AND Refrash_Rxpires_in>=@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+	END
+
+	--2.產生Token
+	IF @Error=0
+	BEGIN
+		EXEC @Error=usp_GenerateToken @IDNO,@DeviceID,@Rxpires_in,@Refrash_Rxpires_in,@LogID,@APPVersion,@APP,@Access_Token OUTPUT,@Refrash_Token OUTPUT,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_RefrashToken';

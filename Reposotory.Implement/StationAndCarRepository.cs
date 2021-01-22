@@ -83,28 +83,13 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
-            int nowCount = 0;
-            string SQL = "SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 AND [IsNormalStation]=0 ORDER BY StationID ASC;";
+            string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
+                            FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
+                            WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate
+                            ORDER BY StationID ASC;";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentStationData>(ref flag, ref lstError, SQL, para, term);
-            return lstStation;
-        }
-
-        /// <summary>
-        /// 取出據點的名稱及代碼
-        /// </summary>
-        /// <returns></returns>
-        public List<iRentStationBaseInfo> GetAlliRentStationBaseData()
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<iRentStationBaseInfo> lstStation = null;
-            int nowCount = 0;
-            string SQL = "SELECT  [StationID],[Location] AS StationName   FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 ORDER BY StationID ASC;";
-            SqlParameter[] para = new SqlParameter[2];
-            string term = "";
-            lstStation = GetObjList<iRentStationBaseInfo>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
 
@@ -125,8 +110,9 @@ namespace Reposotory.Implement
             }
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
-            int nowCount = 0;
-            string SQL = "SELECT  [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content]  FROM [dbo].[TB_iRentStation] WITH(NOLOCK) WHERE use_flag=3 AND [IsNormalStation]=0 ";
+            string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
+                            FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
+                            WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate ";
 
             SqlParameter[] para = new SqlParameter[2];
 

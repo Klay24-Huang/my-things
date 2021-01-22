@@ -1,10 +1,4 @@
 /****** Object:  Table [dbo].[IRENT_SIGNATURE]    Script Date: 2021/1/21 下午 04:16:33 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 CREATE TABLE [dbo].[IRENT_SIGNATURE](
 	[A_PRGID] [varchar](10) NOT NULL,
 	[A_USERID] [varchar](10) NOT NULL,

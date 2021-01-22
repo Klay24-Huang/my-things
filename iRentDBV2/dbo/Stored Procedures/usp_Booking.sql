@@ -235,10 +235,13 @@ BEGIN TRY
 		OR (@ED>=CAST('2021-02-09' AS DATETIME) AND @ED<= CAST('2021-02-16' AS DATETIME))
 		BEGIN
 			--測試人員不卡春節
-			IF NOT EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND SPECSTATUS='99')
+	--		IF NOT EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND SPECSTATUS='99')
+			--春節期間非R129不給預約
+			IF @ProjID <> 'R129'
 			BEGIN
 				SET @Error=1
-				SET @ErrorCode='ERR235'
+				--SET @ErrorCode='ERR242'
+				SET @ErrorCode='ERR161'
 			END
 		END
 	END
@@ -326,6 +329,15 @@ BEGIN TRY
 				SET @Error=1
 				SET @ErrorCode='ERR161'
 			END
+		END
+
+		-- 判斷據點是否生效
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_iRentStation WITH(NOLOCK) WHERE StationID=@StationID AND (@SD BETWEEN SDate AND EDate) AND (@ED BETWEEN SDate AND EDate);
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR243';
 		END
 	END
 	--2.6 卡會員狀態 20210104 ADD BY ADAM REASON.審核不通過不可預約
