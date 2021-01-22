@@ -245,15 +245,24 @@
                     string status = "已預約";
                     string inPic = "";
                     string outPic = "";
-                    double totalDay = ((lstCleanData[i].lastCleanTime != "" && lstCleanData[i].lastCleanTime != "1900/1/1 上午 12:00:00") ? DateTime.Now.Subtract(Convert.ToDateTime(lstCleanData[i].lastCleanTime)).TotalDays : -1);
-                    string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(DateTime.Now.Subtract(Convert.ToDateTime(lstCleanData[i].lastCleanTime)).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                    double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss")== "1900-01-01 00:00:00") ? DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalDays : -1);
+                    string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                    string StartTime = lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
+                    string EndTime = lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
+                    if(EndTime!="未還車" && StartTime != "未取車")
+                    {
+                        if(lstCleanData[i].BookingEnd< lstCleanData[i].BookingStart)
+                        {
+                            EndTime = lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss");
+                        }
+                    }
                     if (lstCleanData[i].incarPic == "0")
                     {
                         inPic = "無";
                     }
                     else
                     {
-                       
+
                         inPic = "<input type=\"button\" value=\"顯示圖片\" onclick=showPic('" + ImgURL + lstCleanData[i].incarPicStr + "',0);>";
                     }
                     if (lstCleanData[i].outcarPic == "0")
@@ -279,8 +288,8 @@
                         <td>@lstCleanData[i].CarNo</td>
                         <td>@lstCleanData[i].lend_place</td>
                         <td>@status</td>
-                        <td>@lstCleanData[i].BookingStart.Replace("1900/1/1 上午 12:00:00", "")</td>
-                        <td>@lstCleanData[i].BookingEnd.Replace("1900/1/1 上午 12:00:00", "")</td>
+                        <td>@StartTime</td>
+                        <td>@EndTime</td>
                         <td>@((lstCleanData[i].outsideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].insideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].rescue == 1) ? "✔" : "✖")</td>
