@@ -1025,7 +1025,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_GetOrderInfoBeforeModifyNew";
                     break;
                 case SPType.BE_GetOrderInfoBeforeModifyV2:
-                    SPName = "usp_BE_GetOrderInfoBeforeModifyVw";
+                    SPName = "usp_BE_GetOrderInfoBeforeModifyV2";
                     break;
                 case SPType.BE_HandleOrderModify:
                     SPName = "usp_BE_HandleOrderModify";

@@ -300,7 +300,7 @@ function SetData(data) {
             $("#DestroyFee_input").val(OrderObj.DestroyFee).prop("readonly", "");
             $("#DestroyFeeRemark_input").val(OrderObj.DestroyFeeRemark);
 
-            $("#ParkingFee_input").val(OrderObj.parkingFee).prop("readonly", "");
+            $("#ParkingFee_input").val(OrderObj.OtherParkingFee).prop("readonly", "");
             $("#ParkingFeeRemark_input").val(OrderObj.ParkingFeeRemark);
 
 
@@ -312,7 +312,7 @@ function SetData(data) {
             $("#OtherFeeRemark_input").val(OrderObj.OtherFeeRemark);
             $("#ParkingFeeByMachi_input").val(OrderObj.PARKINGAMT2).prop("readonly", "");
             $("#ParkingFeeByMachiRemark_input").val(OrderObj.PARKINGMEMO2);
-            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.parkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
+            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.OtherParkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
 
             /*營損結束*/
 

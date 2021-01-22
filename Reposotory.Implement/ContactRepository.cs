@@ -789,11 +789,15 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
-            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ";
+            string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes";
 
             SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
     
             SQL += " LEFT JOIN VW_BE_GetNPR330Data AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
+            SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
+             SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
+            
+            
 
 
             SqlParameter[] para = new SqlParameter[2];
