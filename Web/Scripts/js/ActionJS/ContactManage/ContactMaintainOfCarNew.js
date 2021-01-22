@@ -74,7 +74,8 @@ $(document).ready(function () {
         var final_price = $("#final_price_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
-            var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice); //(oldPrice ) - (parseInt(final_price) + OtherPrice);
+          //  var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice); //(oldPrice ) - (parseInt(final_price) + OtherPrice);
+            var final_amt = (oldPrice) - (parseInt(final_price) + OtherPrice);
 
 
 
