@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModifyNew);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModifyV2);
                 SPOutput_BE_GetOrderInfoBeforeModify spOut = new SPOutput_BE_GetOrderInfoBeforeModify();
                 SPInput_BE_GetOrderInfoBeforeModify spInput = new SPInput_BE_GetOrderInfoBeforeModify()
                 {
@@ -251,10 +251,13 @@ namespace WebAPI.Controllers
                         //    ED = Convert.ToDateTime(apiOutput.OrderData.ED);
                         //}
                         new BillCommon().CalDayHourMin(SD, ED, ref days, ref hours, ref minutes);
-                        int needPointer = (days * 60 * 10) + (hours * 60) + minutes;
+                        int needPointer = ((days * 60 * 10) + (hours * 60) + minutes);
                         if (apiOutput.OrderData.PROJTYPE == 4)
                         {
-
+                            if (needPointer < apiOutput.OrderData.BaseMinutes)
+                            {
+                                needPointer = apiOutput.OrderData.BaseMinutes;
+                            }
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPoint, needPointer);
                             apiOutput.Bonus.CanUseTotalMotorPoint = apiOutput.Bonus.CanUseTotalCarPoint;
                         }
