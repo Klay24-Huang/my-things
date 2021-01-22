@@ -10,5 +10,9 @@ namespace Domain.TB.BackEnd
     {
         public string TaishinTradeNo { set; get; }
         public int ArrearAMT { set; get; }
+        /// <summary>
+        /// 機車基消
+        /// </summary>
+        public int BaseMinutes { set; get; }
     }
 }
