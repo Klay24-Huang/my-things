@@ -2260,6 +2260,7 @@ namespace WebAPI.Models.BaseFunc
                                     }
                                 }
                                 #endregion
+
                                 #region 判斷是否在據點內
                                 //if (flag)
                                 //{
@@ -2358,6 +2359,7 @@ namespace WebAPI.Models.BaseFunc
                             //清除租約
                             if (flag)
                             {
+
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetNoRent);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.SetNoRent;
                                 WSInput_Base<Params> SetNoRentInput = new WSInput_Base<Params>()
@@ -2374,6 +2376,12 @@ namespace WebAPI.Models.BaseFunc
                                 if (flag)
                                 {
                                     flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        //無租約時會回失敗，直接bypass
+                                        flag = true;
+                                        errCode = "000000";
+                                    }
                                 }
                             }
                             //全車上鎖
@@ -2497,6 +2505,12 @@ namespace WebAPI.Models.BaseFunc
                             if (flag)
                             {
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                if (flag == false)
+                                {
+                                    //無租約時會回失敗，直接bypass
+                                    flag = true;
+                                    errCode = "000000";
+                                }
                             }
                         }
                         if (flag)

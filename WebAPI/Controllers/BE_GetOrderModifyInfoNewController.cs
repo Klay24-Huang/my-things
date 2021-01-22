@@ -245,10 +245,11 @@ namespace WebAPI.Controllers
                         List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), ED.ToString("yyyyMMdd"));
                         int days = 0, hours = 0, minutes = 0;
                         apiOutput.IsHoliday = (new BillCommon().IsInHoliday(lstHoliday, SD)) ? 1 : 0;
-                        if (apiOutput.OrderData.FT != "")
-                        {
-                            ED = Convert.ToDateTime(apiOutput.OrderData.ED);
-                        }
+                        //移除逾時判斷
+                        //if (apiOutput.OrderData.FT != "")
+                        //{
+                        //    ED = Convert.ToDateTime(apiOutput.OrderData.ED);
+                        //}
                         new BillCommon().CalDayHourMin(SD, ED, ref days, ref hours, ref minutes);
                         int needPointer = (days * 60 * 10) + (hours * 60) + minutes;
                         if (apiOutput.OrderData.PROJTYPE == 4)

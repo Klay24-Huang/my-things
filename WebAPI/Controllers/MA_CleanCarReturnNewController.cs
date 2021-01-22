@@ -114,7 +114,7 @@ namespace WebAPI.Controllers
                     {
                         outcarPic = string.Format("{0}_outcarPic_{1}.png", apiInput.OrderNum, DateTime.Today.ToString("yyyyMMddHHmmss"));
                     }
-                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.outcarPic, incarPic, MaintainContainer);
+                    flag = new AzureStorageHandle().UploadFileToAzureStorage(apiInput.outcarPic, outcarPic, MaintainContainer);
                     if (flag)
                     {
                         apiInput.outcarPic = outcarPic;
