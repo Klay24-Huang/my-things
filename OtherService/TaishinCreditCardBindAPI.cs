@@ -109,7 +109,7 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
+            //SetHeaderValue(request.Headers, "Connection", "close");
             request.Timeout = 30000;
 
             try
@@ -151,6 +151,11 @@ namespace OtherService
                     }
 
                 }
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -163,6 +168,7 @@ namespace OtherService
             }
             finally
             {
+
                 //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
@@ -314,7 +320,7 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
+            //SetHeaderValue(request.Headers, "Connection", "close");
             request.Timeout = 30000;
             //request.Headers["Connection"] = "keep-alive";
             try
@@ -356,6 +362,11 @@ namespace OtherService
                     }
 
                 }
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -443,8 +454,8 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 30000;
+            //SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 78000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -474,6 +485,11 @@ namespace OtherService
                     }
 
                 }
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -486,7 +502,6 @@ namespace OtherService
             }
             finally
             {
-                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -556,8 +571,8 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 30000;
+            //SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 78000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -584,6 +599,12 @@ namespace OtherService
                     }
 
                 }
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
+                //request.Abort();
             }
             catch (Exception ex)
             {
@@ -596,7 +617,6 @@ namespace OtherService
             }
             finally
             {
-                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -799,7 +819,7 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
+            //SetHeaderValue(request.Headers, "Connection", "close");
             request.Timeout = 78000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
@@ -836,8 +856,12 @@ namespace OtherService
                     }
 
                 }
-                
-
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
+                //request.Abort();
             }
             catch (Exception ex)
             {
@@ -850,7 +874,6 @@ namespace OtherService
             }
             finally
             {
-                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
@@ -1015,8 +1038,8 @@ namespace OtherService
             request.Method = "POST";
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 30000;
+            //SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 78000;
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
@@ -1043,6 +1066,11 @@ namespace OtherService
                     }
 
                 }
+                //增加關閉連線的呼叫
+                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                requestClose.Connection = "Close";
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -1055,8 +1083,6 @@ namespace OtherService
             }
             finally
             {
-
-                //request.Abort();
                 SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
                 {
                     MKTime = MKTime,
