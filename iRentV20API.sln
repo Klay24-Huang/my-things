@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushService", "PushService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingCancelSync", "BookingCancelSync\BookingCancelSync.csproj", "{7087B766-A293-4A34-9B62-6585CBEF4183}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendEventMail", "SendEventMail\SendEventMail.csproj", "{13A81847-DE68-416B-A88A-3F0A47433C0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{7087B766-A293-4A34-9B62-6585CBEF4183}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7087B766-A293-4A34-9B62-6585CBEF4183}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7087B766-A293-4A34-9B62-6585CBEF4183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13A81847-DE68-416B-A88A-3F0A47433C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A81847-DE68-416B-A88A-3F0A47433C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A81847-DE68-416B-A88A-3F0A47433C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A81847-DE68-416B-A88A-3F0A47433C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

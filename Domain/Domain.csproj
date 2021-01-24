@@ -266,6 +266,7 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />
     <Compile Include="Sync\Input\SPInput_SYNC_BookingCancel.cs" />
+    <Compile Include="Sync\Input\SPInput_SYNC_UPDEventMessage.cs" />
     <Compile Include="Sync\Input\SyncInput_MessageParam.cs" />
     <Compile Include="Sync\Output\SyncOutput_ResultParam.cs" />
     <Compile Include="TB\AnyRentObj.cs" />
@@ -387,6 +388,7 @@
     <Compile Include="TB\iRentStationBaseInfo.cs" />
     <Compile Include="TB\SubScript\MemberAuth.cs" />
     <Compile Include="TB\SubScript\SubScriptionForClient.cs" />
+    <Compile Include="TB\Sync\Sync_SendEventMessage.cs" />
     <Compile Include="TB\Sync\Sync_SendMessage.cs" />
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />
