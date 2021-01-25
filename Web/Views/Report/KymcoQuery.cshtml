@@ -152,9 +152,9 @@
                 <th scope="col">區域</th>
                 <th scope="col">種類</th>
                 <th scope="col">車號</th>
+                <th scope="col">@((AuditMode==0) ? "維修方" : (AuditMode == 1) ? "維修方" : "")</th>
                 <th scope="col" style="width:150px;">@((AuditMode==0) ? "經銷商或整備項目" : (AuditMode == 1) ? "經銷商" : "整備項目")</th>
                 <th scope="col">@((AuditMode==0) ? "地址或備註" : (AuditMode == 1) ? "地址" : "備註")</th>
-                <th scope="col">@((AuditMode==0) ? "維修方" : (AuditMode == 1) ? "維修方" : "")</th>
                 <th scope="col">@((AuditMode==0) ? "原因次分類" : (AuditMode == 1) ? "原因次分類" : "")</th>
                 <th scope="col">@((AuditMode==0) ? "車輛是否下線" : (AuditMode == 1) ? "車輛是否下線" : "")</th>
                 <th scope="col">修改時間</th>
@@ -173,20 +173,20 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                    <tr>
-                        <td data-sort="false"></td>
-                        <td scope="col">@(lstData[i].UserID)</td>
-                        <td scope="col">@(lstData[i].UserName)</td>
-                        <td scope="col">@(lstData[i].Area)</td>
-                        <td scope="col">@(lstData[i].TypeK)</td>
-                        <td scope="col">@(lstData[i].CarNo)</td>
-                        <td scope="col" style="color:red;">@(lstData[i].DealerCodeValue)</td>
-                        <td scope="col">@(lstData[i].MemoAddr)</td>
-                        <td scope="col">@(lstData[i].MaintainType)</td>
-                        <td scope="col">@(lstData[i].Reason)</td>
-                        <td scope="col">@(lstData[i].Offline)</td>
-                        <td scope="col">@(lstData[i].UpdTime)</td>
-                    </tr>
+        <tr>
+            <td data-sort="false"></td>
+            <td scope="col">@(lstData[i].UserID)</td>
+            <td scope="col">@(lstData[i].UserName)</td>
+            <td scope="col">@(lstData[i].Area)</td>
+            <td scope="col">@(lstData[i].TypeK)</td>
+            <td scope="col">@(lstData[i].CarNo)</td>
+            <td scope="col">@(lstData[i].MaintainType)</td>
+            <td scope="col" style="color:red;">@(lstData[i].DealerCodeValue)</td>
+            <td scope="col">@(lstData[i].MemoAddr)</td>
+            <td scope="col">@(lstData[i].Reason)</td>
+            <td scope="col">@(lstData[i].Offline)</td>
+            <td scope="col">@(lstData[i].UpdTime)</td>
+        </tr>
                 }
 
             }

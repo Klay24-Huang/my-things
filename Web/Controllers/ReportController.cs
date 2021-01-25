@@ -767,41 +767,82 @@ namespace Web.Controllers
 
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "員工代號", "員工姓名", "區域", "種類", "車號", "經銷商(整備項目)", "地址(備註)", "維修方", "原因次分類", "車輛是否下線", "修改時間" };
-            int headerFieldLen = headerField.Length;
 
-            IRow header = sheet.CreateRow(0);
-            for (int j = 0; j < headerFieldLen; j++)
+            if (ExplodeAuditMode==1)
             {
-                header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
-            }
-            lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
-            int len = lstRawDataOfMachi.Count;
-            for (int k = 0; k < len; k++)
-            {
-                IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);  
-                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName); 
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);   
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
-                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
-                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].MaintainType);
-                content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].Reason);
-                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Offline);
-                content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+                string[] headerField = { "員工代號", "員工姓名", "區域", "種類", "車號", "維修方", "經銷商", "地址", "原因次分類", "車輛是否下線", "修改時間" };
+                int headerFieldLen = headerField.Length;
 
+                IRow header = sheet.CreateRow(0);
+                for (int j = 0; j < headerFieldLen; j++)
+                {
+                    header.CreateCell(j).SetCellValue(headerField[j]);
+                    sheet.AutoSizeColumn(j);
+                }
+                lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
+                int len = lstRawDataOfMachi.Count;
+                for (int k = 0; k < len; k++)
+                {
+                    IRow content = sheet.CreateRow(k + 1);
+                    content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);
+                    content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName);
+                    content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);
+                    content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
+                    content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
+                    content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].MaintainType);
+                    content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
+                    content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
+                    content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].Reason);
+                    content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Offline);
+                    content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+
+                }
+                for (int l = 0; l < headerFieldLen; l++)
+                {
+                    sheet.AutoSizeColumn(l);
+                }
+                MemoryStream ms = new MemoryStream();
+                workbook.Write(ms);
+                // workbook.Close();
+                return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
-            for (int l = 0; l < headerFieldLen; l++)
+            else
             {
-                sheet.AutoSizeColumn(l);
+                string[] headerField = { "員工代號", "員工姓名", "區域", "種類", "車號", "整備項目", "備註", "修改時間" };
+                int headerFieldLen = headerField.Length;
+
+                IRow header = sheet.CreateRow(0);
+                for (int j = 0; j < headerFieldLen; j++)
+                {
+                    header.CreateCell(j).SetCellValue(headerField[j]);
+                    sheet.AutoSizeColumn(j);
+                }
+                lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
+                int len = lstRawDataOfMachi.Count;
+                for (int k = 0; k < len; k++)
+                {
+                    IRow content = sheet.CreateRow(k + 1);
+                    content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);
+                    content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName);
+                    content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);
+                    content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
+                    content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
+                    content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
+                    content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
+                    content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+
+                }
+                for (int l = 0; l < headerFieldLen; l++)
+                {
+                    sheet.AutoSizeColumn(l);
+                }
+                MemoryStream ms = new MemoryStream();
+                workbook.Write(ms);
+                // workbook.Close();
+                return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
-            MemoryStream ms = new MemoryStream();
-            workbook.Write(ms);
-            // workbook.Close();
-            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+
+            
         }
     }
 }
