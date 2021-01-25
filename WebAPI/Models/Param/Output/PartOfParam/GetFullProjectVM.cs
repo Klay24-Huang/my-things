@@ -9,6 +9,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class GetFullProjectVM
     {
         public string PROJID { get; set; }
+        public int PROJTYPE { get; set; }
         public string CarTypeGroupCode { get; set; }
         public double PRICE { get; set; }
         public double PRICE_H { get; set; }

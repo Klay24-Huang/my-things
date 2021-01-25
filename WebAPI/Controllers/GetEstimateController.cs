@@ -239,10 +239,13 @@ namespace WebAPI.Controllers
                     {
                         if (priceBase.Count > 0)
                         {
+                            var cr_com = new CarRentCommon();
+                            DateTime sprSd = Convert.ToDateTime(apiInput.SDate);
+                            DateTime sprEd = Convert.ToDateTime(apiInput.EDate);
                             var pr = priceBase[0];
-                            if (ProjType == 0 || ProjType== 3)
-                            {                               
-                                var cr_com = new CarRentCommon();
+                            if (ProjType == 0 && cr_com.isSpring(sprSd, sprEd))
+                            {                              
+                                //有跨到春節就會回傳春節專案,只針對同站 
                                 var bizIn = new IBIZ_SpringInit()
                                 {
                                     ProjID = apiInput.ProjID,
@@ -252,10 +255,9 @@ namespace WebAPI.Controllers
                                     lstHoliday = lstHoliday,
                                     SD = Convert.ToDateTime(apiInput.SDate),
                                     ED = Convert.ToDateTime(apiInput.EDate),
-                                    ProDisPRICE = Convert.ToDouble(pr.PRICE)/10,
-                                    ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H)/10                                    
+                                    ProDisPRICE = Convert.ToDouble(pr.PRICE) / 10,
+                                    ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H) / 10
                                 };
-                               
                                 var xre = cr_com.GetSpringInit(bizIn, connetStr);
                                 if (xre != null)
                                 {
@@ -268,7 +270,7 @@ namespace WebAPI.Controllers
                                         MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
                                         MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                                     };
-                                }
+                                }                               
                             }
                             else
                             {

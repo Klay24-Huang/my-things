@@ -140,7 +140,7 @@ BEGIN TRY
 			   VW.[final_price] ,
 			   VW.[TransDiscount],
 			   VW.[parkingFee] ,
-			   VW.invoice_date,
+			   invoice_date=RTRIM(VW.invoice_date),
 			   VW.invoice_price,
 			   VW.invoiceCode,
 			   VW.bill_option AS InvoiceType ,
@@ -153,9 +153,16 @@ BEGIN TRY
 			   VW.start_mile,
 			   VW.end_mile,
 			   0 AS DiscountAmount,
-			   '' As DiscountName
-		FROM [dbo].[VW_GetOrderData] AS VW
-		LEFT JOIN TB_LoveCode AS Love ON Love.LoveCode=VW.NPOBAN
+			   '' As DiscountName,
+			   ISNULL(Fee.CarDispatch,0) AS CarDispatch,
+			   ISNULL(Fee.CleanFee,0) AS CleanFee,
+			   ISNULL(Fee.DestroyFee,0) AS DestroyFee,
+			   ISNULL(Fee.ParkingFee,0) AS ParkingFee2,
+			   ISNULL(Fee.DraggingFee,0) AS DraggingFee,
+			   ISNULL(Fee.OtherFee,0) AS OtherFee
+		FROM [dbo].[VW_GetOrderData] AS VW WITH(NOLOCK)
+		LEFT JOIN TB_LoveCode AS Love WITH(NOLOCK) ON Love.LoveCode=VW.NPOBAN
+		LEFT JOIN TB_OrderOtherFee AS Fee WITH(NOLOCK) ON Fee.OrderNo=VW.order_number
 		WHERE VW.order_number=@OrderNo;
 	END
 

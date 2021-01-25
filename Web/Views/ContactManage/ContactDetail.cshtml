@@ -575,7 +575,7 @@
                                 結算金額
                             </div>
                             <div class="col-md-3">
-                                @((OrderStatus > 3) ? obj.Data.FinalPrice.ToString() : "")
+                                @((OrderStatus > 3) ? (obj.Data.FinalPrice + obj.Data.CarDispatch + obj.Data.CleanFee + obj.Data.DestroyFee + obj.Data.ParkingFee + obj.Data.DraggingFee + obj.Data.OtherFee).ToString() : "")
                             </div>
                         </div>
                     </div>
