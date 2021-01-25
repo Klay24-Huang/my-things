@@ -241,7 +241,6 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務  20201206改為等級4就是停權
 						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
-				--FROM (SELECT nowStationID,CarType,CarOfArea,CarNo FROM TB_Car c WITH(NOLOCK) JOIN @tb_StationID s ON c.nowStationID=s.StationID WHERE c.available < 2) C
 				--20201231 ADD BY ADAM REASON.排除車機未設定
 				FROM (SELECT nowStationID,c.CarType,CarOfArea,c.CarNo FROM TB_Car c WITH(NOLOCK) 
 						JOIN @tb_StationID s ON c.nowStationID=s.StationID 
@@ -254,7 +253,7 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
 				JOIN #TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID
 				LEFT JOIN TB_ProjectDiscount PD WITH(NOLOCK) ON PD.ProjID = S.PROJID AND D.CarType = PD.CARTYPE --2020-12-17 eason
-				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID
+				LEFT JOIN TB_iRentStation I WITH(NOLOCK) ON I.StationID=C.nowStationID AND (@SD BETWEEN I.SDate AND I.EDate) AND (@ED BETWEEN I.SDate AND I.EDate)
 				LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID = I.CityID --eason 2020-11-27
 				LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID = I.AreaID --eason 2020-11-27
 				LEFT JOIN #BookingList BL ON C.nowStationID=BL.nowStationID AND C.CarType=BL.CarType
