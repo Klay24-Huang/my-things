@@ -202,7 +202,7 @@ namespace WebAPI.Controllers
                             //    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                             //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                             //}
-                            if (lstOrder[0].car_mgt_status <4 )
+                            if (lstOrder[0].car_mgt_status < 4)
                             {
                                 flag = false;
                                 errCode = "ERR773";
@@ -345,7 +345,7 @@ namespace WebAPI.Controllers
                                     {
                                         if (clearFlag)
                                         {
-                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
+                                            bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
                                             if (CarFlag == false)
                                             {
                                                 //寫入車機錯誤
@@ -381,7 +381,7 @@ namespace WebAPI.Controllers
                                         {
                                             if (clearFlag)
                                             {
-                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode,apiInput.ByPass);
+                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
                                                 if (CarFlag == false)
                                                 {
                                                     //寫入車機錯誤
@@ -415,7 +415,8 @@ namespace WebAPI.Controllers
                             #endregion
                         }
                     }
-                }else if (apiInput.Mode == 1 && apiInput.type==2)
+                }
+                else if (apiInput.Mode == 1 && apiInput.type == 2)
                 {
                     string spName = new ObjType().GetSPName(ObjType.SPType.BE_CancelCleanOrder);
                     SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
@@ -879,8 +880,8 @@ namespace WebAPI.Controllers
             #region 初始宣告
             bool flag = true;
             float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
-            
-            
+
+
             List<Holiday> lstHoliday = null; //假日列表
             List<OrderQueryFullData> OrderDataLists = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -898,7 +899,7 @@ namespace WebAPI.Controllers
             DateTime FineDate = new DateTime();
             bool hasFine = false; //是否逾時
             DateTime NowTime = DateTime.Now;
-            
+
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
             int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
@@ -1197,7 +1198,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            
+
 
             #region 建空模及塞入要輸出的值
             if (flag)
@@ -1325,7 +1326,7 @@ namespace WebAPI.Controllers
                         else
                         {
                             List<MonthlyRentData> UseMonthlyRent = new List<MonthlyRentData>();
-                            
+
                             UseMonthlyRent = monthlyRentDatas;
 
                             int xDiscount = Discount;//帶入月租運算的折扣

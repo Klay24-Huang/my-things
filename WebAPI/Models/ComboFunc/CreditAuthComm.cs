@@ -133,7 +133,7 @@ namespace WebAPI.Models.ComboFunc
             bool flag = true;
             PartOfECRefund WSRefundInput = new PartOfECRefund()
             {
-                ApiVer = ApiVerOther,
+                ApiVer = ApiVer,
                 ApposId = TaishinAPPOS,
                 RequestParams = new EC_RefundRequestParams()
                 {
@@ -154,7 +154,7 @@ namespace WebAPI.Models.ComboFunc
                 Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                 TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString()
             };
-            flag = WebAPI.DoCreditRefund(WSRefundInput,tmpOrder,IDNO, ref errCode, ref WSRefundOutput);
+            flag = WebAPI.DoCreditRefund(WSRefundInput,tmpOrder,IDNO, ref errCode,ref errMsg, ref WSRefundOutput);
             return flag;
         }
         /// <summary>
