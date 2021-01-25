@@ -353,7 +353,7 @@ namespace WebAPI.Models.BillFunc
             , List<MonthlyRentData> mOri
             , int Discount
             )
-        {//dev: CarRentInCompute
+        {//note: CarRentInCompute
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
             double lastDisc = Convert.ToDouble(Discount);//剩餘折扣
@@ -563,7 +563,7 @@ namespace WebAPI.Models.BillFunc
              , List<MonthlyRentData> mOri = null
              , int Discount = 0
             )
-        {//dev: MotoRentMonthComp
+        {//note: MotoRentMonthComp
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
             List<MonthlyRentData> mFinal = new List<MonthlyRentData>();//剩餘月租點數
@@ -819,7 +819,7 @@ namespace WebAPI.Models.BillFunc
             ref List<DayPayMins> norList, double Discount,
             string wDateType, string hDateType
             )
-        {//dev: MotoRentDiscComp
+        {//note: MotoRentDiscComp
             #region 變數宣告
             double fDayMaxMins = 199;//首24H最大計費分鐘
             double dayMaxPrice = 300;//每24H最大租金
@@ -2710,7 +2710,7 @@ namespace WebAPI.Models.BillFunc
         /// <returns>平日折扣, 假日則扣, 最大可折抵分鐘</returns>
         /// <mark>2020-12-09 eason</mark>
         public Tuple<double, double, double> discCompute(double disc, string wDay, string hDay, ref List<DayPayMins> norList)
-        {//dev: discCompute
+        {//note: discCompute
             double wDisc = 0;//平日折扣
             double hDisc = 0;//假日則扣
             double nowDisc = 0;//現在點數
@@ -2778,7 +2778,7 @@ namespace WebAPI.Models.BillFunc
             string wDateType,
             string hDateType
             )
-        {//dev: MotoF24HDiscCompute
+        {//note: MotoF24HDiscCompute
 
             string funNm = "MotoF24HDiscCompute : ";
             double dayMaxMins = 199;//首日最大分鐘
@@ -3497,7 +3497,7 @@ namespace WebAPI.Models.BillFunc
     /// 汽車月租回傳
     /// </summary>
     public class CarRentInfo
-    {//dev: CarRentInfo
+    {//note: CarRentInfo
         /// <summary>
         /// 未逾時租金
         /// </summary>

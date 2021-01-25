@@ -79,6 +79,7 @@ namespace Domain.SP.Output.OrderList
         /// 停車格位置
         /// </summary>
         public string parkingSpace { set; get; }
+        public string CarTypeGroupCode { get; set; }
         #endregion
         #region 機車相關電力相關
         /// <summary>
@@ -91,6 +92,7 @@ namespace Domain.SP.Output.OrderList
         public string RemainingMilage { set; get; }
         #endregion
         #region 專案相關
+        public string ProjID { get; set; }
         /// <summary>
         /// 專案類型
         /// <para>0:同站</para>

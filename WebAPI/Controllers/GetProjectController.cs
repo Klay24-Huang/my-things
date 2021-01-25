@@ -446,28 +446,39 @@ namespace WebAPI.Controllers
         private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED)
         {
             int re = 0;
-            #region 春節租金                    
-
-            //var spItem = spList.FirstOrDefault();
+            var bill = new BillCommon();
+            var cr_com = new CarRentCommon();            
+            var cr_sp = new CarRentSp();
             int PriceBill = spItem.PriceBill;//先給sp值
-            var cr_com = new CarRentCommon();
-            var bizIn = new IBIZ_SpringInit()
-            {
-                ProjID = spItem.PROJID,
-                CarType = spItem.CarType,
-                IDNO = IDNO,
-                LogID = LogID,
-                lstHoliday = lstHoliday,
-                SD = SD,
-                ED = ED,
-                ProDisPRICE = Convert.ToDouble(spItem.Price) / 10,
-                ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
-            };
-            var xre = cr_com.GetSpringInit(bizIn, connetStr);
-            if (xre != null)
-                re = xre.RentInPay;
 
-            #endregion
+            string errMsg = "";
+            var spre = cr_sp.sp_GetEstimate(spItem.PROJID, spItem.CarType, LogID,ref errMsg);
+            int projType = -1;
+            if (spre != null)
+                projType = spre.PROJTYPE;
+
+            bool isSpr = cr_com.isSpring(SD, ED);
+            if (projType == 0 && isSpr)
+            {
+                var bizIn = new IBIZ_SpringInit()
+                {
+                    ProjID = spItem.PROJID,
+                    CarType = spItem.CarType,
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    lstHoliday = lstHoliday,
+                    SD = SD,
+                    ED = ED,
+                    ProDisPRICE = Convert.ToDouble(spItem.Price) / 10,
+                    ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
+                };
+                var xre = cr_com.GetSpringInit(bizIn, connetStr);
+                if (xre != null)
+                    re = xre.RentInPay;                
+            }
+            else
+                re = bill.CarRentCompute(SD, ED, spItem.Price, spItem.PRICE_H, 10, lstHoliday);
+
             return re;
         }
     }

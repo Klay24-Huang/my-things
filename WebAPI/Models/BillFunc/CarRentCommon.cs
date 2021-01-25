@@ -251,6 +251,7 @@ namespace WebAPI.Models.BillFunc
             var billCommon = new BillCommon();          
             var errCode = re.errCode;
             re.flag = true;
+
             //1.0 先還原這個單號使用的
             re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
             re.errCode = errCode;
@@ -259,6 +260,10 @@ namespace WebAPI.Models.BillFunc
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
             else
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+
+            //虛擬月租
+            if (sour.VisMons != null && sour.VisMons.Count() > 0)
+                monthlyRentDatas.AddRange(sour.VisMons);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
@@ -285,6 +290,11 @@ namespace WebAPI.Models.BillFunc
                                 motoMonth = re.carInfo.mFinal;
                             re.useDisc = re.carInfo.useDisc;
                         }
+
+
+                        if (motoMonth != null && motoMonth.Count()>0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0) 
+                            motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
                         if (motoMonth.Count > 0)
@@ -326,8 +336,12 @@ namespace WebAPI.Models.BillFunc
                             }
                         }
 
+                        if (UseMonthlyRent != null && UseMonthlyRent.Count()> 0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0) 
+                            UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
+
                         if (UseMonthlyRent.Count > 0)
-                        {
+                        {                          
                             int UseLen = UseMonthlyRent.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
@@ -385,6 +399,13 @@ namespace WebAPI.Models.BillFunc
                     });
                 }
             }
+
+            //虛擬月租
+            if (sour.VisMons != null && sour.VisMons.Count() > 0)
+                monthlyRentDatas.AddRange(sour.VisMons);
+
+            if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
+                re.monthlyRentDatas = monthlyRentDatas;
 
             int MonthlyLen = monthlyRentDatas.Count;
             if (MonthlyLen > 0)
@@ -448,21 +469,6 @@ namespace WebAPI.Models.BillFunc
                                     UseMonthlyRent = re.carInfo.mFinal;
                                 re.useDisc = re.carInfo.useDisc;
                             }
-                        }
-
-                        if (UseMonthlyRent.Count > 0)
-                        {
-                            re.UseMonthMode = true;
-                            //int UseLen = UseMonthlyRent.Count;
-                            //for (int i = 0; i < UseLen; i++)
-                            //{
-                            //    if (dbSave)
-                            //        re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
-                            //}
-                        }
-                        else
-                        {
-                            re.UseMonthMode = false;
                         }
                     }
                 }
@@ -540,6 +546,63 @@ namespace WebAPI.Models.BillFunc
             return sour;
         }
 
+        public OBIZ_SpringInit GetVisualMonth(IBIZ_SpringInit sour)
+        {//dev:GetVisualMonth
+            var re = new OBIZ_SpringInit();
+            var spRepo = new CarRentSp();
+            string errMsg = "";
+
+            re.PRICE = sour.PRICE;
+            re.PRICE_H = sour.PRICE_H;
+
+            if (sour == null
+                || sour.ProjType == -1
+                // || string.IsNullOrWhiteSpace(sour.ProjID)
+                || string.IsNullOrWhiteSpace(sour.CarType)
+                || sour.SD == null || sour.ED == null || sour.SD > sour.ED)
+                throw new Exception("GetVisualMonth 輸入資料錯誤");
+
+            var projType = sour.ProjType;
+            //var projID = sour.ProjID;
+            var carType = sour.CarType;
+            if (projType == 0)
+            {              
+                re.ProDisPRICE = sour.ProDisPRICE;
+                re.ProDisPRICE_H = sour.ProDisPRICE_H;
+                var visMon = new MonthlyRentData()
+                {
+                    Mode = 0,
+                    MonthlyRentId = 999001,
+                    StartDate = Convert.ToDateTime(SiteUV.strSpringSd),
+                    EndDate = Convert.ToDateTime(SiteUV.strSpringEd),
+                    WorkDayHours = 0,
+                    HolidayHours = 0,
+                    MotoTotalHours = 0,
+                    WorkDayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE)),
+                    HoildayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE_H)),
+                    WorkDayRateForMoto = 0,
+                    HoildayRateForMoto = 0
+                };
+                re.VisMons.Add(visMon);
+                var xre = spRepo.sp_GetEstimate("P735", carType, 999999, ref errMsg);
+                if(xre != null)
+                {
+                    re.PRICE = xre.PRICE/10;
+                    re.PRICE_H = xre.PRICE_H/10;
+                }               
+            }
+            else if (projType == 3)
+            {
+
+            }
+            else if (projType == 4)
+            {
+
+            }
+            
+            return re;
+        }
+
         /// <summary>
         /// 春節專案
         /// </summary>
@@ -547,38 +610,91 @@ namespace WebAPI.Models.BillFunc
         /// <param name="conStr"></param>
         /// <returns></returns>
         public CarRentInfo GetSpringInit(IBIZ_SpringInit sour, string conStr)
-        {           
-            if (sour == null || string.IsNullOrWhiteSpace(conStr))
-                throw new Exception("sour, conStr不可為空");
-            var xsour = objUti.Clone(sour);
-            if (sour.PRICE <= 0 || sour.PRICE_H <= 0)
-            {//一般平假日價格
-                string errMsg = "";
-                //P735暫時寫死:GetEstimate使用
-                var norPri = new CarRentSp().sp_GetEstimate("P735", sour.CarType, sour.LogID, ref errMsg);
-                if (norPri != null)
-                {
-                    xsour.PRICE = norPri.PRICE/10;
-                    xsour.PRICE_H = norPri.PRICE_H/10;
-                }
-            }
-            if(sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H <0)
-            {//春節專案平假日價格
-                if(!string.IsNullOrWhiteSpace(sour.ProjID) && !string.IsNullOrWhiteSpace(sour.CarType))
-                {
-                    if (isSpring(sour.SD, sour.ED))
+        {
+            var carRepo = new CarRentRepo(conStr);
+            var trace = new TraceCom();
+            var tlog = new TraceLogVM()
+            {
+                ApiId = 999002,
+                ApiNm = "GetSpringInit",
+                CodeVersion = trace.codeVersion,             
+            };
+            trace.traceAdd(nameof(sour), sour);
+            bool isSpr = false;//是否為春節
+            try
+            {
+                if (sour == null || string.IsNullOrWhiteSpace(conStr))
+                    throw new Exception("sour, conStr不可為空");
+                if(sour.ProjType == -1)
+                    throw new Exception("ProjType必填");
+                if (sour.SD == null || sour.ED == null || sour.SD > sour.ED)
+                    throw new Exception("SD, ED錯誤");
+
+                trace.FlowList.Add("inpt驗證完成");
+                isSpr = isSpring(sour.SD, sour.ED);
+                trace.traceAdd(nameof(isSpr), isSpr);
+
+                var xsour = objUti.Clone(sour);
+                if (sour.PRICE <= 0 || sour.PRICE_H <= 0)
+                {//一般平假日價格
+                    trace.FlowList.Add("一般平假日價格為0");
+                    string errMsg = "";
+
+                    if(isSpr)
                     {
-                        //春節期間增加:GetProgect使用
-                        var xre = new CarRentRepo(conStr).GetFirstProDisc("R129", sour.CarType);
-                        if (xre != null)
+                        if(sour.ProjType == 0)
                         {
-                            xsour.ProDisPRICE = xre.PRICE / 10;
-                            xsour.ProDisPRICE_H = xre.PRICE_H / 10;
+                            //P735暫時寫死
+                            var norPri = new CarRentSp().sp_GetEstimate("P735", sour.CarType, sour.LogID, ref errMsg);
+                            if (norPri != null)
+                            {
+                                trace.traceAdd(nameof(norPri), norPri);
+                                xsour.PRICE = norPri.PRICE / 10;
+                                xsour.PRICE_H = norPri.PRICE_H / 10;
+                            }
                         }
                     }
                 }
+                if (sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H < 0)
+                {//專案會升級春節虛擬月租
+                    trace.FlowList.Add("專案平假日價格為0");
+                    if (isSpr)
+                    {//春節專案平假日價格 
+                        if(sour.ProjType == 0)
+                        {
+                            trace.FlowList.Add("春節期間");
+                            if (string.IsNullOrWhiteSpace(sour.CarType))
+                                throw new Exception("CarType必填");
+                            var xre = carRepo.GetFirstProDisc("R129", sour.CarType);
+                            if (xre != null)
+                            {
+                                trace.traceAdd(nameof(xre), xre);
+                                xsour.ProDisPRICE = xre.PRICE / 10;
+                                xsour.ProDisPRICE_H = xre.PRICE_H / 10;
+                            }
+                        }
+                    }
+                }
+
+                #region trace
+                trace.FlowList.Add("呼叫計算");
+                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                tlog.FlowStep = trace.FlowStep();
+                tlog.TraceType = eumTraceType.none;
+                carRepo.AddTraceLog(tlog);
+                #endregion
+
+                return xGetSpringInit(xsour, conStr);
             }
-            return xGetSpringInit(xsour, conStr);
+            catch(Exception ex)
+            {
+                trace.BaseMsg = ex.Message;
+                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                tlog.FlowStep = trace.FlowStep();
+                tlog.TraceType = eumTraceType.exception;
+                carRepo.AddTraceLog(tlog);
+                throw;
+            }
         }
 
         /// <summary>
@@ -600,7 +716,8 @@ namespace WebAPI.Models.BillFunc
                 CodeVersion = SiteUV.codeVersion                
             };
             var trace = new TraceCom();
-            trace.objs.Add(nameof(sour), sour);
+            var funInput = objUti.Clone(sour);
+            trace.traceAdd(nameof(funInput), funInput);
             try
             {
                 var monRepo = new MonthlyRentRepository(conStr);
@@ -609,23 +726,36 @@ namespace WebAPI.Models.BillFunc
                 if (string.IsNullOrWhiteSpace(conStr))
                     throw new Exception("連線字串必填");
 
-                if (sour == null || string.IsNullOrWhiteSpace(sour.ProjID)
-                    || string.IsNullOrWhiteSpace(sour.CarType)
+                if (sour == null 
                     || sour.SD == null || sour.ED == null || sour.SD > sour.ED
                     || string.IsNullOrWhiteSpace(sour.IDNO)
                     )
                     throw new Exception("sour資料錯誤");
-                trace.FlowList.Add("sour檢核完成");            
+                trace.FlowList.Add("sour檢核完成");
+
+                bool isPriceEdit = false;
+                if (sour.PRICE <= 0 || sour.PRICE_H <= 0 || sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H <= 0)
+                {
+                    trace.LogicErr.Add("一般平假日或虛擬月租價格有0");
+                    isPriceEdit = true;
+                }
+
                 if (sour.PRICE <= 0)  sour.PRICE = 99;
                 if (sour.PRICE_H <= 0) sour.PRICE_H = 168;
                 if (sour.ProDisPRICE <= 0) sour.ProDisPRICE = 99;
                 if (sour.ProDisPRICE_H <= 0) sour.ProDisPRICE = 168;
 
+                if (isPriceEdit)
+                {
+                    var priEdit = objUti.Clone(sour);
+                    trace.traceAdd(nameof(priEdit), priEdit);
+                }
+
                 //一般月租
                 var month = monRepo.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), 0);
                 if (month != null && month.Count() > 0)
                 {
-                    trace.objs.Add(nameof(month), month);
+                    trace.traceAdd(nameof(month), month);
                     monRents.AddRange(month);
                     monRents.ForEach(x => { x.WorkDayHours = 0; x.HolidayHours = 0; x.MotoTotalHours = 0; });
                     trace.FlowList.Add("一般月租");
@@ -638,28 +768,32 @@ namespace WebAPI.Models.BillFunc
                     monSpring = new MonthlyRentData()
                     {
                         MonthlyRentId = 99999,
-                        StartDate = Convert.ToDateTime("2021-02-09 00:00:00"),
-                        EndDate = Convert.ToDateTime("2021-02-17 00:00:00"),
+                        StartDate = Convert.ToDateTime(SiteUV.strSpringSd),
+                        EndDate = Convert.ToDateTime(SiteUV.strSpringEd),
                         WorkDayRateForCar = Convert.ToSingle(sour.ProDisPRICE),
                         HoildayRateForCar = Convert.ToSingle(sour.ProDisPRICE_H),
                         Mode = 0
                     };
                     monRents.Add(monSpring);
                     trace.FlowList.Add("加入春節月租");
-                    trace.objs.Add(nameof(monSpring), monSpring);
+                    trace.traceAdd(nameof(monSpring), monSpring);
                 }
 
                 re = bill.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, 60, 10, sour.lstHoliday, monRents, 0);
-                trace.objs.Add(nameof(re), re);
-                trace.FlowList.Add("月租計算");  
-                
-                if(re == null || re.RentInPay == 0)
+                trace.traceAdd(nameof(re), re);
+                trace.FlowList.Add("月租計算");
+
+                #region trace
+                if (re.RentInPay == 0)
+                    trace.marks.Add("租金為0");
+                bool mark = true;
+                if (mark)
                 {
-                    trace.BaseMsg = "租金為0";
                     traceLog.TraceType = eumTraceType.mark;
-                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace);
+                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
                     carReo.AddTraceLog(traceLog);
                 }
+                #endregion
             }
             catch (Exception ex)
             {
@@ -673,7 +807,7 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
-        private bool isSpring(DateTime SD, DateTime ED)
+        public bool isSpring(DateTime SD, DateTime ED)
         {
             DateTime vsd = Convert.ToDateTime("2021-02-09 00:00:00");
             DateTime ved = Convert.ToDateTime("2021-02-17 00:00:00");
@@ -690,7 +824,10 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202101211500";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202101221730";//hack: 修改程式請修正此版號
+
+        public static readonly string strSpringSd = "2021-02-09 00:00:00";//春節起
+        public static readonly string strSpringEd = "2021-02-17 00:00:00";//春節迄
     }
 
     #region repo
@@ -983,7 +1120,6 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-
     }
 
     #endregion
@@ -1001,6 +1137,7 @@ namespace WebAPI.Models.BillFunc
         /// 專案代碼
         /// </summary>
         public string ProjID { set; get; }
+        public int ProjType { get; set; } = -1;
         /// <summary>
         /// 車型
         /// </summary>
@@ -1034,10 +1171,14 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public List<Holiday> lstHoliday { get; set; } = new List<Holiday>();
     }
-    //public class OBIZ_SpringInit
-    //{
+    public class OBIZ_SpringInit: IBIZ_SpringInit
+    {
+        /// <summary>
+        /// 虛擬月租
+        /// </summary>
+        public List<MonthlyRentData> VisMons { get; set; } = new List<MonthlyRentData>();
+    }
 
-    //}
     //public class MonRentDataVM: MonthlyRentData
     //{
     //    public string CarType { get; set; }
@@ -1365,6 +1506,7 @@ namespace WebAPI.Models.BillFunc
         /// 汽車基本分鐘數
         /// </summary>
         public int carBaseMins { get; set; }
+        public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
     }
     public class OBIZ_MonthRent: BIZ_CRBase
     {
@@ -1536,6 +1678,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public string codeVersion { get; set; }
         public Int64 OrderNo { set; get; }
+        public new List<string> marks { get; set; } = new List<string>();
+        public new List<string> LogicErr { get; set; } = new List<string>();
         public new List<string> FlowList { get; set; } = new List<string>();
         public string FlowStep()
         {
