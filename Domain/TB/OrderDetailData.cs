@@ -197,5 +197,35 @@
         /// 折抵專案名稱
         /// </summary>
         public string DiscountName { get; set; }
+
+        /// <summary>
+        /// 車輛調度費
+        /// </summary>
+        public int CarDispatch { get; set; }
+
+        /// <summary>
+        /// 清潔費
+        /// </summary>
+        public int CleanFee { get; set; }
+
+        /// <summary>
+        /// 物品損壞/遣失費
+        /// </summary>
+        public int DestroyFee { get; set; }
+
+        /// <summary>
+        /// 非配合停車費
+        /// </summary>
+        public int ParkingFee2 { get; set; }
+
+        /// <summary>
+        /// 拖吊費
+        /// </summary>
+        public int DraggingFee { get; set; }
+
+        /// <summary>
+        /// 其他費用
+        /// </summary>
+        public int OtherFee { get; set; }
     }
 }

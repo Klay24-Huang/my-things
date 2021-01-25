@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.TB.BackEnd
 {
@@ -292,6 +288,9 @@ namespace Domain.TB.BackEnd
         /// 營損-拖吊費備註
         /// </summary>
         public string DraggingFeeRemark { set; get; }
+        /// <summary>
+        /// 營損-其他費用
+        /// </summary>
         public int OtherFee { set; get; }
         /// <summary>
         /// 營損-其他費用備註
@@ -365,9 +364,11 @@ namespace Domain.TB.BackEnd
         /// 付款金額
         /// </summary>
         public int PayAmount { set; get; }
+        /// <summary>
+        /// 安心服務費率
+        /// </summary>
         public int InsurancePerHours { set; get; }
     }
-
 
     /// <summary>
     /// 訂單明細資料
