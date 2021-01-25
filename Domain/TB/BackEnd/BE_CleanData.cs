@@ -24,14 +24,14 @@ namespace Domain.TB.BackEnd
         public string outcarPic { set; get; }
         public string outcarPicStr { set; get; }
         public string outcarPicType { set; get; }
-        public string BookingStart { set; get; }
-        public string BookingEnd { set; get; }
-        public string lastCleanTime { set; get; }
-        public int lastRentTimes { set; get; }
+        public DateTime BookingStart { set; get; }
+        public DateTime BookingEnd { set; get; }
+        public DateTime lastCleanTime { set; get; }
+        public string lastRentTimes { set; get; }
         public string CarNo { set; get; }
         public string lend_place { set; get; }
-        public string start_time { set; get; }
-        public string stop_time { set; get; }
+        public DateTime start_time { set; get; }
+        public DateTime stop_time { set; get; }
         public string MKTime { set; get; }
     }
 }

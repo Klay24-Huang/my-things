@@ -191,7 +191,7 @@ $(function () {
         } else if (data.ErrorCode == "000000") {
             SendData(false);
         } else {
-            disabledLoadingAndShowAlert(data.ErrorMessage);
+            disabledLoadingAndShowAlert(data.ErrorMessage);     
         }
     }
     function SendData(ByPassFlag) {
