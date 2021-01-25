@@ -1115,8 +1115,8 @@ namespace OtherService
                 else
                 {
                     UpdInput.IsSuccess = -2;
-                    UpdInput.RetCode = output.ResponseParams.ResultCode;
-                    UpdInput.RetMsg = output.ResponseParams.ResultMessage;
+                    UpdInput.RetCode = "";
+                    UpdInput.RetMsg = "";
                 }
                 new WebAPILogCommon().UpdCreditRefundData(UpdInput, ref flag, ref errCode, ref lstError);
                 

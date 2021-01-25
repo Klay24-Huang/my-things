@@ -163,8 +163,8 @@ namespace WebAPI.Controllers
                             else if (Convert.ToInt32(STATUS) < 3)
                             {
                                 //20210113先by pass
-                                //flag = false;
-                                //errCode = "ERR761";
+                                flag = false;
+                                errCode = "ERR761";
                             }
                         }
                     }
@@ -192,9 +192,9 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    if (obj.TaishinTradeNo != "")
+                                    if (obj.MerchantTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo.Substring(0,24), ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
@@ -208,7 +208,19 @@ namespace WebAPI.Controllers
                                     if (apiInput.DiffPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
                                     {
                                         WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
-                                        flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                        if (obj.CardToken != "")
+                                        {
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                        }
+                                        else if (obj.ArrearCardToken != "")
+                                        {
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.TaishinTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                       
                                     }
                                 }
                                 //int hasBind = 0;
@@ -254,6 +266,11 @@ namespace WebAPI.Controllers
                                 //        }
                                 //    }
                                 //}
+                                if (flag)
+                                {
+                                    //直接更新
+                                    flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
+                                }
                                 if (flag)
                                 {
                                     /*傳送短租136*/
