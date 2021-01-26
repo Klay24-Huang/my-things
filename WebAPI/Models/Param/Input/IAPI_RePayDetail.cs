@@ -41,6 +41,7 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 是否輸出json
         /// </summary>
-        public int jsonOut { get; set; } = 0;
+        public int jsonOut { get; set; } = 0;//0不輸出,1輸出jsonDts,2輸出traceDts
+
     }
 }
