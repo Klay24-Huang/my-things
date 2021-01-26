@@ -617,11 +617,11 @@ namespace Reposotory.Implement
                    VW.Score AS OperatorScore,
                    VW.Seat,
                    VW.PayMode,
-                   irs.Content,
+                   irs.ContentForAPP AS Content,
                    irs.Area As CarOfArea,
                    VW.StationID,
-                    Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
-                    InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
+                   Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
+                   InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
             INNER JOIN TB_Car AS Car ON Car.CarType=VW.CarType
             JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=Car.CarType
@@ -689,7 +689,7 @@ namespace Reposotory.Implement
 		           PriceByMinutes.[BaseMinutesPrice] AS BasePrice,
 		           PriceByMinutes.[Price] AS PerMinutesPrice,
 		           PriceByMinutes.[MaxPrice],		       
-                   irs.Content,
+                   irs.ContentForAPP AS Content,
 				   cs.device3TBA AS Power,
 				   ISNULL(cs.deviceRDistance,'') AS RemainingMileage,
 		           irs.Area AS CarOfArea                   
@@ -707,7 +707,6 @@ namespace Reposotory.Implement
             string term = " ";
             if (string.IsNullOrEmpty(CarNo) == false && string.IsNullOrWhiteSpace(CarNo) == false)
             {
-
                 para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
                 para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;

@@ -1,8 +1,7 @@
 ﻿using Domain.Common;
-using Domain.TB;
 using Domain.SP.Input.Common;
-using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
 using System;
@@ -11,8 +10,8 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.BillFunc;
+using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -30,7 +29,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -48,12 +46,10 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
-            int QueryMode = 0;
             string IDNO = "";
             #endregion
             #region 防呆
@@ -110,24 +106,17 @@ namespace WebAPI.Controllers
             #region TB
             //Token判斷
             //20201109 ADD BY ADAM REASON.TOKEN判斷修改
-            //if (flag && isGuest == false)
             if (flag && Access_Token_string.Split(' ').Length >= 2)
             {
-                //string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
-                    //Token = Access_Token
                     Token = Access_Token_string.Split(' ')[1].ToString()
                 };
-                //SPOutput_Base spOut = new SPOutput_Base();
                 SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                //SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 //訪客機制BYPASS
                 if (spOut.ErrorCode == "ERR101")

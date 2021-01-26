@@ -25,7 +25,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -43,12 +42,10 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
-            int QueryMode = 0;
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
