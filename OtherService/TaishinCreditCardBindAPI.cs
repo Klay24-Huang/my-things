@@ -1154,13 +1154,6 @@ namespace OtherService
                     }
                     else
                     {
-                        UpdInput.IsSuccess = -2;
-                        UpdInput.RetCode = output.ResponseParams.ResultCode;
-                        UpdInput.RetMsg = output.ResponseParams.ResultMessage;
-                    }
-                    }
-                    else
-                    {
                         CreditRefundFlag = false;
                 
                         
@@ -1184,8 +1177,8 @@ namespace OtherService
                 else
                 {
                     UpdInput.IsSuccess = -2;
-                    UpdInput.RetCode = "";
-                    UpdInput.RetMsg = "";
+                    UpdInput.RetCode = output.ResponseParams.ResultCode;
+                    UpdInput.RetMsg = output.ResponseParams.ResultMessage;
                 }
                 new WebAPILogCommon().UpdCreditRefundData(UpdInput, ref flag, ref errCode, ref lstError);
                 
