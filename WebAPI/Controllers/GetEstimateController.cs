@@ -20,6 +20,7 @@ using WebCommon;
 using System.Data;
 using SSAPI.Client.Local;
 using WebAPI.Utils;
+using System.Linq;
 
 namespace WebAPI.Controllers
 {
@@ -239,16 +240,20 @@ namespace WebAPI.Controllers
                     {
                         if (priceBase.Count > 0)
                         {
+                            #region 春節汽車
                             var cr_com = new CarRentCommon();
                             DateTime sprSd = Convert.ToDateTime(apiInput.SDate);
                             DateTime sprEd = Convert.ToDateTime(apiInput.EDate);
                             var pr = priceBase[0];
-                            if (ProjType == 0 && cr_com.isSpring(sprSd, sprEd))
+                            List<int> proTypes = new List<int>() { 0, 3 };
+                            bool isSpring = cr_com.isSpring(sprSd, sprEd);
+                            if (proTypes.Any(x=>x==ProjType) && isSpring)
                             {                              
                                 //有跨到春節就會回傳春節專案,只針對同站 
                                 var bizIn = new IBIZ_SpringInit()
                                 {
                                     ProjID = apiInput.ProjID,
+                                    ProjType = ProjType,
                                     CarType = apiInput.CarType,
                                     IDNO = IDNO,
                                     LogID = LogID,
@@ -258,7 +263,7 @@ namespace WebAPI.Controllers
                                     ProDisPRICE = Convert.ToDouble(pr.PRICE) / 10,
                                     ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H) / 10
                                 };
-                                var xre = cr_com.GetSpringInit(bizIn, connetStr);
+                                var xre = cr_com.GetSpringInit(bizIn, connetStr,funName);
                                 if (xre != null)
                                 {
                                     double InsurBill = Convert.ToDouble(pr.InsurancePerHours) * (Convert.ToDouble(xre.RentInMins) / 60);
@@ -284,6 +289,7 @@ namespace WebAPI.Controllers
                                     MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                                 };
                             }
+                            #endregion
 
                             outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
                         }

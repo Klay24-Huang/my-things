@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -42,6 +43,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBooking(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var cr_com = new CarRentCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -287,9 +289,21 @@ namespace WebAPI.Controllers
                         priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarNo, ProjType);
                     }
 
-                    //price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
-                    var xre = GetPriceBill(apiInput.ProjID, apiInput.CarType, IDNO, LogID, lstHoliday, SDate, EDate, priceBase.PRICE, priceBase.PRICE_H);
-                    price = xre;
+                    #region 春節汽車
+                    List<int> carProTypes = new List<int>() { 0, 3 };
+                    int proType = -1;
+                    var isSpring = cr_com.isSpring(SDate, EDate);
+                    var sp_re = new CarRentSp().sp_GetEstimate(apiInput.ProjID, CarType, LogID, ref errMsg);
+                    if(sp_re != null)
+                        proType = sp_re.PROJTYPE;
+                    if(isSpring && carProTypes.Any(x=>x== proType))
+                    {
+                        var xre = GetPriceBill(apiInput.ProjID, proType, apiInput.CarType, IDNO, LogID, lstHoliday, SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, funName);
+                        price = xre;
+                    }
+                    else
+                       price = billCommon.CarRentCompute(SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                    #endregion
                 }
                 else
                 {
@@ -402,16 +416,17 @@ namespace WebAPI.Controllers
         #endregion
 
         /// <summary>
-        /// 春節租金
+        /// 春節租金-汽車
         /// </summary>
         /// <returns></returns>
-        private int GetPriceBill(string ProjID, string CarType, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, double Price, double PRICE_H)
+        private int GetPriceBill(string ProjID, int ProjType, string CarType, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, double Price, double PRICE_H,string funNm = "")
         {
             int re = 0;
             var cr_com = new CarRentCommon();
             var bizIn = new IBIZ_SpringInit()
             {
                 ProjID = ProjID,
+                ProjType = ProjType,
                 CarType = CarType,
                 IDNO = IDNO,
                 LogID = LogID,
@@ -421,7 +436,7 @@ namespace WebAPI.Controllers
                 ProDisPRICE = Price / 10,
                 ProDisPRICE_H = PRICE_H / 10
             };
-            var xre = cr_com.GetSpringInit(bizIn, connetStr);
+            var xre = cr_com.GetSpringInit(bizIn, connetStr,funNm);
             if (xre != null)
                 re = xre.RentInPay;
             return re;

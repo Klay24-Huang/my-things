@@ -309,9 +309,9 @@ namespace WebAPI.Controllers
                         if (OrderDataLists != null && OrderDataLists.Count() > 0)
                         {
                             var item = OrderDataLists[0];
-
+                            var proTypes = new List<int>() { 0, 3 };
                             //春節專案才產生虛擬月租
-                            if (isSpring && ProjType == 0)
+                            if (isSpring && proTypes.Contains(ProjType))
                             {
                                 var ibiz_vMon = new IBIZ_SpringInit()
                                 {

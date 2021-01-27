@@ -593,7 +593,29 @@ namespace WebAPI.Models.BillFunc
             }
             else if (projType == 3)
             {
-
+                re.ProDisPRICE = sour.ProDisPRICE;
+                re.ProDisPRICE_H = sour.ProDisPRICE_H;
+                var visMon = new MonthlyRentData()
+                {
+                    Mode = 0,
+                    MonthlyRentId = 999001,
+                    StartDate = Convert.ToDateTime(SiteUV.strSpringSd),
+                    EndDate = Convert.ToDateTime(SiteUV.strSpringEd),
+                    WorkDayHours = 0,
+                    HolidayHours = 0,
+                    MotoTotalHours = 0,
+                    WorkDayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE)),
+                    HoildayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE_H)),
+                    WorkDayRateForMoto = 0,
+                    HoildayRateForMoto = 0
+                };
+                re.VisMons.Add(visMon);
+                var xre = spRepo.sp_GetEstimate("P621", carType, 999999, ref errMsg);
+                if (xre != null)
+                {
+                    re.PRICE = xre.PRICE / 10;
+                    re.PRICE_H = xre.PRICE_H / 10;
+                }
             }
             else if (projType == 4)
             {
@@ -609,8 +631,8 @@ namespace WebAPI.Models.BillFunc
         /// <param name="sour"></param>
         /// <param name="conStr"></param>
         /// <returns></returns>
-        public CarRentInfo GetSpringInit(IBIZ_SpringInit sour, string conStr)
-        {
+        public CarRentInfo GetSpringInit(IBIZ_SpringInit sour, string conStr,string funNM = "")
+        {//dev:GetSpringInit
             var carRepo = new CarRentRepo(conStr);
             var trace = new TraceCom();
             var tlog = new TraceLogVM()
@@ -620,6 +642,10 @@ namespace WebAPI.Models.BillFunc
                 CodeVersion = trace.codeVersion,             
             };
             trace.traceAdd(nameof(sour), sour);
+
+            if(!string.IsNullOrWhiteSpace(funNM))
+               trace.traceAdd(nameof(funNM), funNM);
+
             bool isSpr = false;//是否為春節
             try
             {
@@ -653,6 +679,17 @@ namespace WebAPI.Models.BillFunc
                                 xsour.PRICE_H = norPri.PRICE_H / 10;
                             }
                         }
+                        else if(sour.ProjType == 3)
+                        {
+                            //P621暫時寫死
+                            var norPri = new CarRentSp().sp_GetEstimate("P621", sour.CarType, sour.LogID, ref errMsg);
+                            if (norPri != null)
+                            {
+                                trace.traceAdd(nameof(norPri), norPri);
+                                xsour.PRICE = norPri.PRICE / 10;
+                                xsour.PRICE_H = norPri.PRICE_H / 10;
+                            }
+                        }
                     }
                 }
                 if (sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H < 0)
@@ -660,11 +697,11 @@ namespace WebAPI.Models.BillFunc
                     trace.FlowList.Add("專案平假日價格為0");
                     if (isSpr)
                     {//春節專案平假日價格 
-                        if(sour.ProjType == 0)
+                        trace.FlowList.Add("春節期間");
+                        if (string.IsNullOrWhiteSpace(sour.CarType))
+                            throw new Exception("CarType必填");
+                        if (sour.ProjType == 0)
                         {
-                            trace.FlowList.Add("春節期間");
-                            if (string.IsNullOrWhiteSpace(sour.CarType))
-                                throw new Exception("CarType必填");
                             var xre = carRepo.GetFirstProDisc("R129", sour.CarType);
                             if (xre != null)
                             {
@@ -673,24 +710,29 @@ namespace WebAPI.Models.BillFunc
                                 xsour.ProDisPRICE_H = xre.PRICE_H / 10;
                             }
                         }
+                        else if (sour.ProjType == 3)
+                        {
+                            //UNDONE: 補上路邊
+                        }
                     }
                 }
 
                 #region trace
+                trace.traceAdd(nameof(xsour), xsour);
                 trace.FlowList.Add("呼叫計算");
                 tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
                 tlog.FlowStep = trace.FlowStep();
-                tlog.TraceType = eumTraceType.none;
+                tlog.TraceType = eumTraceType.fun;
                 carRepo.AddTraceLog(tlog);
                 #endregion
 
-                return xGetSpringInit(xsour, conStr);
+                return xGetSpringInit(xsour, conStr,funNM);
             }
             catch(Exception ex)
             {
                 trace.BaseMsg = ex.Message;
-                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                tlog.FlowStep = trace.FlowStep();
+                tlog.ApiMsg = ex.Message;
+                tlog.FlowStep = JsonConvert.SerializeObject(trace.getObjs());
                 tlog.TraceType = eumTraceType.exception;
                 carRepo.AddTraceLog(tlog);
                 throw;
@@ -698,26 +740,28 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 春節月租
+        /// 春節月租-汽車
         /// </summary>
         /// <param name="sour"></param>
         /// <param name="conStr"></param>
         /// <returns></returns>
-        private CarRentInfo xGetSpringInit(IBIZ_SpringInit sour, string conStr)
+        private CarRentInfo xGetSpringInit(IBIZ_SpringInit sour, string conStr,string funNm="")
         {
             var re = new CarRentInfo();
-            string funNm = "xGetSpringInit";
+            //string funNm = "xGetSpringInit";
             var carReo = new CarRentRepo(connetStr);
             var monRents = new List<MonthlyRentData>();
             var traceLog = new TraceLogVM()
             {
                 ApiId = 99901,
-                ApiNm = funNm,
+                ApiNm = "xGetSpringInit",
                 CodeVersion = SiteUV.codeVersion                
             };
             var trace = new TraceCom();
             var funInput = objUti.Clone(sour);
             trace.traceAdd(nameof(funInput), funInput);
+            if (!string.IsNullOrWhiteSpace(funNm))
+                trace.traceAdd(nameof(funNm), funNm);
             try
             {
                 var monRepo = new MonthlyRentRepository(conStr);
@@ -751,7 +795,7 @@ namespace WebAPI.Models.BillFunc
                     trace.traceAdd(nameof(priEdit), priEdit);
                 }
 
-                //一般月租
+                //一般月租:汽車月租不會跟春節重疊-確認過
                 var month = monRepo.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), 0);
                 if (month != null && month.Count() > 0)
                 {
@@ -799,7 +843,8 @@ namespace WebAPI.Models.BillFunc
             {
                 trace.BaseMsg = ex.Message;
                 traceLog.TraceType = eumTraceType.exception;
-                traceLog.ApiMsg = JsonConvert.SerializeObject(trace);
+                traceLog.ApiMsg = ex.Message;
+                traceLog.FlowStep = JsonConvert.SerializeObject(trace.getObjs());
                 carReo.AddTraceLog(traceLog);
                 throw;
             }
@@ -1649,6 +1694,7 @@ namespace WebAPI.Models.BillFunc
     public enum eumTraceType
     {
         none,
+        fun,
         exception,
         followErr,
         logicErr,
