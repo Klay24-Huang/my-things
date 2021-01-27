@@ -90,6 +90,29 @@ namespace OtherService.Common
                 }
             }
         }
+        public Int64 InsCreditRefundDataNew(SPInput_InsTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsTrade, SPOutput_InsTrade> SqlHelper = new SQLHelper<SPInput_InsTrade, SPOutput_InsTrade>(connetStr);
+            SPOutput_InsTrade spOut = new SPOutput_InsTrade();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.InsTradeRefund);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                    return 0;
+                }
+                else
+                {
+                    return spOut.TradeRefundID;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
         public void UpdCreditRefundData(SPInput_UpdTrade input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
         {
             SQLHelper<SPInput_UpdTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_UpdTrade, SPOutput_Base>(connetStr);

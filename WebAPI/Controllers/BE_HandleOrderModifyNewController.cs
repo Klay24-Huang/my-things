@@ -163,8 +163,8 @@ namespace WebAPI.Controllers
                             else if (Convert.ToInt32(STATUS) < 3)
                             {
                                 //20210113先by pass
-                                //flag = false;
-                                //errCode = "ERR761";
+                                flag = false;
+                                errCode = "ERR761";
                             }
                         }
                     }
@@ -185,48 +185,91 @@ namespace WebAPI.Controllers
                             //查詢有無綁卡
                             if (apiInput.DiffPrice > 0) //刷退，
                             {
-                                int hasBind = 0;
-                                List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
-
-                                flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
-                                
-                                if (flag)
+                                WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                                if (obj.ServerOrderNo != "")
                                 {
-                                    if (hasBind == 0)
+                                    flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                }
+                                else
+                                {
+                                    if (obj.MerchantTradeNo != "")
                                     {
-                                        flag = false;
-                                        errCode = "ERR762";
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo.Substring(0,24), ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
+                                        flag = false;
+                                        errCode = "";
+                                    }
+                                }
 
-                                        WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
-                                        if (obj.ServerOrderNo != "")
+                                if (flag)
+                                {
+                                    if (apiInput.DiffPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
+                                    {
+                                        WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
+                                        if (obj.CardToken != "")
                                         {
-                                            flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                        }
+                                        else if (obj.ArrearCardToken != "")
+                                        {
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.TaishinTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
                                         }
                                         else
                                         {
-                                            if (obj.TaishinTradeNo != "")
-                                            {
-                                                flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
-                                            }
-                                            else
-                                            {
-                                                flag = false;
-                                                errCode = "";
-                                            }
+
                                         }
-                                     
-                                        if (flag)
-                                        {
-                                            if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
-                                            {
-                                                WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
-                                                flag = Credit.DoCreditRefund(tmpOrder,obj.IDNO, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
-                                            }
-                                        }
+                                       
                                     }
+                                }
+                                //int hasBind = 0;
+                                //List<CreditCardBindList> lstBind = new List<CreditCardBindList>();
+
+                                //flag = Credit.DoQueryCardList(obj.IDNO, ref hasBind, ref lstBind, ref errCode, ref errMsg);
+
+                                //if (flag)
+                                //{
+                                //    if (hasBind == 0)
+                                //    {
+                                //        flag = false;
+                                //        errCode = "ERR762";
+                                //    }
+                                //    else
+                                //    {
+
+                                //        WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                                //        if (obj.ServerOrderNo != "")
+                                //        {
+                                //            flag = Credit.DoCreditCardQuery(obj.IDNO, obj.ServerOrderNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                //        }
+                                //        else
+                                //        {
+                                //            if (obj.TaishinTradeNo != "")
+                                //            {
+                                //                flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                //            }
+                                //            else
+                                //            {
+                                //                flag = false;
+                                //                errCode = "";
+                                //            }
+                                //        }
+
+                                //        if (flag)
+                                //        {
+                                //            if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
+                                //            {
+                                //                WebAPIOutput_ECRefund WSRefundOutput = new WebAPIOutput_ECRefund();
+                                //                flag = Credit.DoCreditRefund(tmpOrder,obj.IDNO, apiInput.DiffPrice, "租金修改", lstBind[0].CardToken, obj.transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                                //            }
+                                //        }
+                                //    }
+                                //}
+                                if (flag)
+                                {
+                                    //直接更新
+                                    flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
                                 }
                                 if (flag)
                                 {
@@ -258,7 +301,9 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
+
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+           
             return objOutput;
             #endregion
         }

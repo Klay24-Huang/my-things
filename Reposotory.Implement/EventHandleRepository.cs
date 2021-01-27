@@ -1,4 +1,5 @@
 ﻿using Domain.TB.BackEnd;
+using Domain.TB.Sync;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,6 +17,19 @@ namespace Reposotory.Implement
         public EventHandleRepository(string ConnStr)
         {
             this.ConnectionString = ConnStr;
+        }
+        public List<Sync_SendEventMessage> GetEventMessages()
+        {
+            List<Sync_SendEventMessage> lstEVMessage = new List<Sync_SendEventMessage>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT AlertID,EventType,Receiver,CarNo FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=0 ORDER BY AlertID DESC";
+            int nowCount = 0;
+            string term = "";
+
+            SqlParameter[] para = new SqlParameter[3];
+            lstEVMessage = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
+            return lstEVMessage;
         }
 
         public List<BE_EvTimeLine> GetMapDataByTimeLine(string CarNo, string SD, string ED)

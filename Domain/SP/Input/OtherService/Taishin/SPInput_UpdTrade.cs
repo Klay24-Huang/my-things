@@ -9,6 +9,7 @@ namespace Domain.SP.Input.OtherService.Taishin
     public class SPInput_UpdTrade : SPInput_Base
     {
         public Int64 OrderNo { set; get; }
+        public Int64 TradeRefundID { set; get; }
         public string MerchantTradeNo { set; get; }
         public string MerchantMemberID { set; get; }
         public string RetCode         {set;get;}

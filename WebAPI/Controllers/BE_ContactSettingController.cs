@@ -1091,6 +1091,9 @@ namespace WebAPI.Controllers
                             car_outPrice = car_re.car_outPrice;
                         }
                         trace.FlowList.Add("汽車計費資訊(非月租)");
+
+                        car_inPrice = billCommon.CarRentCompute(SD, ED, car_n_price * 10, car_h_price * 10, 10, lstHoliday);
+                        car_outPrice = billCommon.CarRentCompute(ED, FED, OrderDataLists[0].WeekdayPrice, OrderDataLists[0].HoildayPrice, 6, lstHoliday, true, 0);
                     }
                 }
 
@@ -1309,6 +1312,7 @@ namespace WebAPI.Controllers
                         {
                             carInfo = mon_re.carInfo;
                             Discount = mon_re.useDisc;
+
                             monthlyRentDatas = mon_re.monthlyRentDatas;
 
                             if (ProjType == 4)
