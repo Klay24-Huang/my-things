@@ -227,7 +227,7 @@ namespace WebAPI.Controllers
                                    // 預估金額 = 租金 + 里程費 + 安心服務費
                                    //Price = a.PriceBill, //租金改抓sp
                                    //20210115;因應春節專案，預估金額改用特殊算法
-                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate) + 
+                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate,funName) + 
                                             bill.CarMilageCompute(SDate, EDate, a.MilageBase, Mildef, 20, new List<Holiday>()) +
                                             ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, a.InsurancePerHours * 10, a.InsurancePerHours * 10, 10, lstHoliday) : 0),
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
@@ -443,7 +443,7 @@ namespace WebAPI.Controllers
             return re;
         }
 
-        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED)
+        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED,string funNM = "")
         {
             int re = 0;
             var bill = new BillCommon();
@@ -458,11 +458,13 @@ namespace WebAPI.Controllers
                 projType = spre.PROJTYPE;
 
             bool isSpr = cr_com.isSpring(SD, ED);
-            if (projType == 0 && isSpr)
+            List<int> carProjTypes = new List<int>() { 0, 3 };
+            if (carProjTypes.Any(x=> x == projType) && isSpr)
             {
                 var bizIn = new IBIZ_SpringInit()
                 {
                     ProjID = spItem.PROJID,
+                    ProjType = projType,
                     CarType = spItem.CarType,
                     IDNO = IDNO,
                     LogID = LogID,
@@ -472,7 +474,7 @@ namespace WebAPI.Controllers
                     ProDisPRICE = Convert.ToDouble(spItem.Price) / 10,
                     ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
                 };
-                var xre = cr_com.GetSpringInit(bizIn, connetStr);
+                var xre = cr_com.GetSpringInit(bizIn, connetStr,funNM);
                 if (xre != null)
                     re = xre.RentInPay;                
             }
