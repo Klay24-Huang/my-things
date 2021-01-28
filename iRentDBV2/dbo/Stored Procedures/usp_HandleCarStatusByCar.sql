@@ -118,6 +118,12 @@ SET @CID= '';
 			BEGIN
 				UPDATE TB_CarInfo SET CID=@deviceCID WHERE CarNo=@CarNo;
 			END
+			--20210128 CID有多筆時，將未對應的車號CID清空
+			SELECT @hasData=COUNT(1) FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
+			IF @hasData>0
+			BEGIN
+				UPDATE TB_CarInfo SET CID='' WHERE CID=@deviceCID AND CarNo<>@CarNo;
+			END
 			SELECT @hasData=COUNT(1) FROM TB_CarStatus  WITH(NOLOCK) WHERE CarNo=@CarNo;
 			IF @hasData=0
 			BEGIN
