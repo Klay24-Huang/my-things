@@ -273,7 +273,8 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
-                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -281,10 +282,12 @@ namespace Reposotory.Implement
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
                 }
                 else
                 {
-                    term2 = " AND SD >= @SD AND  ED <= @SD";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  SD >= @SD AND  ED <= @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -295,23 +298,21 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
-                    term2 = " AND SD >= @ED AND  ED <= @ED";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  SD >= @ED AND  ED <= @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
             }
-
+            term += term2;
             if ("" != term)
             {
                 SQL += " WHERE " + term;
 
             }
-            if ("" != term2)
-            {
-                SQL += term2;
-            }
+      
             SQL += " ORDER BY OrderNum ASC;";
 
             lstOrderPart = GetObjList<BE_GetCleanFixQueryForWeb>(ref flag, ref lstError, SQL, para, term);
