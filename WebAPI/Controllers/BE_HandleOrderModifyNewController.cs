@@ -160,11 +160,11 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR760";
                             }
-                            else if (Convert.ToInt32(STATUS) < 3)
+                            else if (Convert.ToInt32(STATUS) >3)
                             {
                                 //20210113先by pass
                                 flag = false;
-                                errCode = "ERR761";
+                                errCode = "ERR760"; //"ERR761";
                             }
                         }
                     }
@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
                                 {
                                     if (obj.MerchantTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo.Substring(0,24), ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
