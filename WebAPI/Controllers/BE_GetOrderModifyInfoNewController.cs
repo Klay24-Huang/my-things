@@ -263,6 +263,10 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            if(apiOutput.OrderData.PROJTYPE<4 && hours == 0)
+                            {
+                                needPointer = 60;
+                            }
                             apiOutput.Bonus.CanUseTotalMotorPoint = 0;
                             //needPointer -= (needPointer % 30);
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
