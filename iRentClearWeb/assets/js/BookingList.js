@@ -551,6 +551,9 @@ $("#hidIsCar").val(isCar);
                 }
                 $("#returnOpt").show();
                 $("#title").html("訂單編號【H" + orderNum + "】<BR>車號【" + CarNo + "】");
+            } else {
+                disabledLoadingAndShowAlert(JsonData.ErrorMessage);
+                $("#BookingList").show();
             }
         }
     });

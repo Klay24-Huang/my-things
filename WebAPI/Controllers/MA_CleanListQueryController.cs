@@ -109,10 +109,7 @@ namespace WebAPI.Controllers
                             {
                                 tmp.CanPick = 1;
                             }
-                            else if (nowDateTime > tmp.start_time.AddMinutes(15))
-                            {
-                                tmp.isOverTime = 1;
-                            }
+                           
                             outputApi.Add(tmp);
 
                         }
