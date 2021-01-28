@@ -120,7 +120,7 @@ SET @CID= '';
 			END
 			--20210128 CID有多筆時，將未對應的車號CID清空
 			SELECT @hasData=COUNT(1) FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
-			IF @hasData>0
+			IF @hasData>1
 			BEGIN
 				UPDATE TB_CarInfo SET CID='' WHERE CID=@deviceCID AND CarNo<>@CarNo;
 			END
@@ -141,6 +141,12 @@ SET @CID= '';
 			END
 			ELSE
 			BEGIN
+				--20210128 CID多筆時，將未對應的車號刪除
+				SELECT @hasData=COUNT(1) FROM TB_CarStatus WITH(NOLOCK) WHERE CID=@deviceCID;
+				IF @hasData>1
+				BEGIN
+					DELETE FROM TB_CarStatus WHERE CID=@deviceCID AND CarNo<>@CarNo;
+				END
 				UPDATE TB_CarStatus
 				SET  [CID]=@deviceCID,
 						[ACCStatus]=@deviceACCStatus,
