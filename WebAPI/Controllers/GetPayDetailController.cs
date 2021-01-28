@@ -756,34 +756,7 @@ namespace WebAPI.Controllers
                             outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                         }
                         else
-                        {
-                            #region mark-非月租折扣計算
-                            //var input = new IBIZ_CRNoMonthDisc()
-                            //{
-                            //    UseMonthMode = UseMonthMode,
-                            //    hasFine = hasFine,
-                            //    SD = SD,
-                            //    ED = ED,
-                            //    FED = FED,
-                            //    CarBaseMins = carBaseMins,
-                            //    lstHoliday = lstHoliday,
-                            //    car_n_price = car_n_price,
-                            //    car_h_price = car_h_price,
-                            //    Discount = apiInput.Discount
-                            //};
-                            //var disc_re = cr_com.CRNoMonthDisc(input);
-                            //if (disc_re != null)
-                            //{
-                            //    trace.traceAdd(nameof(disc_re), disc_re);
-                            //    nor_car_PayDisc = disc_re.nor_car_PayDisc;
-                            //    nor_car_wDisc = disc_re.nor_car_wDisc;
-                            //    nor_car_hDisc = disc_re.nor_car_hDisc;
-                            //    nor_car_PayDiscPrice = disc_re.nor_car_PayDiscPrice;
-                            //    Discount = disc_re.UseDisc;
-                            //}
-                            //trace.FlowList.Add("非月租折扣計算");
-                            #endregion
-
+                        {                            
                             if (UseMonthMode)
                             {
                                 outputApi.Rent.CarRental = CarRentPrice;
