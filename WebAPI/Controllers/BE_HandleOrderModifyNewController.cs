@@ -155,17 +155,17 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS != "Y")
+                            if (INVSTATUS == "N" && STATUS=="4")
                             {
                                 flag = false;
                                 errCode = "ERR760";
                             }
-                            else if (Convert.ToInt32(STATUS) < 3)
-                            {
-                                //20210113先by pass
-                                flag = false;
-                                errCode = "ERR761";
-                            }
+                            //else if (Convert.ToInt32(STATUS) >3)
+                            //{
+                            //    //20210113先by pass
+                            //    flag = false;
+                            //    errCode = "ERR760"; //"ERR761";
+                            //}
                         }
                     }
                     if (flag)
@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
                                 {
                                     if (obj.MerchantTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo.Substring(0,24), ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
