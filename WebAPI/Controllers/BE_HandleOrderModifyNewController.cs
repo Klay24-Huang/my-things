@@ -155,17 +155,17 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS != "Y")
+                            if (INVSTATUS == "N" && STATUS=="4")
                             {
                                 flag = false;
                                 errCode = "ERR760";
                             }
-                            else if (Convert.ToInt32(STATUS) >3)
-                            {
-                                //20210113先by pass
-                                flag = false;
-                                errCode = "ERR760"; //"ERR761";
-                            }
+                            //else if (Convert.ToInt32(STATUS) >3)
+                            //{
+                            //    //20210113先by pass
+                            //    flag = false;
+                            //    errCode = "ERR760"; //"ERR761";
+                            //}
                         }
                     }
                     if (flag)

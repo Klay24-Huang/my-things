@@ -192,6 +192,10 @@ namespace WebAPI.Models.ComboFunc
                     }
                     new BillCommon().CalDayHourMin(SD, ED, ref days, ref hours, ref minutes);
                     int needPointer = (days * 60 * 10) + (hours * 60) + minutes;
+                    if(minutes==0 && PROJTYPE < 4)
+                    {
+                        needPointer = 60;
+                    }
                     if (PROJTYPE == 4)
                     {
                         if(needPointer< BaseMinutes)
