@@ -36,6 +36,10 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int IsMotor { set; get; }
         /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
+        /// <summary>
         /// 訂單基本資訊
         /// </summary>
         public RentBase Rent { set; get; }

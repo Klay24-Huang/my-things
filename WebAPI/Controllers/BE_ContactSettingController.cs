@@ -943,6 +943,8 @@ namespace WebAPI.Controllers
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
             string errMsg = "";
+
+            int UseOrderPrice = 0;//使用訂金(4捨5入)
             #endregion
             #region trace-in
             trace.OrderNo = tmpOrder;
@@ -999,6 +1001,7 @@ namespace WebAPI.Controllers
                     var item = OrderDataLists[0];
                     motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
                     ProjType = item.ProjType;
+                    UseOrderPrice = item.UseOrderPrice;
                 }
                 //取得專案狀態
                 if (flag)
@@ -1599,12 +1602,14 @@ namespace WebAPI.Controllers
                     outputApi.Rent.ETAGRental = etagPrice;
 
                     var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
+                    xTotalRental -= UseOrderPrice;//使用訂金
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
                     trace.FlowList.Add("總價計算");
 
                     #region 修正輸出欄位
                     //note: 修正輸出欄位PayDetail
+                    outputApi.UseOrderPrice = UseOrderPrice;
                     if (ProjType == 4)
                     {
                         outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
