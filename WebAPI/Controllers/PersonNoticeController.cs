@@ -29,7 +29,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -42,19 +41,15 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_PersonNotice apiInput = null;
             OAPI_PersonNotice outputApi = null;
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-
             Int16 tmpType = 0;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -67,7 +62,7 @@ namespace WebAPI.Controllers
                 //類型判斷
                 if (flag)
                 {
-                    if (null == apiInput.type)
+                    if (apiInput.type == null)
                     {
                         apiInput.type = 0;
                     }
@@ -94,7 +89,6 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -114,7 +108,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -127,14 +120,15 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+
             if (flag)
             {
                 SPInput_GetNotificationList spInput = new SPInput_GetNotificationList()
                 {
-                    Token=Access_Token,
-                     LogID=LogID,
                     IDNO = IDNO,
-                    Type = tmpType
+                    Token = Access_Token,
+                    Type = tmpType,
+                    LogID = LogID
                 };
                 List<GetNotification> lstOut = new List<GetNotification>();
                 string spName = new ObjType().GetSPName(ObjType.SPType.PersonNotice);
@@ -151,8 +145,9 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

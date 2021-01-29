@@ -29,7 +29,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -45,15 +44,12 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
             #endregion
             #region 防呆
-
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
 
             if (flag)
             {
@@ -81,7 +77,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -94,14 +89,14 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+
             if (flag)
             {
                 SPInput_GetNews spInput = new SPInput_GetNews()
                 {
-                    Token = Access_Token,
-                    LogID = LogID,
                     IDNO = IDNO,
-              
+                    Token = Access_Token,
+                    LogID = LogID
                 };
                 List<NewsObj> lstOut = new List<NewsObj>();
                 string spName = new ObjType().GetSPName(ObjType.SPType.News);
@@ -115,12 +110,11 @@ namespace WebAPI.Controllers
                     outputApi = new OAPI_GetNews();
                     outputApi.NewObj = new List<NewsObj>();
                     outputApi.NewObj = lstOut;
-
                 }
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -132,4 +126,3 @@ namespace WebAPI.Controllers
         }
     }
 }
-
