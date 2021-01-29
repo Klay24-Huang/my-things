@@ -440,11 +440,15 @@ namespace WebAPI.Models.BillFunc
             //re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
             //re.errCode = errCode;      
 
-            int RateType = (sour.ProjType == 4) ? 1 : 0;
-            if (sour.hasFine)
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
-            else
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+            //跨春節不計算一般月租
+            if (!isSpring)
+            {
+                int RateType = (sour.ProjType == 4) ? 1 : 0;
+                if (sour.hasFine)
+                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                else
+                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+            }
 
             //還原單號使用
             if (monthlyRentDatas != null && monthlyRentDatas.Count()>0)
@@ -481,22 +485,79 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (sour.ProjType == 4)
                     {
-                        var motoMonth = objUti.Clone(monthlyRentDatas);
-                        var dayMaxMinns = sour.MotoDayMaxMins;
+                        var motoMonth = objUti.Clone(monthlyRentDatas);                      
                         int motoDisc = sour.Discount;
 
-                        if (isSpring || sour.SD >= Convert.ToDateTime(SiteUV.strSpringSd) || sour.ED > Convert.ToDateTime(SiteUV.strSpringEd))
-                            re.carInfo = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
-                        else
-                            re.carInfo = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                        DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+                        DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
 
-                        if (re.carInfo != null)
+                        //春前
+                        if (sour.ED <= sprSD)
                         {
-                            re.CarRental += re.carInfo.RentInPay;
-                            if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
-                                motoMonth = re.carInfo.mFinal;
-                            re.useDisc = re.carInfo.useDisc;
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                            if (xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
                         }
+                        //前跨春
+                        else if (sour.SD < sprSD && sour.ED > sprSD)
+                        {
+                            re.carInfo = new CarRentInfo();
+                            var bef = billCommon.MotoRentMonthComp(sour.SD, sprSD, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                            if (bef != null)
+                            {
+                                re.CarRental += bef.RentInPay;
+                                re.useDisc += bef.useDisc;
+                                re.carInfo.RentInPay += bef.RentInPay;
+                                re.carInfo.useMonthDisc += bef.useMonthDisc;
+                                re.carInfo.RentInMins += bef.RentInMins;
+                                re.carInfo.AfterDiscRentInMins += bef.AfterDiscRentInMins;
+                                re.carInfo.useMonthDiscW += bef.useMonthDiscW;
+                                re.carInfo.useMonthDiscH += bef.useMonthDiscH;
+                                motoDisc -= bef.useDisc;
+                                motoDisc = motoDisc > 0 ? motoDisc : 0;
+                                if (bef.mFinal != null && bef.mFinal.Count() > 0)
+                                    motoMonth.AddRange(bef.mFinal);
+                            }
+                            var af = billCommon.MotoRentMonthComp(sprSD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            if (af != null)
+                            {
+                                re.CarRental += af.RentInPay;
+                                re.useDisc += af.useDisc;
+                                re.carInfo.RentInPay += af.RentInPay;
+                                re.carInfo.useMonthDisc += af.useMonthDisc;
+                                re.carInfo.RentInMins += af.RentInMins;
+                                re.carInfo.AfterDiscRentInMins += af.AfterDiscRentInMins;
+                                re.carInfo.useMonthDiscW += af.useMonthDiscW;
+                                re.carInfo.useMonthDiscH += af.useMonthDiscH;
+                                motoDisc -= af.useDisc;
+                                motoDisc = motoDisc > 0 ? motoDisc : 0;
+                                if (af.mFinal != null && af.mFinal.Count() > 0)
+                                    motoMonth.AddRange(af.mFinal);
+                            }
+                        }
+                        //春後
+                        else if (sour.SD >= sprSD)
+                        {
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            if (xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
+                        }
+
+                        if (motoMonth != null && motoMonth.Count() > 0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0)
+                            motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
                         if (motoMonth.Count > 0)
@@ -538,6 +599,7 @@ namespace WebAPI.Models.BillFunc
                                 re.useDisc = re.carInfo.useDisc;
                             }
                         }
+
                         #region 不存檔
                         //if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
                         //    sour.VisMons != null && sour.VisMons.Count() > 0)
