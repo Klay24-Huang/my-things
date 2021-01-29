@@ -785,20 +785,63 @@ namespace Reposotory.Implement
 
             return tmp;
         }
+        //20210129廢棄
+        //public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
+        //{
+        //    bool flag = false;
+        //    List<ErrorInfo> lstError = new List<ErrorInfo>();
+        //    List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
+        //    string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes,Main.ArrearCardToken,Main.MerchantTradeNo";
+
+        //    SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
+    
+        //    SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
+        //    SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
+        //     SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
+            
+            
+
+
+        //    SqlParameter[] para = new SqlParameter[2];
+        //    string term = "";
+        //    int nowCount = 0;
+        //    if (OrderNo > 0)
+        //    {
+        //        term = "  OrderNo = @OrderNo";
+        //        para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+        //        para[nowCount].Value = OrderNo;
+        //        para[nowCount].Direction = ParameterDirection.Input;
+        //        nowCount++;
+        //    }
+
+        //    if ("" != term)
+        //    {
+        //        SQL += " WHERE " + term + "  ";
+        //    }
+
+        //    lstOrderData = GetObjList<BE_GetOrderModifyDataNewV2>(ref flag, ref lstError, SQL, para, term);
+        //    BE_GetOrderModifyDataNewV2 tmp = null;
+        //    if (lstOrderData.Count > 0)
+        //    {
+        //        tmp = lstOrderData[0];
+        //    }
+
+        //    return tmp;
+        //}
         public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
             string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes,Main.ArrearCardToken,Main.MerchantTradeNo";
+            SQL += " ,(SELECT SUM(amount)  FROM[dbo].[TB_TradeRefund] WHERE RetCode = 1000 AND IsSuccess = 1 AND OrderNo = @OrderNo) AS RefundAmount ";
+            SQL += " FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
 
-            SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
-    
             SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
             SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
-             SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
-            
-            
+            SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
+
+
 
 
             SqlParameter[] para = new SqlParameter[2];

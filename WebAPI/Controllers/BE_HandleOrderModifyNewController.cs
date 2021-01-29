@@ -135,6 +135,19 @@ namespace WebAPI.Controllers
                 {
 
                     IDNO = obj.IDNO;
+                    if(obj.ArrearAMT==0 && obj.Paid > 0)
+                    {
+                        obj.Paid -= obj.RefundAmount;
+                    }else if (obj.ArrearAMT > 0 && obj.Paid == 0)
+                    {
+                        obj.ArrearAMT -= obj.RefundAmount;
+                    }else if(obj.ArrearAMT > 0 && obj.Paid > 0)
+                    {
+                        obj.Paid = (obj.Paid +obj.ArrearAMT)- obj.RefundAmount;
+                        
+                    }
+                 
+                   
                     PointerComm pointer = new PointerComm();
                     int TotalLastPoint = 0, TotalLastPointCar = 0, TotalLastPointMotor = 0, CanUseTotalCarPoint = 0, CanUseTotalMotorPoint = 0;
                     obj.FT = ""; //忽略逾時
