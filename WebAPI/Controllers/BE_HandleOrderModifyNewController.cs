@@ -192,9 +192,9 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    if (obj.MerchantTradeNo != "")
+                                    if (obj.TaishinTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
@@ -214,13 +214,13 @@ namespace WebAPI.Controllers
                                         }
                                         else if (obj.ArrearCardToken != "")
                                         {
-                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.TaishinTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.MerchantTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
                                         }
                                         else
                                         {
 
                                         }
-                                       
+
                                     }
                                 }
                                 //int hasBind = 0;
