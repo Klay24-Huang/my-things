@@ -1072,6 +1072,7 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("里程費計算");
                     }
 
+                    outputApi.Rent.OvertimeRental = car_outPrice;
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
                     outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes > 0 ? TotalRentMinutes : 0).ToString();
                     outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
