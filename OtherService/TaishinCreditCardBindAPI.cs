@@ -152,10 +152,10 @@ namespace OtherService
 
                 }
                 //增加關閉連線的呼叫
-                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
-                requestClose.Connection = "Close";
-                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
-                myHttpWebResponse.Close();
+                //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                //requestClose.Connection = "Close";
+                //HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                //myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -363,10 +363,10 @@ namespace OtherService
 
                 }
                 //增加關閉連線的呼叫
-                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
-                requestClose.Connection = "Close";
-                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
-                myHttpWebResponse.Close();
+                //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                //requestClose.Connection = "Close";
+                //HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                //myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
@@ -1079,10 +1079,10 @@ namespace OtherService
 
                 }
                 //增加關閉連線的呼叫
-                HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
-                requestClose.Connection = "Close";
-                HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
-                myHttpWebResponse.Close();
+                //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                //requestClose.Connection = "Close";
+                //HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                //myHttpWebResponse.Close();
             }
             catch (Exception ex)
             {
