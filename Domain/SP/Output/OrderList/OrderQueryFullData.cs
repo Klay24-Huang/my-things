@@ -112,6 +112,7 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
+        public int OrderPrice { get; set; }
         /// <summary>
         /// 使用訂金
         /// </summary>

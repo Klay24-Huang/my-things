@@ -115,6 +115,7 @@ namespace WebAPI.Controllers
             DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             int UseOrderPrice = 0;//使用訂金(4捨5入)
+            int OrderPrice = 0;//原始訂金
             #endregion
             try
             {
@@ -220,6 +221,7 @@ namespace WebAPI.Controllers
                         motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
                         ProjType = item.ProjType;
                         UseOrderPrice = item.UseOrderPrice;
+                        OrderPrice = item.OrderPrice;
                     }
 
                     if (ProjType != 4)
@@ -831,13 +833,22 @@ namespace WebAPI.Controllers
 
                         var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
                         xTotalRental -= UseOrderPrice;//預繳定金扣抵
+
+                        outputApi.UseOrderPrice = UseOrderPrice;
+                        outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
+                        if (xTotalRental < 0)
+                        {
+                            outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                            int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
+                            carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                        }
+
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                         outputApi.Rent.TotalRental = xTotalRental;
                         trace.FlowList.Add("總價計算");
 
                         #region 修正輸出欄位
-                        //note: 修正輸出欄位PayDetail
-                        outputApi.UseOrderPrice = UseOrderPrice;
+                        //note: 修正輸出欄位PayDetail                      
                         if (ProjType == 4)
                         {
                             outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();

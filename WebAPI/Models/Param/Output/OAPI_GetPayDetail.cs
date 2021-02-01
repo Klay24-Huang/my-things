@@ -40,6 +40,14 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int UseOrderPrice { get; set; }
         /// <summary>
+        /// 返還訂金
+        /// </summary>
+        public int ReturnOrderPrice { get; set; }
+        /// <summary>
+        /// 沒收訂金
+        /// </summary>
+        public int FineOrderPrice { get; set; }
+        /// <summary>
         /// 訂單基本資訊
         /// </summary>
         public RentBase Rent { set; get; }

@@ -945,6 +945,7 @@ namespace WebAPI.Controllers
             string errMsg = "";
 
             int UseOrderPrice = 0;//使用訂金(4捨5入)
+            int OrderPrice = 0;//原始訂金
             #endregion
             #region trace-in
             trace.OrderNo = tmpOrder;
@@ -1002,6 +1003,7 @@ namespace WebAPI.Controllers
                     motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
                     ProjType = item.ProjType;
                     UseOrderPrice = item.UseOrderPrice;
+                    OrderPrice = item.OrderPrice;
                 }
                 //取得專案狀態
                 if (flag)
@@ -1604,6 +1606,15 @@ namespace WebAPI.Controllers
 
                     var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
                     xTotalRental -= UseOrderPrice;//使用訂金
+                    outputApi.UseOrderPrice = UseOrderPrice;
+                    outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
+                    if (xTotalRental < 0)
+                    {
+                        outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                        int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
+                        carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                    }
+
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
                     trace.FlowList.Add("總價計算");

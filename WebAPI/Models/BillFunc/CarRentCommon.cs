@@ -1152,6 +1152,27 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        /// <summary>
+        /// 更新返還訂金
+        /// </summary>
+        /// <param name="orderNo">訂單編號</param>
+        /// <param name="RETURNAMT">返還訂金</param>
+        /// <returns></returns>
+        public bool UpdNYPayList(int orderNo, int RETURNAMT)
+        {
+            if (orderNo <= 0)
+                throw new Exception("orderNo必填");
+            bool flag = true;
+            string SQL = @"
+                update TB_NYPayList
+                set RETURNAMT = {0},
+                UPDTime = DATEADD(hour,8,getdate())
+                where order_number = {1}";
+            SQL = String.Format(SQL, orderNo.ToString(), RETURNAMT.ToString());
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+
         public bool UpdOrderMainByOrderNo(int orderNo, double init_price, double InsPrice)
         {
             if (orderNo == 0)
