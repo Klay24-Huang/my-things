@@ -273,7 +273,8 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
-                    term2 = " AND ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -281,10 +282,12 @@ namespace Reposotory.Implement
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
                 }
                 else
                 {
-                    term2 = " AND SD >= @SD AND  ED <= @SD";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  SD >= @SD AND  ED <= @SD";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;
@@ -295,23 +298,21 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
-                    term2 = " AND SD >= @ED AND  ED <= @ED";
+                    term2 = (term == "") ? "" : " AND ";
+                    term2 += "  SD >= @ED AND  ED <= @ED";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 20);
                     para[nowCount].Value = ED;
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
             }
-
+            term += term2;
             if ("" != term)
             {
                 SQL += " WHERE " + term;
 
             }
-            if ("" != term2)
-            {
-                SQL += term2;
-            }
+      
             SQL += " ORDER BY OrderNum ASC;";
 
             lstOrderPart = GetObjList<BE_GetCleanFixQueryForWeb>(ref flag, ref lstError, SQL, para, term);
@@ -784,20 +785,63 @@ namespace Reposotory.Implement
 
             return tmp;
         }
+        //20210129廢棄
+        //public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
+        //{
+        //    bool flag = false;
+        //    List<ErrorInfo> lstError = new List<ErrorInfo>();
+        //    List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
+        //    string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes,Main.ArrearCardToken,Main.MerchantTradeNo";
+
+        //    SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
+    
+        //    SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
+        //    SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
+        //     SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
+            
+            
+
+
+        //    SqlParameter[] para = new SqlParameter[2];
+        //    string term = "";
+        //    int nowCount = 0;
+        //    if (OrderNo > 0)
+        //    {
+        //        term = "  OrderNo = @OrderNo";
+        //        para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+        //        para[nowCount].Value = OrderNo;
+        //        para[nowCount].Direction = ParameterDirection.Input;
+        //        nowCount++;
+        //    }
+
+        //    if ("" != term)
+        //    {
+        //        SQL += " WHERE " + term + "  ";
+        //    }
+
+        //    lstOrderData = GetObjList<BE_GetOrderModifyDataNewV2>(ref flag, ref lstError, SQL, para, term);
+        //    BE_GetOrderModifyDataNewV2 tmp = null;
+        //    if (lstOrderData.Count > 0)
+        //    {
+        //        tmp = lstOrderData[0];
+        //    }
+
+        //    return tmp;
+        //}
         public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
             string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes,Main.ArrearCardToken,Main.MerchantTradeNo";
+            SQL += " ,(SELECT SUM(amount)  FROM[dbo].[TB_TradeRefund] WHERE RetCode = 1000 AND IsSuccess = 1 AND OrderNo = @OrderNo) AS RefundAmount ";
+            SQL += " FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
 
-            SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
-    
             SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
             SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
-             SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
-            
-            
+            SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
+
+
 
 
             SqlParameter[] para = new SqlParameter[2];

@@ -286,7 +286,11 @@ function SetData(data) {
             $("#Mileage_input").val(OrderObj.mileage_price).prop("readonly", "");
             $("#spn_finePrice").html(OrderObj.fine_price);
             if (parseInt(OrderObj.Paid) == 0 && parseInt(OrderObj.ArrearAMT) > 0) {
-                $("#spn_payPrice").html(OrderObj.ArrearAMT + "<font color='red'>使用補繳</font>")
+                var ArrearAMT = parseInt(OrderObj.ArrearAMT) - parseInt(OrderObj.RefundAmount);
+                $("#spn_payPrice").html(ArrearAMT + "<font color='red'>使用補繳</font>")
+            } else if (parseInt(OrderObj.Paid) > 0 && parseInt(OrderObj.ArrearAMT) == 0) {
+                var PaidAMT = parseInt(OrderObj.Paid) - parseInt(OrderObj.RefundAmount);
+                $("#spn_payPrice").html(PaidAMT)
             } else {
                 $("#spn_payPrice").html(OrderObj.Paid)
             }

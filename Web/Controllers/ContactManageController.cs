@@ -828,16 +828,16 @@ namespace Web.Controllers
             if (StartDate != "" && EndDate == "")
             {
 
-                StartDate = StartDate + " 00:00:00";
+                StartDate = StartDate + ":00";
             }
             else if (StartDate == "" && EndDate != "")
             {
-                EndDate = EndDate + " 23:59:59";
+                EndDate = EndDate + ":00";
             }
             else if (StartDate != "" && EndDate != "")
             {
-                StartDate = StartDate + " 00:00:00";
-                EndDate = EndDate + " 23:59:59";
+                StartDate = StartDate + ":00";
+                EndDate = EndDate + ":00";
             }
             if (OrderNo != "")
             {

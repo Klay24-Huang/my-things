@@ -135,6 +135,19 @@ namespace WebAPI.Controllers
                 {
 
                     IDNO = obj.IDNO;
+                    if(obj.ArrearAMT==0 && obj.Paid > 0)
+                    {
+                        obj.Paid -= obj.RefundAmount;
+                    }else if (obj.ArrearAMT > 0 && obj.Paid == 0)
+                    {
+                        obj.ArrearAMT -= obj.RefundAmount;
+                    }else if(obj.ArrearAMT > 0 && obj.Paid > 0)
+                    {
+                        obj.Paid = (obj.Paid +obj.ArrearAMT)- obj.RefundAmount;
+                        
+                    }
+                 
+                   
                     PointerComm pointer = new PointerComm();
                     int TotalLastPoint = 0, TotalLastPointCar = 0, TotalLastPointMotor = 0, CanUseTotalCarPoint = 0, CanUseTotalMotorPoint = 0;
                     obj.FT = ""; //忽略逾時
@@ -192,9 +205,9 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    if (obj.MerchantTradeNo != "")
+                                    if (obj.TaishinTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
@@ -214,13 +227,13 @@ namespace WebAPI.Controllers
                                         }
                                         else if (obj.ArrearCardToken != "")
                                         {
-                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.TaishinTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.MerchantTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
                                         }
                                         else
                                         {
 
                                         }
-                                       
+
                                     }
                                 }
                                 //int hasBind = 0;

@@ -561,9 +561,13 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_GetOrderInfoBeforeModifyNew,
             /// <summary>
-            /// 取得合約修改前資料(2021年新版修正)
+            /// 取得合約修改前資料(2021年新版修正, 20210129廢棄)
             /// </summary>
             BE_GetOrderInfoBeforeModifyV2,
+            /// <summary>
+            ///  取得合約修改前資料(2021年新版修正)
+            /// </summary>
+            BE_GetOrderInfoBeforeModifyV3,
             /// <summary>
             /// 短租補傳
             /// </summary>
@@ -1055,6 +1059,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_GetOrderInfoBeforeModifyV2:
                     SPName = "usp_BE_GetOrderInfoBeforeModifyV2";
+                    break;
+                case SPType.BE_GetOrderInfoBeforeModifyV3:
+                    SPName = "usp_BE_GetOrderInfoBeforeModifyV3";
                     break;
                 case SPType.BE_HandleOrderModify:
                     SPName = "usp_BE_HandleOrderModify";
