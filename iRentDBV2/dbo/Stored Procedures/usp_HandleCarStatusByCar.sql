@@ -168,8 +168,8 @@ SET @CID= '';
 						[extDeviceStatus1]=@extDeviceStatus1,
 						[extDeviceStatus2]=@extDeviceStatus2,
 						[extDeviceData2]=@extDeviceData2,
-						[extDeviceData3]=CASE WHEN @extDeviceData3 IS NOT NULL THEN @extDeviceData3 ELSE extDeviceData3 END,
-						[extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
+						[extDeviceData3]=CASE WHEN @deviceOBDstatus = 1 THEN @extDeviceData3 ELSE extDeviceData3 END,
+						[extDeviceData4]=CASE WHEN @deviceOBDstatus = 1 THEN @extDeviceData4 ELSE extDeviceData4 END,
 						[deviceName]=@deviceName,
 						UPDTime=@NowTime
 				WHERE CarNo=@CarNo AND @deviceGPSTime>[GPSTime]
