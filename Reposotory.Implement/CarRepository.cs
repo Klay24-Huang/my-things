@@ -46,11 +46,11 @@ namespace Reposotory.Implement
             string SQL = "SELECT * FROM VW_MA_GetAllCarData";
             if (type == 0)
             {
-                SQL += " WITH(NOLOCK) WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4')";
+                SQL += " WITH(NOLOCK) WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4','X1V4')";
             }
             else
             {
-                SQL += " WITH(NOLOCK) WHERE NowStationID  IN ('X0SR','X0R4','X0U4')";
+                SQL += " WITH(NOLOCK) WHERE NowStationID  IN ('X0SR','X0R4','X0U4','X1V4')";
             }
             for (int j = 0; j < 4; j++)
             {
@@ -117,11 +117,11 @@ namespace Reposotory.Implement
             string SQL = "SELECT * FROM VW_MA_GetAllCarData WITH(NOLOCK) ";
             if (type == 0)
             {
-                SQL += "  WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4') ";
+                SQL += "  WHERE NowStationID NOT IN ('X0SR','X0R4','X0U4','X1V4') ";
             }
             else
             {
-                SQL += "  WHERE NowStationID  IN ('X0SR','X0R4','X0U4') ";
+                SQL += "  WHERE NowStationID  IN ('X0SR','X0R4','X0U4','X1V4') ";
             }
             for (int j = 0; j < 4; j++)
             {
