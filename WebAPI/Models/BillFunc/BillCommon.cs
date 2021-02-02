@@ -544,6 +544,27 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        #region 修正汽車基消
+        //public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
+        //    , List<MonthlyRentData> mOri
+        //    , int Discount
+        //    )
+        //{
+        //    var re = new CarRentInfo();
+        //    if (SD == null || ED == null || SD < ED)
+        //        throw new Exception("SD, ED錯誤");
+
+        //    SD = SD.AddSeconds(SD.Second * -1);
+        //    ED = ED.AddSeconds(ED.Second * -1);
+        //    var mins = ED.Subtract(SD).TotalMinutes;
+
+        //    if(mins < 60)
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 60, dayMaxHour, lstHoliday, mOri, Discount);
+        //    else
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 0, dayMaxHour, lstHoliday, mOri, Discount);          
+        //}
+        #endregion
+
         /// <summary>
         /// 機車月租計算,可包含平假日,多月租
         /// </summary>
