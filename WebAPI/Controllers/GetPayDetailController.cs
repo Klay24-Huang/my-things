@@ -957,11 +957,11 @@ namespace WebAPI.Controllers
                     trace.traceAdd(nameof(errCode), errCode);
                     trace.traceAdd(nameof(TotalPoint), TotalPoint);
                     trace.traceAdd(nameof(TransferPrice), TransferPrice);
-                    string traceMsg = JsonConvert.SerializeObject(trace.getObjs());
+                    trace.objs = trace.getObjs();
                     var errItem = new TraceLogVM()
                     {
                         ApiId = 73,
-                        ApiMsg = traceMsg,
+                        ApiMsg = JsonConvert.SerializeObject(trace),
                         ApiNm = funName,
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
@@ -983,10 +983,11 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
+                trace.objs = trace.getObjs();
                 var errItem = new TraceLogVM()
                 {
                     ApiId = 73,
-                    ApiMsg = JsonConvert.SerializeObject(trace.getObjs()),
+                    ApiMsg = JsonConvert.SerializeObject(trace),
                     ApiNm = funName,
                     CodeVersion = trace.codeVersion,
                     FlowStep = trace.FlowStep(),
