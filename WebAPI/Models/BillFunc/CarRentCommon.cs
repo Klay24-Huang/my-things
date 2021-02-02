@@ -254,22 +254,19 @@ namespace WebAPI.Models.BillFunc
             re.flag = true;
 
             bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
-            //跨春節不計算一般月租
-            if (!isSpring)
-            {
-                //1.0 先還原這個單號使用的
-                re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
-                re.errCode = errCode;
-                int RateType = (sour.ProjType == 4) ? 1 : 0;
-                if (sour.hasFine)
-                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
-                else
-                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
-            }
+
+            //1.0 先還原這個單號使用的
+            re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
+            re.errCode = errCode;
+            int RateType = (sour.ProjType == 4) ? 1 : 0;
+            if (sour.hasFine)
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+            else
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
-                monthlyRentDatas.AddRange(sour.VisMons);
+                monthlyRentDatas.Insert(0,sour.VisMons[0]);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
@@ -441,14 +438,11 @@ namespace WebAPI.Models.BillFunc
             //re.errCode = errCode;      
 
             //跨春節不計算一般月租
-            if (!isSpring)
-            {
-                int RateType = (sour.ProjType == 4) ? 1 : 0;
-                if (sour.hasFine)
-                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
-                else
-                    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
-            }
+            int RateType = (sour.ProjType == 4) ? 1 : 0;
+            if (sour.hasFine)
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+            else
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
 
             //還原單號使用
             if (monthlyRentDatas != null && monthlyRentDatas.Count()>0)
@@ -470,7 +464,7 @@ namespace WebAPI.Models.BillFunc
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
-                monthlyRentDatas.AddRange(sour.VisMons);
+                monthlyRentDatas.Insert(0, sour.VisMons[0]);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
