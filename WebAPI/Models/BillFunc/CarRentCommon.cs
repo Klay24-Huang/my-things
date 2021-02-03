@@ -1048,8 +1048,11 @@ namespace WebAPI.Models.BillFunc
     //note: repo
     public class CarRentRepo : BaseRepository
     {
-        private string _connectionString;
-
+        private string defConStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public CarRentRepo()
+        {
+            this.ConnectionString = defConStr;
+        }
         public CarRentRepo(string ConnStr)
         {
             this.ConnectionString = ConnStr;
@@ -1063,7 +1066,6 @@ namespace WebAPI.Models.BillFunc
             mHis = GetObjList<MonthlyRentHis>(ref flag, ref lstError, SQL, null, "");
             return mHis;
         }
-
         public List<OrderQueryFullData> GetOrders(string orderNos)
         {
             bool flag = false;
@@ -1077,7 +1079,6 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-
         public  ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
         {
             bool flag = false;
@@ -1102,7 +1103,6 @@ namespace WebAPI.Models.BillFunc
                 re = xre.FirstOrDefault();
             return re;
         }
-
         /// <summary>
         /// 取得里程費
         /// </summary>
@@ -1121,7 +1121,6 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-
         /// <summary>
         /// 取得里程資全部資訊
         /// </summary>
@@ -1145,7 +1144,6 @@ namespace WebAPI.Models.BillFunc
             re = GetObjList<MilageSettingTBVM>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
-
         /// <summary>
         /// 更新返還訂金
         /// </summary>
@@ -1166,7 +1164,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool UpdOrderMainByOrderNo(int orderNo, double init_price, double InsPrice)
         {
             if (orderNo == 0)
@@ -1183,7 +1180,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
         {
             bool flag = true;
@@ -1193,12 +1189,10 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddErrLog(string FunName, string Msg, string ErrorCode = "")
         {
             return AddErrLog(FunName, ErrorCode, 0, 999, Msg);
         }
-
         public bool AddErrLog(string FunName, string ErrorCode, int ErrType, int SQLErrorCode, string SQLErrorDesc)
         {
             if (string.IsNullOrWhiteSpace(FunName))
@@ -1217,12 +1211,10 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddApiLog(int APIID, string Msg, string OrderNo = "")
         {
             return AddApiLog(APIID, "99999", Msg, OrderNo);
         }
-
         public bool AddApiLog(int APIID, string CLIENTIP, string APIInput, string ORDNO)
         {
             if (string.IsNullOrWhiteSpace(CLIENTIP))
@@ -1241,7 +1233,22 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
+        public bool AddTraceLog(int apiId ,string funName, eumTraceType traceType, TraceCom sour)
+        {
+            if(sour.objs == null || sour.objs.Count == 0)
+               sour.objs = sour.getObjs();
+            var item = new TraceLogVM()
+            {
+                ApiId = apiId,
+                ApiMsg = JsonConvert.SerializeObject(sour),
+                ApiNm = funName,
+                CodeVersion = sour.codeVersion,
+                FlowStep = sour.FlowStep(),
+                OrderNo = sour.OrderNo,
+                TraceType = traceType
+            };
+            return AddTraceLog(item);
+        }
         public bool AddTraceLog(TraceLogVM sour)
         {
             if (sour != null)
@@ -1259,7 +1266,6 @@ namespace WebAPI.Models.BillFunc
             }
             return false;
         }
-
         private bool xAddTraceLog(TraceLogVM sour)
         {
             bool flag = true;
@@ -1272,7 +1278,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddGoldFlowLog(GoldFlowLogVM sour)
         {
             if (sour != null)
@@ -1293,7 +1298,6 @@ namespace WebAPI.Models.BillFunc
             }
             return false;
         }
-
         private bool xAddGoldFlowLog(GoldFlowLogVM sour)
         {
             bool flag = true;
@@ -1306,7 +1310,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
     }
 
     public class CarRentSp
