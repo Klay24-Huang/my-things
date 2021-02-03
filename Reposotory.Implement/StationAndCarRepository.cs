@@ -634,7 +634,6 @@ namespace Reposotory.Implement
               AND SPCLOCK='Z'
               AND VW.use_flag=1
               AND ((VW.ShowStart BETWEEN @SD AND @ED) OR (VW.ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN VW.ShowStart AND VW.ShowEnd) OR (@ED BETWEEN VW.ShowStart AND VW.ShowEnd))
-              AND VW.PROJID<>'R139'     --排除春節專案
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -704,7 +703,6 @@ namespace Reposotory.Implement
               AND SPCLOCK='Z'
               AND VW.use_flag=1
               AND ((VW.ShowStart BETWEEN @SD AND @ED) OR (VW.ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN VW.ShowStart AND VW.ShowEnd) OR (@ED BETWEEN VW.ShowStart AND VW.ShowEnd))
-              AND VW.PROJID<>'R140'     --排除春節專案
             ORDER BY PROJID ASC";
 
             SqlParameter[] para = new SqlParameter[4];
