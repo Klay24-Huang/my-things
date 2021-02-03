@@ -558,6 +558,32 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
+                    #region 路邊,機車春前特殊處理
+
+                    if (isSpring && neverHasFine.Any(x => x == ProjType))
+                    {
+                        if (ProjType == 3)
+                        {
+                            var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                            if (xre != null)
+                            {
+                                OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
+                                OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                            }
+                        }
+                        else if (ProjType == 4)
+                        {
+                            var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                            if (xre != null)
+                            {
+                                OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
+                                OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                            }
+                        }
+                    }
+
+                    #endregion
+
                     #region 計算非逾時及逾時時間
 
                     if (ProjType == 4)

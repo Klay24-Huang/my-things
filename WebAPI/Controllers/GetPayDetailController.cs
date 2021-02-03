@@ -222,6 +222,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType;
                         UseOrderPrice = item.UseOrderPrice;
                         OrderPrice = item.OrderPrice;
+
                     }
 
                     if (ProjType != 4)
@@ -285,7 +286,6 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("SD,ED,FD計算");
 
                         #region 春節不能使用折扣點數
-                        //dev: 春節不能使用折扣點數 
                         var vsd = new DateTime();
                         var ved = new DateTime();
                         if (neverHasFine.Contains(ProjType))
@@ -306,6 +306,32 @@ namespace WebAPI.Controllers
                             apiInput.Discount = 0;
                             apiInput.MotorDiscount = 0;
                         }
+                        #endregion
+
+                        #region 路邊,機車春前特殊處理
+
+                        if (isSpring && neverHasFine.Any(x => x == ProjType))
+                        {
+                            if (ProjType == 3)
+                            {
+                                var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                                if (xre != null)
+                                {
+                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE/10));
+                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H/10));
+                                }
+                            }
+                            else if (ProjType == 4)
+                            {
+                                var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                                if (xre != null)
+                                {
+                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE/10));
+                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H/10));
+                                }
+                            }
+                        }
+
                         #endregion
 
                         #region 計算非逾時及逾時時間
