@@ -1109,8 +1109,8 @@ namespace WebAPI.Controllers
                         var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
                         if (xre != null)
                         {
-                            OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
-                            OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                            //機車目前不分平假日
+                            OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(xre.PRICE);
                         }
                     }
                 }
@@ -1185,8 +1185,8 @@ namespace WebAPI.Controllers
                             //ProjID = item.ProjID,
                             ProjType = item.ProjType,
                             CarType = item.CarTypeGroupCode,
-                            ProDisPRICE = item.PRICE,
-                            ProDisPRICE_H = item.PRICE_H
+                            ProDisPRICE = ProjType == 4 ? item.MinuteOfPrice : item.PRICE,
+                            ProDisPRICE_H = ProjType == 4 ? item.MinuteOfPrice : item.PRICE_H
                         };
                         var vmonRe = cr_com.GetVisualMonth(ibiz_vMon);
                         if (vmonRe != null)
@@ -1194,9 +1194,18 @@ namespace WebAPI.Controllers
                             if (vmonRe.VisMons != null && vmonRe.VisMons.Count() > 0)
                             {
                                 visMons = vmonRe.VisMons;
-                                OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(vmonRe.PRICE));
-                                OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
-                                trace.traceAdd(nameof(vmonRe), vmonRe);
+                                if (ProjType == 4)
+                                {
+                                    //機車目前不分平假日 ,GetVisualMonth有分
+                                    OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(vmonRe.PRICE);
+                                }
+                                else
+                                {
+                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(vmonRe.PRICE));
+                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
+                                }
+
+                                trace.objs.Add(nameof(vmonRe), vmonRe);
                                 trace.FlowList.Add("新增虛擬月租");
                             }
                         }

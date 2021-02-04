@@ -770,8 +770,8 @@ namespace WebAPI.Models.BillFunc
                     MotoTotalHours = 0,
                     WorkDayRateForCar = 0,
                     HoildayRateForCar = 0,
-                    WorkDayRateForMoto = Convert.ToSingle(Math.Floor(sour.ProDisPRICE)),
-                    HoildayRateForMoto = Convert.ToSingle(Math.Floor(sour.ProDisPRICE_H))
+                    WorkDayRateForMoto = Convert.ToSingle(sour.ProDisPRICE),
+                    HoildayRateForMoto = Convert.ToSingle(sour.ProDisPRICE_H)
                 };
                 re.VisMons.Add(visMon);
                 var xre = spRepo.sp_GetEstimate("P686", carType, 999999, ref errMsg);
