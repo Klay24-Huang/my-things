@@ -1223,6 +1223,7 @@ namespace WebAPI.Models.BaseFunc
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             CommonFunc baseVerify = new CommonFunc();
             bool flag = false;
+            bool ByPass = true;     //20210204;用來讓車機不管執行結果繼續把指令送出去
             SPInput_CheckCarByReturn spInput = new SPInput_CheckCarByReturn()
             {
                 OrderNo = tmpOrder,
@@ -1252,7 +1253,6 @@ namespace WebAPI.Models.BaseFunc
                 #region 汽車
                 if (IsMotor == 0)
                 {
-
                     if (IsCens == 1)
                     {
                         #region 興聯車機
@@ -1260,15 +1260,13 @@ namespace WebAPI.Models.BaseFunc
                         //取最新狀況
                         WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
                         flag = webAPI.GetInfo(CID, ref wsOutInfo);
-                        if (false == flag)
+                        if (flag == false)
                         {
                             errCode = wsOutInfo.ErrorCode;
-
                         }
                         else
                         {
                             if (wsOutInfo.data.CID != CID)
-
                             {
                                 flag = false;
                                 errCode = "ERR400";
@@ -1362,7 +1360,6 @@ namespace WebAPI.Models.BaseFunc
                             {
                                 CID = CID,
                                 mode = 0
-
                             };
 
                             int count = 0;
@@ -1380,12 +1377,12 @@ namespace WebAPI.Models.BaseFunc
 
                             flag = webAPI.SendCardNo(wsInput, ref wsOut);
                         }
-                        if (false == flag)
+                        if (flag == false)
                         {
                             errCode = wsOut.ErrorCode;
                         }
-                        //解除白名單
-                        if (flag)
+                        //解除租約
+                        if (flag || ByPass)
                         {
                             WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
                             {
@@ -1393,13 +1390,13 @@ namespace WebAPI.Models.BaseFunc
                                 OrderStatus = 0
                             };
                             flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
-                            if (false == flag || wsOut.Result == 1)
+                            if (flag == false || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                             }
                         }
                         //上防盜
-                        if (flag)
+                        if (flag || ByPass)
                         {
                             WSInput_SendLock wsLockInput = new WSInput_SendLock()
                             {
@@ -1407,7 +1404,7 @@ namespace WebAPI.Models.BaseFunc
                                 CMD = 1
                             };
                             flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                            if (false == flag || wsOut.Result == 1)
+                            if (flag == false || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                             }
@@ -1432,7 +1429,6 @@ namespace WebAPI.Models.BaseFunc
                         //    method = CommandType,
                         //    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                         //    _params = new Params()
-
                         //};
                         //requestId = input.requestId;
                         //method = CommandType;
@@ -1489,13 +1485,11 @@ namespace WebAPI.Models.BaseFunc
                                 //}
                                 #endregion
                             }
-
                         }
                         if (flag)
                         {
                             if (lstCardList != null)
                             {
-
                                 int CardLen = lstCardList.Count;
                                 //清空顧客卡
                                 if (flag)
@@ -1508,7 +1502,6 @@ namespace WebAPI.Models.BaseFunc
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
                                     requestId = ClearInput.requestId;
                                     method = CommandType;
@@ -1521,9 +1514,6 @@ namespace WebAPI.Models.BaseFunc
                                 //寫入萬用卡
                                 if (CardLen > 0)
                                 {
-
-
-
                                     string[] CardStr = new string[CardLen];
                                     int NowCount = -1;
                                     for (int i = 0; i < CardLen; i++)
@@ -1532,9 +1522,7 @@ namespace WebAPI.Models.BaseFunc
                                         {
                                             NowCount++;
                                             CardStr[NowCount] = lstCardList[i].CardNO;
-
                                         }
-
                                     }
 
                                     if (NowCount >= 0)
@@ -1550,7 +1538,6 @@ namespace WebAPI.Models.BaseFunc
                                             {
                                                 UnivCardNo = CardStr
                                             }
-
                                         };
                                         requestId = SetCardInput.requestId;
                                         method = CommandType;
@@ -1559,11 +1546,10 @@ namespace WebAPI.Models.BaseFunc
                                         {
                                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                         }
-
                                     }
                                 }
                                 //清除租約
-                                if (flag)
+                                if (flag || ByPass)
                                 {
                                     CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetNoRent);
                                     CmdType = OtherService.Enum.MachineCommandType.CommandType.SetNoRent;
@@ -1573,7 +1559,6 @@ namespace WebAPI.Models.BaseFunc
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
                                     requestId = SetNoRentInput.requestId;
                                     method = CommandType;
@@ -1584,7 +1569,7 @@ namespace WebAPI.Models.BaseFunc
                                     }
                                 }
                                 //全車上鎖
-                                if (flag)
+                                if (flag || ByPass)
                                 {
                                     CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn);
                                     CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock_AlertOn;
@@ -1594,7 +1579,6 @@ namespace WebAPI.Models.BaseFunc
                                         method = CommandType,
                                         requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                         _params = new Params()
-
                                     };
                                     requestId = SetNoRentInput.requestId;
                                     method = CommandType;
@@ -1604,7 +1588,6 @@ namespace WebAPI.Models.BaseFunc
                                         flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                     }
                                 }
-
                             }
                         }
                         #endregion
@@ -1731,11 +1714,11 @@ namespace WebAPI.Models.BaseFunc
                     }
                     #endregion
                 }
-
             }
             #endregion
             return flag;
         }
+
         private bool CheckInPolygon(Domain.Common.Polygon latlng, string StationID)
         {
             bool flag = false;
