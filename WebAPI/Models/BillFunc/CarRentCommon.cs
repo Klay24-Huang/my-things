@@ -229,8 +229,8 @@ namespace WebAPI.Models.BillFunc
             WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
             MachiComm mochi = new MachiComm();
             int ParkingPrice = 0;
-            //re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
-            re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
+            re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            //re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
 
             if (re.flag)
             {
