@@ -633,6 +633,7 @@ namespace Reposotory.Implement
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
+              AND ((VW.ShowStart BETWEEN @SD AND @ED) OR (VW.ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN VW.ShowStart AND VW.ShowEnd) OR (@ED BETWEEN VW.ShowStart AND VW.ShowEnd))
             ORDER BY PROJID ASC";
             SqlParameter[] para = new SqlParameter[4];
             string term = " ";
@@ -646,14 +647,14 @@ namespace Reposotory.Implement
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-                //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
-                //para[nowCount].Value = SDate;
-                //para[nowCount].Direction = ParameterDirection.Input;
-                //nowCount++;
-                //para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
-                //para[nowCount].Value = EDate;
-                //para[nowCount].Direction = ParameterDirection.Input;
-                //nowCount++;
+                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
             }
 
             lstStation = GetObjList<ProjectAndCarTypeData>(ref flag, ref lstError, SQL, para, term);
@@ -701,6 +702,7 @@ namespace Reposotory.Implement
             WHERE Car.CarNo=@CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
+              AND ((VW.ShowStart BETWEEN @SD AND @ED) OR (VW.ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN VW.ShowStart AND VW.ShowEnd) OR (@ED BETWEEN VW.ShowStart AND VW.ShowEnd))
             ORDER BY PROJID ASC";
 
             SqlParameter[] para = new SqlParameter[4];
@@ -711,14 +713,14 @@ namespace Reposotory.Implement
                 para[nowCount].Value = CarNo;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-                //para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
-                //para[nowCount].Value = SDate;
-                //para[nowCount].Direction = ParameterDirection.Input;
-                //nowCount++;
-                //para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
-                //para[nowCount].Value = EDate;
-                //para[nowCount].Direction = ParameterDirection.Input;
-                //nowCount++;
+                para[nowCount] = new SqlParameter("@SD", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+                para[nowCount] = new SqlParameter("@ED", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
             }
 
             lstStation = GetObjList<ProjectAndCarTypeDataForMotor>(ref flag, ref lstError, SQL, para, term);

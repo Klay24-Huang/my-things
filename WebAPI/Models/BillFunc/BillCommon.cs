@@ -544,6 +544,27 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        #region 修正汽車基消
+        //public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
+        //    , List<MonthlyRentData> mOri
+        //    , int Discount
+        //    )
+        //{
+        //    var re = new CarRentInfo();
+        //    if (SD == null || ED == null || SD < ED)
+        //        throw new Exception("SD, ED錯誤");
+
+        //    SD = SD.AddSeconds(SD.Second * -1);
+        //    ED = ED.AddSeconds(ED.Second * -1);
+        //    var mins = ED.Subtract(SD).TotalMinutes;
+
+        //    if(mins < 60)
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 60, dayMaxHour, lstHoliday, mOri, Discount);
+        //    else
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 0, dayMaxHour, lstHoliday, mOri, Discount);          
+        //}
+        #endregion
+
         /// <summary>
         /// 機車月租計算,可包含平假日,多月租
         /// </summary>
@@ -556,12 +577,18 @@ namespace WebAPI.Models.BillFunc
         /// <param name="lstHoliday">假日列表</param>
         /// <param name="mOri">月租</param>
         /// <param name="Discount">折扣</param>
+        /// <param name="fDayMaxMins">首日最大計費分鐘199</param>
+        /// <param name="fDayMaxPrice">首日價格上限</param>
+        /// <param name="dayBasePrice">基消</param>
         /// <returns></returns>
         /// <mark>2020-12-21 eason</mark>
         public CarRentInfo MotoRentMonthComp(DateTime SD, DateTime ED, double priceNmin, double priceHmin, int dayBaseMins, double dayMaxMins
              , List<Holiday> lstHoliday = null
              , List<MonthlyRentData> mOri = null
              , int Discount = 0
+             , int fDayMaxMins = 0
+             , double fDayMaxPrice = 0
+             , double dayBasePrice = 10
             )
         {//note: MotoRentMonthComp
             CarRentInfo re = new CarRentInfo();
@@ -572,8 +599,6 @@ namespace WebAPI.Models.BillFunc
                 eumDateType.wDay.ToString(),
                 eumDateType.hDay.ToString()
             };
-
-            double dayBasePrice = 10;//基本費用
 
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED資料錯誤");
@@ -605,8 +630,9 @@ namespace WebAPI.Models.BillFunc
             }
 
             var allDay = GetDateMark(SD, ED, lstHoliday, mOri);//區間內時間註記
-            var dayPayList = GetMotoTypeMins(SD, ED, dayBaseMins, dayMaxMins, allDay);//全分類時間    
-            dayPayList = H24FDateSet(dayPayList, 200, 199);//縮減首日200=>199
+            var dayPayList = GetMotoTypeMins(SD, ED, dayBaseMins, dayMaxMins, allDay);//全分類時間 
+           
+            dayPayList = H24FDateSet(dayPayList, dayMaxMins, fDayMaxMins);//縮減首日及mark首日200=>199
 
             var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();//一般時段
             var dpList = new List<DayPayMins>();//剩餘有分鐘數的
@@ -664,7 +690,7 @@ namespace WebAPI.Models.BillFunc
                         if (m_list != null && mList.Count() > 0)
                             m_list.ForEach(x => x.dayGroupId = "mon_" + m.MonthlyRentId.ToString());
 
-                        var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType);
+                        var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType,fDayMaxMins,fDayMaxPrice);
                         if (mre != null)
                         {
                             dre += mre.Item3;
@@ -696,7 +722,7 @@ namespace WebAPI.Models.BillFunc
                     foreach (var gID in gIDs)
                     {
                         var gList = norList.Where(x => x.dayGroupId == gID).OrderBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
-                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString());
+                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString(),fDayMaxMins,fDayMaxPrice);
                         if (gre != null)
                         {
                             dre += gre.Item3;
@@ -813,16 +839,20 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Discount">折扣點數</param>
         /// <param name="wDateType">平日日期註記</param>
         /// <param name="hDateType">假日日期註記</param>
+        /// <param name="fDayMaxMins">首日最大計費分鐘</param>
+        /// <param name="fDayMaxPrice">首日最大計費金額</param>
         /// <mark>2020-12-21 eason</mark>
         public Tuple<double, double, double, double, double, double, double> MotoRentDiscComp(
             double priceNmin, double priceHmin, double dayBaseMins, double dayBasePrice,
             ref List<DayPayMins> norList, double Discount,
-            string wDateType, string hDateType
+            string wDateType, string hDateType,            
+            double fDayMaxMins, 
+            double fDayMaxPrice
             )
         {//note: MotoRentDiscComp
             #region 變數宣告
-            double fDayMaxMins = 199;//首24H最大計費分鐘
-            double dayMaxPrice = 300;//每24H最大租金
+            //double fDayMaxMins = 199;//首24H最大計費分鐘
+            //double dayMaxPrice = 300;//每24H最大租金
             var fList = new List<DayPayMins>();//首24H資料
             var norListNoF = new List<DayPayMins>();//一般計費不計首日
 
@@ -860,7 +890,7 @@ namespace WebAPI.Models.BillFunc
 
                 if(fList != null && fList.Count() > 0)
                 {
-                    var fd = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, dayMaxPrice, nowDisc, ref fList, wDateType, hDateType);
+                    var fd = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, fDayMaxPrice, nowDisc, ref fList, wDateType, hDateType, fDayMaxMins);
                     if (fd != null)
                     {
                         wLastMins += fd.Item4;
@@ -1573,14 +1603,15 @@ namespace WebAPI.Models.BillFunc
         /// <returns></returns>
         public double GetMotoPayMins(double Mins)
         {
-            double re = 0;
+            //double re = 0;
 
-            if (Mins > 0 && Mins < 6)
-                re = 6;
-            else
-                re = Mins;
+            //if (Mins > 0 && Mins < 6)
+            //    re = 6;
+            //else
+            //    re = Mins;
 
-            return re;
+            //return re;
+            return Mins;
         }
 
         /// <summary>
@@ -2776,12 +2807,13 @@ namespace WebAPI.Models.BillFunc
             double dayBasePrice, double dayMaxPrice, double Discount,
             ref List<DayPayMins> fList,
             string wDateType,
-            string hDateType
+            string hDateType,
+            double fDayMaxMins
             )
         {//note: MotoF24HDiscCompute
 
             string funNm = "MotoF24HDiscCompute : ";
-            double dayMaxMins = 199;//首日最大分鐘
+            //double dayMaxMins = 199;//首日最大分鐘
             double f_wDisc = 0; //f1w+f2w
             double f_hDisc = 0; //f1h+f2h
             double f1_wDisc = 0;//H24日1平日折扣
@@ -2803,7 +2835,7 @@ namespace WebAPI.Models.BillFunc
                 fList = fList.OrderBy(x => x.xDate).ThenByDescending(y => y.haveNext).ToList();
                 Mins = fList.Select(x => x.xMins).Sum();
                 UseDisc = UseDisc > Mins ? Mins : UseDisc;//自動縮減      
-                UseDisc = UseDisc > dayMaxMins ? dayMaxMins : UseDisc;//對大分鐘縮減
+                UseDisc = UseDisc > fDayMaxMins ? fDayMaxMins : UseDisc;//對大分鐘縮減
                 double tmpUseDisc = UseDisc;//首日折扣
 
                 string sAll = "all";
@@ -3043,7 +3075,7 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 UseDisc = f_wDisc + f_hDisc;//使用點數
-                if (UseDisc >= dayMaxMins)//使用點數超過上限
+                if (UseDisc >= fDayMaxMins)//使用點數超過上限
                     f24Pay = 0;
                 else if (f24Pay > dayMaxPrice)
                     f24Pay = dayMaxPrice;//價格超過上限

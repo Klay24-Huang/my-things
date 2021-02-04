@@ -227,5 +227,10 @@
         /// 營損-其他費用 20201212 ADD BY ADAM
         /// </summary>
         public int OtherBill { get; set; }
+
+        /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
     }
 }

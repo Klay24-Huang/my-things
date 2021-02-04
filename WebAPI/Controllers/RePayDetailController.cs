@@ -230,7 +230,7 @@ namespace WebAPI.Controllers
                 objOutput.Add(nameof(jsonDts), jsonDts);
                 return objOutput;
             }
-            if(inApi.jsonOut == 2 && traceDts != null && traceDts.Count() > 0)
+            else if(inApi.jsonOut == 2 && traceDts != null && traceDts.Count() > 0)
             {
                 objOutput.Add(nameof(traceDts), traceDts);
                 return objOutput;
@@ -305,6 +305,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var cr_com = new CarRentCommon();
+            var cr_sp = new CarRentSp();
             var trace = new TraceCom();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
@@ -375,6 +376,10 @@ namespace WebAPI.Controllers
             var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
             bool isSpring = false;//是否為春節時段
             var visMons = new List<MonthlyRentData>();//虛擬月租
+            DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+            DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+            int UseOrderPrice = 0;//使用訂金(4捨5入)
+            int OrderPrice = 0;//原始訂金
             #endregion
 
             #region trace
@@ -456,9 +461,14 @@ namespace WebAPI.Controllers
                     var OrderData = OrderDataLists[0];
                     motoBaseMins = OrderData.BaseMinutes > 0 ? OrderData.BaseMinutes : motoBaseMins;
                     ProjType = OrderData.ProjType;
+                    UseOrderPrice = OrderData.UseOrderPrice;
+                    OrderPrice = OrderData.OrderPrice;
                     trace.FlowList.Add("取出基本資料");
                     trace.traceAdd(nameof(OrderData), OrderData);
                 }
+
+                if (ProjType != 4)
+                    Discount = apiInput.Discount;
             }
             #endregion
 
@@ -548,17 +558,93 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
+                    #region 路邊,機車春前特殊處理
+
+                    if (isSpring && neverHasFine.Any(x => x == ProjType))
+                    {
+                        if (ProjType == 3)
+                        {
+                            var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                            if (xre != null)
+                            {
+                                OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
+                                OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                            }
+                        }
+                        else if (ProjType == 4)
+                        {
+                            var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                            if (xre != null)
+                            {
+                                //機車目前不分平假日
+                                OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(xre.PRICE);
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region 計算非逾時及逾時時間
+
+                    if (ProjType == 4)
+                    {
+                        //春前
+                        if (ED <= sprSD)
+                        {
+                            var xre = billCommon.GetMotoRangeMins(SD, ED, 6, 200, lstHoliday);
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                            var xDays = ED.Subtract(SD).TotalDays;
+                            if (xDays > 1)
+                                TotalRentMinutes -= 1;
+                        }
+                        //前跨春
+                        else if (SD < sprSD && ED > sprSD)
+                        {
+                            var bef = billCommon.GetMotoRangeMins(SD, sprSD, 6, 200, lstHoliday);
+                            TotalFineRentMinutes += Convert.ToInt32(Math.Floor(bef.Item1 + bef.Item2));
+                            var xDays = sprSD.Subtract(SD).TotalDays;
+                            if (xDays > 1)
+                                TotalFineRentMinutes -= 1;
+                            var af = billCommon.GetMotoRangeMins(sprSD, ED, 6, 600, lstHoliday);
+                            TotalFineRentMinutes += Convert.ToInt32(Math.Floor(bef.Item1 + bef.Item2));
+                        }
+                        else
+                        {
+                            var xre = billCommon.GetMotoRangeMins(SD, ED, 6, 600, lstHoliday);
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                        }
+                    }
+                    else
+                    {
+                        if (hasFine)
+                        {
+                            var xre = billCommon.GetCarRangeMins(SD, ED, 60, 600, lstHoliday);
+                            if (xre != null)
+                                TotalRentMinutes += Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                            var ov_re = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
+                            if (ov_re != null)
+                                TotalRentMinutes += Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                        }
+                        else
+                        {
+                            var xre = billCommon.GetCarRangeMins(SD, FED, 60, 600, lstHoliday);
+                            if (xre != null)
+                                TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                        }
+                    }
+                    TotalRentMinutes = TotalRentMinutes > 0 ? TotalRentMinutes : 0;
+
+                    #endregion
+
                     #region 取得虛擬月租
                     //dev:取得虛擬月租
 
                     if (OrderDataLists != null && OrderDataLists.Count() > 0)
                     {
                         var item = OrderDataLists[0];
-
                         //春節專案才產生虛擬月租
-                        if (isSpring && ProjType == 0)
+                        if (isSpring)
                         {
-                           
                             var ibiz_vMon = new IBIZ_SpringInit()
                             {
                                 SD = vsd,
@@ -566,24 +652,27 @@ namespace WebAPI.Controllers
                                 //ProjID = item.ProjID,
                                 ProjType = item.ProjType,
                                 CarType = item.CarTypeGroupCode,
-                                ProDisPRICE = item.PRICE,
-                                ProDisPRICE_H = item.PRICE_H
+                                ProDisPRICE = ProjType == 4 ? item.MinuteOfPrice : item.PRICE,
+                                ProDisPRICE_H = ProjType == 4 ? item.MinuteOfPrice : item.PRICE_H
                             };
                             var vmonRe = cr_com.GetVisualMonth(ibiz_vMon);
                             if (vmonRe != null)
                             {
                                 if (vmonRe.VisMons != null && vmonRe.VisMons.Count() > 0)
                                 {
-                                    var vsMons = vmonRe.VisMons;
-                                    var monPri = vmonRe.PRICE;
-                                    var monPriH = vmonRe.PRICE_H;
-                                    trace.FlowList.Add("產生虛擬月租");
-                                    trace.traceAdd(nameof(vsMons), vsMons);
-                                    trace.traceAdd(nameof(monPri), monPri);
-                                    trace.traceAdd(nameof(monPriH), monPriH);
-                                    visMons = vsMons;
-                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(monPri));
-                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(monPriH));;
+                                    visMons = vmonRe.VisMons;
+                                    if (ProjType == 4)
+                                    {
+                                        //機車目前不分平假日 ,GetVisualMonth有分
+                                        OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(vmonRe.PRICE);
+                                    }
+                                    else
+                                    {
+                                        OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(vmonRe.PRICE));
+                                        OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
+                                    }
+                                    trace.traceAdd(nameof(vmonRe), vmonRe);
+                                    trace.FlowList.Add("新增虛擬月租");
                                 }
                             }
                         }
@@ -591,15 +680,76 @@ namespace WebAPI.Controllers
                     #endregion
                 }
 
-                #region 汽車計費資訊 
-                //note:汽車計費資訊PayDetail
+                #region 不執行Api呼叫 與短租查時數 - 春節不執行
+                if (false && flag && !isSpring)
+                {
+                    var inp = new IBIZ_NPR270Query()
+                    {
+                        IDNO = IDNO
+                    };
+                    var re270 = cr_com.NPR270Query(inp);
+                    if (re270 != null)
+                    {
+                        trace.traceAdd(nameof(re270), re270);
+                        flag = re270.flag;
+                        MotorPoint = re270.MotorPoint;
+                        CarPoint = re270.CarPoint;
+                    }
+                    trace.FlowList.Add("與短租查時數");
+
+                    //判斷輸入的點數有沒有超過總點數
+                    if (ProjType == 4)
+                    {
+                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
+                        {
+                            //flag = false;
+                            //errCode = "ERR205";
+                        }
+                        else
+                        {
+                            if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
+                            {
+
+                                flag = false;
+                                errCode = "ERR207";
+                            }
+                        }
+
+                        if (TotalRentMinutes <= 6 && Discount == 6)
+                        {
+
+                        }
+                        else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
+                        {
+                            flag = false;
+                            errCode = "ERR303";
+                        }
+                        trace.FlowList.Add("機車一般點數檢查");
+                    }
+                    else
+                    {
+                        if (Discount > 0 && Discount % 30 > 0)
+                        {
+                            flag = false;
+                            errCode = "ERR206";
+                        }
+                        else
+                        {
+                            if (Discount > CarPoint)
+                            {
+                                flag = false;
+                                errCode = "ERR207";
+                            }
+                        }
+                        trace.FlowList.Add("汽車一般點數檢查");
+                    }
+                }
+                #endregion
+
+                #region 汽車計費資訊
                 int car_payAllMins = 0; //全部計費租用分鐘
                 int car_payInMins = 0;//未超時計費分鐘
                 int car_payOutMins = 0;//超時分鐘-顯示用
-                double car_pay_in_wMins = 0;//未超時平日計費分鐘
-                double car_pay_in_hMins = 0;//未超時假日計費分鐘
-                double car_pay_out_wMins = 0;//超時平日計費分鐘
-                double car_pay_out_hMins = 0;//超時假日計費分鐘
                 int car_inPrice = 0;//未超時費用
                 int car_outPrice = 0;//超時費用
                 int car_n_price = OrderDataLists[0].PRICE;
@@ -609,51 +759,43 @@ namespace WebAPI.Controllers
                 {
                     if (ProjType != 4)
                     {
-                        var input = new IBIZ_CRNoMonth()
+                        if (hasFine)
                         {
-                            car_n_price = car_n_price,
-                            car_h_price = car_h_price,
-                            WeekdayPrice = OrderDataLists[0].WeekdayPrice,
-                            HoildayPrice = OrderDataLists[0].HoildayPrice,
-                            SD = SD,
-                            ED = ED,
-                            FED = FED,
-                            hasFine = hasFine,
-                            carBaseMins = carBaseMins,
-                            lstHoliday = lstHoliday
-                        };
-                        var car_re = cr_com.CRNoMonth(input);
-                        if (car_re != null)
-                        {
-                            trace.FlowList.Add("非月租汽車租金計算");
-                            trace.traceAdd(nameof(car_re), car_re);
+                            var ord = OrderDataLists[0];
+                            var xre = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
+                            if (xre != null)
+                                car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                            car_outPrice = billCommon.CarRentCompute(ED, FED, ord.WeekdayPrice, ord.HoildayPrice, 6, lstHoliday, true, 0);
+                            car_payAllMins += car_payOutMins;
 
-                            flag = car_re.flag;
-                            car_payAllMins = car_re.car_payAllMins;
-                            car_payInMins = car_re.car_payInMins;
-                            car_payOutMins = car_re.car_payOutMins;
-                            car_pay_in_wMins = car_re.car_pay_in_wMins;
-                            car_pay_in_hMins = car_re.car_pay_in_hMins;
-                            car_inPrice = car_re.car_inPrice;
-                            car_outPrice = car_re.car_outPrice;
+                            var car_re = billCommon.CarRentInCompute(SD, ED, car_n_price, car_h_price, 60, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
+                            if (car_re != null)
+                            {
+                                trace.traceAdd(nameof(car_re), car_re);
+                                car_payAllMins += car_re.RentInMins;
+                                car_payInMins = car_re.RentInMins;
+                                car_inPrice = car_re.RentInPay;
+                                nor_car_PayDisc = car_re.useDisc;
+                            }
                         }
-                    }
-                }
-                #endregion
+                        else
+                        {
+                            var car_re = billCommon.CarRentInCompute(SD, FED, car_n_price, car_h_price, 60, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
+                            if (car_re != null)
+                            {
+                                trace.traceAdd(nameof(car_re), car_re);
 
-                #region 補outputApi
-                if (flag)
-                {
-                    if (ProjType == 4)
-                    {
-                        var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, motoMaxMins, new List<Holiday>());
-                        if (xre != null)
-                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1));
+                                car_payAllMins += car_re.RentInMins;
+                                car_payInMins = car_re.RentInMins;
+                                car_inPrice = car_re.RentInPay;
+                                nor_car_PayDisc = car_re.useDisc;
+                            }
+                        }
+
+                        trace.FlowList.Add("汽車計費資訊(非月租)");
                     }
-                    else
-                        TotalRentMinutes = car_payAllMins;
-                    trace.FlowList.Add("補outputApi");
                 }
+
                 #endregion
 
                 #region mark-查資料庫最後資料 
@@ -681,67 +823,6 @@ namespace WebAPI.Controllers
                 //        }
                 //    }
                 //}
-                #endregion
-
-                #region 與短租查時數(關閉)
-                if (flag && false)
-                {
-                    var inp = new IBIZ_NPR270Query()
-                    {
-                        IDNO = IDNO
-                    };
-                    var re270 = cr_com.NPR270Query(inp);
-                    if (re270 != null)
-                    {
-                        flag = re270.flag;
-                        MotorPoint = re270.MotorPoint;
-                        CarPoint = re270.CarPoint;
-                    }
-
-                    //判斷輸入的點數有沒有超過總點數
-                    if (ProjType == 4)
-                    {
-                        if (Discount > 0 && Discount < OrderDataLists[0].BaseMinutes)   // 折抵點數 < 基本分鐘數
-                        {
-                            //flag = false;
-                            //errCode = "ERR205";
-                        }
-                        else
-                        {
-                            if (Discount > (MotorPoint + CarPoint)) // 折抵點數 > (機車點數 + 汽車點數)
-                            {
-                                flag = false;
-                                errCode = "ERR207";
-                            }
-                        }
-
-                        if (TotalRentMinutes <= 6 && Discount == 6)
-                        {
-
-                        }
-                        else if (Discount > (TotalRentMinutes + TotalFineRentMinutes))   // 折抵時數 > (總租車時數 + 總逾時時數)
-                        {
-                            flag = false;
-                            errCode = "ERR303";
-                        }
-                    }
-                    else
-                    {
-                        if (Discount > 0 && Discount % 30 > 0)
-                        {
-                            flag = false;
-                            errCode = "ERR206";
-                        }
-                        else
-                        {
-                            if (Discount > CarPoint)
-                            {
-                                flag = false;
-                                errCode = "ERR207";
-                            }
-                        }
-                    }
-                }
                 #endregion
 
                 #region 建空模及塞入要輸出的值
@@ -796,22 +877,42 @@ namespace WebAPI.Controllers
                     TransferPrice = OrderDataLists[0].init_TransDiscount;
                     trace.FlowList.Add("建空模");
                 }
+                if (false && flag && OrderDataLists[0].ProjType != 4) //20201224 add by adam 問題未確定前先關掉車麻吉
+                {
+                    var input = new IBIZ_CarMagi()
+                    {
+                        LogID = LogID,
+                        CarNo = OrderDataLists[0].CarNo,
+                        SD = SD,
+                        ED = FED.AddDays(1),
+                        OrderNo = tmpOrder
+                    };
+                    var magi_Re = cr_com.CarMagi(input);
+                    if (magi_Re != null)
+                    {
+                        trace.traceAdd(nameof(magi_Re), magi_Re);
+                        flag = magi_Re.flag;
+                        outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
+                    }
+                    trace.FlowList.Add("車麻吉");
+                }
+
                 #endregion
 
                 #region 月租
                 //note: 月租GetPayDetail
-                if (flag && apiInput.RePayMode == 1)
+                if (flag)
                 {
                     var item = OrderDataLists[0];
                     item = cr_com.dbValeFix(item);
-                    var motoDayMaxMins = 200;
+                    var motoDayMaxMinns = 200;
                     var input = new IBIZ_MonthRent()
                     {
                         IDNO = IDNO,
                         LogID = LogID,
                         intOrderNO = tmpOrder,
                         ProjType = item.ProjType,
-                        MotoDayMaxMins = motoDayMaxMins,
+                        MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
                         hasFine = hasFine,
                         SD = SD,
@@ -827,11 +928,10 @@ namespace WebAPI.Controllers
 
                     if (visMons != null && visMons.Count() > 0)
                         input.VisMons = visMons;
-                    trace.traceAdd("monInput", input);
+
                     var mon_re = cr_com.MonthRentNoSave(input);
                     if (mon_re != null)
                     {
-                        trace.FlowList.Add("月租計算");
                         trace.traceAdd(nameof(mon_re), mon_re);
                         flag = mon_re.flag;
                         UseMonthMode = mon_re.UseMonthMode;
@@ -847,7 +947,9 @@ namespace WebAPI.Controllers
                             else
                                 CarRentPrice += mon_re.CarRental;//汽車用
                         }
-                    }              
+                    }
+
+                    trace.FlowList.Add("月租");
                 }
                 #endregion
 
@@ -866,11 +968,77 @@ namespace WebAPI.Controllers
                         else
                         {
                             var item = OrderDataLists[0];
-                            var dayMaxMinns = Convert.ToDouble(item.MaxPrice) / Convert.ToDouble(item.MinuteOfPrice);
 
-                            carInfo = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, item.BaseMinutes, dayMaxMinns, null, null, Discount);
+                            //春前
+                            if (ED <= sprSD)
+                            {
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, 300);
+                                if (xre != null)
+                                {
+                                    carInfo = xre;
+                                    outputApi.Rent.CarRental = xre.RentInPay;
+                                    Discount = xre.useDisc;
+                                }
+                            }
+                            //前跨春
+                            else if (SD < sprSD && ED > sprSD)
+                            {
+                                carInfo = new CarRentInfo();
+                                double bef_PriW = 0;
+                                double bef_PriH = 0;
+                                var bef_re = cr_sp.sp_GetEstimate("P686", item.CarTypeGroupCode, LogID, ref errMsg);
+                                if (bef_re != null)
+                                {
+                                    bef_PriW = bef_re.PRICE;
+                                    bef_PriH = bef_re.PRICE_H;
+                                }
+                                else
+                                    throw new Exception("moto平日無對應價格");
+
+                                var bef = billCommon.MotoRentMonthComp(SD, sprSD, bef_PriW, bef_PriH, 6, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, 300);
+                                if (bef != null)
+                                {
+                                    outputApi.Rent.CarRental += bef.RentInPay;
+                                    carInfo.useDisc += bef.useDisc;
+                                    carInfo.RentInPay += bef.RentInPay;
+                                    carInfo.useMonthDisc += bef.useMonthDisc;
+                                    carInfo.RentInMins += bef.RentInMins;
+                                    carInfo.AfterDiscRentInMins += bef.AfterDiscRentInMins;
+                                    carInfo.useMonthDiscW += bef.useMonthDiscW;
+                                    carInfo.useMonthDiscH += bef.useMonthDiscH;
+                                    Discount -= bef.useDisc;
+                                    Discount = Discount > 0 ? Discount : 0;
+                                }
+                                var af = billCommon.MotoRentMonthComp(sprSD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                if (af != null)
+                                {
+                                    outputApi.Rent.CarRental += af.RentInPay;
+                                    carInfo.useDisc += af.useDisc;
+                                    carInfo.RentInPay += af.RentInPay;
+                                    carInfo.useMonthDisc += af.useMonthDisc;
+                                    carInfo.RentInMins += af.RentInMins;
+                                    carInfo.AfterDiscRentInMins += af.AfterDiscRentInMins;
+                                    carInfo.useMonthDiscW += af.useMonthDiscW;
+                                    carInfo.useMonthDiscH += af.useMonthDiscH;
+                                    Discount -= af.useDisc;
+                                    Discount = Discount > 0 ? Discount : 0;
+                                }
+                            }
+                            //春後
+                            else if (SD >= sprSD)
+                            {
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                if (xre != null)
+                                {
+                                    carInfo = xre;
+                                    outputApi.Rent.CarRental = xre.RentInPay;
+                                    carInfo.useDisc = xre.useDisc;
+                                }
+                            }
+
                             if (carInfo != null)
                                 outputApi.Rent.CarRental = carInfo.RentInPay;
+
                             trace.FlowList.Add("機車非月租租金計算");
                         }
 
@@ -878,33 +1046,6 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
-                        #region 非月租折扣計算
-                        var input = new IBIZ_CRNoMonthDisc()
-                        {
-                            UseMonthMode = UseMonthMode,
-                            hasFine = hasFine,
-                            SD = SD,
-                            ED = ED,
-                            FED = FED,
-                            CarBaseMins = carBaseMins,
-                            lstHoliday = lstHoliday,
-                            car_n_price = car_n_price,
-                            car_h_price = car_h_price,
-                            Discount = apiInput.Discount
-                        };
-                        var disc_re = cr_com.CRNoMonthDisc(input);
-                        if (disc_re != null)
-                        {
-                            trace.FlowList.Add("汽車非月租折扣計算");
-                            trace.traceAdd(nameof(disc_re), disc_re);
-                            nor_car_PayDisc = disc_re.nor_car_PayDisc;
-                            nor_car_wDisc = disc_re.nor_car_wDisc;
-                            nor_car_hDisc = disc_re.nor_car_hDisc;
-                            nor_car_PayDiscPrice = disc_re.nor_car_PayDiscPrice;
-                            Discount = disc_re.UseDisc;
-                        }
-                        #endregion
-
                         if (UseMonthMode)
                         {
                             outputApi.Rent.CarRental = CarRentPrice;
@@ -926,11 +1067,12 @@ namespace WebAPI.Controllers
 
                             if (UseMonthMode)
                             {
+
                             }
                             else
                             {
                                 //非月租折扣
-                                CarRentPrice -= nor_car_PayDiscPrice;
+                                //CarRentPrice -= nor_car_PayDiscPrice;
                                 CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
                                 trace.FlowList.Add("汽車非月租折扣扣除");
                             }
@@ -947,6 +1089,7 @@ namespace WebAPI.Controllers
                                 outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
                             }
                         }
+                        trace.FlowList.Add("安心服務");
 
                         outputApi.Rent.CarRental = CarRentPrice;
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
@@ -966,6 +1109,7 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("里程費計算");
                     }
 
+                    outputApi.Rent.OvertimeRental = car_outPrice;
                     outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
                     outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes > 0 ? TotalRentMinutes : 0).ToString();
                     outputApi.Rent.TransferPrice = (OrderDataLists[0].init_TransDiscount > 0) ? OrderDataLists[0].init_TransDiscount : 0;
@@ -973,17 +1117,33 @@ namespace WebAPI.Controllers
                     outputApi.Rent.ETAGRental = etagPrice;
 
                     var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
+                    xTotalRental -= UseOrderPrice;//預繳定金扣抵
+                    outputApi.UseOrderPrice = UseOrderPrice;
+                    outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                     
+                    if (xTotalRental < 0)
+                    {
+                        outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                        int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
+                        new CarRentRepo(connetStr).UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                    }
+
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
+                    trace.FlowList.Add("總價計算");
 
                     #region 修正輸出欄位
                     //note: 修正輸出欄位PayDetail
+                    outputApi.UseOrderPrice = UseOrderPrice;
                     if (ProjType == 4)
                     {
                         outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                         outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
                         outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
-                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+
+                        //2020-12-29 所有點數改成皆可折抵
+                        //outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
+                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
+
                         outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
 
                         var cDisc = apiInput.Discount;
@@ -1001,6 +1161,7 @@ namespace WebAPI.Controllers
                                 gift_point = useCdisc;
                             }
                         }
+
                     }
                     else
                     {
@@ -1022,7 +1183,7 @@ namespace WebAPI.Controllers
                         {
                             outputApi.Rent.UseNorTimeInterval = Discount.ToString();
                             outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
-                            outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_pay_in_wMins + car_pay_in_hMins).ToString();//可折抵租用時數
+                            outputApi.Rent.ActualRedeemableTimeInterval = Convert.ToInt32(car_payInMins).ToString();//可折抵租用時數
                             outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount).ToString();//未逾時折抵後的租用時數
                             gift_point = nor_car_PayDisc;
                         }
@@ -1030,7 +1191,7 @@ namespace WebAPI.Controllers
                         gift_motor_point = 0;
                         outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
                     }
-
+                    trace.FlowList.Add("修正輸出欄位");
                     #endregion
 
                     #region trace

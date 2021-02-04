@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModifyV2);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModifyV3);
                 SPOutput_BE_GetOrderInfoBeforeModify spOut = new SPOutput_BE_GetOrderInfoBeforeModify();
                 SPInput_BE_GetOrderInfoBeforeModify spInput = new SPInput_BE_GetOrderInfoBeforeModify()
                 {
@@ -145,7 +145,9 @@ namespace WebAPI.Controllers
                     {
                         if (OrderDataLists.Count > 0)
                         {
+                           
                             apiOutput.OrderData = OrderDataLists[0];
+                            
                         }
                     }
                 }
@@ -263,6 +265,10 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            if(apiOutput.OrderData.PROJTYPE<4 && hours == 0)
+                            {
+                                needPointer = 60;
+                            }
                             apiOutput.Bonus.CanUseTotalMotorPoint = 0;
                             //needPointer -= (needPointer % 30);
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);

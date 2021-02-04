@@ -227,5 +227,14 @@
         /// 其他費用
         /// </summary>
         public int OtherFee { get; set; }
+
+        /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 剩餘訂金
+        /// </summary>
+        public int LastOrderPrice { get; set; }
     }
 }

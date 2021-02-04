@@ -17,5 +17,9 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public int BaseMinutes { set; get; }
         public string MerchantTradeNo { set; get; }
+        /// <summary>
+        /// 已退款金額
+        /// </summary>
+        public int RefundAmount { set; get; }
     }
 }

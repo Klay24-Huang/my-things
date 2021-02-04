@@ -112,7 +112,15 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
-
+        public int OrderPrice { get; set; }
+        /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 剩餘訂金
+        /// </summary>
+        public int LastOrderPrice { get; set; }
         #region 機車費用，當ProjType=4時才有值
         /// <summary>
         /// 基本分鐘數

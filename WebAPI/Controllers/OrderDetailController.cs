@@ -350,7 +350,8 @@ namespace WebAPI.Controllers
                             EquipBill = orderFinishDataLists[0].DestroyFee,
                             ParkingBill2 = orderFinishDataLists[0].ParkingFee2,
                             TowingBill = orderFinishDataLists[0].DraggingFee,
-                            OtherBill = orderFinishDataLists[0].OtherFee
+                            OtherBill = orderFinishDataLists[0].OtherFee,
+                            UseOrderPrice = orderFinishDataLists[0].UseOrderPrice
                         };
                     }
                 }

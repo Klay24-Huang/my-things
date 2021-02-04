@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Output.PartOfParam
 {
@@ -11,12 +8,23 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class GetNotification
     {
         /// <summary>
-        /// 0: 一般訊息, 1: 取車, 2:還車, 3取消
+        /// 推播時間
         /// </summary>
-        public Int16 ActionType { set; get; }
-        public string SendTime { set; get; }
-        public string Title { set; get; }
-        public string Message { set; get; }
-        public string url { set; get; }
+        public DateTime PushTime { get; set; }
+
+        /// <summary>
+        /// 主旨
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// 內文
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
+        /// 連結URL
+        /// </summary>
+        public string url { get; set; }
     }
 }

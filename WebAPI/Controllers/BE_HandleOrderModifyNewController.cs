@@ -135,6 +135,19 @@ namespace WebAPI.Controllers
                 {
 
                     IDNO = obj.IDNO;
+                    if(obj.ArrearAMT==0 && obj.Paid > 0)
+                    {
+                        obj.Paid -= obj.RefundAmount;
+                    }else if (obj.ArrearAMT > 0 && obj.Paid == 0)
+                    {
+                        obj.ArrearAMT -= obj.RefundAmount;
+                    }else if(obj.ArrearAMT > 0 && obj.Paid > 0)
+                    {
+                        obj.Paid = (obj.Paid +obj.ArrearAMT)- obj.RefundAmount;
+                        
+                    }
+                 
+                   
                     PointerComm pointer = new PointerComm();
                     int TotalLastPoint = 0, TotalLastPointCar = 0, TotalLastPointMotor = 0, CanUseTotalCarPoint = 0, CanUseTotalMotorPoint = 0;
                     obj.FT = ""; //忽略逾時
@@ -155,17 +168,17 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS != "Y")
+                            if (INVSTATUS == "N" && STATUS=="4")
                             {
                                 flag = false;
                                 errCode = "ERR760";
                             }
-                            else if (Convert.ToInt32(STATUS) < 3)
-                            {
-                                //20210113先by pass
-                                flag = false;
-                                errCode = "ERR761";
-                            }
+                            //else if (Convert.ToInt32(STATUS) >3)
+                            //{
+                            //    //20210113先by pass
+                            //    flag = false;
+                            //    errCode = "ERR760"; //"ERR761";
+                            //}
                         }
                     }
                     if (flag)
@@ -192,9 +205,9 @@ namespace WebAPI.Controllers
                                 }
                                 else
                                 {
-                                    if (obj.MerchantTradeNo != "")
+                                    if (obj.TaishinTradeNo != "")
                                     {
-                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.MerchantTradeNo.Substring(0,24), ref WSAuthQueryOutput, ref errCode, ref errMsg);
+                                        flag = Credit.DoCreditCardQuery(obj.IDNO, obj.TaishinTradeNo, ref WSAuthQueryOutput, ref errCode, ref errMsg);
                                     }
                                     else
                                     {
@@ -214,13 +227,13 @@ namespace WebAPI.Controllers
                                         }
                                         else if (obj.ArrearCardToken != "")
                                         {
-                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.TaishinTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
+                                            flag = Credit.DoCreditRefund(tmpOrder, obj.IDNO, apiInput.DiffPrice, "租金修改", obj.ArrearCardToken, obj.MerchantTradeNo, ref WSRefundOutput, ref errCode, ref errMsg);
                                         }
                                         else
                                         {
 
                                         }
-                                       
+
                                     }
                                 }
                                 //int hasBind = 0;

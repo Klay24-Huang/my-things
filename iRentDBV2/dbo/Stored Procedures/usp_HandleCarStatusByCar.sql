@@ -118,6 +118,12 @@ SET @CID= '';
 			BEGIN
 				UPDATE TB_CarInfo SET CID=@deviceCID WHERE CarNo=@CarNo;
 			END
+			--20210128 CID有多筆時，將未對應的車號CID清空
+			SELECT @hasData=COUNT(1) FROM TB_CarInfo WITH(NOLOCK) WHERE CID=@deviceCID;
+			IF @hasData>1
+			BEGIN
+				UPDATE TB_CarInfo SET CID='' WHERE CID=@deviceCID AND CarNo<>@CarNo;
+			END
 			SELECT @hasData=COUNT(1) FROM TB_CarStatus  WITH(NOLOCK) WHERE CarNo=@CarNo;
 			IF @hasData=0
 			BEGIN
@@ -135,6 +141,12 @@ SET @CID= '';
 			END
 			ELSE
 			BEGIN
+				--20210128 CID多筆時，將未對應的車號刪除
+				SELECT @hasData=COUNT(1) FROM TB_CarStatus WITH(NOLOCK) WHERE CID=@deviceCID;
+				IF @hasData>1
+				BEGIN
+					DELETE FROM TB_CarStatus WHERE CID=@deviceCID AND CarNo<>@CarNo;
+				END
 				UPDATE TB_CarStatus
 				SET  [CID]=@deviceCID,
 						[ACCStatus]=@deviceACCStatus,
@@ -156,8 +168,8 @@ SET @CID= '';
 						[extDeviceStatus1]=@extDeviceStatus1,
 						[extDeviceStatus2]=@extDeviceStatus2,
 						[extDeviceData2]=@extDeviceData2,
-						[extDeviceData3]=CASE WHEN @extDeviceData3 IS NOT NULL THEN @extDeviceData3 ELSE extDeviceData3 END,
-						[extDeviceData4]=CASE WHEN @extDeviceData4 IS NOT NULL THEN @extDeviceData4 ELSE extDeviceData4 END,
+						[extDeviceData3]=CASE WHEN @deviceOBDstatus = 1 THEN @extDeviceData3 ELSE extDeviceData3 END,
+						[extDeviceData4]=CASE WHEN @deviceOBDstatus = 1 THEN @extDeviceData4 ELSE extDeviceData4 END,
 						[deviceName]=@deviceName,
 						UPDTime=@NowTime
 				WHERE CarNo=@CarNo AND @deviceGPSTime>[GPSTime]

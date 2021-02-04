@@ -59,7 +59,7 @@ function doSetting() {
                     type: "error",
                     position: "center-left",
                     customClass: "aaaa"
-                }).then(()=>{
+                }).then(function(value){
                     window.location.reload();
                 });
                 console.log("false");
@@ -112,7 +112,7 @@ function getData() {
                 $.busyLoadFull("hide", { animate: "fade" });
                 var tmpHTML = "";
                 if (dataLen > 0) {
-                    tmpHTML += "<tr align=\"center\"><td colspan=\"3\"><input type=\"button\" name=\"btnSetting\" class=\"btn-danger\" value=\"設定\" onclick=\"doSetting();\" />";
+                    tmpHTML += "<tr align=\"center\"><td colspan=\"3\"><input type=\"button\" id=\"btnAll\" name=\"btnAll\" class=\"btn-outline-info\" value=\"全選\"  /><input type=\"button\" id=\"btnClear\" name=\"btnClear\" class=\"btn-outline-danger\" value=\"取消全選\"  /><input type=\"button\" name=\"btnSetting\" class=\"btn-danger\" value=\"設定\" onclick=\"doSetting();\" />";
                     tmpHTML += "<input type=\"button\" name=\"btnDownload\" class=\"btn-info\" value=\"下載\"  onclick=\"doDownload();\"/></td></tr>";
                 }
                 for (var i = 0; i < dataLen; i++) {
@@ -138,6 +138,16 @@ function getData() {
                 
                // console.log("tmpHTML:" + tmpHTML);
                 $("#data").html(tmpHTML);
+                $("#btnClear").on("click", function () {
+                    $("input[name='StationID[]']").each(function () {
+                        $(this).prop("checked", "");
+                    });
+                });
+                $("#btnAll").on("click", function () {
+                    $("input[name='StationID[]']").each(function () {
+                        $(this).prop("checked", "checked");
+                    });
+                });
            
             } else {
                 $.busyLoadFull("hide", { animate: "fade" });
@@ -148,7 +158,7 @@ function getData() {
                     type: "error",
                     position: "center-left",
                     customClass: "aaaa"
-                }).then(()=>{
+                }).then(function (value){
                     window.location.reload();
                 });
                 console.log("false");

@@ -229,7 +229,9 @@ namespace WebAPI.Models.BillFunc
             WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
             MachiComm mochi = new MachiComm();
             int ParkingPrice = 0;
-            re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            //re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
+
             if (re.flag)
             {
                re.ParkingFee = ParkingPrice;
@@ -246,11 +248,14 @@ namespace WebAPI.Models.BillFunc
         public OBIZ_MonthRent MonthRentSave(IBIZ_MonthRent sour)
         {
             var re = new OBIZ_MonthRent();
+            var cr_com = new CarRentCommon();
             var monthlyRentRepository = new MonthlyRentRepository(connetStr);
             var monthlyRentDatas = new List<MonthlyRentData>();
             var billCommon = new BillCommon();          
             var errCode = re.errCode;
             re.flag = true;
+
+            bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
 
             //1.0 先還原這個單號使用的
             re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
@@ -263,7 +268,7 @@ namespace WebAPI.Models.BillFunc
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
-                monthlyRentDatas.AddRange(sour.VisMons);
+                monthlyRentDatas.Insert(0,sour.VisMons[0]);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
@@ -278,19 +283,38 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (sour.ProjType == 4)
                     {
-                        var motoMonth = objUti.Clone(monthlyRentDatas);
-                        var dayMaxMinns = sour.MotoDayMaxMins;
+                        var motoMonth = objUti.Clone(monthlyRentDatas);         
                         int motoDisc = sour.Discount;
-                        re.carInfo = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, dayMaxMinns, sour.lstHoliday, motoMonth, motoDisc);
 
-                        if (re.carInfo != null)
+                        DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+                        DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+
+                        //春前
+                        if (sour.ED <= sprSD)
                         {
-                            re.CarRental += re.carInfo.RentInPay;
-                            if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
-                                motoMonth = re.carInfo.mFinal;
-                            re.useDisc = re.carInfo.useDisc;
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                            if(xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
                         }
-
+                        //春後
+                        else 
+                        {
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            if (xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
+                        }
 
                         if (motoMonth != null && motoMonth.Count()>0 && //虛擬月租不存
                             sour.VisMons != null && sour.VisMons.Count() > 0) 
@@ -366,16 +390,19 @@ namespace WebAPI.Models.BillFunc
         {
             var repo = new CarRentRepo(connetStr);
             var re = new OBIZ_MonthRent();
+            var cr_com = new CarRentCommon();
             var monthlyRentRepository = new MonthlyRentRepository(connetStr);
             var monthlyRentDatas = new List<MonthlyRentData>();
             var monthlyHistory = new List<MonthlyRentHis>();
             var billCommon = new BillCommon();
             var errCode = re.errCode;
+            re.flag = true;
+            bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
             //1.0 先還原這個單號使用的
             //re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
             //re.errCode = errCode;      
-            re.flag = true;
 
+            //跨春節不計算一般月租
             int RateType = (sour.ProjType == 4) ? 1 : 0;
             if (sour.hasFine)
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
@@ -402,7 +429,7 @@ namespace WebAPI.Models.BillFunc
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
-                monthlyRentDatas.AddRange(sour.VisMons);
+                monthlyRentDatas.Insert(0, sour.VisMons[0]);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
@@ -417,18 +444,42 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (sour.ProjType == 4)
                     {
-                        var motoMonth = objUti.Clone(monthlyRentDatas);
-                        var dayMaxMinns = sour.MotoDayMaxMins;
+                        var motoMonth = objUti.Clone(monthlyRentDatas);                      
                         int motoDisc = sour.Discount;
-                        re.carInfo = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, dayMaxMinns, sour.lstHoliday, motoMonth, motoDisc);
 
-                        if (re.carInfo != null)
+                        DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+                        DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+
+                        //春前
+                        if (sour.ED <= sprSD)
                         {
-                            re.CarRental += re.carInfo.RentInPay;
-                            if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
-                                motoMonth = re.carInfo.mFinal;
-                            re.useDisc = re.carInfo.useDisc;
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                            if (xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
                         }
+                        //春後
+                        else 
+                        {
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            if (xre != null)
+                            {
+                                re.carInfo = xre;
+                                re.CarRental = xre.RentInPay;
+                                if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                    motoMonth = xre.mFinal;
+                                re.useDisc = xre.useDisc;
+                            }
+                        }
+
+                        if (motoMonth != null && motoMonth.Count() > 0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0)
+                            motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
                         if (motoMonth.Count > 0)
@@ -470,6 +521,21 @@ namespace WebAPI.Models.BillFunc
                                 re.useDisc = re.carInfo.useDisc;
                             }
                         }
+
+                        #region 不存檔
+                        //if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
+                        //    sour.VisMons != null && sour.VisMons.Count() > 0)
+                        //    UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
+
+                        //if (UseMonthlyRent.Count > 0)
+                        //{
+                        //    int UseLen = UseMonthlyRent.Count;
+                        //    for (int i = 0; i < UseLen; i++)
+                        //    {
+                        //        re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
+                        //    }
+                        //}
+                        #endregion
                     }
                 }
             }
@@ -619,9 +685,31 @@ namespace WebAPI.Models.BillFunc
             }
             else if (projType == 4)
             {
-
+                re.ProDisPRICE = sour.ProDisPRICE;
+                re.ProDisPRICE_H = sour.ProDisPRICE_H;
+                var visMon = new MonthlyRentData()
+                {
+                    Mode = 1,
+                    MonthlyRentId = 999002,
+                    StartDate = Convert.ToDateTime(SiteUV.strSpringSd),
+                    EndDate = Convert.ToDateTime(SiteUV.strSpringEd),
+                    WorkDayHours = 0,
+                    HolidayHours = 0,
+                    MotoTotalHours = 0,
+                    WorkDayRateForCar = 0,
+                    HoildayRateForCar = 0,
+                    WorkDayRateForMoto = Convert.ToSingle(sour.ProDisPRICE),
+                    HoildayRateForMoto = Convert.ToSingle(sour.ProDisPRICE_H)
+                };
+                re.VisMons.Add(visMon);
+                var xre = spRepo.sp_GetEstimate("P686", carType, 999999, ref errMsg);
+                if (xre != null)
+                {
+                    re.PRICE = xre.PRICE;
+                    re.PRICE_H = xre.PRICE_H;
+                }
             }
-            
+
             return re;
         }
 
@@ -712,7 +800,13 @@ namespace WebAPI.Models.BillFunc
                         }
                         else if (sour.ProjType == 3)
                         {
-                            //UNDONE: 補上路邊
+                            var xre = carRepo.GetFirstProDisc("R139", sour.CarType);
+                            if (xre != null)
+                            {
+                                trace.traceAdd(nameof(xre), xre);
+                                xsour.ProDisPRICE = xre.PRICE / 10;
+                                xsour.ProDisPRICE_H = xre.PRICE_H / 10;
+                            }
                         }
                     }
                 }
@@ -854,14 +948,17 @@ namespace WebAPI.Models.BillFunc
 
         public bool isSpring(DateTime SD, DateTime ED)
         {
-            DateTime vsd = Convert.ToDateTime("2021-02-09 00:00:00");
-            DateTime ved = Convert.ToDateTime("2021-02-17 00:00:00");
+            if (SD == null || ED == null || SD > ED)
+                throw new Exception("isSpring:SD,ED錯誤");
+            DateTime vsd = Convert.ToDateTime(SiteUV.strSpringSd);
+            DateTime ved = Convert.ToDateTime(SiteUV.strSpringEd);
             if (ED > vsd && ED <= ved)
                 return true;
             else if (SD >= vsd && SD < ved)
                 return true;
             return false;
         }
+
     }
 
     public static class SiteUV
@@ -869,7 +966,7 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202101271200";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202102021730";//hack: 修改程式請修正此版號
 
         public static readonly string strSpringSd = "2021-02-09 00:00:00";//春節起
         public static readonly string strSpringEd = "2021-02-17 00:00:00";//春節迄
@@ -879,8 +976,11 @@ namespace WebAPI.Models.BillFunc
     //note: repo
     public class CarRentRepo : BaseRepository
     {
-        private string _connectionString;
-
+        private string defConStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public CarRentRepo()
+        {
+            this.ConnectionString = defConStr;
+        }
         public CarRentRepo(string ConnStr)
         {
             this.ConnectionString = ConnStr;
@@ -894,7 +994,6 @@ namespace WebAPI.Models.BillFunc
             mHis = GetObjList<MonthlyRentHis>(ref flag, ref lstError, SQL, null, "");
             return mHis;
         }
-
         public List<OrderQueryFullData> GetOrders(string orderNos)
         {
             bool flag = false;
@@ -908,7 +1007,6 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-
         public  ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
         {
             bool flag = false;
@@ -933,7 +1031,6 @@ namespace WebAPI.Models.BillFunc
                 re = xre.FirstOrDefault();
             return re;
         }
-
         /// <summary>
         /// 取得里程費
         /// </summary>
@@ -952,7 +1049,6 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-
         /// <summary>
         /// 取得里程資全部資訊
         /// </summary>
@@ -976,7 +1072,26 @@ namespace WebAPI.Models.BillFunc
             re = GetObjList<MilageSettingTBVM>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
-
+        /// <summary>
+        /// 更新返還訂金
+        /// </summary>
+        /// <param name="orderNo">訂單編號</param>
+        /// <param name="RETURNAMT">返還訂金</param>
+        /// <returns></returns>
+        public bool UpdNYPayList(int orderNo, int RETURNAMT)
+        {
+            if (orderNo <= 0)
+                throw new Exception("orderNo必填");
+            bool flag = true;
+            string SQL = @"
+                update TB_NYPayList
+                set RETURNAMT = {0},
+                UPDTime = DATEADD(hour,8,getdate())
+                where order_number = {1}";
+            SQL = String.Format(SQL, orderNo.ToString(), RETURNAMT.ToString());
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
         public bool UpdOrderMainByOrderNo(int orderNo, double init_price, double InsPrice)
         {
             if (orderNo == 0)
@@ -993,7 +1108,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
         {
             bool flag = true;
@@ -1003,12 +1117,10 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddErrLog(string FunName, string Msg, string ErrorCode = "")
         {
             return AddErrLog(FunName, ErrorCode, 0, 999, Msg);
         }
-
         public bool AddErrLog(string FunName, string ErrorCode, int ErrType, int SQLErrorCode, string SQLErrorDesc)
         {
             if (string.IsNullOrWhiteSpace(FunName))
@@ -1027,12 +1139,10 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddApiLog(int APIID, string Msg, string OrderNo = "")
         {
             return AddApiLog(APIID, "99999", Msg, OrderNo);
         }
-
         public bool AddApiLog(int APIID, string CLIENTIP, string APIInput, string ORDNO)
         {
             if (string.IsNullOrWhiteSpace(CLIENTIP))
@@ -1051,7 +1161,22 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
+        public bool AddTraceLog(int apiId ,string funName, eumTraceType traceType, TraceCom sour)
+        {
+            if(sour.objs == null || sour.objs.Count == 0)
+               sour.objs = sour.getObjs();
+            var item = new TraceLogVM()
+            {
+                ApiId = apiId,
+                ApiMsg = JsonConvert.SerializeObject(sour),
+                ApiNm = funName,
+                CodeVersion = sour.codeVersion,
+                FlowStep = sour.FlowStep(),
+                OrderNo = sour.OrderNo,
+                TraceType = traceType
+            };
+            return AddTraceLog(item);
+        }
         public bool AddTraceLog(TraceLogVM sour)
         {
             if (sour != null)
@@ -1069,7 +1194,6 @@ namespace WebAPI.Models.BillFunc
             }
             return false;
         }
-
         private bool xAddTraceLog(TraceLogVM sour)
         {
             bool flag = true;
@@ -1082,7 +1206,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
         public bool AddGoldFlowLog(GoldFlowLogVM sour)
         {
             if (sour != null)
@@ -1103,7 +1226,6 @@ namespace WebAPI.Models.BillFunc
             }
             return false;
         }
-
         private bool xAddGoldFlowLog(GoldFlowLogVM sour)
         {
             bool flag = true;
@@ -1116,7 +1238,6 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-
     }
 
     public class CarRentSp
@@ -1498,6 +1619,7 @@ namespace WebAPI.Models.BillFunc
         public string CarNo { set; get; }
         public DateTime SD { get; set; } 
         public DateTime ED { get; set; }
+        public Int64 OrderNo { get; set; }
     }
     public class OBIZ_CarMagi: BIZ_CRBase
     {

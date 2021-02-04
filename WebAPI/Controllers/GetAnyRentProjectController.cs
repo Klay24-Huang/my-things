@@ -7,6 +7,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -135,7 +136,6 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-
                 List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
                 lstData = _repository.GetProjectOfAnyRent(IDNO,apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
@@ -218,6 +218,23 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+
+                //for春節專案使用，將原專案每小時金額改為春節價格，並將春節專案移除
+                var Temp = lstTmpData.Where(x => x.ProjID == "R139").FirstOrDefault();
+                if (Temp != null)
+                {
+                    foreach (var tmp in lstTmpData)
+                    {
+                        if (tmp.ProjID != "R139")
+                        {
+                            tmp.WorkdayPerHour = Temp.WorkdayPerHour;
+                            tmp.HolidayPerHour = Temp.HolidayPerHour;
+                        }
+                    }
+
+                    lstTmpData.Remove(Temp);
+                }
+
                 outputApi = new OAPI_GetAnyRentProject()
                 {
                     GetAnyRentProjectObj = lstTmpData
