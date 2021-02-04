@@ -407,7 +407,7 @@
                                 安心服務
                             </div>
                             <div class="col-md-2">
-                                <span id="spn_Insurance_price">@((OrderStatus > 1) ? obj.Data.InsurancePurePrice.ToString() : "")</span>
+                                <span id="spn_Insurance_price">@((OrderStatus > 1) ? obj.Data.Insurance_price.ToString() : "")</span> <!--2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的-->
                             </div>
                         </div>
                     </div>

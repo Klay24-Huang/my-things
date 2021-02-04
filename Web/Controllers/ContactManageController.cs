@@ -503,7 +503,7 @@ namespace Web.Controllers
                         content.CreateCell(19).SetCellValue((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString());                                     //還車里程
                         content.CreateCell(20).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString());    //租金
                         content.CreateCell(21).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].InsurancePerHours.ToString());    //安心服務費率
-                        content.CreateCell(22).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].InsurancePurePrice.ToString());    //安心服務金額
+                        content.CreateCell(22).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].Insurance_price.ToString());    //安心服務金額 //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
                         content.CreateCell(23).SetCellValue((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString());                                   //罰金
                         content.CreateCell(24).SetCellValue((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString());                                     //油資
                         content.CreateCell(25).SetCellValue((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString());    //ETag費用
