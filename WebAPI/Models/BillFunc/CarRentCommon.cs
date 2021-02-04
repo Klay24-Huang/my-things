@@ -304,6 +304,19 @@ namespace WebAPI.Models.BillFunc
                         else if (sour.SD < sprSD && sour.ED > sprSD)
                         {
                             re.carInfo = new CarRentInfo();
+
+                            var totalMins = sour.ED.Subtract(sour.SD).TotalMinutes;
+                            var bfMins = sprSD.Subtract(sour.SD).TotalMinutes;
+                            var afMins = sour.ED.Subtract(sprSD).TotalMinutes;                            
+                            if(bfMins < 6)
+                            {
+                                var fillMins = 6 - bfMins;
+                                if (afMins >= fillMins)
+                                    sprSD = sprSD.AddMinutes(fillMins);
+                                else
+                                    sprSD = sprSD.AddMinutes(afMins);
+                            }
+
                             var bef = billCommon.MotoRentMonthComp(sour.SD, sprSD, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);                            
                             if(bef != null)
                             {
@@ -320,7 +333,7 @@ namespace WebAPI.Models.BillFunc
                                 if (bef.mFinal != null && bef.mFinal.Count() > 0)
                                     motoMonth.AddRange(bef.mFinal);
                             }
-                            var af = billCommon.MotoRentMonthComp(sprSD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            var af = billCommon.MotoRentMonthComp(sprSD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, 0, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901,0);
                             if(af != null)
                             {
                                 re.CarRental += af.RentInPay;
@@ -502,6 +515,19 @@ namespace WebAPI.Models.BillFunc
                         else if (sour.SD < sprSD && sour.ED > sprSD)
                         {
                             re.carInfo = new CarRentInfo();
+
+                            var totalMins = sour.ED.Subtract(sour.SD).TotalMinutes;
+                            var bfMins = sprSD.Subtract(sour.SD).TotalMinutes;
+                            var afMins = sour.ED.Subtract(sprSD).TotalMinutes;
+                            if (bfMins < 6)
+                            {
+                                var fillMins = 6 - bfMins;
+                                if (afMins >= fillMins)
+                                    sprSD = sprSD.AddMinutes(fillMins);
+                                else
+                                    sprSD = sprSD.AddMinutes(afMins);
+                            }
+
                             var bef = billCommon.MotoRentMonthComp(sour.SD, sprSD, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
                             if (bef != null)
                             {
@@ -518,7 +544,7 @@ namespace WebAPI.Models.BillFunc
                                 if (bef.mFinal != null && bef.mFinal.Count() > 0)
                                     motoMonth.AddRange(bef.mFinal);
                             }
-                            var af = billCommon.MotoRentMonthComp(sprSD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            var af = billCommon.MotoRentMonthComp(sprSD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, 0, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901, 0);
                             if (af != null)
                             {
                                 re.CarRental += af.RentInPay;

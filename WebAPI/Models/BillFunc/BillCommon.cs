@@ -578,6 +578,8 @@ namespace WebAPI.Models.BillFunc
         /// <param name="mOri">月租</param>
         /// <param name="Discount">折扣</param>
         /// <param name="fDayMaxMins">首日最大計費分鐘199</param>
+        /// <param name="fDayMaxPrice">首日價格上限</param>
+        /// <param name="dayBasePrice">基消</param>
         /// <returns></returns>
         /// <mark>2020-12-21 eason</mark>
         public CarRentInfo MotoRentMonthComp(DateTime SD, DateTime ED, double priceNmin, double priceHmin, int dayBaseMins, double dayMaxMins
@@ -586,6 +588,7 @@ namespace WebAPI.Models.BillFunc
              , int Discount = 0
              , int fDayMaxMins = 0
              , double fDayMaxPrice = 0
+             , double dayBasePrice = 10
             )
         {//note: MotoRentMonthComp
             CarRentInfo re = new CarRentInfo();
@@ -596,8 +599,6 @@ namespace WebAPI.Models.BillFunc
                 eumDateType.wDay.ToString(),
                 eumDateType.hDay.ToString()
             };
-
-            double dayBasePrice = 10;//基本費用
 
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED資料錯誤");
@@ -1602,14 +1603,15 @@ namespace WebAPI.Models.BillFunc
         /// <returns></returns>
         public double GetMotoPayMins(double Mins)
         {
-            double re = 0;
+            //double re = 0;
 
-            if (Mins > 0 && Mins < 6)
-                re = 6;
-            else
-                re = Mins;
+            //if (Mins > 0 && Mins < 6)
+            //    re = 6;
+            //else
+            //    re = Mins;
 
-            return re;
+            //return re;
+            return Mins;
         }
 
         /// <summary>
