@@ -118,7 +118,7 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
-		SELECT order_number AS OrderNo,
+		SELECT VW.order_number AS OrderNo,
 		       lend_place AS StationID,
 			   StationName,
 			   Tel,
@@ -143,6 +143,9 @@ BEGIN TRY
 			   PRONAME,		--專案基本資料
 			   IIF(PayMode=0, PRICE/10, PRICE) AS PRICE, --平日每小時價 20201003 ADD BY ADAM
 			   IIF(PayMode=0, PRICE_H/10, PRICE_H) AS PRICE_H, --假日每小時價 20201003 ADD BY ADAM
+			   --UseOrderPrice = 0,--使用訂金
+			   UseOrderPrice =  ISNULL(NYP.PAYAMT,0) - dbo.FN_UnUseOrderPrice(ISNULL(NYP.PAYAMT,0),VW.start_time,VW.stop_time,VW.final_start_time,VW.final_stop_time),--使用訂金
+			   LastOrderPrice = 0,--剩餘訂金
 			   BaseMinutes,
 			   BaseMinutesPrice,
 			   MinuteOfPrice,
@@ -173,13 +176,15 @@ BEGIN TRY
 										ELSE 0 END ,
 			   VW.Insurance, --是否有安心服務
 			   VW.CarTypeGroupCode,
-			   VW.ProjID
+			   VW.ProjID,
+			   OrderPrice = ISNULL(NYP.PAYAMT,0)		--春節訂金
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
-		WHERE VW.IDNO=@IDNO AND order_number=@OrderNo AND cancel_status=0
+		LEFT JOIN TB_NYPayList NYP WITH(NOLOCK) ON VW.order_number=NYP.order_number
+		WHERE VW.IDNO=@IDNO AND VW.order_number=@OrderNo AND cancel_status=0
 		ORDER BY start_time ASC 
 	END
 

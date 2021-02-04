@@ -222,6 +222,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType;
                         UseOrderPrice = item.UseOrderPrice;
                         OrderPrice = item.OrderPrice;
+
                     }
 
                     if (ProjType != 4)
@@ -285,7 +286,6 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("SD,ED,FD計算");
 
                         #region 春節不能使用折扣點數
-                        //dev: 春節不能使用折扣點數 
                         var vsd = new DateTime();
                         var ved = new DateTime();
                         if (neverHasFine.Contains(ProjType))
@@ -306,6 +306,32 @@ namespace WebAPI.Controllers
                             apiInput.Discount = 0;
                             apiInput.MotorDiscount = 0;
                         }
+                        #endregion
+
+                        #region 路邊,機車春前特殊處理
+
+                        if (isSpring && neverHasFine.Any(x => x == ProjType))
+                        {
+                            if (ProjType == 3)
+                            {
+                                var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                                if (xre != null)
+                                {
+                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE/10));
+                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H/10));
+                                }
+                            }
+                            else if (ProjType == 4)
+                            {
+                                var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                                if (xre != null)
+                                {
+                                    //機車目前不分平假日
+                                    OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(xre.PRICE);
+                                }
+                            }
+                        }
+
                         #endregion
 
                         #region 計算非逾時及逾時時間
@@ -376,8 +402,8 @@ namespace WebAPI.Controllers
                                     //ProjID = item.ProjID,
                                     ProjType = item.ProjType,
                                     CarType = item.CarTypeGroupCode,
-                                    ProDisPRICE = item.PRICE,
-                                    ProDisPRICE_H = item.PRICE_H
+                                    ProDisPRICE = ProjType == 4 ? item.MinuteOfPrice : item.PRICE ,
+                                    ProDisPRICE_H = ProjType == 4 ? item.MinuteOfPrice : item.PRICE_H
                                 };
                                 var vmonRe = cr_com.GetVisualMonth(ibiz_vMon);
                                 if (vmonRe != null)
@@ -385,8 +411,17 @@ namespace WebAPI.Controllers
                                     if (vmonRe.VisMons != null && vmonRe.VisMons.Count() > 0)
                                     {
                                         visMons = vmonRe.VisMons;
-                                        OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(vmonRe.PRICE));
-                                        OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
+                                        if (ProjType == 4)
+                                        {
+                                            //機車目前不分平假日 ,GetVisualMonth有分
+                                            OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(vmonRe.PRICE);
+                                        }
+                                        else
+                                        {
+                                            OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(vmonRe.PRICE));
+                                            OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
+                                        }
+
                                         trace.traceAdd(nameof(vmonRe), vmonRe);
                                         trace.FlowList.Add("新增虛擬月租");
                                     }
@@ -957,11 +992,11 @@ namespace WebAPI.Controllers
                     trace.traceAdd(nameof(errCode), errCode);
                     trace.traceAdd(nameof(TotalPoint), TotalPoint);
                     trace.traceAdd(nameof(TransferPrice), TransferPrice);
-                    string traceMsg = JsonConvert.SerializeObject(trace.getObjs());
+                    trace.objs = trace.getObjs();
                     var errItem = new TraceLogVM()
                     {
                         ApiId = 73,
-                        ApiMsg = traceMsg,
+                        ApiMsg = JsonConvert.SerializeObject(trace),
                         ApiNm = funName,
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
@@ -983,10 +1018,11 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
+                trace.objs = trace.getObjs();
                 var errItem = new TraceLogVM()
                 {
                     ApiId = 73,
-                    ApiMsg = JsonConvert.SerializeObject(trace.getObjs()),
+                    ApiMsg = JsonConvert.SerializeObject(trace),
                     ApiNm = funName,
                     CodeVersion = trace.codeVersion,
                     FlowStep = trace.FlowStep(),

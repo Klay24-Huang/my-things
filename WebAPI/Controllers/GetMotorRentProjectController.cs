@@ -5,6 +5,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -193,6 +194,22 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+
+                //for春節專案使用，將原專案每日上限改為春節上限，並將春節專案移除
+                var Temp = lstTmpData.Where(x => x.ProjID == "R140").FirstOrDefault();
+                if (Temp != null)
+                {
+                    foreach (var tmp in lstTmpData)
+                    {
+                        if (tmp.ProjID != "R140")
+                        {
+                            tmp.MaxPrice = Temp.MaxPrice;
+                        }
+                    }
+
+                    lstTmpData.Remove(Temp);
+                }
+
                 outputApi = new OAPI_GetMotorProject()
                 {
                     GetMotorProjectObj = lstTmpData
