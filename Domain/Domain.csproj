@@ -328,6 +328,7 @@
     <Compile Include="TB\BackEnd\BE_MonthlyQuery.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyReportData.cs" />
     <Compile Include="TB\BackEnd\BE_NPR136Retry.cs" />
+    <Compile Include="TB\BackEnd\BE_NPR136RetryNew.cs" />
     <Compile Include="TB\BackEnd\BE_NPR340Retry.cs" />
     <Compile Include="TB\BackEnd\BE_Operator.cs" />
     <Compile Include="TB\BackEnd\BE_OrderDataCombind.cs" />

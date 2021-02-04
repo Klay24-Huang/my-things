@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
                                 start_time = lstOrder[i].start_time,
                                 stop_time = lstOrder[i].stop_time,
                                 UserID = lstOrder[i].UserID,
-                                Location = lstOrder[i].Location.Replace(" ", "").Replace("\t", ""),
+                                Location = lstOrder[i].Location.Replace(" ", "").Replace("\t", "").Replace("'","").Replace("<","").Replace(">","").Replace("\"",""),
                                 Site_ID = lstOrder[i].Site_ID,
                                  deviceToken=lstOrder[i].deviceToken
                             };

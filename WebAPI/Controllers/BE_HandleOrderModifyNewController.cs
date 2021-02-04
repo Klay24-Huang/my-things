@@ -64,6 +64,8 @@ namespace WebAPI.Controllers
             int NewFinalPrice = 0;
             int DiffFinalPrice = 0;
             CreditAuthComm Credit = new CreditAuthComm();
+            int OldCarPoint = 0;
+            int OldMotorPoint = 0;
 
             #endregion
             #region 防呆
@@ -135,6 +137,8 @@ namespace WebAPI.Controllers
                 {
 
                     IDNO = obj.IDNO;
+                    OldCarPoint = obj.gift_point;
+                    OldMotorPoint = obj.gift_motor_point;
                     if(obj.ArrearAMT==0 && obj.Paid > 0)
                     {
                         obj.Paid -= obj.RefundAmount;
@@ -154,6 +158,8 @@ namespace WebAPI.Controllers
                     flag = pointer.GetPointer(IDNO, obj.FS, obj.ED, obj.FE, obj.FT, obj.PROJTYPE,obj.BaseMinutes, ref TotalLastPoint, ref TotalLastPointCar, ref TotalLastPointMotor, ref CanUseTotalCarPoint, ref CanUseTotalMotorPoint);
                     if (flag)
                     {
+                        CanUseTotalCarPoint += OldCarPoint;     //回補
+                        CanUseTotalMotorPoint += OldMotorPoint; //回補
                         if (apiInput.CarPoint > CanUseTotalCarPoint || apiInput.MotorPoint > CanUseTotalMotorPoint)
                         {
                             flag = false;
@@ -371,9 +377,11 @@ namespace WebAPI.Controllers
         public bool DoSendNPR136(Int64 OrderNo, Int64 LogID, int DiffPrice, string UserID, ref string errCode, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
-            BE_NPR136Retry obj = new HiEasyRentRepository(connetStr).GetNPR136RetryByOrderNo(OrderNo);
-            if (obj != null)
+            //BE_NPR136Retry obj = new HiEasyRentRepository(connetStr).GetNPR136RetryByOrderNo(OrderNo);
+            List<BE_NPR136RetryNew> lst = new HiEasyRentRepository(connetStr).GetNPR136RetryByOrderNoNew(OrderNo);
+            if (lst != null)
             {
+                BE_NPR136RetryNew obj = lst[0];
                 WebAPIInput_NPR136Save wsInput = new WebAPIInput_NPR136Save()
                 {
                     AUTHCODE = obj.AUTHCODE,
@@ -441,7 +449,7 @@ namespace WebAPI.Controllers
                     PAYTYPE = "1",
                     PAYMENTTYPE = "1",
                     PAYMEMO = "租金",
-                    PORDNO = obj.REMARK
+                    PORDNO = (obj.TaishinTradeNo=="")?obj.ArrearTaishinTradeNo : obj.TaishinTradeNo
                 });
 
                 WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
