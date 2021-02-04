@@ -1414,7 +1414,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         CarNo = OrderDataLists[0].CarNo,
                         SD = SD,
-                        ED = FED.AddDays(1)
+                        ED = FED.AddDays(1),
+                        OrderNo = tmpOrder
                     };
                     var magi_Re = cr_com.CarMagi(input);
                     if (magi_Re != null)

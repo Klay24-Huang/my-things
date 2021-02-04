@@ -229,7 +229,9 @@ namespace WebAPI.Models.BillFunc
             WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
             MachiComm mochi = new MachiComm();
             int ParkingPrice = 0;
-            re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            //re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
+
             if (re.flag)
             {
                re.ParkingFee = ParkingPrice;
@@ -1717,6 +1719,7 @@ namespace WebAPI.Models.BillFunc
         public string CarNo { set; get; }
         public DateTime SD { get; set; } 
         public DateTime ED { get; set; }
+        public Int64 OrderNo { get; set; }
     }
     public class OBIZ_CarMagi: BIZ_CRBase
     {
