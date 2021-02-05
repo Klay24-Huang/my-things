@@ -1088,7 +1088,7 @@ namespace WebAPI.Models.BillFunc
                 set RETURNAMT = {0},
                 UPDTime = DATEADD(hour,8,getdate())
                 where order_number = {1}";
-            SQL = String.Format(SQL, orderNo.ToString(), RETURNAMT.ToString());
+            SQL = String.Format(SQL, RETURNAMT.ToString(), orderNo.ToString());
             ExecNonResponse(ref flag, SQL);
             return flag;
         }

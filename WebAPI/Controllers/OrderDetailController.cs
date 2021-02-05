@@ -351,7 +351,8 @@ namespace WebAPI.Controllers
                             ParkingBill2 = orderFinishDataLists[0].ParkingFee2,
                             TowingBill = orderFinishDataLists[0].DraggingFee,
                             OtherBill = orderFinishDataLists[0].OtherFee,
-                            UseOrderPrice = orderFinishDataLists[0].UseOrderPrice
+                            UseOrderPrice = orderFinishDataLists[0].UseOrderPrice,
+                            ReturnOrderPrice = orderFinishDataLists[0].ReturnOrderPrice
                         };
                     }
                 }

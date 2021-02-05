@@ -96,7 +96,28 @@ BEGIN TRY
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+
+	   declare @final_price int =  0
+	   declare @sd datetime
+	   declare @ed datetime
+	   declare @fsd datetime
+	   declare @fed datetime
+	   declare @OrdPrice int = 0
+	   declare @UseOrdPrice int = 0
+	   declare @ReturnOrderPrice int = 0
+
+	   select top 1  
+	   @final_price = d.final_price,
+	   @sd = o.start_time, @ed = o.stop_time, @fsd = d.final_start_time, @fed = d.final_stop_time
+	   from TB_OrderMain o	   
+	   join TB_OrderDetail d  on o.order_number = d.order_number
+	   where d.order_number = @OrderNo	     
+
+	    select top 1 @OrdPrice = p.PAYAMT from TB_NYPayList p where p.order_number = @OrderNo
+	    set @UseOrdPrice  = ISNULL(@OrdPrice,0) - cast(FLOOR(dbo.FN_UnUseOrderPrice(@UseOrdPrice,@sd,@ed,@fsd,@fed)) as int)--使用訂金
+	    select top 1 @ReturnOrderPrice = p.RETURNAMT from TB_NYPayList p where p.order_number = @OrderNo
+
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -105,7 +126,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -133,6 +154,10 @@ BEGIN TRY
 			   VW.[ProjType],
 			   VW.[final_start_time] AS StartTime,
 			   VW.[final_stop_time] AS EndTime ,
+			   UseOrderPrice =  iif(@UseOrdPrice > 0,@UseOrdPrice,0 ),--使用訂金
+			   ReturnOrderPrice = iif(@ReturnOrderPrice > 0, @ReturnOrderPrice,0),--退還訂金
+			   LastOrderPrice = 0,--剩餘訂金
+			   OrderPrice = ISNULL(NYP.PAYAMT,0),		--春節訂金
 			   VW.[mileage_price],
 			   VW.[Insurance_price],
 			   VW.[Etag],
@@ -163,6 +188,7 @@ BEGIN TRY
 		FROM [dbo].[VW_GetOrderData] AS VW WITH(NOLOCK)
 		LEFT JOIN TB_LoveCode AS Love WITH(NOLOCK) ON Love.LoveCode=VW.NPOBAN
 		LEFT JOIN TB_OrderOtherFee AS Fee WITH(NOLOCK) ON Fee.OrderNo=VW.order_number
+		LEFT JOIN TB_NYPayList NYP WITH(NOLOCK) ON VW.order_number=NYP.order_number
 		WHERE VW.order_number=@OrderNo;
 	END
 
