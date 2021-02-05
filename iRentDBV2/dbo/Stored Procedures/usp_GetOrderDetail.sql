@@ -154,6 +154,7 @@ BEGIN TRY
 			   VW.[ProjType],
 			   VW.[final_start_time] AS StartTime,
 			   VW.[final_stop_time] AS EndTime ,
+			   OrderPrice = @OrdPrice, --全部訂金
 			   UseOrderPrice =  iif(@UseOrdPrice > 0,@UseOrdPrice,0 ),--使用訂金
 			   ReturnOrderPrice = iif(@ReturnOrderPrice > 0, @ReturnOrderPrice,0),--退還訂金
 			   LastOrderPrice = 0,--剩餘訂金

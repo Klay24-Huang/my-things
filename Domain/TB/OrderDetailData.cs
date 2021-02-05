@@ -229,6 +229,11 @@
         public int OtherFee { get; set; }
 
         /// <summary>
+        /// 全部訂金
+        /// </summary>
+        public int OrderPrice { get; set; }
+
+        /// <summary>
         /// 使用訂金
         /// </summary>
         public int UseOrderPrice { get; set; }

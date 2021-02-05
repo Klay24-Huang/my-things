@@ -845,6 +845,11 @@ namespace WebAPI.Controllers
                             outputApi.ReturnOrderPrice = (-1) * xTotalRental;
                             int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
                             carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+
+                            //不含退還訂金
+                            OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
+                            OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
+                            outputApi.UseOrderPrice = OrderPrice;
                         }
 
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;

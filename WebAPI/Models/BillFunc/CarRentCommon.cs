@@ -1073,6 +1073,25 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
         /// <summary>
+        /// 取得訂金資訊
+        /// </summary>
+        /// <param name="order_number"></param>
+        /// <returns></returns>
+        public List<NYPayList> GetNYPayList(int order_number)
+        {
+            var re = new List<NYPayList>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (order_number <= 0)
+                throw new Exception("order_number為必填");
+            string SQL = @"
+	            select p.order_number, p.PAYDATE, p.PAYAMT, p.RETURNAMT, p.NORDNO from TB_NYPayList p
+	            where p.order_number = {0} ";          
+            SQL = String.Format(SQL, order_number.ToString());
+            re = GetObjList<NYPayList>(ref flag, ref lstError, SQL, null, "");
+            return re;
+        }
+        /// <summary>
         /// 更新返還訂金
         /// </summary>
         /// <param name="orderNo">訂單編號</param>
@@ -1802,6 +1821,15 @@ namespace WebAPI.Models.BillFunc
         /// 是否啟用(0:否;1:是;2:待上線)
         /// </summary>
         public Int16 use_flag { get; set; }
+    }
+
+    public class NYPayList
+    {
+        public Int64 order_number { get; set; }
+        public string PAYDATE { get; set; }
+        public int PAYAMT { get; set; }
+        public int RETURNAMT { get; set; }
+        public string NORDNO { get; set; }
     }
 
     #endregion
