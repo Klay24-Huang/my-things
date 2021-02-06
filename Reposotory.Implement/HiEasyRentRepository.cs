@@ -222,5 +222,38 @@ namespace Reposotory.Implement
 
             return obj;
         }
+        public List<BE_NPR136RetryNew> GetNPR136RetryByOrderNoNew(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_NPR136RetryNew> lstNPR136 = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT VW.*,ISNULL(TradeVW.ArrearTaishinTradeNo,'') AS ArrearTaishinTradeNo FROM VW_BE_GETNPR136DataV2 AS VW ";
+                   SQL +=" LEFT JOIN VW_NPR330QueryTrade AS TradeVW ON TradeVW.ArrearOrder = VW.IRENTORDNO ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " IRENTORDNO=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            return lstNPR136;
+        }
     }
 }
