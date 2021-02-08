@@ -232,5 +232,9 @@
         /// 使用訂金
         /// </summary>
         public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 返還=訂金
+        /// </summary>
+        public int ReturnOrderPrice { get; set; }
     }
 }

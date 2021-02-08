@@ -59,6 +59,8 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             Int64 tmpOrder = 0;
             bool clearFlag = false;
+            int OldCarPoint = 0;
+            int OldMotorPoint = 0;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
             List<BE_CarScheduleTimeLog> lstOrder = null;
 
@@ -147,7 +149,9 @@ namespace WebAPI.Controllers
                         {
                            
                             apiOutput.OrderData = OrderDataLists[0];
-                            
+                            OldCarPoint = OrderDataLists[0].gift_point;
+                            OldMotorPoint = OrderDataLists[0].gift_motor_point;
+
                         }
                     }
                 }
@@ -237,9 +241,9 @@ namespace WebAPI.Controllers
                         }
                         apiOutput.Bonus = new BonusForOrder()
                         {
-                            TotalLASTPOINT = TotalLastPoint,
-                            TotalCarLASTPOINT = TotalLastPointCar,
-                            TotalMotorLASTPOINT = TotalLastPointMotor
+                            TotalLASTPOINT = TotalLastPoint+ OldCarPoint+OldMotorPoint, //回補已使用的汽機車點數
+                            TotalCarLASTPOINT = TotalLastPointCar+ OldCarPoint,
+                            TotalMotorLASTPOINT = TotalLastPointMotor+ OldMotorPoint
 
                         };
                         SD = Convert.ToDateTime(apiOutput.OrderData.FS);

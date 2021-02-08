@@ -146,11 +146,25 @@ BEGIN TRY
 		END
 	END
 
+	--取訂單資訊
+	IF @Error=0
+	BEGIN
+		SELECT @booking_status=booking_status,
+				@cancel_status=cancel_status,
+				@car_mgt_status=car_mgt_status,
+				@CarNo=CarNo,
+				@ProjType=ProjType,
+				@IsMotor=CASE WHEN ProjType=4 THEN 1 ELSE 0 END
+		FROM TB_OrderMain WITH(NOLOCK)
+		WHERE order_number=@OrderNo;
+	END
+
 	IF @Error=0
 	BEGIN
 		SELECT @RentNowActiveType=ISNULL(RentNowActiveType,5),@NowActiveOrderNum=ISNULL(NowActiveOrderNum,0)
 		FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
+
 		IF @RentNowActiveType NOT IN(0,5) AND @NowActiveOrderNum>0
 		BEGIN
 			--20210104 ADD BY ADAM REASON.針對還在目前案件做判斷
@@ -167,18 +181,35 @@ BEGIN TRY
 			END
 		END
 	END
+
+	--IF @Error=0
+	--BEGIN
+	--	IF @ProjType=3 AND @StopTime<>''
+	--	BEGIN
+	--		SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND start_time>CONVERT(datetime,@StopTime);
+	--		IF @hasData=0
+	--		BEGIN
+	--			SET @Error=1;
+	--			SET @ErrorCode='ERR175';
+	--		END
+	--	END
+	--END
+
+	-- 檢查是否有前車未還
 	IF @Error=0
 	BEGIN
-		IF @ProjType=3 AND @StopTime<>''
+		DECLARE @BeforeDate DATETIME;
+		SET @BeforeDate = DATEADD(Month,-1,@NowTime);
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE CarNo=@CarNo AND start_time>@BeforeDate
+		AND (car_mgt_status>=4 and car_mgt_status<16) AND cancel_status=0;
+		IF @hasData>0
 		BEGIN
-			SELECT @hasData=COUNT(1) FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo AND start_time>CONVERT(datetime,@StopTime);
-			IF @hasData=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR175';
-			END
+			SET @Error=1;
+			SET @ErrorCode='ERR240';
 		END
 	END
+
 	IF @Error=0
 	BEGIN
 		BEGIN TRAN
@@ -190,19 +221,10 @@ BEGIN TRY
 		AND ((ProjType=0 AND start_time <= DATEADD(MINUTE,30,@NowTime)) --同站可提早30分鐘取車
 			OR (start_time<=@NowTime)	--路邊通常都是預約後才取車
 			);
-				
+		
+		--寫入記錄
 		IF @hasData>0
 		BEGIN
-			--寫入記錄
-			SELECT @booking_status=booking_status,
-				   @cancel_status=cancel_status,
-				   @car_mgt_status=car_mgt_status,
-				   @CarNo=CarNo,
-				   @ProjType=ProjType,
-				   @IsMotor=CASE WHEN ProjType=4 THEN 1 ELSE 0 END
-			FROM TB_OrderMain WITH(NOLOCK)
-			WHERE order_number=@OrderNo;
-
 			--如果取不到里程，從tb取出
 			IF @NowMileage=0
 			BEGIN
@@ -216,33 +238,42 @@ BEGIN TRY
 						,@PrevRentPrice=B.pure_price
 			FROM TB_OrderMain A WITH(NOLOCK)
 			JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
-			WHERE A.order_number<@OrderNo		--上一筆訂單
+			WHERE
+			--A.order_number<@OrderNo		--上一筆訂單
+			B.final_stop_time < (select top 1 d.final_stop_time from TB_OrderDetail d where d.order_number = @OrderNo)
 			AND A.IDNO=@IDNO AND A.car_mgt_status>=16
 			ORDER BY A.order_number DESC
 
+			declare @finalStartTime datetime
+ 			select @finalStartTime = d.final_start_time from TB_OrderDetail d where d.order_number = @OrderNo
+
 			--運具轉換且時間在一個小時內轉乘
-			IF @PrevOrderNo>0 AND @IsMotor<>@PrevIsMotor AND DATEADD(hour,1,@PrevFinalStopTime) > @NowTime
+			IF @PrevOrderNo>0 
+			AND @IsMotor<>@PrevIsMotor 
+			--AND DATEADD(hour,1,@PrevFinalStopTime) > @NowTime
+			AND DATEDIFF(minute,@PrevFinalStopTime, @finalStartTime) <=60
 			BEGIN
 				--設定可折抵金額
 				SELECT @TransferPrice = CASE WHEN @PrevRentPrice>=46 THEN 46 ELSE @PrevRentPrice END
 			END
 
+			-- 20210106 ADD BY ADAM REASON.因為現有合約會帶錯里程，這段邏輯先mark起來
 			-- 20201220 by EDWARD 因車機有時候回傳錯誤的[取車里程]，所以暫時查詢上一筆合約的還車里程來取代[取車里程]
-			declare @pre_end_mile float=0
-			set @pre_end_mile = isnull((select top 1 D.end_mile 
-										  from IRENT_V2..TB_OrderMain C with(nolock)
-										  join IRENT_V2..TB_OrderDetail D with(nolock) ON D.order_number=C.order_number
-										 where C.CarNo=@CarNo and D.final_start_time<@NowTime
-										 order by D.final_start_time desc),0)
+			--declare @pre_end_mile float=0
+			--set @pre_end_mile = isnull((select top 1 D.end_mile 
+			--							  from IRENT_V2..TB_OrderMain C with(nolock)
+			--							  join IRENT_V2..TB_OrderDetail D with(nolock) ON D.order_number=C.order_number
+			--							 where C.CarNo=@CarNo and D.final_start_time<@NowTime
+			--							 order by D.final_start_time desc),0)
 			--if (@NowMileage<>@pre_end_mile)
-			if @pre_end_mile>0 and ABS(@NowMileage-@pre_end_mile)>3  -- 差距超過3公里時才用上一筆合約的還車里程來取代
-			begin
-				set @SQLExceptionMsg = @CarNo+' ('+cast(@OrderNo as varchar)+') 錯誤的[取車里程]:'+cast(@NowMileage as varchar) +'=>'+cast(@pre_end_mile as varchar)
-				insert into TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
-				values (@FunName,'ErrMil',@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-				-- select top 50 * from TB_ErrorLog with(nolock) where ErrorCode ='ErrMil' order by DTime desc
-				set @NowMileage=@pre_end_mile
-			end
+			--if @pre_end_mile>0 and ABS(@NowMileage-@pre_end_mile)>3  -- 差距超過3公里時才用上一筆合約的還車里程來取代
+			--begin
+			--	set @SQLExceptionMsg = @CarNo+' ('+cast(@OrderNo as varchar)+') 錯誤的[取車里程]:'+cast(@NowMileage as varchar) +'=>'+cast(@pre_end_mile as varchar)
+			--	insert into TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
+			--	values (@FunName,'ErrMil',@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+			--	-- select top 50 * from TB_ErrorLog with(nolock) where ErrorCode ='ErrMil' order by DTime desc
+			--	set @NowMileage=@pre_end_mile
+			--end
 			-- end of 錯誤的[取車里程]
 
 

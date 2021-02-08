@@ -54,7 +54,7 @@ function doReturnCar(UserName) {
         flag = false;
         msg = "備註未填寫";
     }
-    if (incarPIC == "") {
+    if (incarPIC == "" && incarclean==1) {
         if (flag) {
             msg = "車內照未選擇";
         } else {
@@ -63,7 +63,7 @@ function doReturnCar(UserName) {
         flag = false;
     }
 
-    if (outcarPIC == "") {
+    if (outcarPIC == "" && outcarclean==1) {
         if (flag) {
             msg = "車外照未選擇";
         } else {

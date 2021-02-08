@@ -229,9 +229,18 @@
         public int OtherFee { get; set; }
 
         /// <summary>
+        /// 全部訂金
+        /// </summary>
+        public int OrderPrice { get; set; }
+
+        /// <summary>
         /// 使用訂金
         /// </summary>
         public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 返還=訂金
+        /// </summary>
+        public int ReturnOrderPrice { get; set; }
         /// <summary>
         /// 剩餘訂金
         /// </summary>

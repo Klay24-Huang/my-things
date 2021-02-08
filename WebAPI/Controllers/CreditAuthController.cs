@@ -385,6 +385,7 @@ namespace WebAPI.Controllers
                         {
                             //寫入車機錯誤
                         }
+                        errCode = "000000";     //不管車機執行是否成功，都把errCode清掉
                     }
 
                     //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題

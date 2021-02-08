@@ -169,7 +169,7 @@ namespace WebAPI.Controllers
                             WSInput_SendLock wsInput = new WSInput_SendLock()
                             {
                                 CID = CID,
-                                CMD = 2
+                                CMD = 1
                             };
                             WSOutput_Base wsOutput = new WSOutput_Base();
                             flag = censWebAPI.SendLock(wsInput, ref wsOutput);

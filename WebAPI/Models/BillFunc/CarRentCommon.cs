@@ -229,8 +229,8 @@ namespace WebAPI.Models.BillFunc
             WebAPIOutput_QueryBillByCar mochiOutput = new WebAPIOutput_QueryBillByCar();
             MachiComm mochi = new MachiComm();
             int ParkingPrice = 0;
-            //re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
-            re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
+            re.flag = mochi.GetParkingBill(sour.LogID, sour.CarNo, sour.SD, sour.ED.AddDays(1), ref ParkingPrice, ref mochiOutput);
+            //re.flag = mochi.GetParkingBill(sour.LogID, sour.OrderNo, sour.CarNo, sour.SD.ToString(), sour.ED.AddDays(1).ToString(), ref ParkingPrice, ref mochiOutput);
 
             if (re.flag)
             {
@@ -812,12 +812,12 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 #region trace
-                trace.traceAdd(nameof(xsour), xsour);
-                trace.FlowList.Add("呼叫計算");
-                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                tlog.FlowStep = trace.FlowStep();
-                tlog.TraceType = eumTraceType.fun;
-                carRepo.AddTraceLog(tlog);
+                //trace.traceAdd(nameof(xsour), xsour);
+                //trace.FlowList.Add("呼叫計算");
+                //tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                //tlog.FlowStep = trace.FlowStep();
+                //tlog.TraceType = eumTraceType.fun;
+                //carRepo.AddTraceLog(tlog);
                 #endregion
 
                 return xGetSpringInit(xsour, conStr,funNM);
@@ -912,7 +912,7 @@ namespace WebAPI.Models.BillFunc
                         HoildayRateForCar = Convert.ToSingle(sour.ProDisPRICE_H),
                         Mode = 0
                     };
-                    monRents.Add(monSpring);
+                    monRents.Insert(0, monSpring);
                     trace.FlowList.Add("加入春節月租");
                     trace.traceAdd(nameof(monSpring), monSpring);
                 }
@@ -922,15 +922,15 @@ namespace WebAPI.Models.BillFunc
                 trace.FlowList.Add("月租計算");
 
                 #region trace
-                if (re.RentInPay == 0)
-                    trace.marks.Add("租金為0");
-                bool mark = true;
-                if (mark)
-                {
-                    traceLog.TraceType = eumTraceType.mark;
-                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                    carReo.AddTraceLog(traceLog);
-                }
+                //if (re.RentInPay == 0)
+                //    trace.marks.Add("租金為0");
+                //bool mark = true;
+                //if (mark)
+                //{
+                //    traceLog.TraceType = eumTraceType.mark;
+                //    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                //    carReo.AddTraceLog(traceLog);
+                //}
                 #endregion
             }
             catch (Exception ex)
@@ -959,17 +959,6 @@ namespace WebAPI.Models.BillFunc
             return false;
         }
 
-    }
-
-    public static class SiteUV
-    {
-        /// <summary>
-        /// 版號
-        /// </summary>
-        public static readonly string codeVersion = "202102021730";//hack: 修改程式請修正此版號
-
-        public static readonly string strSpringSd = "2021-02-09 00:00:00";//春節起
-        public static readonly string strSpringEd = "2021-02-17 00:00:00";//春節迄
     }
 
     #region repo
@@ -1073,6 +1062,25 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
         /// <summary>
+        /// 取得訂金資訊
+        /// </summary>
+        /// <param name="order_number"></param>
+        /// <returns></returns>
+        public List<NYPayList> GetNYPayList(int order_number)
+        {
+            var re = new List<NYPayList>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (order_number <= 0)
+                throw new Exception("order_number為必填");
+            string SQL = @"
+	            select p.order_number, p.PAYDATE, p.PAYAMT, p.RETURNAMT, p.NORDNO from TB_NYPayList p
+	            where p.order_number = {0} ";          
+            SQL = String.Format(SQL, order_number.ToString());
+            re = GetObjList<NYPayList>(ref flag, ref lstError, SQL, null, "");
+            return re;
+        }
+        /// <summary>
         /// 更新返還訂金
         /// </summary>
         /// <param name="orderNo">訂單編號</param>
@@ -1088,7 +1096,7 @@ namespace WebAPI.Models.BillFunc
                 set RETURNAMT = {0},
                 UPDTime = DATEADD(hour,8,getdate())
                 where order_number = {1}";
-            SQL = String.Format(SQL, orderNo.ToString(), RETURNAMT.ToString());
+            SQL = String.Format(SQL, RETURNAMT.ToString(), orderNo.ToString());
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
@@ -1198,7 +1206,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = true;
             string SQL = "";
-            SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
+            SQL = "INSERT INTO TB_TraceLog2 (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
             SQL += " VALUES ('" + sour.CodeVersion + "',"
                 + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
                 "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'" +
@@ -1802,6 +1810,15 @@ namespace WebAPI.Models.BillFunc
         /// 是否啟用(0:否;1:是;2:待上線)
         /// </summary>
         public Int16 use_flag { get; set; }
+    }
+
+    public class NYPayList
+    {
+        public Int64 order_number { get; set; }
+        public string PAYDATE { get; set; }
+        public int PAYAMT { get; set; }
+        public int RETURNAMT { get; set; }
+        public string NORDNO { get; set; }
     }
 
     #endregion

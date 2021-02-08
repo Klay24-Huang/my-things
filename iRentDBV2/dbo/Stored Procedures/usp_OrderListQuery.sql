@@ -107,6 +107,13 @@ BEGIN TRY
 	--輸出訂單資訊
 	IF @Error=0
 	BEGIN
+		--抓近1個月內未完成的訂單
+		SELECT *
+		INTO #tmpOrderMain
+		FROM TB_OrderMain WITH(NOLOCK) 
+		WHERE start_time > DATEADD(MONTH,-1,@NowTime) AND (car_mgt_status >= 4 and car_mgt_status < 16) AND cancel_status=0
+		AND stop_time < @NowTime;
+
 		SELECT VW.lend_place AS StationID
 			,VW.StationName
 			,VW.Tel
@@ -159,8 +166,9 @@ BEGIN TRY
             ,VW.IsReturnCar
 			--20201026 ADD BY ADAM REASON.增加AppStatus
             ,AppStatus = CASE WHEN DATEADD(mi,-30,VW.start_time) > @NowTime AND VW.car_mgt_status=0 THEN 1	--1:尚未到取車時間(取車時間半小時前)
-                              WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
-                                   AND VW.NowOrderNo>0 AND VW.car_mgt_status=0 THEN 2						--2:立即換車(取車前半小時，前車尚未完成還車)
+                              WHEN (ISNULL(TOM.CarNo,'') <> '' AND ISNULL(TOM.order_number,0) <> VW.order_number) OR 
+								   (DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
+                                   AND VW.NowOrderNo>0 AND VW.car_mgt_status=0) THEN 2						--2:立即換車(取車前半小時，前車尚未完成還車)
 							  WHEN VW.car_mgt_status=0 AND @NowTime > VW.stop_pick_time THEN 9				--9:未取車
                               WHEN DATEADD(mi,-30,VW.start_time) < @NowTime AND @NowTime <= VW.start_time 
                                    AND VW.car_mgt_status=0    THEN 3										--3:開始使用(取車時間半小時前)
@@ -169,7 +177,7 @@ BEGIN TRY
                               WHEN VW.car_mgt_status<=11 AND DATEADD(mi,-30,VW.stop_time) > @NowTime 
 								   AND VW.car_mgt_status >0	THEN 5											--5:操作車輛(取車後) 取車時間改實際取車時間
                               WHEN VW.car_mgt_status<=11 AND DATEADD(mi,-30,VW.stop_time) < @NowTime THEN 6	--6:操作車輛(準備還車)-
-							  WHEN VW.car_mgt_status<=11 AND stop_time < @NowTime THEN 6
+							  WHEN VW.car_mgt_status<=11 AND VW.stop_time < @NowTime THEN 6
 							  WHEN VW.car_mgt_status=16 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime 
 								   AND OD.nowStatus=0 THEN 7												--7:物品遺漏(再開一次車門)
 							  WHEN VW.car_mgt_status=16 AND OD.nowStatus=1 THEN 8							--8:鎖門並還車(一次性開門申請後)
@@ -189,13 +197,18 @@ BEGIN TRY
 		LEFT JOIN TB_City CT WITH(NOLOCK) ON CT.CityID=VW.CityID
 		LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID=VW.AreaID
 		LEFT JOIN TB_OrderDetail LOD WITH(NOLOCK) ON LOD.order_number=VW.LastOrderNo
+		LEFT JOIN #tmpOrderMain TOM WITH(NOLOCK) ON TOM.CarNo=VW.CarNo
         WHERE VW.IDNO=@IDNO AND VW.cancel_status=0
         AND (VW.car_mgt_status<16    --排除已還車的
 			--針對汽機車已還車在15分鐘內的
 			OR (VW.car_mgt_status=16 AND VW.final_stop_time is not null AND OD.nowStatus<2 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime)
 			)
         AND VW.order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN VW.order_number ELSE @OrderNo END
-        ORDER BY VW.start_time ASC 
+		--20210104 UPD BY JERRY 只查一年內的資料
+		AND VW.start_time > DATEADD(MONTH,-3,@NowTime)
+        ORDER BY VW.start_time ASC
+
+		DROP TABLE #tmpOrderMain
 	END
 
 	--寫入錯誤訊息
