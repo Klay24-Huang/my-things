@@ -812,12 +812,12 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 #region trace
-                trace.traceAdd(nameof(xsour), xsour);
-                trace.FlowList.Add("呼叫計算");
-                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                tlog.FlowStep = trace.FlowStep();
-                tlog.TraceType = eumTraceType.fun;
-                carRepo.AddTraceLog(tlog);
+                //trace.traceAdd(nameof(xsour), xsour);
+                //trace.FlowList.Add("呼叫計算");
+                //tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                //tlog.FlowStep = trace.FlowStep();
+                //tlog.TraceType = eumTraceType.fun;
+                //carRepo.AddTraceLog(tlog);
                 #endregion
 
                 return xGetSpringInit(xsour, conStr,funNM);
@@ -922,15 +922,15 @@ namespace WebAPI.Models.BillFunc
                 trace.FlowList.Add("月租計算");
 
                 #region trace
-                if (re.RentInPay == 0)
-                    trace.marks.Add("租金為0");
-                bool mark = true;
-                if (mark)
-                {
-                    traceLog.TraceType = eumTraceType.mark;
-                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                    carReo.AddTraceLog(traceLog);
-                }
+                //if (re.RentInPay == 0)
+                //    trace.marks.Add("租金為0");
+                //bool mark = true;
+                //if (mark)
+                //{
+                //    traceLog.TraceType = eumTraceType.mark;
+                //    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                //    carReo.AddTraceLog(traceLog);
+                //}
                 #endregion
             }
             catch (Exception ex)
