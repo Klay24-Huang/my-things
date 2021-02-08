@@ -880,7 +880,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<GetBookingMainForMaintain> lstBooking = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT List.*,Station.StationID AS Site_ID,Station.Location AS Location FROM VW_MA_GetCleanOrderList AS List ";
+            string SQL = "SELECT List.*,ISNULL(Station.StationID,'') AS Site_ID,ISNULL(Station.Location,'') AS Location FROM VW_MA_GetCleanOrderList AS List ";
             SQL += " LEFT JOIN TB_Car AS Car ON Car.CarNo = List.assigned_car_id ";
             SQL += " LEFT JOIN TB_iRentStation AS Station ON Station.StationID = Car.nowStationID";
             SqlParameter[] para = new SqlParameter[1];
