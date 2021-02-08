@@ -912,7 +912,7 @@ namespace WebAPI.Models.BillFunc
                         HoildayRateForCar = Convert.ToSingle(sour.ProDisPRICE_H),
                         Mode = 0
                     };
-                    monRents.Add(monSpring);
+                    monRents.Insert(0, monSpring);
                     trace.FlowList.Add("加入春節月租");
                     trace.traceAdd(nameof(monSpring), monSpring);
                 }
