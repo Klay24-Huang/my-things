@@ -461,6 +461,7 @@
     <Build Include="dbo\Tables\TB_NYRefund.sql" />
     <Build Include="dbo\Tables\IRENT_SIGNATURE.sql" />
     <Build Include="dbo\Functions\FN_UnUseOrderPrice.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BookingControl_NY.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

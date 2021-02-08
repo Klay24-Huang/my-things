@@ -1,7 +1,9 @@
-/****** Object:  StoredProcedure [dbo].[usp_BookingControl]    Script Date: 2020/11/11 上午 10:40:53 ******/
+/****** Object:  StoredProcedure [dbo].[usp_BookingControl_NY]    Script Date: 2021/2/8 下午 02:53:20 ******/
+
+/****** Object:  StoredProcedure [dbo].[usp_BookingControl_NY]    Script Date: 2020/11/11 上午 10:40:53 ******/
 
 /****************************************************************
-** Name: [dbo].[usp_BookingControl]
+** Name: [dbo].[usp_BookingControl_NY]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -31,7 +33,7 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_BookingControl]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_BookingControl_NY]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Jet
@@ -42,10 +44,10 @@
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 
+** 20210110  |  ADAM      |  春節專案寫入預約轉檔專用(拿掉TRANSACTION)
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_BookingControl]
+CREATE PROCEDURE [dbo].[usp_BookingControl_NY]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
 	@Token                  VARCHAR(1024)         ,
@@ -116,10 +118,7 @@ DECLARE @MotorMaxPrice INT			--單日計費上限
 DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
 		,@BIRTH			DATETIME
 		,@GIVEKM		INT
-		,@RNTKM			INT;
-DECLARE @car_mgt_status TINYINT;
-DECLARE @cancel_status TINYINT;
-DECLARE @booking_status TINYINT;
+		,@RNTKM			INT
 
 /*初始設定*/
 SET @Error=0;
@@ -128,14 +127,11 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 SET @IsSystem=0;
-SET @FunName='usp_BookingControl';
+SET @FunName='usp_BookingControl_NY';
 SET @ErrorType=0;
 SET @hasData=0;
-SET @Descript=N'使用者操作【取車】新增資料至BookingControl';
+SET @Descript=N'新增資料至BookingControl';
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @car_mgt_status=0;
-SET @cancel_status =0;
-SET @booking_status=0;
 
 SET @IsHoliday=0;
 SET @IDNO=ISNULL(@IDNO,'');
@@ -176,7 +172,7 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
-		BEGIN TRAN
+		--BEGIN TRAN
 		SET @hasData=0
 		
 		SELECT @hasData=COUNT(order_number) FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo;
@@ -201,6 +197,7 @@ BEGIN TRY
 				@OUTBRNH=[lend_place],
 				@INBRNH=[return_place],
 				@ORDAMT=[init_price],
+				
 				@PROJID=[ProjID],
 				@INVKIND=[bill_option],
 				@INVTITLE=[title],
@@ -210,11 +207,9 @@ BEGIN TRY
 				@NOCAMT=[InsurancePurePrice],
 				@SDate=start_time,
 				@EDate=stop_time,
-				@ProjType=ProjType,
-				@booking_status=booking_status,
-				@cancel_status=cancel_status,
-				@car_mgt_status=car_mgt_status
+				@ProjType=ProjType
 			FROM [dbo].[TB_OrderMain] WITH(NOLOCK) WHERE [order_number]=@OrderNo;
+			
 			
 			SELECT @GIVEDATE_R=CONVERT(VARCHAR,[final_start_time],112),
 				@GIVETIME_R=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
@@ -265,94 +260,31 @@ BEGIN TRY
 				SET @RNTAMT=@ORDAMT
 			END
 
+			--IF @PROJID='R129'
+			--BEGIN
+			--用訂單的價格送
+			SELECT @RNTAMT=init_price FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
+			
+
 			--寫資料
-			IF NOT EXISTS(SELECT * FROM TB_BookingControl WITH(NOLOCK) WHERE order_number=@OrderNo)
-			BEGIN
-				INSERT INTO TB_BookingControl(order_number,PROCD,ODCUSTID,ODCUSTNM,TEL1,TEL2,TEL3,ODDATE,GIVEDATE,GIVETIME
-					,RNTDATE,RNTTIME,CARTYPE,CARNO,OUTBRNH,INBRNH,ORDAMT,REMARK,PAYAMT,RPRICE
-					,RINV,DISRATE,NETRPRICE,RNTAMT,INSUAMT,RENTDAY,EBONUS,PROJTYPE,TYPE,INVKIND
-					,INVTITLE,UNIMNO,TSEQNO,ORDNO,MKTime,UPDTime,isRetry,RetryTimes,CARRIERID,NPOBAN
-					,NOCAMT)
-				VALUES(@OrderNo,@PROCD,@ODCUSTID,@ODCUSTNM,@TEL1,@TEL2,@TEL3,@ODDATE,@GIVEDATE,@GIVETIME
-					,@RNTDATE,@RNTTIME,@CARTYPE,@CarNo,@OUTBRNH,@INBRNH,@ORDAMT,@REMARK,@PAYAMT,@RPRICE
-					,@RINV,@DISRATE,@NETRPRICE,@ORDAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
-					,@INVTITLE,@UNIMNO,@TSEQNO,@ORDNO,@NowTime,@NowTime,@isRetry,@RetryTimes,@CARRIERID,@NPOBAN
-					,@NOCAMT);
-			END
+			INSERT INTO TB_BookingControl(order_number,PROCD,ODCUSTID,ODCUSTNM,TEL1,TEL2,TEL3,ODDATE,GIVEDATE,GIVETIME
+				,RNTDATE,RNTTIME,CARTYPE,CARNO,OUTBRNH,INBRNH,ORDAMT,REMARK,PAYAMT,RPRICE
+				,RINV,DISRATE,NETRPRICE,RNTAMT,INSUAMT,RENTDAY,EBONUS,PROJTYPE,TYPE,INVKIND
+				,INVTITLE,UNIMNO,TSEQNO,ORDNO,MKTime,UPDTime,isRetry,RetryTimes,CARRIERID,NPOBAN
+				,NOCAMT)
+			VALUES(@OrderNo,@PROCD,@ODCUSTID,@ODCUSTNM,@TEL1,@TEL2,@TEL3,@ODDATE,@GIVEDATE,@GIVETIME
+				,@RNTDATE,@RNTTIME,@CARTYPE,@CarNo,@OUTBRNH,@INBRNH,@ORDAMT,@REMARK,@PAYAMT,@RPRICE
+				,@RINV,@DISRATE,@NETRPRICE,@RNTAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
+				,@INVTITLE,@UNIMNO,@TSEQNO,@ORDNO,@NowTime,@NowTime,@isRetry,@RetryTimes,@CARRIERID,@NPOBAN
+				,@NOCAMT);
 
-			IF NOT EXISTS(SELECT * FROM TB_lendCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
-			BEGIN
-			--順便寫入出車(125必須要等060跑過產生預約編號才可以進行同步)
-			INSERT INTO TB_lendCarControl
-			(
-				  [PROCD], [ORDNO], [IRENTORDNO], [CUSTID], [CUSTNM]
-				, [BIRTH], [CUSTTYPE], [ODCUSTID], [CARTYPE], [CARNO]
-				, [TSEQNO], [GIVEDATE], [GIVETIME], [RENTDAYS], [GIVEKM]
-				, [OUTBRNHCD], [RNTDATE], [RNTTIME], [RNTKM], [INBRNHCD]
-				, [RPRICE], [RINSU], [DISRATE], [OVERHOURS], [OVERAMT2]
-				, [RNTAMT], [RENTAMT], [LOSSAMT2], [PROJID], [REMARK]
-				, [INVKIND], [UNIMNO], [INVTITLE], [INVADDR], [MKTime]
-				, [UPDTime], [isRetry], [RetryTimes], [CARRIERID], [NPOBAN], [NOCAMT]
-			)
-			SELECT @PROCD
-				  ,@ORDNO		AS ORDNO		--現階段不會有短租的預約編號
-				  ,@OrderNo		AS IRENTORDNO
-				  ,@IDNO		AS CUSTID
-				  ,@ODCUSTNM	AS CUSTNM
 
-				  ,IIF (@BIRTH IS NULL,'',CONVERT(VARCHAR(10),@BIRTH,120))		--20210115 ADD BY ADAM REASON.防止NULL寫入
-				  ,CASE WHEN LEN(@IDNO)=10 THEN '1' ELSE '2' END AS CUSTTYPE
-				  ,'' AS ODCUSTID
-				  ,@CARTYPE		AS CARTYPE
-				  ,@CarNo		AS CARNO
-				  
-				  ,@TSEQNO		AS TSEQNO
-				  ,@GIVEDATE_R	AS GIVEDATE
-				  ,@GIVETIME_R	AS GIVETIME
-				  ,0			AS RENTDAYS
-				  ,@GIVEKM		AS GIVEKM
 
-				  ,@OUTBRNH		AS OUTBRNHCD
-				  ,@RNTDATE		AS RNTDATE
-				  ,@RNTTIME		As RNTTIME
-				  ,@RNTKM		AS RNTKM
-				  ,@INBRNH		AS INBRNHCD
-
-				  ,@RPRICE		AS RPRICE
-				  ,@RINV		AS RINSU
-				  ,@DISRATE		AS DISRATE
-				  ,0			AS OVERHOURS
-				  ,0			AS OVERAMT2
-
-				  ,@RNTAMT		AS RNTAMT
-				  ,@RNTAMT		AS RENTAMT
-				  ,0			AS LOSSAMT2
-				  ,@PROJID		AS PROJID
-				  ,@REMARK		AS REMARK
-
-				  ,@INVKIND		AS INVKIND
-				  ,@UNIMNO		AS UNIMNO
-				  ,@INVTITLE	AS INVTITLE		--沒有抬頭
-				  ,''			AS INVADDR		--沒有地址
-				  ,@NowTime		AS MKTime
-
-				  ,@NowTime		AS UPDTIME
-				  ,1			AS IsRetry
-				  ,0			AS RetryTimes
-				  ,@CARRIERID	AS CARRIERID
-				  ,@NPOBAN		AS NPOBAN
-				  ,@NOCAMT		AS NOCAMT
-			END
-
-			--寫入歷程
-			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
-			VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-
-			COMMIT TRAN;
+			--COMMIT TRAN;
 		END
 		ELSE
 		BEGIN
-			ROLLBACK TRAN;
+			--ROLLBACK TRAN;
 			SET @Error=1;
 			SET @ErrorCode='ERR171';
 		END
@@ -370,11 +302,11 @@ BEGIN CATCH
 	SET @ErrorMsg='我要寫錯誤訊息';
 	SET @SQLExceptionCode=ERROR_NUMBER();
 	SET @SQLExceptionMsg=ERROR_MESSAGE();
-	IF @@TRANCOUNT > 0
-	BEGIN
-		print 'rolling back transaction' /* <- this is never printed */
-		ROLLBACK TRAN
-	END
+	--IF @@TRANCOUNT > 0
+	--BEGIN
+	--	print 'rolling back transaction' /* <- this is never printed */
+	--	ROLLBACK TRAN
+	--END
 	SET @IsSystem=1;
 	SET @ErrorType=4;
 	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
@@ -382,5 +314,6 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingControl';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingControl_NY';
 GO
+
