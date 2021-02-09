@@ -239,11 +239,13 @@ namespace WebAPI.Controllers
                             }
 
                         }
+
+
                         apiOutput.Bonus = new BonusForOrder()
                         {
                             TotalLASTPOINT = TotalLastPoint+ OldCarPoint+OldMotorPoint, //回補已使用的汽機車點數
-                            TotalCarLASTPOINT = TotalLastPointCar+ OldCarPoint,
-                            TotalMotorLASTPOINT = TotalLastPointMotor+ OldMotorPoint
+                            TotalCarLASTPOINT = TotalLastPointCar+ OldCarPoint,         //汽車剩餘
+                            TotalMotorLASTPOINT = TotalLastPointMotor+ OldMotorPoint    //機車剩餘
 
                         };
                         SD = Convert.ToDateTime(apiOutput.OrderData.FS);
@@ -257,6 +259,7 @@ namespace WebAPI.Controllers
                         //    ED = Convert.ToDateTime(apiOutput.OrderData.ED);
                         //}
                         new BillCommon().CalDayHourMin(SD, ED, ref days, ref hours, ref minutes);
+                        //new BillCommon().GetTimePart(SD, ED, apiOutput.OrderData.PROJTYPE);
                         int needPointer = ((days * 60 * 10) + (hours * 60) + minutes);
                         if (apiOutput.OrderData.PROJTYPE == 4)
                         {
@@ -274,7 +277,14 @@ namespace WebAPI.Controllers
                                 needPointer = 60;
                             }
                             apiOutput.Bonus.CanUseTotalMotorPoint = 0;
-                            //needPointer -= (needPointer % 30);
+                            if ((needPointer % 30) >= 15)
+                            {
+                                needPointer += (30-(needPointer % 30));
+                            }
+                            else
+                            {
+                                needPointer -= (needPointer % 30);
+                            }
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
 
                         }
