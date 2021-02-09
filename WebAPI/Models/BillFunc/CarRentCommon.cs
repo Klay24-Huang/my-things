@@ -1096,6 +1096,28 @@ namespace WebAPI.Models.BillFunc
             re = GetObjList<NYPayList>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
+        public string GetCarTypeGroupCode(string CarNo)
+        {
+            string re = "";
+            var sqlRe = new List<GetFullProjectVM>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (string.IsNullOrWhiteSpace(CarNo))
+                throw new Exception("CarNo 為必填");
+            string SQL = @"
+	            select top 1 g.CarTypeGroupCode from TB_Car c
+	            join TB_CarType t on t.CarType = c.CarType
+	            join TB_CarTypeGroupConsist gc on gc.CarType = t.CarType
+	            join TB_CarTypeGroup g on gc.CarTypeGroupID = g.CarTypeGroupID
+	            where c.CarNo = '{0}'";
+            SQL = String.Format(SQL, CarNo.ToString());
+            sqlRe = GetObjList<GetFullProjectVM>(ref flag, ref lstError, SQL, null, "");
+
+            if (sqlRe != null && sqlRe.Count() > 0)
+                re = sqlRe.FirstOrDefault().CarTypeGroupCode;
+            return re;
+        }
+
         /// <summary>
         /// 更新返還訂金
         /// </summary>
