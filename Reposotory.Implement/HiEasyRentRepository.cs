@@ -227,6 +227,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_NPR136RetryNew> lstNPR136 = null;
+            BE_NPR136RetryNew obj = null;
 
             int nowCount = 0;
             string SQL = "SELECT VW.*,ISNULL(TradeVW.ArrearTaishinTradeNo,'') AS ArrearTaishinTradeNo FROM VW_BE_GETNPR136DataV2 AS VW ";
@@ -251,6 +252,17 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE " + term;
 
+            }
+
+            //20210208 ADD BY ADAM REASON.
+            lstNPR136 = GetObjList<BE_NPR136RetryNew>(ref flag, ref lstError, SQL, para, term);
+            if (lstNPR136 != null)
+            {
+                if (lstNPR136.Count > 0)
+                {
+                    obj = new BE_NPR136RetryNew();
+                    obj = lstNPR136[0];
+                }
             }
 
             return lstNPR136;
