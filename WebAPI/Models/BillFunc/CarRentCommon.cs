@@ -299,6 +299,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental = xre.RentInPay;
                                 if (xre.mFinal != null && xre.mFinal.Count > 0)
                                     motoMonth = xre.mFinal;
+                                else
+                                    motoMonth = new List<MonthlyRentData>();
                                 re.useDisc = xre.useDisc;
                             }
                         }
@@ -312,6 +314,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental = xre.RentInPay;
                                 if (xre.mFinal != null && xre.mFinal.Count > 0)
                                     motoMonth = xre.mFinal;
+                                else
+                                    motoMonth = new List<MonthlyRentData>();
                                 re.useDisc = xre.useDisc;
                             }
                         }
@@ -345,6 +349,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental += re.carInfo.RentInPay;
                                 if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
                                     UseMonthlyRent = re.carInfo.mFinal;
+                                else
+                                    UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
                             }                         
                         }
@@ -356,6 +362,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental += re.carInfo.RentInPay;
                                 if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
                                     UseMonthlyRent = re.carInfo.mFinal;
+                                else
+                                    UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
                             }
                         }
@@ -460,6 +468,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental = xre.RentInPay;
                                 if (xre.mFinal != null && xre.mFinal.Count > 0)
                                     motoMonth = xre.mFinal;
+                                else
+                                    motoMonth = new List<MonthlyRentData>();
                                 re.useDisc = xre.useDisc;
                             }
                         }
@@ -473,6 +483,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental = xre.RentInPay;
                                 if (xre.mFinal != null && xre.mFinal.Count > 0)
                                     motoMonth = xre.mFinal;
+                                else
+                                    motoMonth = new List<MonthlyRentData>();
                                 re.useDisc = xre.useDisc;
                             }
                         }
@@ -507,6 +519,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental += re.carInfo.RentInPay;
                                 if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
                                     UseMonthlyRent = re.carInfo.mFinal;
+                                else
+                                    UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
                             }
                         }
@@ -518,6 +532,8 @@ namespace WebAPI.Models.BillFunc
                                 re.CarRental += re.carInfo.RentInPay;
                                 if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
                                     UseMonthlyRent = re.carInfo.mFinal;
+                                else
+                                    UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
                             }
                         }
