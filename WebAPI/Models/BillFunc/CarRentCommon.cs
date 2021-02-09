@@ -828,12 +828,12 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 #region trace
-                //trace.traceAdd(nameof(xsour), xsour);
-                //trace.FlowList.Add("呼叫計算");
-                //tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                //tlog.FlowStep = trace.FlowStep();
-                //tlog.TraceType = eumTraceType.fun;
-                //carRepo.AddTraceLog(tlog);
+                trace.traceAdd(nameof(xsour), xsour);
+                trace.FlowList.Add("呼叫計算");
+                tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                tlog.FlowStep = trace.FlowStep();
+                tlog.TraceType = eumTraceType.fun;
+                carRepo.AddTraceLog(tlog);
                 #endregion
 
                 return xGetSpringInit(xsour, conStr,funNM);
@@ -938,15 +938,15 @@ namespace WebAPI.Models.BillFunc
                 trace.FlowList.Add("月租計算");
 
                 #region trace
-                //if (re.RentInPay == 0)
-                //    trace.marks.Add("租金為0");
-                //bool mark = true;
-                //if (mark)
-                //{
-                //    traceLog.TraceType = eumTraceType.mark;
-                //    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                //    carReo.AddTraceLog(traceLog);
-                //}
+                if (re.RentInPay == 0)
+                    trace.marks.Add("租金為0");
+                bool mark = true;
+                if (mark)
+                {
+                    traceLog.TraceType = eumTraceType.mark;
+                    traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
+                    carReo.AddTraceLog(traceLog);
+                }
                 #endregion
             }
             catch (Exception ex)
@@ -1096,6 +1096,37 @@ namespace WebAPI.Models.BillFunc
             re = GetObjList<NYPayList>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
+       
+        public List<TraceLogTBVM> GetTraceLog(int OrderNo, string ApiMsg, string TraceType,string OrderNos = "")
+        {
+            var re = new List<TraceLogTBVM>();
+            var sour = new TraceLogTBVM() {
+                OrderNo = OrderNo,
+                ApiMsg = ApiMsg,
+                TraceType = TraceType
+            };          
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = @"
+                select top 100 t.ApiId,t.ApiMsg,t.ApiNm,t.CodeVersion,t.FlowStep,t.OrderNo,t.traceId,t.TraceType 
+                from Tb_TraceLog t  where 1=1 ";
+
+            if (string.IsNullOrWhiteSpace(OrderNos))
+            {
+                if (sour.OrderNo > 0)
+                    SQL += " and t.OrderNo = " + sour.OrderNo;
+            }
+            else
+                SQL += " and t.OrderNo in(" + OrderNos + ") ";
+
+            if (!string.IsNullOrWhiteSpace(sour.ApiMsg))
+                SQL += " and t.ApiMsg like '%" + sour.ApiMsg + "%' ";
+            if(!string.IsNullOrWhiteSpace(sour.TraceType))
+                SQL += " and t.TraceType like '%" +sour.TraceType + "%' ";
+            re = GetObjList<TraceLogTBVM>(ref flag, ref lstError, SQL, null, "");
+            return re;
+        }
+        
         public string GetCarTypeGroupCode(string CarNo)
         {
             string re = "";
@@ -1857,6 +1888,18 @@ namespace WebAPI.Models.BillFunc
         public int PAYAMT { get; set; }
         public int RETURNAMT { get; set; }
         public string NORDNO { get; set; }
+    }
+
+    public class TraceLogTBVM
+    {
+        public int traceId { get; set; }
+        public string CodeVersion { get; set; }
+        public Int64 OrderNo { get; set; }
+        public int ApiId { get; set; }
+        public string ApiNm { get; set; }
+        public string ApiMsg { get; set; }
+        public string FlowStep { get; set; }
+        public string TraceType { get; set; }
     }
 
     #endregion
