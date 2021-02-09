@@ -240,7 +240,7 @@ BEGIN TRY
 			JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 			WHERE
 			--A.order_number<@OrderNo		--上一筆訂單
-			B.final_stop_time < (select top 1 d.final_stop_time from TB_OrderDetail d where d.order_number = @OrderNo)
+			B.final_stop_time < (select top 1 d.final_start_time from TB_OrderDetail d where d.order_number = @OrderNo)
 			AND A.IDNO=@IDNO AND A.car_mgt_status>=16
 			ORDER BY A.order_number DESC
 
@@ -278,9 +278,8 @@ BEGIN TRY
 
 
 			--寫入訂單明細
-			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile
-			)VALUES(@OrderNo,1,@NowTime,@NowMileage
-			);
+			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile)
+			VALUES(@OrderNo,1,@NowTime,@NowMileage);
 
 			--更新訂單主檔
 			IF @ProjType=3 AND @StopTime<>''
