@@ -136,23 +136,26 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(spName, spCarStatusInput, ref SPOutputBase, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
 
-                var Temp = ListOut.Where(x => x.ProjID == "R139").FirstOrDefault();
-                if (Temp != null)
+                //春節限定，將R139專案移除，並將R139的價格給原專案
+                List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
+                ListOutCorrect = ListOut.Where(x => x.ProjID != "R139").ToList();
+
+                var TempR139List = ListOut.Where(x => x.ProjID == "R139").ToList();
+                if (TempR139List != null)
                 {
-                    foreach (var tmp in ListOut)
+                    foreach (var temp in TempR139List)
                     {
-                        if (tmp.ProjID != "R139")
+                        var Modify = ListOutCorrect.Where(x => x.CarNo == temp.CarNo).FirstOrDefault();
+                        if (Modify != null)
                         {
-                            tmp.Rental = Temp.Rental;
+                            Modify.Rental = temp.Rental;
                         }
                     }
-
-                    ListOut.Remove(Temp);
                 }
 
                 OAnyRentAPI = new OAPI_AnyRent()
                 {
-                    AnyRentObj = ListOut
+                    AnyRentObj = ListOutCorrect
                 };
             }
             #endregion
