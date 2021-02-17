@@ -144,7 +144,9 @@ namespace WebAPI.Controllers
                     UserName = apiInput.UserName,
                     UserPWD = apiInput.UserPWD,
                     Mode = apiInput.Mode,
-                    PowerStr = PowerStr
+                    PowerStr = PowerStr,
+                    AreaV = apiInput.AreaV, //20210209唐加
+                    mtypeV = apiInput.mtypeV //20210209唐加
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

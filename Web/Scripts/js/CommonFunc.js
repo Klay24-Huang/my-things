@@ -244,9 +244,9 @@ function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj
  */
 function DoAjaxAfterReload(obj,API,FailMessage) {
     var json = JSON.stringify(obj);
-    console.log(json);
-    var site = jsHost + API;
-    //var site = "http://localhost:2061/api/BE_HandleOrderModifyByDiscount" //202012唐測試用
+    console.log("json:" + json);
+    //var site = jsHost + API;
+    var site = "http://localhost:2061/api/BE_HandleUserMaintain" //202012唐測試用
     console.log("site:" + site);
     $.ajax({
         url: site,
@@ -258,6 +258,8 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
         success: function (data) {
             $.busyLoadFull("hide");
 
+            console.log("data:" + data);
+
             if (data.Result == "1") {
                 swal({
                     title: 'SUCCESS',
@@ -268,7 +270,7 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
                 });
             } else {
                 swal({
-                    title: 'Fail01',
+                    title: 'Fail011',
                     text: data.ErrorMessage,
                     icon: 'error'
                 });
@@ -277,7 +279,7 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
         error: function (e) {
             $.busyLoadFull("hide");
             swal({
-                title: 'Fail02',
+                title: 'Fail022',
                 text: FailMessage,
                 icon: 'error'
             });

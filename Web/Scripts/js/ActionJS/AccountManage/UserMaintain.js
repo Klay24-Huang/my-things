@@ -7,6 +7,8 @@ var UserAccount = "";
 var UserPWD = "";
 var StartDate = "";
 var EndDate = "";
+var AreaV = ""; //20210209唐加
+var mtypeV = ""; //20210209唐加
 
 $(document).ready(function () {
 
@@ -54,7 +56,8 @@ $(document).ready(function () {
             })
             $(this).text("全選");
         }
-    })
+    }) 
+
     $("#ddlObj").on("change", function () {
         var Mode = $(this).val();
         console.log("Mode=" + Mode);
@@ -68,7 +71,6 @@ $(document).ready(function () {
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("儲存");
-
                 break;
             case "Edit":
                 $("#UserPWD").prop("disabled", "disabled");
@@ -76,7 +78,6 @@ $(document).ready(function () {
                 $("#btnSend").show();
                 $("#btnReset").show();
                 $("#btnSend").text("查詢");
-
                 break;
         }
     });
@@ -89,15 +90,13 @@ $(document).ready(function () {
             if (Mode == "Edit") {
                 $("#justSearch").val(1)
                 $("#UserPWD").prop("disabled", "disabled");
-            }
-               
+            } 
             $("#frmUserMaintain").submit();
         }
     })
     $("#ddlUserGroup").on("change", function () {
         var Account = $("#Account").val();
         if ($(this).val() != "") {
-         
             //BE_QueryFuncByUserGroup
             ShowLoading("資料查詢中…");
             var obj = new Object();
@@ -110,6 +109,32 @@ $(document).ready(function () {
                 $(this).prop("checked", "");
             })
         }
+
+        //20210209唐加
+        var Mode = $("#ddlObj").val();
+        console.log("MMode6=" + Mode);
+        switch (Mode) {
+            case "Add":
+                //console.log("****************=" + $(this).val())
+                //console.log("****************=" + $("#ddlUserGroup").val())
+                if ($(this).val() == 10 || $(this).val() == 8) {
+                    $("#Area").show();
+                    $("#mtype").show();
+                }
+                else {
+                    $("#Area").hide();
+                    $("#mtype").hide();
+                }
+                break;
+            case "Edit":
+                $("#Area").hide();
+                $("#mtype").hide();
+                break;
+            case "":
+                $("#Area").hide();
+                $("#mtype").hide();
+                break;
+        }
     });
     $("#btnSend").on("click", function () {
         var Mode = $("#ddlObj").val();
@@ -121,6 +146,8 @@ $(document).ready(function () {
         var StartDate = $("#StartDate").val();
         var EndDate = $("#EndDate").val();
         var UserPWD = $("#UserPWD").val();
+        var AreaV = $("#AreaV").val(); //20210209唐加
+        var mtypeV = $("#mtypeV").val(); //20210209唐加
         var flag = true;
         var errMsg = "";
         var hasClick = false;
@@ -156,6 +183,8 @@ $(document).ready(function () {
                 obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
                 obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
                 obj.Mode = Mode;
+                obj.AreaV = AreaV; //20210209唐加
+                obj.mtypeV = mtypeV; //20210209唐加
                 DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "新增/修改權限發生錯誤")
             } else {
                 var hasTerm = false;
@@ -176,7 +205,6 @@ $(document).ready(function () {
                             errMsg = "起始日期大於結束日期";
                         }
                     }
-                   
                 }
                 if (flag) {
                     $("#justSearch").val(0)
@@ -189,12 +217,7 @@ $(document).ready(function () {
 
             disabledLoading(errMsg);
         }
-       
-               
-
-
     })
-
 })
 function DoEdit(Id) {
    console.log('edit')

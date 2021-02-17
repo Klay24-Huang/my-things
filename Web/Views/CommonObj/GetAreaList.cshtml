@@ -1,0 +1,11 @@
+﻿@model IEnumerable<Domain.Common.BackEnd.OperatorItem>
+@{
+    Layout = null;
+    List<SelectListItem> list = new List<SelectListItem>();
+}
+@foreach (var OperatorList in Model)
+{
+    list.Add(new SelectListItem() { Text = OperatorList.OptValue, Value = OperatorList.OptText });
+}
+@Html.DropDownList("ddlObj", list, new { Class = "form-control" })
+
