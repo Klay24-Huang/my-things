@@ -25,15 +25,9 @@ BEGIN
 	DECLARE @FunName VARCHAR(50) = 'usp_ArrearsQuery_U1'
 
 	BEGIN TRY
-		BEGIN TRAN 
-       /*
-		declare @t TY_ArrearsQuery 
-		declare @msg nvarchar(max)
-		insert into @t 
-		values('1','2','3','4','1',6,7,'8','9','10','11','12','13','14',15)
-		exec usp_ArrearsQuery_U1 @msg, 1,9999, @t	   
-	   */		
+		BEGIN TRAN 	
 	    
+		DROP TABLE IF EXISTS #tmp_ArrearsQuery_ori
 		DROP TABLE IF EXISTS #tmp_ArrearsQuery
 
 		IF @LogID IS NULL OR @LogID = ''
@@ -62,13 +56,33 @@ BEGIN
 				a.INBRNHCD AS StationID, --取車據點
 				CarType = ( SELECT TOP 1 c.CarType FROM TB_Car c WITH(NOLOCK) WHERE c.CarNo = a.CARNO), --車型代碼
 				IsMotor = (SELECT TOP 1 c.IsMotor FROM TB_CarInfo c WITH(NOLOCK) WHERE c.CarNo = a.CARNO) ---是否是機車0否,1是
-				INTO #tmp_ArrearsQuery
+				INTO #tmp_ArrearsQuery_ori
 				FROM @ArrearsQuery a
 
+				--eason 0218:短租未存檔前進行欠費查詢會將已繳款但未完成存檔資料回傳
+				--但已完成TB_NPR330Detail資料變更,(已確認)
+				--會包含已繳款資訊,過慮已繳款
+				declare @tmp_ArrearsQuery_ori_Count int = 0
+				declare @tmp_ArrearsQuery_Count int = 0
+				select @tmp_ArrearsQuery_ori_Count = count(*) from #tmp_ArrearsQuery_ori
+				if @tmp_ArrearsQuery_ori_Count >0
+				begin                    
+					select distinct o.* 
+					into #tmp_ArrearsQuery 
+					from #tmp_ArrearsQuery_ori o 
+					join TB_NPR330Detail d WITH(NOLOCK) on
+					d.Amount = o.Amount and d.ArrearsKind = o.ArrearsKind and d.CarNo = o.CarNo 
+					and d.CNTRNO = o.CNTRNO and d.IRENTORDNO = o.IRENTORDNO and d.ORDNO = o.ORDNO
+					and d.POLNO = o.POLNO and d.StationID = o.StationID
+					and d.StartDate = o.StartDate and d.EndDate = o.EndDate					
+					where d.IsPay <> 1 
+				    select @tmp_ArrearsQuery_Count = count(*) from #tmp_ArrearsQuery
+				end
+
 				DECLARE @MasteId int = 0
-				IF @IsSave = 1
-				BEGIN
-					INSERT INTO TB_NPR330Save VALUES (@IDNO,0,1, DATEADD(HOUR,8,GETDATE()), DATEADD(HOUR,8,GETDATE()))				   
+				IF @IsSave = 1 and @tmp_ArrearsQuery_Count > 0
+				BEGIN		    
+					INSERT INTO TB_NPR330Save ([IDNO], [IsPay], [useFlag], [MKTime], [UPDTime]) VALUES (@IDNO,0,1, DATEADD(HOUR,8,GETDATE()), DATEADD(HOUR,8,GETDATE()))				   
 					SELECT @MasteId = @@IDENTITY 
 					IF @MasteId > 0
 					BEGIN
@@ -157,6 +171,7 @@ BEGIN
         VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 	END CATCH
 
+	DROP TABLE IF EXISTS #tmp_ArrearsQuery_ori
 	DROP TABLE IF EXISTS #tmp_ArrearsQuery
 
 	--輸出系統訊息
