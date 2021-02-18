@@ -906,14 +906,8 @@ namespace WebAPI.Controllers
 
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
-            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
-            int days = 0; int hours = 0; int mins = 0; //以分計費總時數
-            int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
-            int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int CarRentPrice = 0; //車輛租金
-            int MonthlyPoint = 0;   //月租折抵點數        20201128 ADD BY ADAM 
-            int MonthlyPrice = 0;   //月租折抵換算金額      20201128 ADD BY ADAM 
             int TransferPrice = 0;      //轉乘優惠折抵金額  20201201 ADD BY ADAM
             MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
@@ -922,7 +916,6 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
-            int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
 
             double nor_car_wDisc = 0;//只有一般時段時平日折扣
             double nor_car_hDisc = 0;//只有一般時段時價日折扣
@@ -1265,7 +1258,7 @@ namespace WebAPI.Controllers
                                 trace.traceAdd(nameof(car_re), car_re);
 
                                 car_payAllMins += car_re.RentInMins;
-                                car_payInMins = car_re.RentInMins;    
+                                car_payInMins = car_re.RentInMins;
                                 car_inPrice = car_re.RentInPay;
                                 nor_car_PayDisc = car_re.useDisc;
                             }
@@ -1539,7 +1532,7 @@ namespace WebAPI.Controllers
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     }
                     else
-                    {                       
+                    {
                         if (UseMonthMode)
                         {
                             outputApi.Rent.CarRental = CarRentPrice;
@@ -1764,13 +1757,6 @@ namespace WebAPI.Controllers
                 carRepo.AddTraceLog(errItem);
                 throw;
             }
-
-            return flag;
-        }
-
-        private bool DoReturn()
-        {
-            bool flag = true;
 
             return flag;
         }
