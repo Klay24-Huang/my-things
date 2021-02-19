@@ -162,7 +162,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string stop_time { set; get; }
         /// <summary>
-        /// 實際車時間
+        /// 實際還車時間
         /// </summary>
         public string final_stop_time { set; get; }
         /// <summary>

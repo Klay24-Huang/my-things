@@ -2,8 +2,10 @@
 using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
+using Domain.SP.Output.Car;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.TB.BackEnd;
@@ -1063,7 +1065,53 @@ namespace WebAPI.Controllers
                 #region 取還車里程
                 if (ProjType != 4)
                 {
-                    bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                    //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                    // 20210219;修改還車里程取得規則
+                    if (OrderDataLists[0].car_mgt_status >= 11) 
+                    {
+                        //已還車
+                        //保險起見，再判斷一次是否有還車里程，以防程式崩潰
+                        if (OrderDataLists[0].end_mile > 0)
+                        {
+                            //用已記錄的還車里程
+                            End_Mile = Convert.ToInt32(OrderDataLists[0].end_mile);
+                        }
+                        else
+                        {
+                            SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                            {
+                                IDNO = IDNO,
+                                OrderNo = tmpOrder
+                            };
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                            SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                            SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                End_Mile = SPOut.Millage;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //未還車
+                        SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder
+                        };
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                        SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                        SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                        if (flag)
+                        {
+                            End_Mile = SPOut.Millage;
+                        }
+                    }
                 }
                 #endregion
 
@@ -1683,19 +1731,18 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         OrderNo = tmpOrder,
+                        UserID = UserID,
                         final_price = outputApi.Rent.TotalRental,
                         pure_price = outputApi.Rent.CarRental,
                         mileage_price = outputApi.Rent.MileageRent,
                         Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
                         fine_price = outputApi.Rent.OvertimeRental,
                         gift_point = gift_point,
-                        //gift_motor_point = gift_motor_point,
-
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,
-                        LogID = LogID,
-                        UserID = UserID
+                        EndMile = End_Mile,
+                        LogID = LogID
                     };
 
                     #region trace
