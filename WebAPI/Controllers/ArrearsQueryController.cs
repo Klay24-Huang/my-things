@@ -154,21 +154,25 @@ namespace WebAPI.Controllers
 
                                 var sp_result = sp_ArrearsQuery(spTb_input, spInput, ref sp_ArrearsQuery_Err);
 
-                                if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
+                                //20210219 ADD BY ADAM REASON.增加判斷後，有可能會出現被過濾後是空的情況
+                                if (sp_result != null)
                                 {
-                                    outputApi.ArrearsInfos = sp_result;
-                                    string NPR330Save_ID = outputApi.ArrearsInfos.Select(y => y.NPR330Save_ID).FirstOrDefault().ToString();
-                                    outputApi.TradeOrderNo = NPR330Save_ID ?? "";
+                                    if (string.IsNullOrWhiteSpace(sp_ArrearsQuery_Err))
+                                    {
+                                        outputApi.ArrearsInfos = sp_result;
+                                        string NPR330Save_ID = outputApi.ArrearsInfos.Select(y => y.NPR330Save_ID).FirstOrDefault().ToString();
+                                        outputApi.TradeOrderNo = NPR330Save_ID ?? "";
 
-                                    if (outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count() > 0)
-                                        outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Total_Amount).Sum();
+                                        if (outputApi.ArrearsInfos != null && outputApi.ArrearsInfos.Count() > 0)
+                                            outputApi.TotalAmount = outputApi.ArrearsInfos.Select(x => x.Total_Amount).Sum();
+                                    }
+                                    else
+                                    {
+                                        errCode = "ERR";
+                                        errMsg = sp_ArrearsQuery_Err;
+                                        flag = false;
+                                    }
                                 }
-                                else
-                                {
-                                    errCode = "ERR";
-                                    errMsg = sp_ArrearsQuery_Err;
-                                    flag = false;
-                                }                          
                             }
                         }
                         else
