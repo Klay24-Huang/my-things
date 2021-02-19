@@ -825,7 +825,7 @@ namespace WebAPI.Models.BaseFunc
                     param = @"^([+]8869|09)(\d{8})$";
                     break;
                 case CheckType.IDNO:
-                    param = @"^([A-Z]{1}(1|2){1}(\d{8}))$";
+                    param = @"^([A-Z]{1}(1|2|8|9){1}(\d{8}))$";
                     break;
                 case CheckType.FIDNO:
                     param = @"^[A-Z]{1}[A-D]{1}[0-9]{8}$";
