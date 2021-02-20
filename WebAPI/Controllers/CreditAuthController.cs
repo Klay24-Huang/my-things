@@ -140,6 +140,21 @@ namespace WebAPI.Controllers
                 errCode = "ERR101";
             }
             #endregion
+
+            #region 還車時間檢查
+
+            //if (flag)
+            //{
+            //    var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
+            //    if (!ckTime)
+            //    {
+            //        flag = false;
+            //        errCode = "ERR245";
+            //    }
+            //}
+
+            #endregion
+
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -830,5 +845,43 @@ namespace WebAPI.Controllers
 
             return saveDetail;
         }
+
+        private bool CkFinalStopTime(string IDNO, long Order, long LogID, string Access_Token)
+        {
+            bool flag = true;
+            var xre = GetOrder(IDNO, Order, LogID, Access_Token, ref flag);
+            if (xre != null && !string.IsNullOrWhiteSpace(xre.final_stop_time))
+            {
+                if (DateTime.TryParse(xre.final_stop_time, out DateTime FD))
+                {
+                    if (DateTime.Now.Subtract(FD).TotalMinutes < 15)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        private OrderQueryFullData GetOrder(string IDNO, long Order, long LogID, string Access_Token, ref bool flag)
+        {
+            var re = new OrderQueryFullData();
+            var lstError = new List<ErrorInfo>();
+
+            SPInput_GetOrderStatusByOrderNo spInput = new SPInput_GetOrderStatusByOrderNo()
+            {
+                IDNO = IDNO,
+                OrderNo = Order,
+                LogID = LogID,
+                Token = Access_Token
+            };
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderStatusByOrderNo);
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref ds, ref lstError);
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                re = objUti.GetFirstRow<OrderQueryFullData>(ds.Tables[0]);
+            return re;
+        }
+
     }
 }
