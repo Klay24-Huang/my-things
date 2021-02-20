@@ -382,6 +382,10 @@ namespace WebAPI.Models.Enum
             /// 重新計價
             /// </summary>
             CalFinalPrice_Re,
+            /// <summary>
+            /// 取得還車里程
+            /// </summary>
+            GetCarReturnMillage,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -915,6 +919,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetEstimate:
                     SPName = "usp_GetEstimate_Q1";
+                    break;
+                case SPType.GetCarReturnMillage:    // 取得還車里程 20210219 ADD
+                    SPName = "usp_GetCarReturnMillage";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

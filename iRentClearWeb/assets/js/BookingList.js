@@ -552,7 +552,13 @@ $("#hidIsCar").val(isCar);
                 $("#returnOpt").show();
                 $("#title").html("訂單編號【H" + orderNum + "】<BR>車號【" + CarNo + "】");
             } else {
-                disabledLoadingAndShowAlert(JsonData.ErrorMessage);
+               // disabledLoadingAndShowAlert(JsonData.ErrorMessage);
+                $.busyLoadFull("hide");
+                swal({
+                    title: 'Fail',
+                    text: JsonData.ErrorMessage,
+                    icon: 'error'
+                });
                 $("#BookingList").show();
             }
         }

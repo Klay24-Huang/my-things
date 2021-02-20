@@ -2,8 +2,10 @@
 using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
+using Domain.SP.Output.Car;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.TB.BackEnd;
@@ -906,14 +908,8 @@ namespace WebAPI.Controllers
 
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
-            int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
-            int days = 0; int hours = 0; int mins = 0; //以分計費總時數
-            int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
-            int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int CarRentPrice = 0; //車輛租金
-            int MonthlyPoint = 0;   //月租折抵點數        20201128 ADD BY ADAM 
-            int MonthlyPrice = 0;   //月租折抵換算金額      20201128 ADD BY ADAM 
             int TransferPrice = 0;      //轉乘優惠折抵金額  20201201 ADD BY ADAM
             MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
             BillCommon billCommon = new BillCommon();
@@ -922,7 +918,6 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
-            int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
 
             double nor_car_wDisc = 0;//只有一般時段時平日折扣
             double nor_car_hDisc = 0;//只有一般時段時價日折扣
@@ -1070,7 +1065,53 @@ namespace WebAPI.Controllers
                 #region 取還車里程
                 if (ProjType != 4)
                 {
-                    bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                    //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                    // 20210219;修改還車里程取得規則
+                    if (OrderDataLists[0].car_mgt_status >= 11) 
+                    {
+                        //已還車
+                        //保險起見，再判斷一次是否有還車里程，以防程式崩潰
+                        if (OrderDataLists[0].end_mile > 0)
+                        {
+                            //用已記錄的還車里程
+                            End_Mile = Convert.ToInt32(OrderDataLists[0].end_mile);
+                        }
+                        else
+                        {
+                            SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                            {
+                                IDNO = IDNO,
+                                OrderNo = tmpOrder
+                            };
+                            string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                            SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                            SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                End_Mile = SPOut.Millage;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //未還車
+                        SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder
+                        };
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                        SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                        SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                        if (flag)
+                        {
+                            End_Mile = SPOut.Millage;
+                        }
+                    }
                 }
                 #endregion
 
@@ -1265,7 +1306,7 @@ namespace WebAPI.Controllers
                                 trace.traceAdd(nameof(car_re), car_re);
 
                                 car_payAllMins += car_re.RentInMins;
-                                car_payInMins = car_re.RentInMins;    
+                                car_payInMins = car_re.RentInMins;
                                 car_inPrice = car_re.RentInPay;
                                 nor_car_PayDisc = car_re.useDisc;
                             }
@@ -1539,7 +1580,7 @@ namespace WebAPI.Controllers
                         outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
                     }
                     else
-                    {                       
+                    {
                         if (UseMonthMode)
                         {
                             outputApi.Rent.CarRental = CarRentPrice;
@@ -1690,19 +1731,18 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         OrderNo = tmpOrder,
+                        UserID = UserID,
                         final_price = outputApi.Rent.TotalRental,
                         pure_price = outputApi.Rent.CarRental,
                         mileage_price = outputApi.Rent.MileageRent,
                         Insurance_price = outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice,
                         fine_price = outputApi.Rent.OvertimeRental,
                         gift_point = gift_point,
-                        //gift_motor_point = gift_motor_point,
-
                         Etag = outputApi.Rent.ETAGRental,
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,
-                        LogID = LogID,
-                        UserID = UserID
+                        EndMile = End_Mile,
+                        LogID = LogID
                     };
 
                     #region trace
@@ -1764,13 +1804,6 @@ namespace WebAPI.Controllers
                 carRepo.AddTraceLog(errItem);
                 throw;
             }
-
-            return flag;
-        }
-
-        private bool DoReturn()
-        {
-            bool flag = true;
 
             return flag;
         }

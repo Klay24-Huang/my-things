@@ -2621,13 +2621,11 @@ namespace WebAPI.Models.BaseFunc
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
-                        if (flag)
+                        // 20210218;不管車機回傳結果成功或失敗，都從CarStatus取里程回來，避免車機無回應取不到里程，導致里程費無法計算出來
+                        CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                        if (info != null)
                         {
-                            CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
-                            if (info != null)
-                            {
-                                end_mile = info.Millage;
-                            }
+                            end_mile = info.Millage;
                         }
                         #endregion
                     }
