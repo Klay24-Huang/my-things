@@ -666,8 +666,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_RegisterMemberData";
                     break;
                 case SPType.UploadCredentials: //上傳證件照
-                    //SPName = "usp_UploadCredentials";
-                    SPName = "usp_UploadCredentialsNew";
+                    SPName = "usp_UploadCredentials";
+                    //SPName = "usp_UploadCredentialsNew_20210220_Tang";  //20210220唐暫時改，用於將1.0照片拋去azure
                     break;
                 case SPType.ReSendEmail: //重發EMail
                     SPName = "usp_ReSendEmail";

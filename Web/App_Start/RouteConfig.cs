@@ -16,10 +16,11 @@ namespace Web
             //20210218唐加，Adam哥說不要可以直接連結Monitor
             routes.MapRoute(
                 name: "Default_Map",
-                url: "Monitor/{action}",
+                url: "Monitor",
                 defaults: new { controller = "Home", action = "Index" }
             );
-            
+
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
