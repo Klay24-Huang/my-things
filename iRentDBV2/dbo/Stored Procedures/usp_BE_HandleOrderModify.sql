@@ -1,4 +1,6 @@
-﻿/****************************************************************
+﻿/****** Object:  StoredProcedure [dbo].[usp_BE_HandleOrderModify]    Script Date: 2021/2/20 上午 11:01:05 ******/
+
+/****************************************************************
 ** Name: [dbo].[usp_BE_HandleOrderModify]
 ** Desc: 
 **
@@ -43,7 +45,7 @@
 ** 2020/11/25 上午 11:03:12    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-ALTER PROCEDURE [dbo].[usp_BE_HandleOrderModify]
+CREATE PROCEDURE [dbo].[usp_BE_HandleOrderModify]
     @OrderNo                BIGINT                ,		--訂單編號
 	@CarPoint               INT                   ,		--折抵時數(汽車)
 	@MotorPoint             INT                   ,		--折抵時數(機車)
@@ -279,6 +281,21 @@ SET @IRENTORDNO =  'H' + CAST(@OrderNo AS VARCHAR)
 					,RENTAMT=@Pure
 					,LOSSAMT2=@Mileage
 					,OVERAMT2=@fine_price
+
+					--20210208 ADD BY ADAM REASON.
+					,CTRLAMT=@CarDispatch
+					,CTRLMEMO=@DispatchRemark
+					,CLEANAMT=@CleanFee
+					,CLEANMEMO=@CleanFeeRemark
+					,EQUIPAMT=@DestroyFee
+					,EQUIPMEMO=@DestroyFeeRemark
+					,PARKINGAMT=@ParkingFee
+					,PARKINGMEMO=@ParkingFeeRemark
+					,PARKINGAMT2=@ParkingFeeByMachi
+					,PARKINGMEMO2=@ParkingFeeByMachiRemark
+					,OTHERAMT=@OtherFee
+					,OTHERMEMO=@OtherFeeRemark
+
 					WHERE IRENTORDNO=@OrderNo;
 				END
 			END
@@ -312,16 +329,5 @@ EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
