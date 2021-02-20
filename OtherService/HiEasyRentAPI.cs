@@ -1706,6 +1706,7 @@ namespace OtherService
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR010SaveURL);
+            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:4149/api/NPR010/Save/"); //20210218唐測試
             request.Method = "POST";
             request.ContentType = "application/json";
             try
