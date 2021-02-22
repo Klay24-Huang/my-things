@@ -86,6 +86,10 @@ namespace WebAPI.Models.Enum
             /// 修改會員資料
             /// </summary>
             SetMemberData,
+            /// <summary>
+            /// 檢查手機號碼
+            /// </summary>
+            CheckMobile,
             #endregion
             /// <summary>
             /// Token Check
@@ -684,6 +688,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetMemberData:  //修改會員資料
                     SPName = "usp_SetMemberData";
+                    break;
+                case SPType.CheckMobile:    //檢查手機號碼
+                    SPName = "usp_CheckMobile";
                     break;
                 #endregion
                 case SPType.CheckToken: //Check Token
