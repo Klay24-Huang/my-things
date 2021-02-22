@@ -274,15 +274,13 @@
             ActionStrName = "光陽維運";
             break;
             #endregion
-
-
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
     if (controllName != "Contact")
     {
         if (Session["User"] == null)
         {
-            Response.Redirect("~/Home/Login");
+            Response.Redirect("~/Home/Login"); //RouteConfig設定去/Home/Index，但實際是跑去/Home/Login
         }
     }
 }

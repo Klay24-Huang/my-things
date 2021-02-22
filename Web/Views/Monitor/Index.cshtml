@@ -10,6 +10,12 @@
         lstEv = Model.ToList<Domain.TB.BackEnd.BE_EvTimeLine>();
         len = lstEv.Count();
     }
+
+    //20210222唐加，讓此頁面必須登入才可看
+    if (Session["User"] == null)
+    {
+        Response.Redirect("~/Home/Login"); //RouteConfig設定去/Home/Index，但實際是跑去/Home/Login
+    }
 }
 
 <!DOCTYPE html>
