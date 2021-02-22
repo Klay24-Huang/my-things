@@ -183,6 +183,7 @@
     <Compile Include="SP\Input\Project\SPInput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
+    <Compile Include="SP\Input\Register\SPInput_CheckMobile.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
     <Compile Include="SP\Input\Register\SPInput_ForgetPWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_GetMemberMobile.cs" />

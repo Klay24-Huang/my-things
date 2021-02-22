@@ -466,6 +466,15 @@
     <Build Include="dbo\Tables\Tb_TraceLog2.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayRentBillNew.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetCarReturnMillage.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckMobile.sql" />
+    <Build Include="dbo\Tables\TB_MemberDataBlockMobile.sql" />
+    <Build Include="dbo\Tables\TB_CensCMDLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_CancelCleanOrder.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsCarReturnError.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsCleanOrder.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsCensCMDLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SYNC_UPDSendAlertMessage.sql" />
+    <Build Include="dbo\Tables\TB_ReturnCarErrorLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
