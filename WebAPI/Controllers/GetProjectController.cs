@@ -203,6 +203,11 @@ namespace WebAPI.Controllers
                 var spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
                 if (spList != null && spList.Count > 0)
                 {
+                    //if (apiInput.PriceMin > 0)
+                    //    spList = spList.Where(x => x.Price >= apiInput.PriceMin || x.PRICE_H >= apiInput.PriceMin).ToList();
+                    //if (apiInput.PriceMax > 0)
+                    //    spList = spList.Where(x => x.Price <= apiInput.PriceMax || x.PRICE_H <= apiInput.PriceMax).ToList();
+
                     lstData = (from a in spList
                                select new StationAndProjectAndCarTypeData
                                {

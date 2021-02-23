@@ -42,5 +42,15 @@ namespace WebAPI.Models.Param.Input
         /// 是否使用安心服務
         /// </summary>
         public int Insurance { set; get; }
+
+        /// <summary>
+        /// 價格查詢-最少
+        /// </summary>
+        //public int PriceMin { get; set; }
+
+        /// <summary>
+        /// 價格查詢-最多
+        /// </summary>
+        //public int PriceMax { get; set; } 
     }
 }
