@@ -38,6 +38,14 @@ namespace Domain.TB
         /// </summary>
         public float MotoTotalHours { set; get; } = 0;
         /// <summary>
+        /// 機車平日剩餘分鐘
+        /// </summary>
+        //public float MotoWorkDayMins { set; get; } = 0;
+        /// <summary>
+        /// 機車假日剩餘分鐘
+        /// </summary>
+        //public float MotoHolidayMins { set; get; } = 0;
+        /// <summary>
         /// 汽車平日優惠費率
         /// </summary>
         public float WorkDayRateForCar { set; get; } = 0;
