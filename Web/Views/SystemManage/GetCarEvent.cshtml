@@ -76,7 +76,7 @@
                         <td scope="col">
                             @if (lstCarEventLog[i].deviceType == 0)
                             {
-                                <span class="icon-16" @((lstCarEventLog[i].DoorStatus == 1111) ? "" : " text-danger")></span><!--車門，20210223唐改-->
+                                <span class="icon-16 @((lstCarEventLog[i].DoorStatus == 1111) ? "" : " text-danger")"></span><!--車門，20210223唐改-->
                             }
                          </td>
                         <td scope="col">@(lstCarEventLog[i].MKTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
