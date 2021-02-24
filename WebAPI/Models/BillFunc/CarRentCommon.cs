@@ -330,6 +330,7 @@ namespace WebAPI.Models.BillFunc
                             int UseLen = motoMonth.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
+                                //fix: 修正存入 MotoWorkDayMins, MotoHolidayMins
                                 re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId, 0, 0, Convert.ToInt32(motoMonth[i].MotoTotalHours), sour.LogID, ref errCode); //寫入記錄
                             }
                         }
@@ -377,7 +378,8 @@ namespace WebAPI.Models.BillFunc
                             int UseLen = UseMonthlyRent.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
-                                  re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
+                                //fix: 修正存入,增加CarTotalHours存入
+                                re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
                             }
                         } 
                     }
