@@ -73,12 +73,12 @@ namespace WebAPI.Controllers
                     if (false == DateTime.TryParseExact(apiInput.SD, "yyyyMMddHHmm00", null, System.Globalization.DateTimeStyles.None, out SD))
                     {
                         flag = false;
-                        errCode = "ERR241";
+                        errCode = "ERR907";
                     }
                     if (false == DateTime.TryParseExact(apiInput.ED, "yyyyMMddHHmm00", null, System.Globalization.DateTimeStyles.None, out ED))
                     {
                         flag = false;
-                        errCode = "ERR243";
+                        errCode = "ERR907";
                     }
                     if (flag)
                     {
@@ -87,14 +87,14 @@ namespace WebAPI.Controllers
                         if (nowTime > SD)
                         {
                             flag = false;
-                            errCode = "ERR266";
+                            errCode = "ERR154";
                         }
                         if (flag)
                         {
                             if (SD > ED || ED.Subtract(SD).TotalMinutes < 5)
                             {
                                 flag = false;
-                                errCode = "ERR267";
+                                errCode = "ERR153";
                             }
                         }
                     }
