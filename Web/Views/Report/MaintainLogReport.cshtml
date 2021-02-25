@@ -239,6 +239,7 @@
             }
             else
             {
+                
                 for (int i = 0; i < CleanDataLen; i++)
                 {
 
@@ -289,7 +290,20 @@
                         <td>@lstCleanData[i].lend_place</td>
                         <td>@status</td>
                         <td>@StartTime</td>
-                        <td>@((EndTime!= "未還車" && StartTime!= "未取車")?(lstCleanData[i].BookingEnd<lstCleanData[i].BookingStart)? lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"): lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                        <td>
+                            @*@((EndTime!= "未還車" && StartTime!= "未取車")?((lstCleanData[i].BookingEnd<lstCleanData[i].BookingStart)? lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"): lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")))*@
+                                                @if (EndTime != "未還車" && StartTime != "未取車")
+                                                {
+                                                    if (lstCleanData[i].BookingEnd < lstCleanData[i].BookingStart)
+                                                    {
+                                                        @lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")
+                                                    }
+                                                    else
+                                                    {
+                                                        @lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")
+                                                    }
+                                                }
+                                            </td>
                         <td>@((lstCleanData[i].outsideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].insideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].rescue == 1) ? "✔" : "✖")</td>
