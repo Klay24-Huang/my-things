@@ -10,6 +10,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -37,7 +38,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -61,10 +61,8 @@ namespace WebAPI.Controllers
             int retryMode = 0;
             string ORDNO = "";
             string CNTRNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -95,7 +93,6 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
@@ -107,23 +104,19 @@ namespace WebAPI.Controllers
                         errCode = "ERR900";
                     }
                 }
-
             }
             #endregion
 
             #region TB
-
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleHiEasyRentRetry);
                 SPInput_BE_HandleHiEasyRentRetry spInput = new SPInput_BE_HandleHiEasyRentRetry()
                 {
                     LogID = LogID,
-                     Mode=Convert.ToInt16(apiInput.Type),
+                    Mode = Convert.ToInt16(apiInput.Type),
                     OrderNo = tmpOrder,
                     UserID = apiInput.UserID
-
-
                 };
                 SPOutput_BE_HandleHiEasyRentRetry spOut = new SPOutput_BE_HandleHiEasyRentRetry();
                 SQLHelper<SPInput_BE_HandleHiEasyRentRetry, SPOutput_BE_HandleHiEasyRentRetry> sqlHelp = new SQLHelper<SPInput_BE_HandleHiEasyRentRetry, SPOutput_BE_HandleHiEasyRentRetry>(connetStr);
@@ -133,6 +126,7 @@ namespace WebAPI.Controllers
                 {
                     retryMode = spOut.ReturnMode;
                 }
+
                 if (flag)
                 {
                     if (retryMode == 1)
@@ -160,10 +154,10 @@ namespace WebAPI.Controllers
                                 ODCUSTNM = obj.ODCUSTNM,
                                 ODDATE = obj.ODDATE,
                                 ORDAMT = obj.ORDAMT.ToString(),
-                                ORDNO = string.Format("H{0}",obj.OrderNo.ToString().PadLeft(7,'0')),
+                                ORDNO = string.Format("H{0}", obj.OrderNo.ToString().PadLeft(7, '0')),
                                 OUTBRNH = obj.OUTBRNH,
                                 PAYAMT = obj.PAYAMT.ToString(),
-                                PROCD =obj.PROCD,
+                                PROCD = obj.PROCD,
                                 PROJTYPE = obj.PROJTYPE,
                                 REMARK = obj.REMARK,
                                 RENTDAY = obj.RENTDAY.ToString(),
@@ -178,7 +172,7 @@ namespace WebAPI.Controllers
                                 TSEQNO = obj.TSEQNO.ToString(),
                                 TYPE = obj.TYPE.ToString(),
                                 UNIMNO = obj.UNIMNO
-                                
+
                             };
                             WebAPIOutput_NPR060Save output = new WebAPIOutput_NPR060Save();
                             flag = WebAPI.NPR060Save(input, ref output);
@@ -194,7 +188,7 @@ namespace WebAPI.Controllers
                                 ORDNO = output.Data[0].ORDNO;
                             }
 
-                            bool saveFlag = DoSave060Data(tmpOrder, ORDNO, Convert.ToInt16((output.Result)?1:0), LogID, ref lstError, ref errCode);
+                            bool saveFlag = DoSave060Data(tmpOrder, ORDNO, Convert.ToInt16((output.Result) ? 1 : 0), LogID, ref lstError, ref errCode);
                             if (saveFlag)
                             {
                                 if (apiInput.Type == 2)
@@ -208,9 +202,10 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR";
                         }
-                    }else if (retryMode == 2) //125
+                    }
+                    else if (retryMode == 2) //125
                     {
-                        BE_LandControl obj= rentRepository.GetLandControl(tmpOrder);
+                        BE_LandControl obj = rentRepository.GetLandControl(tmpOrder);
                         if (obj != null)
                         {
                             WebAPIInput_NPR125Save input = new WebAPIInput_NPR125Save()
@@ -275,9 +270,26 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
-                    else if(retryMode == 3) //130
+                    else if (retryMode == 3) //130
                     {
-                        BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
+                        //BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
+
+                        string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
+                        SPInput_BE_GetReturnCarControl spInput2 = new SPInput_BE_GetReturnCarControl()
+                        {
+                            OrderNo = tmpOrder,
+                            UserID = apiInput.UserID,
+                            LogID = LogID
+                        };
+                        SPOutput_Base spOut2 = new SPOutput_Base();
+                        List<BE_ReturnControl> ReturnControlList = new List<BE_ReturnControl>();
+                        DataSet ds = new DataSet();
+                        SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base>(connetStr);
+                        flag = sqlHelp2.ExeuteSP(spName2, spInput2, ref spOut2, ref ReturnControlList, ref ds, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, spOut2.Error, spOut2.ErrorCode, ref lstError, ref errCode);
+
+                        BE_ReturnControl obj = ReturnControlList[0];
+
                         if (obj != null)
                         {
                             WebAPIInput_NPR130Save input = new WebAPIInput_NPR130Save()
@@ -293,7 +305,6 @@ namespace WebAPI.Controllers
                                 GIVEDATE = obj.GIVEDATE,
                                 GIVEKM = obj.GIVEKM.ToString(),
                                 GIVETIME = obj.GIVETIME,
-                                
                                 INVADDR = obj.INVADDR,
                                 INVKIND = obj.INVKIND.ToString(),
                                 INVTITLE = obj.INVTITLE,
@@ -319,14 +330,14 @@ namespace WebAPI.Controllers
                                 RPRICE = obj.RPRICE.ToString(),
                                 TSEQNO = obj.TSEQNO,
                                 UNIMNO = obj.UNIMNO,
-                                AUTHCODE=obj.AUTHCODE,
-                                CARDNO=obj.CARDNO,
-                                GIFT=obj.GIFT,
-                                GIFT_MOTO=obj.GIFT_MOTO,
-                                PAYAMT=obj.PAYAMT.ToString(),
-                                INBRNHCD=obj.OUTBRNHCD,
-                              
+                                AUTHCODE = obj.AUTHCODE,
+                                CARDNO = obj.CARDNO,
+                                GIFT = obj.GIFT,
+                                GIFT_MOTO = obj.GIFT_MOTO,
+                                PAYAMT = obj.PAYAMT.ToString(),
+                                INBRNHCD = obj.OUTBRNHCD,
                             };
+
                             if (obj.PAYAMT > 0)
                             {
                                 if (obj.eTag > 0)
@@ -334,7 +345,6 @@ namespace WebAPI.Controllers
                                     input.tbPaymentDetail = new PaymentDetail[2];
                                     input.tbPaymentDetail[0] = new PaymentDetail()
                                     {
-                                        //PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
                                         PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                         PAYTYPE = "1",
                                         PAYMENTTYPE = "1",
@@ -355,7 +365,6 @@ namespace WebAPI.Controllers
                                     input.tbPaymentDetail = new PaymentDetail[1];
                                     input.tbPaymentDetail[0] = new PaymentDetail()
                                     {
-                                        //PAYAMT = (obj.PAYAMT - obj.eTag).ToString(),
                                         PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                         PAYTYPE = "1",
                                         PAYMENTTYPE = "1",
@@ -363,7 +372,6 @@ namespace WebAPI.Controllers
                                         PORDNO = obj.REMARK
                                     };
                                 }
-
                             }
                             else
                             {
@@ -382,18 +390,16 @@ namespace WebAPI.Controllers
                             flag = WebAPI.NPR130Save(input, ref output);
                             if (flag)
                             {
-                                int INVAMT = 0,HasPaid=0;
-                                string INVNO = "", INVDATE="";
+                                int INVAMT = 0, HasPaid = 0;
+                                string INVNO = "", INVDATE = "";
                                 if (output.Result == false)
                                 {
                                     flag = false;
                                     errCode = "ERR";
                                     errMsg = output.Message;
-
                                 }
                                 else
                                 {
-                                    
                                     if (obj.PAYAMT > 0)
                                     {
                                         HasPaid = 1;
@@ -403,13 +409,11 @@ namespace WebAPI.Controllers
                                     }
                                 }
 
-
-                                bool saveFlag = DoSave130Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0),  INVNO,  INVDATE,  INVAMT,HasPaid, LogID, ref lstError, ref errCode);
+                                bool saveFlag = DoSave130Data(tmpOrder, Convert.ToInt16((output.Result) ? 1 : 0), INVNO, INVDATE, INVAMT, HasPaid, LogID, ref lstError, ref errCode);
                             }
                         }
                     }
                 }
-
             }
             #endregion
 
@@ -424,7 +428,7 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-        private bool DoSave060Data(Int64 OrderNo,string ORDNO,Int16 IsSuccess,Int64 LogID,ref List<ErrorInfo> lstError,ref string errCode)
+        private bool DoSave060Data(Int64 OrderNo, string ORDNO, Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_BookingControlSuccess);
@@ -442,7 +446,7 @@ namespace WebAPI.Controllers
             return flag;
 
         }
-        private bool DoSave125Data(Int64 OrderNo, string CNTRNO,Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        private bool DoSave125Data(Int64 OrderNo, string CNTRNO, Int16 IsSuccess, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_LandControlSuccess);
@@ -460,7 +464,7 @@ namespace WebAPI.Controllers
             return flag;
 
         }
-        private bool DoSave130Data(Int64 OrderNo, Int16 IsSuccess,string INVNO,string INVDATE,int INVAMT,int HasPaid, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
+        private bool DoSave130Data(Int64 OrderNo, Int16 IsSuccess, string INVNO, string INVDATE, int INVAMT, int HasPaid, Int64 LogID, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string spName = new ObjType().GetSPName(ObjType.SPType.BE_ReturnControlSuccess);
@@ -469,10 +473,10 @@ namespace WebAPI.Controllers
                 IsSuccess = IsSuccess,
                 LogID = LogID,
                 OrderNo = OrderNo,
-                 INVAMT=INVAMT,
-                  INVDATE=INVDATE,
-                   HasPaid=HasPaid,
-                   INVNO=INVNO
+                INVAMT = INVAMT,
+                INVDATE = INVDATE,
+                HasPaid = HasPaid,
+                INVNO = INVNO
             };
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_BE_ReturnControlSuccess, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_ReturnControlSuccess, SPOutput_Base>(connetStr);

@@ -70,6 +70,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetOrderInfoBeforeModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_GetReturnCarControl.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarBindData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarOnline.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />

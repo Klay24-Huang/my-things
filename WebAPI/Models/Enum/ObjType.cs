@@ -612,6 +612,10 @@ namespace WebAPI.Models.Enum
             /// 使用者回饋處理
             /// </summary>
             BE_FeedBackHandle,
+            /// <summary>
+            /// 取得還車合約
+            /// </summary>
+            BE_GetReturnCarControl,
 
             GetBindingCard,
             #endregion
@@ -1111,7 +1115,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_FeedBackHandle:
                     SPName = "usp_BE_FeedBackHandle";
                         break;
-
+                case SPType.BE_GetReturnCarControl:     //取得還車合約資訊
+                    SPName = "usp_BE_GetReturnCarControl";
+                    break;
                 case SPType.GetBindingCard:
                     SPName = "usp_GetBindingCard";
                     break;
