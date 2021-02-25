@@ -4,9 +4,11 @@
 	[IDNO] [varchar](20) NOT NULL,
 	[StartDate] [datetime] NOT NULL,
 	[EndDate] [datetime] NOT NULL,
+	[UseCarFreeType] [int] NOT NULL,
 	[UseCarTotalHours] [float] NOT NULL,
 	[UseWorkDayHours] [float] NOT NULL,
 	[UseHolidayHours] [float] NOT NULL,
+	[UseMotoFreeType] [int] NOT NULL,
 	[UseMotoTotalHours] [float] NOT NULL,
 	[UseMotoWorkDayMins] [float] NOT NULL,
 	[UseMotoHolidayMins] [float] NOT NULL,
@@ -26,6 +28,9 @@ GO
 ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF__TB_Monthly__IDNO__246854D6]  DEFAULT ('') FOR [IDNO]
 GO
 
+ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF_TB_MonthlyRentHistory_UseCarFreeType]  DEFAULT ((0)) FOR [UseCarFreeType]
+GO
+
 ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF_TB_MonthlyRentHistory_UseCarTotalHours]  DEFAULT ((0.000000)) FOR [UseCarTotalHours]
 GO
 
@@ -33,6 +38,9 @@ ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF__TB_Monthl__UseWo_
 GO
 
 ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF__TB_Monthl__UseHo__30CE2BBB]  DEFAULT ((0.000000)) FOR [UseHolidayHours]
+GO
+
+ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF_TB_MonthlyRentHistory_UseMotoFreeType]  DEFAULT ((0)) FOR [UseMotoFreeType]
 GO
 
 ALTER TABLE [dbo].[TB_MonthlyRentHistory] ADD  CONSTRAINT [DF__TB_Monthl__UseMo__31C24FF4]  DEFAULT ((0.000000)) FOR [UseMotoTotalHours]
@@ -65,6 +73,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'訂閱迄' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'EndDate'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'使用汽車免費時段: 0無,1平日,2假日,3不分平假日' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'UseCarFreeType'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'汽車總時數' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'UseCarTotalHours'
 GO
 
@@ -72,6 +83,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'汽車平日�
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'汽車假日時數' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'UseHolidayHours'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'使用機車免費時段: 0無,1平日,2假日,3不分平假日' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'UseMotoFreeType'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'機車總時數' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRentHistory', @level2type=N'COLUMN',@level2name=N'UseMotoTotalHours'

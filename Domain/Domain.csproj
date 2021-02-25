@@ -378,8 +378,6 @@
     <Compile Include="TB\Maintain\iRentManageStation.cs" />
     <Compile Include="TB\Maintain\MemberCleanSetting.cs" />
     <Compile Include="TB\Mochi\SyncMachiParkId.cs" />
-    <Compile Include="TB\MonFreePoint.cs" />
-    <Compile Include="TB\MonFreePointHistory.cs" />
     <Compile Include="TB\MonthlyRentData.cs" />
     <Compile Include="TB\MotorPowerInfoBase.cs" />
     <Compile Include="TB\MotorBillBase.cs" />

@@ -478,8 +478,6 @@
     <Build Include="dbo\Tables\TB_OrderAuth.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_ChangePassword.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetReturnCarControl.sql" />
-    <Build Include="dbo\Tables\TB_MonFreePoint.sql" />
-    <Build Include="dbo\Tables\TB_MonFreePointHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
