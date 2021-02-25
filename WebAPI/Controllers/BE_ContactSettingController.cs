@@ -1063,7 +1063,7 @@ namespace WebAPI.Controllers
                 }
 
                 #region 取還車里程
-                if (ProjType != 4)
+                if (flag)
                 {
                     //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
                     // 20210219;修改還車里程取得規則
