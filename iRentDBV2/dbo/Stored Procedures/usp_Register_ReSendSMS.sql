@@ -62,6 +62,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @DeadLine DATETIME;
 DECLARE @NowDate DATETIME;
+DECLARE @LogFlag VARCHAR(1);
 
 /*初始設定*/
 SET @Error=0;
@@ -80,6 +81,7 @@ SET @Mode=ISNULL(@Mode,0);
 SET @DeadLine=DATEADD(HOUR,8,GETDATE());
 SET @DeadLine=DATEADD(MINUTE,15,@DeadLine);
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
+SET @LogFlag='';
 
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' OR @Mobile=''
@@ -130,7 +132,7 @@ BEGIN TRY
 		BEGIN
 			SET @hasData=0;
 			--判斷是否審核通過
-			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO --AND HasAudit=1;  --20201114 ADD BY ADAM REASON.改為待審只有一筆
+			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO;  --20201114 ADD BY ADAM REASON.改為待審只有一筆
 			IF @hasData=0
 			BEGIN
 				--會員資料存在，則從[TB_MemberData]取相關資料存至待審檔
@@ -138,21 +140,29 @@ BEGIN TRY
 													 MEMCITY,MEMADDR,MEMEMAIL,MEMCOMTEL,MEMCONTRACT,
 													 MEMCONTEL,MEMMSG,CARDNO,UNIMNO,MEMSENDCD,
 													 CARRIERID,NPOBAN,AuditKind,HasAudit,IsNew,
-													 MKTime)
+													 MKTime,UPDTime)
 				SELECT MEMIDNO,MEMCNAME,@Mobile,MEMBIRTH,MEMCOUNTRY,
 					   MEMCITY,MEMADDR,MEMEMAIL,MEMCOMTEL,MEMCONTRACT,
 					   MEMCONTEL,MEMMSG,CARDNO,UNIMNO,MEMSENDCD,
 					   CARRIERID,NPOBAN,0,0,1,
-					   @NowDate
+					   @NowDate,@NowDate
 				FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+				SET @LogFlag='A';
 			END
 			ELSE
 			BEGIN
 				UPDATE [TB_MemberDataOfAutdit] 
 				SET MEMTEL=@Mobile,
 					UPDTime=@NowDate 
-				WHERE MEMIDNO=@IDNO --AND HasAudit=0;	--20201114 ADD BY ADAM REASON.改為待審只有一筆
+				WHERE MEMIDNO=@IDNO;	--20201114 ADD BY ADAM REASON.改為待審只有一筆
+
+				SET @LogFlag='U';
 			END
+
+			-- 20210225;新增LOG檔
+			INSERT INTO TB_MemberDataOfAutdit_Log
+			SELECT @LogFlag,'5',@NowDate,* FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO;
 
 			SET @hasData=0;
 			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=@Mode;

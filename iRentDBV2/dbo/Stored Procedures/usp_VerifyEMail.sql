@@ -72,8 +72,8 @@ SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
-SET @IDNO=ISNULL (@IDNO,'');
-SET @EMAIL=ISNULL (@EMAIL,'');
+SET @IDNO=ISNULL(@IDNO,'');
+SET @EMAIL=ISNULL(@EMAIL,'');
 
 BEGIN TRY
 	IF  @IDNO='' OR @EMAIL=''
@@ -85,11 +85,11 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		-- 註冊也會寄EMAIL做認證，因此會碰到帳號尚未審核通過還在待審檔的問題，因此先判斷主檔是否有資料，沒資料則判斷待審檔，當待審檔也沒資料再回傳ErrorCode
-		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
 		IF @hasData=0
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
+			SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND MEMEMAIL=@EMAIL;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -100,9 +100,14 @@ BEGIN TRY
 				UPDATE TB_MemberData 
 				SET MEMEMAIL=@EMAIL,
 					HasVaildEMail=1,
+					U_PRGID=14,
 					U_USERID=@IDNO,
 					U_SYSDT=@NowDate 
 				WHERE MEMIDNO=@IDNO;
+
+				-- 20210226;新增LOG檔
+				INSERT INTO TB_MemberData_Log
+				SELECT 'U','14',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 			END
 		END
 		ELSE
@@ -110,9 +115,14 @@ BEGIN TRY
 			UPDATE TB_MemberData 
 			SET MEMEMAIL=@EMAIL,
 				HasVaildEMail=1,
+				U_PRGID=14,
 				U_USERID=@IDNO,
 				U_SYSDT=@NowDate 
 			WHERE MEMIDNO=@IDNO;
+
+			-- 20210226;新增LOG檔
+			INSERT INTO TB_MemberData_Log
+			SELECT 'U','14',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 		END
 	END
 	--寫入錯誤訊息

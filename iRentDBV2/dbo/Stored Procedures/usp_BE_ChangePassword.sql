@@ -58,21 +58,23 @@ SET MEMPWD=sys.fn_varbintohexstr(HASHBYTES('SHA2_256',@PassWord)),
 	U_SYSDT=DATEADD(HOUR,8,GETDATE())
 WHERE MEMIDNO=@IDNO
 
-SELECT 
-ISNULL(Autdit.MKTime,MemberData.A_SYSDT) AS ApplyDate,
-ISNULL(Autdit.UPDTime,MemberData.U_SYSDT) AS ModifyDate,
-MemberData.MEMCNAME,
-MemberData.MEMIDNO,
-SUBSTRING(MemberData.MEMIDNO,2,1) AS SEX,
-AuditKind=ISNULL(Autdit.AuditKind,1),
-HasAudit=ISNULL(Autdit.HasAudit,2),
-IsNew=ISNULL(Autdit.IsNew,0),
-SUBSTRING(MemberData.MEMIDNO,10,1) AS IDNOSUFF,
-MemberData.MEMBIRTH,
-MemberData.MEMADDR,
-MemberData.MEMEMAIL
+-- 20210226;新增LOG檔
+INSERT INTO TB_MemberData_Log
+SELECT 'U','BE_CPwd',DATEADD(HOUR,8,GETDATE()),* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+
+SELECT ISNULL(Autdit.MKTime,MemberData.A_SYSDT) AS ApplyDate,
+	ISNULL(Autdit.UPDTime,MemberData.U_SYSDT) AS ModifyDate,
+	MemberData.MEMCNAME,
+	MemberData.MEMIDNO,
+	SUBSTRING(MemberData.MEMIDNO,2,1) AS SEX,
+	AuditKind=ISNULL(Autdit.AuditKind,1),
+	HasAudit=ISNULL(Autdit.HasAudit,2),
+	IsNew=ISNULL(Autdit.IsNew,0),
+	SUBSTRING(MemberData.MEMIDNO,10,1) AS IDNOSUFF,
+	MemberData.MEMBIRTH,
+	MemberData.MEMADDR,
+	MemberData.MEMEMAIL
 FROM [TB_MemberData] MemberData WITH(NOLOCK)
 LEFT JOIN [TB_MemberDataOfAutdit] Autdit WITH(NOLOCK) ON MemberData.MEMIDNO=Autdit.MEMIDNO
 WHERE MemberData.MEMIDNO=@IDNO
 GO
-

@@ -86,7 +86,7 @@ BEGIN TRY
 		 
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -97,9 +97,14 @@ BEGIN TRY
 			UPDATE TB_MemberData 
 			SET MEMEMAIL=@EMAIL,
 				HasVaildEMail=0,
+				U_PRGID=15,
 				U_USERID=@IDNO,
 				U_SYSDT=@NowDate
 			WHERE MEMIDNO=@IDNO;
+
+			-- 20210225;新增LOG檔
+			INSERT INTO TB_MemberData_Log
+			SELECT 'U','15',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 		END
 	END
 	--寫入錯誤訊息

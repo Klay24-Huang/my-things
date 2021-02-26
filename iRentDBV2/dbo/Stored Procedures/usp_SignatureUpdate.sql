@@ -1,5 +1,7 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_ChangePWD]
+/****** Object:  StoredProcedure [dbo].[usp_SignatureUpdate]    Script Date: 2021/2/26 上午 11:25:56 ******/
+
+/****************************************************************
+** Name: [dbo].[usp_SignatureUpdate]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -43,10 +45,9 @@
 ** 2020/8/6 上午 07:21:25    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_ChangePWD]
+CREATE PROCEDURE [dbo].[usp_SignatureUpdate]
 	@IDNO                   VARCHAR(10)           ,
-	@OldPWD                 VARCHAR(100)           , --舊密碼
-	@NewPWD                 VARCHAR(100)           , --新密碼
+	@CrentialsFile          VARCHAR(150)           ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -58,32 +59,26 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @tmpPWD VARCHAR(100);
-DECLARE @NowDate DATETIME;
-
+DECLARE @tmpPWD VARCHAR(20);
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-SET @FunName='usp_ChangePWD';
+SET @FunName='usp_SignatureUpdate';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
 SET @IDNO=ISNULL (@IDNO,'');
-SET @OldPWD=ISNULL (@OldPWD,'');
-SET @NewPWD=ISNULL (@NewPWD,'');
-SET @tmpPWD='';
-SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
-	IF  @IDNO='' OR @OldPWD='' OR @NewPWD='' 
+	IF  @IDNO=''
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR100'
 	END
-		 
+
 	IF @Error=0
 	BEGIN
 		BEGIN TRAN
@@ -92,33 +87,29 @@ BEGIN TRY
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode='ERR132';
-			COMMIT TRAN;
+			ROLLBACK TRAN;
 		END
 		ELSE
 		BEGIN
-			SELECT @tmpPWD=ISNULL(MEMPWD,'') FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO ;
-			IF @tmpPWD=@OldPWD
+			IF NOT EXISTS (SELECT * FROM TB_CrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11)
 			BEGIN
-				UPDATE TB_MemberData 
-				SET MEMPWD=@NewPWD,
-					U_PRGID=9,
-					U_USERID=@IDNO,
-					U_SYSDT=@NowDate
-				WHERE  MEMIDNO=@IDNO;
+				INSERT INTO TB_CrentialsPIC(IDNO, CrentialsType, CrentialsFile, LSFLG, MKTime, UPDTime) 
+				SELECT IDNO=@IDNO
+					, CrentialsType=11
+					, CrentialsFile=@CrentialsFile
+					, LSFLG=0
+					, MKTime=DATEADD(HOUR,8,GETDATE())
+					, UPDTime=DATEADD(HOUR,8,GETDATE())
 
-				-- 20210226;新增LOG檔
-				INSERT INTO TB_MemberData_Log
-				SELECT 'U','9',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
-			END
-			ELSE
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR146';
+				UPDATE TB_Credentials
+				SET Signture=2,
+					MKTime=DATEADD(HOUR,8,GETDATE()),
+					UPDTime=DATEADD(HOUR,8,GETDATE())
+				WHERE IDNO=@IDNO
 			END
 			COMMIT TRAN;
 		END
 	END
-
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -144,20 +135,6 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';
-
-
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SignatureUpdate';
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';
 
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'修改密碼', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangePWD';

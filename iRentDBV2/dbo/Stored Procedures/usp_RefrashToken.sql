@@ -52,6 +52,7 @@ CREATE PROCEDURE [dbo].[usp_RefrashToken]
 	@Rxpires_in             INT                   , --Access DeadLine second
 	@Refrash_Rxpires_in     INT                   , --Refrash DeadLine second
 	@LogID                  BIGINT                ,
+	@PushREGID				BIGINT				  , --推播註冊流水號
 	@Access_Token  			VARCHAR(64)	    OUTPUT,	--驗證碼
 	@Refrash_Token		    VARCHAR(64)	    OUTPUT,	--驗證碼
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -83,6 +84,7 @@ SET @DeviceID=ISNULL (@DeviceID,'');
 SET @APP=ISNULL(@APP,2);
 SET @APPVersion=ISNULL(@APPVersion,'');
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
+
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' 
 	BEGIN
@@ -105,6 +107,30 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		EXEC @Error=usp_GenerateToken @IDNO,@DeviceID,@Rxpires_in,@Refrash_Rxpires_in,@LogID,@APPVersion,@APP,@Access_Token OUTPUT,@Refrash_Token OUTPUT,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
+	END
+
+	--20210129 增加推播流水號儲存檢測
+	IF @Error=0
+	BEGIN
+		DECLARE @OldPushREGID BIGINT
+		SELECT @OldPushREGID=PushREGID FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+		IF @OldPushREGID <> @PushREGID
+		BEGIN
+			IF @PushREGID > 0
+			BEGIN
+				UPDATE TB_MemberData 
+				SET PushREGID=@PushREGID,
+					U_PRGID=19,
+					U_USERID=@IDNO,
+					U_SYSDT=@NowTime
+				WHERE MEMIDNO=@IDNO
+
+				-- 20210226;新增LOG檔
+				INSERT INTO TB_MemberData_Log
+				SELECT 'U','19',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+			END
+		END
 	END
 
 	--寫入錯誤訊息
