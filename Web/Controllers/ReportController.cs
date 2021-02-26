@@ -127,6 +127,10 @@ namespace Web.Controllers
                 {
                     OrderStatus = "逾時未取車(排程取消)";
                 }
+                else if (data[k].OrderStatus == 5)
+                {
+                    OrderStatus = "逾時未還車(排程取消)";
+                }
 
                 double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
                 string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
@@ -141,8 +145,29 @@ namespace Web.Controllers
                 content.CreateCell(3).SetCellValue(data[k].CarNo);                                               //車號
                 content.CreateCell(4).SetCellValue(data[k].lend_place);                                          //據點
                 content.CreateCell(5).SetCellValue(OrderStatus);                                                 //狀態
-                content.CreateCell(6).SetCellValue(data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車"));  //實際取車
-                content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));    //實際還車
+                if(data[k].OrderStatus<1 || data[k].OrderStatus == 4)
+                {
+                    content.CreateCell(6).SetCellValue( "未取車");  //實際取車
+                }
+                else
+                {
+                    content.CreateCell(6).SetCellValue(data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車"));  //實際取車
+                }
+                if (data[k].OrderStatus < 1 || data[k].OrderStatus == 4)
+                {
+                    content.CreateCell(7).SetCellValue("未取車");     //實際還車
+                }else if(data[k].OrderStatus==1)
+                {
+                    content.CreateCell(7).SetCellValue("未還車");     //實際還車
+                }
+                else if (data[k].OrderStatus == 5)
+                {
+                    content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間："+ data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                }
+                else
+                {
+                    content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));    //實際還車
+                }
                 content.CreateCell(8).SetCellValue((data[k].outsideClean == 1) ? "✔" : "✖");                                                 //車外清潔
                 content.CreateCell(9).SetCellValue((data[k].insideClean == 1) ? "✔" : "✖");                                                 //車內清潔
                 content.CreateCell(10).SetCellValue((data[k].rescue == 1) ? "✔" : "✖");                                                 //車輛救援

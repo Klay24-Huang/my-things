@@ -226,7 +226,8 @@ var now = new Date()
                         htmlStr += "<td>已取消</td>";
                     } else if (JsonData.Data[i].OrderStatus == 4) {
                         htmlStr += "<td>取車逾時，系統已取消</td>";
-                     
+                    } else if (JsonData.Data[i].OrderStatus == 5) {
+                        htmlStr += "<td>還車逾時，系統已釋放</td>";  
                     
                     } else {
                         htmlStr += "<td>已逾時</td>";

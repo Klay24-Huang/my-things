@@ -239,7 +239,7 @@
             }
             else
             {
-                
+
                 for (int i = 0; i < CleanDataLen; i++)
                 {
 
@@ -248,9 +248,9 @@
                     string outPic = "";
                     double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss")== "1900-01-01 00:00:00") ? DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalDays : -1);
                     string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
-                    string StartTime = lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
-                    string EndTime = lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
-                    if(EndTime!="未還車" && StartTime != "未取車")
+                    string StartTime =(lstCleanData[i].OrderStatus<1|| lstCleanData[i].OrderStatus==4)?"未取車":lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
+                    string EndTime = (lstCleanData[i].OrderStatus == 1 ) ? "未還車":lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
+                    if (EndTime!="未還車" && StartTime != "未取車")
                     {
                         if(lstCleanData[i].BookingEnd< lstCleanData[i].BookingStart)
                         {
@@ -281,6 +281,18 @@
                     else if (lstCleanData[i].OrderStatus == 2)
                     {
                         status = "已還車";
+                    }
+                    else if (lstCleanData[i].OrderStatus == 3)
+                    {
+                        status = "已取消";
+                    }
+                    else if (lstCleanData[i].OrderStatus == 4)
+                    {
+                        status = "逾時未取車(系統強制取消)";
+                    }
+                    else if (lstCleanData[i].OrderStatus == 5)
+                    {
+                        status = "逾時未還車(系統強制釋放)";
                     }
                     <tr>
 
