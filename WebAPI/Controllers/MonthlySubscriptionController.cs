@@ -1,9 +1,5 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Input.Rent;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
-using Domain.TB;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,7 +18,6 @@ namespace WebAPI.Controllers
 {
     public class MonthlySubscriptionController : ApiController
     {
-        
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
@@ -30,8 +25,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
-            string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
@@ -43,22 +36,14 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
 
             OAPI_Base outputApi = new OAPI_Base();
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
-            Int16 APPKind = 2;
-            string Contentjson = "";
-            bool isGuest = true;
-            bool CheckFlag = true;
-            string IDNO = "";
             #endregion
 
             #region 防呆
             if (flag)
             {
-                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject <IAPI_MonthlySubscription>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(JsonConvert.SerializeObject(apiInput), ClientIP, funName, ref errCode, ref LogID);
@@ -68,7 +53,6 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-
                 SPOutput_Base spOut = new SPOutput_Base();
 
                 MonthlySubscriptionData[] MonthlyRentData = apiInput.MonthlySubscriptionObj.ToArray();
@@ -88,7 +72,8 @@ namespace WebAPI.Controllers
                             EndDate = MonthlyRentData[i].EndDate,
                             seqno = MonthlyRentData[i].seqno,
                             ProjID = MonthlyRentData[i].ProjID,
-                            ProjNM = MonthlyRentData[i].ProjNM
+                            ProjNM = MonthlyRentData[i].ProjNM,
+                            FavHFee = MonthlyRentData[i].FavHFee
                         };
                     }
                 }
@@ -104,15 +89,16 @@ namespace WebAPI.Controllers
                         EndDate = "",
                         seqno = 0,
                         ProjID = "",
-                        ProjNM = ""
+                        ProjNM = "",
+                        FavHFee = 0
                     };
                 }
 
                 object[][] parms1 = {
-                        new object[] {
-                            LogID
+                    new object[] {
+                        LogID
                     },
-                        objparms
+                    objparms
                 };
 
                 DataSet ds1 = null;
@@ -136,12 +122,11 @@ namespace WebAPI.Controllers
                     }
                 }
                 ds1.Dispose();
-
             }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -152,6 +137,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-        
     }
 }

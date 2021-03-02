@@ -1,12 +1,13 @@
-﻿CREATE TYPE [dbo].[TY_MonthlyRent] AS TABLE (
-	IDNO				VARCHAR(10) NOT NULL,
-	WorkDayHours		FLOAT NOT NULL,
-	HolidayHours		FLOAT NOT NULL,
-	MotorTotalHours		FLOAT NOT NULL,
-	StartDate			DATETIME NOT NULL,
-	EndDate				DATETIME NOT NULL,
-	SEQNO				INT NOT NULL,
-	ProjID				VARCHAR(20) NOT NULL,
-	ProjNM				NVARCHAR(50) NOT NULL
-);
+﻿CREATE TYPE [dbo].[TY_MonthlyRent] AS TABLE(
+	[IDNO]				varchar(10)		NOT NULL,
+	[WorkDayHours]		float			NOT NULL,
+	[HolidayHours]		float			NOT NULL,
+	[MotorTotalHours]	float			NOT NULL,
+	[StartDate]			datetime		NOT NULL,
+	[EndDate]			datetime		NOT NULL,
+	[SEQNO]				int				NOT NULL,
+	[ProjID]			varchar(20)		NOT NULL,
+	[ProjNM]			nvarchar(50)	NOT NULL,
+	[FavHFee]			float			NOT NULL
+)
 GO
