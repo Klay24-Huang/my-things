@@ -6,6 +6,11 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+//using WebAPI.Models.BaseFunc;//20210218唐加
+//using WebCommon;//20210218唐加
+//using Domain.SP.BE.Input;//20210218唐加
+//using Domain.SP.BE.Output;//20210218唐加
+//using Web.Models.Enum;//20210218唐加
 
 namespace Web.Controllers
 {
@@ -54,9 +59,9 @@ namespace Web.Controllers
                         break;
                 }
             }
-
-
             return View(lstEv);
         }
+
+
     }
 }

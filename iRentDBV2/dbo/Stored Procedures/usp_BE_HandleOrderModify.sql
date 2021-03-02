@@ -1,4 +1,6 @@
-﻿/****************************************************************
+﻿/****** Object:  StoredProcedure [dbo].[usp_BE_HandleOrderModify]    Script Date: 2021/2/20 上午 11:01:05 ******/
+
+/****************************************************************
 ** Name: [dbo].[usp_BE_HandleOrderModify]
 ** Desc: 
 **
@@ -44,20 +46,20 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_HandleOrderModify]
-    @OrderNo                BIGINT                ,
-	@CarPoint               INT                   ,
-	@MotorPoint             INT                   ,
-	@ProjType               INT                   ,
-	@StartDate              DATETIME              ,
-	@EndDate                DATETIME              ,
-	@start_mile             numeric(10,2)		  ,
-	@end_mile               numeric(10,2)         ,
-	@fine_price             INT                   ,
-	@FinalPrice             INT                   ,
-	@Reson					INT      			  ,
-	@Remark					NVARCHAR(50)		  ,
-	@CarDispatch            INT                   ,
-	@DispatchRemark         NVARCHAR(50)          ,
+    @OrderNo                BIGINT                ,		--訂單編號
+	@CarPoint               INT                   ,		--折抵時數(汽車)
+	@MotorPoint             INT                   ,		--折抵時數(機車)
+	@ProjType               INT                   ,		--專案類型
+	@StartDate              DATETIME              ,		--實際取車
+	@EndDate                DATETIME              ,		--實際還車
+	@start_mile             numeric(10,2)		  ,		--取車里程
+	@end_mile               numeric(10,2)         ,		--還車里程
+	@fine_price             INT                   ,		--逾時費用
+	@FinalPrice             INT                   ,		--還車費用
+	@Reson					INT      			  ,		--理由
+	@Remark					NVARCHAR(50)		  ,		--備註
+	@CarDispatch            INT                   ,		--營損
+	@DispatchRemark         NVARCHAR(50)          ,		--
 	@CleanFee               INT                   ,
 	@CleanFeeRemark         NVARCHAR(50)          ,
 	@DestroyFee             INT                   ,
@@ -70,8 +72,10 @@ CREATE PROCEDURE [dbo].[usp_BE_HandleOrderModify]
 	@OtherFeeRemark         NVARCHAR(50)          ,
 	@ParkingFeeByMachi      INT                   ,
 	@ParkingFeeByMachiRemark        NVARCHAR(50)  ,
-	@PAYAMT                 INT                   ,
-	@Insurance_price        INT                   ,
+	@PAYAMT                 INT                   ,		--
+	@Insurance_price        INT                   ,		--安心服務
+	@Mileage				INT                   ,		--里程費
+	@Pure                   INT                   , --純租金
 	@UserID                 NVARCHAR(10)          , --使用者
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -86,7 +90,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
-
+DECLARE @IRENTORDNO VARCHAR(20)
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -104,14 +108,15 @@ SET @OrderNo    =ISNULL(@OrderNo    ,-1);
 SET @CarPoint   =ISNULL(@CarPoint   ,-1);
 SET @MotorPoint =ISNULL(@MotorPoint ,-1);
 SET @FinalPrice =ISNULL(@FinalPrice ,-1);
+SET @Pure       =ISNULL(@Pure,-1);
 SET @UserID    =ISNULL (@UserID    ,'');
-
+SET @IRENTORDNO =  'H' + CAST(@OrderNo AS VARCHAR)
 
 		BEGIN TRY
 
 		 
 		 	 
-		 IF @UserID='' OR @OrderNo<=0 OR @CarPoint<0 OR @MotorPoint<0 OR @FinalPrice<0 OR @CarDispatch<0 OR @CleanFee<0 OR @DestroyFee<0 OR @ParkingFee<0 OR @DraggingFee<0 OR @OtherFee<0 OR @ParkingFeeByMachi<0
+		 IF @UserID='' OR @OrderNo<=0 OR @CarPoint<0 OR @MotorPoint<0 OR @FinalPrice<0 OR @CarDispatch<0 OR @CleanFee<0 OR @DestroyFee<0 OR @ParkingFee<0 OR @DraggingFee<0 OR @OtherFee<0 OR @ParkingFeeByMachi<0 OR @Pure<0
 		 BEGIN
 		   SET @Error=1;
 		   SET @ErrorCode='ERR900'
@@ -129,7 +134,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 			IF @hasData=1
 			BEGIN
 				SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_OrderOtherFee WHERE OrderNo=@OrderNo;
+				SELECT @hasData=COUNT(1) FROM TB_OrderOtherFee WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 				IF @hasData=0
 				BEGIN
 					INSERT INTO TB_OrderOtherFee(OrderNo,CarDispatch,DispatchRemark,CleanFee,CleanFeeRemark,DestroyFee             
@@ -148,7 +153,7 @@ SET @UserID    =ISNULL (@UserID    ,'');
 					SELECT OrderNo,CarDispatch,DispatchRemark,CleanFee,CleanFeeRemark,DestroyFee             
 												,DestroyFeeRemark,ParkingFee,ParkingFeeRemark,DraggingFee,DraggingFeeRemark      
 												,OtherFee,OtherFeeRemark,ParkingFeeByMachi,ParkingFeeByMachiRemark,@UserID,@NowTime
-					FROM TB_OrderOtherFee WHERE OrderNo=@OrderNo;
+					FROM TB_OrderOtherFee WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 
 					UPDATE TB_OrderOtherFee
 					SET CarDispatch=@CarDispatch,DispatchRemark=@DispatchRemark,CleanFee=@CleanFee,CleanFeeRemark=@CleanFeeRemark,DestroyFee=@DestroyFee
@@ -165,7 +170,18 @@ SET @UserID    =ISNULL (@UserID    ,'');
 											  [parkingFee], [parkingSpace], [TransDiscount], 
 											 [U_USERID],[U_SYSDT],[U_Reson],[U_Remark]) SELECT *,@UserID,@NowTime,@Reson,@Remark FROM TB_OrderDetail  WITH(NOLOCK) WHERE order_number=@OrderNo;
 				UPDATE TB_OrderDetail
-				SET gift_motor_point=@MotorPoint,gift_point=@CarPoint,final_price=@FinalPrice,final_start_time=@StartDate,final_stop_time=@EndDate,start_mile=@start_mile,end_mile=@end_mile,fine_price=@fine_price,Insurance_price=@Insurance_price
+				SET gift_motor_point=@MotorPoint
+				,gift_point=@CarPoint
+				,final_price=@FinalPrice
+				,final_start_time=@StartDate
+				,final_stop_time=@EndDate
+				,start_mile=@start_mile
+				,end_mile=@end_mile
+				,fine_price=@fine_price
+				,Insurance_price=@Insurance_price
+				,pure_price=@Pure
+				--20201214 UPD BY JERRY	增加更新里程費
+				,mileage_price=@Mileage
 				WHERE order_number=@OrderNo;
 				
 				SET @hasData=0;
@@ -196,11 +212,27 @@ SET @UserID    =ISNULL (@UserID    ,'');
 											 ,CTRLAMT,CTRLMEMO,CLEANAMT,CLEANMEMO,EQUIPAMT
 											 ,EQUIPMEMO,TOWINGAMT,TOWINGMEMO,OTHERAMT,OTHERMEMO
 											 ,PARKINGMEMO,PARKINGAMT2,PARKINGMEMO2
-											 FROM VW_BE_BeforeNPR136GetData WHERE IRENTORDNO=@OrderNo;
+											 FROM VW_BE_BeforeNPR136GetData WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo;
 
-					UPDATE TB_NPR136Save SET GIFT=@CarPoint,GIFT_MOTO=@MotorPoint,RENTAMT=@FinalPrice,[GIVEDATE]=CONVERT(VARCHAR(10),@StartDate,112),[RNTDATE]=CONVERT(VARCHAR(10),@EndDate,112)
-					,[GIVETIME]=REPLACE(CONVERT(VARCHAR(5), @StartDate,108),':',''),[RNTTIME]=REPLACE(CONVERT(VARCHAR(5), @EndDate,108),':',''),[GIVEKM]=@start_mile,[RNTKM]=@end_mile,isRetry=1
-					,PAYAMT=@PAYAMT,RENTDAYS=(DATEDIFF ( day , @StartDate , @EndDate )  ),NOCAMT=@Insurance_price
+					UPDATE TB_NPR136Save SET GIFT=@CarPoint
+					,GIFT_MOTO=@MotorPoint
+					,RNTAMT=@FinalPrice		--20210206 ADD BY ADAM REASON.修正備註,還車費用,逾時費,里程費未存檔
+					,[GIVEDATE]=CONVERT(VARCHAR(10),@StartDate,112)
+					,[RNTDATE]=CONVERT(VARCHAR(10),@EndDate,112)
+					,[GIVETIME]=REPLACE(CONVERT(VARCHAR(5)
+					, @StartDate,108),':','')
+					,[RNTTIME]=REPLACE(CONVERT(VARCHAR(5), @EndDate,108),':','')
+					,[GIVEKM]=@start_mile
+					,[RNTKM]=@end_mile
+					,isRetry=1
+					,PAYAMT=@PAYAMT
+					,RENTDAYS=(DATEDIFF ( day , @StartDate , @EndDate )  )
+					,NOCAMT=@Insurance_price
+					--20210206 ADD BY ADAM REASON.修正備註,還車費用,逾時費,里程費未存檔
+					,REMARK='iRent單號【'+ISNULL(@IRENTORDNO,'')+'】'
+					,RENTAMT=@Pure
+					,LOSSAMT2=@Mileage
+					,OVERAMT2=@fine_price
 					WHERE IRENTORDNO=@OrderNo;
 				END
 				ELSE
@@ -230,9 +262,40 @@ SET @UserID    =ISNULL (@UserID    ,'');
 											 ,EQUIPMEMO,TOWINGAMT,TOWINGMEMO,OTHERAMT,OTHERMEMO
 											 ,PARKINGMEMO,PARKINGAMT2,PARKINGMEMO2 
 									FROM TB_NPR136Save WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo;
-					UPDATE TB_NPR136Save SET GIFT=@CarPoint,GIFT_MOTO=@MotorPoint,RENTAMT=@FinalPrice,[GIVEDATE]=CONVERT(VARCHAR(10),@StartDate,112),[RNTDATE]=CONVERT(VARCHAR(10),@EndDate,112)
-					,[GIVETIME]=REPLACE(CONVERT(VARCHAR(5), @StartDate,108),':',''),[RNTTIME]=REPLACE(CONVERT(VARCHAR(5), @EndDate,108),':',''),[GIVEKM]=@start_mile,[RNTKM]=@end_mile,isRetry=1
-					,PAYAMT=@PAYAMT,RENTDAYS=(DATEDIFF ( day , @StartDate , @EndDate )  ),NOCAMT=@Insurance_price
+
+					UPDATE TB_NPR136Save 
+					SET GIFT=@CarPoint
+					,GIFT_MOTO=@MotorPoint
+					,RNTAMT=@FinalPrice		--20210206 ADD BY ADAM REASON.修正備註,還車費用,逾時費,里程費未存檔
+					,[GIVEDATE]=CONVERT(VARCHAR(10),@StartDate,112)
+					,[RNTDATE]=CONVERT(VARCHAR(10),@EndDate,112)
+					,[GIVETIME]=REPLACE(CONVERT(VARCHAR(5), @StartDate,108),':','')
+					,[RNTTIME]=REPLACE(CONVERT(VARCHAR(5), @EndDate,108),':','')
+					,[GIVEKM]=@start_mile
+					,[RNTKM]=@end_mile
+					,isRetry=1
+					,PAYAMT=@PAYAMT
+					,RENTDAYS=(DATEDIFF ( day , @StartDate , @EndDate )  )
+					,NOCAMT=@Insurance_price
+					--20210206 ADD BY ADAM REASON.修正備註,還車費用,逾時費,里程費未存檔
+					,RENTAMT=@Pure
+					,LOSSAMT2=@Mileage
+					,OVERAMT2=@fine_price
+
+					--20210208 ADD BY ADAM REASON.
+					,CTRLAMT=@CarDispatch
+					,CTRLMEMO=@DispatchRemark
+					,CLEANAMT=@CleanFee
+					,CLEANMEMO=@CleanFeeRemark
+					,EQUIPAMT=@DestroyFee
+					,EQUIPMEMO=@DestroyFeeRemark
+					,PARKINGAMT=@ParkingFee
+					,PARKINGMEMO=@ParkingFeeRemark
+					,PARKINGAMT2=@ParkingFeeByMachi
+					,PARKINGMEMO2=@ParkingFeeByMachiRemark
+					,OTHERAMT=@OtherFee
+					,OTHERMEMO=@OtherFeeRemark
+
 					WHERE IRENTORDNO=@OrderNo;
 				END
 			END
@@ -266,16 +329,5 @@ EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_HandleOrderModify';

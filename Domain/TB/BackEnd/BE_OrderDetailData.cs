@@ -187,7 +187,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 安心服務費
         /// </summary>
-        public int InsurancePurePrice { set; get; }
+        public int Insurance_price { set; get; } //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
         /// <summary>
         /// 取車回饋
         /// </summary>

@@ -86,6 +86,10 @@ namespace WebAPI.Models.Enum
             /// 修改會員資料
             /// </summary>
             SetMemberData,
+            /// <summary>
+            /// 檢查手機號碼
+            /// </summary>
+            CheckMobile,
             #endregion
             /// <summary>
             /// Token Check
@@ -382,6 +386,10 @@ namespace WebAPI.Models.Enum
             /// 重新計價
             /// </summary>
             CalFinalPrice_Re,
+            /// <summary>
+            /// 取得還車里程
+            /// </summary>
+            GetCarReturnMillage,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -604,6 +612,10 @@ namespace WebAPI.Models.Enum
             /// 使用者回饋處理
             /// </summary>
             BE_FeedBackHandle,
+            /// <summary>
+            /// 取得還車合約
+            /// </summary>
+            BE_GetReturnCarControl,
 
             GetBindingCard,
             #endregion
@@ -664,6 +676,7 @@ namespace WebAPI.Models.Enum
                 case SPType.UploadCredentials: //上傳證件照
                     //SPName = "usp_UploadCredentials";
                     SPName = "usp_UploadCredentialsNew";
+                    //SPName = "usp_UploadCredentialsNew_20210220_Tang";  //20210220唐暫時改，用於將1.0照片拋去azure
                     break;
                 case SPType.ReSendEmail: //重發EMail
                     SPName = "usp_ReSendEmail";
@@ -679,6 +692,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetMemberData:  //修改會員資料
                     SPName = "usp_SetMemberData";
+                    break;
+                case SPType.CheckMobile:    //檢查手機號碼
+                    SPName = "usp_CheckMobile";
                     break;
                 #endregion
                 case SPType.CheckToken: //Check Token
@@ -916,6 +932,9 @@ namespace WebAPI.Models.Enum
                 case SPType.GetEstimate:
                     SPName = "usp_GetEstimate_Q1";
                     break;
+                case SPType.GetCarReturnMillage:    // 取得還車里程 20210219 ADD
+                    SPName = "usp_GetCarReturnMillage";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
@@ -1096,7 +1115,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_FeedBackHandle:
                     SPName = "usp_BE_FeedBackHandle";
                         break;
-
+                case SPType.BE_GetReturnCarControl:     //取得還車合約資訊
+                    SPName = "usp_BE_GetReturnCarControl";
+                    break;
                 case SPType.GetBindingCard:
                     SPName = "usp_GetBindingCard";
                     break;

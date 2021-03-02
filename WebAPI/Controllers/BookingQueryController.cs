@@ -7,10 +7,12 @@ using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Newtonsoft.Json;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -149,6 +151,10 @@ namespace WebAPI.Controllers
                 {
                     BillCommon billCommon = new BillCommon();
 
+                    var _repository = new ProjectRepository(connetStr);
+                    List<GetFullProjectInfo> ProjectInfo = new List<GetFullProjectInfo>();
+                    ProjectInfo = _repository.GetFullProjectInfo();
+
                     int DataLen = OrderDataLists.Count;
                     if (DataLen > 0)
                     {
@@ -229,6 +235,28 @@ namespace WebAPI.Controllers
                                     Power = Convert.ToInt32(OrderDataLists[i].device3TBA),
                                     RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToInt32(Convert.ToSingle(OrderDataLists[i].RemainingMilage))
                                 };
+
+                                //春節限定，調整每日上限
+                                var NYSD = new DateTime(2021, 2, 9, 0, 0, 0);
+                                var NYED = new DateTime(2021, 2, 16, 23, 59, 59);
+                                if (NYSD <= Convert.ToDateTime(obj.StartTime) && NYED >= Convert.ToDateTime(obj.StartTime))
+                                {
+                                    obj.MotorBasePriceObj.MaxPrice = 901;
+                                }
+                            }
+
+                            //春節限定，將春節專案的價格移植至原專案上
+                            if (obj.ProjType == 3)  //路邊
+                            {
+                                var temp = ProjectInfo.Where(x => x.CarTypeName == obj.CarTypeName).FirstOrDefault();
+                                if (temp != null)
+                                {
+                                    if (temp.ShowStart <= Convert.ToDateTime(obj.StartTime) && temp.ShowEnd >= Convert.ToDateTime(obj.StartTime))
+                                    {
+                                        obj.WorkdayPerHour = temp.PRICE / 10;
+                                        obj.HolidayPerHour = temp.PRICE_H / 10;
+                                    }
+                                }
                             }
 
                             obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;

@@ -241,6 +241,11 @@ namespace WebAPI.Controllers
                                         }
 
                                     }
+                                    else
+                                    {
+                                        flag = false;
+                                        errCode = "ERR762";
+                                    }
                                 }
                                 //int hasBind = 0;
                                 //List<CreditCardBindList> lstBind = new List<CreditCardBindList>();

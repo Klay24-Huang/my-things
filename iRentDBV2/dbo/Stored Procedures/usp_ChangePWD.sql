@@ -105,6 +105,10 @@ BEGIN TRY
 					U_USERID=@IDNO,
 					U_SYSDT=@NowDate
 				WHERE  MEMIDNO=@IDNO;
+
+				-- 20210226;新增LOG檔
+				INSERT INTO TB_MemberData_Log
+				SELECT 'U','9',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 			END
 			ELSE
 			BEGIN

@@ -26,6 +26,10 @@ namespace Domain.TB
         /// </summary>
         public string IDNO { set; get; }
         /// <summary>
+        /// 汽車剩餘總時數
+        /// </summary>
+        public float CarTotalHours { set; get; } = 0;
+        /// <summary>
         /// 汽車平日剩餘時數
         /// </summary>
         public float WorkDayHours { set; get; } = 0;
@@ -37,6 +41,14 @@ namespace Domain.TB
         /// 機車剩餘總時數
         /// </summary>
         public float MotoTotalHours { set; get; } = 0;
+        /// <summary>
+        /// 機車平日剩餘分鐘
+        /// </summary>
+        public float MotoWorkDayMins { set; get; } = 0;
+        /// <summary>
+        /// 機車假日剩餘分鐘
+        /// </summary>
+        public float MotoHolidayMins { set; get; } = 0;
         /// <summary>
         /// 汽車平日優惠費率
         /// </summary>

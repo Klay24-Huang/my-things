@@ -116,7 +116,10 @@ DECLARE @MotorMaxPrice INT			--單日計費上限
 DECLARE  @IRENTORDNO	VARCHAR(10)		--IRENT訂單編號
 		,@BIRTH			DATETIME
 		,@GIVEKM		INT
-		,@RNTKM			INT
+		,@RNTKM			INT;
+DECLARE @car_mgt_status TINYINT;
+DECLARE @cancel_status TINYINT;
+DECLARE @booking_status TINYINT;
 
 /*初始設定*/
 SET @Error=0;
@@ -128,8 +131,11 @@ SET @IsSystem=0;
 SET @FunName='usp_BookingControl';
 SET @ErrorType=0;
 SET @hasData=0;
-SET @Descript=N'新增資料至BookingControl';
+SET @Descript=N'使用者操作【取車】新增資料至BookingControl';
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @car_mgt_status=0;
+SET @cancel_status =0;
+SET @booking_status=0;
 
 SET @IsHoliday=0;
 SET @IDNO=ISNULL(@IDNO,'');
@@ -195,7 +201,6 @@ BEGIN TRY
 				@OUTBRNH=[lend_place],
 				@INBRNH=[return_place],
 				@ORDAMT=[init_price],
-				
 				@PROJID=[ProjID],
 				@INVKIND=[bill_option],
 				@INVTITLE=[title],
@@ -205,9 +210,11 @@ BEGIN TRY
 				@NOCAMT=[InsurancePurePrice],
 				@SDate=start_time,
 				@EDate=stop_time,
-				@ProjType=ProjType
+				@ProjType=ProjType,
+				@booking_status=booking_status,
+				@cancel_status=cancel_status,
+				@car_mgt_status=car_mgt_status
 			FROM [dbo].[TB_OrderMain] WITH(NOLOCK) WHERE [order_number]=@OrderNo;
-			
 			
 			SELECT @GIVEDATE_R=CONVERT(VARCHAR,[final_start_time],112),
 				@GIVETIME_R=SUBSTRING(REPLACE(CONVERT(VARCHAR,[final_start_time],108),':',''),1,4),
@@ -223,7 +230,7 @@ BEGIN TRY
 
 			SELECT @RPRICE=Case When @IsHoliday=1 Then PROPRICE_H Else PROPRICE_N End FROM [dbo].[TB_Project] WITH(NOLOCK) WHERE [PROJID]=@PROJID;
 
-			SELECT @PriceN=[PRICE],@PriceH=[PRICE_H] FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] WHERE PROJID=@PROJID AND CARTYPE=@CARTYPE;
+			SELECT @PriceN=[PRICE],@PriceH=[PRICE_H] FROM [dbo].[VW_GetFullProjectCollectionOfCarTypeGroup] WITH(NOLOCK) WHERE PROJID=@PROJID AND CARTYPE=@CARTYPE;
 
 			SELECT @MotorPrice=Price,@BaseMinutes=BaseMinutes,@BaseMinutesPrice=BaseMinutesPrice,@MotorMaxPrice=MaxPrice FROM [TB_PriceByMinutes] WITH(NOLOCK) WHERE ProjID=@PROJID AND CarType=@CARTYPE;
 			
@@ -259,17 +266,20 @@ BEGIN TRY
 			END
 
 			--寫資料
-			INSERT INTO TB_BookingControl(order_number,PROCD,ODCUSTID,ODCUSTNM,TEL1,TEL2,TEL3,ODDATE,GIVEDATE,GIVETIME
-				,RNTDATE,RNTTIME,CARTYPE,CARNO,OUTBRNH,INBRNH,ORDAMT,REMARK,PAYAMT,RPRICE
-				,RINV,DISRATE,NETRPRICE,RNTAMT,INSUAMT,RENTDAY,EBONUS,PROJTYPE,TYPE,INVKIND
-				,INVTITLE,UNIMNO,TSEQNO,ORDNO,MKTime,UPDTime,isRetry,RetryTimes,CARRIERID,NPOBAN
-				,NOCAMT)
-			VALUES(@OrderNo,@PROCD,@ODCUSTID,@ODCUSTNM,@TEL1,@TEL2,@TEL3,@ODDATE,@GIVEDATE,@GIVETIME
-				,@RNTDATE,@RNTTIME,@CARTYPE,@CarNo,@OUTBRNH,@INBRNH,@ORDAMT,@REMARK,@PAYAMT,@RPRICE
-				,@RINV,@DISRATE,@NETRPRICE,@ORDAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
-				,@INVTITLE,@UNIMNO,@TSEQNO,@ORDNO,@NowTime,@NowTime,@isRetry,@RetryTimes,@CARRIERID,@NPOBAN
-				,@NOCAMT);
-			
+			IF NOT EXISTS(SELECT * FROM TB_BookingControl WITH(NOLOCK) WHERE order_number=@OrderNo)
+			BEGIN
+				INSERT INTO TB_BookingControl(order_number,PROCD,ODCUSTID,ODCUSTNM,TEL1,TEL2,TEL3,ODDATE,GIVEDATE,GIVETIME
+					,RNTDATE,RNTTIME,CARTYPE,CARNO,OUTBRNH,INBRNH,ORDAMT,REMARK,PAYAMT,RPRICE
+					,RINV,DISRATE,NETRPRICE,RNTAMT,INSUAMT,RENTDAY,EBONUS,PROJTYPE,TYPE,INVKIND
+					,INVTITLE,UNIMNO,TSEQNO,ORDNO,MKTime,UPDTime,isRetry,RetryTimes,CARRIERID,NPOBAN
+					,NOCAMT)
+				VALUES(@OrderNo,@PROCD,@ODCUSTID,@ODCUSTNM,@TEL1,@TEL2,@TEL3,@ODDATE,@GIVEDATE,@GIVETIME
+					,@RNTDATE,@RNTTIME,@CARTYPE,@CarNo,@OUTBRNH,@INBRNH,@ORDAMT,@REMARK,@PAYAMT,@RPRICE
+					,@RINV,@DISRATE,@NETRPRICE,@ORDAMT,@INSUAMT,@RENTDAY,@EBONUS,@PROJID,@TYPE,@INVKIND
+					,@INVTITLE,@UNIMNO,@TSEQNO,@ORDNO,@NowTime,@NowTime,@isRetry,@RetryTimes,@CARRIERID,@NPOBAN
+					,@NOCAMT);
+			END
+
 			IF NOT EXISTS(SELECT * FROM TB_lendCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
 			BEGIN
 			--順便寫入出車(125必須要等060跑過產生預約編號才可以進行同步)
@@ -290,7 +300,7 @@ BEGIN TRY
 				  ,@IDNO		AS CUSTID
 				  ,@ODCUSTNM	AS CUSTNM
 
-				  ,CONVERT(VARCHAR(10),@BIRTH,120)
+				  ,IIF (@BIRTH IS NULL,'',CONVERT(VARCHAR(10),@BIRTH,120))		--20210115 ADD BY ADAM REASON.防止NULL寫入
 				  ,CASE WHEN LEN(@IDNO)=10 THEN '1' ELSE '2' END AS CUSTTYPE
 				  ,'' AS ODCUSTID
 				  ,@CARTYPE		AS CARTYPE
@@ -334,6 +344,10 @@ BEGIN TRY
 				  ,@NOCAMT		AS NOCAMT
 			END
 
+			--寫入歷程
+			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+			VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
 			COMMIT TRAN;
 		END
 		ELSE
@@ -370,4 +384,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingControl';
 GO
-

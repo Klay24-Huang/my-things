@@ -6,6 +6,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -114,9 +115,12 @@ namespace WebAPI.Controllers
                     });
                 }
 
+                //春節限定，將R140專案移除
+                var tempList = AllCars.Where(x => x.ProjID != "R140").ToList();
+
                 OAnyRentAPI = new OAPI_MotorRent()
                 {
-                    MotorRentObj = AllCars
+                    MotorRentObj = tempList
                 };
             }
             #endregion

@@ -208,6 +208,14 @@ namespace WebAPI.Models.ComboFunc
                     else
                     {
                         CanUseTotalMotorPoint = 0;
+                        if ((needPointer % 30) >= 15)
+                        {
+                            needPointer += (30 - (needPointer % 30));
+                        }
+                        else
+                        {
+                            needPointer -= (needPointer % 30);
+                        }
                         needPointer -= (needPointer % 30);
                         CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
 

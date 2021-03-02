@@ -4,6 +4,7 @@ using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Newtonsoft.Json;
+using NLog;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace OtherService
     /// </summary>
     public class FETCatAPI
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string BasePath = ConfigurationManager.AppSettings.Get("CatBaseURL");
         private string SyncPath = ConfigurationManager.AppSettings.Get("CatSyncURL");
         private string[] SyncCommand = ConfigurationManager.AppSettings.Get("CatSyncCommand").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
@@ -210,7 +213,7 @@ namespace OtherService
             }
             catch (Exception ex)
             {
-
+                logger.Error(String.Format("{0} send fail: {1}", spInput.requestId, ex.Message));
                 spInput.HttpStatus = "exception";
             }
             finally

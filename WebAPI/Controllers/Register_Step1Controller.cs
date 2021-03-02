@@ -106,6 +106,20 @@ namespace WebAPI.Controllers
                     }
                 }
             }
+            // 20210222;增加手機黑名單檢查
+            if (flag)
+            {
+                string spName = new ObjType().GetSPName(ObjType.SPType.CheckMobile);
+                SPInput_CheckMobile spInput = new SPInput_CheckMobile()
+                {
+                    LogID = LogID,
+                    Mobile = apiInput.Mobile,
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_CheckMobile, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            }
             #endregion
             #region 發送簡訊
             if (flag)

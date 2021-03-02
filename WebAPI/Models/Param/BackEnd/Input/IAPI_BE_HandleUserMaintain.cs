@@ -17,6 +17,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         public string StartDate { set; get; }
         public string EndDate { set; get; }
 
+        public string AreaV { set; get; }//20210209唐加
+        public string mtypeV { set; get; }//20210209唐加
+
         public List<Power> Power { get; set; }
 
     }

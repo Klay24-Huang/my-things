@@ -60,6 +60,7 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowDate Datetime;
+DECLARE @LogFlag VARCHAR(1);
 
 /*初始設定*/
 SET @Error=0;
@@ -75,6 +76,7 @@ SET @NowDate=DATEADD(Hour,8,getdate());
 SET @IDNO=ISNULL (@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @Mobile=ISNULL (@Mobile,'');
+SET @LogFlag='';
 
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' OR @Mobile=''
@@ -87,24 +89,35 @@ BEGIN TRY
 	BEGIN
 		--再次確認身份證是否存在
 		BEGIN TRAN
-		SELECT @hasData=COUNT(1) FROM TB_MemberData WHERE MEMIDNO=@IDNO AND MEMPWD='' AND IrFlag>-1;
+		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND MEMPWD='' AND IrFlag>-1;
 		IF @hasData=0
 		BEGIN
 			SET @hasData=0
 			--有未審核通過的資料就更新，沒有才INSERT
-			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO --AND HasAudit=0;		--20201114 ADD BY ADAM REASON.改為待審只有一筆
+			SELECT @hasData=COUNT(1) FROM TB_MemberDataOfAutdit WITH(NOLOCK) WHERE MEMIDNO=@IDNO;	--20201114 ADD BY ADAM REASON.改為待審只有一筆
 			IF @hasData=0
 			BEGIN
-				INSERT INTO TB_MemberDataOfAutdit(MEMIDNO,MEMTEL,HasAudit,IsNew,MKTime)
-				VALUES(@IDNO,@Mobile,0,1,@NowDate);
+				INSERT INTO TB_MemberDataOfAutdit(MEMIDNO,MEMTEL,HasAudit,IsNew,MKTime,UPDTime)
+				VALUES(@IDNO,@Mobile,0,1,@NowDate,@NowDate);
+
+				SET @LogFlag='A';
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_MemberDataOfAutdit SET MEMTEL=@Mobile WHERE MEMIDNO=@IDNO;
+				UPDATE TB_MemberDataOfAutdit 
+				SET MEMTEL=@Mobile,
+					UPDTime=@NowDate 
+				WHERE MEMIDNO=@IDNO;
+
+				SET @LogFlag='U';
 			END
 
+			-- 20210225;新增LOG檔
+			INSERT INTO TB_MemberDataOfAutdit_Log
+			SELECT @LogFlag,'3',@NowDate,* FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO;
+
 			SET @hasData=0
-			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=0;
+			SELECT @hasData=COUNT(1) FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=0;
 			IF @hasData=0
 			BEGIN
 				INSERT INTO TB_VerifyCode(IDNO,Mobile,Mode,VerifyNum,DeadLine)

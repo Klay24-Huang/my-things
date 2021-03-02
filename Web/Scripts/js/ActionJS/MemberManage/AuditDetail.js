@@ -262,12 +262,12 @@ $(function () {
             SendObj.Addr = Addr;
             SendObj.UniCode = UniCode;
             SendObj.InvoiceType = InvoiceType;
-            SendObj.AuditStatus = AuditStatus;
+            SendObj.AuditStatus = AuditStatus;//-1不通過，否則就通過
             SendObj.NotAuditReason = NotAuditReason;
             SendObj.RejectReason = RejectReason;
             SendObj.UserID = Account;
             SendObj.SendMessage = SendMessage;
-            SendObj.IsNew = IsNew;
+            SendObj.IsNew = IsNew; //1是新加入，不然就是變更身分
 
             //20201125 UPD BY JERRY 增加欄位處理
             SendObj.MEMHTEL = MEMHTEL;

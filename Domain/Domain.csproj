@@ -70,6 +70,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetOrderInfoBeforeModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_GetReturnCarControl.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarBindData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarOnline.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleCarSetting.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="SP\Input\Car\SPInput_CheckCariButton.cs" />
     <Compile Include="SP\Input\Car\SPInput_EnforceReturnCar.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetAnyRentCar.cs" />
+    <Compile Include="SP\Input\Car\SPInput_GetCarMillage.cs" />
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_SetMotorStatus.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="SP\Input\Project\SPInput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />
+    <Compile Include="SP\Input\Register\SPInput_CheckMobile.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckVerifyCode.cs" />
     <Compile Include="SP\Input\Register\SPInput_ForgetPWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_GetMemberMobile.cs" />
@@ -236,6 +239,7 @@
     <Compile Include="SP\Output\Booking\SPOutput_CheckCarStatus.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_ReadCard.cs" />
     <Compile Include="SP\Output\Car\SPOutput_CarStatus.cs" />
+    <Compile Include="SP\Output\Car\SPOutput_GetCarMillage.cs" />
     <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
     <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
@@ -362,6 +366,7 @@
     <Compile Include="TB\ErrorMessageList.cs" />
     <Compile Include="TB\FeedBackPIC.cs" />
     <Compile Include="TB\GetFeedBackKindData.cs" />
+    <Compile Include="TB\GetFullProjectInfo.cs" />
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
     <Compile Include="TB\iRentManagerStation.cs" />
