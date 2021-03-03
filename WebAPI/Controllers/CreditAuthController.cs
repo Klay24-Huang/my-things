@@ -141,17 +141,16 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 還車時間檢查
-
-            //if (flag)
-            //{
-            //    var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
-            //    if (!ckTime)
-            //    {
-            //        flag = false;
-            //        errCode = "ERR245";
-            //    }
-            //}
+            #region 還車時間檢查 
+            if (flag)
+            {
+                var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
+                if (!ckTime)
+                {
+                    flag = false;
+                    errCode = "ERR245";
+                }
+            }
 
             #endregion
 

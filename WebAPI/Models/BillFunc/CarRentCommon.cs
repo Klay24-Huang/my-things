@@ -1277,7 +1277,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = true;
             string SQL = "";
-            SQL = "INSERT INTO TB_TraceLog2 (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
+            SQL = "INSERT INTO TB_TraceLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, TraceType)";
             SQL += " VALUES ('" + sour.CodeVersion + "',"
                 + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
                 "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.TraceType.ToString() + "'" +
