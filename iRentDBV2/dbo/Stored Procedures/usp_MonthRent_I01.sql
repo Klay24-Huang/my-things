@@ -96,18 +96,13 @@ BEGIN TRY
 		(
 			ProjID, ProjNM, SEQNO, Mode, IDNO, WorkDayHours,
 			HolidayHours, MotoTotalHours, StartDate, EndDate,
+			WorkDayRateForCar,
 			WorkDayRateForMoto, HoildayRateForMoto,
 			MKTime, UPDTime
 		)
-		/*
-		VALUES
-		(
-			@ProjID, @ProjNM, @SEQNO, @Mode, @IDNO, @WorkDayHours,
-			@HolidayHours, @MotorTotalHours, @StartDate, @EndDate,
-			@NowTime, @NowTime
-		)*/
 		SELECT ProjID, ProjNM, SEQNO, CASE WHEN MotorTotalHours > 0 THEN 1 ELSE 0 END, IDNO, WorkDayHours,
 			HolidayHours, MotorTotalHours, StartDate, EndDate,
+			CASE WHEN MotorTotalHours = 0 THEN FavHFee ELSE 99 END,
 			CASE WHEN MotorTotalHours > 0 THEN FavHFee ELSE 1.5 END, CASE WHEN MotorTotalHours > 0 THEN FavHFee ELSE 1.5 END,
 			@NowTime, @NowTime
 		FROM @MonthlyRent
