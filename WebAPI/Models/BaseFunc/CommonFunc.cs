@@ -1071,9 +1071,12 @@ namespace WebAPI.Models.BaseFunc
         /// <returns></returns>
         public string GetClientIp(HttpRequestMessage request = null)
         {
-
-
-            if (request.Properties.ContainsKey("MS_HttpContext"))
+            //20210303 ADD BY ADAM REASON.補上Azure front door ip偵測
+            if (request.Properties.ContainsKey("X-Azure-ClientIP"))
+            {
+                return ((HttpContextWrapper)request.Properties["X-Azure-ClientIP"]).Request.UserHostAddress;
+            }
+            else if (request.Properties.ContainsKey("MS_HttpContext"))
             {
                 return ((HttpContextWrapper)request.Properties["MS_HttpContext"]).Request.UserHostAddress;
             }
