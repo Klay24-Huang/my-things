@@ -141,19 +141,6 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 還車時間檢查 
-            if (flag)
-            {
-                var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
-                if (!ckTime)
-                {
-                    flag = false;
-                    errCode = "ERR245";
-                }
-            }
-
-            #endregion
-
             #region TB
             //Token判斷
             if (flag && isGuest == false)
@@ -171,6 +158,19 @@ namespace WebAPI.Controllers
 
                 if (apiInput.PayType == 0)
                 {
+                    #region 還車時間檢查 
+                    if (flag)
+                    {
+                        var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
+                        if (!ckTime)
+                        {
+                            flag = false;
+                            errCode = "ERR245";
+                        }
+                    }
+
+                    #endregion
+
                     #region 取出訂單資訊
                     if (flag)
                     {
