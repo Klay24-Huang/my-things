@@ -121,6 +121,10 @@ namespace Domain.SP.Output.OrderList
         /// 剩餘訂金
         /// </summary>
         public int LastOrderPrice { get; set; }
+        /// <summary>
+        /// 前n分鐘0元
+        /// </summary>
+        public double FirstFreeMins { get; set; }
         #region 機車費用，當ProjType=4時才有值
         /// <summary>
         /// 基本分鐘數

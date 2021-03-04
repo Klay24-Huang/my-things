@@ -67,7 +67,7 @@ namespace Reposotory.Implement
                 {
                     term += " AND ";
                 }
-                term += " ((@SD BETWEEN  StartDate AND EndDate) OR (@ED BETWEEN  StartDate AND EndDate))";
+                term += " ((EndDate > @SD AND EndDate <= @ED) OR (StartDate >= @SD AND StartDate < @ED) OR (StartDate <= @SD AND EndDate >= @ED))";
                 para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                 para[nowCount].Value = SD;
                 para[nowCount].Direction = ParameterDirection.Input;

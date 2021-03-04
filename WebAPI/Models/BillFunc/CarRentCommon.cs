@@ -292,7 +292,7 @@ namespace WebAPI.Models.BillFunc
                         //春前
                         if (sour.ED <= sprSD)
                         {
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300,sour.FirstFreeMins);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -349,7 +349,7 @@ namespace WebAPI.Models.BillFunc
                         int xDiscount = sour.Discount;//帶入月租運算的折扣
                         if (sour.hasFine)
                         {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount);
+                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
                             if (re.carInfo != null)
                             {
                                 re.CarRental += re.carInfo.RentInPay;
@@ -362,7 +362,7 @@ namespace WebAPI.Models.BillFunc
                         }
                         else
                         {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount);
+                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount,sour.FirstFreeMins);
                             if (re.carInfo != null)
                             {
                                 re.CarRental += re.carInfo.RentInPay;
@@ -1758,6 +1758,10 @@ namespace WebAPI.Models.BillFunc
         /// 汽車基本分鐘數
         /// </summary>
         public int carBaseMins { get; set; }
+        /// <summary>
+        /// 前n分鐘0元
+        /// </summary>
+        public double FirstFreeMins { get; set; }
         public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
     }
     public class OBIZ_MonthRent: BIZ_CRBase

@@ -177,6 +177,7 @@ BEGIN TRY
 			   VW.Insurance, --是否有安心服務
 			   VW.CarTypeGroupCode,
 			   VW.ProjID,
+			   VW.FirstFreeMins, --前n分鐘免費 eason
 			   OrderPrice = ISNULL(NYP.PAYAMT,0)		--春節訂金
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)

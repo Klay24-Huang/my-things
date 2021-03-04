@@ -382,8 +382,6 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                mOri = mOri.OrderByDescending(x => x.MonLvl).ToList();
-
                 if (mOri.Any(x => x.WorkDayHours < 0 || x.WorkDayRateForCar < 0 ||
                    x.HolidayHours < 0 || x.HoildayRateForCar < 0 || x.MonthlyRentId <= 0
                    || x.Mode != 0
@@ -641,8 +639,6 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                mOri = mOri.OrderByDescending(x => x.MonLvl).ToList();
-
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
                    || x.Mode != 1

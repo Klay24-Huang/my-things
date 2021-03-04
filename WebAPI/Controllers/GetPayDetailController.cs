@@ -686,7 +686,8 @@ namespace WebAPI.Controllers
                             Discount = Discount,
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
-                            carBaseMins = 60
+                            carBaseMins = 60,
+                            FirstFreeMins = item.FirstFreeMins
                         };
 
                         if (visMons != null && visMons.Count() > 0)

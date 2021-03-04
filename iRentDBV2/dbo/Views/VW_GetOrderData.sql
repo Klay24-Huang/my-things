@@ -67,6 +67,7 @@ AS
 		,VW.PRODESC
 		,VW.PRICE
 		,VW.PRICE_H
+        ,VW.FirstFreeMins
 		,VW.CarBrend
 		,VW.CarTypeName
 		,VW.CarTypeGroupCode
