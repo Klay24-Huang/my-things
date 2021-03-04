@@ -251,7 +251,7 @@ namespace WebAPI.Models.BillFunc
             var cr_com = new CarRentCommon();
             var monthlyRentRepository = new MonthlyRentRepository(connetStr);
             var monthlyRentDatas = new List<MonthlyRentData>();
-            var billCommon = new BillCommon();          
+            var billCommon = new BillCommon();
             var errCode = re.errCode;
             re.flag = true;
 
@@ -268,7 +268,7 @@ namespace WebAPI.Models.BillFunc
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
-                monthlyRentDatas.Insert(0,sour.VisMons[0]);
+                monthlyRentDatas.Insert(0, sour.VisMons[0]);
 
             if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0)
                 re.monthlyRentDatas = monthlyRentDatas;
@@ -283,7 +283,7 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (sour.ProjType == 4)
                     {
-                        var motoMonth = objUti.Clone(monthlyRentDatas);         
+                        var motoMonth = objUti.Clone(monthlyRentDatas);
                         int motoDisc = sour.Discount;
 
                         DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
@@ -293,7 +293,7 @@ namespace WebAPI.Models.BillFunc
                         if (sour.ED <= sprSD)
                         {
                             var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, 300);
-                            if(xre != null)
+                            if (xre != null)
                             {
                                 re.carInfo = xre;
                                 re.CarRental = xre.RentInPay;
@@ -305,7 +305,7 @@ namespace WebAPI.Models.BillFunc
                             }
                         }
                         //春後
-                        else 
+                        else
                         {
                             var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
                             if (xre != null)
@@ -320,8 +320,8 @@ namespace WebAPI.Models.BillFunc
                             }
                         }
 
-                        if (motoMonth != null && motoMonth.Count()>0 && //虛擬月租不存
-                            sour.VisMons != null && sour.VisMons.Count() > 0) 
+                        if (motoMonth != null && motoMonth.Count() > 0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0)
                             motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
@@ -330,8 +330,13 @@ namespace WebAPI.Models.BillFunc
                             int UseLen = motoMonth.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
-                                //fix: 修正存入 MotoWorkDayMins, MotoHolidayMins
-                                re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId, 0, 0, Convert.ToInt32(motoMonth[i].MotoTotalHours), sour.LogID, ref errCode); //寫入記錄
+                                re.flag = monthlyRentRepository.InsMonthlyHistory(
+                                    sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId,
+                                    0, 0, 0,
+                                    Convert.ToInt32(motoMonth[i].MotoTotalHours),
+                                    Convert.ToInt32(motoMonth[i].MotoWorkDayMins),
+                                    Convert.ToInt32(motoMonth[i].MotoHolidayMins),
+                                    sour.LogID, ref errCode); //寫入記錄
                             }
                         }
                     }
@@ -353,7 +358,7 @@ namespace WebAPI.Models.BillFunc
                                 else
                                     UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
-                            }                         
+                            }
                         }
                         else
                         {
@@ -369,19 +374,24 @@ namespace WebAPI.Models.BillFunc
                             }
                         }
 
-                        if (UseMonthlyRent != null && UseMonthlyRent.Count()> 0 && //虛擬月租不存
-                            sour.VisMons != null && sour.VisMons.Count() > 0) 
+                        if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
+                            sour.VisMons != null && sour.VisMons.Count() > 0)
                             UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         if (UseMonthlyRent.Count > 0)
-                        {                          
+                        {
                             int UseLen = UseMonthlyRent.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
-                                //fix: 修正存入,增加CarTotalHours存入
-                                re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
+                                re.flag = monthlyRentRepository.InsMonthlyHistory(
+                                    sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId,
+                                    Convert.ToInt32(UseMonthlyRent[i].CarTotalHours * 60),
+                                    Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60),
+                                    Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60),
+                                    0, 0, 0,
+                                    sour.LogID, ref errCode); //寫入記錄
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -430,9 +440,12 @@ namespace WebAPI.Models.BillFunc
                 {
                     monthlyRentDatas.ForEach(x =>
                     {
+                        x.CarTotalHours += Convert.ToSingle(monHis.Where(g => g.MonthlyRentId == x.MonthlyRentId).Select(h => h.UseCarTotalHours).Sum());
                         x.WorkDayHours += Convert.ToSingle(monHis.Where(a => a.MonthlyRentId == x.MonthlyRentId).Select(b => b.UseWorkDayHours).Sum());
                         x.HolidayHours += Convert.ToSingle(monHis.Where(c => c.MonthlyRentId == x.MonthlyRentId).Select(d => d.UseHolidayHours).Sum());
                         x.MotoTotalHours += Convert.ToSingle(monHis.Where(e => e.MonthlyRentId == x.MonthlyRentId).Select(f => f.UseMotoTotalHours).Sum());
+                        x.MotoWorkDayMins += Convert.ToSingle(monHis.Where(i => i.MonthlyRentId == x.MonthlyRentId).Select(j => j.UseMotoWorkDayMins).Sum());
+                        x.MotoHolidayMins += Convert.ToSingle(monHis.Where(k => k.MonthlyRentId == x.MonthlyRentId).Select(l => l.UseMotoHolidayMins).Sum());
                     });
                 }
             }
@@ -498,12 +511,7 @@ namespace WebAPI.Models.BillFunc
                         motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
                         if (motoMonth.Count > 0)
                         {
-                            //int UseLen = motoMonth.Count;
-                            //for (int i = 0; i < UseLen; i++)
-                            //{
-                            //    if (dbSave)
-                            //        re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId, 0, 0, Convert.ToInt32(motoMonth[i].MotoTotalHours), sour.LogID, ref errCode); //寫入記錄
-                            //}
+
                         }
                     }
                     else
@@ -540,20 +548,7 @@ namespace WebAPI.Models.BillFunc
                             }
                         }
 
-                        #region 不存檔
-                        //if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
-                        //    sour.VisMons != null && sour.VisMons.Count() > 0)
-                        //    UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
-
-                        //if (UseMonthlyRent.Count > 0)
-                        //{
-                        //    int UseLen = UseMonthlyRent.Count;
-                        //    for (int i = 0; i < UseLen; i++)
-                        //    {
-                        //        re.flag = monthlyRentRepository.InsMonthlyHistory(sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId, Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60), Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60), 0, sour.LogID, ref errCode); //寫入記錄
-                        //    }
-                        //}
-                        #endregion
+                        //不進行sp存檔,以下省略...
                     }
                 }
             }
@@ -997,7 +992,18 @@ namespace WebAPI.Models.BillFunc
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             var mHis = new List<MonthlyRentHis>();
-            string SQL = "SELECT MonthlyRentId, UseWorkDayHours, UseHolidayHours, UseMotoTotalHours FROM TB_MonthlyRentHistory WHERE OrderNo = " + OrderNo + " AND  MonthlyRentId IN (" + MonthlyRentIds + ")";
+
+            if (string.IsNullOrWhiteSpace(MonthlyRentIds) || string.IsNullOrWhiteSpace(OrderNo))
+                throw new Exception("MonthlyRentIds, OrderNo必填");
+
+            string SQL = @"
+            SELECT 
+            MonthlyRentId, 
+            UseCarTotalHours, UseWorkDayHours, UseHolidayHours, 
+            UseMotoTotalHours, UseMotoWorkDayMins, UseMotoHolidayMins 
+            FROM TB_MonthlyRentHistory
+            WHERE OrderNo = {0} AND MonthlyRentId IN ({1}) ";
+            SQL = string.Format(SQL, OrderNo, MonthlyRentIds);
             mHis = GetObjList<MonthlyRentHis>(ref flag, ref lstError, SQL, null, "");
             return mHis;
         }
@@ -1811,9 +1817,12 @@ namespace WebAPI.Models.BillFunc
     public class MonthlyRentHis
     {
         public int MonthlyRentId { get; set; }
+        public double UseCarTotalHours { get; set; }
         public double UseWorkDayHours { get; set; }
         public double UseHolidayHours { get; set; }
         public double UseMotoTotalHours { get; set; }
+        public double UseMotoWorkDayMins { get; set; }
+        public double UseMotoHolidayMins { get; set; }
     }
     public class TraceLogVM
     {

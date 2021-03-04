@@ -22,6 +22,18 @@ namespace Domain.TB
         /// </summary>
         public Int64 MonthlyRentId { set; get; }
         /// <summary>
+        /// 月租等級
+        /// </summary>
+        public int MonLvl { get; set; }
+        /// <summary>
+        /// 汽車免費時段: 0無,1平日,2假日,3不分平假日
+        /// </summary>
+        public int CarFreeType { get; set; }
+        /// <summary>
+        /// 機車免費時段: 0無,1平日,2假日,3不分平假日
+        /// </summary>
+        public int MotoFreeType { get; set; }
+        /// <summary>
         /// 身份證
         /// </summary>
         public string IDNO { set; get; }

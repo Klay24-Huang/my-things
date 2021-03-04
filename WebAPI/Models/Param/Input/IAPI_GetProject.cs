@@ -12,6 +12,7 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string StationID { set; get; }
         public string CarType { set; get; }
+        //public int Seat { get; set; }
         /// <summary>
         /// 預計取車時間
         /// </summary>

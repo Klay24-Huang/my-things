@@ -39,7 +39,16 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MonthlyRentData> lstMonthlyRent = null;
-            string SQL = "SELECT Mode,MonthlyRentId,IDNO,WorkDayHours,HolidayHours,MotoTotalHours,[WorkDayRateForCar],[HoildayRateForCar],[WorkDayRateForMoto],[HoildayRateForMoto],[StartDate],[EndDate]  FROM [TB_MonthlyRent] ";
+            string SQL = @"
+            SELECT 
+            Mode,MonthlyRentId,MonLvl,IDNO,
+            CarFreeType,MotoFreeType,
+            CarTotalHours,WorkDayHours,HolidayHours,
+            MotoTotalHours,MotoWorkDayMins,MotoHolidayMins,
+            WorkDayRateForCar,HoildayRateForCar,
+            WorkDayRateForMoto,HoildayRateForMoto,
+            StartDate,EndDate
+            FROM TB_MonthlyRent ";
             SqlParameter[] para = new SqlParameter[4];
             string term = "";
             int nowCount = 0;
@@ -76,7 +85,6 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-
 
             if ("" != term)
             {
@@ -115,7 +123,11 @@ namespace Reposotory.Implement
             checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo,Int64 MonthlyRentId, int UseWorkDayMins, int UseHolidayMins, int UseMotoTotalMinutes, Int64 LogID, ref string errCode)
+        public bool InsMonthlyHistory(
+            string IDNO, Int64 OrderNo,Int64 MonthlyRentId,
+            int UseCarTotalHours, int UseWorkDayMins, int UseHolidayMins,
+            int UseMotoTotalMinutes, int UseMotoWorkDayMins, int UseMotoHolidayMins,
+            Int64 LogID, ref string errCode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -123,12 +135,15 @@ namespace Reposotory.Implement
             SPInput_InsMonthlyHistory SPInput = new SPInput_InsMonthlyHistory()
             {
                 IDNO = IDNO,
-                LogID = LogID,
                 OrderNo = OrderNo,
                 MonthlyRentId = MonthlyRentId,
+                UseCarTotalHours = UseCarTotalHours,
+                UseWorkDayHours = UseWorkDayMins,
                 UseHolidayHours = UseHolidayMins,
                 UseMotoTotalHours = UseMotoTotalMinutes,        //2021128 ADD BY ADAM 
-                UseWorkDayHours = UseWorkDayMins
+                UseMotoWorkDayMins = UseMotoWorkDayMins,
+                UseMotoHolidayMins = UseMotoHolidayMins,
+                LogID = LogID,
             };
             SPOutput_Base SPOutput = new SPOutput_Base();
             SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base>(ConnectionString);
