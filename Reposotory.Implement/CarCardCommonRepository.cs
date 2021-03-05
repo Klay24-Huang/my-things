@@ -275,5 +275,65 @@ namespace Reposotory.Implement
             lstCardSettingLogs = GetObjList<BE_CardSettingData>(ref flag, ref lstError, SQL, para, term);
             return lstCardSettingLogs;
         }
+        /// <summary>
+        /// 機車電池狀態查詢
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public List<BE_MotorBatteryStatus> GetMotorBatteryStatus(string CarNo, string SDate, string EDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MotorBatteryStatus> lstMotorBatteryStatus = null;
+            string SQL = "SELECT CarNo,CID,Volt,device2TBA,device3TBA,deviceRSOC,deviceMBA,deviceMBAA,deviceMBAT_Hi,deviceMBAT_Lo,deviceRBA,deviceRBAA,deviceRBAT_Hi,deviceRBAT_Lo,deviceLBA,deviceLBAA,deviceLBAT_Hi,deviceLBAT_Lo,MKTime FROM TB_CarRawData ";
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            int nowCount = 0;
+
+            term = " CarNo=@CarNo ";
+            para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+            para[nowCount].Value = CarNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if (SDate != "")
+            {
+                if (term != "")
+                {
+                    term += " AND ";
+                }
+                term += " MKTime>=@SDate ";
+                para[nowCount] = new SqlParameter("@SDate", SqlDbType.DateTime);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if (EDate != "")
+            {
+                if (term != "")
+                {
+                    term += " AND ";
+                }
+                term += " MKTime<=@EDate ";
+                para[nowCount] = new SqlParameter("@EDate", SqlDbType.DateTime);
+                para[nowCount].Value = EDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE (" + term + ")";
+            }
+            SQL += " ORDER BY MKTime ASC";
+
+
+            lstMotorBatteryStatus = GetObjList<BE_MotorBatteryStatus>(ref flag, ref lstError, SQL, para, term);
+            return lstMotorBatteryStatus;
+        }
     }
 }

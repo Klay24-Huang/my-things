@@ -869,5 +869,157 @@ namespace Web.Controllers
 
             
         }
+
+        /// <summary>
+        /// 機車電池狀態查詢
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MotorBatteryStatusQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MotorBatteryStatusQuery(string CarNo, string SendDate)
+        {
+            if (string.IsNullOrEmpty(SendDate))
+            {
+                SendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
+            }
+            string StartDate = SendDate + " 00:00";
+            string EndDate = SendDate + " 23:59";
+
+            ViewData["CarNo"] = CarNo;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["SendDate"] = SendDate;
+            List<BE_MotorBatteryStatus> lstData = new CarCardCommonRepository(connetStr).GetMotorBatteryStatus(CarNo, StartDate, EndDate);
+            return View(lstData);
+        }
+
+        public ActionResult ExplodeMotorBatteryStatusQuery(string ExplodeCarNo, string ExplodeSendDate)
+        {
+            if (string.IsNullOrEmpty(ExplodeSendDate))
+            {
+                ExplodeSendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
+            }
+            string StartDate = ExplodeSendDate + " 00:00";
+            string EndDate = ExplodeSendDate + " 23:59";
+
+            List<BE_MotorBatteryStatus> lstRawData = new List<BE_MotorBatteryStatus>();
+            CarCardCommonRepository _repository = new CarCardCommonRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            sheet.CreateFreezePane(0, 1);
+            XSSFCellStyle cs_cell = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFCellStyle cs_cell_date = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFCellStyle cs_cell_mba = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFCellStyle cs_cell_rba = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFCellStyle cs_cell_lba = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFFont font_cell = (XSSFFont)workbook.CreateFont();
+            font_cell.FontName = "微軟正黑體";
+            font_cell.FontHeightInPoints = 12;
+            cs_cell.SetFont(font_cell);
+            cs_cell_date.SetFont(font_cell);
+            cs_cell_date.DataFormat = workbook.CreateDataFormat().GetFormat("yyyy-MM-dd HH:mm:ss");
+            cs_cell_mba.SetFont(font_cell);
+            cs_cell_mba.SetFillForegroundColor(new XSSFColor(System.Drawing.Color.FromArgb(255, 211, 130)));
+            cs_cell_mba.FillPattern = FillPattern.SolidForeground;
+            cs_cell_rba.SetFont(font_cell);
+            cs_cell_rba.SetFillForegroundColor(new XSSFColor(System.Drawing.Color.FromArgb(76, 224, 230)));
+            cs_cell_rba.FillPattern = FillPattern.SolidForeground;
+            cs_cell_lba.SetFont(font_cell);
+            cs_cell_lba.SetFillForegroundColor(new XSSFColor(System.Drawing.Color.FromArgb(242, 224, 255)));
+            cs_cell_lba.FillPattern = FillPattern.SolidForeground;
+
+            string[] headerField = {
+                "CarNo",
+                "CID",
+                "Time",
+                "Volt",
+                "2TBA",
+                "3TBA",
+                "RSOC",
+                "MBA",
+                "",  //MBAA
+                "",  //MBAT_Hi
+                "",  //MBAT_Lo
+                "RBA",
+                "",  //RBAA
+                "",  //RBAT_Hi
+                "",  //RBAT_Lo
+                "LBA",
+                "",  //LBAA
+                "",  //LBAT_Hi
+                ""   //LBAT_Lo
+            };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                var cell = header.CreateCell(j);
+                cell.CellStyle = cs_cell;
+                cell.SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+
+            lstRawData = _repository.GetMotorBatteryStatus(ExplodeCarNo, StartDate, EndDate);
+            int len = lstRawData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawData[k].CarNo);
+                content.CreateCell(1).SetCellValue(lstRawData[k].CID);
+                content.CreateCell(2).SetCellValue(lstRawData[k].MKTime);
+                content.CreateCell(3).SetCellValue(lstRawData[k].Volt);
+                content.CreateCell(4).SetCellValue(lstRawData[k].device2TBA);
+                content.CreateCell(5).SetCellValue(lstRawData[k].device3TBA);
+                content.CreateCell(6).SetCellValue(lstRawData[k].deviceRSOC);
+                content.CreateCell(7).SetCellValue(lstRawData[k].deviceMBA);
+                content.CreateCell(8).SetCellValue(lstRawData[k].deviceMBAA);
+                content.CreateCell(9).SetCellValue(lstRawData[k].deviceMBAT_Hi);
+                content.CreateCell(10).SetCellValue(lstRawData[k].deviceMBAT_Lo);
+                content.CreateCell(11).SetCellValue(lstRawData[k].deviceRBA);
+                content.CreateCell(12).SetCellValue(lstRawData[k].deviceRBAA);
+                content.CreateCell(13).SetCellValue(lstRawData[k].deviceRBAT_Hi);
+                content.CreateCell(14).SetCellValue(lstRawData[k].deviceRBAT_Lo);
+                content.CreateCell(15).SetCellValue(lstRawData[k].deviceLBA);
+                content.CreateCell(16).SetCellValue(lstRawData[k].deviceLBAA);
+                content.CreateCell(17).SetCellValue(lstRawData[k].deviceLBAT_Hi);
+                content.CreateCell(18).SetCellValue(lstRawData[k].deviceLBAT_Lo);
+
+                content.GetCell(0).CellStyle = cs_cell;
+                content.GetCell(1).CellStyle = cs_cell;
+                content.GetCell(2).CellStyle = cs_cell_date;
+                content.GetCell(3).CellStyle = cs_cell;
+                content.GetCell(4).CellStyle = cs_cell;
+                content.GetCell(5).CellStyle = cs_cell;
+                content.GetCell(6).CellStyle = cs_cell;
+                content.GetCell(7).CellStyle = cs_cell_mba;
+                content.GetCell(8).CellStyle = cs_cell_mba;
+                content.GetCell(9).CellStyle = cs_cell_mba;
+                content.GetCell(10).CellStyle = cs_cell_mba;
+                content.GetCell(11).CellStyle = cs_cell_rba;
+                content.GetCell(12).CellStyle = cs_cell_rba;
+                content.GetCell(13).CellStyle = cs_cell_rba;
+                content.GetCell(14).CellStyle = cs_cell_rba;
+                content.GetCell(15).CellStyle = cs_cell_lba;
+                content.GetCell(16).CellStyle = cs_cell_lba;
+                content.GetCell(17).CellStyle = cs_cell_lba;
+                content.GetCell(18).CellStyle = cs_cell_lba;
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            ms.Close();
+            // workbook.Close();
+            return base.File(ms.ToArray(), 
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ExplodeSendDate.Replace("-", "") + "_" + ExplodeCarNo + ".xlsx");
+        }
     }
 }
