@@ -869,5 +869,140 @@ namespace Web.Controllers
 
             
         }
+
+
+        /// <summary>
+        /// 會員審核明細報表 - 20210305唐加
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MemberDetailQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
+        {
+            //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
+            List<BE_GetMemList> lstRawDataOfMachi = new List<BE_GetMemList>();//SP回傳的資料欄位
+            OtherRepository _repository = new OtherRepository(connetStr);
+
+            string tSDate = StartDate;
+            string tEDate = EndDate;
+            int tAuditMode = AuditMode;
+            string IDNoSuffCombind = "";
+            if (IDNOSuff != null)
+            {
+                if (IDNOSuff.Length > 0)
+                {
+                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
+                    int IDLEN = IDNOSuff.Length;
+                    for (int i = 1; i < IDLEN; i++)
+                    {
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
+                    }
+                }
+            }
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+
+            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "處理事項", "處理區分", "不通過原因" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstRawDataOfMachi = _repository.GetMemLists(tAuditMode, tSDate, tEDate, IDNoSuffCombind);
+            int len = lstRawDataOfMachi.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].ID);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
+                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].REASON);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員審核明細" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        /*
+        public ActionResult ExplodeMemberDetailQuery(string ExplodeSDate, string ExplodeEDate, string[] Id, int ExplodeAuditMode)
+        {
+            //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
+            List<BE_GetMemList> lstRawDataOfMachi = new List<BE_GetMemList>();//SP回傳的資料欄位
+            OtherRepository _repository = new OtherRepository(connetStr);
+
+            string tSDate = ExplodeSDate;
+            string tEDate = ExplodeEDate;
+            int tAuditMode = ExplodeAuditMode;
+            string IDNoSuffCombind = "";
+            if (Id != null)
+            {
+                if (Id.Length > 0)
+                {
+                    IDNoSuffCombind += string.Format("{0},", Id[0]);
+                    int IDLEN = Id.Length;
+                    for (int i = 1; i < IDLEN; i++)
+                    {
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", Id[i]);
+                    }
+                }
+            }
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+
+            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "處理事項", "處理區分", "不通過原因" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstRawDataOfMachi = _repository.GetMemLists(tAuditMode, tSDate, tEDate, IDNoSuffCombind);
+            int len = lstRawDataOfMachi.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].ID);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
+                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].REASON);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員審核明細" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        */
     }
 }
