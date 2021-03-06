@@ -26,6 +26,10 @@ namespace Domain.TB
         /// </summary>
         public int MonLvl { get; set; }
         /// <summary>
+        /// 月租類別:0一般月租,1短期
+        /// </summary>
+        public int MonType { get; set; }
+        /// <summary>
         /// 汽車免費時段: 0無,1平日,2假日,3不分平假日
         /// </summary>
         public int CarFreeType { get; set; }

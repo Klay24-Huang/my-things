@@ -116,6 +116,7 @@ namespace WebAPI.Controllers
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
+            string ShortTermIds = "";//短期月租Id可多筆
             #endregion
             try
             {
@@ -137,6 +138,7 @@ namespace WebAPI.Controllers
                         Discount = apiInput.Discount,
                         MotorDiscount = apiInput.MotorDiscount,
                         isGuest = isGuest,
+                        ShortTermIds = apiInput.ShortTermIds
                     };
                     var inck_re = cr_com.InCheck(input);
                     if (inck_re != null)
@@ -145,8 +147,11 @@ namespace WebAPI.Controllers
                         flag = inck_re.flag;
                         errCode = inck_re.errCode;
                         Discount = inck_re.Discount;
-                        tmpOrder = inck_re.longOrderNo;
+                        tmpOrder = inck_re.longOrderNo;                      
                     }
+                    if (flag)
+                        ShortTermIds = apiInput.ShortTermIds;
+
                     trace.FlowList.Add("input檢查");
 
                     //不開放訪客
@@ -592,6 +597,8 @@ namespace WebAPI.Controllers
                     #region 建空模及塞入要輸出的值
                     if (flag)
                     {
+                        int Mode = ProjType == 4 ? 1 : 0;
+                        outputApi.ShortTerms = carRepo.GetShortTerms(IDNO, SD, FED, Mode); //短期下拉選項
                         outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
                         outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
                         outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase();
@@ -662,6 +669,7 @@ namespace WebAPI.Controllers
                     }
 
                     #endregion
+
                     #region 月租
                     //note: 月租GetPayDetail
                     if (flag)
@@ -687,7 +695,8 @@ namespace WebAPI.Controllers
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
                             carBaseMins = 60,
-                            FirstFreeMins = item.FirstFreeMins
+                            FirstFreeMins = item.FirstFreeMins,
+                            ShortTermIds = ShortTermIds
                         };
 
                         if (visMons != null && visMons.Count() > 0)

@@ -15,6 +15,10 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string OrderNo { set; get; }
         /// <summary>
+        /// 短期的月租Id
+        /// </summary>
+        public string ShortTermIds { get; set; }
+        /// <summary>
         /// 汽車使用的點數
         /// </summary>
         public int Discount { set; get; }

@@ -33,15 +33,16 @@ namespace Reposotory.Implement
         /// <para>0:汽車</para>
         /// <para>1:機車</para>
         /// </param>
+        /// <param name="shortTermIds">短期MonthlyRentIds(可多筆),以逗號分隔</param>
         /// <returns></returns>
-        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType)
+        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType, string shortTermIds="")
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MonthlyRentData> lstMonthlyRent = null;
             string SQL = @"
             SELECT 
-            Mode,MonthlyRentId,MonLvl,IDNO,
+            Mode,MonType,MonthlyRentId,MonLvl,IDNO,
             CarFreeType,MotoFreeType,
             CarTotalHours,WorkDayHours,HolidayHours,
             MotoTotalHours,MotoWorkDayMins,MotoHolidayMins,
@@ -86,9 +87,13 @@ namespace Reposotory.Implement
                 nowCount++;
             }
 
+            string shortTermSql = "";
+            if(!string.IsNullOrEmpty(shortTermIds) && !string.IsNullOrWhiteSpace(shortTermIds))
+                shortTermSql = " OR MonthlyRentId in ("+ shortTermIds +")"; 
+
             if ("" != term)
             {
-                SQL += " WHERE " + term;
+                SQL += " WHERE " + term + shortTermSql;
             }
             SQL += "  ORDER BY StartDate ASC";
 

@@ -262,9 +262,9 @@ namespace WebAPI.Models.BillFunc
             re.errCode = errCode;
             int RateType = (sour.ProjType == 4) ? 1 : 0;
             if (sour.hasFine)
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
             else
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
@@ -606,7 +606,23 @@ namespace WebAPI.Models.BillFunc
                 }
 
                 re.Discount = sour.Discount + sour.MotorDiscount;
-            }       
+            }
+
+            //短期格式檢查
+            if (re.flag && !string.IsNullOrWhiteSpace(sour.ShortTermIds) && !string.IsNullOrEmpty(sour.ShortTermIds))
+            {
+                string shorts = sour.ShortTermIds;
+                List<string> lst_shotrs = shorts.Split(',').ToList();              
+                foreach(var s in lst_shotrs)
+                {
+                    if (!Int32.TryParse(s, out int sNm))
+                    {                      
+                        re.flag = false;
+                        re.errCode = "ERR246";
+                        break;
+                    }
+                }
+            }
 
             return re;
         }
@@ -1018,6 +1034,31 @@ namespace WebAPI.Models.BillFunc
                 string SQL = "select o.order_number[OrderNo], o.ProjType, o.start_time, o.stop_time, o.init_price from TB_OrderMain o where o.order_number in (" + orderNos + ")";
                 re = GetObjList<OrderQueryFullData>(ref flag, ref lstError, SQL, null, "");
             }
+            return re;
+        }
+      
+        /// <summary>
+        /// 取得短期
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <returns></returns>
+        public List<ShortTermBase> GetShortTerms(string IDNO, DateTime StartDate, DateTime EndDate, int Mode = -1)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            var re = new List<ShortTermBase>();
+            if (string.IsNullOrWhiteSpace(IDNO) || StartDate == null || EndDate == null || Mode == -1)
+                throw new Exception("GetShortTerms: 輸入參數皆為必填");
+
+            string strSD = StartDate.ToString("yyyy-MM-dd HH:mm");
+            string strED = EndDate.ToString("yyyy-MM-dd HH:mm");
+
+            string SQL = "SELECT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE MonType = 1 AND Mode = {7} AND IDNO = '{0}'";
+            SQL +=  " AND ((EndDate > '{1}' AND EndDate <= '{2}') OR (StartDate >= '{3}' AND StartDate < '{4}') OR (StartDate <= '{5}' AND EndDate >= '{6}'))";
+            SQL = string.Format(SQL, IDNO, strSD, strED, strSD, strED, strSD, strED, Mode.ToString());
+            re = GetObjList<ShortTermBase>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
         public  ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
@@ -1762,6 +1803,10 @@ namespace WebAPI.Models.BillFunc
         /// 前n分鐘0元
         /// </summary>
         public double FirstFreeMins { get; set; }
+        /// <summary>
+        /// 短期的月租Id
+        /// </summary>
+        public string ShortTermIds { get; set; }
         public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
     }
     public class OBIZ_MonthRent: BIZ_CRBase
@@ -1812,6 +1857,10 @@ namespace WebAPI.Models.BillFunc
         /// 是否為訪客
         /// </summary>
         public  bool isGuest { get; set; }
+        /// <summary>
+        /// 短期的月租Id(可多筆)
+        /// </summary>
+        public string ShortTermIds { get; set; }
     }
     public class OBIZ_InCheck: BIZ_CRBase
     {
