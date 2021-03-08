@@ -80,7 +80,7 @@
                     <label class="control-label" for="inputUsername"><i class="icon-key"></i></label>
                     <div class="controls">
                         @*<input type="password" class="input-block-level" id="inputUsername" placeholder="密碼">*@
-                        @Html.PasswordFor(m => m.Password, new { @class = "input-block-level", placeholder = "密碼", maxlength = "10" }) @Html.ValidationMessageFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @class = "input-block-level", placeholder = "密碼", maxlength = "20" }) @Html.ValidationMessageFor(m => m.Password)
                     </div>
                     <label class="small" style="color:red;">請注意：您所輸入的帳號，密碼必須與iRent APP登入資訊相同</label>
                 </div>
