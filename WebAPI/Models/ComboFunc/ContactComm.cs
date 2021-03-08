@@ -1,10 +1,12 @@
-﻿using Domain.WebAPI.Input.HiEasyRentAPI;
+﻿using Domain.SP.Input.Arrears;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebAPI.Models.BillFunc;
 
 namespace WebAPI.Models.ComboFunc
 {
@@ -60,7 +62,7 @@ namespace WebAPI.Models.ComboFunc
             return flag;
         }
 
-        public bool CheckNPR330(string IDNO, ref int TAMT)
+        public bool CheckNPR330(string IDNO, long LogID, ref int TAMT)
         {
             bool flag = false;
             TAMT = 0;
@@ -69,18 +71,21 @@ namespace WebAPI.Models.ComboFunc
             flag = WebAPI.NPR330Query(IDNO, ref WebAPIOutput);
             if (flag)
             {
-                if (WebAPIOutput.Result)
+                if (WebAPIOutput.Result && WebAPIOutput.RtnCode == "0" && WebAPIOutput.Data != null && WebAPIOutput.Data.Count()>0)
                 {
-                    if (WebAPIOutput.RtnCode == "0")
+                    var spTb_input = WebAPIOutput.Data;
+                    string sp_ArrearsQuery_Err = "";//sp呼叫錯誤回傳
+                    var spInput = new SPInput_ArrearsQuery()
+                    {
+                        IDNO = IDNO,
+                        IsSave = 0,
+                        LogID = LogID
+                    };
+                    var sp_result = new ArrearsSp().sp_ArrearsQuery(spTb_input, spInput, ref sp_ArrearsQuery_Err);
+                    if (sp_result != null && sp_result.Count() > 0)
                     {
                         flag = true;
-
-                        int DataLen = WebAPIOutput.Data.Length;
-
-                        for (int i = 0; i < DataLen; i++)
-                        {
-                            TAMT += Convert.ToInt32(WebAPIOutput.Data[i].TAMT);
-                        }
+                        TAMT += sp_result.Select(x => x.Total_Amount).Sum();
                     }
                 }
             }
