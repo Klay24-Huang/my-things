@@ -307,7 +307,7 @@ namespace WebAPI.Models.BillFunc
                         //春後
                         else
                         {
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901,10,sour.FirstFreeMins);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -324,7 +324,7 @@ namespace WebAPI.Models.BillFunc
                             sour.VisMons != null && sour.VisMons.Count() > 0)
                             motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
-                        motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
+                        //motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins >0 || x.MotoHolidayMins > 0).ToList();
                         if (motoMonth.Count > 0)
                         {
                             int UseLen = motoMonth.Count;
@@ -1055,7 +1055,7 @@ namespace WebAPI.Models.BillFunc
             string strSD = StartDate.ToString("yyyy-MM-dd HH:mm");
             string strED = EndDate.ToString("yyyy-MM-dd HH:mm");
 
-            string SQL = "SELECT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE MonType = 1 AND Mode = {7} AND IDNO = '{0}'";
+            string SQL = "SELECT DISTINCT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE MonType = 1 AND Mode = {7} AND IDNO = '{0}'";
             SQL +=  " AND ((EndDate > '{1}' AND EndDate <= '{2}') OR (StartDate >= '{3}' AND StartDate < '{4}') OR (StartDate <= '{5}' AND EndDate >= '{6}'))";
             SQL = string.Format(SQL, IDNO, strSD, strED, strSD, strED, strSD, strED, Mode.ToString());
             re = GetObjList<ShortTermBase>(ref flag, ref lstError, SQL, null, "");
@@ -1765,9 +1765,13 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public double MotoDayMaxMins { get; set; }
         /// <summary>
-        /// 每分鐘多少-機車
+        /// 每分鐘多少-機車平日
         /// </summary>
         public double MinuteOfPrice { set; get; }
+        /// <summary>
+        /// 每分鐘多少-機車假日
+        /// </summary>
+        public float MinuteOfPriceH { get; set; }
         /// <summary>
         /// 是否逾時
         /// </summary>

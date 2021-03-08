@@ -149,6 +149,7 @@ BEGIN TRY
 			   BaseMinutes,
 			   BaseMinutesPrice,
 			   MinuteOfPrice,
+			   MinuteOfPriceH,
 			   MaxPrice, --當ProjType=4才有值
 			   start_time,
 			   final_start_time,

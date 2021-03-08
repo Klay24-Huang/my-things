@@ -80,7 +80,7 @@ namespace Reposotory.Implement
             }
             if (term != "")
             {
-                term += " AND  Mode=@RateType";
+                term += " AND  Mode=@RateType AND MonType = 0";
                 para[nowCount] = new SqlParameter("@RateType", SqlDbType.TinyInt, 1);
                 para[nowCount].Value = RateType;
                 para[nowCount].Direction = ParameterDirection.Input;

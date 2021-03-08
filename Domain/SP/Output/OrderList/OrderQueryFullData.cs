@@ -135,9 +135,13 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int BaseMinutesPrice { set; get; }
         /// <summary>
-        /// 每分鐘多少
+        /// 每分鐘多少-平日
         /// </summary>
         public float MinuteOfPrice { set; get; }
+        /// <summary>
+        /// 每分鐘多少-假日
+        /// </summary>
+        public float MinuteOfPriceH { get; set; }
         /// <summary>
         /// 每日上限
         /// </summary>

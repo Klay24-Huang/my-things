@@ -891,12 +891,13 @@ namespace WebAPI.Models.BillFunc
                     var mo = mOri.Where(y => y.MonthlyRentId == x.MonthlyRentId).FirstOrDefault();
                     if (mo != null)
                     {
+                        x.MotoTotalHours = (mo.MotoTotalHours - x.MotoTotalHours);
                         x.MotoWorkDayMins = (mo.MotoWorkDayMins - x.MotoWorkDayMins);//使用的點數
                         x.MotoHolidayMins = (mo.MotoHolidayMins - x.MotoHolidayMins);
                     }
                 });
 
-                mFinal = mFinal.Where(x => x.MotoWorkDayMins > 0 || x.MotoHolidayMins > 0).ToList();//月租點數有使用才回傳
+                //mFinal = mFinal.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins > 0 || x.MotoHolidayMins > 0).ToList();//月租點數有使用才回傳
                 re.mFinal = mFinal;
             }
 

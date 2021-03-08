@@ -685,6 +685,7 @@ namespace WebAPI.Controllers
                             ProjType = item.ProjType,
                             MotoDayMaxMins = motoDayMaxMinns,
                             MinuteOfPrice = item.MinuteOfPrice,
+                            MinuteOfPriceH = item.MinuteOfPriceH,
                             hasFine = hasFine,
                             SD = SD,
                             ED = ED,
