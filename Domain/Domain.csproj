@@ -332,6 +332,7 @@
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyQuery.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyReportData.cs" />
+    <Compile Include="TB\BackEnd\BE_MotorBatteryStatus.cs" />
     <Compile Include="TB\BackEnd\BE_NPR136Retry.cs" />
     <Compile Include="TB\BackEnd\BE_NPR136RetryNew.cs" />
     <Compile Include="TB\BackEnd\BE_NPR340Retry.cs" />
