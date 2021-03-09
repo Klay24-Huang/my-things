@@ -446,7 +446,7 @@ namespace WebAPI.Controllers
                     GetProjectObj = lstTmpData
                 };
 
-                #region 車款,金額下拉
+                #region 車款,金額下拉,是否有可租
 
                 if(lstData != null && lstData.Count() > 0)
                 {
@@ -479,6 +479,11 @@ namespace WebAPI.Controllers
 
                     if (SeatGroups != null && SeatGroups.Count() > 0)
                         outputApi.SeatGroups = SeatGroups;
+
+                    if (lstData.Where(x => x.IsRent.ToLower() == "y").ToList().Count() > 0)
+                        outputApi.HasRentCard = true;
+                    else
+                        outputApi.HasRentCard = false;
                 }
 
                 #endregion
