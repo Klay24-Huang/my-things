@@ -13,6 +13,10 @@ namespace WebAPI.Models.Param.Input
         public string StationID { set; get; }
         public string CarType { set; get; }
         /// <summary>
+        ///座位數
+        /// </summary>
+        public string Seat { set; get; }
+        /// <summary>
         /// 預計取車時間
         /// </summary>
         public string SDate { set; get; }
@@ -46,11 +50,11 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 價格查詢-最少
         /// </summary>
-        //public int PriceMin { get; set; }
+        public int PriceMin { get; set; }
 
         /// <summary>
         /// 價格查詢-最多
         /// </summary>
-        //public int PriceMax { get; set; } 
+        public int PriceMax { get; set; } 
     }
 }
