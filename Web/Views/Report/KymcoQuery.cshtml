@@ -122,8 +122,8 @@
             </ul>
         }
     </div>
-        <!--end card-->
-        </div>
+    <!--end card-->
+</div>
 
 @using (Html.BeginForm("ExplodeKymcoQuery", "Report", FormMethod.Post, new { id = "frmKymcoExplode" }))
 {
@@ -173,20 +173,20 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-        <tr>
-            <td data-sort="false"></td>
-            <td scope="col">@(lstData[i].UserID)</td>
-            <td scope="col">@(lstData[i].UserName)</td>
-            <td scope="col">@(lstData[i].Area)</td>
-            <td scope="col">@(lstData[i].TypeK)</td>
-            <td scope="col">@(lstData[i].CarNo)</td>
-            <td scope="col">@(lstData[i].MaintainType)</td>
-            <td scope="col" style="color:red;">@(lstData[i].DealerCodeValue)</td>
-            <td scope="col">@(lstData[i].MemoAddr)</td>
-            <td scope="col">@(lstData[i].Reason)</td>
-            <td scope="col">@(lstData[i].Offline)</td>
-            <td scope="col">@(lstData[i].UpdTime)</td>
-        </tr>
+                    <tr>
+                        <td data-sort="false"></td>
+                        <td scope="col">@(lstData[i].UserID)</td>
+                        <td scope="col">@(lstData[i].UserName)</td>
+                        <td scope="col">@(lstData[i].Area)</td>
+                        <td scope="col">@(lstData[i].TypeK)</td>
+                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col">@(lstData[i].MaintainType)</td>
+                        <td scope="col" style="color:red;">@(lstData[i].DealerCodeValue)</td>
+                        <td scope="col">@(lstData[i].MemoAddr)</td>
+                        <td scope="col">@(lstData[i].Reason)</td>
+                        <td scope="col">@(lstData[i].Offline)</td>
+                        <td scope="col">@(lstData[i].UpdTime)</td>
+                    </tr>
                 }
 
             }

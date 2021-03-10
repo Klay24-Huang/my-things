@@ -355,7 +355,6 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
-
         /// <summary>
         /// 取得安心保險清單
         /// </summary>
@@ -390,7 +389,6 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -417,6 +415,21 @@ namespace Reposotory.Implement
 
             lstAudits = GetObjList<BE_GetAuditList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
+        }
+
+        /// 取得黑名單手機號碼
+        public string GetMobileBlock(string TEL)
+        {
+            //bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string lstMember = null;
+            SqlParameter[] para = new SqlParameter[1];
+            //int nowCount = 0;
+            //string term = "";
+            string SQL = $" SELECT * FROM VW_BE_GetBlockMobile where Mobile={TEL} ";
+
+            lstMember = GetS(SQL);
+            return lstMember;
         }
     }
 }

@@ -288,7 +288,7 @@ $(function () {
             disabledLoadingAndShowAlert(errMsg);
         }
        
-        if (parseInt(MobileLen) > 0 || parseInt(HistoryLen)>0) {
+        if (parseInt(MobileLen) > 0 || parseInt(HistoryLen) > 0) {
                 $('.table').footable({
                     "paging": {
                         "enabled": true,
@@ -396,6 +396,11 @@ $(function () {
     if (MobileLen > 0) {
         $('#btnCheckSameMobile').click();
     }
+    //20210310唐加
+    if (BlockMobileLen > 0) {
+        $('#btnCheckBlockMobileLen').click();
+    }
+
     setPostbackValue();
 })
 function ShowPIC(site) {

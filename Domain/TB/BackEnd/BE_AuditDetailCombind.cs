@@ -30,6 +30,8 @@ namespace Domain.TB.BackEnd
 
         public List<BE_AuditRecommendHistory> RecommendHistory { set; get; }
         public List<BE_InsuranceData> InsuranceData { set; get; }
+        //20210310唐加
+        public string mobileBlock { set; get; }
     }
     
 }
