@@ -203,7 +203,7 @@ namespace WebAPI.Controllers
                     StationIDs = apiInput.StationID,
                     SD = SDate,
                     ED = EDate,                    
-                    //CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
+                    CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
                     IDNO = IDNO,
                     Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
                     LogID = LogID
@@ -266,15 +266,15 @@ namespace WebAPI.Controllers
                     if (!string.IsNullOrWhiteSpace(apiInput.CarType))
                     {
                         List<string> LstCarType = apiInput.CarType.Split(',').ToList();
-                        lstData.ForEach(x => { if (!LstCarType.Contains(x.CarType)) { x.IsRent = "N"; } });
+                        lstData.ForEach(x => { if (!LstCarType.Contains(x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0;} });
                     }
                     if (!string.IsNullOrWhiteSpace(apiInput.Seat))
                     {
                         List<int> LstSeat = apiInput.Seat.Split(',').ToList().Select(y=>Convert.ToInt32(y)).ToList();
-                        lstData.ForEach(x => { if (!LstSeat.Contains(x.Seat)) { x.IsRent = "N"; } });
+                        lstData.ForEach(x => { if (!LstSeat.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
                     }
                     if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
-                        lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; } });
+                        lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
 
                     #endregion
                 }
@@ -480,7 +480,7 @@ namespace WebAPI.Controllers
                     if (SeatGroups != null && SeatGroups.Count() > 0)
                         outputApi.SeatGroups = SeatGroups;
 
-                    if (lstData.Where(x => x.IsRent.ToLower() == "y").ToList().Count() > 0)
+                    if (lstData.Where(x => x.IsRent.ToLower() == "y" && x.IsShowCard == 1).ToList().Count() > 0)
                         outputApi.HasRentCard = true;
                     else
                         outputApi.HasRentCard = false;
