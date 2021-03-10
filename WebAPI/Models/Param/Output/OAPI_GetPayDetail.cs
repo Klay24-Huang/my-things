@@ -64,9 +64,9 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public MonthRentBase MonthRent { set; get; }
         /// <summary>
-        /// 短期下拉
+        /// 月租下拉
         /// </summary>
-        public List<ShortTermBase> ShortTerms { get; set; }
+        public List<MonBase> MonBase { get; set; }
         /// <summary>
         /// 專案類型
         /// <para>0:同站</para>

@@ -15,9 +15,9 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string OrderNo { set; get; }
         /// <summary>
-        /// 短期的月租Id
+        /// 月租Id,可多筆
         /// </summary>
-        public string ShortTermIds { get; set; }
+        public string MonIds { get; set; }
         /// <summary>
         /// 汽車使用的點數
         /// </summary>

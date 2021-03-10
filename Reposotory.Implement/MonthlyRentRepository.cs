@@ -100,6 +100,56 @@ namespace Reposotory.Implement
             lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
             return lstMonthlyRent;
         }
+
+        /// <summary>
+        /// 取出指定月租
+        /// </summary>
+        /// <param name="IDNO">身份證</param>
+        /// <param name="MonthlyRentIds">MonthlyRentIds(可多筆),以逗號分隔</param>
+        /// <returns></returns>
+        public List<MonthlyRentData> GetSubscriptionRatesByMonthlyRentId(string IDNO, string MonthlyRentIds = "")
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<MonthlyRentData> lstMonthlyRent = null;
+            string SQL = @"
+            SELECT 
+            Mode,MonType,MonthlyRentId,MonLvl,IDNO,
+            CarFreeType,MotoFreeType,
+            CarTotalHours,WorkDayHours,HolidayHours,
+            MotoTotalHours,MotoWorkDayMins,MotoHolidayMins,
+            WorkDayRateForCar,HoildayRateForCar,
+            WorkDayRateForMoto,HoildayRateForMoto,
+            StartDate,EndDate
+            FROM TB_MonthlyRent ";
+
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            int nowCount = 0;
+            if (false == string.IsNullOrEmpty(IDNO))
+            {
+                term = " IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 30);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            string shortTermSql = "";
+            if (!string.IsNullOrEmpty(MonthlyRentIds) && !string.IsNullOrWhiteSpace(MonthlyRentIds))
+                shortTermSql = " AND MonthlyRentId in (" + MonthlyRentIds + ")";
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + shortTermSql;
+            }
+            SQL += "  ORDER BY StartDate ASC";
+
+            lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
+            return lstMonthlyRent;
+        }
+
+
         /// <summary>
         /// 還原月租記錄
         /// </summary>

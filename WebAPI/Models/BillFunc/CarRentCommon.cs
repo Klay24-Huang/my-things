@@ -254,17 +254,23 @@ namespace WebAPI.Models.BillFunc
             var billCommon = new BillCommon();
             var errCode = re.errCode;
             re.flag = true;
+            re.UseMonthMode = false;
+            re.IsMonthRent = 0;
 
             bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
 
             //1.0 先還原這個單號使用的
             re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
+
             re.errCode = errCode;
             int RateType = (sour.ProjType == 4) ? 1 : 0;
-            if (sour.hasFine)
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
-            else
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
+            //if (sour.hasFine)
+            //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
+            //else
+            //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
+           
+            if(sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
+               monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
@@ -609,11 +615,11 @@ namespace WebAPI.Models.BillFunc
             }
 
             //短期格式檢查
-            if (re.flag && !string.IsNullOrWhiteSpace(sour.ShortTermIds) && !string.IsNullOrEmpty(sour.ShortTermIds))
+            if (re.flag && !string.IsNullOrWhiteSpace(sour.MonIds) && !string.IsNullOrEmpty(sour.MonIds))
             {
-                string shorts = sour.ShortTermIds;
-                List<string> lst_shotrs = shorts.Split(',').ToList();              
-                foreach(var s in lst_shotrs)
+                string strMonIds = sour.MonIds;
+                List<string> lst_MonIds = strMonIds.Split(',').ToList();              
+                foreach(var s in lst_MonIds)
                 {
                     if (!Int32.TryParse(s, out int sNm))
                     {                      
@@ -642,7 +648,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         public OBIZ_SpringInit GetVisualMonth(IBIZ_SpringInit sour)
-        {//dev:GetVisualMonth
+        {
             var re = new OBIZ_SpringInit();
             var spRepo = new CarRentSp();
             string errMsg = "";
@@ -749,7 +755,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="conStr"></param>
         /// <returns></returns>
         public CarRentInfo GetSpringInit(IBIZ_SpringInit sour, string conStr,string funNM = "")
-        {//dev:GetSpringInit
+        {
             var carRepo = new CarRentRepo(conStr);
             var trace = new TraceCom();
             var tlog = new TraceLogVM()
@@ -1036,29 +1042,36 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-      
+
         /// <summary>
         /// 取得短期
         /// </summary>
         /// <param name="IDNO"></param>
         /// <param name="StartDate"></param>
         /// <param name="EndDate"></param>
+        /// <param name="Mode"></param>
+        /// <para>0:汽車</para>
+        /// <para>1:機車</para>
         /// <returns></returns>
-        public List<ShortTermBase> GetShortTerms(string IDNO, DateTime StartDate, DateTime EndDate, int Mode = -1)
+        public List<MonBase> GetMonths(string IDNO, DateTime StartDate, DateTime EndDate, int Mode = -1)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            var re = new List<ShortTermBase>();
+            var re = new List<MonBase>();
             if (string.IsNullOrWhiteSpace(IDNO) || StartDate == null || EndDate == null || Mode == -1)
-                throw new Exception("GetShortTerms: 輸入參數皆為必填");
+                throw new Exception("GetMonths: 輸入參數皆為必填");
+
+            if (StartDate > EndDate)
+                throw new Exception("GetMonths: 起不可大於迄");
 
             string strSD = StartDate.ToString("yyyy-MM-dd HH:mm");
             string strED = EndDate.ToString("yyyy-MM-dd HH:mm");
 
-            string SQL = "SELECT DISTINCT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE MonType = 1 AND Mode = {7} AND IDNO = '{0}'";
+            string SQL = "SELECT DISTINCT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE Mode = {7} AND IDNO = '{0}'";
             SQL +=  " AND ((EndDate > '{1}' AND EndDate <= '{2}') OR (StartDate >= '{3}' AND StartDate < '{4}') OR (StartDate <= '{5}' AND EndDate >= '{6}'))";
+            
             SQL = string.Format(SQL, IDNO, strSD, strED, strSD, strED, strSD, strED, Mode.ToString());
-            re = GetObjList<ShortTermBase>(ref flag, ref lstError, SQL, null, "");
+            re = GetObjList<MonBase>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
         public  ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
@@ -1808,9 +1821,9 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public double FirstFreeMins { get; set; }
         /// <summary>
-        /// 短期的月租Id
+        /// 月租Id(可多筆)
         /// </summary>
-        public string ShortTermIds { get; set; }
+        public string MonIds { get; set; }
         public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
     }
     public class OBIZ_MonthRent: BIZ_CRBase
@@ -1862,9 +1875,9 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public  bool isGuest { get; set; }
         /// <summary>
-        /// 短期的月租Id(可多筆)
+        /// 月租Id(可多筆)
         /// </summary>
-        public string ShortTermIds { get; set; }
+        public string MonIds { get; set; }
     }
     public class OBIZ_InCheck: BIZ_CRBase
     {

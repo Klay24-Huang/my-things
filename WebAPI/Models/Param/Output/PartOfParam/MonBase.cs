@@ -6,9 +6,9 @@ using System.Web;
 namespace WebAPI.Models.Param.Output.PartOfParam
 {
     /// <summary>
-    /// 短期基本
+    /// 月租選擇
     /// </summary>
-    public class ShortTermBase
+    public class MonBase
     {
         public Int64 MonthlyRentId { get; set; }
         public string ProjNM { get; set; }
