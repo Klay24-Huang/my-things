@@ -448,7 +448,8 @@ namespace WebAPI.Controllers
 
                 #region 車款,金額下拉,是否有可租
 
-                if(lstData != null && lstData.Count() > 0)
+                bool HaveRentY = lstData.Where(y => y.IsRent.ToLower() == "y").Count() > 0;
+                if (lstData != null && lstData.Count() > 0 && HaveRentY)
                 {
                     outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
                     outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
