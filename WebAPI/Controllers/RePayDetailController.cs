@@ -73,10 +73,12 @@ namespace WebAPI.Controllers
             {
                 int disc = 0;
                 int motoDisc = 0;
+                string MonIds = "";
                 if (dts.Count() == 1)
                 {
                     disc = inApi.Discount;
                     motoDisc = inApi.MotorDiscount;
+                    MonIds = inApi.MonIds;
                 }
 
                 foreach(var item in dts)
@@ -89,7 +91,8 @@ namespace WebAPI.Controllers
                         RePayMode = inApi.RePayMode,
                         Discount = disc,
                         MotorDiscount =motoDisc,
-                        jsonOut = inApi.jsonOut
+                        jsonOut = inApi.jsonOut,       
+                        MonIds = MonIds
                     };
                     try
                     {
@@ -193,6 +196,7 @@ namespace WebAPI.Controllers
             var cr_com = new CarRentCommon();
             var cr_sp = new CarRentSp();
             var trace = new TraceCom();
+            var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -266,6 +270,7 @@ namespace WebAPI.Controllers
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
+            string MonIds = "";//短期月租Id可多筆
             #endregion
 
             #region trace
@@ -293,6 +298,7 @@ namespace WebAPI.Controllers
                     Discount = apiInput.Discount,
                     MotorDiscount = apiInput.MotorDiscount,
                     isGuest = isGuest,
+                    MonIds = apiInput.MonIds
                 };
                 var inck_re = cr_com.InCheck(input);
                 if (inck_re != null)
@@ -302,6 +308,8 @@ namespace WebAPI.Controllers
                     Discount = inck_re.Discount;
                     tmpOrder = inck_re.longOrderNo;
                 }
+                if (flag)
+                    MonIds = apiInput.MonIds;
             }
 
             #endregion
@@ -725,6 +733,8 @@ namespace WebAPI.Controllers
                 #region 建空模及塞入要輸出的值
                 if (flag)
                 {
+                    int Mode = ProjType == 4 ? 1 : 0;
+                    outputApi.MonBase = carRepo.GetMonths(IDNO, SD, FED, Mode); //短期下拉選項
                     outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
                     outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
                     outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase();
@@ -811,6 +821,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType,
                         MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
+                        MinuteOfPriceH = item.MinuteOfPriceH,
                         hasFine = hasFine,
                         SD = SD,
                         ED = ED,
@@ -820,7 +831,9 @@ namespace WebAPI.Controllers
                         Discount = Discount,
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
-                        carBaseMins = 60
+                        carBaseMins = 60,
+                        FirstFreeMins = item.FirstFreeMins,
+                        MonIds = MonIds
                     };
 
                     if (visMons != null && visMons.Count() > 0)
@@ -1246,6 +1259,10 @@ namespace WebAPI.Controllers
         /// 機車時數
         /// </summary>
         public int MotorDiscount { set; get; } = 0;
+        /// <summary>
+        /// 月租Id,可多筆
+        /// </summary>
+        public string MonIds { get; set; }
     }
 
     public class OAPI_RePayDetailAll

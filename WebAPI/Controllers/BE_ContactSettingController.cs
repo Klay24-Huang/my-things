@@ -1495,6 +1495,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType,
                         MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
+                        MinuteOfPriceH = item.MinuteOfPriceH,
                         hasFine = hasFine,
                         SD = SD,
                         ED = ED,
@@ -1504,7 +1505,8 @@ namespace WebAPI.Controllers
                         Discount = Discount,
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
-                        carBaseMins = 60
+                        carBaseMins = 60,
+                        FirstFreeMins = item.FirstFreeMins
                     };
 
                     if (visMons != null && visMons.Count() > 0)
