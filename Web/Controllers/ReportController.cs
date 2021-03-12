@@ -1057,7 +1057,7 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
 
-            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "處理事項", "處理區分", "不通過原因" };
+            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "審核結果", "不通過原因", "處理項目" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
