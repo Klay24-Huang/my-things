@@ -269,3 +269,4 @@ CreditCardWeb/Properties/PublishProfiles/iRentV2-pay-api - Web Deploy.pubxml
 CreditCardWeb/Properties/ServiceDependencies/iRentV2-pay-api - Web Deploy/profile.arm.json
 iRentClearWeb/Properties/PublishProfiles/iRentV2-clear-web - Web Deploy.pubxml
 iRentClearWeb/Properties/ServiceDependencies/iRentV2-clear-web - Web Deploy/profile.arm.json
+/WebAPI/Models/Param/Output/PartOfParam/GetProject_SeatGroup.cs

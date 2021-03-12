@@ -136,7 +136,7 @@ namespace WebAPI.Controllers
             {
                 int TAMT = 0;
                 WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
-                flag = contract.CheckNPR330(IDNO, ref TAMT);
+                flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
                 if (TAMT > 0)
                 {
                     flag = false;

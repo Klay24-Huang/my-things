@@ -65,14 +65,37 @@ namespace Reposotory.Implement
                                 flag = new ReflectionHelper().SetPropertyValue(property.Name, reader.GetValue(i).ToString(), ref obj, ref lstError);
                             }
                         }
-
                         lstObj.Add(obj);
                     }
                 }
             }
-
             return lstObj;
         }
+
+        //20210310唐加GetS
+        public string GetS(string SQL)
+        {
+            //ADO.NET
+            SqlConnection conn = new SqlConnection(this.ConnectionString);
+            if (conn.State != ConnectionState.Open) conn.Open();//已完成的一組連線不能再開啟避免開啟第二次造成執行錯誤
+            SqlCommand cmd = new SqlCommand(SQL, conn);
+            //cmd.ExecuteNonQuery(); //送出指令，不會傳回結果集
+            SqlDataReader dr = cmd.ExecuteReader();//根據指令執行reader
+            string a = "";
+            while (dr.Read())
+            {
+                a = dr["Mobile"].ToString();
+            }
+            conn.Close();
+            return a;
+
+            //Entity Framework
+
+            //LinQ
+
+        }
+
+
         public void ExecNonResponse(ref bool flag,string SQL)
         {
             try
@@ -123,7 +146,6 @@ namespace Reposotory.Implement
             {
                 flag = false;
             }
-
         }
         /// <summary>
         /// 取得經緯度最大範圍

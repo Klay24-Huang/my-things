@@ -94,6 +94,7 @@ namespace Web.Controllers
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
@@ -124,10 +125,14 @@ namespace Web.Controllers
 
 
             Data.SameMobile = new List<BE_SameMobileData>();
+            Data.mobileBlock = "";//20210310唐加
             if (obj != null)
             {
                 lstMobile = new MemberRepository(connetStr).GetSameMobile(AuditIDNO, obj.MEMTEL);
                 Data.SameMobile = lstMobile;
+                //20210310唐加
+                mobileBlock = new MemberRepository(connetStr).GetMobileBlock(obj.MEMTEL);
+                Data.mobileBlock = mobileBlock;
             }
             Data.detail = new BE_AuditDetail();
             Data.detail = obj;
@@ -135,7 +140,6 @@ namespace Web.Controllers
             Data.detail.SPSD = obj.SPSD != "" ? obj.SPSD.Substring(0, 4) + "-" + obj.SPSD.Substring(4, 2) + "-" + obj.SPSD.Substring(6, 2) : obj.SPSD;
             if (lstAudits != null)
             {
-
                 Data.Images = new BE_AuditCrentials();
                 for(int i = 1; i <= 11; i++)
                 {

@@ -600,7 +600,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\FeedBackKind.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetFullProjectVM.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetNotification.cs" />
-    <Compile Include="Models\Param\Output\PartOfParam\MonBase.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\GetProject_SeatGroup.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MotorRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\NewsObj.cs" />

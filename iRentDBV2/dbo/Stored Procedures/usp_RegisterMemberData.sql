@@ -67,6 +67,7 @@ DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @AUDIT INT;
 DECLARE @LogFlag VARCHAR(1);
+DECLARE @IsNew INT;	--是否為新加入(0:否;1:是)
 
 /*初始設定*/
 SET @Error=0;
@@ -89,6 +90,7 @@ SET @MEMEMAIL=ISNULL(@MEMEMAIL,'');
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @AUDIT=0;
 SET @LogFlag='';
+SET @IsNew=1;
 
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @MEMEMAIL='' OR @MEMCNAME=''
@@ -179,7 +181,30 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		--20201114 ADD BY ADAM REASON.改為待審只有一筆
-		SELECT @AUDIT=[Audit] FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+		--SELECT @AUDIT=[Audit] FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_AuditHistory WITH(NOLOCK) WHERE HandleItem=1 and IsReject=0 and IDNO=@IDNO;
+		IF @hasData=0
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM MEMBER_NEW WITH(NOLOCK) WHERE IRENTFLG='Y' AND MEMIDNO=@IDNO;
+			IF @hasData=0
+			BEGIN
+				--都不存在就是新會員
+				SET @IsNew=1;
+			END
+			ELSE
+			BEGIN
+				--iRent1.0有審核過
+				SET @IsNew=0;
+			END
+		END
+		ELSE
+		BEGIN
+			--審核通過
+			SET @IsNew=0;
+		END
 
 		SET @hasData=0;
 		SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO;	--20201114 ADD BY ADAM REASON.改為待審只有一筆
@@ -193,7 +218,7 @@ BEGIN TRY
 			SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
 					[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
 					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-					[CARRIERID],[NPOBAN],2,0,1,
+					[CARRIERID],[NPOBAN],2,0,@IsNew,
 					@NowTime,@NowTime
 			FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
@@ -210,7 +235,7 @@ BEGIN TRY
 				UPDTime=@NowTime,
 				--20201114 ADD BY ADAM REASON.改為待審只有一筆
 				HasAudit=0,
-				IsNew=CASE WHEN @AUDIT=1 THEN 0 ELSE 1 END
+				IsNew=@IsNew
 			WHERE MEMIDNO=@IDNO;
 
 			SET @LogFlag='U';

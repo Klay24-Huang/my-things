@@ -194,5 +194,26 @@ namespace Reposotory.Implement
             lstAudits = GetObjList<BE_GetKymcoList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
+
+
+        /// <summary>
+        /// 會員審核明細報表查詢-20210305唐加
+        /// </summary>
+        public List<BE_GetMemList> GetMemLists(int AuditMode, string StartDate, string EndDate, string ID)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[8];
+            string term = "";
+            //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
+            string SQL = " EXEC usp_BE_GetMemList  '" + AuditMode.ToString() +
+                "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
+                "','" + ID + "'";
+
+            lstAudits = GetObjList<BE_GetMemList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
     }
 }

@@ -22,6 +22,7 @@ using WebAPI.Utils;
 using Domain.SP.Output;
 using System.CodeDom;
 using Domain.SP.Input.Arrears;
+using WebAPI.Models.BillFunc;
 
 namespace WebAPI.Controllers
 {
@@ -152,7 +153,7 @@ namespace WebAPI.Controllers
                                     LogID = LogID
                                 };
 
-                                var sp_result = sp_ArrearsQuery(spTb_input, spInput, ref sp_ArrearsQuery_Err);
+                                var sp_result = new ArrearsSp().sp_ArrearsQuery(spTb_input, spInput, ref sp_ArrearsQuery_Err);
 
                                 //20210219 ADD BY ADAM REASON.增加判斷後，有可能會出現被過濾後是空的情況
                                 if (sp_result != null)
@@ -215,99 +216,99 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        private List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, SPInput_ArrearsQuery spInput, ref string errMsg)
-        {
-            List<ArrearsQueryDetail> re = new List<ArrearsQueryDetail>();
+        //private List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, SPInput_ArrearsQuery spInput, ref string errMsg)
+        //{
+        //    List<ArrearsQueryDetail> re = new List<ArrearsQueryDetail>();
 
-            try
-            {
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrearsQuery);
-                int apiLen = apiList.Length;
-                object[] objparms = new object[apiLen == 0 ? 1 : apiLen];
-                if (apiLen > 0)
-                {
-                    for (int i = 0; i < apiLen; i++)
-                    {
-                        objparms[i] = new
-                        {
-                            CUSTID = apiList[i].CUSTID,
-                            ORDNO = apiList[i].ORDNO,
-                            CNTRNO = apiList[i].CNTRNO,
-                            PAYMENTTYPE = apiList[i].PAYMENTTYPE,
-                            SPAYMENTTYPE = apiList[i].SPAYMENTTYPE,
-                            DUEAMT = apiList[i].DUEAMT,
-                            PAIDAMT = apiList[i].PAIDAMT,
-                            CARNO = apiList[i].CARNO,
-                            POLNO = apiList[i].POLNO,
-                            PAYTYPE = apiList[i].PAYTYPE,
-                            GIVEDATE = apiList[i].GIVEDATE,
-                            RNTDATE = apiList[i].RNTDATE,
-                            INBRNHCD = apiList[i].INBRNHCD,
-                            IRENTORDNO = apiList[i].IRENTORDNO,
-                            TAMT = apiList[i].TAMT
-                        };
-                    }
-                }
-                else
-                {
-                    objparms[0] = new
-                    {
-                        CARNO = "",
-                        CNTRNO = "",
-                        CUSTID = "",
-                        DUEAMT = 0,
-                        GIVEDATE = "",
-                        INBRNHCD = "",
-                        IRENTORDNO = "",
-                        ORDNO = "",
-                        PAIDAMT = 0,
-                        PAYMENTTYPE = "",
-                        PAYTYPE = "",
-                        POLNO = "",
-                        RNTDATE = "",
-                        SPAYMENTTYPE = "",
-                        TAMT = 0
-                    };
-                }
+        //    try
+        //    {
+        //        string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrearsQuery);
+        //        int apiLen = apiList.Length;
+        //        object[] objparms = new object[apiLen == 0 ? 1 : apiLen];
+        //        if (apiLen > 0)
+        //        {
+        //            for (int i = 0; i < apiLen; i++)
+        //            {
+        //                objparms[i] = new
+        //                {
+        //                    CUSTID = apiList[i].CUSTID,
+        //                    ORDNO = apiList[i].ORDNO,
+        //                    CNTRNO = apiList[i].CNTRNO,
+        //                    PAYMENTTYPE = apiList[i].PAYMENTTYPE,
+        //                    SPAYMENTTYPE = apiList[i].SPAYMENTTYPE,
+        //                    DUEAMT = apiList[i].DUEAMT,
+        //                    PAIDAMT = apiList[i].PAIDAMT,
+        //                    CARNO = apiList[i].CARNO,
+        //                    POLNO = apiList[i].POLNO,
+        //                    PAYTYPE = apiList[i].PAYTYPE,
+        //                    GIVEDATE = apiList[i].GIVEDATE,
+        //                    RNTDATE = apiList[i].RNTDATE,
+        //                    INBRNHCD = apiList[i].INBRNHCD,
+        //                    IRENTORDNO = apiList[i].IRENTORDNO,
+        //                    TAMT = apiList[i].TAMT
+        //                };
+        //            }
+        //        }
+        //        else
+        //        {
+        //            objparms[0] = new
+        //            {
+        //                CARNO = "",
+        //                CNTRNO = "",
+        //                CUSTID = "",
+        //                DUEAMT = 0,
+        //                GIVEDATE = "",
+        //                INBRNHCD = "",
+        //                IRENTORDNO = "",
+        //                ORDNO = "",
+        //                PAIDAMT = 0,
+        //                PAYMENTTYPE = "",
+        //                PAYTYPE = "",
+        //                POLNO = "",
+        //                RNTDATE = "",
+        //                SPAYMENTTYPE = "",
+        //                TAMT = 0
+        //            };
+        //        }
 
-                object[][] parms1 = {
-                    new object[] {
-                        spInput.IDNO,
-                        spInput.IsSave,
-                        spInput.LogID
-                    },
-                    objparms
-                };
+        //        object[][] parms1 = {
+        //            new object[] {
+        //                spInput.IDNO,
+        //                spInput.IsSave,
+        //                spInput.LogID
+        //            },
+        //            objparms
+        //        };
 
-                DataSet ds1 = null;
-                string returnMessage = "";
-                string messageLevel = "";
-                string messageType = "";
+        //        DataSet ds1 = null;
+        //        string returnMessage = "";
+        //        string messageLevel = "";
+        //        string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+        //        ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
-                if(string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
-                {
-                    if (ds1.Tables.Count >= 2)
-                        re = objUti.ConvertToList<ArrearsQueryDetail>(ds1.Tables[0]);
-                    else if(ds1.Tables.Count == 1)
-                    {
-                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
-                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
-                            errMsg = re_db.ErrorMsg;                        
-                    }
-                }
-                else
-                    errMsg = returnMessage;
+        //        if(string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+        //        {
+        //            if (ds1.Tables.Count >= 2)
+        //                re = objUti.ConvertToList<ArrearsQueryDetail>(ds1.Tables[0]);
+        //            else if(ds1.Tables.Count == 1)
+        //            {
+        //                var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+        //                if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+        //                    errMsg = re_db.ErrorMsg;                        
+        //            }
+        //        }
+        //        else
+        //            errMsg = returnMessage;
 
-                return re;
-            }
-            catch (Exception ex)
-            {
-                errMsg = ex.ToString();
-                throw ex;
-            }
-        }
+        //        return re;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        errMsg = ex.ToString();
+        //        throw ex;
+        //    }
+        //}
     
     }
 }

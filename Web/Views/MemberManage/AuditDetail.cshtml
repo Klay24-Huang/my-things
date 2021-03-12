@@ -26,6 +26,7 @@
     string IsReject = "", RejectReason = "", RejectExplain = "";
     string CarDriver = "", CarDriver1 = "", MotoDriver2 = "", MotorDriver1 = "";
     int MobileLen = 0;
+    int BlockMobileLen = 0; //20210310唐加
     int HistoryLen = 0;
     string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
 
@@ -132,6 +133,7 @@
             }
         }
         MobileLen = (obj.SameMobile == null) ? 0 : obj.SameMobile.Count();
+        BlockMobileLen = (obj.mobileBlock == null) ? 0 : obj.mobileBlock.Count();//20210310唐加
         HistoryLen = (obj.History == null) ? 0 : obj.History.Count();
 
         if (HistoryLen > 0)
@@ -153,669 +155,673 @@
             </div>
             @using (Html.BeginForm("AuditDetail", "MemberManage", FormMethod.Post, new { id = "frmAudit", @class = "form-horizontal", enctype = "multipart/form-data" }))
             {
-            <ul class="list-group list-group-flush">
-                <!--每一個li是一項查詢條件-->
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                審核備註
-                            </div>
-                            <div class="col-md-3" style="color:red;">
-                                @(obj.detail.MEMO)
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                會員手機
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-primary" id="btnCheckSameMobile" name="btnCheckSameMobile" data-toggle="modal" data-target="#sameMobile_modal">預覽手機重複名單</button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                iRent會員狀態
-                            </div>
-                            <div class="col-md-10">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == -1) ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="NoRegister">
-                                        尚未申請
-                                    </label>
+                <ul class="list-group list-group-flush">
+                    <!--每一個li是一項查詢條件-->
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    審核備註
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.AuditKind == 1 || obj.detail.AuditKind == 2) &&  obj.detail.HasAudit != -1 ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="NoRegister">
-                                        待上傳證件照片
-                                    </label>
-                                </div>
-                                <!--<div class="form-check">
-                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
-                        <label class="form-check-label" for="NoRegister">
-                            待設定付款方式
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
-                        <label class="form-check-label" for="NoRegister">
-                            待設定發票開立
-                        </label>
-                    </div>-->
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="0" @((obj.detail.HasAudit == 0) ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="NoRegister">
-                                        審核中
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == 1) ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="NoRegister">
-                                        審核失敗
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="2" @((obj.detail.HasAudit == 2) ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="NoRegister">
-                                        審核成功
-                                    </label>
+                                <div class="col-md-3" style="color:red;">
+                                    @(obj.detail.MEMO)
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                中文姓名
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)"  />
-                            </div>
-                            <div class="col-md-3" style="display:@(obj.detail.MEMCNAME == "" || UPD_MEMBER_NAME_USER.IndexOf(Session["Account"].ToString().Trim() + ",") > -1 ? "" : "none")">
-                                <button type="submit" class="btn btn-primary">修改姓名</button>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    會員手機
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary" id="btnCheckSameMobile" name="btnCheckSameMobile" data-toggle="modal" data-target="#sameMobile_modal">預覽手機重複名單</button>
+                                    <!--20210310唐加-->
+                                    <button type="button" class="btn btn-primary" id="btnCheckBlockMobileLen" name="btnCheckBlockMobileLen" data-toggle="modal" data-target="#blockMobile_modal" style="VISIBILITY: hidden"></button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                身份證字號
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    iRent會員狀態
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == -1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            尚未申請
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.AuditKind == 1 || obj.detail.AuditKind == 2) && obj.detail.HasAudit != -1 ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待上傳證件照片
+                                        </label>
+                                    </div>
+                                    <!--<div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定付款方式
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定發票開立
+                                        </label>
+                                    </div>-->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="0" @((obj.detail.HasAudit == 0) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核中
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核失敗
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="2" @((obj.detail.HasAudit == 2) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核成功
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@(obj.detail.MEMIDNO)" readonly />
-                                <input type="hidden" name="AuditIDNO" id="AuditIDNO" value="@(obj.detail.MEMIDNO)" />
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    中文姓名
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)" />
+                                </div>
+                                <div class="col-md-3" style="display:@(obj.detail.MEMCNAME == "" || UPD_MEMBER_NAME_USER.IndexOf(Session["Account"].ToString().Trim() + ",") > -1 ? "" : "none")">
+                                    <button type="submit" class="btn btn-primary">修改姓名</button>
+                                </div>
                             </div>
-                            @*<div class="col-md-3">
-                        <button type="button" class="btn btn-primary" id="btnShow" name="btnShow">快速預覽取車證件</button>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    身份證字號
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="IDNO" id="IDNO" value="@(obj.detail.MEMIDNO)" readonly />
+                                    <input type="hidden" name="AuditIDNO" id="AuditIDNO" value="@(obj.detail.MEMIDNO)" />
+                                </div>
+                                @*<div class="col-md-3">
+                                        <button type="button" class="btn btn-primary" id="btnShow" name="btnShow">快速預覽取車證件</button>
 
-                    </div>*@
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                駕照號碼
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="DriverNo" id="DriverNo" value="@(obj.detail.MEMIDNO)" readonly />
+                                    </div>*@
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                駕照種類
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
-                                    <label class="form-check-label" for="CarDriver">汽車</label>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    駕照號碼
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
-                                    <label class="form-check-label" for="CarDriver1">機車(持汽車駕照使用輕型機車)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
-                                    <label class="form-check-label" for="MotoDriver2">機車(重型)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
-                                    <label class="form-check-label" for="MotorDriver1">機車(輕型)</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#surrounding_modal" id="btnReview" name="btnReview">預覽證件</button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                特殊身份說明
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="SPECSTATUS" id="SPECSTATUS" value="@(obj.detail.SPECSTATUS)">
-                                    @for (int i = 0; i < SPECSTATUSLen; i++)
-                                    {
-                                        <option value="@(SPECSTATUSVALUE[i])">@SPECSTATUS[i]</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                特殊身份有效日期
-                            </div>
-                            <div class="col-md-3">
-                                <!-- datepicker -->
-                                <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@(obj.detail.SPSD)" readonly="false">
-                                    <svg width="22" height="22" viewBox="0 0 22 22">
-                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
-                                            <rect width="22" height="19" rx="3" stroke="none" />
-                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
-                                        </g>
-                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
-                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
-                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
-                                        </g>
-                                        <g transform="translate(3.633 -0.005)">
-                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
-                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
-                            ～
-                            <div class="col-md-3">
-                                <!-- datepicker with time -->
-                                <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@(obj.detail.SPED)" readonly="false">
-                                    <svg width="22" height="22" viewBox="0 0 22 22">
-                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
-                                            <rect width="22" height="19" rx="3" stroke="none" />
-                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
-                                        </g>
-                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
-                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
-                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
-                                        </g>
-                                        <g transform="translate(3.633 -0.005)">
-                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
-                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
-                                        </g>
-                                    </svg>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="DriverNo" id="DriverNo" value="@(obj.detail.MEMIDNO)" readonly />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                出生日期
-                            </div>
-                            <div class="col-md-3">
-                                <!-- datepicker -->
-                                <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="Birth" name="Birth" value="@((Convert.ToDateTime(obj.detail.MEMBIRTH)).ToString("yyyy-MM-dd"))" readonly="false">
-                                    <svg width="22" height="22" viewBox="0 0 22 22">
-                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
-                                            <rect width="22" height="19" rx="3" stroke="none" />
-                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
-                                        </g>
-                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
-                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
-                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
-                                        </g>
-                                        <g transform="translate(3.633 -0.005)">
-                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
-                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
-                                        </g>
-                                    </svg>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    駕照種類
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="CarDriver">汽車</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="CarDriver1">機車(持汽車駕照使用輕型機車)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="MotoDriver2">機車(重型)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="MotorDriver1">機車(輕型)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#surrounding_modal" id="btnReview" name="btnReview">預覽證件</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                手機號碼
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="Mobile" id="Mobile" value="@(obj.detail.MEMTEL)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                地址
-                            </div>
-                            <div class="col-md-2">
-                                <select class="form-control" name="City" id="City" value="@(obj.detail.MEMCOUNTRY)"> <!--20210113唐加value-->
-                                    <option value="">請選擇</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <select class="form-control" name="Area" id="Area" value="@(obj.detail.MEMCITY)"> <!--20210113唐加value-->
-                                    <option value="">請選擇</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <input class="form-control" type="text" name="Addr" id="Addr" value="@(obj.detail.MEMADDR)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                連絡電話
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="MEMHTEL" id="MEMHTEL" value="@(obj.detail.MEMHTEL)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                公司電話
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="MEMCOMTEL" id="MEMCOMTEL" value="@(obj.detail.MEMCOMTEL)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                緊急聯絡人姓名
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="MEMCONTRACT" id="MEMCONTRACT" value="@(obj.detail.MEMCONTRACT)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                緊急聯絡人手機
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="MEMCONTEL" id="MEMCONTEL" value="@(obj.detail.MEMCONTEL)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                @*<li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        公司抬頭
-                    </div>
-                    <div class="col-md-3">
-                        <input class="form-control" type="text" name="Title" id="Title" value="@(obj.)" />
-
-                    </div>
-
-                </div>
-            </div>
-        </li>*@
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                統編
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="UniCode" id="UniCode" value="@(obj.detail.UNIMNO)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                發票寄送方式
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="InvoiceType" id="InvoiceType">
-                                    @for (int i = 0; i < InvoiceKindLen; i++)
-                                    {
-                                        if (obj.detail.MEMSENDCD == i)
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    特殊身份說明
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="SPECSTATUS" id="SPECSTATUS" value="@(obj.detail.SPECSTATUS)">
+                                        @for (int i = 0; i < SPECSTATUSLen; i++)
                                         {
-                                            <option value="@(i)" selected>@InvoiceKind[i]</option>
+                                            <option value="@(SPECSTATUSVALUE[i])">@SPECSTATUS[i]</option>
                                         }
-                                        else
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    特殊身份有效日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@(obj.detail.SPSD)" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                ～
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@(obj.detail.SPED)" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    出生日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="Birth" name="Birth" value="@((Convert.ToDateTime(obj.detail.MEMBIRTH)).ToString("yyyy-MM-dd"))" readonly="false">
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    手機號碼
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="Mobile" id="Mobile" value="@(obj.detail.MEMTEL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    地址
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="City" id="City" value="@(obj.detail.MEMCOUNTRY)">
+                                        <!--20210113唐加value-->
+                                        <option value="">請選擇</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="Area" id="Area" value="@(obj.detail.MEMCITY)">
+                                        <!--20210113唐加value-->
+                                        <option value="">請選擇</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="Addr" id="Addr" value="@(obj.detail.MEMADDR)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    連絡電話
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMHTEL" id="MEMHTEL" value="@(obj.detail.MEMHTEL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    公司電話
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCOMTEL" id="MEMCOMTEL" value="@(obj.detail.MEMCOMTEL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    緊急聯絡人姓名
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCONTRACT" id="MEMCONTRACT" value="@(obj.detail.MEMCONTRACT)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    緊急聯絡人手機
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCONTEL" id="MEMCONTEL" value="@(obj.detail.MEMCONTEL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @*<li class="list-group-item">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        公司抬頭
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" type="text" name="Title" id="Title" value="@(obj.)" />
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>*@
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    統編
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="UniCode" id="UniCode" value="@(obj.detail.UNIMNO)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    發票寄送方式
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="InvoiceType" id="InvoiceType">
+                                        @for (int i = 0; i < InvoiceKindLen; i++)
                                         {
-                                            <option value="@(i)">@InvoiceKind[i]</option>
+                                            if (obj.detail.MEMSENDCD == i)
+                                            {
+                                                <option value="@(i)" selected>@InvoiceKind[i]</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@(i)">@InvoiceKind[i]</option>
+                                            }
+
                                         }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    E-Mail
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="MEMEMAIL" id="MEMEMAIL" value="@(obj.detail.MEMEMAIL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    E-Mail認證
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_NotOK" value="0" @((obj.detail.HasVaildEMail == 0) ? " checked" : "")>
+                                        <label class="form-check-label" for="HasVaildEMail_NotOK">
+                                            E-Mail未認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_OK" value="1" @((obj.detail.HasVaildEMail == 1) ? " checked" : "")>
+                                        <label class="form-check-label" for="HasVaildEMail_OK">
+                                            E-Mail已認證
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    活動及優惠訊息通知
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_NotOK" value="0" @((obj.detail.MEMMSG == "N") ? " checked" : "")>
+                                        <label class="form-check-label" for="MEMMSG_NotOK">
+                                            通知未開啟
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_OK" value="1" @((obj.detail.MEMMSG == "Y") ? " checked" : "")>
+                                        <label class="form-check-label" for="MEMMSG_OK">
+                                            通知已開啟
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    權限
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="NotOK" value="0" @((obj.detail.HasCheckMobile == 0 && obj.block == null) ? " checked" : "")>
+                                        <label class="form-check-label" for="NotOK">
+                                            手機未認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="OK" value="1" @((obj.detail.HasCheckMobile == 1 && obj.block == null) ? " checked" : "")>
+                                        <label class="form-check-label" for="OK">
+                                            手機已認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="block" value="-1" @((obj.block != null) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="block">
+                                            黑名單
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-2">
+                                    有效日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="BlockStartDate" name="BlockStartDate" value="@((obj.block!=null)? obj.block.STADT:"")" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                ～
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="BlockEndDate" name="BlockEndDate" value="@((obj.block!=null)? obj.block.ENDDT:"")" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    @(obj.detail.IsNew == 1 ? "申請新加入" : "身分變更")審核結果
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="AuditStatus" id="AuditOK" value="1" @(IsReject == "0" ? "checked" : "")>
+                                        <label class="form-check-label" for="AuditOK">
+                                            通過
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="AuditStatus" id="AuditReject" value="-1" @(IsReject == "0" || IsReject == "" ? "" : "checked")>
+                                        <label class="form-check-label" for="AuditReject">
+                                            不通過，原因說明
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="NotAuditReason" id="NotAuditReason" value="@(RejectExplain)">
+                                        <option value="">請選擇</option>
+                                        <option value="無上傳證件">無上傳證件</option>
+                                        <option value="證件錯誤(駕照錯誤之類)">證件錯誤(駕照錯誤之類)</option>
+                                        <option value="證件不清楚">證件不清楚</option>
+                                        <option value="資料跟證件不符">資料跟證件不符</option>
+                                        <option value="未輸入手機認證碼">未輸入手機認證碼</option>
+                                        <option value="資料需再確認">資料需再確認</option>
+                                        <option value="未上傳法定代理人同意書">未上傳法定代理人同意書</option>
+                                        <option value="法定代理人同意書資料異常">法定代理人同意書資料異常</option>
+                                        <option value="電子簽名請簽正楷中文">電子簽名請簽正楷中文</option>
+                                        <option value="自拍照有誤">自拍照有誤</option>
+                                        <option value="其他">其他</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="text" name="RejectReason" id="RejectReason" value="@(RejectReason)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!--20210115唐加備註欄位-->
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    備註
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="MEMO_NEW" id="MEMO_NEW" value="@(obj.detail.MEMONEW)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
 
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                E-Mail
-                            </div>
-                            <div class="col-md-6">
-                                <input class="form-control" type="text" name="MEMEMAIL" id="MEMEMAIL" value="@(obj.detail.MEMEMAIL)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                E-Mail認證
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_NotOK" value="0" @((obj.detail.HasVaildEMail == 0) ? " checked" : "")>
-                                    <label class="form-check-label" for="HasVaildEMail_NotOK">
-                                        E-Mail未認證
-                                    </label>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    前次審核人員
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_OK" value="1" @((obj.detail.HasVaildEMail == 1) ? " checked" : "")>
-                                    <label class="form-check-label" for="HasVaildEMail_OK">
-                                        E-Mail已認證
-                                    </label>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="LastOpt" id="LastOpt" value="@(obj.detail.LastOpt)" readonly />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                活動及優惠訊息通知
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_NotOK" value="0" @((obj.detail.MEMMSG == "N") ? " checked" : "")>
-                                    <label class="form-check-label" for="MEMMSG_NotOK">
-                                        通知未開啟
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_OK" value="1" @((obj.detail.MEMMSG == "Y") ? " checked" : "")>
-                                    <label class="form-check-label" for="MEMMSG_OK">
-                                        通知已開啟
-                                    </label>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-8 text-danger">
+                                    *己通過身份變更者，更修改會員資料
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                權限
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Power" id="NotOK" value="0" @((obj.detail.HasCheckMobile == 0 && obj.block == null) ? " checked" : "")>
-                                    <label class="form-check-label" for="NotOK">
-                                        手機未認證
-                                    </label>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    推薦時數歷程
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Power" id="OK" value="1" @((obj.detail.HasCheckMobile == 1 && obj.block == null) ? " checked" : "")>
-                                    <label class="form-check-label" for="OK">
-                                        手機已認證
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Power" id="block" value="-1" @((obj.block != null) ? " checked" : "") disabled>
-                                    <label class="form-check-label" for="block">
-                                        黑名單
-                                    </label>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnRecommendHistory" name="btnRecommendHistory" class="btn btn-info" data-toggle="modal" data-target="#recommendHistory_modal">顯示推薦時數歷程</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-2">
-                            </div>
-                            <div class="col-md-2">
-                                有效日期
-                            </div>
-                            <div class="col-md-3">
-                                <!-- datepicker -->
-                                <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="BlockStartDate" name="BlockStartDate" value="@((obj.block!=null)? obj.block.STADT:"")" disabled>
-                                    <svg width="22" height="22" viewBox="0 0 22 22">
-                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
-                                            <rect width="22" height="19" rx="3" stroke="none" />
-                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
-                                        </g>
-                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
-                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
-                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
-                                        </g>
-                                        <g transform="translate(3.633 -0.005)">
-                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
-                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
-                                        </g>
-                                    </svg>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    安心服務
                                 </div>
-                            </div>
-                            ～
-                            <div class="col-md-3">
-                                <!-- datepicker with time -->
-                                <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="BlockEndDate" name="BlockEndDate" value="@((obj.block!=null)? obj.block.ENDDT:"")" disabled>
-                                    <svg width="22" height="22" viewBox="0 0 22 22">
-                                        <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
-                                            <rect width="22" height="19" rx="3" stroke="none" />
-                                            <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
-                                        </g>
-                                        <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
-                                            <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
-                                            <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
-                                        </g>
-                                        <g transform="translate(3.633 -0.005)">
-                                            <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
-                                            <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
-                                        </g>
-                                    </svg>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnHistory" name="btnInsuranceData" class="btn btn-info" data-toggle="modal" data-target="#InsuranceData_modal">顯示安心服務內容</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                @(obj.detail.IsNew == 1 ? "申請新加入" : "身分變更")審核結果
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="AuditStatus" id="AuditOK" value="1" @(IsReject == "0" ? "checked" : "")>
-                                    <label class="form-check-label" for="AuditOK">
-                                        通過
-                                    </label>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    審核簡歷
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="AuditStatus" id="AuditReject" value="-1" @(IsReject == "0" || IsReject == "" ? "" : "checked")>
-                                    <label class="form-check-label" for="AuditReject">
-                                        不通過，原因說明
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <select class="form-control" name="NotAuditReason" id="NotAuditReason" value="@(RejectExplain)">
-                                    <option value="">請選擇</option>
-                                    <option value="無上傳證件">無上傳證件</option>
-                                    <option value="證件錯誤(駕照錯誤之類)">證件錯誤(駕照錯誤之類)</option>
-                                    <option value="證件不清楚">證件不清楚</option>
-                                    <option value="資料跟證件不符">資料跟證件不符</option>
-                                    <option value="未輸入手機認證碼">未輸入手機認證碼</option>
-                                    <option value="資料需再確認">資料需再確認</option>
-                                    <option value="未上傳法定代理人同意書">未上傳法定代理人同意書</option>
-                                    <option value="法定代理人同意書資料異常">法定代理人同意書資料異常</option>
-                                    <option value="電子簽名請簽正楷中文">電子簽名請簽正楷中文</option>
-                                    <option value="自拍照有誤">自拍照有誤</option>
-                                    <option value="其他">其他</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <input class="form-control" type="text" name="RejectReason" id="RejectReason" value="@(RejectReason)" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <!--20210115唐加備註欄位-->
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                備註
-                            </div>
-                            <div class="col-md-6">
-                                <input class="form-control" type="text" name="MEMO_NEW" id="MEMO_NEW" value="@(obj.detail.MEMONEW)" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                前次審核人員
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="LastOpt" id="LastOpt" value="@(obj.detail.LastOpt)" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item" style="display:none;">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-8 text-danger">
-                                *己通過身份變更者，更修改會員資料
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                推薦時數歷程
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" id="btnRecommendHistory" name="btnRecommendHistory" class="btn btn-info" data-toggle="modal" data-target="#recommendHistory_modal">顯示推薦時數歷程</button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                安心服務
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" id="btnHistory" name="btnInsuranceData" class="btn btn-info" data-toggle="modal" data-target="#InsuranceData_modal">顯示安心服務內容</button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                審核簡歷
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" id="btnHistory" name="btnHistory" class="btn btn-info" data-toggle="modal" data-target="#history_modal">顯示審核簡歷</button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="SendMessage" name="SendMessage" value="1" checked>
-                                    <label class="form-check-label" for="SendMessage">送出審核結果簡訊</label>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnHistory" name="btnHistory" class="btn btn-info" data-toggle="modal" data-target="#history_modal">顯示審核簡歷</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-3 offset-md-2">
-                                <button type="button" id="btnSend" name="btnSend" class="btn btn-info">儲存</button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="history.back();">返回</button>
-                                <input type="hidden" id="len" name="len" value="" />
-                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="SendMessage" name="SendMessage" value="1" checked>
+                                        <label class="form-check-label" for="SendMessage">送出審核結果簡訊</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3 offset-md-2">
+                                    <button type="button" id="btnSend" name="btnSend" class="btn btn-info">儲存</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="history.back();">返回</button>
+                                    <input type="hidden" id="len" name="len" value="" />
+                                    <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
 
                 <div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
@@ -830,7 +836,7 @@
                                                     身份證正面
                                                 </div>
                                                 <div class="col-md-8">
-                                                        <img id='ID_1_PIC' name='ID_1_PIC' src='@(obj.Images.ID_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_1)")' />
+                                                    <img id='ID_1_PIC' name='ID_1_PIC' src='@(obj.Images.ID_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_1)")' />
                                                     <span>@(ID_1_str)</span>
                                                     <span><br>@(obj.Images.ID_1_UPDTime)</span>
                                                 </div>
@@ -1637,6 +1643,54 @@
         </div>
     </div>
 
+    <div id="blockMobile_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container mt-4">
+                        <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                            <thead class="text-white bg-primary">
+                                <tr>
+                                    <th data-sort="false"> </th>
+                                    <th scope="col">電話</th>
+                                    <th scope="col">描述</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (BlockMobileLen == 0)
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center">
+                                            查無結果
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td data-sort="false"></td>
+                                        <td scope="col">@(obj.mobileBlock)</td>
+                                        <td scope="col">此電話為黑名單，千萬不能幫他改阿</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="hide-if-no-paging">
+                                <tr>
+                                    <td colspan="2" class="text-center">
+                                        <ul class="pagination"></ul>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="InsuranceData_modal" class="modal fade">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -1749,4 +1803,5 @@
     var IsNew = '@(obj.detail.IsNew)';
     var MobileLen = '@(MobileLen)';
     var HistoryLen = '@(HistoryLen)';
+    var BlockMobileLen = '@(BlockMobileLen)'; //20210310唐加
 </script>

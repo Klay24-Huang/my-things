@@ -20,6 +20,7 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -138,6 +139,25 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+                
+                    if(flag && !string.IsNullOrWhiteSpace(apiInput.Seat))
+                    {
+                        List<string> LstSeat = apiInput.Seat.Split(',').ToList();
+                        bool intCk = true;
+                        foreach (string se in LstSeat)
+                        {
+                            if (!int.TryParse(se, out int sea))
+                            {
+                                intCk = false;
+                                break;
+                            }
+                        }
+                        if (!intCk)
+                        {
+                            errCode = "ERR247";
+                            flag = false;
+                        }                    
+                    }
                 }
             }
             #endregion
@@ -182,7 +202,7 @@ namespace WebAPI.Controllers
                 {
                     StationIDs = apiInput.StationID,
                     SD = SDate,
-                    ED = EDate,
+                    ED = EDate,                    
                     CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
                     IDNO = IDNO,
                     Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
@@ -203,15 +223,6 @@ namespace WebAPI.Controllers
                 var spList = GetStationCarTypeOfMutiStation(spInput, ref flag, ref lstError, ref errCode);
                 if (spList != null && spList.Count > 0)
                 {
-                    #region 地圖查詢-mark
-                    //if (apiInput.PriceMin > 0)
-                    //    spList = spList.Where(x => x.Price >= apiInput.PriceMin || x.PRICE_H >= apiInput.PriceMin).ToList();
-                    //if (apiInput.PriceMax > 0)
-                    //    spList = spList.Where(x => x.Price <= apiInput.PriceMax || x.PRICE_H <= apiInput.PriceMax).ToList();
-                    //if (apiInput.Seat > 0)
-                    //    spList = spList.Where(x => x.Seat == apiInput.Seat).ToList();
-                    #endregion
-
                     lstData = (from a in spList
                                select new StationAndProjectAndCarTypeData
                                {
@@ -249,6 +260,23 @@ namespace WebAPI.Controllers
                                    StationName = a.StationName,
                                    StationPicJson = a.StationPicJson
                                }).ToList();
+
+                    #region 過濾查詢結果
+
+                    if (!string.IsNullOrWhiteSpace(apiInput.CarType))
+                    {
+                        List<string> LstCarType = apiInput.CarType.Split(',').ToList();
+                        lstData.ForEach(x => { if (!LstCarType.Contains(x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0;} });
+                    }
+                    if (!string.IsNullOrWhiteSpace(apiInput.Seat))
+                    {
+                        List<int> LstSeat = apiInput.Seat.Split(',').ToList().Select(y=>Convert.ToInt32(y)).ToList();
+                        lstData.ForEach(x => { if (!LstSeat.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
+                    }
+                    if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
+                        lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
+
+                    #endregion
                 }
 
                 if (flag)
@@ -417,6 +445,50 @@ namespace WebAPI.Controllers
                 {
                     GetProjectObj = lstTmpData
                 };
+
+                #region 車款,金額下拉,是否有可租
+
+                bool HaveRentY = lstData.Where(y => y.IsRent.ToLower() == "y").Count() > 0;
+                if (lstData != null && lstData.Count() > 0 && HaveRentY)
+                {
+                    outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
+                    outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
+
+                    var SeatGroups = new List<GetProject_SeatGroup>();
+                    List<int> SeatsList = lstData.Where(z=>z.IsRent.ToLower() == "y").GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
+                    if(SeatsList != null && SeatsList.Count()>0)
+                    {
+                        foreach(int se in SeatsList)
+                        {
+                            var item = new GetProject_SeatGroup();
+                            item.Seat = Convert.ToInt16(se);
+
+                            List<GetProject_CarInfo> CarInfos =
+                                (from a in lstData
+                                 where a.IsRent.ToLower() == "y" && a.Seat == se
+                                 group new { a.Seat, a.CarType } by new { a.Seat, a.CarType } into g
+                                 select new GetProject_CarInfo
+                                 {
+                                     Seat = item.Seat,
+                                     CarTypes = g.Key.CarType
+                                 }).ToList();
+                            if (CarInfos != null && CarInfos.Count() > 0)
+                                item.CarInfos = CarInfos;
+                            SeatGroups.Add(item);
+                        }
+                    }
+
+                    if (SeatGroups != null && SeatGroups.Count() > 0)
+                        outputApi.SeatGroups = SeatGroups;
+
+                    if (lstData.Where(x => x.IsRent.ToLower() == "y" && x.IsShowCard == 1).ToList().Count() > 0)
+                        outputApi.HasRentCard = true;
+                    else
+                        outputApi.HasRentCard = false;
+                }
+
+                #endregion
+
             }
             #endregion
 

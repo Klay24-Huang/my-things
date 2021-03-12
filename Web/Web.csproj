@@ -376,8 +376,10 @@
     <Content Include="Scripts\js\ActionJS\Report\ChargeParkingDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\KymcoQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MaintainLogReport.js" />
+    <Content Include="Scripts\js\ActionJS\Report\MemberDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MonthlyDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MonthlyMainQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\MotorBatteryStatusQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ParkingCheckInQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\TradeQuery.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\ChargeParkingSetting.js" />
@@ -669,6 +671,8 @@
     <Content Include="Views\Report\KymcoQuery.cshtml" />
     <Content Include="Views\CommonObj\GetAreaList.cshtml" />
     <Content Include="Views\CommonObj\GetTypeleList.cshtml" />
+    <Content Include="Views\Report\MemberDetailQuery.cshtml" />
+    <Content Include="Views\Report\MotorBatteryStatusQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
