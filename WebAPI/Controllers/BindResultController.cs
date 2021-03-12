@@ -132,6 +132,10 @@ namespace WebAPI.Controllers
                                 CardToken = apiInput.RequestParams.CardToken
                             };
                         }
+                        else
+                        {
+                            flag = false;
+                        }
                     }
                 }
                 catch (Exception ex)
