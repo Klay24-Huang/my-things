@@ -237,7 +237,7 @@ $(function () {
             //console.log(y.getFullYear() - ('1997-01-16 00:00:00.000').substr(0, 4));
             //console.log($("#Birth").val())
             //20210312唐加判斷:20歲以下才要審
-            if ($.trim(Obj.F01_Audit) == "" && (y.getFullYear() - $("#Birth").val().substr(0, 4)) < 20) {
+            if ($.trim(Obj.F01_Audit) == "0" && (y.getFullYear() - $("#Birth").val().substr(0, 4)) < 20) {
                 flag = false;
                 errMsg = "請勾選【法定代理人】的照片審核結果";
             }
@@ -377,7 +377,7 @@ $(function () {
             //console.log(y.getFullYear() - ('1997-01-16 00:00:00.000').substr(0, 4));
             //console.log($("#Birth").val())
             //20210312唐加判斷:20歲以下才要審
-            if ($.trim(Obj.F01_Audit) == "" &&  (y.getFullYear() - $("#Birth").val().substr(0, 4)) < 20 ) {
+            if ($.trim(Obj.F01_Audit) == "0" &&  (y.getFullYear() - $("#Birth").val().substr(0, 4)) < 20 ) {
                 flag = false;
                 errmsg = "請勾選【法定代理人】的照片審核結果";
             }
