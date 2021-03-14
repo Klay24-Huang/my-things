@@ -100,7 +100,7 @@ BEGIN TRY
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -109,7 +109,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -125,6 +125,10 @@ BEGIN TRY
 			U_USERID=@IDNO,
 			U_SYSDT=@NowTime 
 		WHERE MEMIDNO=@IDNO;
+
+		-- 20210226;新增LOG檔
+		INSERT INTO TB_MemberData_Log
+		SELECT 'U','48/167',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 	END
 
 	--寫入錯誤訊息

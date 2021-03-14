@@ -51,6 +51,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            var cr_repo = new CarRentRepo();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -304,6 +305,15 @@ namespace WebAPI.Controllers
                         }
                         #endregion
 
+                        int UseOrderPrice = orderFinishDataLists[0].UseOrderPrice;
+                        var NYPayLists = cr_repo.GetNYPayList(Convert.ToInt32(tmpOrder));
+                        if(NYPayLists != null && NYPayLists.Count() > 0)
+                        {
+                            var nItem = NYPayLists.FirstOrDefault();
+                            UseOrderPrice = UseOrderPrice - nItem.RETURNAMT;
+                            UseOrderPrice = UseOrderPrice > 0 ? UseOrderPrice : 0;
+                        }
+
                         outputApi = new OAPI_OrderDetail()
                         {
                             OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(7, '0')),
@@ -351,7 +361,8 @@ namespace WebAPI.Controllers
                             ParkingBill2 = orderFinishDataLists[0].ParkingFee2,
                             TowingBill = orderFinishDataLists[0].DraggingFee,
                             OtherBill = orderFinishDataLists[0].OtherFee,
-                            UseOrderPrice = orderFinishDataLists[0].UseOrderPrice
+                            UseOrderPrice = UseOrderPrice,
+                            ReturnOrderPrice = orderFinishDataLists[0].ReturnOrderPrice
                         };
                     }
                 }

@@ -82,16 +82,17 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                    <tr>
-                        <td data-sort="false">
-                        </td>
-                        <td scope="col">@(lstData[i].IRENTORDNO)</td>
-                        <td scope="col">@(lstData[i].ORDNO)</td>
-                        <td scope="col">@(lstData[i].SPAYMENTTYPE)</td>
-                        <td scope="col">@(lstData[i].POLNO)</td>
-                        <td scope="col">@(lstData[i].DUEAMT)</td>
-                        <td scope="col">@(lstData[i].PAIDAMT)</td>
-                    </tr>
+        <tr>
+            <td data-sort="false">
+            </td>
+            <td scope="col">@(lstData[i].IRENTORDNO)</td>
+            <!--<td scope="col">@(lstData[i].ORDNO)</td>-->
+            <!--20210225 ADD BY ADAM REASON.預約編號改合約編號--><td scope="col">@(lstData[i].CNTRNO)</td>
+            <td scope="col">@(lstData[i].SPAYMENTTYPE)</td>
+            <td scope="col">@(lstData[i].POLNO)</td>
+            <td scope="col">@(lstData[i].DUEAMT)</td>
+            <td scope="col">@(lstData[i].PAIDAMT)</td>
+        </tr>
                 }
 
             }

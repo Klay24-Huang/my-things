@@ -87,5 +87,8 @@ namespace Domain.TB.BackEnd
         /// 寫入時間
         /// </summary>
         public DateTime MKTime { set; get; }
+
+        //20210208唐加iButton
+        public int iButton { set; get; }
     }
 }

@@ -152,6 +152,7 @@ namespace Web.Controllers
                                 Data.Images.ID_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP")>-1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.ID_1_IsNew = 1;
                                 Data.Images.ID_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
+                                //若UPDTime是空，則AuditResult=sp傳回的AuditResult。若UPDTime不是空，則AuditResult=(若sp傳回的AuditResult不是1且有註記失敗原因則=-1，不然就0)
                                 Data.Images.ID_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
                                 Data.Images.ID_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;

@@ -151,7 +151,7 @@ namespace WebAPI.Controllers
             #endregion
             #region TB
 
-            if (flag)
+            if (flag) //這邊資料存到iRent db
             {
                 string CarRentType = "0";
                 string MotorRentType = "0";
@@ -201,7 +201,7 @@ namespace WebAPI.Controllers
                     HasVaildEMail = apiInput.HasVaildEMail,
                     MEMMSG = apiInput.MEMMSG,
                     MEMONEW = apiInput.MEMONEW //20210115唐加
-            };
+                };
 
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
@@ -211,17 +211,16 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
             }
-            if (flag)
+            if (flag) //這邊資料用api拋給sqyhi06vm
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
 
-                WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save()
+                WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save() //宣告好多欄位傳去NPR010，但下面只有部分設定，部分還直接寫死
                 {
                     user_id= "HLC",
                     MEMIDNO = apiInput.IDNO,
                     //MEMCNAME = apiInput.MEMCNAME,
-
                     //InvoiceType = apiInput.InvoiceType,
                     //IsNew = apiInput.IsNew,
                     MEMCEIL = apiInput.Mobile,
@@ -235,7 +234,10 @@ namespace WebAPI.Controllers
                     MEMCONTRACT = apiInput.MEMCONTRACT,
                     MEMCONTEL = apiInput.MEMCONTEL,
                     MEMMSG = apiInput.MEMMSG,
-                    tbExtSigninList = new List<ExtSigninList>()
+                    tbExtSigninList = new List<ExtSigninList>(),
+                    //20210218唐:這邊還要加 IRENTFLG(N未審T審失敗Y審通過)
+                    //PROCD = (apiInput.IsNew==1) ? "A" : "U",
+                    IRENTFLG = (apiInput.AuditStatus==0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")
                 };
                 flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }
@@ -247,6 +249,7 @@ namespace WebAPI.Controllers
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
+            
             //會員審核簡訊傳送
             if (apiInput.SendMessage==1)
             {
@@ -290,6 +293,7 @@ namespace WebAPI.Controllers
                 }
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
+            
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;

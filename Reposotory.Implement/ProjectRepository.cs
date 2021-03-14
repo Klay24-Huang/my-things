@@ -1,11 +1,7 @@
 ﻿using Domain.TB;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -66,10 +62,9 @@ namespace Reposotory.Implement
         /// <para>3:路邊</para>
         /// </param>
         /// <returns></returns>
-        public ProjectPriceBase GetProjectPriceBase(string ProjID,string CarType,int projType)
+        public ProjectPriceBase GetProjectPriceBase(string ProjID, string CarType, int projType)
         {
-           
-                   bool flag = false;
+            bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectPriceBase> lstProjInfo = null;
             ProjectPriceBase obj = null;
@@ -108,7 +103,6 @@ namespace Reposotory.Implement
                     para[nowCount].Direction = ParameterDirection.Input;
                     nowCount++;
                 }
-              
             }
             if ("" != term)
             {
@@ -133,7 +127,6 @@ namespace Reposotory.Implement
         /// <returns></returns>
         public ProjectPriceOfMinuteBase GetProjectPriceBaseByMinute(string ProjID, string CarNo)
         {
-
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectPriceOfMinuteBase> lstProjInfo = null;
@@ -157,14 +150,11 @@ namespace Reposotory.Implement
             }
             if (false == string.IsNullOrWhiteSpace(CarNo))
             {
-              
-                    term += " Car.CarNo=@CarNo";
-                    para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
-                    para[nowCount].Value = CarNo;
-                    para[nowCount].Direction = ParameterDirection.Input;
-                    nowCount++;
-                
-
+                term += " Car.CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
             }
             if ("" != term)
             {
@@ -180,6 +170,27 @@ namespace Reposotory.Implement
                 }
             }
             return obj;
+        }
+
+        /// <summary>
+        /// 取得春節專案資訊
+        /// </summary>
+        /// <returns></returns>
+        public List<GetFullProjectInfo> GetFullProjectInfo()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<GetFullProjectInfo> ListOut = new List<GetFullProjectInfo>();
+
+            string SQL = "SELECT PROJID,ShowStart,ShowEnd,PROJTYPE,StationID,CARTYPE,PRICE,PRICE_H,CarTypeName " +
+                         " FROM VW_GetFullProjectCollectionOfCarTypeGroup " +
+                         " WHERE PROJID in ('R139','R140') ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = " PROJID in ('R139','R140') ";
+
+            ListOut = GetObjList<GetFullProjectInfo>(ref flag, ref lstError, SQL, para, term);
+
+            return ListOut;
         }
     }
 }

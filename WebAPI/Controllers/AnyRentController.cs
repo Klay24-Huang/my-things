@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -30,7 +31,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -47,7 +47,6 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             StationAndCarRepository _repository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
@@ -86,26 +85,20 @@ namespace WebAPI.Controllers
             #region TB
             //Token判斷
             //20201109 ADD BY ADAM REASON.TOKEN判斷修改
-            //if (flag && isGuest == false)
-            if(flag && Access_Token_string.Split(' ').Length >= 2)
+            if (flag && Access_Token_string.Split(' ').Length >= 2)
             {
-                //string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
                     LogID = LogID,
-                    //Token = Access_Token
                     Token = Access_Token_string.Split(' ')[1].ToString()
                 };
-                //SPOutput_Base spOut = new SPOutput_Base();
                 SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                //SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 //訪客機制BYPASS
-                if (spOut.ErrorCode=="ERR101")
+                if (spOut.ErrorCode == "ERR101")
                 {
                     flag = true;
                     spOut.ErrorCode = "";
@@ -121,20 +114,6 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
-                //List<AnyRentObj> AllCars = new List<AnyRentObj>();
-                //if (apiInput.ShowALL == 1)
-                //{
-                //    AllCars = _repository.GetAllAnyRent(IDNO);
-                //}
-                //else
-                //{
-                //    AllCars = _repository.GetAllAnyRent(IDNO, apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                //}
-
-                //OAnyRentAPI = new OAPI_AnyRent()
-                //{
-                //    AnyRentObj = AllCars
-                //};
 
                 double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
                 latlngLimit = _repository.GetAround(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
@@ -157,9 +136,26 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(spName, spCarStatusInput, ref SPOutputBase, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
 
+                //春節限定，將R139專案移除，並將R139的價格給原專案
+                List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
+                ListOutCorrect = ListOut.Where(x => x.ProjID != "R139").ToList();
+
+                var TempR139List = ListOut.Where(x => x.ProjID == "R139").ToList();
+                if (TempR139List != null)
+                {
+                    foreach (var temp in TempR139List)
+                    {
+                        var Modify = ListOutCorrect.Where(x => x.CarNo == temp.CarNo).FirstOrDefault();
+                        if (Modify != null)
+                        {
+                            Modify.Rental = temp.Rental;
+                        }
+                    }
+                }
+
                 OAnyRentAPI = new OAPI_AnyRent()
                 {
-                    AnyRentObj = ListOut
+                    AnyRentObj = ListOutCorrect
                 };
             }
             #endregion

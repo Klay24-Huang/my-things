@@ -135,6 +135,10 @@ BEGIN TRY
 				U_SYSDT=@NowDate
 			WHERE MEMIDNO=@IDNO;
 
+			-- 20210225;新增LOG檔
+			INSERT INTO TB_MemberData_Log
+			SELECT 'U','7',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+
 			COMMIT TRAN;
 		END
 	END

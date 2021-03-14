@@ -46,7 +46,7 @@
 CREATE PROCEDURE [dbo].[usp_SetPWD]
 	@IDNO                   VARCHAR(10)           ,
 	@DeviceID               VARCHAR(128)          ,
-	@PWD                    VARCHAR(100)           ,		--20201118 ADD BY ADAM REASON.
+	@PWD                    VARCHAR(100)          ,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -98,6 +98,11 @@ BEGIN TRY
 				U_USERID=@IDNO,
 				U_SYSDT=@NowDate 
 			WHERE MEMIDNO=@IDNO;
+
+			-- 20210226;新增LOG檔
+			INSERT INTO TB_MemberData_Log
+			SELECT 'U','18',@NowDate,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+
 			COMMIT TRAN;
 		END
 		ELSE

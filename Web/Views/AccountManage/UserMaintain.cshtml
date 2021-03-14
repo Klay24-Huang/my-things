@@ -68,10 +68,7 @@
                             </div>
                             <div class="col-md-3">
                                 @Html.Action("GetUserGroupList", "CommonObj", new { SEQNO = SEQNO, OperatorID = OperatorID })
-
                             </div>
-
-
                         </div>
                     </div>
                 </li>
@@ -189,6 +186,64 @@
                         </div>
                     </div>
                 </li>
+
+
+
+
+                <!--20210209唐加-->
+                <li class="list-group-item" id="Area" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                區域
+                            </div>
+                            <div class="col-md-3">
+                                <select name="AreaV" id="AreaV" class="form-control">
+                                    <option value="0" selected></option>
+                                    <option value="北一區">北一區</option>
+                                    <option value="北二區">北二區</option>
+                                    <option value="北三區">北三區</option>
+                                    <option value="北四區">北四區</option>
+                                    <option value="桃竹苗區">桃竹苗區</option>
+                                    <option value="中彰投區">中彰投區</option>
+                                    <option value="雲嘉南區">雲嘉南區</option>
+                                    <option value="高屏區">高屏區</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!--20210209唐加-->        
+                <li class="list-group-item" id="mtype" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                種類
+                            </div>
+                            <div class="col-md-3">
+                                <select name="mtypeV" id="mtypeV" class="form-control">
+                                    <option value="0" selected></option>
+                                    <option value="機車整備">機車整備</option>
+                                    <option value="汽車整備(同站)">汽車整備(同站)</option>
+                                    <option value="汽車整備(隨租)">汽車整備(隨租)</option>
+                                    <option value="約聘人員">約聘人員</option>
+                                    <option value="計時人員">計時人員</option>
+                                    <option value="計時機車整備(佛光大)">計時機車整備(佛光大)</option>
+                                    <option value="總監">總監</option>
+                                    <option value="副總監">副總監</option>
+                                    <option value="專車司機">專車司機</option>
+                                    <option value="業務專員">業務專員</option>
+                                    <option value="營管中心">營管中心</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                
+
+
+
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -207,7 +262,7 @@
     </div>
 
     <!--end card-->
-</div>
+                            </div>
 <!--輸出表格-->
 <div class="container mt-4" id="panelResult" name="panelResult">
     <table class="table bg-white table-striped bg-white mt-4 "  data-limit-navigation="5">

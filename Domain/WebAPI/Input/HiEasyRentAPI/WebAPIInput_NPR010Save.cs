@@ -63,7 +63,7 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         public string CARRIERID { get; set; } = "";
         public string NPOBAN { get; set; } = "";
         public string IRENTFLG { get; set; } = "";
-        public string PROCD { get; set; } = "U";
+        public string PROCD { get; set; } = "U"; //20210219唐:寫死U是因為MEMBER_API不用寫入，只要寫入MEMBER_NEW即可
         public string SIGNATURE { get; set; } = "";
         public string NOCFLG { get; set; } = "";
         public List<ExtSigninList> tbExtSigninList { get; set; }

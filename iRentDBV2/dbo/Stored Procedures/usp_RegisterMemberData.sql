@@ -44,7 +44,7 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_RegisterMemberData]
-	@IDNO                   VARCHAR(10)				,
+	@IDNO                   VARCHAR(10)				,	--帳號
 	@DeviceID               VARCHAR(128)			,
 	@MEMCNAME				NVARCHAR(10)			,	--姓名
 	@MEMBIRTH               DATETIME				,	--生日
@@ -66,6 +66,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @AUDIT INT;
+DECLARE @LogFlag VARCHAR(1);
 
 /*初始設定*/
 SET @Error=0;
@@ -77,7 +78,6 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_RegisterMemberData';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @IDNO=ISNULL(@IDNO,'');
 SET @DeviceID=ISNULL(@DeviceID,'');
@@ -87,7 +87,8 @@ SET @MEMCITY =ISNULL(@MEMCITY ,0);
 SET @MEMADDR =ISNULL(@MEMADDR ,'');
 SET @MEMEMAIL=ISNULL(@MEMEMAIL,'');
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @AUDIT=0
+SET @AUDIT=0;
+SET @LogFlag='';
 
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' OR @MEMBIRTH='' OR @MEMCITY=0 OR @MEMADDR='' OR @MEMEMAIL='' OR @MEMCNAME=''
@@ -119,11 +120,21 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		UPDATE TB_MemberData
-		SET IrFlag=1,
+		SET MEMCNAME=@MEMCNAME,
+			MEMBIRTH=@MEMBIRTH,
+			MEMCITY=@MEMCITY,
+			MEMADDR=@MEMADDR,
+			MEMEMAIL=@MEMEMAIL,
+			IrFlag=1,
+			U_PRGID=6,
 			U_USERID=@IDNO,
 			U_SYSDT=@NowTime,
 			MEMRFNBR=@MEMRFNBR		--更新短租會員流水號
 		WHERE MEMIDNO=@IDNO;
+
+		-- 20210225;新增LOG檔
+		INSERT INTO TB_MemberData_Log
+		SELECT 'U','6',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
 		SELECT @hasData=COUNT(1) FROM TB_Credentials WITH(NOLOCK) WHERE IDNO=@IDNO;
@@ -168,21 +179,25 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		--20201114 ADD BY ADAM REASON.改為待審只有一筆
-		SELECT @AUDIT=[Audit] FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+		SELECT @AUDIT=[Audit] FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
-		SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO --AND HasAudit=1;--20201114 ADD BY ADAM REASON.改為待審只有一筆
+		SELECT @hasData=COUNT(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO;	--20201114 ADD BY ADAM REASON.改為待審只有一筆
 		IF @hasData=0
 		BEGIN
 			INSERT INTO TB_MemberDataOfAutdit([MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
 											  [MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
 											  [MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-											  [CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew])
+											  [CARRIERID],[NPOBAN],[AuditKind],[HasAudit],[IsNew],
+											  MKTime,UPDTime)
 			SELECT 	[MEMIDNO],[MEMCNAME],[MEMTEL],[MEMBIRTH],[MEMCOUNTRY],     
 					[MEMCITY],[MEMADDR],[MEMEMAIL],[MEMCOMTEL],[MEMCONTRACT], 	 
 					[MEMCONTEL],[MEMMSG],[CARDNO],[UNIMNO],[MEMSENDCD],
-					[CARRIERID],[NPOBAN],2,0,1  
+					[CARRIERID],[NPOBAN],2,0,1,
+					@NowTime,@NowTime
 			FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+			SET @LogFlag='A';
 		END
 		ELSE
 		BEGIN
@@ -197,7 +212,13 @@ BEGIN TRY
 				HasAudit=0,
 				IsNew=CASE WHEN @AUDIT=1 THEN 0 ELSE 1 END
 			WHERE MEMIDNO=@IDNO;
+
+			SET @LogFlag='U';
 		END
+
+		-- 20210225;新增LOG檔
+		INSERT INTO TB_MemberDataOfAutdit_Log
+		SELECT @LogFlag,'6',@NowTime,* FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO;
 
 		SET @hasData=0;
 		SELECT @hasData=COUNT(1) FROM TB_BookingInsuranceOfUser WITH(NOLOCK) WHERE IDNO=@IDNO;

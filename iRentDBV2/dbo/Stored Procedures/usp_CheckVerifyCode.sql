@@ -47,7 +47,7 @@ CREATE PROCEDURE [dbo].[usp_CheckVerifyCode]
 	@IDNO                   VARCHAR(10)           , --帳號
 	@DeviceID               VARCHAR(128)          , --機號
 	@OrderNum               VARCHAR(20)           , --訂單編號
-	@Mode                   TINYINT               , --0:註冊;1:忘記密碼;2:一次性開門
+	@Mode                   TINYINT               , --0:註冊;1:忘記密碼;2:一次性開門;3:更換手機
 	@VerifyCode             VARCHAR(6)            , --簡訊驗證碼
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -65,6 +65,7 @@ DECLARE @tmpVerifyCode VARCHAR(6);
 DECLARE @VerifyCodeID BIGINT;
 DECLARE @DeadLine DATETIME;
 DECLARE @MOBILE VARCHAR(10);
+DECLARE @LogFlag VARCHAR(1);
 
 /*初始設定*/
 SET @Error=0;
@@ -81,30 +82,31 @@ SET @IDNO=ISNULL (@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @OrderNum=ISNULL (@OrderNum,'');
 SET @VerifyCode=ISNULL(@VerifyCode,'');
-SET @Mode=ISNULL(@Mode,3);
+SET @Mode=ISNULL(@Mode,9);
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @tmpVerifyCode='';
 SET @VerifyCodeID=0;
 SET @DeadLine=GETDATE();
+SET @LogFlag='';
 
 BEGIN TRY
-	IF @DeviceID='' OR @IDNO=''  OR @VerifyCode='' OR @Mode=3 OR (@OrderNum='' AND @Mode=2)
+	IF @DeviceID='' OR @IDNO=''  OR @VerifyCode='' OR @Mode=9 OR (@OrderNum='' AND @Mode=2)
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
 	END
-		 
+
 	IF @Error=0
 	BEGIN
-		IF @Mode=0
+		IF @Mode=0 OR @Mode=3
 		BEGIN
-			--模式(0:註冊時)
+			--模式(0:註冊時) 3:更換手機
 			SELECT TOP 1 @VerifyCodeID=ISNULL(VerifyCodeID,0),
 				@tmpVerifyCode=ISNULL(VerifyNum,''),
 				@DeadLine=ISNULL(DeadLine,GETDATE()),
 				@MOBILE=Mobile
-			FROM TB_VerifyCode 
-			WHERE IDNO=@IDNO AND Mode=0 AND IsVerify=0 
+			FROM TB_VerifyCode  WITH(NOLOCK)
+			WHERE IDNO=@IDNO AND Mode=@Mode AND IsVerify=0 
 			ORDER BY SendTime DESC;
 
 			IF @VerifyCodeID>0 AND @tmpVerifyCode=@VerifyCode 
@@ -116,7 +118,7 @@ BEGIN TRY
 					WHERE VerifyCodeID=@VerifyCodeID;
 
 					--確認無待審資料
-					SELECT @hasData=Count(1) FROM [TB_MemberDataOfAutdit] WHERE MEMIDNO=@IDNO AND MEMTEL=@MOBILE AND HasAudit=0;
+					SELECT @hasData=Count(1) FROM [TB_MemberDataOfAutdit] WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND MEMTEL=@MOBILE AND HasAudit=0;
 					IF @hasData=0
 					BEGIN
 						IF EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO)
@@ -124,15 +126,24 @@ BEGIN TRY
 							UPDATE [TB_MemberData] 
 							SET MEMTEL=@MOBILE,
 								HasCheckMobile=1,
+								U_PRGID=12,
 								U_USERID=@IDNO,
 								U_SYSDT=@NowTime
 							WHERE MEMIDNO=@IDNO;
+
+							SET @LogFlag='U';
 						END
 						ELSE
 						BEGIN
-							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_USERID,A_SYSDT)
-							VALUES(@IDNO,@MOBILE,1,@IDNO,@NowTime);
+							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT)
+							VALUES(@IDNO,@MOBILE,1,12,@IDNO,@NowTime,12,@IDNO,@NowTime);
+
+							SET @LogFlag='A';
 						END
+
+						-- 20210225;新增LOG檔
+						INSERT INTO TB_MemberData_Log
+						SELECT @LogFlag,'12',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 					END
 					ELSE
 					BEGIN
@@ -141,16 +152,24 @@ BEGIN TRY
 							UPDATE [TB_MemberData] 
 							SET MEMTEL=@MOBILE,
 								HasCheckMobile=1,
+								U_PRGID=12,
 								U_USERID=@IDNO,
 								U_SYSDT=@NowTime
 							WHERE MEMIDNO=@IDNO;
+
+							SET @LogFlag='U';
 						END
 						ELSE
 						BEGIN
-							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_USERID,A_SYSDT)
-							VALUES(@IDNO,@MOBILE,1,@IDNO,@NowTime);
+							INSERT INTO TB_MemberData(MEMIDNO,MEMTEL,HasCheckMobile,A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT)
+							VALUES(@IDNO,@MOBILE,1,12,@IDNO,@NowTime,12,@IDNO,@NowTime);
 
+							SET @LogFlag='A';
 						END
+
+						-- 20210225;新增LOG檔
+						INSERT INTO TB_MemberData_Log
+						SELECT @LogFlag,'12',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 					END
 				END
 				ELSE
@@ -169,7 +188,7 @@ BEGIN TRY
 		BEGIN
 			--模式(1:忘記密碼)
 			SELECT TOP 1 @VerifyCodeID=ISNULL(VerifyCodeID,0),@tmpVerifyCode=ISNULL(VerifyNum,''),@DeadLine=ISNULL(DeadLine,GETDATE()) 
-			FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=1  
+			FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=1  
 			ORDER BY SendTime DESC;
 
 			IF @VerifyCodeID>0 AND @tmpVerifyCode=@VerifyCode 
@@ -192,11 +211,11 @@ BEGIN TRY
 				SET @ErrorCode='ERR131';
 			END
 		END
-		ELSE
+		ELSE IF @Mode=2
 		BEGIN
 			--模式(2:一次性開門)
 			SELECT TOP 1 @VerifyCodeID=ISNULL(VerifyCodeID,0),@tmpVerifyCode=ISNULL(VerifyNum,''),@DeadLine=ISNULL(DeadLine,GETDATE()) 
-			FROM TB_VerifyCode WHERE IDNO=@IDNO AND Mode=2 AND OrderNum=@OrderNum 
+			FROM TB_VerifyCode WITH(NOLOCK) WHERE IDNO=@IDNO AND Mode=2 AND OrderNum=@OrderNum 
 			ORDER BY SendTime DESC;
 
 			IF @VerifyCodeID>0 AND @tmpVerifyCode=@VerifyCode
