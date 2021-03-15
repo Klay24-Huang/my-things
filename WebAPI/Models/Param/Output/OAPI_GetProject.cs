@@ -15,19 +15,19 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 是否具有可租的卡片
         /// </summary>
-        public bool HasRentCard { get; set; } = false;
+        //public bool HasRentCard { get; set; } = false;
         /// <summary>
         /// 查詢最大值
         /// </summary>
-        public int PriceMin { get; set; }
+        //public int PriceMin { get; set; }
         /// <summary>
         ///查詢最小值 
         /// </summary>
-        public int PriceMax { get; set; }
+        //public int PriceMax { get; set; }
         /// <summary>
         /// 車款下拉
         /// </summary>
-        public List<GetProject_SeatGroup> SeatGroups { get; set; }
+        //public List<GetProject_SeatGroup> SeatGroups { get; set; }
 
         public List<GetProjectObj> GetProjectObj { set; get; }
     }
