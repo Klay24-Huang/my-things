@@ -47,6 +47,7 @@ CREATE PROCEDURE [dbo].[usp_GetStationCarType]
 	@StationID              VARCHAR(10)           ,
 	@SD                     DATETIME = NULL	      , 
 	@ED                     DATETIME = NULL       ,
+	@IDNO					VARCHAR(10)			  , --會員代碼
 	@LogID                  BIGINT   = 0          ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -65,7 +66,7 @@ SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @NowTime=DATEADD(HOUR,8,DATEADD(hour,8,GETDATE()));
 
 SET @FunName='usp_GetStationCarType';
 SET @IsSystem=0;
@@ -74,6 +75,8 @@ SET @IsSystem=0;
 SET @hasData=0;
 
 	BEGIN TRY      
+
+	    SET @IDNO = ISNULL(@IDNO,'')
 
 		IF @SD IS NOT NULL AND @ED IS NOT NULL
 		BEGIN
@@ -88,6 +91,8 @@ SET @hasData=0;
 					,Price_H		= P.PROPRICE_H			--假日
 					,Price          = dbo.FN_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H) --租金計算 2020-11-10 eason
 					,Seat			= E.Seat				--座椅數
+					,IsFavStation   = CASE WHEN (SELECT COUNT(*) FROM VW_GetFavoriteStation fs WHERE fs.StationID = I.StationID AND fs.IDNO = @IDNO) > 0
+									  THEN 1 ELSE 0 END   
 			FROM (SELECT nowStationID,CarType FROM TB_Car WITH(NOLOCK) WHERE nowStationID=@StationID AND available<2) C
 			JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
 			JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=C.CarType
@@ -95,6 +100,7 @@ SET @hasData=0;
 			JOIN TB_OperatorBase O WITH(NOLOCK) ON D.Operator=O.OperatorID
 			JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
 			JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID AND P.SPCLOCK = 'Z'
+			LEFT JOIN TB_iRentStationInfo I  WITH(NOLOCK) ON I.StationID = S.StationID
 			--JOIN TB_OrderMain OM ON OM.ProjID = P.PROJID  
 			WHERE C.nowStationID = @StationID 
 			--AND ( 
@@ -105,9 +111,17 @@ SET @hasData=0;
 			--	OR (DATEADD(MINUTE,-30,@SD) between OM.start_time AND OM.stop_time) 
 			--	OR (DATEADD(MINUTE,30,@ED) between OM.start_time AND OM.stop_time) 
 			--)
+			--20201212 ADD BY ADAM REASON.增加顯示時間的條件
+			AND ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd))
 		END
 		ELSE
 		BEGIN
+			IF @SD IS NULL
+			SET @SD=DATEADD(hour,8,GETDATE())
+
+			IF @ED IS NULL
+			SET @ED=DATEADD(DAY,1,@SD)
+
 			--先串車在串車型
 			SELECT  DISTINCT CarBrend										--廠牌
 					,CarType		= E.CarTypeGroupCode					--車型
@@ -119,6 +133,8 @@ SET @hasData=0;
 					,Price_H		= P.PROPRICE_H			--假日
 					,Price          = dbo.FN_CalSpread(@SD, @ED, P.PROPRICE_N, P.PROPRICE_H) --租金計算 2020-11-10 eason
 					,Seat			= E.Seat				--座椅數
+					,IsFavStation   = CASE WHEN (SELECT COUNT(*) FROM VW_GetFavoriteStation fs WITH(NOLOCK) WHERE fs.StationID = I.StationID AND fs.IDNO = @IDNO) > 0
+						  THEN 1 ELSE 0 END   
 			FROM (SELECT nowStationID,CarType FROM TB_Car WITH(NOLOCK) WHERE nowStationID=@StationID AND available<2) C
 			JOIN TB_CarType D WITH(NOLOCK) ON C.CarType=D.CarType
 			JOIN TB_CarTypeGroupConsist F WITH(NOLOCK) ON F.CarType=C.CarType
@@ -126,6 +142,7 @@ SET @hasData=0;
 			JOIN TB_OperatorBase O WITH(NOLOCK) ON D.Operator=O.OperatorID
 			JOIN TB_ProjectStation S WITH(NOLOCK) ON S.StationID=C.nowStationID AND S.IOType='O'
 			JOIN TB_Project P WITH(NOLOCK) ON P.PROJID=S.PROJID AND P.SPCLOCK = 'Z'
+			LEFT JOIN TB_iRentStation I  WITH(NOLOCK) ON I.StationID = S.StationID
 			--JOIN TB_OrderMain OM ON OM.ProjID = P.PROJID  
 			WHERE C.nowStationID = @StationID 
 		END

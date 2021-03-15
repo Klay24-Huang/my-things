@@ -16,5 +16,7 @@ namespace Domain.SP.Input.Car
         public DateTime SD { get; set; }
 
         public DateTime ED { get; set; }
+
+        public string IDNO { get; set; }
     }
 }

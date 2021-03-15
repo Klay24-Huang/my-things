@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
             DateTime EDate = DateTime.Now;
             string Contentjson = "";
             bool isGuest = true;
-
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -132,19 +132,32 @@ namespace WebAPI.Controllers
             //#endregion
             #region TB
             //Token判斷
-            //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-            //}
+            if (flag && isGuest == false)
+            {
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    Token = Access_Token
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                //訪客機制BYPASS
+                if (spOut.ErrorCode == "ERR101")
+                {
+                    flag = true;
+                    spOut.ErrorCode = "";
+                    spOut.Error = 0;
+                    errCode = "000000";
+                }
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
@@ -158,6 +171,7 @@ namespace WebAPI.Controllers
                     StationID = apiInput.StationID,
                     SD = SDate,
                     ED = EDate,
+                    IDNO = IDNO,
                     LogID = LogID
                 };
                 var spList = GetStationCarType(spInput, ref flag, ref lstError, ref errCode);
@@ -178,7 +192,7 @@ namespace WebAPI.Controllers
                                            OperatorScore = a.OperatorScore,
                                            Seat = a.Seat,
                                            //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, a.Price_N, a.Price_H, lstHoliday))
-                                           Price = a.Price
+                                           Price = a.Price                                           
                                        }).ToList();
                     }
                 }
@@ -213,10 +227,10 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                if (OAPI_Params != null)
+                if (OAPI_Params != null && OAPI_Params.Count()>0)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
-                    {
+                    {                       
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };
                 }
@@ -224,9 +238,13 @@ namespace WebAPI.Controllers
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
+                        IsFavStation = 0,
                         GetCarTypeObj = OAPI_Params
                     };
                 }
+
+                if (spList != null && spList.Count() > 0)
+                    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
             }
             #endregion
 
