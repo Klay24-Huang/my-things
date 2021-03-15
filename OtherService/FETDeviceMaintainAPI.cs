@@ -20,9 +20,9 @@ namespace OtherService
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         string BasePath = ConfigurationManager.AppSettings.Get("CatDeviceMaintainBaseURL");
-        string GCPBasePath = ConfigurationManager.AppSettings.Get("CatAccount");
-        string user = ConfigurationManager.AppSettings.Get("CatPassword");
-        string pwd = ConfigurationManager.AppSettings.Get("GCPDeviceMaintainBaseURL");
+        string GCPBasePath = ConfigurationManager.AppSettings.Get("GCPDeviceMaintainBaseURL");
+        string user = ConfigurationManager.AppSettings.Get("CatAccount");
+        string pwd = ConfigurationManager.AppSettings.Get("CatPassword");
         string token = "";
         string refreshToken = "";
 
