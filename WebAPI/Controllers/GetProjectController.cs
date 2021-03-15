@@ -258,7 +258,8 @@ namespace WebAPI.Controllers
                                    Seat = a.Seat,
                                    StationID = a.StationID,
                                    StationName = a.StationName,
-                                   StationPicJson = a.StationPicJson
+                                   StationPicJson = a.StationPicJson,
+                                   IsFavStation = a.IsFavStation //常用據點
                                }).ToList();
 
                     #region 過濾查詢結果
