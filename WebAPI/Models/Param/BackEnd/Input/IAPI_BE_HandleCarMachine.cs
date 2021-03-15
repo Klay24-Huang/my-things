@@ -11,6 +11,6 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 車號
         /// </summary>
         public string CarNo { set; get; }
-        public string CID { set; get; }
+        public string iButtonKey { set; get; }
     }
 }

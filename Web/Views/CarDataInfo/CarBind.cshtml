@@ -70,28 +70,6 @@
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-md-2">
-                                匯入資料
-                            </div>
-
-                            <div class="col-md-3">
-                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
-                            </div>
-                            <div class="col-md-2">
-                                限定.XLS/XLSX檔
-                            </div>
-
-                            <div class="col-md-3">
-                                <button type="button" id="btnUpload" name="btnUpload" class="btn btn-primary">匯入</button>
-                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
-                            </div>
-
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <input type="hidden" name="Mode" id="Mode" value="@(Mode)" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
@@ -134,7 +112,6 @@
             }
             else
             {
-                @Html.Action("GetCarMachineUnBindList", "CommonObj", new { SEQNO = 0 })
                 for (int i = 0; i < ResultLen; i++)
                 {
                     string BindStatus = (lstData[i].BindStatus == 1) ? "已綁定" : "未綁定";
@@ -144,16 +121,16 @@
                         <td scope="row">@(i+1)</td>
                         <td scope="col">
                             @(lstData[i].CID)
-                            <input type="hidden" value="@(lstData[i].CID)" name="hCID_@(i+1)" id="hCID_@(i+1)" />
-                            <input type="hidden" value="@(lstData[i].CarNo)" name="CarNo_@(i+1)" id="CarNo_@(i+1)" />
-                            <select name="CID_@(i+1)" id="CID_@(i+1)" class="form-control" style="display:none;"></select>
                         </td>
                         <td scope="col">
                             @(BindStatus)
                         </td>
-                        <td scope="col">@(lstData[i].CarNo)</td>
+                        <td scope="col"><div id="CarNo_@(i+1)">@(lstData[i].CarNo)</div></td>
                         <th scope="col">@(lstData[i].deviceToken)</th>
-                        <td scope="col">@(lstData[i].iButtonKey)</td>
+                        <td scope="col">
+                            @(lstData[i].iButtonKey)
+                            <input type="text" name="iButtonKey_@(i+1)" id="iButtonKey_@(i+1)" value="@lstData[i].iButtonKey" class="form-control" style="display:none" />
+                        </td>
                         <td scope="col">@(lstData[i].MobileNum)</td>
                         <td scope="col">
                             <Button type="button" id="btnEdit_@(i+1)" name="btnEdit_@(i+1)" class="btn btn-outline-secondary" onclick=DoEdit('@(i+1)');>編輯</Button>

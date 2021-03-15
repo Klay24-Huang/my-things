@@ -1,15 +1,8 @@
 ﻿var NowEditID = 0;
-var CID = "";
+var iButtonKey = "";
 
 $(document).ready(function () {
 
-    $("#exampleDownload").on("click", function () {
-        window.location.href = "../Content/example/CarBindExample.xlsx";
-    });
-    $("#btnUpload").on("click", function () {
-        $("#Mode").val("Add");
-        $("#frmCarBind").submit();
-    })
     $("#btnExplode").on("click", function () {
         $("#Mode").val("Explode");
         $("#frmCarBind").submit();
@@ -34,15 +27,6 @@ $(document).ready(function () {
        
     }
 
-    if (Mode == "Add") {
-        if (errorLine == "ok") {
-            ShowSuccessMessage("匯入成功");
-        } else {
-            if (errorMsg != "") {
-                ShowFailMessage(errorMsg);
-            }
-        }
-    }
     disabledLoading();
 });
 function DoQuery() {
@@ -66,10 +50,10 @@ function DoQuery() {
 function DoReset(Id) {
     if (NowEditID > 0) {
         NowEditID = 0;
-        $("#CID_" + Id).empty().hide();
+        $("#iButtonKey_" + Id).empty().hide();
 
     } else {
-        $("#CID_" + Id).hide();
+        $("#iButtonKey_" + Id).hide();
     }
 
     $("#btnReset_" + Id).hide();
@@ -80,21 +64,17 @@ function DoReset(Id) {
 function DoEdit(Id) {
     if (NowEditID > 0) {
         //先還原前一個
-        $("#CID_" + NowEditID).empty().hide();
+        $("#iButtonKey_" + NowEditID).val(iButtonKey).hide();
 
         $("#btnReset_" + NowEditID).hide();
         $("#btnSave_" + NowEditID).hide();
         $("#btnEdit_" + NowEditID).show();
     }
-
+    //再開啟下一個
     NowEditID = Id;
- //   CID = $("#CID_" + Id).val();
- 
-    //  }
-    var $options = $("#ddlMachine_0 > option").clone();
-
-    $("#CID_" + Id).append($options);
-    $("#CID_" + Id).show();
+    iButtonKey = $("#iButtonKey_" + Id).val();
+    
+    $("#iButtonKey_" + Id).show();
 
 
     $("#btnReset_" + Id).show();
@@ -109,17 +89,13 @@ function DoSave(Id) {
     var flag = true;
     var errMsg = "";
 
-    var sCIDVal = $("#CID_" + Id).val();
-    if (sCIDVal === '') {
-        flag = false
-        errMsg = 'CID不可空白';
-    }
+    var iButtonKeyVal = $("#iButtonKey_" + Id).val();
 
     if (flag) {
         var obj = new Object();
         obj.UserID = Account;
-        obj.CID = $("#CID_"+Id).val();
-        obj.CarNo = $("#CarNo_" + Id).val();
+        obj.iButtonKey = $("#iButtonKey_"+Id).val();
+        obj.CarNo = $("#CarNo_" + Id).text();
 
         var json = JSON.stringify(obj);
         console.log(json);
@@ -156,7 +132,7 @@ function DoSave(Id) {
                 $.busyLoadFull("hide");
                 swal({
                     title: 'Fail',
-                    text: "綁定車機發生錯誤",
+                    text: "更新iButtonKey發生錯誤",
                     icon: 'error'
                 });
             }

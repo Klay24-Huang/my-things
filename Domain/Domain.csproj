@@ -98,6 +98,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_UpdCATDeviceToken.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDUserGroup.cs" />
@@ -284,7 +285,10 @@
     <Compile Include="TB\BackEnd\BE_AuditHistory.cs" />
     <Compile Include="TB\BackEnd\BE_AuditImage.cs" />
     <Compile Include="TB\BackEnd\BE_BookingControl.cs" />
+    <Compile Include="TB\BackEnd\BE_CarBindImportData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarBindImportDataResult.cs" />
     <Compile Include="TB\BackEnd\BE_CarData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarInfoForMachineData.cs" />
     <Compile Include="TB\BackEnd\BE_CleanData.cs" />
     <Compile Include="TB\BackEnd\BE_CleanDataWithoutPIC.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />
@@ -408,6 +412,7 @@
     <Compile Include="WebAPI\Input\CENS\WSInput_SendCardNo.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SendLock.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />
+    <Compile Include="WebAPI\Input\FET\WebAPIInput_GCPUpMapping.cs" />
     <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EinvBiz.cs" />
@@ -461,6 +466,13 @@
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetPaymentInfo.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_AddDeviceToken.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_GCPUpMapping.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_GetDeviceId.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_GetDeviceInfo.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_Login.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_QueryDeviceToken.cs" />
+    <Compile Include="WebAPI\output\FET\WebAPIOutput_ResultDTO.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ArrearQuery.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_EinvBiz.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010.cs" />
