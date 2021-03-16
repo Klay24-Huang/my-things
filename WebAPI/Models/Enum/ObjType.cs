@@ -390,6 +390,10 @@ namespace WebAPI.Models.Enum
             /// 取得還車里程
             /// </summary>
             GetCarReturnMillage,
+            /// <summary>
+            /// 取得廣告資訊
+            /// </summary>
+            GetBanner,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -934,6 +938,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetCarReturnMillage:    // 取得還車里程 20210219 ADD
                     SPName = "usp_GetCarReturnMillage";
+                    break;
+                case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
+                    SPName = "usp_GetBanner";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

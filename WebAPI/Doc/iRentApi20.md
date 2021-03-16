@@ -4,18 +4,21 @@
 
 iRentApi20 Web API版本
 
- 目錄
+目錄
 
 首頁地圖相關
 - [GetFavoriteStation取得常用站點](#GetFavoriteStation)
 - [SetFavoriteStation設定常用站點](#SetFavoriteStation)
 - [GetCarType同站以據點取出車型](#GetCarType)
 - [GetProject取得專案與資費](#GetProject)
+- [GetBanner 取得廣告資訊](#GetBanner)
 
 ----------
-修改歷程
+# 修改歷程
+
 20210315 常用站點API修改
----------
+
+20210316 增加取得廣告資訊
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -472,3 +475,112 @@ iRentApi20 Web API版本
 
 
 -------------
+
+<h5 id="GetBanner" name="GetBanner">20210316發佈</h5>
+
+# GetBanner 取得廣告資訊
+
+* ASP.NET Web API (REST API)
+
+* api位置 https://irentcar-app.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetBanner/]
+
+  ### 動作 [GET]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| BannerObj    | 廣告資訊列表       |  List  |               |
+
+* BannerObj 參數說明
+
+| 參數名稱    | 參數說明   |  型態  | 範例                                                    |
+| ----------- | ---------- | :----: | ------------------------------------------------------- |
+| MarqueeText | 跑馬燈文字 | string | 測試Banner1                                             |
+| PIC         | 圖片       | string | https://irentv2data.blob.core.windows.net/banner/01.png |
+| URL         | 網頁網址   | string | https://www.easyrent.com.tw/upload/event/109event/2042/ |
+
+* Output範例
+
+```Output範例
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "BannerObj": [
+            {
+                "MarqueeText": "測試Banner1",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/01.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner2",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/02.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner3",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/03.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner4",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/04.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner5",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/05.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner6",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/06.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner7",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/07.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner8",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/08.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner9",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/09.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner10",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/10.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            }
+        ]
+    }
+}
+```
+
+---------------
+
