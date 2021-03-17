@@ -823,70 +823,21 @@ namespace Web.Controllers
                                             }
                                             else
                                             {
-                                                Console.WriteLine("{0}有資料", importData.CarNo);
                                                 BE_CarInfoForMachineData carInfoData = lstCarInfoData[0];
                                                 if (carInfoData.HasIButton == 1 && importData.IBUTTON == "")
                                                 {
                                                     importFlag = false;
                                                     importMessage = "[iButton]不可為空白";
                                                 }
-                                                //更新CAT資料，產生deviceId與deviceToken
-                                                if (importFlag)
+                                                if (importData.CID.Length != 4 && importData.CID.Length != 5)
                                                 {
-                                                    if (carInfoData.deviceId == "" || carInfoData.deviceToken == "")
-                                                    {
-                                                        WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> addDeviceToken = deviceMaintain.AddDeviceToken(importData.CarNo,
-                                                            carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.CATCarType.Car : FETDeviceMaintainAPI.CATCarType.Motor);
-                                                        if (addDeviceToken.Result)
-                                                        {
-                                                            carInfoData.deviceId = addDeviceToken.Data.deviceId;
-                                                            carInfoData.deviceToken = addDeviceToken.Data.deviceToken;
-
-                                                            //更新deviceId與deviceToken
-                                                            string SPName = new ObjType().GetSPName(ObjType.SPType.UpdCATDeviceToken);
-                                                            //更新資料
-                                                            SPInput_BE_UpdCATDeviceToken data = new SPInput_BE_UpdCATDeviceToken()
-                                                            {
-                                                                CarNo = carInfoData.CarNo,
-                                                                deviceId = addDeviceToken.Data.deviceId,
-                                                                deviceToken = addDeviceToken.Data.deviceToken,
-                                                                UserID = UserId,
-                                                                LogID = 0
-                                                            };
-
-                                                            SPOutput_Base SPOutput = new SPOutput_Base();
-                                                            flag = new SQLHelper<SPInput_BE_UpdCATDeviceToken, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
-                                                            baseVerify.checkSQLResult(ref importFlag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                                            if (!importFlag)
-                                                            {
-                                                                importMessage = string.Format("更新deviceToken:{0}", baseVerify.GetErrorMsg(errCode));
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            importFlag = false;
-                                                            importMessage = string.Format("CAT:{0}", addDeviceToken.Message);
-                                                        }
-                                                    }
+                                                    importFlag = false;
+                                                    importMessage = (carInfoData.IsCens == 1) ? "興聯車機[CID]應為5碼" : "遠傳車機[CID]應為4碼";
                                                 }
-                                                //更新GCP資料
-                                                if (importFlag)
+                                                if (carInfoData.IsCens == 1)
                                                 {
-                                                    List<WebAPIInput_GCPUpMapping> lstGCPUpMapping = new List<WebAPIInput_GCPUpMapping>();
-                                                    lstGCPUpMapping.Add(new WebAPIInput_GCPUpMapping
-                                                    {
-                                                        deviceCID = carInfoData.CID,
-                                                        deviceName = carInfoData.CarNo,
-                                                        deviceToken = carInfoData.deviceToken,
-                                                        deviceType = carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.GCPCarType.Vehicle.ToString() : FETDeviceMaintainAPI.GCPCarType.Motorcycle.ToString()
-                                                    });
-                                                    WebAPIOutput_ResultDTO<List<WebAPIOutput_GCPUpMapping>> GCPUpMapping = deviceMaintain.GCPUpMapping(lstGCPUpMapping);
-                                                    if (!GCPUpMapping.Result || GCPUpMapping.Data.Count == 0 || GCPUpMapping.Data[0].upResult == "NotOkay")
-                                                    {
-                                                        importFlag = false;
-                                                        importMessage = "GCP資料錯誤";
-                                                    }
-                                                    else
+                                                    //興聯車機直接更新資料
+                                                    if (importFlag)
                                                     {
                                                         string SPName = new ObjType().GetSPName(ObjType.SPType.ImportCarBindData);
                                                         //更新資料
@@ -907,6 +858,90 @@ namespace Web.Controllers
                                                         if (!importFlag)
                                                         {
                                                             importMessage = string.Format("更新車機綁定資訊:{0}", baseVerify.GetErrorMsg(errCode));
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //遠傳車機
+                                                    //更新CAT資料，產生deviceId與deviceToken
+                                                    if (importFlag)
+                                                    {
+                                                        if (carInfoData.deviceId == "" || carInfoData.deviceToken == "")
+                                                        {
+                                                            WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> addDeviceToken = deviceMaintain.AddDeviceToken(importData.CarNo,
+                                                                carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.CATCarType.Car : FETDeviceMaintainAPI.CATCarType.Motor);
+                                                            if (addDeviceToken.Result)
+                                                            {
+                                                                carInfoData.deviceId = addDeviceToken.Data.deviceId;
+                                                                carInfoData.deviceToken = addDeviceToken.Data.deviceToken;
+
+                                                                //更新deviceId與deviceToken
+                                                                string SPName = new ObjType().GetSPName(ObjType.SPType.UpdCATDeviceToken);
+                                                                //更新資料
+                                                                SPInput_BE_UpdCATDeviceToken data = new SPInput_BE_UpdCATDeviceToken()
+                                                                {
+                                                                    CarNo = carInfoData.CarNo,
+                                                                    deviceId = addDeviceToken.Data.deviceId,
+                                                                    deviceToken = addDeviceToken.Data.deviceToken,
+                                                                    UserID = UserId,
+                                                                    LogID = 0
+                                                                };
+
+                                                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                                                flag = new SQLHelper<SPInput_BE_UpdCATDeviceToken, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                                                baseVerify.checkSQLResult(ref importFlag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                                                if (!importFlag)
+                                                                {
+                                                                    importMessage = string.Format("更新deviceToken:{0}", baseVerify.GetErrorMsg(errCode));
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                importFlag = false;
+                                                                importMessage = string.Format("CAT:{0}", addDeviceToken.Message);
+                                                            }
+                                                        }
+                                                    }
+                                                    //更新GCP資料
+                                                    if (importFlag)
+                                                    {
+                                                        List<WebAPIInput_GCPUpMapping> lstGCPUpMapping = new List<WebAPIInput_GCPUpMapping>();
+                                                        lstGCPUpMapping.Add(new WebAPIInput_GCPUpMapping
+                                                        {
+                                                            deviceCID = carInfoData.CID,
+                                                            deviceName = carInfoData.CarNo,
+                                                            deviceToken = carInfoData.deviceToken,
+                                                            deviceType = carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.GCPCarType.Vehicle.ToString() : FETDeviceMaintainAPI.GCPCarType.Motorcycle.ToString()
+                                                        });
+                                                        WebAPIOutput_ResultDTO<List<WebAPIOutput_GCPUpMapping>> GCPUpMapping = deviceMaintain.GCPUpMapping(lstGCPUpMapping);
+                                                        if (!GCPUpMapping.Result || GCPUpMapping.Data.Count == 0 || GCPUpMapping.Data[0].upResult == "NotOkay")
+                                                        {
+                                                            importFlag = false;
+                                                            importMessage = "GCP資料錯誤";
+                                                        }
+                                                        else
+                                                        {
+                                                            string SPName = new ObjType().GetSPName(ObjType.SPType.ImportCarBindData);
+                                                            //更新資料
+                                                            SPInput_BE_ImportCarBindData data = new SPInput_BE_ImportCarBindData()
+                                                            {
+                                                                CID = importData.CID,
+                                                                CarNo = carInfoData.CarNo,
+                                                                iButtonKey = importData.IBUTTON,
+                                                                MobileNum = importData.MobileNum,
+                                                                SIMCardNo = importData.SIMCardNo,
+                                                                UserID = UserId,
+                                                                LogID = 0
+                                                            };
+
+                                                            SPOutput_Base SPOutput = new SPOutput_Base();
+                                                            flag = new SQLHelper<SPInput_BE_ImportCarBindData, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, data, ref SPOutput, ref lstError);
+                                                            baseVerify.checkSQLResult(ref importFlag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                                            if (!importFlag)
+                                                            {
+                                                                importMessage = string.Format("更新車機綁定資訊:{0}", baseVerify.GetErrorMsg(errCode));
+                                                            }
                                                         }
                                                     }
                                                 }
