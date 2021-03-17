@@ -909,7 +909,7 @@ namespace Web.Controllers
                                                         List<WebAPIInput_GCPUpMapping> lstGCPUpMapping = new List<WebAPIInput_GCPUpMapping>();
                                                         lstGCPUpMapping.Add(new WebAPIInput_GCPUpMapping
                                                         {
-                                                            deviceCID = carInfoData.CID,
+                                                            deviceCID = importData.CID,
                                                             deviceName = carInfoData.CarNo,
                                                             deviceToken = carInfoData.deviceToken,
                                                             deviceType = carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.GCPCarType.Vehicle.ToString() : FETDeviceMaintainAPI.GCPCarType.Motorcycle.ToString()
