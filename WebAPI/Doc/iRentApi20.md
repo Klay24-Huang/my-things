@@ -20,6 +20,8 @@ iRentApi20 Web API版本
 
 20210316 增加取得廣告資訊
 
+20210317 修正API位置，區分正式及測試
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -43,8 +45,15 @@ iRentApi20 Web API版本
 
 # GetFavoriteStation取得常用站點
 * ASP.NET Web API (REST API)
-* api位置 https://irentcar-app.azurefd.net/
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
 * 傳送跟接收採JSON格式
+
 * HEADER帶入AccessToken**(必填)**
 
   ### [/api/GetFavoriteStation/]
@@ -119,8 +128,15 @@ iRentApi20 Web API版本
 
 # SetFavoriteStation設定常用站點
 * ASP.NET Web API (REST API)
-* api位置 https://irentcar-app.azurefd.net/
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
 * 傳送跟接收採JSON格式
+
 * HEADER帶入AccessToken**(必填)**
 
   ### [/api/SetFavoriteStation/]
@@ -189,8 +205,15 @@ iRentApi20 Web API版本
 <h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
 # GetCarType同站以據點取出車型
 * ASP.NET Web API (REST API)
-* api位置 https://irentcar-app.azurefd.net/
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
 * 傳送跟接收採JSON格式
+
 * HEADER帶入AccessToken**(可不填)**
 
   ### [/api/GetCarType/]
@@ -294,8 +317,15 @@ iRentApi20 Web API版本
 <h5 id="GetProject" name="GetProject">20210315修改 - 增加是否為常用據點欄位</h5>
 # GetProject取得專案與資費
 * ASP.NET Web API (REST API)
-* api位置 https://irentcar-app.azurefd.net/
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
 * 傳送跟接收採JSON格式
+
 * HEADER帶入AccessToken**(必填)**
 
   ### [/api/GetProject/]
@@ -482,7 +512,11 @@ iRentApi20 Web API版本
 
 * ASP.NET Web API (REST API)
 
-* api位置 https://irentcar-app.azurefd.net/
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
 
 * 傳送跟接收採JSON格式
 
