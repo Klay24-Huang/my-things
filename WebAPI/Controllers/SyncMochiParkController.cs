@@ -60,6 +60,8 @@ namespace WebAPI.Controllers
             {
                 List<SyncMachiParkId> lstParkId = null;
                 List<SyncMachiParkId> ListParkSend = new List<SyncMachiParkId>();   //要寄信通知的停車場清單
+                List<SyncMachiParkId> ListParkDisabled = new List<SyncMachiParkId>();   //要停用的清單
+
                 MochiParkAPI webAPI = new MochiParkAPI();
                 DateTime NowDate = DateTime.Now;
                 SPInput_GetMachiToken spIGetToken = new SPInput_GetMachiToken()
@@ -192,19 +194,18 @@ namespace WebAPI.Controllers
                                 }
                             }
 
-                            lstParkId = lstParkId.FindAll(delegate (SyncMachiParkId ParkId) { return ParkId.use_flag == 0; });
-                            if (lstParkId != null)
+                            ListParkDisabled = lstParkId.FindAll(delegate (SyncMachiParkId ParkId) { return ParkId.use_flag == 0; });
+                            if (ListParkDisabled != null)
                             {
-                                if (lstParkId.Count > 0)
+                                if (ListParkDisabled.Count > 0)
                                 {
-                                    int delCount = lstParkId.Count;
+                                    int delCount = ListParkDisabled.Count;
                                     spName = new ObjType().GetSPName(ObjType.SPType.DisabledMachiPark);
                                     for (int k = 0; k < delCount; k++)
                                     {
-                                        //usp_disabledMachiPark_202004
                                         SPInput_DisabledMochiPark spInputDisabled = new SPInput_DisabledMochiPark()
                                         {
-                                            Id = lstParkId[k].Id,
+                                            Id = ListParkDisabled[k].Id,
                                             LogID = LogID
                                         };
                                         SPOutput_Base spOutDisabled = new SPOutput_Base();
@@ -214,7 +215,7 @@ namespace WebAPI.Controllers
                                     }
                                     
                                     // 停用的要通知
-                                    ListParkSend.AddRange(lstParkId);
+                                    ListParkSend.AddRange(ListParkDisabled);
                                 }
                             }
 
