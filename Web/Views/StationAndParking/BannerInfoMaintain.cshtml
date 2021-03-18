@@ -144,7 +144,7 @@
                             Banner照片上傳
                         </div>
                         <div class="col-md-1">
-                            <img src="@((PIC1=="")?"":ImgURL+PIC1)" id="PIC1" name="PIC1" class="img-thumbnail" />
+                            <img src="@((PIC1=="")?"":ImgURL+PIC1)" id="PIC1" name="PIC1" class="img-thumbnail" style="max-width: 500%" /> <!--我不想改共用css，就直接改死這邊-->
                         </div>
                     </div>
                     <div class="row">
@@ -157,7 +157,7 @@
                         <div class="col-md-8">
                             <input type="hidden" name="fileName1" id="fileName1" value="@(PIC1)" />
                             <input type="hidden" name="fileData1" id="fileData1" value="" />
-                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限xxx * xxx
+                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限 328*77
                             <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
                             <button class="btn btn-danger" name="btnDelete" id="btnDelete" style="float:right;">刪除圖片</button>
                         </div>

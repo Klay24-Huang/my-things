@@ -39,11 +39,9 @@
         }
     });
 
-    /*
+    
     $('body').on("change", "#fileImport", function () {
         var file = this.files[0];
-        var flag = true;
-        var errMsg = "";
         if (file != null) {
             var fileName = file.name;
             var fileSize = file.size;
@@ -55,21 +53,19 @@
                 extName = ext[0];
                 console.log(extName.toUpperCase())
             }
-            if (flag) {
-                if (fileSize > 1024000) {
-                    swal({
-                        title: 'Fail',
-                        text: "僅允許1000K",
-                        icon: 'error'
-                    }).then(function (value) {
-                        clearFileInput("fileImport");
-                    });
-                }
-            }
-            if (extName.toUpperCase() != "PNG" && extName.toUpperCase() != "JPG" && extName.toUpperCase() != "JEPG") {
+            //if (fileSize > 1024000) {
+            //    swal({
+            //        title: 'Fail',
+            //        text: "僅允許1000K",
+            //        icon: 'error'
+            //    }).then(function (value) {
+            //        clearFileInput("fileImport");
+            //    });
+            //}
+            if (extName.toUpperCase() != "PNG") {
                 swal({
                     title: 'Fail',
-                    text: "僅允許png,jpg格式",
+                    text: "僅允許png",
                     icon: 'error'
                 }).then(function (value) {
                     // $("#fileImport").val("");
@@ -78,7 +74,7 @@
             }
         }
     })
-    */
+    
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料處理中…");

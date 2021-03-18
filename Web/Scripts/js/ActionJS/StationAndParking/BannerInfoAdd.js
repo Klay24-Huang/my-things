@@ -4,6 +4,11 @@
     $("#fileImport").prop("disabled", "");
     clearFileInput("fileImport");
 
+    console.log("A:"+$("#fileImport")[0].value);
+    console.log("A:" +$("#fileImport")[0].val);
+    console.log("A:" +$("#fileImport"));
+    console.log("A:" +$("#fileImport")[0]);
+
     $("#btnUpload").on("click", function () {
         if ($("#fileImport")[0].files.length != 0) { //length未上傳照片是0，上傳是1
             $("#fileName1").val($("#fileImport")[0].files[0].name);
@@ -24,17 +29,15 @@
         }
     });
 
-    //console.log("我");
-    //console.log($("#fileImport")[0].value);
-    //console.log($("#fileImport")[0].val);
-    //console.log($("#fileImport"));
-    //console.log($("#fileImport")[0]);
-
-    //這裡只做檢核而已
-    /*
+    //這裡只做檢核而已 
+    /* 這段寫法的change事件只有第一次會觸發.......
     $("#fileImport").on("change", function () {
+        console.log("b:" + $("#fileImport")[0].value);
+        console.log("b:" + $("#fileImport")[0].val);
+        console.log("b:" + $("#fileImport"));
+        console.log("b:" + $("#fileImport")[0]);
+
         var file = this.files[0];
-        var flag = true;
         if (file != null) {
             var fileName = file.name;
             var ext = GetFileExtends(fileName);
@@ -42,52 +45,63 @@
             if (CheckStorageIsNull(ext)) {
                 extName = ext[0];
             }
-            if (flag) {
-                //if (file.width != 343 && file.height != 80 ) {
-                //    swal({
-                //        title: 'Fail',
-                //        text: "尺寸不對",
-                //        icon: 'error'
-                //    }).then(function (value) {
-
-                //        clearFileInput("fileImport");
-                //    });
-                //}
-            }
+            //if (file.width != 343 && file.height != 80) {
+            //    swal({
+            //        title: 'Fail',
+            //        text: "尺寸不對",
+            //        icon: 'error'
+            //    }).then(function (value) {
+            //        clearFileInput("fileImport");
+            //    });
+            //}
             if (extName.toUpperCase() != "PNG") {
                 swal({
                     title: 'Fail',
                     text: "僅允許png格式",
                     icon: 'error'
                 }).then(function (value) {
-                    //$("#fileImport").prop("disabled", "");
+                    $("#fileImport").prop("disabled", "");
                     clearFileInput("fileImport");
-                    $("#fileImport").val('');
                 });
             }
         }
-
     })
     */
-    /*
-    $("#fileImport").on("click", function () {
-        console.log("我");
+    $('body').on("change", "#fileImport", function () {
         var file = this.files[0];
         if (file != null) {
-
-            console.log("我777");
             var fileName = file.name;
+            var fileSize = file.size;
+            console.log("大小:" + file);
+            $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
-            $("#fileImport").val(ext);
-            $("#fileImport").name = ext;
-            $("#fileImport")[0].name = ext;
-            $("#fileImport")[0].files = ext;
-            $("#fileImport")[0].innerHTML = ext;
-            $("#fileImport")[0].files = ext;
+            var extName = "";
+            if (CheckStorageIsNull(ext)) {
+                extName = ext[0];
+                console.log(extName.toUpperCase())
+            }
+            //if (fileSize > 1024000) {
+            //    swal({
+            //        title: 'Fail',
+            //        text: "僅允許1000K",
+            //        icon: 'error'
+            //    }).then(function (value) {
+            //        clearFileInput("fileImport");
+            //    });
+            //}
+            if (extName.toUpperCase() != "PNG") {
+                swal({
+                    title: 'Fail',
+                    text: "僅允許png",
+                    icon: 'error'
+                }).then(function (value) {
+                    // $("#fileImport").val("");
+                    clearFileInput("fileImport");
+                });
+            }
         }
-        console.log("我666");
     })
-    */
+    
 
 
     $("#btnSend").on("click", function () {
