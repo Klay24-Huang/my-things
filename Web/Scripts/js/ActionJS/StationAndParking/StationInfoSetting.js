@@ -28,7 +28,7 @@
         });
     }
 });
-function goMaintain(StationID){
+function goMaintain(StationID) {
     $("#MaintainStationID").val(StationID);
     $("#frmStationMaintain").submit();
 }

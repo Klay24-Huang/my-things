@@ -627,7 +627,9 @@ namespace WebAPI.Models.Enum
             GetOrderAuthList,
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
-            UpdateOrderAuthReturnList
+            UpdateOrderAuthReturnList,
+            BE_Banner//20210316唐加
+
         }
         /// <summary>
         /// 取出SPName
@@ -941,6 +943,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.News:
                     SPName = "usp_GetNews";
+                    break;
+                case SPType.BE_Banner:  //20210316唐加
+                    SPName = "usp_BE_Banner_I";
                     break;
                 #endregion
                 #region 拓連
