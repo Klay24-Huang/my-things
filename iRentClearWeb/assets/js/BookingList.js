@@ -154,6 +154,16 @@ function doReturnCar(UserName) {
     console.log(incarclean, incarPIC, outcarPIC);
 
 }
+function htmlencode(s) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(s));
+    return div.innerHTML;
+}
+function htmldecode(s) {
+    var div = document.createElement('div');
+    div.innerHTML = s;
+    return div.innerText || div.textContent;
+}
 function getCarData() {
     $.busyLoadFull("show", {
         spinner: "cube-grid"
@@ -201,6 +211,9 @@ var now = new Date()
                    // var now = new Date();
                   //  var d = new Date()
                   //  console.log(d.getTimezoneOffset());
+                    JsonData.Data[i].deviceToken = JsonData.Data[i].deviceToken.replace(" ", "⊙");
+                    console.log(htmlencode(JsonData.Data[i].deviceToken));
+                  
                     console.log("now=" + now);
                     console.log("SD=" + SD);
                     console.log("ED=" + ED);
@@ -208,6 +221,8 @@ var now = new Date()
                         if (JsonData.Data[i].isOverTime == 1) {
                             htmlStr += "<td>已逾時</td>";
                         } else {
+                            console.log(htmlencode(JsonData.Data[i].deviceToken));
+                           // JsonData.Data[i].deviceToken = JsonData.Data[i].deviceToken.replace("", "⊙");
                             if (JsonData.Data[i].CanPick == 1 && JsonData.Data[i].CanCancel == 1) {
                                 htmlStr += "<td><span class=\"btn btn-danger\" id='POrder_" + JsonData.Data[i].OrderNum + "' ontouchend=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=pickCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "','" + JsonData.Data[i].deviceToken + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取車</span><br><span class=\"btn btn-danger\" id='COrder_" + JsonData.Data[i].OrderNum + "' ontouchend=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "'); onclick=cancelCar('" + JsonData.Data[i].OrderNum + "','" + JsonData.Data[i].MachineNo + "'," + JsonData.Data[i].IsCar + ",'" + JsonData.Data[i].assigned_car_id + "');>取消</span>  </td>";
                             } else if (JsonData.Data[i].CanPick == 0 && JsonData.Data[i].CanCancel == 1) {
@@ -238,11 +253,18 @@ var now = new Date()
                     htmlStr += "</tr>";
                 }
                 $("#bookDetailBody").html(htmlStr);
-        
-                $('#bookDetail').footable({ "paging": { "limit": 5},"limit-navigation":5 });
+
+                try {
+                    $('#bookDetail').footable({ "paging": { "limit": 5 }, "limit-navigation": 5 });
+                    $('#bookDetail').trigger('footable_redraw');
+                } catch (ex){
+
+                   console.log(ex)
+                }
+             
 	        // $("#bookDetail").attr("data-paging-limit", 5);
               
-                $('#bookDetail').trigger('footable_redraw');
+              
                 //    $.unblockUI();
                 //  warningAlertSubMit(JsonData.ErrMsg, 2, 1, "formStationManage");
 
@@ -1115,7 +1137,7 @@ function SendMotoCmdFun(machineNo, deviceToken, CMD, hasRent) {
     }
     var obj = new Object();
     obj.CID = machineNo;
-    obj.deviceToken = deviceToken;
+    obj.deviceToken = deviceToken.replace("⊙", " ");
     obj.UserId = $("#Account").val();
 
    
@@ -1213,7 +1235,7 @@ function SetLock(CID, deviceToken, Action) {
     console.log(userName);
     var obj = new Object();
     obj.CID = CID;
-    obj.deviceToken = deviceToken;
+    obj.deviceToken = deviceToken.replace("⊙"," ");
     obj.UserId = $("#Account").val();
     if (CID.length > 4) {
         obj.IsCens = 1;
@@ -1262,7 +1284,7 @@ function searchCarFun(machineNo, deviceToken) {
     var userName = $('#manager').val();
     var obj = new Object();
     obj.CID = machineNo;
-    obj.deviceToken = deviceToken;
+    obj.deviceToken = deviceToken.replace("⊙", " ");
     obj.UserId = $("#Account").val();
     
     if (machineNo.length > 4) {

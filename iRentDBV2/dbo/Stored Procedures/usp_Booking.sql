@@ -96,6 +96,7 @@ DECLARE  @INVKIND		TINYINT		--發票寄送方式 1:捐贈;2:email;3:二聯;4:三
 		,@NPOBAN		VARCHAR(20)	--愛心碼
 		,@UNIMNO		VARCHAR(10)	--統編
 DECLARE @BeforeDate		DATETIME;
+DECLARE @Descript NVARCHAR(200);
 
 /*初始設定*/
 SET @Error=0;
@@ -132,6 +133,7 @@ SET @Insurance=ISNULL(@Insurance,0);
 SET @InsurancePurePrice=ISNULL(@InsurancePurePrice,0);
 SET @PayMode=ISNULL(@PayMode,0);
 SET @BeforeDate = DATEADD(Month,-1,@NowTime);
+SET @Descript=N'使用者操作【預約】';
 
 BEGIN TRY
 	IF @Token='' OR @IDNO='' 
@@ -169,6 +171,28 @@ BEGIN TRY
 			   @NowActiveOrderNum=ISNULL(NowActiveOrderNum, 0)
 		FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
+
+		--20210309 ADD BY ADAM REASON.先給預設值，不會因為下面找不到而造成誤判
+		SET @NormalRentBookingNowCount=0
+		SET @AnyRentBookingNowCount=0
+		SET @MotorRentBookingNowCount=0
+
+		--20210124 ADD BY ADAM REASON.統計次數改為即時統計
+		SELECT @NormalRentBookingNowCount=B.[0]
+		,@AnyRentBookingNowCount=B.[3]
+		,@MotorRentBookingNowCount=B.[4]
+		FROM (
+		SELECT ProjType,COUNT(ProjType) AS ProjCount
+		FROM TB_OrderMain WITH(NOLOCK) 
+		WHERE IDNO=@IDNO
+		AND cancel_status=0
+		AND car_mgt_status < 16
+		AND start_time > dateadd(d,-30,dbo.GET_TWDATE())
+		GROUP BY ProjType) A
+		PIVOT
+		(
+			COUNT(ProjType) FOR ProjType IN ([0],[3],[4])
+		) AS B
 
 		--1.1三個相加>=5
 		IF (@NormalRentBookingNowCount+@AnyRentBookingNowCount+@MotorRentBookingNowCount)>=5
@@ -237,7 +261,7 @@ BEGIN TRY
 			--測試人員不卡春節
 	--		IF NOT EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND SPECSTATUS='99')
 			--春節期間非R129不給預約
-			IF @ProjID <> 'R129'
+			IF @ProjID <> 'R129' AND (@ProjType <>4 AND @ProjType <> 3)	--機車會暫時跨到過年先排除
 			BEGIN
 				SET @Error=1
 				--SET @ErrorCode='ERR242'
@@ -273,13 +297,15 @@ BEGIN TRY
 
 			--早鳥須預約三天以上
 			--IF dbo.GET_TWDATE() < '2021-01-31 23:59:59' AND DATEDIFF(day,@SD,@ED) < 3
-			IF GET_TWDATE() < '2021-01-31 23:59:59' AND @TotalHours < 30
+			--IF dbo.GET_TWDATE() < '2021-01-31 23:59:59' AND @TotalHours < 30
+			--20210127 ADD BY ADAM REASON.預約一天提早到0128
+			IF dbo.GET_TWDATE() < '2021-01-27 23:59:59' AND @TotalHours < 30
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR241';
 			END
 			--ELSE IF dbo.GET_TWDATE() < '2021-02-09 23:59:59' AND DATEDIFF(day,@SD,@ED) < 1
-			ELSE IF GET_TWDATE() < '2021-02-09 23:59:59' AND @TotalHours < 10
+			ELSE IF dbo.GET_TWDATE() < '2021-02-09 23:59:59' AND @TotalHours < 10
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR242';
@@ -287,13 +313,25 @@ BEGIN TRY
 		END
 	END
 	
-	--維修鎖定
-	IF (@SD>=CAST('2021-01-21 02:00:00' AS DATETIME) AND @SD<=CAST('2021-01-21 03:00:00' AS DATETIME)) OR
-	(@ED>=CAST('2021-01-21 02:00:00' AS DATETIME) AND @ED<=CAST('2021-01-21 03:00:00' AS DATETIME))
-	BEGIN
-		SET @Error=1
-		SET @ErrorCode='ERR906'
-	END
+	--維修卡預約
+	--IF	(@SD>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @SD<=CAST('2021-03-03 05:00:00' AS DATETIME)) OR
+	--	--(@ED>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-03 05:00:00' AS DATETIME))
+	--	(@ED>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-03 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
+	--BEGIN
+	--	SET @Error=1
+	--	SET @ErrorCode='ERR905'
+	--END
+	--IF
+	--	(@SD>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @SD<=CAST('2021-03-11 05:00:00' AS DATETIME)) OR
+	--	--(@ED>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-11 05:00:00' AS DATETIME))
+	--	(@ED>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-11 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
+	--BEGIN
+	--	if @IDNO <> 'A122364317'
+	--	BEGIN
+	--	SET @Error=1
+	--	SET @ErrorCode='ERR906'
+	--	END
+	--END		
 
 	-- 據點特殊判斷
 	IF @Error=0
@@ -347,6 +385,21 @@ BEGIN TRY
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode='ERR101';
+		END
+
+		-- 20210311;增加檢核汽車駕照、機車駕照須審核通過才可預約
+		DECLARE @CarDriver INT;		--汽車駕證
+		DECLARE @MotorDriver INT;	--機車駕照
+
+		SELECT @CarDriver=CarDriver_1,@MotorDriver=MotorDriver_1 FROM TB_Credentials WITH(NOLOCK) WHERE IDNO=@IDNO;
+
+		IF @ProjType <> 4	--專案類型非(4:機車)
+		BEGIN
+			IF @CarDriver <> 2
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR248';
+			END
 		END
 	END
 	--3.判斷有沒有車可預約
@@ -460,8 +513,9 @@ BEGIN TRY
 							UPDTime=@NowTime
 						WHERE IDNO=@IDNO;
 					END
+
 					--寫入歷史記錄
-					INSERT INTO TB_OrderHistory(OrderNum)VALUES(@OrderNum);
+					INSERT INTO TB_OrderHistory(OrderNum,Descript)VALUES(@OrderNum,@Descript);
 
 					--20210110 ADD BY ADAM REASON.春節專案寫入預約轉檔
 					IF @ProjID='R129'
@@ -586,8 +640,10 @@ BEGIN TRY
 							WHERE IDNO=@IDNO;
 						END
 					END
+
 					--寫入歷史記錄
-					INSERT INTO TB_OrderHistory(OrderNum)VALUES(@OrderNum);
+					INSERT INTO TB_OrderHistory(OrderNum,Descript)VALUES(@OrderNum,@Descript);
+
 					COMMIT TRAN;
 				END
 				ELSE

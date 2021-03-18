@@ -7,28 +7,20 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.BE.Input
 {
-    public class SPInput_BE_ImportCarBindData:SPInput_Base
+    public class SPInput_BE_UpdCATDeviceToken : SPInput_Base
     {
         /// <summary>
         /// 車號
         /// </summary>
         public string CarNo { set; get; }
         /// <summary>
-        /// 車機編號
+        /// 遠傳車機ID
         /// </summary>
-        public string CID { set; get; }
+        public string deviceId { set; get; }
         /// <summary>
-        /// iButton Key
+        /// 遠傳車機Token
         /// </summary>
-        public string iButtonKey { set; get; }
-        /// <summary>
-        /// 門號
-        /// </summary>
-        public string MobileNum { set; get; }
-        /// <summary>
-        /// 卡號
-        /// </summary>
-        public string SIMCardNo { set; get; }
+        public string deviceToken { set; get; }
         /// <summary>
         /// 操作者
         /// </summary>

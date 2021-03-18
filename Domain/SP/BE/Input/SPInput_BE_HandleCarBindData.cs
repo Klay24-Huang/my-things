@@ -14,9 +14,9 @@ namespace Domain.SP.BE.Input
         /// </summary>
         public string CarNo { set; get; }
         /// <summary>
-        /// 車機
+        /// iButton
         /// </summary>
-        public string  CID { set; get; }
+        public string iButtonKey { set; get; }
         /// <summary>
         /// 操作者
         /// </summary>

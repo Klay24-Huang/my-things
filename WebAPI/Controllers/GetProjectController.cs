@@ -258,7 +258,8 @@ namespace WebAPI.Controllers
                                    Seat = a.Seat,
                                    StationID = a.StationID,
                                    StationName = a.StationName,
-                                   StationPicJson = a.StationPicJson
+                                   StationPicJson = a.StationPicJson,
+                                   IsFavStation = a.IsFavStation //常用據點
                                }).ToList();
 
                     #region 過濾查詢結果
@@ -451,8 +452,8 @@ namespace WebAPI.Controllers
                 bool HaveRentY = lstData.Where(y => y.IsRent.ToLower() == "y").Count() > 0;
                 if (lstData != null && lstData.Count() > 0 && HaveRentY)
                 {
-                    outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
-                    outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
+                    //outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
+                    //outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
 
                     var SeatGroups = new List<GetProject_SeatGroup>();
                     List<int> SeatsList = lstData.Where(z=>z.IsRent.ToLower() == "y").GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
@@ -478,13 +479,13 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (SeatGroups != null && SeatGroups.Count() > 0)
-                        outputApi.SeatGroups = SeatGroups;
+                    //if (SeatGroups != null && SeatGroups.Count() > 0)
+                    //    outputApi.SeatGroups = SeatGroups;
 
-                    if (lstData.Where(x => x.IsRent.ToLower() == "y" && x.IsShowCard == 1).ToList().Count() > 0)
-                        outputApi.HasRentCard = true;
-                    else
-                        outputApi.HasRentCard = false;
+                    //if (lstData.Where(x => x.IsRent.ToLower() == "y" && x.IsShowCard == 1).ToList().Count() > 0)
+                    //    outputApi.HasRentCard = true;
+                    //else
+                    //    outputApi.HasRentCard = false;
                 }
 
                 #endregion

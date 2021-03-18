@@ -196,13 +196,12 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 
 				--測試春節專案(暫用2/1~1/3)，先用寫死方式之後再改
 				CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
-				INSERT INTO #SPDATE VALUES('2021-02-09','2021-02-16')
+				INSERT INTO #SPDATE VALUES('2021-02-09','2021-02-17')
 				SELECT * INTO #TB_Project FROM TB_Project WITH(NOLOCK) WHERE ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd))
-				IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE))) AND @SpecStatus='99'
+				IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE))) --AND @SpecStatus='99'
 				BEGIN
 					--在此時間的專案會只剩特殊專案
 					DELETE FROM #TB_Project WHERE PROJID<>'R129' 
-
 				END
 				ELSE
 				BEGIN
@@ -241,6 +240,8 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 						,Insurance				= CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務  20201206改為等級4就是停權
 						,InsurancePerHours		= CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
 						,StationPicJson			= ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) JOIN @tb_StationID s ON SI.[StationID]=s.StationID WHERE SI.use_flag=1 AND s.StationID=C.nowStationID FOR JSON PATH),'[]')
+				        ,IsFavStation           = CASE WHEN (SELECT COUNT(*) FROM VW_GetFavoriteStation fs WHERE fs.StationID = I.StationID AND fs.IDNO = @IDNO) > 0
+						                          THEN 1 ELSE 0 END   
 				--20201231 ADD BY ADAM REASON.排除車機未設定
 				FROM (SELECT nowStationID,c.CarType,CarOfArea,c.CarNo FROM TB_Car c WITH(NOLOCK) 
 						JOIN @tb_StationID s ON c.nowStationID=s.StationID 
@@ -266,8 +267,6 @@ SET @NowTime = DATEADD(hour,8,GETDATE())
 				AND E.CarTypeGroupCode = CASE WHEN @CarType<>'' THEN @CarType ELSE E.CarTypeGroupCode END
 				AND SPCLOCK='Z'
 				ORDER BY StationID,Price,IsRent DESC
-
-				--SELECT * FROM #TB_OrderMain
 
 				DROP TABLE #TB_OrderMain
 				DROP TABLE #BookingList

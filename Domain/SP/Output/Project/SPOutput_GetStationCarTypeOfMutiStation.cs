@@ -118,5 +118,10 @@ namespace Domain.SP.Output.Project
         /// 每公里多少錢
         /// </summary>
         public float MilageBase { set; get; }
+        /// <summary>
+        /// 是否是常用據點 20210315 ADD BY ADAM
+        /// </summary>
+        public int IsFavStation { set; get; }
+
     }
 }

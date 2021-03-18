@@ -1,21 +1,29 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
-using Domain.SP.Input.Station;
-using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.TB;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using System.Data;
+using WebAPI.Utils;
+using Domain.SP.Output;
+using System.CodeDom;
+using Domain.SP.Input.Arrears;
+using WebAPI.Models.BillFunc;
+using Domain.SP.Input.Station;
 
 namespace WebAPI.Controllers
 {
@@ -51,6 +59,7 @@ namespace WebAPI.Controllers
             Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            string IDNO = "";
             #endregion
             #region 防呆
 
@@ -61,20 +70,24 @@ namespace WebAPI.Controllers
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
                 if (flag)
                 {
-                    if(string.IsNullOrWhiteSpace(apiInput.StationID) || string.IsNullOrEmpty(apiInput.StationID))
+                    if(apiInput == null || apiInput.FavoriteStations == null || apiInput.FavoriteStations.Count() == 0)
                     {
                         flag = false;
-                        errCode = "ERR900";
+                        errCode = "ERR250";
                     }
-                }
-                if (flag)
-                {
-                    if(apiInput.Mode<0 || apiInput.Mode > 1)
+
+                    if (flag)
                     {
-                        flag = false;
-                        errCode = "ERR900";
+                        var modes = new List<Int16>() { 0, 1 };
+                        var ckSour = apiInput.FavoriteStations;
+                        if (ckSour.Any(x => string.IsNullOrWhiteSpace(x.StationID)||!modes.Any(y=>y == x.Mode)))
+                        {
+                            flag = false;
+                            errCode = "ERR251";
+                        }
                     }
                 }
             }
@@ -97,7 +110,6 @@ namespace WebAPI.Controllers
                 string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
-
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -105,23 +117,31 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag,spOut.Error,spOut.ErrorCode, ref lstError, ref errCode);
-        
+
                 if (flag)
                 {
-                  string SetFavoriteName = new ObjType().GetSPName(ObjType.SPType.SetFavoriteStation);
-                  SPInput_InsFavoriteStation spInput = new SPInput_InsFavoriteStation()
-                  {
-                    IDNO = spOut.IDNO,
-                    LogID = LogID,
-                    Mode = apiInput.Mode,
-                    StationID = apiInput.StationID
-                  };
-                    SPOutput_Base spBaseOut = new SPOutput_Base();
-                    SQLHelper<SPInput_InsFavoriteStation, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsFavoriteStation, SPOutput_Base>(connetStr);
-                    flag = sqlInsHelp.ExecuteSPNonQuery(SetFavoriteName, spInput, ref spBaseOut, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref spBaseOut, ref lstError, ref errCode);
+                    IDNO = spOut.IDNO;
+                }
 
-
+                if (flag)
+                {
+                    var spIn = new SPInput_InsFavoriteStation() { IDNO = IDNO, LogID = LogID };
+                    FavoriteStation[] apiList = apiInput.FavoriteStations.ToArray();
+                    var sp_re = sp_SetFavoriteStation(apiList, spIn, ref errMsg);
+                    if (sp_re != null)
+                    {
+                        flag = sp_re.Error == 0;
+                        if(sp_re.Error != 0 && sp_re.ErrorCode != "0000")
+                        {
+                            errCode = sp_re.ErrorCode;
+                            errMsg = sp_re.ErrorMsg;
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR252";
+                    }
                 }
             }
             #endregion
@@ -137,5 +157,64 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        private SPOutput_Base sp_SetFavoriteStation(FavoriteStation[] apiList, SPInput_InsFavoriteStation spInput, ref string errMsg)
+        {
+            var re = new SPOutput_Base();
+
+            try
+            {
+                string SPName = new ObjType().GetSPName(ObjType.SPType.SetFavoriteStation);
+                int apiLen = apiList.Length;
+                object[] objparms = new object[apiLen == 0 ? 1 : apiLen];
+                if (apiLen > 0)
+                {
+                    for (int i = 0; i < apiLen; i++)
+                    {
+                        objparms[i] = new
+                        {
+                            StationID = apiList[i].StationID,
+                            Mode = apiList[i].Mode
+                        };
+                    }
+                }
+                else
+                {
+                    objparms[0] = new
+                    {
+                        StationID = "",
+                        Mode = 0     
+                    };
+                }
+
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID
+                    },
+                    objparms
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                   re = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                else
+                    errMsg = returnMessage;
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.ToString();
+                throw ex;
+            }
+
+            return re;
+        }
+
     }
 }

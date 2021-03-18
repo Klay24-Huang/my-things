@@ -259,6 +259,7 @@
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
+    <Compile Include="Controllers\GetBannerController.cs" />
     <Compile Include="Controllers\GetMemberInvoiceSettingController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
@@ -557,6 +558,7 @@
     <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindList.cs" />
@@ -647,6 +649,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Doc\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">
