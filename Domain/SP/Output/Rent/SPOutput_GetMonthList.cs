@@ -8,5 +8,85 @@ namespace Domain.SP.Output.Rent
 {
     public class SPOutput_GetMonthList
     {
+        /// <summary>
+        /// 方案代碼-key
+        /// </summary>
+        public string MonProjID { get; set; }
+        /// <summary>
+        /// 方案名稱
+        /// </summary>
+        public string MonProjNM { get; set; }
+        /// <summary>
+        /// 總期數-key
+        /// </summary>
+        public int MonProPeriod { get; set; }
+        /// <summary>
+        /// 方案價格
+        /// </summary>
+        public int PeriodPrice { get; set; }
+        /// <summary>
+        /// 注意事項
+        /// </summary>
+        public string MonProDisc { get; set; }
+        /// <summary>
+        /// 是否為機車0否1是
+        /// </summary>
+        public int IsMoto { get; set; }
+        /// <summary>
+        /// 優先序(數值越大越優先)
+        /// </summary>
+        public int MonLvl { get; set; }
+        /// <summary>
+        /// 月租分類0無1月租2訂閱制3短租
+        /// </summary>
+        public int MonType { get; set; }
+        /// <summary>
+        /// 汽車平日時數
+        /// </summary>
+        public int CarWDHours { get; set; }
+        /// <summary>
+        /// 汽車假日時數
+        /// </summary>
+        public int CarHDHours { get; set; }
+        /// <summary>
+        /// 汽車不分平假日時數
+        /// </summary>
+        public int CarTotalHours { get; set; }
+        /// <summary>
+        /// 機車平日時數
+        /// </summary>
+        public int MotoWDMins { get; set; }
+        /// <summary>
+        /// 機車假日時數
+        /// </summary>
+        public int MotoHDMins { get; set; }
+        /// <summary>
+        /// 機車不分平假日時數
+        /// </summary>
+        public int MotoTotalMins { get; set; }
+        /// <summary>
+        /// 方案起日-8碼
+        /// </summary>
+        public string SDATE { get; set; }
+        /// <summary>
+        /// 方案迄日-8碼
+        /// </summary>
+        public string EDATE { get; set; }
+        /// <summary>
+        /// 汽車平日優惠費率
+        /// </summary>
+        public double WDRateForCar { get; set; }
+        /// <summary>
+        /// 汽車假日優惠費率
+        /// </summary>
+        public double HDRateForCar { get; set; }
+        /// <summary>
+        /// 機車平日優惠費率
+        /// </summary>
+        public double WDRateForMoto { get; set; }
+        /// <summary>
+        /// 機車假日優惠費率
+        /// </summary>
+        public double HDRateForMoto { get; set; }
     }
 }

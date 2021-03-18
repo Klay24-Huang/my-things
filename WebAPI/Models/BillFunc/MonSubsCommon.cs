@@ -32,9 +32,9 @@ namespace WebAPI.Models.BillFunc
                 string SPName = "usp_GetMonthList_U1";//hack: fix spNm
                 object[][] parms1 = {
                     new object[] {
-                        //spInput.IDNO,
-                        //spInput.IsSave,
-                        //spInput.LogID
+                        spInput.LogID,
+                        spInput.IsMoto,
+                        spInput.MonType
                     },
                 };
 
