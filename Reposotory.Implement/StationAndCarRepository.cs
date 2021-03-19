@@ -375,7 +375,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //20210319 ADD BY ADAM REASON.補上欄位ContentForAPP,IsRequiredForReturn
+            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content],ContentForAPP,IsRequiredForReturn ";
+            SQL += " FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(IDNO) == false && string.IsNullOrWhiteSpace(IDNO) == false)
