@@ -24,6 +24,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -59,6 +60,8 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoCreditAuth(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var trace = new TraceCom();
+            var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
             var objOutput = new Dictionary<string, object>();    //輸出
             string Access_Token = "";
@@ -87,6 +90,11 @@ namespace WebAPI.Controllers
             ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(RedisConnet);
             IDatabase Cache = connection.GetDatabase();
             #endregion
+
+            trace.traceAdd("apiIn", value);
+
+            try { 
+
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
@@ -139,7 +147,9 @@ namespace WebAPI.Controllers
                 flag = false;
                 errCode = "ERR101";
             }
-            #endregion
+                #endregion
+
+            trace.traceAdd("apiInCk", new { flag, errCode });
 
             #region TB
             //Token判斷
@@ -156,6 +166,8 @@ namespace WebAPI.Controllers
                     transaction_no = ""
                 };
 
+                trace.traceAdd("PayInput", PayInput);
+
                 if (apiInput.PayType == 0)
                 {
                     #region 還車時間檢查 
@@ -167,6 +179,8 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR245";
                         }
+
+                        trace.traceAdd("ckTime", ckTime);
                     }
 
                     #endregion
@@ -188,6 +202,9 @@ namespace WebAPI.Controllers
                         DataSet ds = new DataSet();
                         flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+                        trace.traceAdd("OrderDataLists", OrderDataLists);
+                            
                         //判斷訂單狀態
                         if (flag)
                         {
@@ -215,11 +232,15 @@ namespace WebAPI.Controllers
                             Amount = OrderDataLists[0].final_price;
                         }
                     }
+
+                    trace.traceAdd("OrderDataListsCk", new { flag , errCode });
+
                     #endregion
                     #region 檢查車機狀態
                     if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
                     {
                         flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                        trace.traceAdd("CarDevCk", flag);
                     }
                     #endregion
                     #region 檢查iButton
@@ -237,6 +258,8 @@ namespace WebAPI.Controllers
                         SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
                         flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
                         baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+
+                        trace.traceAdd("iBtnSp", new { spInput, SPOutputBase });                        
                     }
                     #endregion
                     #region 台新信用卡-Mark
@@ -378,7 +401,7 @@ namespace WebAPI.Controllers
                     //}
                     #endregion
 
-                    
+
                     //Mark By Jerry 改為排程取款
                     //if (flag && Amount > 0)       //有錢才刷
                     //{
@@ -390,6 +413,9 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+
+                        trace.traceAdd("DoCloseRent", new { errCode, dis= "不管車機執行是否成功，都把errCode=000000" });
+
                         if (CarFlag == false)
                         {
                             //寫入車機錯誤
@@ -412,6 +438,8 @@ namespace WebAPI.Controllers
                         {
                             RewardPoint = PayOutput.Reward;
                         }
+
+                        trace.traceAdd("DonePayRentBill", new { flag, PayInput, PayOutput });
                     }
 
                     //20201201 ADD BY ADAM REASON.換電獎勵
@@ -420,6 +448,9 @@ namespace WebAPI.Controllers
                         WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
                         HiEasyRentAPI wsAPI = new HiEasyRentAPI();
                         flag = wsAPI.NPR380Save(IDNO, RewardPoint.ToString(), apiInput.OrderNo, ref wsOutput);
+
+                        trace.traceAdd("NPR380Save", new { IDNO, RewardPoint, apiInput.OrderNo, wsOutput });
+
                         //存檔
                         string SPName = new ObjType().GetSPName(ObjType.SPType.SaveNPR380Result);
                         SPOutput_Base NPR380Output = new SPOutput_Base();
@@ -432,6 +463,8 @@ namespace WebAPI.Controllers
                         SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
                         flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
+
+                        trace.traceAdd("SaveNPR380Result", new { flag, NPR380Input , NPR380Output , lstError });
                     }
 
                     #region 寫還車照片到azure
@@ -457,6 +490,8 @@ namespace WebAPI.Controllers
                                 flag = true; //先bypass，之後補傳再刪
                             }
                         }
+
+                        trace.traceAdd("reCarToAzure", flag);
                     }
                     #endregion
 
@@ -472,7 +507,7 @@ namespace WebAPI.Controllers
                     // 20210220;增加快取機制，當資料存在快取記憶體中，就不再執行並回錯誤訊息。
                     var KeyString = string.Format("{0}-{1}", "CreditAuthController", apiInput.OrderNo);
                     var CacheString = Cache.StringGet("Key1").ToString();
-                    
+
                     if (string.IsNullOrEmpty(CacheString) || KeyString != CacheString)
                     {
                         Cache.StringSet("Key1", KeyString, TimeSpan.FromSeconds(1));
@@ -494,6 +529,8 @@ namespace WebAPI.Controllers
                         //先取出要繳的費用
                         var sp_result = sp_ArrearsQueryByNPR330ID(NPR330Save_ID, LogID, ref MSG);
 
+                        trace.traceAdd("DonePayBack", new { spInput_PayBack, sp_result });
+
                         if (sp_result.Count > 0)
                         {
                             for (int i = 0; i < sp_result.Count; i++)
@@ -514,6 +551,8 @@ namespace WebAPI.Controllers
 
                                 flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
 
+                                trace.traceAdd("TaishinCardTrade", new { apiInput, PayInput, WSAuthOutput, Amount, errCode });
+
                                 string RTNCODE = "";
                                 string RESULTCODE = "";
                                 try
@@ -529,6 +568,8 @@ namespace WebAPI.Controllers
                                     spInput_PayBack.MerchantTradeNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
                                     spInput_PayBack.TaishinTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
                                     flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
+
+                                    trace.traceAdd("DonePayBack", new { spInput_PayBack, errCode, lstError });
                                 }
 
                                 if (flag && RTNCODE == "1000" && RESULTCODE == "1000")  //20210106 ADD BY ADAM REASON.有成功才呼叫
@@ -583,6 +624,8 @@ namespace WebAPI.Controllers
                                         flag = true;
                                         errCode = "000000";
                                     }
+
+                                    trace.traceAdd("NPR340Save", new {flag, wsInput, wsOutput });
                                 }
                             }
                             else
@@ -602,12 +645,32 @@ namespace WebAPI.Controllers
             }
 
             #endregion
+
+            trace.traceAdd("finalFlag", new { flag, errCode });
+
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
+
+            }
+            catch(Exception ex)
+            {                
+                trace.BaseMsg = ex.Message;                
+            }
+
+            if (string.IsNullOrWhiteSpace(trace.BaseMsg))
+            {
+                if(flag)
+                   carRepo.AddTraceLog(84, funName, eumTraceType.mark, trace);
+                else
+                   carRepo.AddTraceLog(84, funName, eumTraceType.followErr, trace);
+            }
+            else
+               carRepo.AddTraceLog(84, funName, eumTraceType.exception, trace);
+
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
