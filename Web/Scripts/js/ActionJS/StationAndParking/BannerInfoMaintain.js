@@ -45,13 +45,38 @@
         if (file != null) {
             var fileName = file.name;
 
-            console.log(fileSize);
             $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
             var extName = "";
             if (CheckStorageIsNull(ext)) {
                 extName = ext[0];
                 console.log(extName.toUpperCase())
+            }
+
+            //判斷圖片尺寸，看網路寫的，爽
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                var data = e.target.result;
+                //加载图片获取图片真实宽度和高度
+                var image = new Image();
+                image.onload = function () {
+                    var width = image.width;
+                    var height = image.height;
+
+                    console.log("Q:" + width)
+                    console.log("Q:" + height)
+                    if (width != 343 || height != 80) {
+                        swal({
+                            title: 'Fail',
+                            text: "尺寸不對",
+                            icon: 'error'
+                        }).then(function (value) {
+                            clearFileInput("fileImport");
+                        });
+                    }
+                };
+                image.src = data;
             }
             //if (fileSize > 1024000) {
             //    swal({
@@ -86,7 +111,7 @@
         var EDate = $("#EDate").val();
         var flag = true;
         var checkList = [SDate, EDate, URL, RunHorse];
-        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填啦呆子", "跑馬燈啦大哥，填一下好嗎"];
+        var checkErrList = ["有效起日未填", "有效迄日未填", "睡覺喔? URL沒填啦", "跑馬燈拜託一下"];
 
         var checkLen = checkList.length;
         if (flag) {

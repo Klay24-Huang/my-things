@@ -63,6 +63,7 @@
     })
     */
 
+    
     //在 HTML 有提供 File、FileReader、Image 這三組 API，透過他們可以達到檔案上傳的格式、尺寸、大小檢查以及預覽功能
     $('body').on("change", "#fileImport", function () {
         var file = this.files[0]; //原生input file控制元件有個files屬性，該屬性是一個陣列
@@ -75,6 +76,32 @@
             if (CheckStorageIsNull(ext)) {
                 extName = ext[0];
                 console.log(extName.toUpperCase())
+            }
+
+            //判斷圖片尺寸，看網路寫的，爽
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                var data = e.target.result;
+                //加载图片获取图片真实宽度和高度
+                var image = new Image();
+                image.onload = function () {
+                    var width = image.width;
+                    var height = image.height;
+
+                    console.log("Q:"+width)
+                    console.log("Q:" +height)
+                    if (width != 343 || height !=80) {
+                        swal({
+                            title: 'Fail',
+                            text: "尺寸不對",
+                            icon: 'error'
+                        }).then(function (value) {
+                            clearFileInput("fileImport");
+                        });
+                    }
+                };
+                image.src = data;
             }
             //if (fileSize > 1024000) {
             //    swal({
@@ -97,6 +124,7 @@
             }
         }
     })
+    
     
 
 
