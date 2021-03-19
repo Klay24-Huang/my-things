@@ -253,13 +253,13 @@ namespace WebAPI.Controllers
 
                     #region 過濾查詢結果
 
-                    if (lstData != null && lstData.Count() > 0)
-                        lstData.ForEach(x => { if ((string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "n") { x.IsShowCard = 0; } });
+                    //if (lstData != null && lstData.Count() > 0)
+                    //    lstData.ForEach(x => { if ((string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "n") { x.IsShowCard = 0; } });
 
-                    if (apiInput.Seats != null && apiInput.Seats.Count()>0)
-                    {
-                        lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
-                    }
+                    //if (apiInput.Seats != null && apiInput.Seats.Count()>0)
+                    //{
+                    //    lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
+                    //}
                     //if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
                     //    lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
 
@@ -287,7 +287,7 @@ namespace WebAPI.Controllers
                                 StationName = lstData[0].StationName,
                                 IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
                                 IsFavStation = lstData[0].IsFavStation,
-                                IsShowCard = lstData[0].IsShowCard,
+                                //IsShowCard = lstData[0].IsShowCard,
                                 ProjectObj = new List<ProjectObj>(),
                                 StationInfoObj = new List<StationInfoObj>()
                             });
@@ -323,8 +323,8 @@ namespace WebAPI.Controllers
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = "",
                                 IsRent = lstData[0].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
-                                IsFavStation = lstData[0].IsFavStation,
-                                IsShowCard = lstData[0].IsShowCard
+                                IsFavStation = lstData[0].IsFavStation
+                                //IsShowCard = lstData[0].IsShowCard
                             });
                             //lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                             lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Price;
@@ -363,8 +363,8 @@ namespace WebAPI.Controllers
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
                                         IsRent = lstData[i].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
-                                        IsFavStation = lstData[i].IsFavStation,
-                                        IsShowCard = lstData[i].IsShowCard
+                                        IsFavStation = lstData[i].IsFavStation
+                                        //IsShowCard = lstData[i].IsShowCard
                                     };
 
                                     List<StationInfoObj> tmpStation = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[i].StationPicJson);
@@ -386,7 +386,7 @@ namespace WebAPI.Controllers
                                         StationName = lstData[i].StationName,
                                         IsRent = lstData[i].IsRent,
                                         IsFavStation = lstData[i].IsFavStation,
-                                        IsShowCard = lstData[i].IsShowCard,
+                                        //IsShowCard = lstData[i].IsShowCard,
                                         ProjectObj = new List<ProjectObj>(),
                                         StationInfoObj = new List<StationInfoObj>(),
                                         Minimum = tmpBill
@@ -429,8 +429,8 @@ namespace WebAPI.Controllers
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
                                         IsRent = lstData[i].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
-                                        IsFavStation = lstData[i].IsFavStation,
-                                        IsShowCard = lstData[i].IsShowCard
+                                        IsFavStation = lstData[i].IsFavStation
+                                        //IsShowCard = lstData[i].IsShowCard
                                     });
                                 }
                             }
@@ -454,31 +454,31 @@ namespace WebAPI.Controllers
                     //outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
                     //outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
                     
-                    List<int> SeatsList = lstData.Where(z => z.IsRent.ToLower() == "y" && z.IsShowCard == 1).GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
-                    if (SeatsList != null && SeatsList.Count() > 0)
-                    {
-                        foreach (int se in SeatsList)
-                        {
-                            var item = new GetProject_SeatGroup();
-                            item.Seat = Convert.ToInt16(se);
+                    //List<int> SeatsList = lstData.Where(z => z.IsRent.ToLower() == "y" && z.IsShowCard == 1).GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
+                    //if (SeatsList != null && SeatsList.Count() > 0)
+                    //{
+                    //    foreach (int se in SeatsList)
+                    //    {
+                    //        var item = new GetProject_SeatGroup();
+                    //        item.Seat = Convert.ToInt16(se);
 
-                            List<GetProject_CarInfo> CarInfos =
-                                (from a in lstData
-                                 where a.IsRent.ToLower() == "y" && a.Seat == se
-                                 group new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic }
-                                 by new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic } into g
-                                 select new GetProject_CarInfo
-                                 {
-                                     Seat = item.Seat,
-                                     CarType = g.Key.CarType,
-                                     CarTypePic = g.Key.CarTypePic,
-                                     CarTypeName = g.Key.CarTypeName
-                                 }).ToList();
-                            if (CarInfos != null && CarInfos.Count() > 0)
-                                item.CarInfos = CarInfos;
-                            SeatGroups.Add(item);
-                        }
-                    }
+                    //        List<GetProject_CarInfo> CarInfos =
+                    //            (from a in lstData
+                    //             where a.IsRent.ToLower() == "y" && a.Seat == se
+                    //             group new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic }
+                    //             by new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic } into g
+                    //             select new GetProject_CarInfo
+                    //             {
+                    //                 Seat = item.Seat,
+                    //                 CarType = g.Key.CarType,
+                    //                 CarTypePic = g.Key.CarTypePic,
+                    //                 CarTypeName = g.Key.CarTypeName
+                    //             }).ToList();
+                    //        if (CarInfos != null && CarInfos.Count() > 0)
+                    //            item.CarInfos = CarInfos;
+                    //        SeatGroups.Add(item);
+                    //    }
+                    //}
 
                     //if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "": x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
                     //    outputApi.HasRentCard = true;

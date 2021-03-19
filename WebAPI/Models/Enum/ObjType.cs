@@ -846,10 +846,12 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMemberInfo";
                     break;
                 case SPType.GetStationCarType:
-                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    SPName = "usp_GetStationCarType_20210315";  //20210317 ADD BY ADAM REASON.常用站點測試版
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation";
+                    //SPName = "usp_GetStationCarTypeOfMutiStation";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";     //20210319 ADD BY ADAM REASON.測試常用站點
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
