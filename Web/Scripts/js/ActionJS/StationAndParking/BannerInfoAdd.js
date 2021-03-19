@@ -4,15 +4,10 @@
     $("#fileImport").prop("disabled", "");
     clearFileInput("fileImport");
 
-    console.log("A:"+$("#fileImport")[0].value);
-    console.log("A:" +$("#fileImport")[0].val);
-    console.log("A:" +$("#fileImport"));
-    console.log("A:" +$("#fileImport")[0]);
-
     $("#btnUpload").on("click", function () {
         if ($("#fileImport")[0].files.length != 0) { //length未上傳照片是0，上傳是1
             $("#fileName1").val($("#fileImport")[0].files[0].name);
-            handleFiles($("#fileImport")[0].files, 1);
+            handleFiles($("#fileImport")[0].files, 1); //呼叫圖片處理function
         } else {
             swal({
                 title: 'Fail',
@@ -70,10 +65,9 @@
 
     //在 HTML 有提供 File、FileReader、Image 這三組 API，透過他們可以達到檔案上傳的格式、尺寸、大小檢查以及預覽功能
     $('body').on("change", "#fileImport", function () {
-        var file = this.files[0];
+        var file = this.files[0]; //原生input file控制元件有個files屬性，該屬性是一個陣列
         if (file != null) {
             var fileName = file.name;
-            var fileSize = file.size;
 
             $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
@@ -172,29 +166,20 @@ function handleFiles(file, id) {
 
                 // console.log("before length:" + base64.length);
                 $('#PIC' + id).attr('src', url);
-
             };
             reader.readAsDataURL(tmpfile);
-
-
             // $('#tmpENVPIC').show();
             console.log("show")
             //  $("#btnReview").show();
-
         } else {
             //$("#btnReview").hide();
             // document.getElementById('tmpENVPICc').src = "";
             // $("#hidPic").val("");
-
-
         }
-
     }
-
 }
 
 document.getElementById("PIC1").addEventListener('load', function () {
-
     var cvs = document.createElement('canvas'),
         ctx = cvs.getContext('2d');
     var img = new Image(),
@@ -214,6 +199,9 @@ document.getElementById("PIC1").addEventListener('load', function () {
     var base64 = dataUrl.split(",");
     console.log(dataUrl);
 });
+
+
+
 document.getElementById('PIC1').addEventListener('change', function () {
     console.log("call PIC1 Change");
     var reader = new FileReader();
@@ -227,9 +215,6 @@ document.getElementById('PIC1').addEventListener('change', function () {
     //以M為單位
     //this.files[0] 該資訊包含：圖片的大小，以byte計算 獲取size的方法如下：this.files[0].size;
 }, false);
-
-
-
 //最終實現思路：
 //1、設定壓縮後的最大寬度 or 高度；
 //2、設定壓縮比例，根據圖片的不同size大小，設定不同的壓縮比。

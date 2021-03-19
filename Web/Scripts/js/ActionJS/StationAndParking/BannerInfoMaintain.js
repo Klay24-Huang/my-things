@@ -41,10 +41,10 @@
 
     //在 HTML 有提供 File、FileReader、Image 這三組 API，透過他們可以達到檔案上傳的格式、尺寸、大小檢查以及預覽功能
     $('body').on("change", "#fileImport", function () {
-        var file = this.files[0];
+        var file = this.files[0]; //原生input file控制元件有個files屬性，該屬性是一個陣列
         if (file != null) {
             var fileName = file.name;
-            var fileSize = file.size;
+
             console.log(fileSize);
             $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
@@ -74,6 +74,7 @@
             }
         }
     })
+
     
 
     $("#btnSend").on("click", function () {
@@ -115,6 +116,8 @@
 
     });
 });
+
+
 var inPicSize = 0;
 //圖片處理
 function handleFiles(file, id) {
@@ -164,6 +167,10 @@ function handleFiles(file, id) {
 
 }
 
+
+
+
+
 document.getElementById("PIC1").addEventListener('load', function () {
 
     var cvs = document.createElement('canvas'),
@@ -198,9 +205,6 @@ document.getElementById('PIC1').addEventListener('change', function () {
     //以M為單位
     //this.files[0] 該資訊包含：圖片的大小，以byte計算 獲取size的方法如下：this.files[0].size;
 }, false);
-
-
-
 //最終實現思路：
 //1、設定壓縮後的最大寬度 or 高度；
 //2、設定壓縮比例，根據圖片的不同size大小，設定不同的壓縮比。
