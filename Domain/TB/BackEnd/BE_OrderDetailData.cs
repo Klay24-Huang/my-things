@@ -368,6 +368,10 @@ namespace Domain.TB.BackEnd
         /// 安心服務費率
         /// </summary>
         public int InsurancePerHours { set; get; }
+        /// <summary>
+        /// AES編碼 20210316 ADD BY ADAM 
+        /// </summary>
+        public string AesEncode { set; get; }
     }
 
     /// <summary>

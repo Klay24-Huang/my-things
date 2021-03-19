@@ -284,7 +284,9 @@
                                 @(OrderKind)
                             </div>
                             <div class="col-md-3">
-                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?OrderNum=@(obj.Data.OrderNo)','_blank','');">HTML</button>
+                                <!--<button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?OrderNum=@(obj.Data.OrderNo)','_blank','');">HTML</button>-->
+                                <!--20210316 ADD BY ADAM-->
+                                <button type="button" id="btnSend" name="btnSend" class="btn btn-outline-info" onclick="window.open('../../Contact/returnCarNew/?p=@(obj.Data.AesEncode)','_blank','');">HTML</button>
                             </div>
                         </div>
                     </div>

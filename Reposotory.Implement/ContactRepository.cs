@@ -583,7 +583,9 @@ namespace Reposotory.Implement
             BE_OrderDetailData obj = null;
 
             int nowCount = 0;
-            string SQL = "SELECT *  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //string SQL = "SELECT *  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //20210316 ADD BY ADAM REASON.增加aes編碼
+            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
 
 
             SqlParameter[] para = new SqlParameter[10];
@@ -600,6 +602,68 @@ namespace Reposotory.Implement
                 nowCount++;
             }
 
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            SQL += " ORDER BY OrderNo ASC;";
+
+            lstOrder = GetObjList<BE_OrderDetailData>(ref flag, ref lstError, SQL, para, term);
+            if (lstOrder != null)
+            {
+                if (lstOrder.Count > 0)
+                {
+                    obj = new BE_OrderDetailData();
+                    obj = lstOrder[0];
+                }
+            }
+
+            return obj;
+        }
+
+        /// <summary>
+        /// 後台訂單明細使用 20210315 ADD BY ADAM REASON.增加IDNO查詢
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="IDNO"></param>
+        /// <returns></returns>
+        public BE_OrderDetailData GetOrderDetail(Int64 OrderNo,string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_OrderDetailData> lstOrder = null;
+            BE_OrderDetailData obj = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+
+            if (OrderNo > 0)
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " OrderNo=@OrderNo";
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if (IDNO != "")
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,10);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
 
             if ("" != term)
             {
