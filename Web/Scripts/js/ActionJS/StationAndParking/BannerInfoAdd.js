@@ -67,12 +67,14 @@
         }
     })
     */
+
+    //在 HTML 有提供 File、FileReader、Image 這三組 API，透過他們可以達到檔案上傳的格式、尺寸、大小檢查以及預覽功能
     $('body').on("change", "#fileImport", function () {
         var file = this.files[0];
         if (file != null) {
             var fileName = file.name;
             var fileSize = file.size;
-            console.log("大小:" + file);
+
             $('.jfilestyle input[type=text]').val(fileName);
             var ext = GetFileExtends(fileName);
             var extName = "";
