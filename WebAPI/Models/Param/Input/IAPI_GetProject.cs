@@ -11,7 +11,7 @@ namespace WebAPI.Models.Param.Input
         /// 據點代碼
         /// </summary>
         public string StationID { set; get; }
-        //public string CarType { set; get; }
+        public string CarType { set; get; }
         /// <summary>
         ///座位數
         /// </summary>
@@ -57,7 +57,7 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         //public int PriceMax { get; set; } 
 
-        public List<string> CarTypes { get; set; } = new List<string>();
+        //public List<string> CarTypes { get; set; } = new List<string>();
         public List<int> Seats { get; set; } = new List<int>();
     }
 }

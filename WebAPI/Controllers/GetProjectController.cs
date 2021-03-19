@@ -143,8 +143,10 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                        if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
-                            StrCarTypes = String.Join(",", apiInput.CarTypes);
+                        StrCarTypes = apiInput.CarType;//hack: 單筆for上版測試用 
+
+                        //if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                        //    StrCarTypes = String.Join(",", apiInput.CarTypes);
                     }                     
                 }
             }
