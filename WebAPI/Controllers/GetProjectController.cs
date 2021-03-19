@@ -480,15 +480,15 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "": x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
-                        outputApi.HasRentCard = true;
-                    else
-                        outputApi.HasRentCard = false;
+                    //if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "": x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
+                    //    outputApi.HasRentCard = true;
+                    //else
+                    //    outputApi.HasRentCard = false;
                 }
 
                 #endregion
 
-                outputApi.SeatGroups = SeatGroups;
+                //outputApi.SeatGroups = SeatGroups;
             }
             #endregion
 
@@ -515,7 +515,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);           
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
