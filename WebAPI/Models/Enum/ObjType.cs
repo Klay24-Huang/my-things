@@ -457,6 +457,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_HandleStation,
             /// <summary>
+            /// 新增及修改據點（包括同步進專案)
+            /// </summary>
+            BE_HandleStationNew,
+            /// <summary>
             /// 特約停車場處理
             /// </summary>
             BE_HandleTransParking,
@@ -999,6 +1003,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleStation:
                     SPName = "usp_BE_HandleStation";
+                    break;
+                case SPType.BE_HandleStationNew:
+                    SPName = "usp_BE_HandleStationNew";
                     break;
                 case SPType.BE_HandleTransParking:
                     SPName = "usp_BE_HandleTransParking";
