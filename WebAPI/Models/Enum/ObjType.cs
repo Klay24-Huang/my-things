@@ -846,7 +846,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMemberInfo";
                     break;
                 case SPType.GetStationCarType:
-                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    SPName = "usp_GetStationCarType_20210322";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";

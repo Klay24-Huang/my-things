@@ -62,6 +62,8 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            string CarTypeList = "";
+            string SeatList = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -116,6 +118,12 @@ namespace WebAPI.Controllers
                             errCode = "ERR151";
                         }
                     }
+
+                    if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                        CarTypeList = String.Join(",", apiInput.CarTypes);
+
+                    if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
+                        SeatList = String.Join(",", apiInput.Seats.Select(x=>x.ToString()).ToList());
                 }
             }
 
@@ -171,8 +179,11 @@ namespace WebAPI.Controllers
                     StationID = apiInput.StationID,
                     SD = SDate,
                     ED = EDate,
+                    CarTypes = CarTypeList,
+                    Seats = SeatList,
                     IDNO = IDNO,
-                    LogID = LogID
+                    LogID = LogID,
+                    
                 };
                 var spList = GetStationCarType(spInput, ref flag, ref lstError, ref errCode);
 
