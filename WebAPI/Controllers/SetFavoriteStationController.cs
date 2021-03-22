@@ -24,6 +24,7 @@ using System.CodeDom;
 using Domain.SP.Input.Arrears;
 using WebAPI.Models.BillFunc;
 using Domain.SP.Input.Station;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -35,9 +36,10 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
-        public Dictionary<string, object> doGetNormalRent(Dictionary<string, object> value)
+        public Dictionary<string, object> doGetNormalRent(List<FavoriteStation> apIn)
         {
             #region 初始宣告
+            var value = new Dictionary<string, object>();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -50,7 +52,7 @@ namespace WebAPI.Controllers
             string funName = "SetFavoriteStationController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_SetFavoriteStation apiInput = null;
+            var apiInput = new IAPI_SetFavoriteStation();
             OAPI_Base SetFavoriteStationAPI = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -63,10 +65,22 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
 
+            #region input轉IAPI_SetFavoriteStation
+
+            if (apIn != null && apIn.Count()>0)
+            {
+                apiInput.FavoriteStations = apIn;
+                value.Add("IAPI_SetFavoriteStation", apiInput);
+            }
+            else
+                value.Add("IAPI_SetFavoriteStation", "{}");
+
+            #endregion
+
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetFavoriteStation>(Contentjson);
+                //apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetFavoriteStation>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
