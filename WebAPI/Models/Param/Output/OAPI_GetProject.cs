@@ -13,17 +13,17 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_GetProject
     {
         /// <summary>
-        /// 是否具有可租的卡片
+        /// 是否有可租的卡片
         /// </summary>
         public bool HasRentCard { get; set; } = false;
         /// <summary>
         /// 查詢最大值
         /// </summary>
-        public int PriceMin { get; set; }
+        //public int PriceMin { get; set; }
         /// <summary>
         ///查詢最小值 
         /// </summary>
-        public int PriceMax { get; set; }
+        //public int PriceMax { get; set; }
         /// <summary>
         /// 車款下拉
         /// </summary>

@@ -181,6 +181,7 @@
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
     <Compile Include="Controllers\BE_AutoPayMoneyController.cs" />
+    <Compile Include="Controllers\BE_BannerController.cs" />
     <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
+    <Compile Include="Controllers\GetBannerController.cs" />
     <Compile Include="Controllers\GetMemberInvoiceSettingController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
@@ -377,6 +379,7 @@
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_AutoPayMoney.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Banner.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />
@@ -566,6 +569,7 @@
     <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindList.cs" />
@@ -662,6 +666,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Doc\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

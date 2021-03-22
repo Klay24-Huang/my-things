@@ -45,5 +45,9 @@ namespace Domain.SP.Output.Car
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        /// <summary>
+        /// 是否是常用據點 20210315 ADD BY ADAM
+        /// </summary>
+        public int IsFavStation { set; get; }
     }
 }

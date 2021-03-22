@@ -390,6 +390,10 @@ namespace WebAPI.Models.Enum
             /// 取得還車里程
             /// </summary>
             GetCarReturnMillage,
+            /// <summary>
+            /// 取得廣告資訊
+            /// </summary>
+            GetBanner,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -627,7 +631,9 @@ namespace WebAPI.Models.Enum
             GetOrderAuthList,
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
-            UpdateOrderAuthReturnList
+            UpdateOrderAuthReturnList,
+            BE_Banner//20210316唐加
+
         }
         /// <summary>
         /// 取出SPName
@@ -840,7 +846,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMemberInfo";
                     break;
                 case SPType.GetStationCarType:
-                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
+                    SPName = "usp_GetStationCarType_20210322";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";
@@ -935,12 +942,18 @@ namespace WebAPI.Models.Enum
                 case SPType.GetCarReturnMillage:    // 取得還車里程 20210219 ADD
                     SPName = "usp_GetCarReturnMillage";
                     break;
+                case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
+                    SPName = "usp_GetBanner";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
                     break;
                 case SPType.News:
                     SPName = "usp_GetNews";
+                    break;
+                case SPType.BE_Banner:  //20210316唐加
+                    SPName = "usp_BE_Banner_I";
                     break;
                 #endregion
                 #region 拓連

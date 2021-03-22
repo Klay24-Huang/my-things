@@ -335,5 +335,37 @@ namespace Reposotory.Implement
             lstMotorBatteryStatus = GetObjList<BE_MotorBatteryStatus>(ref flag, ref lstError, SQL, para, term);
             return lstMotorBatteryStatus;
         }
+        /// <summary>
+        /// 車機設定資訊
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <returns></returns>
+        public List<BE_CarInfoForMachineData> GetCarInfoForMachineData(string CarNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarInfoForMachineData> lstCarInfoForMachineData = null;
+            int nowCount = 0;
+            string SQL = " SELECT [CarNo],[CID],[deviceId],[deviceToken],[IsCens],[IsMotor],[HasIButton] ";
+            SQL += " FROM TB_CarInfo ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            if (false == string.IsNullOrWhiteSpace(CarNo))
+            {
+                term += " AND CarNo=@CarNo";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE 1=1 " + term;
+            }
+
+            lstCarInfoForMachineData = GetObjList<BE_CarInfoForMachineData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarInfoForMachineData;
+        }        
     }
 }

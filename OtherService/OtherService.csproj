@@ -61,6 +61,7 @@
     <Compile Include="Enum\MachineCommandType.cs" />
     <Compile Include="Enum\ObjType.cs" />
     <Compile Include="FETCatAPI.cs" />
+    <Compile Include="FETDeviceMaintainAPI.cs" />
     <Compile Include="HiEasyRentAPI.cs" />
     <Compile Include="MochiParkAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

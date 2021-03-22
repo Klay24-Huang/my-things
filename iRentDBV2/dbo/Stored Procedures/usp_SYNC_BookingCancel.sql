@@ -57,7 +57,6 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @Descript NVARCHAR(200);
 
-
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -68,65 +67,93 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_SYNC_BookingCancel';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
+BEGIN TRY
+	--訂單資訊共用表
+	DECLARE @sync_order_data TABLE (
+		[OrderNum] int,
+		[citizen_id] varchar(20),
+		[assigned_car_id] varchar(20),
+		[Title] varchar(50),
+		[StartTime] datetime,
+		[StopTime] datetime,
+		[FineTime] datetime,
+		[FinalStartTime] datetime,
+		[FinalStopTime] datetime,
+		[CardNo] varchar(50),
+		[car_mgt_status] int,
+		[booking_status] int,
+		[cancel_status] int,
+		[MachineNo] varchar(10),
+		[DeviceToken] varchar(300),
+		[RID] int,
+		[CarNo] VARCHAR(20),
+		[ProjType] INT
+	)
 
-
-		BEGIN TRY
-		  --訂單資訊共用表
-			DECLARE @sync_order_data TABLE (
-				[OrderNum] int
-			  ,[citizen_id] varchar(20)
-			  ,[assigned_car_id] varchar(20)
-			  ,[Title] varchar(50)
-			  ,[StartTime] datetime
-			  ,[StopTime] datetime
-			  ,[FineTime] datetime
-			  ,[FinalStartTime] datetime
-			  ,[FinalStopTime] datetime
-			  ,[CardNo] varchar(50)
-			  ,[car_mgt_status] int
-			  ,[booking_status] int
-			  ,[cancel_status] int
-			  ,[MachineNo] varchar(10)
-			  ,[DeviceToken] varchar(300)
-			  ,[RID] int
-			)
-			/*過15分鐘未取車，系統自動取消*/
+	/*過15分鐘未取車，系統自動取消*/
 	--寫入暫存表
-	INSERT INTO @sync_order_data ([OrderNum],[citizen_id],[Title],[DeviceToken],[cancel_status],[car_mgt_status],[booking_status])
-	SELECT DISTINCT OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),cancel_status,car_mgt_status,booking_status
+	INSERT INTO @sync_order_data ([OrderNum],[citizen_id],[Title],[DeviceToken],[cancel_status],[car_mgt_status],[booking_status],CarNo,ProjType)
+	SELECT DISTINCT OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),cancel_status,car_mgt_status,booking_status,CarNo	,ProjType	--20201218 ADD BY ADAM 
 	FROM VW_SYNC_GetSyncData WITH(NOLOCK)
-	WHERE car_mgt_status=0 AND booking_status=0  AND cancel_status=0 AND PROJTYPE<>3 AND DATEADD(MINUTE,15,StartTime)<=@NowTime; --(booking_status>=0 AND booking_status<3)
+	WHERE car_mgt_status=0 AND booking_status=0  AND cancel_status=0 
+	AND stop_pick_time<=dbo.GET_TWDATE()
+	AND stop_pick_time>StartTime
 
 	--寫入訂單紀錄
 	INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 	SELECT OrderNum,cancel_status,car_mgt_status,booking_status,N'排程【逾時未取車】'
 	FROM @sync_order_data;
 
-	--寫入推播通知
-	INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
-	SELECT OrderNum,citizen_id,3,Title,DeviceToken,@NowTime,N'請注意！您已超過預約取車時間，系統已自動取消訂單。提醒您，若臨時變更行程請於APP取消預約，以免影響您的租車權益。'
-	FROM @sync_order_data;
+	--會員的資料要處理狀態
+	UPDATE TB_CarInfo 
+	SET RentCount=RentCount-1,
+		UPDTime=@NowTime
+	FROM TB_CarInfo C
+	JOIN @sync_order_data D ON C.CarNo=D.CardNo
+	WHERE C.RentCount>0;
+
+	--更新總表
+	UPDATE [TB_BookingStatusOfUser]
+	SET [NormalRentBookingNowCount]	= CASE WHEN D.ProjType=0 AND NormalRentBookingNowCount>0 THEN [NormalRentBookingNowCount]-1 ELSE [NormalRentBookingNowCount] END,
+		[NormalRentBookingCancelCount]= CASE WHEN D.ProjType=0 THEN [NormalRentBookingCancelCount]+1 ELSE [NormalRentBookingCancelCount] END,
+		[AnyRentBookingNowCount] = CASE WHEN D.ProjType=3 AND [AnyRentBookingNowCount]>0 THEN 0 ELSE [AnyRentBookingNowCount] END,
+		[AnyRentBookingCancelCount] = CASE WHEN D.ProjType=3 THEN [AnyRentBookingCancelCount]+1 ELSE [AnyRentBookingCancelCount] END,
+		[MotorRentBookingNowCount]	= CASE WHEN D.ProjType=4 AND [MotorRentBookingNowCount]>0 THEN 0 ELSE MotorRentBookingNowCount END,
+		[MotorRentBookingCancelCount] = CASE WHEN D.ProjType=4 THEN [MotorRentBookingCancelCount]+1 ELSE [MotorRentBookingCancelCount] END,
+		UPDTime=@NowTime
+	FROM [TB_BookingStatusOfUser] A
+	JOIN @sync_order_data D ON A.IDNO=D.citizen_id
+
+	--寫入推播通知 ，推播先關掉等機制完成後再上
+	--INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
+	--SELECT OrderNum,citizen_id,3,Title,DeviceToken,@NowTime,N'請注意！您已超過預約取車時間，系統已自動取消訂單。提醒您，若臨時變更行程請於APP取消預約，以免影響您的租車權益。'
+	--FROM @sync_order_data;
 
 	--更新給短租預約單
-	UPDATE TB_BookingControl set PROCD='F',isRetry=0 where order_number in 
-		(SELECT [order_number] FROM [TB_BookingControl] WITH(NOLOCK) WHERE [order_number] IN (SELECT OrderNum FROM @sync_order_data) AND PROCD = 'A' AND isRetry = 1);
+	UPDATE TB_BookingControl 
+	set PROCD='F',
+		isRetry=0,
+		UPDTime=@NowTime
+	where order_number in (SELECT [order_number] FROM [TB_BookingControl] WITH(NOLOCK) WHERE [order_number] IN (SELECT OrderNum FROM @sync_order_data) AND PROCD = 'A' AND isRetry = 1);
 
-	update TB_BookingControl SET PROCD='F',isRetry=1 WHERE order_number in 
-		(SELECT [order_number] FROM [TB_BookingControl] WITH(NOLOCK) WHERE [order_number] IN (select OrderNum from @sync_order_data) AND PROCD = 'A' AND isRetry = 0);
-
-	--update TB_BookingControl_201611 set PROCD='F',isRetry=1 where order_number in (select OrderNum from @sync_order_data);
+	update TB_BookingControl 
+	SET PROCD='F',
+		isRetry=1,
+		UPDTime=@NowTime
+	WHERE order_number in (SELECT [order_number] FROM [TB_BookingControl] WITH(NOLOCK) WHERE [order_number] IN (select OrderNum from @sync_order_data) AND PROCD = 'A' AND isRetry = 0);
 
 	--更新主訂單狀態
-	UPDATE TB_OrderMain set cancel_status=3 where order_number in (SELECT OrderNum FROM @sync_order_data);
+	UPDATE TB_OrderMain 
+	set cancel_status=3 
+	where order_number in (SELECT OrderNum FROM @sync_order_data);
 
 	--清除共用表
 	delete from @sync_order_data
 
-		/*還車前30分鐘通知*/
+	/*還車前30分鐘通知*/
 	--宣告固定時間參數
 	declare @hourSub2return datetime;
 	set @hourSub2return = DATEADD(HOUR,-2, @NowTime);
@@ -135,13 +162,16 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 	insert into @sync_order_data ([OrderNum],[citizen_id],[Title],[DeviceToken],StopTime)
 	SELECT distinct OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),StopTime
 	FROM VW_SYNC_GetSyncData WITH(NOLOCK)
-	WHERE (car_mgt_status>=4 AND car_mgt_status<15) AND booking_status<5 AND cancel_status=0 AND @NowTime>= DATEADD(MINUTE,-30,StopTime) AND StopTime>@NowTime AND OrderNum NOT IN ( 
-	SELECT OrderNum FROM TB_PersonNotification WHERE NType in (2,4) );
+	WHERE (car_mgt_status>=4 AND car_mgt_status<15) 
+	AND booking_status<5 
+	AND cancel_status=0 
+	AND @NowTime>= DATEADD(MINUTE,-30,StopTime) 
+	AND StopTime>@NowTime AND OrderNum NOT IN ( SELECT OrderNum FROM TB_PersonNotification WHERE NType in (2,4) );
 
-	--寫入推播通知
-	INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
-	select distinct OrderNum,citizen_id,2,Title,DeviceToken,@NowTime,N'您好，您目前租用的車輛需於30分鐘內還車，若需延後還車，請於APP申請延長用車。(注意！逾時還車租金將以定價收費，無法享有優惠價)'
-	from @sync_order_data;
+	--寫入推播通知，推播先關掉等機制完成後再上
+	--INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
+	--select distinct OrderNum,citizen_id,2,Title,DeviceToken,@NowTime,N'您好，您目前租用的車輛需於30分鐘內還車，若需延後還車，請於APP申請延長用車。(注意！逾時還車租金將以定價收費，無法享有優惠價)'
+	--from @sync_order_data;
 
 	--清除共用表
 	delete from @sync_order_data
@@ -164,10 +194,10 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 	select OrderNum,cancel_status,car_mgt_status,booking_status,N'排程【寫入逾時時間】'
 	from @sync_order_data
 
-	--寫入推播通知
-	INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
-	select distinct OrderNum,[citizen_id],4,Title,DeviceToken,@NowTime,N'請注意！您目前租用的車輛已超過預計還車時間，逾時租金將無法享有優惠價(以車款定價計算)。請立即還車以免影響您的租車權益及造成下一位使用者不便。'
-	from @sync_order_data;
+	--寫入推播通知，推播先關掉等機制完成後再上
+	--INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
+	--select distinct OrderNum,[citizen_id],4,Title,DeviceToken,@NowTime,N'請注意！您目前租用的車輛已超過預計還車時間，逾時租金將無法享有優惠價(以車款定價計算)。請立即還車以免影響您的租車權益及造成下一位使用者不便。'
+	--from @sync_order_data;
 
 	--更新訂單主表
 	declare @delayCount int;
@@ -175,7 +205,9 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 	if @delayCount > 0
 	begin
-	UPDATE TB_OrderMain set fine_Time = stop_time where order_number in ( select OrderNum from @sync_order_data );
+		UPDATE TB_OrderMain 
+		set fine_Time = stop_time 
+		where order_number in ( select OrderNum from @sync_order_data );
 	end
 
 	--清除共用表
@@ -191,39 +223,121 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 	insert into @sync_order_data ([OrderNum],[citizen_id],[Title],[DeviceToken],[MachineNo],[assigned_car_id])
 	SELECT distinct OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),CID,CarNo
 	FROM VW_SYNC_GetSyncData WITH(NOLOCK)
-	INNER JOIN TB_Trade ON OrderNo=VW_SYNC_GetSyncData.OrderNum AND CreditType=0 AND IsSuccess=1 AND DATEADD(Minute,15,UPDTime) between @hourSub2pay and @NowTime 
-	WHERE (car_mgt_status>=4 AND car_mgt_status<16) AND booking_status<5 AND cancel_status=0 AND VW_SYNC_GetSyncData.OrderNum NOT IN ( 
-	SELECT OrderNum FROM TB_PersonNotification WHERE NType=5 );
+	INNER JOIN TB_Trade WITH(NOLOCK) ON OrderNo=VW_SYNC_GetSyncData.OrderNum AND CreditType=0 AND IsSuccess=1 AND DATEADD(Minute,15,UPDTime) between @hourSub2pay and @NowTime 
+	WHERE (car_mgt_status>=4 AND car_mgt_status<16) 
+	AND booking_status<5 
+	AND cancel_status=0 
+	AND VW_SYNC_GetSyncData.OrderNum NOT IN (SELECT OrderNum FROM TB_PersonNotification WHERE NType=5);
 
 	--寫入推播通知
-	INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
-	select distinct OrderNum,citizen_id,5,Title,DeviceToken,@NowTime,N'請注意！您尚未完成還車程序！請立即開啟APP點選「鎖車」按鈕。若有任何問題請聯繫24H客服人員0800-024550'
-	from @sync_order_data;
+	--INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,[Message])
+	--select distinct OrderNum,citizen_id,5,Title,DeviceToken,@NowTime,N'請注意！您尚未完成還車程序！請立即開啟APP點選「鎖車」按鈕。若有任何問題請聯繫24H客服人員0800-024550'
+	--from @sync_order_data;
+
+	--20210205 ADD BY ADAM REASON.補上清潔訂單自動取消
+	DECLARE @sync_clearOrder_data TABLE (
+		[OrderNum] int,
+		[CarNo] varchar(50),
+		[car_mgt_status] int,
+		[booking_status] int,
+		[cancel_status] int,
+		[spec_status] int,
+		[StartTime] datetime,
+		[StopTime] datetime
+	);
+
+	DECLARE @sync_closeCleanOrder TABLE([OrderNum] int);
+	
+	--取出全部未完成及未取消的清潔保修
+	INSERT INTO @sync_clearOrder_data([OrderNum],CarNo,[car_mgt_status],[booking_status],[cancel_status],[spec_status],[StartTime] ,[StopTime])
+	SELECT [order_number] ,[CarNo] ,[car_mgt_status] ,[booking_status] ,[cancel_status] ,[spec_status],[start_time],[stop_time]
+	FROM [dbo].[TB_OrderMain] WITH(NOLOCK) WHERE booking_status>0 AND booking_status<3 AND cancel_status=0 AND spec_status>0 
+	
+
+	--執行整備人員逾期未取車
+	INSERT INTO @sync_closeCleanOrder (OrderNum)
+	SELECT order_number FROM TB_OrderMain WHERE order_number IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status=4 AND DATEADD(minute,15,StartTime)<@NowTime  
+		AND OrderNum IN (SELECT [OrderNum] FROM TB_CarCleanLog WHERE OrderStatus=0)
+	)
+
+	--更新訂單主檔
+	UPDATE TB_OrderMain 
+	SET cancel_status=5 
+	WHERE order_number IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status=4 AND DATEADD(minute,15,StartTime)<@NowTime 
+		AND OrderNum IN (SELECT [OrderNum] FROM TB_CarCleanLog WHERE OrderStatus=0)
+	)
+
+	--更新整備人員記錄檔
+	UPDATE TB_CarCleanLog 
+	SET OrderStatus=4 
+	WHERE OrderNum IN (
+		SELECT OrderNum FROM @sync_closeCleanOrder
+	)
+
+	--清除共用表
+	DELETE FROM @sync_closeCleanOrder
+  
+	--執行後台保清清潔若是已超過時間則自動釋出
+	UPDATE TB_OrderMain 
+	SET cancel_status=5 
+	WHERE order_number IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status <4 AND StopTime<@NowTime
+	)
+
+	--更新整備人員記錄檔
+	UPDATE TB_CarCleanLog 
+	SET OrderStatus=5,
+		bookingEnd=@NowTime 
+	WHERE OrderNum IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status <4 AND StopTime<@NowTime
+	)
+
+	-- 20210317 ADD;將已取車逾時未還車的狀態更新
+	--執行更新"已取車逾時未還車"狀態更新
+	UPDATE TB_OrderMain 
+	SET car_mgt_status=16 
+	WHERE order_number IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE car_mgt_status=0 AND StopTime < DATEADD(minute,-15,@NowTime)
+		AND OrderNum IN (SELECT [OrderNum] FROM TB_CarCleanLog WHERE OrderStatus=1)
+	)
+
+	--更新整備人員記錄檔
+	UPDATE TB_CarCleanLog 
+	SET OrderStatus=5
+	WHERE OrderNum IN (
+		SELECT OrderNum FROM @sync_clearOrder_data WHERE car_mgt_status=0 AND StopTime < DATEADD(minute,-15,@NowTime)
+		AND OrderNum IN (SELECT [OrderNum] FROM TB_CarCleanLog WHERE OrderStatus=1)
+	)
+
+	--清除共用表
+	DELETE FROM @sync_clearOrder_data
 
 
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
-		END CATCH
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,0,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';

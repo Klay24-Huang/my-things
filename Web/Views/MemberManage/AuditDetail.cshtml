@@ -1353,7 +1353,8 @@
                                             <div class="row">
                                                 <div class="col-md-10">
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="F01_AuditStatus" id="F01_AuditNot" value="" @(obj.Images.F01_AuditResult == 0 && obj.Images.F01_UPDTime != null ? "checked" : "")>
+                                                        <!--20210312唐改value=0-->
+                                                        <input class="form-check-input" type="radio" name="F01_AuditStatus" id="F01_AuditNot" value="0" @(obj.Images.F01_AuditResult == 0 && obj.Images.F01_UPDTime != null ? "checked" : "")>
                                                         <label class="form-check-label" for="F01_AuditNot">
                                                             待審核
                                                         </label>
@@ -1415,7 +1416,8 @@
                                             <div class="row">
                                                 <div class="col-md-10">
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="Other_1_AuditStatus" id="Other_1_AuditNot" value="" @(obj.Images.Other_1_AuditResult == 0 && obj.Images.Other_1_UPDTime != null ? "checked" : "")>
+                                                        <!--20210312唐改value=0-->
+                                                        <input class="form-check-input" type="radio" name="Other_1_AuditStatus" id="Other_1_AuditNot" value="0" @(obj.Images.Other_1_AuditResult == 0 && obj.Images.Other_1_UPDTime != null ? "checked" : "")>
                                                         <label class="form-check-label" for="Other_1_AuditNot">
                                                             待審核
                                                         </label>

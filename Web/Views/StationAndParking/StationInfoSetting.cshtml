@@ -48,7 +48,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="NotMach" name="NotMach" value="1" @((NotMach=="0")?"":" checked")>
+                                    <input class="form-check-input" type="checkbox" id="NotMach" name="NotMach" value="1" @((NotMach == "0") ? "" : " checked")>
                                     <label class="form-check-label" for="NotMach">
                                         車位數與上線數不相符
                                     </label>
@@ -69,7 +69,7 @@
                     </div>
                 </li>
             </ul>
-            </form>
+        </form>
     </div>
     <!--end card-->
 </div>
@@ -79,7 +79,7 @@
     <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
-                <th scope="col" data-type="numeric" ></th>
+                <th scope="col" data-type="numeric"></th>
                 <th scope="col">ID</th>
                 <th scope="col">名稱</th>
                 <th scope="col">地址</th>
@@ -103,37 +103,37 @@
                 {
                     for (int i = 0; i < ResultLen; i++)
                     {
-        <tr>
-            <th scope="col">@(i+1)</th>
-            <th scope="row">@(lstData[i].StationID)</th>
-            <th scope="col">@(lstData[i].Location)</th>
-            <th scope="col">@(string.Format("{0}{1}{2}",lstData[i].CityName, lstData[i].AreaName, lstData[i].ADDR))</th>
-            <th scope="col">@(lstData[i].Latitude)</th>
-            <th scope="col">@(lstData[i].Longitude)</th>
-            <th scope="col">
-                <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
-                        <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
-                        <g transform="translate(6.135)">
-                            <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
-                            <g transform="translate(0.004)">
-                                <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
-                                <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
-                            </g>
-                        </g>
-                    </svg>
-                </a>
+                        <tr>
+                            <th scope="col">@(i+1)</th>
+                            <th scope="row">@(lstData[i].StationID)</th>
+                            <th scope="col">@(lstData[i].Location)</th>
+                            <th scope="col">@(string.Format("{0}{1}{2}",lstData[i].CityName, lstData[i].AreaName, lstData[i].ADDR))</th>
+                            <th scope="col">@(lstData[i].Latitude)</th>
+                            <th scope="col">@(lstData[i].Longitude)</th>
+                            <th scope="col">
+                                <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
+                                        <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
+                                        <g transform="translate(6.135)">
+                                            <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
+                                            <g transform="translate(0.004)">
+                                                <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
+                                                <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </a>
 
-            </th>
-            <th scope="col">@(lstData[i].AllowParkingNum)</th>
-            <th scope="col">@(lstData[i].NowOnlineNum)</th>
+                            </th>
+                            <th scope="col">@(lstData[i].AllowParkingNum)</th>
+                            <th scope="col">@(lstData[i].NowOnlineNum)</th>
 
-            <th scope="col"><button class="btn btn-outline-info" id="btn_@(lstData[i].StationID)" name="btn_@(lstData[i].StationID)" onclick="goMaintain('@(lstData[i].StationID)')">修改</button></th>
-        </tr>
-                        }
+                            <th scope="col"><button class="btn btn-outline-info" id="btn_@(lstData[i].StationID)" name="btn_@(lstData[i].StationID)" onclick="goMaintain('@(lstData[i].StationID)')">修改</button></th>
+                        </tr>
                     }
-             }
-                    </tbody>
+                }
+            }
+        </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
                 <td colspan="10" class="text-center">
@@ -149,7 +149,7 @@
 <!--輸出表格結束-->
 <!--javascript 初始-->
 <script>
-    var StationID = '@StationID';
+    var StationID = '@StationID'; //這幹嘛用? 也不是丟給controller的參數，是用在哪??
     var Mode = '';
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
     var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';

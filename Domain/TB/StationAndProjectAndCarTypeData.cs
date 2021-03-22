@@ -124,5 +124,9 @@ namespace Domain.TB
         /// </summary>
         /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
         public int IsShowCard { get; set; } = 1;
+        /// <summary>
+        /// 是否是常用據點 20210315 ADD BY ADAM
+        /// </summary>
+        public int IsFavStation { set; get; }
     }
 }

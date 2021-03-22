@@ -54,6 +54,10 @@ namespace Web.Models.Enum
             /// 使用者群組維護（寫入）
             /// </summary>
             InsUserGroup,
+            /// <summary>
+            /// 更新遠傳DeviceId與DeveiceToken
+            /// </summary>
+            UpdCATDeviceToken,
         }
         public string GetSPName(ObjType.SPType type)
         {
@@ -89,6 +93,9 @@ namespace Web.Models.Enum
                     break;
                 case SPType.InsUserGroup:
                     SPName = "usp_BE_InsUserGroup";
+                    break;
+                case SPType.UpdCATDeviceToken:
+                    SPName = "usp_BE_UpdCATDeviceToken";
                     break;
             }
             return SPName;

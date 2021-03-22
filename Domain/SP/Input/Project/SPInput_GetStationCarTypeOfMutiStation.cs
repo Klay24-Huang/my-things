@@ -23,7 +23,7 @@ namespace Domain.SP.Input.Project
         /// <summary>
         /// 車型群組代碼
         /// </summary>
-        public string CarType { get; set; }
+        public string CarTypes { get; set; }
         /// <summary>
         /// 客戶代碼
         /// </summary>

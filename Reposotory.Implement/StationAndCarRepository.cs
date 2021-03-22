@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
 using WebCommon;
 
@@ -78,15 +79,45 @@ namespace Reposotory.Implement
         /// 取得同站所有據點
         /// </summary>
         /// <returns></returns>
-        public List<iRentStationData> GetAlliRentStation()
+        public List<iRentStationData> GetAlliRentStation(List<string> CarTypes = null, List<int> Seats = null)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
-            string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
-                            FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
-                            WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate
-                            ORDER BY StationID ASC;";
+            //string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
+            //                FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
+            //                WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate
+            //                ORDER BY StationID ASC;";
+
+            string SQL = @"
+            SELECT s.StationID
+	            ,s.Location AS StationName
+	            ,s.Tel
+	            ,s.ADDR
+	            ,s.Latitude
+	            ,s.Longitude
+	            ,s.Content
+            FROM TB_iRentStation s WITH (NOLOCK)
+            JOIN TB_Car c WITH (NOLOCK) on c.nowStationID = s.StationID
+            JOIN TB_CarTypeGroupConsist f WITH(NOLOCK) ON f.CarType=c.CarType
+            JOIN TB_CarTypeGroup e WITH(NOLOCK) ON f.CarTypeGroupID=e.CarTypeGroupID
+            WHERE s.use_flag = 3
+            AND IsNormalStation = 0
+            AND DATEADD(HOUR, 8, GETDATE()) BETWEEN SDate AND EDate
+            AND c.available = 1 ";
+
+            if (CarTypes != null && CarTypes.Count > 0)
+            {
+                List<string> carList = CarTypes.Select(x => "'" + x + "'").ToList();
+                string sql_carTypes = String.Join(",", carList);
+                SQL += " AND e.CarTypeGroupCode in (" + sql_carTypes + ") ";
+            }
+
+            if (Seats != null && Seats.Count > 0)
+                SQL += " AND e.Seat in (" + String.Join(",",Seats.Select(x=>x.ToString()).ToList()) + ") ";
+
+            SQL += " ORDER BY StationID ASC ";
+
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentStationData>(ref flag, ref lstError, SQL, para, term);
@@ -100,7 +131,7 @@ namespace Reposotory.Implement
         /// <param name="lng">經度</param>
         /// <param name="radius">半徑（單位公里）</param>
         /// <returns></returns>
-        public List<iRentStationData> GetAlliRentStation(double lat, double lng, double radius)
+        public List<iRentStationData> GetAlliRentStation(double lat, double lng, double radius, List<string> CarTypes = null, List<int> Seats = null)
         {
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
@@ -110,9 +141,36 @@ namespace Reposotory.Implement
             }
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
-            string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
-                            FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
-                            WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate ";
+            //string SQL = @"SELECT [StationID],[Location] AS StationName,[Tel],[ADDR],[Latitude],[Longitude],[Content] 
+            //                FROM [dbo].[TB_iRentStation] WITH(NOLOCK) 
+            //                WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate ";
+
+            string SQL = @"
+            SELECT s.StationID
+	            ,s.Location AS StationName
+	            ,s.Tel
+	            ,s.ADDR
+	            ,s.Latitude
+	            ,s.Longitude
+	            ,s.Content
+            FROM TB_iRentStation s WITH (NOLOCK)
+            JOIN TB_Car c WITH (NOLOCK) on c.nowStationID = s.StationID
+            JOIN TB_CarTypeGroupConsist f WITH(NOLOCK) ON f.CarType=c.CarType
+            JOIN TB_CarTypeGroup e WITH(NOLOCK) ON f.CarTypeGroupID=e.CarTypeGroupID
+            WHERE s.use_flag = 3
+            AND s.IsNormalStation = 0
+            AND DATEADD(HOUR, 8, GETDATE()) BETWEEN s.SDate AND s.EDate
+            AND c.available = 1 ";
+
+            if(CarTypes != null && CarTypes.Count > 0)
+            {
+                List<string> carList = CarTypes.Select(x => "'" + x + "'").ToList();
+                string sql_carTypes = String.Join(",", carList);
+                SQL += " AND e.CarTypeGroupCode in (" + sql_carTypes + ") ";
+            }
+
+            if (Seats != null && Seats.Count > 0)
+                SQL += " AND e.Seat in (" + String.Join(",", Seats.Select(x => x.ToString()).ToList()) + ") ";
 
             SqlParameter[] para = new SqlParameter[2];
 
@@ -304,7 +362,9 @@ namespace Reposotory.Implement
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //20210318 ADD BY ADAM REASON.機車上線邏輯調整
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-60,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
@@ -336,7 +396,9 @@ namespace Reposotory.Implement
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //20210318 ADD BY ADAM REASON.機車上線邏輯調整
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-60,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";
@@ -375,7 +437,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //20210319 ADD BY ADAM REASON.補上欄位ContentForAPP,IsRequiredForReturn
+            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content],ContentForAPP,IsRequiredForReturn ";
+            SQL += " FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(IDNO) == false && string.IsNullOrWhiteSpace(IDNO) == false)
@@ -1166,5 +1231,45 @@ namespace Reposotory.Implement
         //    }
         //    #endregion
         //}
+
+        //20210315唐加
+        public List<BE_GetBannerInfo> GetBannerInfo(string name)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetBannerInfo> lstBanner = null;
+            string SQL = "SELECT * FROM TB_Banner WITH(NOLOCK) ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+
+            term = " MarqueeText like '%" + name + "%'";
+
+            if (term != "")
+            {
+                SQL += " WHERE " + term;
+            }
+            SQL += " ORDER BY SEQNO DESC ";
+            lstBanner = GetObjList<BE_GetBannerInfo>(ref flag, ref lstError, SQL, para, term);
+            return lstBanner;
+        }
+        public List<BE_GetBannerInfo> GetBannerInfo2(string seqno)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetBannerInfo> lstBanner = null;
+            string SQL = "SELECT * FROM TB_Banner WITH(NOLOCK) ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+
+            term = " SEQNO='" + seqno + "'";
+
+            if (term != "")
+            {
+                SQL += " WHERE " + term;
+            }
+            SQL += " ORDER BY SEQNO DESC ";
+            lstBanner = GetObjList<BE_GetBannerInfo>(ref flag, ref lstError, SQL, para, term);
+            return lstBanner;
+        }
     }
 }

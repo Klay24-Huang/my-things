@@ -6,6 +6,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -99,11 +100,11 @@ namespace WebAPI.Controllers
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
                 if (apiInput.ShowALL == 1)
                 {
-                    iRentStations = _repository.GetAlliRentStation();
+                    iRentStations = _repository.GetAlliRentStation(apiInput.CarTypes, apiInput.Seats);
                 }
                 else
                 {
-                    iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value,apiInput.CarTypes, apiInput.Seats);
                 }
 
                 ONormalRentAPI = new OAPI_NormalRent()

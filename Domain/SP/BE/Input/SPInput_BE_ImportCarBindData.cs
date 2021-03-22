@@ -22,6 +22,14 @@ namespace Domain.SP.BE.Input
         /// </summary>
         public string iButtonKey { set; get; }
         /// <summary>
+        /// 門號
+        /// </summary>
+        public string MobileNum { set; get; }
+        /// <summary>
+        /// 卡號
+        /// </summary>
+        public string SIMCardNo { set; get; }
+        /// <summary>
         /// 操作者
         /// </summary>
         public string UserID { set; get; }

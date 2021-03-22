@@ -47,6 +47,18 @@ namespace Domain.WebAPI.output.rootAPI
         /// 是否有車可租(BY據點)
         /// </summary>
         public string IsRent { set; get; }
+
+        /// <summary>
+        /// 是否是常用據點 20210315 ADD BY ADAM
+        /// </summary>
+        public int IsFavStation { set; get; }
+
+        /// <summary>
+        /// 是否顯示牌卡
+        /// </summary>
+        /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
+        public int IsShowCard { get; set; } = 1;
+
         /// <summary>
         /// 專案資料
         /// </summary>

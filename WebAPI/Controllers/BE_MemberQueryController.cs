@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoBE_HandleCarOnline(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_MemberQuery(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -85,7 +85,7 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID,
                     CarNo = apiInput.CarNo.Replace(" ", ""),
-                    CID = apiInput.CID.Replace(" ", ""),
+                    iButtonKey = apiInput.iButtonKey.Replace(" ", ""),
                     UserID = apiInput.UserID
 
 
