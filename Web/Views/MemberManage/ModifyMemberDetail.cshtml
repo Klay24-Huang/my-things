@@ -1,0 +1,1807 @@
+﻿@model Domain.TB.BackEnd.BE_AuditDetailCombind
+@{
+    string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
+    string CarContainer = (System.Configuration.ConfigurationManager.AppSettings["CarContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["CarContainer"].ToString();
+    string ImgURL = StorageBaseURL + CarContainer + "/";
+    Domain.TB.BackEnd.BE_AuditDetailCombind obj = null;
+    string OrderKind = ""; //訂單類型
+    string OrderModify = "";
+    string[] InvoiceKind = { "請選擇", "捐贈", "EMAIL", "二聯", "三聯式發票，請至官網查詢下載", "手機條碼載具", "自然人憑證載具" };
+    string[] SPECSTATUS = { "請選擇", "非特殊身分", "特殊身分 - 台大", "特殊身份 - 和泰", "特殊身份 - 桃機工作人員", "特殊身份 - 彰化衛生局", "特殊身份 - 校園招募", "特殊身分 - 持永久居留證者", "特殊身分 - 持一般居留證者", "特殊身分 - 企業客戶150", "特殊身分 - 企業客戶168", "特殊身分 - 長租客服", "特殊身分 - 測試身分" };
+    string[] SPECSTATUSVALUE = { "00", "01", "02", "04", "05", "06", "07", "08", "09", "10", "11", "12", "99" };
+    int InvoiceKindLen = InvoiceKind.Length;
+    int SPECSTATUSLen = SPECSTATUS.Length;
+    int ReturnLen = 0;
+    string ID_1 = "", ID_1_str = "";
+    string ID_2 = "", ID_2_str = "";
+    string Car_1 = "", Car_1_str = "";
+    string Car_2 = "", Car_2_str = "";
+    string Motor_1 = "", Motor_1_str = "";
+    string Motor_2 = "", Motor_2_str = "";
+    string Self_1 = "", Self_1_str = "";
+    string Signture_1 = "", Signture_1_str = "";
+    string F01 = "", F01_str = "";
+    string Other_1 = "", Other_1_str = "";
+    string Business_1 = "", Business_1_str = "";
+    string IsReject = "", RejectReason = "", RejectExplain = "";
+    string CarDriver = "", CarDriver1 = "", MotoDriver2 = "", MotorDriver1 = "";
+    int MobileLen = 0;
+    int BlockMobileLen = 0; //20210310唐加
+    int HistoryLen = 0;
+    string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
+
+    if (Model != null)
+    {
+        obj = Model;
+        if (obj.detail.isBlock == "Y")
+        {
+            obj.block = new Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR172QueryData();
+        }
+        if (obj.detail.IsNew == 0)
+        {
+            if (obj.Images.ID_1_IsNew == 2)
+            {
+                //ID_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.ID_1_IsNew == 0)
+            {
+                ID_1_str = "已審核";
+            }
+
+            if (obj.Images.ID_2_IsNew == 2)
+            {
+                //ID_2_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.ID_2_IsNew == 0)
+            {
+                ID_2_str = "已審核";
+            }
+
+            if (obj.Images.Car_1_IsNew == 2)
+            {
+                //Car_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Car_1_IsNew == 0)
+            {
+                Car_1_str = "已審核";
+            }
+            if (obj.Images.Car_2_IsNew == 2)
+            {
+                //Car_2_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Car_2_IsNew == 0)
+            {
+                Car_2_str = "已審核";
+            }
+
+            if (obj.Images.Motor_1_IsNew == 2)
+            {
+                //Motor_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Motor_1_IsNew == 0)
+            {
+                Motor_1_str = "已審核";
+            }
+            if (obj.Images.Motor_2_IsNew == 2)
+            {
+                //Motor_2_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Motor_2_IsNew == 0)
+            {
+                Motor_2_str = "已審核";
+            }
+
+            if (obj.Images.Self_1_IsNew == 2)
+            {
+                //Self_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Self_1_IsNew == 0)
+            {
+                Self_1_str = "已審核";
+            }
+            if (obj.Images.Signture_1_IsNew == 2)
+            {
+                //Signture_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Signture_1_IsNew == 0)
+            {
+                Signture_1_str = "已審核";
+            }
+            if (obj.Images.F01_IsNew == 2)
+            {
+                //F01_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.F01_IsNew == 0)
+            {
+                F01_str = "已審核";
+            }
+            if (obj.Images.Other_1_IsNew == 2)
+            {
+                //Other_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Other_1_IsNew == 0)
+            {
+                Other_1_str = "已審核";
+            }
+            if (obj.Images.Business_1_IsNew == 2)
+            {
+                //Business_1_str = "舊系統未同步照片";
+            }
+            else if (obj.Images.Business_1_IsNew == 0)
+            {
+                Business_1_str = "已審核";
+            }
+        }
+        MobileLen = (obj.SameMobile == null) ? 0 : obj.SameMobile.Count();
+        BlockMobileLen = (obj.mobileBlock == null) ? 0 : obj.mobileBlock.Count();//20210310唐加
+        HistoryLen = (obj.History == null) ? 0 : obj.History.Count();
+
+        if (HistoryLen > 0)
+        {
+            IsReject = obj.History[obj.History.Count - 1].IsReject.ToString();
+            RejectReason = obj.History[obj.History.Count - 1].RejectReason;
+            RejectExplain = obj.History[obj.History.Count - 1].RejectExplain;
+        }
+    }
+
+}
+@if (obj != null)
+{
+    <div class="container mt-4">
+        <!--card start-->
+        <div class="card">
+            <div class="card-header text-white" style="background-color: #9fa4ac;">
+                會員資料修改
+            </div>
+            @using (Html.BeginForm("ModifyMemberDetail", "MemberManage", FormMethod.Post, new { id = "frmModifyMemberDetail", @class = "form-horizontal", enctype = "multipart/form-data" }))
+            {
+                <ul class="list-group list-group-flush">
+                    <!--每一個li是一項查詢條件-->
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    審核備註
+                                </div>
+                                <div class="col-md-3" style="color:red;">
+                                    @(obj.detail.MEMO)
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    會員手機
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary" id="btnCheckSameMobile" name="btnCheckSameMobile" data-toggle="modal" data-target="#sameMobile_modal">預覽手機重複名單</button>
+                                    <!--20210310唐加-->
+                                    <button type="button" class="btn btn-primary" id="btnCheckBlockMobileLen" name="btnCheckBlockMobileLen" data-toggle="modal" data-target="#blockMobile_modal" style="VISIBILITY: hidden"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    iRent會員狀態
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == -1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            尚未申請
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.AuditKind == 1 || obj.detail.AuditKind == 2) && obj.detail.HasAudit != -1 ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待上傳證件照片
+                                        </label>
+                                    </div>
+                                    <!--<div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定付款方式
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.IsNew == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            待設定發票開立
+                                        </label>
+                                    </div>-->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="0" @((obj.detail.HasAudit == 0) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核中
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="1" @((obj.detail.HasAudit == 1) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核失敗
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="NoRegister" id="NoRegister" value="2" @((obj.detail.HasAudit == 2) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="NoRegister">
+                                            審核成功
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    中文姓名
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="UserName" id="UserName" value="@(obj.detail.MEMCNAME)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    身份證字號
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="IDNO" id="IDNO" value="@(obj.detail.MEMIDNO)" readonly />
+                                    <input type="hidden" name="AuditIDNO" id="AuditIDNO" value="@(obj.detail.MEMIDNO)" />
+                                </div>
+                                @*<div class="col-md-3">
+                                        <button type="button" class="btn btn-primary" id="btnShow" name="btnShow">快速預覽取車證件</button>
+
+                                    </div>*@
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    駕照號碼
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="DriverNo" id="DriverNo" value="@(obj.detail.MEMIDNO)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    駕照種類
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="CarDriver" name="Driver" disabled value="CarDriver" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="CarDriver">汽車</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="CarDriver1" name="Driver" disabled value="CarDriver1" @((obj.detail.RentType == "1" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="CarDriver1">機車(持汽車駕照使用輕型機車)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="MotoDriver2" name="Driver" disabled value="MotoDriver2" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="MotoDriver2">機車(重型)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="MotorDriver1" name="Driver" disabled value="MotorDriver1" @((obj.detail.RentType == "2" || obj.detail.RentType == "3") && obj.detail.HasAudit == 2 ? " checked" : "")>
+                                        <label class="form-check-label" for="MotorDriver1">機車(輕型)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#surrounding_modal" id="btnReview" name="btnReview">預覽證件</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    特殊身份說明
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="SPECSTATUS" disabled id="SPECSTATUS" value="@(obj.detail.SPECSTATUS)">
+                                        @for (int i = 0; i < SPECSTATUSLen; i++)
+                                        {
+                                            <option value="@(SPECSTATUSVALUE[i])">@SPECSTATUS[i]</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    特殊身份有效日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="StartDate" name="StartDate" value="@(obj.detail.SPSD)" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                ～
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="EndDate" name="EndDate" value="@(obj.detail.SPED)" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    出生日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="Birth" name="Birth" value="@((Convert.ToDateTime(obj.detail.MEMBIRTH)).ToString("yyyy-MM-dd"))" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    手機號碼
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="Mobile" id="Mobile" value="@(obj.detail.MEMTEL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    地址
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="City" id="City" value="@(obj.detail.MEMCOUNTRY)" disabled>
+                                        <!--20210113唐加value-->
+                                        <option value="">請選擇</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="Area" id="Area" value="@(obj.detail.MEMCITY)" disabled>
+                                        <!--20210113唐加value-->
+                                        <option value="">請選擇</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="Addr" id="Addr" value="@(obj.detail.MEMADDR)" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    連絡電話
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMHTEL" id="MEMHTEL" value="@(obj.detail.MEMHTEL)" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    公司電話
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCOMTEL" id="MEMCOMTEL" value="@(obj.detail.MEMCOMTEL)"  disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    緊急聯絡人姓名
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCONTRACT" id="MEMCONTRACT" value="@(obj.detail.MEMCONTRACT)"  disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    緊急聯絡人手機
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="MEMCONTEL" id="MEMCONTEL" value="@(obj.detail.MEMCONTEL)"  disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @*<li class="list-group-item">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        公司抬頭
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" type="text" name="Title" id="Title" value="@(obj.)" />
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>*@
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    統編
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="UniCode" id="UniCode" value="@(obj.detail.UNIMNO)"  disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    發票寄送方式
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="InvoiceType" id="InvoiceType" disabled>
+                                        @for (int i = 0; i < InvoiceKindLen; i++)
+                                        {
+                                            if (obj.detail.MEMSENDCD == i)
+                                            {
+                                                <option value="@(i)" selected>@InvoiceKind[i]</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@(i)">@InvoiceKind[i]</option>
+                                            }
+
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    E-Mail
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="MEMEMAIL" id="MEMEMAIL" value="@(obj.detail.MEMEMAIL)" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    E-Mail認證
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_NotOK" value="0" @((obj.detail.HasVaildEMail == 0) ? " checked" : "")>
+                                        <label class="form-check-label" for="HasVaildEMail_NotOK">
+                                            E-Mail未認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="HasVaildEMail" id="HasVaildEMail_OK" value="1" @((obj.detail.HasVaildEMail == 1) ? " checked" : "")>
+                                        <label class="form-check-label" for="HasVaildEMail_OK">
+                                            E-Mail已認證
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    活動及優惠訊息通知
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_NotOK" value="0" @((obj.detail.MEMMSG == "N") ? " checked" : "")>
+                                        <label class="form-check-label" for="MEMMSG_NotOK">
+                                            通知未開啟
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="MEMMSG" id="MEMMSG_OK" value="1" @((obj.detail.MEMMSG == "Y") ? " checked" : "")>
+                                        <label class="form-check-label" for="MEMMSG_OK">
+                                            通知已開啟
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    權限
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="NotOK" value="0" @((obj.detail.HasCheckMobile == 0 && obj.block == null) ? " checked" : "")>
+                                        <label class="form-check-label" for="NotOK">
+                                            手機未認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="OK" value="1" @((obj.detail.HasCheckMobile == 1 && obj.block == null) ? " checked" : "")>
+                                        <label class="form-check-label" for="OK">
+                                            手機已認證
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Power" id="block" value="-1" @((obj.block != null) ? " checked" : "") disabled>
+                                        <label class="form-check-label" for="block">
+                                            黑名單
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-2">
+                                    有效日期
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- datepicker -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="BlockStartDate" name="BlockStartDate" value="@((obj.block!=null)? obj.block.STADT:"")" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                ～
+                                <div class="col-md-3">
+                                    <!-- datepicker with time -->
+                                    <div class="custom-datepicker">
+                                        <input class="datePicker form-control" type="text" id="BlockEndDate" name="BlockEndDate" value="@((obj.block!=null)? obj.block.ENDDT:"")" disabled>
+                                        <svg width="22" height="22" viewBox="0 0 22 22">
+                                            <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
+                                                <rect width="22" height="19" rx="3" stroke="none" />
+                                                <rect x="0.5" y="0.5" width="21" height="18" rx="2.5" fill="none" />
+                                            </g>
+                                            <g transform="translate(0 3)" fill="#9fa4ac" stroke="#9fa4ac" stroke-width="1">
+                                                <path d="M3,0H19a3,3,0,0,1,3,3V6a0,0,0,0,1,0,0H0A0,0,0,0,1,0,6V3A3,3,0,0,1,3,0Z" stroke="none" />
+                                                <path d="M3,.5H19A2.5,2.5,0,0,1,21.5,3V5a.5.5,0,0,1-.5.5H1A.5.5,0,0,1,.5,5V3A2.5,2.5,0,0,1,3,.5Z" fill="none" />
+                                            </g>
+                                            <g transform="translate(3.633 -0.005)">
+                                                <rect id="Rectangle_37" data-name="Rectangle 37" width="2" height="8" rx="1" transform="translate(0.367 0.005)" fill="#9fa4ac" />
+                                                <rect id="Rectangle_38" data-name="Rectangle 38" width="2" height="8" rx="1" transform="translate(11.367 0.005)" fill="#9fa4ac" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    @(obj.detail.IsNew == 1 ? "申請新加入" : "身分變更")審核結果
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="AuditStatus" id="AuditOK" value="1" @(IsReject == "0" ? "checked" : "")>
+                                        <label class="form-check-label" for="AuditOK">
+                                            通過
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="AuditStatus" id="AuditReject" value="-1" @(IsReject == "0" || IsReject == "" ? "" : "checked")>
+                                        <label class="form-check-label" for="AuditReject">
+                                            不通過，原因說明
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="NotAuditReason" id="NotAuditReason" value="@(RejectExplain)">
+                                        <option value="">請選擇</option>
+                                        <option value="無上傳證件">無上傳證件</option>
+                                        <option value="證件錯誤(駕照錯誤之類)">證件錯誤(駕照錯誤之類)</option>
+                                        <option value="證件不清楚">證件不清楚</option>
+                                        <option value="資料跟證件不符">資料跟證件不符</option>
+                                        <option value="未輸入手機認證碼">未輸入手機認證碼</option>
+                                        <option value="資料需再確認">資料需再確認</option>
+                                        <option value="未上傳法定代理人同意書">未上傳法定代理人同意書</option>
+                                        <option value="法定代理人同意書資料異常">法定代理人同意書資料異常</option>
+                                        <option value="電子簽名請簽正楷中文">電子簽名請簽正楷中文</option>
+                                        <option value="自拍照有誤">自拍照有誤</option>
+                                        <option value="其他">其他</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="text" name="RejectReason" id="RejectReason" value="@(RejectReason)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!--20210115唐加備註欄位-->
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    備註
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="MEMO_NEW" id="MEMO_NEW" value="@(obj.detail.MEMONEW)" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    前次審核人員
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" name="LastOpt" id="LastOpt" value="@(obj.detail.LastOpt)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-8 text-danger">
+                                    *己通過身份變更者，更修改會員資料
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    推薦時數歷程
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnRecommendHistory" name="btnRecommendHistory" class="btn btn-info" data-toggle="modal" data-target="#recommendHistory_modal">顯示推薦時數歷程</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    安心服務
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnHistory" name="btnInsuranceData" class="btn btn-info" data-toggle="modal" data-target="#InsuranceData_modal">顯示安心服務內容</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    審核簡歷
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnHistory" name="btnHistory" class="btn btn-info" data-toggle="modal" data-target="#history_modal">顯示審核簡歷</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="display:none;">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="SendMessage" name="SendMessage" value="1" >
+                                        <label class="form-check-label" for="SendMessage">送出審核結果簡訊</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3 offset-md-2">
+                                    <!--<button type="button" id="btnSend" name="btnSend" class="btn btn-info">儲存</button>-->
+                                    <button type="submit" class="btn btn-primary">儲存</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="window.open('/MemberManage/ModifyMember', '_blank', '');">返回</button>
+                                    <input type="hidden" id="len" name="len" value="" />
+                                    <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <ul class="list-group list-group-flush">
+                                    <!--每一個li是一項查詢條件-->
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    身份證正面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id='ID_1_PIC' name='ID_1_PIC' src='@(obj.Images.ID_1)' class='img-thumbnail' onclick='ShowPIC("@(obj.Images.ID_1)")' />
+                                                    <span>@(ID_1_str)</span>
+                                                    <span><br>@(obj.Images.ID_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="ID_1" id="ID_1">
+                                                        <option value="ID_1" selected>身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_1_AuditStatus" id="ID_1_AuditNot" value="" @(obj.Images.ID_1_AuditResult == 0 && obj.Images.ID_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_1_AuditStatus" id="ID_1_AuditOK" value="1" @(obj.Images.ID_1_AuditResult == 1 && obj.Images.ID_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_1_AuditStatus" id="ID_1_AuditReject" value="-1" @(obj.Images.ID_1_AuditResult == -1 && obj.Images.ID_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="ID_1_RejectReason" id="ID_1_RejectReason" value="@(obj.Images.ID_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    身份證反面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="ID_2_PIC" name="ID_2_PIC" src="@(obj.Images.ID_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.ID_2)')" />   <span>@(ID_2_str)</span>
+                                                    <span><br>@(obj.Images.ID_2_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="ID_2" id="ID_2">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2" selected>身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_2_AuditStatus" id="ID_2_AuditNot" value="" @(obj.Images.ID_2_AuditResult == 0 && obj.Images.ID_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_2_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_2_AuditStatus" id="ID_2_AuditOK" value="1" @(obj.Images.ID_2_AuditResult == 1 && obj.Images.ID_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_2_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="ID_2_AuditStatus" id="ID_2_AuditReject" value="-1" @(obj.Images.ID_2_AuditResult == -1 && obj.Images.ID_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="ID_2_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="ID_2_RejectReason" id="ID_2_RejectReason" value="@(obj.Images.ID_2_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    汽車駕照正面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Car_1_PIC" name="Car_1_PIC" src="@(obj.Images.Car_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_1)')" />   <span>@(Car_1_str)</span>
+                                                    <span><br>@(obj.Images.Car_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Car_1" id="Car_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1" selected>汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_1_AuditStatus" id="Car_1_AuditNot" value="" @(obj.Images.Car_1_AuditResult == 0 && obj.Images.Car_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_1_AuditStatus" id="Car_1_AuditOK" value="1" @(obj.Images.Car_1_AuditResult == 1 && obj.Images.Car_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_1_AuditStatus" id="Car_1_AuditReject" value="-1" @(obj.Images.Car_1_AuditResult == -1 && obj.Images.Car_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Car_1_RejectReason" id="Car_1_RejectReason" value="@(obj.Images.Car_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    汽車駕照反面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Car_2_PIC" name="Car_2_PIC" src="@(obj.Images.Car_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Car_2)')" />   <span>@(Car_2_str)</span>
+                                                    <span><br>@(obj.Images.Car_2_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Car_2" id="Car_2">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2" selected>汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_2_AuditStatus" id="Car_2_AuditNot" value="" @(obj.Images.Car_2_AuditResult == 0 && obj.Images.Car_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_2_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_2_AuditStatus" id="Car_2_AuditOK" value="1" @(obj.Images.Car_2_AuditResult == 1 && obj.Images.Car_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_2_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Car_2_AuditStatus" id="Car_2_AuditReject" value="-1" @(obj.Images.Car_2_AuditResult == -1 && obj.Images.Car_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Car_2_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Car_2_RejectReason" id="Car_2_RejectReason" value="@(obj.Images.Car_2_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    機車駕照正面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Motor_1_PIC" name="Motor_1_PIC" src="@(obj.Images.Motor_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_1)')" />   <span>@(Motor_1_str)</span>
+                                                    <span><br>@(obj.Images.Motor_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Motor_1" id="Motor_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1" selected>機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_1_AuditStatus" id="Motor_1_AuditNot" value="" @(obj.Images.Motor_1_AuditResult == 0 && obj.Images.Motor_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_1_AuditStatus" id="Motor_1_AuditOK" value="1" @(obj.Images.Motor_1_AuditResult == 1 && obj.Images.Motor_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_1_AuditStatus" id="Motor_1_AuditReject" value="-1" @(obj.Images.Motor_1_AuditResult == -1 && obj.Images.Motor_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Motor_1_RejectReason" id="Motor_1_RejectReason" value="@(obj.Images.Motor_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    機車駕照反面
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Motor_2_PIC" name="Motor_2_PIC" src="@(obj.Images.Motor_2)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Motor_2)')" />   <span>@(Motor_2_str)</span>
+                                                    <span><br>@(obj.Images.Motor_2_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Motor_2" id="Motor_2">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2" selected>機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_2_AuditStatus" id="Motor_2_AuditNot" value="" @(obj.Images.Motor_2_AuditResult == 0 && obj.Images.Motor_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_2_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_2_AuditStatus" id="Motor_2_AuditOK" value="1" @(obj.Images.Motor_2_AuditResult == 1 && obj.Images.Motor_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_2_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Motor_2_AuditStatus" id="Motor_2_AuditReject" value="-1" @(obj.Images.Motor_2_AuditResult == -1 && obj.Images.Motor_2_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Motor_2_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Motor_2_RejectReason" id="Motor_2_RejectReason" value="@(obj.Images.Motor_2_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    自拍照
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Self_1_PIC" name="Self_1_PIC" src="@(obj.Images.Self_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Self_1)')" />   <span>@(Self_1_str)</span>
+                                                    <span><br>@(obj.Images.Self_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Self_1" id="Self_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1" selected>自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Self_1_AuditStatus" id="Self_1_AuditNot" value="" @(obj.Images.Self_1_AuditResult == 0 && obj.Images.Self_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Self_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Self_1_AuditStatus" id="Self_1_AuditOK" value="1" @(obj.Images.Self_1_AuditResult == 1 && obj.Images.Self_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Self_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Self_1_AuditStatus" id="Self_1_AuditReject" value="-1" @(obj.Images.Self_1_AuditResult == -1 && obj.Images.Self_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Self_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Self_1_RejectReason" id="Self_1_RejectReason" value="@(obj.Images.Self_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    簽名檔
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Signture_1_PIC" name="Signture_1_PIC" src="@(obj.Images.Signture_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Signture_1)')" />   <span>@(Signture_1_str)</span>
+                                                    <span><br>@(obj.Images.Signture_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Signture_1" id="Signture_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1" selected>簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Signture_1_AuditStatus" id="Signture_1_AuditNot" value="" @(obj.Images.Signture_1_AuditResult == 0 && obj.Images.Signture_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Signture_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Signture_1_AuditStatus" id="Signture_1_AuditOK" value="1" @(obj.Images.Signture_1_AuditResult == 1 && obj.Images.Signture_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Signture_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Signture_1_AuditStatus" id="Signture_1_AuditReject" value="-1" @(obj.Images.Signture_1_AuditResult == -1 && obj.Images.Signture_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Signture_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Signture_1_RejectReason" id="Signture_1_RejectReason" value="@(obj.Images.Signture_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    法定代理人
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="F01_PIC" name="F01_PIC" src="@(obj.Images.F01)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.F01)')" />   <span>@(F01_str)</span>
+                                                    <span><br>@(obj.Images.F01_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="F01" id="F01">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01" selected>法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <!--20210312唐改value=0-->
+                                                        <input class="form-check-input" type="radio" name="F01_AuditStatus" id="F01_AuditNot" value="0" @(obj.Images.F01_AuditResult == 0 && obj.Images.F01_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="F01_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="F01_AuditStatus" id="F01_AuditOK" value="1" @(obj.Images.F01_AuditResult == 1 && obj.Images.F01_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="F01_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="F01_AuditStatus" id="F01_AuditReject" value="-1" @(obj.Images.F01_AuditResult == -1 && obj.Images.F01_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="F01_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="F01_RejectReason" id="F01_RejectReason" value="@(obj.Images.F01_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    其他證件
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Other_1_PIC" name="Other_1_PIC" src="@(obj.Images.Other_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Other_1)')" />   <span>@(Other_1_str)</span>
+                                                    <span><br>@(obj.Images.Other_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Other_1" id="Other_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1" selected>其他證件</option>
+                                                        <!--<option value="Business_1">企業用戶</option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <!--20210312唐改value=0-->
+                                                        <input class="form-check-input" type="radio" name="Other_1_AuditStatus" id="Other_1_AuditNot" value="0" @(obj.Images.Other_1_AuditResult == 0 && obj.Images.Other_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Other_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Other_1_AuditStatus" id="Other_1_AuditOK" value="1" @(obj.Images.Other_1_AuditResult == 1 && obj.Images.Other_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Other_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Other_1_AuditStatus" id="Other_1_AuditReject" value="-1" @(obj.Images.Other_1_AuditResult == -1 && obj.Images.Other_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Other_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Other_1_RejectReason" id="Other_1_RejectReason" value="@(obj.Images.Other_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item" style="display:none;">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    企業用戶
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <img id="Business_1_PIC" name="Business_1_PIC" src="@(obj.Images.Business_1)" class="img-thumbnail" onclick="ShowPIC('@(obj.Images.Business_1)')" />   <span>@(Business_1_str)</span>
+                                                    <span><br>@(obj.Images.Business_1_UPDTime)</span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <select name="Business_1" id="Business_1">
+                                                        <option value="ID_1">身份證正面</option>
+                                                        <option value="ID_2">身份證反面</option>
+                                                        <option value="Car_1">汽車駕照正面</option>
+                                                        <option value="Car_2">汽車駕照反面</option>
+                                                        <option value="Motor_1">機車駕照正面</option>
+                                                        <option value="Motor_2">機車駕照反面</option>
+                                                        <option value="Self_1">自拍照</option>
+                                                        <option value="Signture_1">簽名檔</option>
+                                                        <option value="F01">法定代理人</option>
+                                                        <option value="Other_1">其他證件</option>
+                                                        <option value="Business_1" selected>企業用戶</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Business_1_AuditStatus" id="Business_1_AuditNot" value="" @(obj.Images.Business_1_AuditResult == 0 && obj.Images.Business_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Business_1_AuditNot">
+                                                            待審核
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Business_1_AuditStatus" id="Business_1_AuditOK" value="1" @(obj.Images.Business_1_AuditResult == 1 && obj.Images.Business_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Business_1_AuditOK">
+                                                            通過
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="Business_1_AuditStatus" id="Business_1_AuditReject" value="-1" @(obj.Images.Business_1_AuditResult == -1 && obj.Images.Business_1_UPDTime != null ? "checked" : "")>
+                                                        <label class="form-check-label" for="Business_1_AuditReject">
+                                                            不通過
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input class="form-control" type="text" name="Business_11_RejectReason" id="Business_1_RejectReason" value="@(obj.Images.Business_1_RejectReason)" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <!--<button type="button" class="btn btn-info" id="btnAllCheckPIC" name="btnAllCheckPIC" style="position:absolute;left:20px;">全部通過</button>
+    <button type="button" class="btn btn-info" id="btnSavePIC" name="btnSavePIC">儲存設定</button>-->
+                                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                                <input type="hidden" name="tmpPicData" id="tmpPicData" value="" />
+                                <input type="hidden" name="picreject" id="picreject" value="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!--end card-->
+    </div>
+    <div id="history_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th data-sort="false">修改人員</th>
+                                <th scope="col">修改日期</th>
+                                <th scope="col">處理事項</th>
+                                <th scope="col">處理區分</th>
+                                <th scope="col">不通過原因</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (HistoryLen == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < HistoryLen; i++)
+                                {
+                                    string HandleType = "未處理";
+                                    if (obj.History[i].IsReject == 1)
+                                    {
+                                        HandleType = "已處理，審核未通過";
+                                    }
+                                    else if (obj.History[i].IsReject != 1)
+                                    {
+                                        HandleType = "已處理，審核已通過";
+                                    }
+                                    <tr>
+                                        <td data-sort="false">@(obj.History[i].MUserName)</td>
+                                        <td scope="col">@(Convert.ToDateTime(obj.History[i].AuditDate).ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                        <td scope="col">@((obj.History[i].HandleItem == 0) ? "變更身份" : "新加入會員")</td>
+                                        <td scope="col">@(HandleType)</td>
+                                        <td scope="col">@(string.Format("{0}{1}", obj.History[i].RejectExplain, obj.History[i].RejectReason))</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sameMobile_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container mt-4">
+                        <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                            <thead class="text-white bg-primary">
+                                <tr>
+                                    <th data-sort="false"> </th>
+                                    <th scope="col">身份證字號</th>
+                                    <th scope="col">姓名</th>
+                                    <th scope="col">地址</th>
+                                    <th scope="col">電話</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (MobileLen == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            查無結果
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < MobileLen; i++)
+                                    {
+                                        <tr>
+                                            <td data-sort="false"></td>
+                                            <td scope="col">@(obj.SameMobile[i].IDNO)</td>
+                                            <td scope="col">@(obj.SameMobile[i].UserName)</td>
+                                            <td scope="col">@(string.Format("{0}{1}{2}", obj.SameMobile[i].CityName, obj.SameMobile[i].AreaName, obj.SameMobile[i].MEMADDR))</td>
+                                            <td scope="col" class="sameMobile">@(obj.SameMobile[i].MEMTEL)</td>
+                                        </tr>
+                                    }
+
+                                }
+                            </tbody>
+                            <tfoot class="hide-if-no-paging">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <ul class="pagination"></ul>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="blockMobile_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container mt-4">
+                        <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                            <thead class="text-white bg-primary">
+                                <tr>
+                                    <th data-sort="false"> </th>
+                                    <th scope="col">電話</th>
+                                    <th scope="col">描述</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (BlockMobileLen == 0)
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center">
+                                            查無結果
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td data-sort="false"></td>
+                                        <td scope="col">@(obj.mobileBlock)</td>
+                                        <td scope="col">此電話為黑名單，千萬不能幫他改阿</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="hide-if-no-paging">
+                                <tr>
+                                    <td colspan="2" class="text-center">
+                                        <ul class="pagination"></ul>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="InsuranceData_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">層級</th>
+                                <th scope="col">車型</th>
+                                <th scope="col">安心服務金額</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (obj.InsuranceData.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < obj.InsuranceData.Count; i++)
+                                {
+                                    <tr>
+                                        <td scope="col">@(obj.InsuranceData[i].InsuranceLevel)</td>
+                                        <td scope="col">@(obj.InsuranceData[i].CarTypeGroupCode)</td>
+                                        <td scope="col">@(obj.InsuranceData[i].InsurancePerHours)</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="recommendHistory_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th data-sort="false">獎勵名稱</th>
+                                <th scope="col">獎勵時數</th>
+                                <th scope="col">獎勵時間</th>
+                                <th scope="col">被推薦人</th>
+                                <th scope="col">推薦人</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (obj.RecommendHistory.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < obj.RecommendHistory.Count; i++)
+                                {
+                                    <tr>
+                                        <td data-sort="false">@(obj.RecommendHistory[i].gift_name)</td>
+                                        <td scope="col">@(obj.RecommendHistory[i].gift_mins)</td>
+                                        <td scope="col">@(obj.RecommendHistory[i].U_SYSDT)</td>
+                                        <td scope="col">@(obj.RecommendHistory[i].recommended)</td>
+                                        <td scope="col">@(obj.RecommendHistory[i].recommend)</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+        var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var AuditID = '@(obj.detail.AuditID)';
+    var CityID = '@(obj.detail.CityID)';
+    var AreaID = '@(obj.detail.AreaID)';
+    var IsNew = '@(obj.detail.IsNew)';
+    var MobileLen = '@(MobileLen)';
+    var HistoryLen = '@(HistoryLen)';
+    var BlockMobileLen = '@(BlockMobileLen)'; //20210310唐加
+</script>

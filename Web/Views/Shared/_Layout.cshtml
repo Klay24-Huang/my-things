@@ -214,6 +214,14 @@
             ControllerStrName = "會員管理";
             ActionStrName = "會員密碼修改";
             break;
+        case "ModifyMember":
+            ControllerStrName = "會員管理";
+            ActionStrName = "會員修改";
+            break;
+        case "ModifyMemberDetail":
+            ControllerStrName = "會員管理";
+            ActionStrName = "會員資料修改";
+            break;
         #endregion
         #region 帳號管理
         case "FranchiseesMaintain":
@@ -540,6 +548,8 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="~/MemberManage/Audit">會員審核查詢</a>
+                                <a class="dropdown-item" href="~/MemberManage/ChangePassword">會員密碼修改</a>
+                                <a class="dropdown-item" href="~/MemberManage/ModifyMember">會員修改</a>
                                 <!--<a class="dropdown-item" href="~/MemberManage/ViewSameMobile">手機重複清單</a>-->
                             </div>
                         </li>
