@@ -63,6 +63,8 @@ namespace WebAPI.Controllers
             int QueryMode = 0;
             string IDNO = "";
             var bill = new BillCommon();
+            var SeatGroups = new List<GetProject_SeatGroup>();
+            string StrCarTypes = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -139,25 +141,11 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
-                
-                    if(flag && !string.IsNullOrWhiteSpace(apiInput.Seat))
+                    if (flag)
                     {
-                        List<string> LstSeat = apiInput.Seat.Split(',').ToList();
-                        bool intCk = true;
-                        foreach (string se in LstSeat)
-                        {
-                            if (!int.TryParse(se, out int sea))
-                            {
-                                intCk = false;
-                                break;
-                            }
-                        }
-                        if (!intCk)
-                        {
-                            errCode = "ERR247";
-                            flag = false;
-                        }                    
-                    }
+                        if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                            StrCarTypes = String.Join(",", apiInput.CarTypes);
+                    }                     
                 }
             }
             #endregion
@@ -202,14 +190,13 @@ namespace WebAPI.Controllers
                 {
                     StationIDs = apiInput.StationID,
                     SD = SDate,
-                    ED = EDate,                    
-                    CarType = string.IsNullOrWhiteSpace(apiInput.CarType) ? "" : apiInput.CarType.Replace(" ", ""),
+                    ED = EDate,
+                    CarTypes = StrCarTypes,
                     IDNO = IDNO,
                     Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
                     LogID = LogID
                 };
 
-                // 目前APP都是送0進來，因此這段目前無用
                 if (apiInput.Mode == 1)
                 {
                     iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
@@ -247,7 +234,7 @@ namespace WebAPI.Controllers
                                    // 預估金額 = 租金 + 里程費 + 安心服務費
                                    //Price = a.PriceBill, //租金改抓sp
                                    //20210115;因應春節專案，預估金額改用特殊算法
-                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate,funName) + 
+                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate, funName) +
                                             bill.CarMilageCompute(SDate, EDate, a.MilageBase, Mildef, 20, new List<Holiday>()) +
                                             ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, a.InsurancePerHours * 10, a.InsurancePerHours * 10, 10, lstHoliday) : 0),
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
@@ -264,18 +251,15 @@ namespace WebAPI.Controllers
 
                     #region 過濾查詢結果
 
-                    if (!string.IsNullOrWhiteSpace(apiInput.CarType))
+                    if (lstData != null && lstData.Count() > 0)
+                        lstData.ForEach(x => { if ((string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "n") { x.IsShowCard = 0; } });
+
+                    if (apiInput.Seats != null && apiInput.Seats.Count()>0)
                     {
-                        List<string> LstCarType = apiInput.CarType.Split(',').ToList();
-                        lstData.ForEach(x => { if (!LstCarType.Contains(x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0;} });
+                        lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
                     }
-                    if (!string.IsNullOrWhiteSpace(apiInput.Seat))
-                    {
-                        List<int> LstSeat = apiInput.Seat.Split(',').ToList().Select(y=>Convert.ToInt32(y)).ToList();
-                        lstData.ForEach(x => { if (!LstSeat.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
-                    }
-                    if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
-                        lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
+                    //if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
+                    //    lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
 
                     #endregion
                 }
@@ -300,6 +284,8 @@ namespace WebAPI.Controllers
                                 StationID = lstData[0].StationID,
                                 StationName = lstData[0].StationName,
                                 IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
+                                IsFavStation = lstData[0].IsFavStation,
+                                IsShowCard = lstData[0].IsShowCard,
                                 ProjectObj = new List<ProjectObj>(),
                                 StationInfoObj = new List<StationInfoObj>()
                             });
@@ -334,7 +320,9 @@ namespace WebAPI.Controllers
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = "",
-                                IsRent = lstData[0].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
+                                IsRent = lstData[0].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
+                                IsFavStation = lstData[0].IsFavStation,
+                                IsShowCard = lstData[0].IsShowCard
                             });
                             //lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                             lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Price;
@@ -372,7 +360,9 @@ namespace WebAPI.Controllers
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
-                                        IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
+                                        IsRent = lstData[i].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
+                                        IsFavStation = lstData[i].IsFavStation,
+                                        IsShowCard = lstData[i].IsShowCard
                                     };
 
                                     List<StationInfoObj> tmpStation = JsonConvert.DeserializeObject<List<StationInfoObj>>(lstData[i].StationPicJson);
@@ -393,6 +383,8 @@ namespace WebAPI.Controllers
                                         StationID = lstData[i].StationID,
                                         StationName = lstData[i].StationName,
                                         IsRent = lstData[i].IsRent,
+                                        IsFavStation = lstData[i].IsFavStation,
+                                        IsShowCard = lstData[i].IsShowCard,
                                         ProjectObj = new List<ProjectObj>(),
                                         StationInfoObj = new List<StationInfoObj>(),
                                         Minimum = tmpBill
@@ -434,7 +426,9 @@ namespace WebAPI.Controllers
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
-                                        IsRent = lstData[i].IsRent      //20201024 ADD BY ADAM REASON.增加是否可租
+                                        IsRent = lstData[i].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
+                                        IsFavStation = lstData[i].IsFavStation,
+                                        IsShowCard = lstData[i].IsShowCard
                                     });
                                 }
                             }
@@ -449,17 +443,19 @@ namespace WebAPI.Controllers
 
                 #region 車款,金額下拉,是否有可租
 
-                bool HaveRentY = lstData.Where(y => y.IsRent.ToLower() == "y").Count() > 0;
+                bool HaveRentY = false;
+                if(lstData != null && lstData.Count() > 0)
+                   HaveRentY = lstData.Where(y => (string.IsNullOrWhiteSpace(y.IsRent) ? "": y.IsRent.ToLower()) == "y").Count() > 0;
+
                 if (lstData != null && lstData.Count() > 0 && HaveRentY)
                 {
                     //outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
                     //outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
-
-                    var SeatGroups = new List<GetProject_SeatGroup>();
-                    List<int> SeatsList = lstData.Where(z=>z.IsRent.ToLower() == "y").GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
-                    if(SeatsList != null && SeatsList.Count()>0)
+                    
+                    List<int> SeatsList = lstData.Where(z => z.IsRent.ToLower() == "y" && z.IsShowCard == 1).GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
+                    if (SeatsList != null && SeatsList.Count() > 0)
                     {
-                        foreach(int se in SeatsList)
+                        foreach (int se in SeatsList)
                         {
                             var item = new GetProject_SeatGroup();
                             item.Seat = Convert.ToInt16(se);
@@ -467,11 +463,14 @@ namespace WebAPI.Controllers
                             List<GetProject_CarInfo> CarInfos =
                                 (from a in lstData
                                  where a.IsRent.ToLower() == "y" && a.Seat == se
-                                 group new { a.Seat, a.CarType } by new { a.Seat, a.CarType } into g
+                                 group new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic }
+                                 by new { a.Seat, a.CarType, a.CarTypeName, a.CarTypePic } into g
                                  select new GetProject_CarInfo
                                  {
                                      Seat = item.Seat,
-                                     CarTypes = g.Key.CarType
+                                     CarType = g.Key.CarType,
+                                     CarTypePic = g.Key.CarTypePic,
+                                     CarTypeName = g.Key.CarTypeName
                                  }).ToList();
                             if (CarInfos != null && CarInfos.Count() > 0)
                                 item.CarInfos = CarInfos;
@@ -479,17 +478,15 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    //if (SeatGroups != null && SeatGroups.Count() > 0)
-                    //    outputApi.SeatGroups = SeatGroups;
-
-                    //if (lstData.Where(x => x.IsRent.ToLower() == "y" && x.IsShowCard == 1).ToList().Count() > 0)
-                    //    outputApi.HasRentCard = true;
-                    //else
-                    //    outputApi.HasRentCard = false;
+                    if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "": x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
+                        outputApi.HasRentCard = true;
+                    else
+                        outputApi.HasRentCard = false;
                 }
 
                 #endregion
 
+                outputApi.SeatGroups = SeatGroups;
             }
             #endregion
 
@@ -516,7 +513,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);           
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
@@ -525,23 +522,23 @@ namespace WebAPI.Controllers
             return re;
         }
 
-        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED,string funNM = "")
+        private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, string funNM = "")
         {
             int re = 0;
             var bill = new BillCommon();
-            var cr_com = new CarRentCommon();            
+            var cr_com = new CarRentCommon();
             var cr_sp = new CarRentSp();
             int PriceBill = spItem.PriceBill;//先給sp值
 
             string errMsg = "";
-            var spre = cr_sp.sp_GetEstimate(spItem.PROJID, spItem.CarType, LogID,ref errMsg);
+            var spre = cr_sp.sp_GetEstimate(spItem.PROJID, spItem.CarType, LogID, ref errMsg);
             int projType = -1;
             if (spre != null)
                 projType = spre.PROJTYPE;
 
             bool isSpr = cr_com.isSpring(SD, ED);
             List<int> carProjTypes = new List<int>() { 0, 3 };
-            if (carProjTypes.Any(x=> x == projType) && isSpr)
+            if (carProjTypes.Any(x => x == projType) && isSpr)
             {
                 var bizIn = new IBIZ_SpringInit()
                 {
@@ -556,9 +553,9 @@ namespace WebAPI.Controllers
                     ProDisPRICE = Convert.ToDouble(spItem.Price) / 10,
                     ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
                 };
-                var xre = cr_com.GetSpringInit(bizIn, connetStr,funNM);
+                var xre = cr_com.GetSpringInit(bizIn, connetStr, funNM);
                 if (xre != null)
-                    re = xre.RentInPay;                
+                    re = xre.RentInPay;
             }
             else
                 re = bill.CarRentCompute(SD, ED, spItem.Price, spItem.PRICE_H, 10, lstHoliday);

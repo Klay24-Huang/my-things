@@ -1,8 +1,4 @@
 ﻿using Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Output
 {
@@ -12,5 +8,10 @@ namespace WebAPI.Models.Param.Output
         /// OAuth需使用，Token type=>Bearer
         /// </summary>
         public Token Token { set; get; }
+
+        /// <summary>
+        /// 強制更新 1=強更，0=否
+        /// </summary>
+        public int MandatoryUPD { get; set; }
     }
 }

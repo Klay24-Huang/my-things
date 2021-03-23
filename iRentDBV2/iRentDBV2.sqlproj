@@ -482,6 +482,10 @@
     <Build Include="dbo\Stored Procedures\usp_SignatureUpdate.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetBanner.sql" />
     <Build Include="dbo\User Defined Types\TY_FavoriteStation.sql" />
+    <Build Include="dbo\Functions\FN_StrListToTb.sql" />
+    <Build Include="dbo\Tables\TB_ChkVersion.sql" />
+    <Build Include="dbo\Tables\TB_MemberDataOfAutdit_Log.sql" />
+    <Build Include="dbo\Tables\TB_MemberData_Log.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

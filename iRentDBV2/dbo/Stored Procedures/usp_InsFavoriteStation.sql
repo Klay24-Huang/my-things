@@ -45,32 +45,37 @@ BEGIN
 			SELECT @FavoStations_add_count = COUNT(*) FROM @FavoStations WHERE Mode = 1
 			SELECT @FavoStations_del_count = COUNT(*) FROM @FavoStations WHERE Mode = 0
 
-			--刪除最愛站點
-			IF @FavoStations_del_count > 0
-			BEGIN
-			   DELETE FROM TB_FavoriteStation  
-			   WHERE IDNO = @IDNO AND StationID IN (SELECT fs.StationID FROM @FavoStations fs WHERE fs.Mode=0)
-			END
-
-			--新增最愛站點
-			IF @FavoStations_add_count > 0
-			BEGIN		   
-                WITH tmp AS(
-			    SELECT infs.StationID, @IDNO[IDNO], @Now[MKTime]  FROM @FavoStations infs 
-				LEFT JOIN TB_FavoriteStation tbfs ON tbfs.StationID = infs.StationID AND tbfs.IDNO = @IDNO
-				WHERE infs.Mode = 1 AND ISNULL(tbfs.StationID,'') = '' 
-				)
-				INSERT INTO TB_FavoriteStation (IDNO, StationID, MKTime)
-				SELECT t.IDNO, t.StationID, t.MKTime FROM tmp t
-			END
-
-			ELSE
+			--20210322
+			IF (@FavoStations_add_count =0 AND @FavoStations_del_count=0)
 			BEGIN
 				SET @Error = 1
 				SET @ErrorCode = 'spErr'
 				SET @ErrorMsg = 'FavoStations 為必填' 
 			END
+			ELSE 
+			BEGIN
+				--刪除最愛站點
+				IF @FavoStations_del_count > 0
+				BEGIN
+				   DELETE FROM TB_FavoriteStation  
+				   WHERE IDNO = @IDNO AND StationID IN (SELECT fs.StationID FROM @FavoStations fs WHERE fs.Mode=0)
+				END
+
+				--新增最愛站點
+				IF @FavoStations_add_count > 0
+				BEGIN		   
+					WITH tmp AS(
+					SELECT infs.StationID, @IDNO[IDNO], @Now[MKTime]  FROM @FavoStations infs 
+					LEFT JOIN TB_FavoriteStation tbfs ON tbfs.StationID = infs.StationID AND tbfs.IDNO = @IDNO
+					WHERE infs.Mode = 1 AND ISNULL(tbfs.StationID,'') = '' 
+					)
+					INSERT INTO TB_FavoriteStation (IDNO, StationID, MKTime)
+					SELECT t.IDNO, t.StationID, t.MKTime FROM tmp t
+				END
+			END
+			
 		END
+		
 
 		COMMIT TRAN 
 	END TRY

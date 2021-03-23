@@ -55,6 +55,7 @@ CREATE PROCEDURE [dbo].[usp_RefrashToken]
 	@PushREGID				BIGINT				  , --推播註冊流水號
 	@Access_Token  			VARCHAR(64)	    OUTPUT,	--驗證碼
 	@Refrash_Token		    VARCHAR(64)	    OUTPUT,	--驗證碼
+	@MandatoryUPD			INT				OUTPUT,	--強制更新 1=強更，0=否
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -66,24 +67,26 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
-DECLARE @tmpTime DATETIME;
+DECLARE @iRentVersion VARCHAR(10);	--iRent版號
+DECLARE @ChkTime DATETIME;			--強更時間
+DECLARE @UseFlag VARCHAR(1);		--啟動區分: Y = 啟動, N = 不啟動
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-
 SET @FunName='usp_RefrashToken';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @IDNO=ISNULL(@IDNO,'');
 SET @DeviceID=ISNULL (@DeviceID,'');
 SET @APP=ISNULL(@APP,2);
 SET @APPVersion=ISNULL(@APPVersion,'');
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @MandatoryUPD=0;
 
 BEGIN TRY
 	IF @DeviceID='' OR @IDNO='' 
@@ -129,6 +132,21 @@ BEGIN TRY
 				-- 20210226;新增LOG檔
 				INSERT INTO TB_MemberData_Log
 				SELECT 'U','19',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+			END
+		END
+	END
+
+	--20210322;新增比對版號更新機制
+	IF @Error=0
+	BEGIN
+		SELECT TOP 1 @iRentVersion=iRentVersion,@UseFlag=UseFlag,@ChkTime=ChkTime
+		FROM [TB_ChkVersion] where DATEADD(HOUR,8,GETDATE()) >= ChkTime order by ChkTime desc;
+
+		IF @UseFlag='Y'
+		BEGIN
+			IF @APPVersion <> @iRentVersion AND @NowTime >= @ChkTime
+			BEGIN
+				SET @MandatoryUPD=1;
 			END
 		END
 	END

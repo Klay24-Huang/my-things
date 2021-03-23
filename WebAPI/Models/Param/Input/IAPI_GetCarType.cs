@@ -19,5 +19,7 @@ namespace WebAPI.Models.Param.Input
         /// 預計還車時間
         /// </summary>
         public string ED { set; get; }
+        public List<string> CarTypes { get; set; } = new List<string>();
+        public List<int> Seats { get; set; } = new List<int>();
     }
 }

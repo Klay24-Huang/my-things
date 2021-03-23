@@ -1,14 +1,10 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
-using Domain.SP.Input.Login;
 using Domain.SP.Output.Common;
-using Domain.SP.Output.Login;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
@@ -24,9 +20,7 @@ namespace WebAPI.Controllers
     public class RefrashTokenController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-
         private string android = ConfigurationManager.AppSettings.Get("android");
-
         private string ios = ConfigurationManager.AppSettings.Get("ios");
         private int Rxpires_in = (ConfigurationManager.AppSettings.Get("Rxpires_in") == null) ? 1800 : Convert.ToInt32(ConfigurationManager.AppSettings.Get("Rxpires_in").ToString());
         private int Refrash_Rxpires_in = (ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in") == null) ? 1800 : Convert.ToInt32(ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in").ToString());
@@ -45,7 +39,6 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_RefrashToken apiInput = null;
             OAPI_RefrashToken apiOutput = null;
-
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -53,7 +46,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -121,7 +113,7 @@ namespace WebAPI.Controllers
                 SPOutput_RefrashToken spOut = new SPOutput_RefrashToken();
                 SQLHelper<SPInput_RefrashToken, SPOutput_RefrashToken> sqlHelp = new SQLHelper<SPInput_RefrashToken, SPOutput_RefrashToken>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag,  spOut.Error,spOut.ErrorCode, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
                     token = new Token()
@@ -134,13 +126,14 @@ namespace WebAPI.Controllers
 
                     apiOutput = new OAPI_RefrashToken()
                     {
-                        Token = token
+                        Token = token,
+                        MandatoryUPD = spOut.MandatoryUPD
                     };
                 }
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
