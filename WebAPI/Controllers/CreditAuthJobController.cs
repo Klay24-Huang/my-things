@@ -122,53 +122,59 @@ namespace WebAPI.Controllers
                 logger.Trace("OrderAuthList Count:" + OrderAuthList.Count.ToString());
                 for (int i = 0; i < OrderAuthList.Count; i++)
                 {
-
-                    #region 這邊要再加上查訂單狀態
-                    SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+                    try
                     {
-                        IDNO = OrderAuthList[i].IDNO,
-                        LogID = LogID,
-                        OrderNo = OrderAuthList[i].order_number,
-                        Token = Access_Token,
-                        transaction_no = ""
-                    };
+                        #region 這邊要再加上查訂單狀態
+                        SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+                        {
+                            IDNO = OrderAuthList[i].IDNO,
+                            LogID = LogID,
+                            OrderNo = OrderAuthList[i].order_number,
+                            Token = Access_Token,
+                            transaction_no = ""
+                        };
 
-                    apiInput = new IAPI_CreditAuth()
-                    {
-                        PayType = 0,
-                        OrderNo = OrderAuthList[i].order_number.ToString()
-                    };
+                        apiInput = new IAPI_CreditAuth()
+                        {
+                            PayType = 0,
+                            OrderNo = OrderAuthList[i].order_number.ToString()
+                        };
 
-                    Amount = OrderAuthList[i].final_price;
-                    WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                    if (Amount > 0)       //有錢才刷
-                    {
-                        flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+                        Amount = OrderAuthList[i].final_price;
+                        WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                        if (Amount > 0)       //有錢才刷
+                        {
+                            flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+                        }
+                        //logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
+
+                        SPInput_UpdateOrderAuthList UpdateOrderAuthList = new SPInput_UpdateOrderAuthList()
+                        {
+                            authSeq = OrderAuthList[i].authSeq,
+                            AuthFlg = WSAuthOutput.ResponseParams.ResultCode != "1000" ? -1 : 1,
+                            AuthCode = WSAuthOutput.ResponseParams.ResultCode,
+                            AuthMessage = WSAuthOutput.ResponseParams.ResultMessage,
+                            OrderNo = OrderAuthList[i].order_number,
+                            transaction_no = PayInput.transaction_no,
+                            Reward = 0
+                        };
+                        //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
+                        //                            所以把存檔功能先提早完成再進行信用卡授權
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.UpdateOrderAuthList);
+                        SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
+                        SQLHelper<SPInput_UpdateOrderAuthList, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_UpdateOrderAuthList, SPOutput_GetRewardPoint>(connetStr);
+                        flag = SQLPayHelp.ExecuteSPNonQuery(SPName, UpdateOrderAuthList, ref PayOutput, ref lstError);
+                        if (flag == false)
+                        {
+                            logger.Trace("UpdateOrderAuthList Params:" + JsonConvert.SerializeObject(UpdateOrderAuthList));
+                            logger.Trace("UpdateOrderAuthList Error:" + JsonConvert.SerializeObject(lstError));
+                        }
+                        baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
                     }
-                    //logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
-
-                    SPInput_UpdateOrderAuthList UpdateOrderAuthList = new SPInput_UpdateOrderAuthList()
+                    catch (Exception ex)
                     {
-                        authSeq = OrderAuthList[i].authSeq,
-                        AuthFlg = WSAuthOutput.ResponseParams.ResultCode != "1000" ? -1 : 1,
-                        AuthCode = WSAuthOutput.ResponseParams.ResultCode,
-                        AuthMessage = WSAuthOutput.ResponseParams.ResultMessage,
-                        OrderNo = OrderAuthList[i].order_number,
-                        transaction_no = PayInput.transaction_no,
-                        Reward = 0
-                    };
-                    //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
-                    //                            所以把存檔功能先提早完成再進行信用卡授權
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.UpdateOrderAuthList);
-                    SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
-                    SQLHelper<SPInput_UpdateOrderAuthList, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_UpdateOrderAuthList, SPOutput_GetRewardPoint>(connetStr);
-                    flag = SQLPayHelp.ExecuteSPNonQuery(SPName, UpdateOrderAuthList, ref PayOutput, ref lstError);
-                    if (flag == false)
-                    {
-                        logger.Trace("UpdateOrderAuthList Params:" + JsonConvert.SerializeObject(UpdateOrderAuthList));
-                        logger.Trace("UpdateOrderAuthList Error:" + JsonConvert.SerializeObject(lstError));
+                        logger.Error("OrderAuthListloop Error:" + ex.Message);
                     }
-                    baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
                 }
             }
             #endregion
