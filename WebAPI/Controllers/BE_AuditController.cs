@@ -62,7 +62,6 @@ namespace WebAPI.Controllers
 
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -75,9 +74,6 @@ namespace WebAPI.Controllers
                 string[] errList = { "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
-
-
-
             }
             #endregion
             #region 判斷有無修正圖片類型
@@ -151,7 +147,8 @@ namespace WebAPI.Controllers
             #endregion
             #region TB
 
-            if (flag) //這邊資料存到iRent db
+            //這邊資料存到iRent db
+            if (flag)
             {
                 string CarRentType = "0";
                 string MotorRentType = "0";
@@ -211,7 +208,8 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
             }
-            if (flag) //這邊資料用api拋給sqyhi06vm
+            //這邊資料用api拋給sqyhi06vm
+            if (flag)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
