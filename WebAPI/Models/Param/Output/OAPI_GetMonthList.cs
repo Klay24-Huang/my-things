@@ -8,7 +8,10 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetMonthList
     {
-        public List<MonCardParam> MonCards { get; set; }
+        public List<MonCardParam> NorMonCards { get; set; }
+
+        public List<MonCardParam> MixMonCards { get; set; }
+
     }
     
 }

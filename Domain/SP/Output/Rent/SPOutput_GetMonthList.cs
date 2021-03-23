@@ -21,6 +21,10 @@ namespace Domain.SP.Output.Rent
         /// </summary>
         public int MonProPeriod { get; set; }
         /// <summary>
+        /// 短期總天數,非短期則為0-key
+        /// </summary>
+        public int ShortDays { get; set; }
+        /// <summary>
         /// 方案價格
         /// </summary>
         public int PeriodPrice { get; set; }

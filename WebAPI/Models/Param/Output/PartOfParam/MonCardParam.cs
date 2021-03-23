@@ -20,6 +20,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public int MonProPeriod { get; set; }
         /// <summary>
+        /// 短期總天數,非短期則為0-key
+        /// </summary>
+        public int ShortDays { get; set; }
+        /// <summary>
         /// 方案價格
         /// </summary>
         public int PeriodPrice { get; set; }
@@ -38,15 +42,15 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 汽車不分平假日時數
         /// </summary>
-        public int CarTotalHours { get; set; }
+        //public int CarTotalHours { get; set; }
         /// <summary>
         /// 機車平日時數
         /// </summary>
-        public int MotoWDMins { get; set; }
+        //public int MotoWDMins { get; set; }
         /// <summary>
         /// 機車假日時數
         /// </summary>
-        public int MotoHDMins { get; set; }
+        //public int MotoHDMins { get; set; }
         /// <summary>
         /// 機車不分平假日時數
         /// </summary>

@@ -52,7 +52,8 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             var apiInput = new IAPI_GetMonthList();
             var outputApi = new OAPI_GetMonthList();
-            outputApi.MonCards = new List<MonCardParam>();
+            outputApi.NorMonCards = new List<MonCardParam>();
+            outputApi.MixMonCards = new List<MonCardParam>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -110,18 +111,26 @@ namespace WebAPI.Controllers
                                      MonProjID = a.MonProjID,
                                      MonProjNM = a.MonProjNM,
                                      MonProPeriod = a.MonProPeriod,
+                                     ShortDays = a.ShortDays,
                                      PeriodPrice = a.PeriodPrice,
                                      IsMoto = a.IsMoto,
                                      CarWDHours = a.CarWDHours,
                                      CarHDHours = a.CarHDHours,
-                                     CarTotalHours = a.CarTotalHours,
-                                     MotoWDMins = a.MotoWDMins,
-                                     MotoHDMins = a.MotoHDMins,
+                                     //CarTotalHours = a.CarTotalHours,
+                                     //MotoWDMins = a.MotoWDMins,
+                                     //MotoHDMins = a.MotoHDMins,
                                      MotoTotalMins = a.MotoTotalMins,
                                      SDATE = a.SDATE,
                                      EDATE = a.EDATE
                                  }).ToList();
-                    outputApi.MonCards = cards;
+
+                    var mixCards = cards.Where(x => (x.CarWDHours > 0 || x.CarHDHours > 0) && x.MotoTotalMins > 0).ToList();
+                    var norCards = cards.Where(x => !mixCards.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
+
+                    if (mixCards != null && mixCards.Count() > 0)
+                        outputApi.MixMonCards = mixCards;
+                    if (norCards != null && norCards.Count() > 0)
+                        outputApi.NorMonCards = norCards;
 
                     trace.traceAdd("outputApi", outputApi);
                 }
