@@ -1,6 +1,17 @@
 ﻿CREATE VIEW [dbo].[VW_GetFavoriteStation]
 	AS 
-	SELECT [IDNO],Favorite.StationID,Station.[Location] AS StationName,Station.ADDR,Station.Tel,Station.Latitude,Station.Longitude,Station.Content,Favorite.MKTime
-	,ContentForAPP,IsRequiredForReturn			--20210319 ADD BY ADAM REASON.補上欄位ContentForAPP,IsRequiredForReturn
-  FROM [TB_FavoriteStation] AS Favorite
-  INNER JOIN TB_iRentStation AS Station WITH(NOLOCK) ON Favorite.StationID=Station.StationID 
+SELECT IDNO
+	,f.StationID
+	,s.[Location] AS StationName
+	,s.ADDR
+	,s.Tel
+	,s.Latitude
+	,s.Longitude
+	,s.Content
+	,f.MKTime
+	,ContentForAPP --20210319 ADD BY ADAM
+	,IsRequiredForReturn --20210319 ADD BY ADAM
+FROM [TB_FavoriteStation] AS f WITH (NOLOCK)
+INNER JOIN TB_iRentStation AS s WITH (NOLOCK) ON f.StationID = s.StationID
+WHERE s.EDate >= DATEADD(HOUR,8,GETDATE())
+GO
