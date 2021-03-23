@@ -257,6 +257,7 @@
     <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
+    <Compile Include="Controllers\CreditAuthRetryJobController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
     <Compile Include="Controllers\GetBannerController.cs" />
@@ -628,6 +629,7 @@
     <Content Include="NLog.config" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-CarMachine-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
@@ -640,6 +642,8 @@
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api2 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api3 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -31,6 +31,8 @@ namespace Domain.WebAPI.output.Taishin
     public class GetPaymentInfoRequestParams
     {
         public string ServiceTradeNo { get; set; }
+        public string MemberId { get; set; }
+        public string MerchantTradeNo { get; set; }
     }
     public class GetPaymentInfoResponseParams {
         public string ResultCode { get; set; }

@@ -632,6 +632,8 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
             UpdateOrderAuthReturnList,
+            //20210319 ADD BY JERRY 增加重取授權
+            GetOrderAuthRetryList,
             BE_Banner//20210316唐加
 
         }
@@ -928,6 +930,10 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UpdateOrderAuthList:   //更新批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_UpdateOrderAuthList";
+                    break;
+
+                case SPType.GetOrderAuthRetryList:   //取得批次重取授權明細 20210108 ADD BY JERRY 
+                    SPName = "usp_GetOrderAuthRetryList";
                     break;
                 case SPType.GetOrderAuthReturnList:   //取得批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_GetOrderAuthReturnList";
