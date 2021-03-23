@@ -365,7 +365,9 @@
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCreditCard.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\ModifyMember.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\Audit.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\ModifyMemberDetail.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\AuditDetail.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\AuditHistory.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\CredentialsView.js" />
@@ -682,6 +684,11 @@
     <Content Include="Views\StationAndParking\BannerInfoMaintain.cshtml" />
     <Content Include="Views\StationAndParking\BannerInfoAdd.cshtml" />
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMember.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
+    <None Include="Web.iRent-Backend-Web - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.iRent-Backend-Web-Test - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
