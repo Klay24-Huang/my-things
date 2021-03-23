@@ -116,5 +116,9 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 總金額
         /// </summary>
         public long TAMT { get; set; }
+        /// <summary>
+        /// 備註
+        /// </summary>
+        public string MEMO { get; set; }
     }
 }
