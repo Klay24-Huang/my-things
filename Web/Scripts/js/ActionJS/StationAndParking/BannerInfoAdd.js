@@ -137,7 +137,7 @@
         var EDate = $("#EDate").val();
         var flag = true;
         var checkList = [SDate, EDate, URL, RunHorse];
-        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填啦呆子", "跑馬燈啦大哥，填一下好嗎"];
+        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填啦", "跑馬燈啦大哥，填一下好嗎"];
 
         var checkLen = checkList.length;
         if (flag) {
