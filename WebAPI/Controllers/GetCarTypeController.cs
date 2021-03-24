@@ -290,8 +290,8 @@ namespace WebAPI.Controllers
 
             List<SPOutput_GetStationCarType_Cards>  sp_list = new List<SPOutput_GetStationCarType_Cards>();
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarType);
-            SPOut_GetStationCarType spOut = new SPOut_GetStationCarType();
-            SQLHelper<SPInput_GetStationCarType, SPOut_GetStationCarType> sqlHelp = new SQLHelper<SPInput_GetStationCarType, SPOut_GetStationCarType>(connetStr);
+            SPOutBase_GetStationCarType spOut = new SPOutBase_GetStationCarType();
+            SQLHelper<SPInput_GetStationCarType, SPOutBase_GetStationCarType> sqlHelp = new SQLHelper<SPInput_GetStationCarType, SPOutBase_GetStationCarType>(connetStr);
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);

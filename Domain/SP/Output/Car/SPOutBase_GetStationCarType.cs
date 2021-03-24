@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.SP.Output.Rent
+namespace Domain.SP.Output.Car
 {
-    public class SPOut_GetStationCarType: SPOutput_Base
+    public class SPOutBase_GetStationCarType: SPOutput_Base
     {
         public int IsFavStation { get; set; }
     }
