@@ -55,6 +55,10 @@ $(document).ready(function () {
         var Insurance_price = $("#Insurance_price_input").val();
         var Mileage = $("#Mileage_input").val();
         var pure = $("#pure_price_input").val();
+
+        //20210324 ADD BY ADAM REASON.補ETAG
+        var eTag = $("#spn_eTag").html();
+
         var SM = $("#start_mile_input").val();
         var EM = $("#end_mile_input").val();
         var FP = $("#fine_price_input").val();
@@ -69,7 +73,9 @@ $(document).ready(function () {
         var Other_7 = $("#ParkingFeeByMachi_input").val();
         var finalPrice = $("#spn_finalPrice").html();
 
-        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP);
+        //var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP);
+        //20210324 ADD BY ADAM REASON.補ETAG
+        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP) + parseInt(eTag);
         $("#final_price_input").val(totalAmt);
         var final_price = $("#final_price_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {

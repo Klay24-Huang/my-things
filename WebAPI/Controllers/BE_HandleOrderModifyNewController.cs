@@ -174,7 +174,7 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS == "N" && STATUS=="4")
+                            if (INVSTATUS == "N" && STATUS=="04")
                             {
                                 flag = false;
                                 errCode = "ERR760";
@@ -244,7 +244,7 @@ namespace WebAPI.Controllers
                                     else
                                     {
                                         flag = false;
-                                        errCode = "ERR762";
+                                        errCode = "2239";
                                     }
                                 }
                                 //int hasBind = 0;
