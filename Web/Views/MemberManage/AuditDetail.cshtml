@@ -37,7 +37,7 @@
         {
             obj.block = new Domain.WebAPI.output.HiEasyRentAPI.WebAPIOutput_NPR172QueryData();
         }
-        if (obj.detail.IsNew == 0)
+        if (obj.detail.IsNew == 0) //IsNew=1新申請0身分變更，下面判斷2是在搞笑? 還是我有誤解?
         {
             if (obj.Images.ID_1_IsNew == 2)
             {
@@ -739,7 +739,6 @@
                             </div>
                         </div>
                     </li>
-
                     <li class="list-group-item">
                         <div class="container-fluid">
                             <div class="row">
@@ -825,7 +824,7 @@
 
                 <div class="modal fade" id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                     <div class="row">
-                        <div class="modal-dialog modal-lg position-fixed" role="document">
+                        <div class="modal-dialog modal-lg position-fixed" style="left:2%" role="document">
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <div class="row">
