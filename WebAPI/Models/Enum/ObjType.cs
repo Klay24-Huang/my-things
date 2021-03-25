@@ -724,7 +724,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    SPName = "usp_Booking";
+                    //SPName = "usp_Booking";
+                    SPName = "usp_Booking_20210325";        //20210325 ADD BY ADAM REASON.車機指令改善
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";

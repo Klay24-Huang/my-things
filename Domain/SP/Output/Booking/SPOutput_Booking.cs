@@ -15,6 +15,10 @@ namespace Domain.SP.Output.Booking
         /// <summary>
         /// 訂單編號
         /// </summary>
-       public Int64 OrderNum { set; get; }
+        public Int64 OrderNum { set; get; }
+
+        public string CID { set; get; }
+
+        public string deviceToken { set; get; }
     }
 }
