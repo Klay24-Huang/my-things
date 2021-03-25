@@ -813,7 +813,7 @@ namespace Web.Controllers
                                         else
                                         {
                                             var lstCarInfoData = (from data in lstCarInfoForMachineData
-                                                                  where data.CarNo == importData.CarNo
+                                                                  where data.CarNo.Trim() == importData.CarNo
                                                                   select data).ToList();
 
                                             if (lstCarInfoData.Count() == 0)
