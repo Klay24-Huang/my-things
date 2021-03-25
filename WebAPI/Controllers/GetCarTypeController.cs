@@ -227,10 +227,10 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                if (OAPI_Params != null && OAPI_Params.Count()>0)
+                if (OAPI_Params != null && OAPI_Params.Count() > 0)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
-                    {                       
+                    {
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };
                 }
@@ -243,8 +243,8 @@ namespace WebAPI.Controllers
                     };
                 }
 
-                if (spList != null && spList.Count() > 0)
-                    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
+                //if (spList != null && spList.Count() > 0)
+                //    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
             }
             #endregion
 

@@ -365,7 +365,9 @@
     <Content Include="Scripts\js\ActionJS\Manage\ResendToHieasyrent.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCard.js" />
     <Content Include="Scripts\js\ActionJS\Manage\UnBindCreditCard.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\ModifyMember.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\Audit.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\ModifyMemberDetail.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\AuditDetail.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\AuditHistory.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\CredentialsView.js" />
@@ -634,6 +636,7 @@
     <Content Include="Views\Report\ChargeParkingDetailQuery.cshtml" />
     <Content Include="Views\CardDataInfo\UnBindCard.cshtml" />
     <None Include="Properties\PublishProfiles\iRent-Backend-Web - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRent-Backend-Web-Test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-BackEnd-test - Web Deploy.pubxml" />
     <Content Include="Views\Home\ChangePWD.cshtml" />
@@ -681,6 +684,14 @@
     <Content Include="Views\StationAndParking\BannerInfoMaintain.cshtml" />
     <Content Include="Views\StationAndParking\BannerInfoAdd.cshtml" />
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMember.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
+    <None Include="Web.iRent-Backend-Web - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.iRent-Backend-Web-Test - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

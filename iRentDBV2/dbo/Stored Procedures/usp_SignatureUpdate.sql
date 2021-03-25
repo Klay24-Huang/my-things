@@ -103,7 +103,6 @@ BEGIN TRY
 
 				UPDATE TB_Credentials
 				SET Signture=2,
-					MKTime=DATEADD(HOUR,8,GETDATE()),
 					UPDTime=DATEADD(HOUR,8,GETDATE())
 				WHERE IDNO=@IDNO
 			END

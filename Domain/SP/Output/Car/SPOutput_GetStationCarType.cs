@@ -48,6 +48,6 @@ namespace Domain.SP.Output.Car
         /// <summary>
         /// 是否是常用據點 20210315 ADD BY ADAM
         /// </summary>
-        public int IsFavStation { set; get; }
+        //public int IsFavStation { set; get; }
     }
 }

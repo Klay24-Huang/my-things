@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
     /// <summary>
     /// 使用信用卡付款
     /// </summary>
-    public class CreditAuthJobController : ApiController
+    public class CreditAuthRetryJobController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
         private CommonFunc baseVerify { get; set; }
 
         [HttpGet]
-        public Dictionary<string, object> DoCreditAuthJob()
+        public Dictionary<string, object> DoCreditAuthRetryJob()
         {
             logger.Trace("Init");
             #region 初始宣告
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                 {
                     MINUTES = AuthResendMin
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderAuthList);
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderAuthRetryList);
                 SPOutput_Base spOutBase = new SPOutput_Base();
                 SQLHelper<SPInput_GetOrderAuthList, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderAuthList, SPOutput_Base>(connetStr);
                 OrderAuthList = new List<OrderAuthList>();
@@ -124,6 +124,7 @@ namespace WebAPI.Controllers
                 {
                     try
                     {
+
                         #region 這邊要再加上查訂單狀態
                         SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
                         {
@@ -131,7 +132,7 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             OrderNo = OrderAuthList[i].order_number,
                             Token = Access_Token,
-                            transaction_no = ""
+                            transaction_no = OrderAuthList[i].transaction_no
                         };
 
                         apiInput = new IAPI_CreditAuth()
@@ -202,19 +203,24 @@ namespace WebAPI.Controllers
             Int64 LogID = PayInput.LogID;
             Int64 tmpOrder = PayInput.OrderNo;
             string Access_Token = PayInput.Token;
+            
+
 
             #region 台新信用卡
             if (flag)
             {
                 //送台新查詢
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+
+
+                PartOfGetECOrderInfo obj = new PartOfGetECOrderInfo()
                 {
-                    ApiVer = ApiVerOther,
+                    ApiVer = ApiVer,
                     ApposId = TaishinAPPOS,
-                    RequestParams = new GetCreditCardListRequestParamasData()
+                    RequestParams = new IGetECOrderInfoRequestParams()
                     {
                         MemberId = IDNO,
+                        MerchantTradeNo = PayInput.transaction_no
                     },
                     Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                     TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
@@ -222,14 +228,42 @@ namespace WebAPI.Controllers
 
                 };
 
-                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
-                string errMsg = "";
-                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
+                flag = WebAPI.DoECOrderQuery(obj, ref errCode, ref WSAuthQueryOutput);
+                if (WSAuthQueryOutput.ResponseParams.ResultCode == "1000")
+                {
+                    flag = false;
+                    WSAuthOutput.ResponseParams = new AuthResponseParams();
+                    WSAuthOutput.ResponseParams.ResultCode = WSAuthQueryOutput.ResponseParams.ResultCode;
+                    WSAuthOutput.ResponseParams.ResultMessage = WSAuthQueryOutput.ResponseParams.ResultMessage;
+                }
+                else
+                {
+                    flag = true;
+                }
 
                 //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                 //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
                 if (flag)
                 {
+                    PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+                    {
+                        ApiVer = ApiVerOther,
+                        ApposId = TaishinAPPOS,
+                        RequestParams = new GetCreditCardListRequestParamasData()
+                        {
+                            MemberId = IDNO,
+                        },
+                        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+
+                    };
+
+                    //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                    string errMsg = "";
+                    DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+
                     //int Len = wsOutput.ResponseParams.ResultData.Count;
                     bool hasFind = false;
                     string CardToken = "";
@@ -283,7 +317,7 @@ namespace WebAPI.Controllers
                                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
                                     //MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyyyMMddHHmmssfff")),   //20201209 ADD BY ADAM REASON.財務又說要改回來
-                                    MerchantTradeNo = string.Format(apiInput.PayType == 0 ? "{0}F_{1}" : "{0}G_{1}", apiInput.PayType==0 ? tmpOrder.ToString() : PayInput.IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),     //20210106 ADD BY ADAM REASON.
+                                    MerchantTradeNo = PayInput.transaction_no != "" ? PayInput.transaction_no : string.Format(apiInput.PayType == 0 ? "{0}F_{1}" : "{0}G_{1}", apiInput.PayType == 0 ? tmpOrder.ToString() : PayInput.IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),     //20210106 ADD BY ADAM REASON.
                                     //MerchantTradeNo = string.Format("{0}F_{1}", tmpOrder, DateTime.Now.ToString("yyMMddHHmm")),      //20201130 ADD BY ADAM 因應短租財務長度20進行調整
                                     NonRedeemAmt = Amount.ToString() + "00",
                                     NonRedeemdescCode = "",
@@ -305,6 +339,9 @@ namespace WebAPI.Controllers
                             //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                             //flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
                             flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, IDNO, ref errCode, ref WSAuthOutput);
+                            //WSAuthOutput.ResponseParams = new AuthResponseParams();
+                            //WSAuthOutput.ResponseParams.ResultCode = "-1";
+                            //WSAuthOutput.ResponseParams.ResultMessage = "測試";
 
                             logger.Trace("DoCreditCardAuthV2:" + JsonConvert.SerializeObject(WSAuthOutput));
                             if (WSAuthOutput.RtnCode != "1000")
@@ -327,27 +364,6 @@ namespace WebAPI.Controllers
                         {
                             PayInput.transaction_no = "Free";
                         }
-                        if (flag)
-                        {
-                            //if (OrderDataLists[0].ProjType == 4)
-                            //{
-                            //    bool Motorflag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                            //    if (Motorflag == false)
-                            //    {
-                            //        //寫入車機錯誤
-                            //    }
-                            //}
-
-                            //20210101 ADD BY ADAM REASON.這段語法移到外面，目前常會遇到此段語法被跳過的
-                            //if (apiInput.PayType == 0)
-                            //{
-                            //    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                            //    if (CarFlag == false)
-                            //    {
-                            //        //寫入車機錯誤
-                            //    }
-                            //}
-                        }
                     }
                     else
                     {
@@ -355,72 +371,18 @@ namespace WebAPI.Controllers
                         errCode = "ERR195";
                     }
                     #endregion
+                    ds.Dispose();
                 }
                 else
                 {
                     flag = false;
                     errCode = "ERR730";
                 }
-                ds.Dispose();
             }
             #endregion
 
             return flag;
         }
-
-        /// <summary>
-        /// 欠費繳交
-        /// </summary>
-        /// <param name="spInput"></param>
-        /// <param name="errCode"></param>
-        /// <param name="lstError"></param>
-        /// <returns></returns>
-        private bool DonePayBack(SPInput_DonePayBack spInput, ref string errCode, ref List<ErrorInfo> lstError)
-        {
-            bool flag = true;
-            string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayBack);
-            SPOutput_Base spOutput = new SPOutput_Base();
-            SQLHelper<SPInput_DonePayBack, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_DonePayBack, SPOutput_Base>(connetStr);
-            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, spInput, ref spOutput, ref lstError);
-            baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
-            return flag;
-        }
-
-        private List<NPR330SaveDetail> sp_ArrearsQueryByNPR330ID(int NPR330Save_ID, long LogID, ref string errMsg)
-        {
-            List<NPR330SaveDetail> saveDetail = new List<NPR330SaveDetail>();
-
-            string SPName = new ObjType().GetSPName(ObjType.SPType.ArrearsQueryByNPR330ID);
-
-            object[] param = new object[2];
-            param[0] = NPR330Save_ID;
-            param[1] = LogID;
-
-            DataSet ds1 = null;
-            string returnMessage = "";
-            string messageLevel = "";
-            string messageType = "";
-
-            ds1 = WebApiClient.SPRetB(ServerInfo.GetServerInfo(), SPName, param, ref returnMessage, ref messageLevel, ref messageType);
-
-            if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
-            {
-                if (ds1.Tables.Count >= 2)
-                {
-                    if (ds1.Tables.Count >= 2)
-                        saveDetail = objUti.ConvertToList<NPR330SaveDetail>(ds1.Tables[0]);
-                    else if (ds1.Tables.Count == 1)
-                    {
-                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
-                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
-                            errMsg = re_db.ErrorMsg;
-                    }
-                }
-            }
-            else
-                errMsg = returnMessage;
-
-            return saveDetail;
-        }
+        
     }
 }

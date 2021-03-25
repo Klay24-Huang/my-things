@@ -14,8 +14,14 @@ namespace Domain.WebAPI.Input.Taishin.GenerateCheckSum
         public IGetPaymentInfoRequestParams RequestParams { get; set; }
         public string TimeStamp { get; set; }
         public string TransNo { get; set; }
-   
-  
-    
+    }
+    public class PartOfGetECOrderInfo
+    {
+        public string ApiVer { get; set; }
+        public string ApposId { get; set; }
+        public string Random { get; set; }
+        public IGetECOrderInfoRequestParams RequestParams { get; set; }
+        public string TimeStamp { get; set; }
+        public string TransNo { get; set; }
     }
 }
