@@ -87,15 +87,32 @@
             //        clearFileInput("fileImport");
             //    });
             //}
-            if (extName.toUpperCase() != "PNG") {
+            if (extName.toUpperCase() != "PNG" && extName.toUpperCase() != "JPG") {
                 swal({
                     title: 'Fail',
-                    text: "僅允許png",
+                    text: "僅允許png和jpg",
                     icon: 'error'
                 }).then(function (value) {
                     // $("#fileImport").val("");
                     clearFileInput("fileImport");
                 });
+            }
+
+            var fileName2 = fileName.slice(0, -4) //擷取.png之前的文字
+
+            //可以正確判斷，但用正則表達式比較好         
+            for (var i = 0; i < fileName2.length; i++) {
+                if (fileName2.charCodeAt(i) > 255) {
+                    swal({
+                        title: 'Fail',
+                        text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                        icon: 'error'
+                    }).then(function (value) {
+                        // $("#fileImport").val("");
+                        clearFileInput("fileImport");
+                    });
+                    break;
+                }
             }
         }
     })

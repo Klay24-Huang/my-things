@@ -247,10 +247,12 @@ $(function () {
                 errMsg = "請勾選【其他證件】的照片審核結果";
             }
             */
+            /*
             if ($.trim(Obj.Business_1_Audit) == "") {
                 flag = false;
                 errMsg = "請勾選【企業用戶】的照片審核結果";
             }
+            */
             if ($.trim(Obj.Signture_1_Audit) == "") {
                 flag = false;
                 errMsg = "請勾選【簽名檔】的照片審核結果";
@@ -387,10 +389,12 @@ $(function () {
                 errmsg = "請勾選【其他證件】的照片審核結果";
             }
             */
+            /*
             if ($.trim(Obj.Business_1_Audit) == "") {
                 flag = false;
                 errmsg = "請勾選【企業用戶】的照片審核結果";
             }
+            */
             if ($.trim(Obj.Signture_1_Audit) == "") {
                 flag = false;
                 errmsg = "請勾選【簽名檔】的照片審核結果";
@@ -505,7 +509,7 @@ function setData() {
 
     Obj.Business_1 = 10;
     Obj.Business_1_new = change(field[9] );
-    Obj.Business_1_Audit = ObjList[9].Audit;//fieldAudit[10];
+    Obj.Business_1_Audit = 0;//ObjList[9].Audit;//fieldAudit[10];
     Obj.Business_1_Reason = ObjList[9].Reason;//fieldReason[10];
     Obj.Business_1_Image = ObjList[9].Image;//$("#Business_1_PIC").attr('src');
 

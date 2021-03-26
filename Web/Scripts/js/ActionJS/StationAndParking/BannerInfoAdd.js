@@ -112,16 +112,65 @@
             //        clearFileInput("fileImport");
             //    });
             //}
-            if (extName.toUpperCase() != "PNG") {
+            if ((extName.toUpperCase() != "PNG") && (extName.toUpperCase() != "JPG")) {
                 swal({
                     title: 'Fail',
-                    text: "僅允許png",
+                    text: "僅允許png和jpg",
                     icon: 'error'
                 }).then(function (value) {
                     // $("#fileImport").val("");
                     clearFileInput("fileImport");
                 });
             }
+
+            var fileName2 = fileName.slice(0, -4) //擷取.png之前的文字
+            /*
+            為何不能用.....
+            entryLen = fileName2.length;
+            cnChar = entryVal.match(/[^\x00-\x80]/g);//利用match方法檢索出中文字元並返回一個存放中文的陣列
+            entryLen = cnChar.length;//算出實際的字元長度
+            if (entryLen > 0) {
+                swal({
+                    title: 'Fail',
+                    text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                    icon: 'error'
+                }).then(function (value) {
+                    // $("#fileImport").val("");
+                    clearFileInput("fileImport");
+                });
+            }
+            */
+            
+            /*
+            這是全中文字才會符合
+            var reg = /^[\u4E00-\u9FA5]+$/
+            if (reg.test(fileName2)) {
+                swal({
+                    title: 'Fail',
+                    text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                    icon: 'error'
+                }).then(function (value) {
+                    // $("#fileImport").val("");
+                    clearFileInput("fileImport");
+                });
+            }
+            */
+
+            //可以正確判斷，但用正則表達式比較好         
+            for (var i = 0; i < fileName2.length; i++) {
+                if (fileName2.charCodeAt(i) > 255) {
+                    swal({
+                        title: 'Fail',
+                        text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                        icon: 'error'
+                    }).then(function (value) {
+                        // $("#fileImport").val("");
+                        clearFileInput("fileImport");
+                    });
+                    break;
+                }
+            }
+            
         }
     })
     
