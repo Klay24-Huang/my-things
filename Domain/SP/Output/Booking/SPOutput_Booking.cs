@@ -16,9 +16,13 @@ namespace Domain.SP.Output.Booking
         /// 訂單編號
         /// </summary>
         public Int64 OrderNum { set; get; }
-
+        /// <summary>
+        /// 車機編號 20210325 ADD BY ADAM
+        /// </summary>
         public string CID { set; get; }
-
+        /// <summary>
+        /// 遠傳車機token 20210325 ADD BY ADAM
+        /// </summary>
         public string deviceToken { set; get; }
     }
 }

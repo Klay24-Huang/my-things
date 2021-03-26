@@ -362,10 +362,11 @@ namespace WebAPI.Controllers
                         string method = CommandType;
                         //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                        if (flag)
-                        {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
+                        //20210326 ADD BY ADAM REASON.先不等report回覆
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
                     }
 
                     outputApi = new OAPI_Booking()
