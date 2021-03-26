@@ -184,9 +184,10 @@
         var RunHorse = $("#RunHorse").val();
         var SDate = $("#SDate").val();
         var EDate = $("#EDate").val();
+        var fn = $("#fileData1").val();
         var flag = true;
-        var checkList = [SDate, EDate, URL, RunHorse];
-        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填啦", "跑馬燈啦大哥，填一下好嗎"];
+        var checkList = [SDate, EDate, URL, RunHorse, fn];
+        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填，妳有看到嗎?", "跑馬燈啦，填一下好嗎", "圖片沒傳，睏了嗎?"];
 
         var checkLen = checkList.length;
         if (flag) {
