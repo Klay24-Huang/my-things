@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleStation);
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleStationNew); //←切回舊版改為BE_HandleStation即可
                 SPInput_HandleStation spInput = new SPInput_HandleStation()
                 {
                     LogID = LogID,

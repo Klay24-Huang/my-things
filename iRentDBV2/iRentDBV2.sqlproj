@@ -481,6 +481,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_UpdateMemberName.sql" />
     <Build Include="dbo\Stored Procedures\usp_SignatureUpdate.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetBanner.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_HandleStationNew.sql" />
     <Build Include="dbo\User Defined Types\TY_FavoriteStation.sql" />
   </ItemGroup>
   <ItemGroup>
