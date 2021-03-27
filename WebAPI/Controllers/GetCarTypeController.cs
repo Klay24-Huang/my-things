@@ -243,8 +243,8 @@ namespace WebAPI.Controllers
                     };
                 }
 
-                //if (spList != null && spList.Count() > 0)
-                //    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
+                if (spList != null && spList.Count() > 0)
+                    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
             }
             #endregion
 
