@@ -162,7 +162,19 @@ namespace Web.Controllers
                 }
                 else if (data[k].OrderStatus == 5)
                 {
-                    content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間："+ data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                    if(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")!= "1900-01-01 00:00:00" && data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss") != "1900-01-01 00:00:00")
+                    {
+                        if (data[k].BookingEnd < data[k].BookingStart)
+                        {
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                        }
+                        else
+                        {
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                        }
+                    }
+                   
+                   
                 }
                 else
                 {
