@@ -1071,6 +1071,13 @@ namespace WebAPI.Models.BaseFunc
         /// <returns></returns>
         public string GetClientIp(HttpRequestMessage request = null)
         {
+            // 20210329;測試LoadBalancer下取得使用者IP
+            IEnumerable<string> values;
+            if (request.Headers.TryGetValues("X-Forwarded-For", out values))
+            {
+                return values.FirstOrDefault().Split(new char[] { ',' }).FirstOrDefault().Split(new char[] { ':' }).FirstOrDefault();
+            }
+
             //20210303 ADD BY ADAM REASON.補上Azure front door ip偵測
             if (request.Properties.ContainsKey("X-Azure-ClientIP"))
             {
