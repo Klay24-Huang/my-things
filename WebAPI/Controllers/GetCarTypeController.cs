@@ -120,11 +120,11 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
-                        CarTypeList = String.Join(",", apiInput.CarTypes);
+                    //if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                    //    CarTypeList = String.Join(",", apiInput.CarTypes);
 
-                    if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
-                        SeatList = String.Join(",", apiInput.Seats.Select(x=>x.ToString()).ToList());
+                    //if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
+                    //    SeatList = String.Join(",", apiInput.Seats.Select(x=>x.ToString()).ToList());
                 }
             }
 
@@ -296,7 +296,7 @@ namespace WebAPI.Controllers
             flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             re.IsFavStation = spOut.IsFavStation;
-
+            re.Cards = sp_list;
             return re;
         }
 

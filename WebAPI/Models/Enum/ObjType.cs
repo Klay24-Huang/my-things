@@ -394,6 +394,10 @@ namespace WebAPI.Models.Enum
             /// 取得廣告資訊
             /// </summary>
             GetBanner,
+            /// <summary>
+            /// 重新授權
+            /// </summary>
+            GetOrderAuthRetryList,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -707,8 +711,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckToken";
                     break;
                 case SPType.RefrashToken: //Refrash Token
-                    //SPName = "usp_RefrashToken";
-                    SPName = "usp_RefrashToken_ForTest";
+                    SPName = "usp_RefrashToken";
+                    //SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -723,7 +727,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    SPName = "usp_Booking";
+                    SPName = "usp_Booking_20210325";
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";
@@ -851,7 +855,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarType_20210324";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -945,6 +949,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
                     SPName = "usp_GetBanner";
+                    break;
+                case SPType.GetOrderAuthRetryList:
+                    SPName = "usp_GetOrderAuthRetryList";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
