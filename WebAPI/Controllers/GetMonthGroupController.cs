@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
 
             string Contentjson = "";
             bool isGuest = true;
-            outputApi.MonCards = new List<MonCardParam>();
+            outputApi.MonCards = new List<GetMonthGroup_MonCardParam>();
             string IDNO = "";
 
             #endregion
@@ -113,7 +113,7 @@ namespace WebAPI.Controllers
                 if (sp_List != null && sp_List.Count() > 0)
                 {
                     var cards = (from a in sp_List
-                                 select new MonCardParam
+                                 select new GetMonthGroup_MonCardParam
                                  {
                                      MonProjID = a.MonProjID,
                                      MonProjNM = a.MonProjNM,
@@ -123,15 +123,12 @@ namespace WebAPI.Controllers
                                      IsMoto = a.IsMoto,
                                      CarWDHours = a.CarWDHours,
                                      CarHDHours = a.CarHDHours,
-                                     //CarTotalHours = a.CarTotalHours,
-                                     //MotoWDMins = a.MotoWDMins,
-                                     //MotoHDMins = a.MotoHDMins,
                                      MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
-                                     //SDATE = a.SDATE,
-                                     //EDATE = a.EDATE
+                                     IsOrder = a.IsOrder
                                  }).ToList();
 
                     outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
+                    outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
                     outputApi.MonCards = cards;
                     trace.traceAdd("outputApi", outputApi);
                 }

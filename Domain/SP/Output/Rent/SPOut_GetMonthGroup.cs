@@ -30,5 +30,6 @@ namespace Domain.SP.Output.Rent
         public double HDRateForCar { get; set; }
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
+        public int IsOrder { get; set; }
     }
 }

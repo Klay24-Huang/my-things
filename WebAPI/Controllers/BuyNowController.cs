@@ -39,6 +39,7 @@ namespace WebAPI.Controllers
             var ms_com = new MonSubsCommon();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
+            var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -113,10 +114,14 @@ namespace WebAPI.Controllers
 
                 #region TB
 
+
+
                 #endregion
             }
             catch (Exception ex)
             {
+                trace.BaseMsg = ex.Message;
+                carRepo.AddTraceLog(181, funName, eumTraceType.exception, trace);
 
             }
 

@@ -9,6 +9,16 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_GetMonthGroup
     {
         public string MonProDisc { get; set; }
-        public List<MonCardParam> MonCards { get; set; }
+        /// <summary>
+        /// 是否為使用中
+        /// </summary>
+        public int IsOrder { get; set; } = 0;
+        public List<GetMonthGroup_MonCardParam> MonCards { get; set; }
     }
+
+    public class GetMonthGroup_MonCardParam: MonCardParam
+    {
+        public int IsOrder { get; set; }
+    }
+
 }
