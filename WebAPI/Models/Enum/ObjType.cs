@@ -626,6 +626,14 @@ namespace WebAPI.Models.Enum
             BE_GetReturnCarControl,
 
             GetBindingCard,
+            /// <summary>
+            /// 匯入車機車輛綁定資料
+            /// </summary>
+            BE_ImportCarBindData,
+            /// <summary>
+            /// 更新遠傳DeviceId與DeveiceToken
+            /// </summary>
+            BE_UpdCATDeviceToken,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -1145,6 +1153,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBindingCard:
                     SPName = "usp_GetBindingCard";
+                    break;
+                case SPType.BE_ImportCarBindData:
+                    SPName = "usp_BE_ImportCarBindData";
+                    break;
+                case SPType.BE_UpdCATDeviceToken:
+                    SPName = "usp_BE_UpdCATDeviceToken";
                     break;
                 #endregion
                 #region 整備人員
