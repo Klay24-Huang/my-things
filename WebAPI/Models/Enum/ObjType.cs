@@ -632,8 +632,6 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
             UpdateOrderAuthReturnList,
-            //20210319 ADD BY JERRY 增加重取授權
-            GetOrderAuthRetryList,
             BE_Banner//20210316唐加
 
         }
@@ -709,7 +707,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckToken";
                     break;
                 case SPType.RefrashToken: //Refrash Token
-                    SPName = "usp_RefrashToken";
+                    //SPName = "usp_RefrashToken";
+                    SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -724,8 +723,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    //SPName = "usp_Booking";
-                    SPName = "usp_Booking_20210325";        //20210325 ADD BY ADAM REASON.車機指令改善
+                    SPName = "usp_Booking";
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";
@@ -850,11 +848,10 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarType:
                     //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210315";  //20210317 ADD BY ADAM REASON.常用站點測試版
+                    SPName = "usp_GetStationCarType_20210324";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    //SPName = "usp_GetStationCarTypeOfMutiStation";
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";     //20210319 ADD BY ADAM REASON.測試常用站點
+                    SPName = "usp_GetStationCarTypeOfMutiStation";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -933,10 +930,6 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UpdateOrderAuthList:   //更新批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_UpdateOrderAuthList";
-                    break;
-
-                case SPType.GetOrderAuthRetryList:   //取得批次重取授權明細 20210108 ADD BY JERRY 
-                    SPName = "usp_GetOrderAuthRetryList";
                     break;
                 case SPType.GetOrderAuthReturnList:   //取得批次授權明細 20210108 ADD BY JERRY 
                     SPName = "usp_GetOrderAuthReturnList";

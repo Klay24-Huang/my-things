@@ -9,6 +9,16 @@ namespace Domain.SP.Output.Car
     public class SPOutput_GetStationCarType
     {
         /// <summary>
+        /// 是否是常用據點 20210315 ADD BY ADAM
+        /// </summary>
+        public int IsFavStation { set; get; }
+
+        public List<SPOutput_GetStationCarType_Cards> Cards { get; set; }
+    }
+
+    public class SPOutput_GetStationCarType_Cards
+    {
+        /// <summary>
         /// 車子品牌
         /// </summary>
         public string CarBrend { set; get; }
@@ -45,9 +55,5 @@ namespace Domain.SP.Output.Car
         ///座位數
         /// </summary>
         public int Seat { set; get; }
-        /// <summary>
-        /// 是否是常用據點 20210315 ADD BY ADAM
-        /// </summary>
-        public int IsFavStation { set; get; }
     }
 }
