@@ -89,8 +89,8 @@
                     var width = image.width;
                     var height = image.height;
 
-                    console.log("Q:"+width)
-                    console.log("Q:" +height)
+                    //console.log("Q:"+width)
+                    //console.log("Q:" +height)
                     if (width != 343 || height !=80) {
                         swal({
                             title: 'Fail',
@@ -188,6 +188,13 @@
         var flag = true;
         var checkList = [SDate, EDate, URL, RunHorse, fn];
         var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填，妳有看到嗎?", "跑馬燈啦，填一下好嗎", "圖片沒傳，睏了嗎?"];
+
+        if (SDate !== "" && EDate !== "") {
+            if (SDate > EDate) {
+                flag = false;
+                errorMsg = "起始日期大於結束日期";
+            }
+        }
 
         var checkLen = checkList.length;
         if (flag) {

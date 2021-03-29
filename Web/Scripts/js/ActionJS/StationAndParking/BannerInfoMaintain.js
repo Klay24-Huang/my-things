@@ -4,9 +4,12 @@
     $("#fileImport").prop("disabled", "");
     clearFileInput("fileImport");
 
+    var del = false
+
     $("#btnDelete").on("click", function () {
-        console.log($.trim($("#fileName1").val));
-        if ($.trim($("#fileName1").val()) == "") {
+        //console.log($.trim($("#fileName1").val));
+        del = true
+        if ($.trim($("#fileName1").val()) == "" || $.trim($("#fileData1").val()) == "") {
             swal({
                 title: 'Fail',
                 text: "請選擇圖片",
@@ -16,8 +19,8 @@
         }
         $("#PIC1").attr('src', null);
         $("#fileName1").val('');
+        $("#fileData1").val('');
     });
-
 
     $("#btnUpload").on("click", function () {
         if ($("#fileImport")[0].files.length != 0) {
@@ -33,7 +36,7 @@
     });
     $("#PIC1").on("click", function () {
         if ($(this).attr("src") != "") {
-            console.log("路徑:" + $(this).attr("src"));
+            //console.log("路徑:" + $(this).attr("src"));
             $("#tmpENVPIC").attr("src", $(this).attr("src"));
             $("#surrounding_modal").modal();
         }
@@ -50,7 +53,7 @@
             var extName = "";
             if (CheckStorageIsNull(ext)) {
                 extName = ext[0];
-                console.log(extName.toUpperCase())
+                //console.log(extName.toUpperCase())
             }
 
             //判斷圖片尺寸，看網路寫的，爽
@@ -64,8 +67,8 @@
                     var width = image.width;
                     var height = image.height;
 
-                    console.log("Q:" + width)
-                    console.log("Q:" + height)
+                    //console.log("Q:" + width)
+                    //console.log("Q:" + height)
                     if (width != 343 || height != 80) {
                         swal({
                             title: 'Fail',
@@ -126,10 +129,17 @@
         var RunHorse = $("#RunHorse").val();
         var SDate = $("#SDate").val();
         var EDate = $("#EDate").val();
-        var fn = $("#fileData1").val();
+        var fn = del == true ? $("#fileData1").val() : 'pp'; //若沒有做刪除圖片，就隨便給個名字騙過這邊的檢核
         var flag = true;
         var checkList = [SDate, EDate, URL, RunHorse, fn];
         var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填，妳有看到嗎?", "跑馬燈啦，填一下好嗎", "圖片沒傳，睏了嗎?"];
+
+        if (SDate !== "" && EDate !== "") {
+            if (SDate > EDate) {
+                flag = false;
+                errorMsg = "起始日期大於結束日期";
+            }
+        }
 
         var checkLen = checkList.length;
         if (flag) {
@@ -233,7 +243,7 @@ document.getElementById("PIC1").addEventListener('load', function () {
     var compressRate = getCompressRate(1, inPicSize);
     var dataUrl = cvs.toDataURL('image/png', compressRate);
     var base64 = dataUrl.split(",");
-    console.log(dataUrl);
+    //console.log(dataUrl);    //console.log(dataUrl);
 });
 document.getElementById('PIC1').addEventListener('change', function () {
     console.log("call PIC1 Change");
