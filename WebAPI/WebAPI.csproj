@@ -274,6 +274,7 @@
     <Compile Include="Controllers\GetMemberStatusController.cs" />
     <Compile Include="Controllers\FeedBackController.cs" />
     <Compile Include="Controllers\GetFeedBackKindDescriptController.cs" />
+    <Compile Include="Controllers\GetMonthGroupController.cs" />
     <Compile Include="Controllers\GetMonthListController.cs" />
     <Compile Include="Controllers\GetMotorStatusController.cs" />
     <Compile Include="Controllers\GetPayDetailController.cs" />
@@ -310,7 +311,6 @@
     <Compile Include="Controllers\MA_SettingManageStationController.cs" />
     <Compile Include="Controllers\MixAuthModeController.cs" />
     <Compile Include="Controllers\MonPeriodDetailController.cs" />
-    <Compile Include="Controllers\MonthDetailController.cs" />
     <Compile Include="Controllers\MonthlyRentExchangeController.cs" />
     <Compile Include="Controllers\MonthlySubscriptionController.cs" />
     <Compile Include="Controllers\MotorCmdController.cs" />
@@ -479,6 +479,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMachiParkToken.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetMonthGroup.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMonthList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorStatus.cs" />
@@ -493,7 +494,6 @@
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonPeriodDetail.cs" />
-    <Compile Include="Models\Param\Input\IAPI_MonthDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRentExchange.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
@@ -580,6 +580,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetFeedBackKind.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMonthGroup.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMonthList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorStatus.cs" />
@@ -594,7 +595,6 @@
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_MonPeriodDetail.cs" />
-    <Compile Include="Models\Param\Output\OAPI_MonthDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />

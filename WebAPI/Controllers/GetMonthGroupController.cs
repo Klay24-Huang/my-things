@@ -24,14 +24,13 @@ using System.CodeDom;
 using Domain.SP.Input.Arrears;
 using WebAPI.Models.BillFunc;
 using Domain.SP.Input.Rent;
-using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
-    public class GetMonthListController : ApiController
+    public class GetMonthGroupController : ApiController
     {
         [HttpPost()]
-        public Dictionary<string, object> DoGetMonthList([FromBody] Dictionary<string, object> value)
+        public Dictionary<string, object> DoGetMonthGroup([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var ms_com = new MonSubsCommon();
@@ -47,51 +46,40 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GetMonthListController";
+            string funName = "GetMonthGroupController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            var apiInput = new IAPI_GetMonthList();
-            var outputApi = new OAPI_GetMonthList();
-            outputApi.NorMonCards = new List<MonCardParam>();
-            outputApi.MixMonCards = new List<MonCardParam>();
+            var apiInput = new IAPI_GetMonthGroup();
+            var outputApi = new OAPI_GetMonthGroup();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            outputApi.MonCards = new List<MonCardParam>();
             string IDNO = "";
 
             #endregion
 
             try
             {
-                trace.traceAdd("apiIn", value);
-
                 #region 防呆
 
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetMonthList>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetMonthGroup>(Contentjson);
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
-                    if(apiInput.MonType == 0)
-                    {
-                        apiInput.MonType = 2; //暫時只有訂閱制月租
-                        //flag = false;
-                        //errCode = "ERR255";
-                    }
-
-                    trace.traceAdd("apiInCk", errCode);
                 }
 
                 #endregion
 
-                if (flag && isGuest == false) 
+                #region token
+
+                if (flag && isGuest == false)
                 {
                     var token_in = new IBIZ_TokenCk
                     {
@@ -108,22 +96,23 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                #endregion
+
                 #region TB
 
-                var spIn = new SPInput_GetMonthList()
+                var spIn = new SPInput_GetMonthGroup()
                 {
                     IDNO = IDNO,
                     LogID = LogID,
-                    IsMoto = apiInput.IsMoto,
-                    MonType = apiInput.MonType
+                    MonProjID = apiInput.MonProjID
                 };
                 trace.traceAdd("spIn", spIn);
                 //取出月租列表
-                var sp_mList = ms_com.sp_GetMonthList(spIn, ref errCode);
-                trace.traceAdd("sp_mList", sp_mList);
-                if(sp_mList != null && sp_mList.Count() > 0)
+                var sp_List = ms_com.sp_GetMonthGroup(spIn, ref errCode);
+                trace.traceAdd("sp_List", sp_List);
+                if (sp_List != null && sp_List.Count() > 0)
                 {
-                    var cards = (from a in sp_mList
+                    var cards = (from a in sp_List
                                  select new MonCardParam
                                  {
                                      MonProjID = a.MonProjID,
@@ -137,28 +126,22 @@ namespace WebAPI.Controllers
                                      //CarTotalHours = a.CarTotalHours,
                                      //MotoWDMins = a.MotoWDMins,
                                      //MotoHDMins = a.MotoHDMins,
-                                     MotoTotalMins = a.MotoTotalMins,
+                                     MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
                                      //SDATE = a.SDATE,
                                      //EDATE = a.EDATE
                                  }).ToList();
 
-                    var mixCards = cards.Where(x => (x.CarWDHours > 0 || x.CarHDHours > 0) && x.MotoTotalMins > 0).ToList();
-                    var norCards = cards.Where(x => !mixCards.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
-
-                    if (mixCards != null && mixCards.Count() > 0)
-                        outputApi.MixMonCards = mixCards;
-                    if (norCards != null && norCards.Count() > 0)
-                        outputApi.NorMonCards = norCards;
-
+                    outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
+                    outputApi.MonCards = cards;
                     trace.traceAdd("outputApi", outputApi);
                 }
 
                 #endregion
             }
             catch (Exception ex)
-            {                
+            {
                 trace.BaseMsg = ex.Message;
-                carRepo.AddTraceLog(178,funName, eumTraceType.exception,trace);
+                carRepo.AddTraceLog(179, funName, eumTraceType.exception, trace);
             }
 
             #region 輸出
@@ -166,5 +149,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
+
     }
 }

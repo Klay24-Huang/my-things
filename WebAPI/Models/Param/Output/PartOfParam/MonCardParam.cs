@@ -34,11 +34,11 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 汽車平日時數
         /// </summary>
-        public int CarWDHours { get; set; }
+        public double CarWDHours { get; set; }
         /// <summary>
         /// 汽車假日時數
         /// </summary>
-        public int CarHDHours { get; set; }
+        public double CarHDHours { get; set; }
         /// <summary>
         /// 汽車不分平假日時數
         /// </summary>
@@ -58,10 +58,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 方案起日-8碼
         /// </summary>
-        public string SDATE { get; set; }
+        //public string SDATE { get; set; }
         /// <summary>
         /// 方案迄日-8碼
         /// </summary>
-        public string EDATE { get; set; }
+        //public string EDATE { get; set; }
     }
 }

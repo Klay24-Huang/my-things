@@ -8,6 +8,7 @@ namespace Domain.SP.Input.Rent
 {
     public class SPInput_GetMonthList
     {
+        public string IDNO { get; set; }
         public Int64 LogID { get; set; }
         /// <summary>
         /// 是否為機車

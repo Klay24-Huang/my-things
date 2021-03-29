@@ -209,6 +209,7 @@
     <Compile Include="SP\Input\Rent\SPInput_DonePayRent.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetBookingStartTime.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetCarStatusBeforeOpenDoorFinish.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_GetMonthGroup.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetMonthList.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
     <Compile Include="SP\Input\Rent\SPInput_InsFeedBack.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="SP\Output\Rent\SPOutput_GetBookingStartTime.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetCarStatusBeforeOpenDoorFinish.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_GetMonthList.cs" />
+    <Compile Include="SP\Output\Rent\SPOut_GetMonthGroup.cs" />
     <Compile Include="SP\Output\Rent\SPOut_InsFeedBack.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
