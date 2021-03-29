@@ -18,6 +18,7 @@ iRentApi20 Web API版本
 - [GetCarType同站以據點取出車型](#GetCarType)
 - [GetProject取得專案與資費](#GetProject)
 - [GetBanner 取得廣告資訊](#GetBanner)
+- [GetNormalRent 取得同站租還站點](#GetNormalRent)
 
 ----------
 # 修改歷程
@@ -29,6 +30,8 @@ iRentApi20 Web API版本
 20210317 修正API位置，區分正式及測試
 
 20210322 新增登入、更新Token、取得會員狀態
+
+20210324 增加地圖搜尋相關修改，有變動到的API清單為 GetNormalRent,GetCarType,GetProject
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -568,6 +571,8 @@ iRentApi20 Web API版本
 ----------------
 
 <h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
+<h5>20210324修改 - 增加搜尋使用欄位CarTypes,Seats </h5>
+
 # GetCarType同站以據點取出車型
 * ASP.NET Web API (REST API)
 
@@ -591,11 +596,15 @@ iRentApi20 Web API版本
 | StationID | 據點代碼 | Y | string | X0II |
 | SD | 預計取車時間 | N | string | 2021-03-01 00:00:00 |
 | ED | 預計還車時間 | N | string | 2021-03-01 23:59:59 |
+| ☆CarTypes | 車型代碼 | N | Array string | [ "PRIUSC" ]|
+| ☆Seats | 座椅數 | N | Array int | [ 5 ]|
 
 * input範例
 ```input範例
 {
-    "StationID": "X0II"
+    "StationID": "X0II",
+	"CarTypes":[ "PRIUSC" ],
+    "Seats":[ 5 ]
 }
 ```
 
@@ -680,6 +689,7 @@ iRentApi20 Web API版本
 ----------------
 
 <h5 id="GetProject" name="GetProject">20210315修改 - 增加是否為常用據點欄位</h5>
+<h5>20210324修改 - 增加搜尋欄位 </h5>
 # GetProject取得專案與資費
 * ASP.NET Web API (REST API)
 
@@ -701,7 +711,12 @@ iRentApi20 Web API版本
 | 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
 | --------- | -------- | :--: | :----: | ----------- |
 | StationID | 據點代碼 | Y | string | X0II |
-| CarType | 車型代碼 | | string | PRIUSC |
+| ☆CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
+| ☆Seats | 座椅數 | N | Array int | [ 5 ] |
+
+* Seats 回傳參數說明
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
 | SDate | 預計取車時間 | Y | string | 2021-03-12 14:00:00 |
 | EDate | 預計還車時間 | Y | string | 2021-03-13 15:00:00 |
 | Mode | 顯示方式 | Y | int | 0:依據點代碼 1:依經緯度 |
@@ -737,6 +752,7 @@ iRentApi20 Web API版本
 | Data | 資料物件 | | |
 | GetProjectObj | 回傳清單 | List | |
 
+
 * GetProjectObj參數說明
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
@@ -754,6 +770,7 @@ iRentApi20 Web API版本
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
 | ProjectObj | 專案清單 | List | |
 | StationInfoObj | 站點照片 | List | |
+
 
 * ProjectObj參數說明
 | 參數名稱 | 參數說明     |  型態  | 範例 |
@@ -909,7 +926,7 @@ iRentApi20 Web API版本
 
 * BannerObj 參數說明
 
-| 參數名稱    | 參數說明   |  型態  | 範例                                                    |
+| 參數名稱    | 參數說明   |  型態  | 範例                                 |
 | ----------- | ---------- | :----: | ------------------------------------------------------- |
 | MarqueeText | 跑馬燈文字 | string | 測試Banner1                                             |
 | PIC         | 圖片       | string | https://irentv2data.blob.core.windows.net/banner/01.png |
@@ -983,3 +1000,117 @@ iRentApi20 Web API版本
 
 ---------------
 
+<h5 id="GetNormalRent" name="GetNormalRent">20210324修改</h5>
+
+# GetNormalRent 取得同站租還站點
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetNormalRent/]
+
+  ### 動作 [GET]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| ShowALL | 是否顯示全部 | Y | int | 0:否 1:是 |
+| Latitude | 緯度 |  | float | |
+| Longitude | 經度 | | float | |
+| Radius | 半徑 | | float | |
+| * CarTypes | 車型清單 | N | array string | |
+| * Seats | 座位數 | N | array int | |
+
+* input範例
+```
+{
+    "ShowALL": "0",
+    "Latitude": 25.060368,
+    "Longitude": 121.520260,
+    "Radius": 2.5,
+    "CarTypes":[ "PRIUSC" ],
+    "Seats":[ 5 ]
+}
+```
+
+* output回傳參數說明
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
+| Result | 是否成功 | int | 0:失敗 1:成功  |
+| ErrorCode | 錯誤碼 | string | 000000 |
+| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
+| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
+| ErrorMessage | 錯誤訊息 | string | Success |
+| Data | 資料物件 | | |
+| NormalRentObj   | 常用站點列表 |  List  | |
+
+* NormalRentObj 參數說明
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
+| StationID | 據點代碼 | string | X0II |
+| StationName | 據點名稱 | string | 濱江站 |
+| Tel | 電話 | string  | 02-12345678 |
+| ADDR | 地址 | string | 台北市松江路999號 |
+| Latitude | 緯度 | float | |
+| Longitude | 經度 | float | |
+| Content | 其他說明 | string | |
+| ContentForAPP | 據點描述(app顯示用) | string | |
+| IsRequiredForReturn | 還車位置資訊必填 | int | 0:否 1:是 |
+| StationPic | 據點照片 | List | |
+
+
+* StationPic參數說明
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
+| StationPic | 據點照片 | string | |
+| PicDescription | 據點說明 | string | |
+
+
+* output範例
+```
+{
+	"Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "NormalRentObj": [
+            {
+                "StationID": "X0AO",
+                "StationName": "iRent愛馬屋北車站",
+                "Tel": "02-2375-6000",
+                "ADDR": "中山北路一段18號旁空地",
+                "Latitude": 25.046680,
+                "Longitude": 121.519857,
+                "Content": "",
+                "ContentForAPP": null,
+                "IsRequiredForReturn": 0,
+                "StationPic": null
+            },
+            {
+                "StationID": "X0AP",
+                "StationName": "iRent北市圓山站",
+                "Tel": "02-2516-3816",
+                "ADDR": "玉門街與敦煌路口旁 [車位已滿，請耐心等候入場]",
+                "Latitude": 25.074977,
+                "Longitude": 121.521395,
+                "Content": "",
+                "ContentForAPP": null,
+                "IsRequiredForReturn": 0,
+                "StationPic": null
+            }
+        ]
+    }
+}
+```
+
+----------------------------
