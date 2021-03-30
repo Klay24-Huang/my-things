@@ -56,7 +56,7 @@ namespace Web.Controllers
             ViewData["Banner"] = Banner;
             //ViewData["Name"] = Banner;
             List<BE_GetBannerInfo> lstData = null;
-            StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+            NewsRepository repository = new NewsRepository(connetStr);
             lstData = repository.GetBannerInfo(Banner);
             return View(lstData);
         }
@@ -72,7 +72,7 @@ namespace Web.Controllers
         public ActionResult BannerInfoMaintain(string MaintainBanner)//卡我這麼久，幹，結果是參數命名要和html/js一樣啦，白癡耶，靠北，吼~~~~~~~~~~~~~~~~~~~~
         {
             BE_BannerDetailCombind Data = null;
-            StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+            NewsRepository repository = new NewsRepository(connetStr);
             Data = new BE_BannerDetailCombind()
             {
                 detail = repository.GetBannerInfo2(MaintainBanner)
