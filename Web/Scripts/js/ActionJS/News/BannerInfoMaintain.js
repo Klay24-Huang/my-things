@@ -69,7 +69,7 @@
 
                     //console.log("Q:" + width)
                     //console.log("Q:" + height)
-                    if (width != 343 || height != 80) {
+                    if (width % 343 != 0 || height % 80 != 0 || width / 343 != height / 80) {
                         swal({
                             title: 'Fail',
                             text: "尺寸不對",
