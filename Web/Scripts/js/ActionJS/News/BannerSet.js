@@ -2,6 +2,11 @@
 
     SetStation($("#Banner"), $("#BannerName"));
 
+    //讓修改後回到此頁面時重里整理，但第一次進來不會耶
+    setTimeout(function () {
+        $('.btnSend').click();
+    }, 500);
+
     $("#btnSend").on("click", function () {
         ShowLoading("資料查詢中");
         $("#frmBannerSetting").submit();

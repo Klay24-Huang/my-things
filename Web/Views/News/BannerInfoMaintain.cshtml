@@ -1,9 +1,28 @@
-﻿<div class="container mt-4">
+﻿@model Domain.TB.BackEnd.BE_BannerDetailCombind
+@{
+    string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
+    string bannerContainer = (System.Configuration.ConfigurationManager.AppSettings["bannerContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["bannerContainer"].ToString();
+    string ImgURL = StorageBaseURL + bannerContainer + "/";
+    Domain.TB.BackEnd.BE_BannerDetailCombind obj = null;
+
+    string PIC1 = "";
+    string SEQ;
+    if (Model != null)
+    {
+        obj = Model;
+        PIC1 = obj.detail[0].PIC_NAME;
+        SEQ = obj.detail[0].SEQNO;
+    }
+}
+<div class="container mt-4">
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
             Banner維護
         </div>
+
+        <input type="hidden" id="SEQ" name="SEQ" value="@obj.detail[0].SEQNO" />
+
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
             <li class="list-group-item">
@@ -15,7 +34,7 @@
                         <div class="col-md-3">
                             <!-- datepicker -->
                             <div class="custom-datepicker">
-                                <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="" readonly="false">
+                                <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@(obj.detail[0].STARTDATE.ToString("yyyy-MM-dd"))" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -46,7 +65,7 @@
                         <div class="col-md-3">
                             <!-- datepicker with time -->
                             <div class="custom-datepicker">
-                                <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="" readonly="false">
+                                <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@(obj.detail[0].ENDDATE.ToString("yyyy-MM-dd"))" readonly="false">
                                 <svg width="22" height="22" viewBox="0 0 22 22">
                                     <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                         <rect width="22" height="19" rx="3" stroke="none" />
@@ -98,7 +117,7 @@
                             webview網址
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="URL" id="URL" value="" />
+                            <input class="form-control" type="text" name="URL" id="URL" value="@(obj.detail[0].URL)" />
 
                         </div>
                     </div>
@@ -111,15 +130,12 @@
                             跑馬燈文字
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="RunHorse" id="RunHorse" value="" />
+                            <input class="form-control" type="text" name="RunHorse" id="RunHorse" value="@(obj.detail[0].MarqueeText)" />
 
                         </div>
                     </div>
                 </div>
             </li>
-
-
-
 
             <li class="list-group-item">
                 <div class="container-fluid">
@@ -128,7 +144,7 @@
                             Banner照片上傳
                         </div>
                         <div class="col-md-1">
-                            <img src="" id="PIC1" name="PIC1" class="img-thumbnail" style="max-width: 500%"/> <!--我不想改共用css，就直接改死這邊-->
+                            <img src="@((PIC1=="")?"":ImgURL+PIC1)" id="PIC1" name="PIC1" class="img-thumbnail" style="max-width: 500%" /> <!--我不想改共用css，就直接改死這邊-->
                         </div>
                     </div>
                     <div class="row">
@@ -141,17 +157,13 @@
                         <div class="col-md-8">
                             <input type="hidden" name="fileName1" id="fileName1" value="" />
                             <input type="hidden" name="fileData1" id="fileData1" value="" />
-                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限 328*77
+                            <input type="file" class="jfilestyle" accept=".png" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="選擇檔案">限 343*80 的倍數
                             <button class="btn btn-primary" name="btnUpload" id="btnUpload">上傳圖片</button>
+                            <button class="btn btn-danger" name="btnDelete" id="btnDelete" style="float:right;">刪除圖片</button>
                         </div>
                     </div>
                 </div>
             </li>
-
-
-
-
-
 
 
             <li class="list-group-item">
@@ -185,10 +197,10 @@
     </div>
 </div>
 
-
 <script>
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
     var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
     var Account = '@((Session["Account"]==null)?"":Session["Account"].ToString())';
+    var StationType = '@(obj.detail[0].QUEUE)'
 </script>
 

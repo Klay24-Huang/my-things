@@ -113,7 +113,7 @@ namespace WebAPI.Controllers
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_Banner, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_Banner, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
             }
             #endregion

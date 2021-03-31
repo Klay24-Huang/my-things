@@ -23,6 +23,7 @@
     [NowOnlineNum] INT NOT NULL DEFAULT 0,
 	[use_flag] [tinyint] NOT NULL DEFAULT 2,
     [Area] [varchar](10) NOT NULL DEFAULT '',
+    [AlertEmail] [varchar](100) NULL,
 	[MKTime] [datetime] NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
 	[UPDTime] [datetime] NOT NULL DEFAULT (DATEADD(HOUR,8,GETDATE())),
     [A_USER_ID] VARCHAR(50) NOT NULL DEFAULT '', 

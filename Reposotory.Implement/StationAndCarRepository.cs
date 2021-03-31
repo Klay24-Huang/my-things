@@ -1232,44 +1232,6 @@ namespace Reposotory.Implement
         //    #endregion
         //}
 
-        //20210315唐加
-        public List<BE_GetBannerInfo> GetBannerInfo(string name)
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_GetBannerInfo> lstBanner = null;
-            string SQL = "SELECT * FROM TB_Banner WITH(NOLOCK) ";
-            SqlParameter[] para = new SqlParameter[1];
-            string term = "";
-
-            term = " MarqueeText like '%" + name + "%'";
-
-            if (term != "")
-            {
-                SQL += " WHERE " + term;
-            }
-            SQL += " ORDER BY SEQNO DESC ";
-            lstBanner = GetObjList<BE_GetBannerInfo>(ref flag, ref lstError, SQL, para, term);
-            return lstBanner;
-        }
-        public List<BE_GetBannerInfo> GetBannerInfo2(string seqno)
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_GetBannerInfo> lstBanner = null;
-            string SQL = "SELECT * FROM TB_Banner WITH(NOLOCK) ";
-            SqlParameter[] para = new SqlParameter[1];
-            string term = "";
-
-            term = " SEQNO='" + seqno + "'";
-
-            if (term != "")
-            {
-                SQL += " WHERE " + term;
-            }
-            SQL += " ORDER BY SEQNO DESC ";
-            lstBanner = GetObjList<BE_GetBannerInfo>(ref flag, ref lstError, SQL, para, term);
-            return lstBanner;
-        }
+        
     }
 }

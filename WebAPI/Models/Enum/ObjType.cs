@@ -707,7 +707,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckToken";
                     break;
                 case SPType.RefrashToken: //Refrash Token
-                    SPName = "usp_RefrashToken";
+                    //SPName = "usp_RefrashToken";
+                    SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -847,7 +848,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarType:
                     //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210322";
+                    SPName = "usp_GetStationCarType_20210324";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
                     SPName = "usp_GetStationCarTypeOfMutiStation";

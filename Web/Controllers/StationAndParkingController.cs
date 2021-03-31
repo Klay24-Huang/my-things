@@ -80,48 +80,6 @@ namespace Web.Controllers
             }
             return View(Data);
         }
-        //20210315唐加banner設定
-        public ActionResult BannerSet()
-        {
-            return View();
-        }
-        [HttpPost]
-        public ActionResult BannerSet(string Banner)
-        {
-            ViewData["Banner"] = Banner;
-            //ViewData["Name"] = Banner;
-            List<BE_GetBannerInfo> lstData = null;
-            StationAndCarRepository repository = new StationAndCarRepository(connetStr);
-            lstData = repository.GetBannerInfo(Banner);
-            return View(lstData);
-        }
-        public ActionResult BannerInfoAdd()
-        {
-            return View();
-        }
-        public ActionResult BannerInfoMaintain()
-        {
-            return View();
-        }
-        [HttpPost]
-        public ActionResult BannerInfoMaintain(string MaintainBanner)//卡我這麼久，幹，結果是參數命名要和html/js一樣啦，白癡耶，靠北，吼~~~~~~~~~~~~~~~~~~~~
-        {
-            BE_BannerDetailCombind Data = null;
-            StationAndCarRepository repository = new StationAndCarRepository(connetStr);
-            Data = new BE_BannerDetailCombind()
-            {
-                detail = repository.GetBannerInfo2(MaintainBanner)
-            };
-            return View(Data);
-        }
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// 電子柵欄

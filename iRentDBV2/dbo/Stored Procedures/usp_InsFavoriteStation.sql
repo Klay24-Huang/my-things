@@ -32,8 +32,15 @@ BEGIN
 		IF @LogID IS NULL OR @LogID = ''
 		BEGIN
 			SET @Error=1
-			SET @ErrorCode = 'spErr'
+			SET @ErrorCode = 'ERR254'
 			SET @ErrorMsg = 'LogID必填'
+		END
+
+		IF @IDNO = ''
+		BEGIN
+			SET @Error=1
+			SET @ErrorCode = 'ERR256'
+			SET @ErrorMsg = 'IDNO必填'
 		END
 
 		IF  @Error = 0
@@ -49,8 +56,8 @@ BEGIN
 			IF (@FavoStations_add_count =0 AND @FavoStations_del_count=0)
 			BEGIN
 				SET @Error = 1
-				SET @ErrorCode = 'spErr'
-				SET @ErrorMsg = 'FavoStations 為必填' 
+				SET @ErrorCode = 'ERR250'
+				SET @ErrorMsg = 'FavoStations為必填' 
 			END
 			ELSE 
 			BEGIN
