@@ -465,6 +465,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BE_HandleStation,
             /// <summary>
+            /// 新增及修改據點（包括同步進專案)
+            /// </summary>
+            BE_HandleStationNew,
+            /// <summary>
             /// 特約停車場處理
             /// </summary>
             BE_HandleTransParking,
@@ -626,6 +630,14 @@ namespace WebAPI.Models.Enum
             BE_GetReturnCarControl,
 
             GetBindingCard,
+            /// <summary>
+            /// 匯入車機車輛綁定資料
+            /// </summary>
+            BE_ImportCarBindData,
+            /// <summary>
+            /// 更新遠傳DeviceId與DeveiceToken
+            /// </summary>
+            BE_UpdCATDeviceToken,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -1021,6 +1033,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_HandleStation:
                     SPName = "usp_BE_HandleStation";
                     break;
+                case SPType.BE_HandleStationNew:
+                    SPName = "usp_BE_HandleStationNew";
+                    break;
                 case SPType.BE_HandleTransParking:
                     SPName = "usp_BE_HandleTransParking";
                     break;
@@ -1141,6 +1156,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBindingCard:
                     SPName = "usp_GetBindingCard";
+                    break;
+                case SPType.BE_ImportCarBindData:
+                    SPName = "usp_BE_ImportCarBindData";
+                    break;
+                case SPType.BE_UpdCATDeviceToken:
+                    SPName = "usp_BE_UpdCATDeviceToken";
                     break;
                 #endregion
                 #region 整備人員

@@ -295,6 +295,7 @@
     <Compile Include="Controllers\GetProjectController.cs" />
     <Compile Include="Controllers\GetServerTimeController.cs" />
     <Compile Include="Controllers\GetUPDListController.cs" />
+    <Compile Include="Controllers\BE_HandleCarBindController.cs" />
     <Compile Include="Controllers\InvoiceSettingController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LoveCodeListController.cs" />
@@ -390,6 +391,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarSetting.cs" />
@@ -429,6 +431,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
