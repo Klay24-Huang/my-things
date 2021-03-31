@@ -628,6 +628,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\NullOutput.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OAPI_GetCarTypeParam.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OAPI_GetMonthListParam.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\OPAI_TypeListParam.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderFinishObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
