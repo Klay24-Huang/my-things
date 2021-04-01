@@ -153,6 +153,7 @@ namespace Web.Controllers
                 {
                     content.CreateCell(6).SetCellValue(data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車"));  //實際取車
                 }
+
                 if (data[k].OrderStatus < 1 || data[k].OrderStatus == 4)
                 {
                     content.CreateCell(7).SetCellValue("未取車");     //實際還車
@@ -175,6 +176,12 @@ namespace Web.Controllers
                     }
                    
                    
+                }else if (data[k].OrderStatus == 2)
+                {
+                    if (data[k].BookingEnd < data[k].BookingStart)
+                    {
+                        data[k].BookingEnd = data[k].BookingEnd.AddHours(8);
+                    }
                 }
                 else
                 {
