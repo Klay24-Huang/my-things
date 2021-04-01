@@ -116,6 +116,7 @@ namespace WebAPI.Controllers
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
+            string ProjID = "";
             #endregion
             try
             {
@@ -222,7 +223,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType;
                         UseOrderPrice = item.UseOrderPrice;
                         OrderPrice = item.OrderPrice;
-
+                        ProjID = item.ProjID;
                     }
 
                     if (ProjType != 4)
@@ -686,7 +687,8 @@ namespace WebAPI.Controllers
                             Discount = Discount,
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
-                            carBaseMins = 60
+                            carBaseMins = 60,
+                            CancelMonthRent = (ProjID == "R024")
                         };
 
                         if (visMons != null && visMons.Count() > 0)
