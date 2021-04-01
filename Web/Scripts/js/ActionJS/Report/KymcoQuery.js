@@ -72,9 +72,9 @@
                 errMsg = "起始日期大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 35) {
+                if (GetDateDiff > 3) {
                     flag = false;
-                    errMsg = "時間區間不可大於35天";
+                    errMsg = "時間區間不可大於3天";
                 }
             }
         } else {
