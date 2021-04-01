@@ -7,7 +7,8 @@ namespace WebAPI.Models.Param.Output.PartOfParam
 {
     public class OPAI_TypeListParam
     {
-        public int CodeId { get; set; }
-        public string CodeNm { get; set; }
+        public int CodeId { get; set; } = 0;
+        public string CodeNm { get; set; } = "";
+        public string Disc { get; set; } = "";
     }
 }

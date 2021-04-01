@@ -369,6 +369,7 @@
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\BillFunc\BuyNowCommon.cs" />
+    <Compile Include="Models\BillFunc\BuyNowNxtCommon.cs" />
     <Compile Include="Models\BillFunc\CarRentCommon.cs" />
     <Compile Include="Models\BillFunc\MonSubsCommon.cs" />
     <Compile Include="Models\BillFunc\SiteUV.cs" />

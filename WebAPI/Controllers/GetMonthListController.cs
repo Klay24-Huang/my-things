@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetMonthList([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
-            var ms_com = new MonSubsCommon();
+            var msp = new MonSubsSp();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -119,7 +119,7 @@ namespace WebAPI.Controllers
                 };
                 trace.traceAdd("spIn", spIn);
                 //取出月租列表
-                var sp_mList = ms_com.sp_GetMonthList(spIn, ref errCode);
+                var sp_mList = msp.sp_GetMonthList(spIn, ref errCode);
                 trace.traceAdd("sp_mList", sp_mList);
                 if(sp_mList != null && sp_mList.Count() > 0)
                 {

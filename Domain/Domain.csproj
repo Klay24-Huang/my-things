@@ -121,6 +121,7 @@
     <Compile Include="SP\Input\Battle\SPInput_EDI_STATION.cs" />
     <Compile Include="SP\Input\Battle\SPInput_GetKey.cs" />
     <Compile Include="SP\Input\Battle\SPInput_MaintainBase.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetBuyNowInfo.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetInsurancePrice.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_CreateSubsMonth.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
@@ -236,6 +238,7 @@
     <Compile Include="SP\Output\Bill\SPOutput_GetInsurancePrice.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetRewardPoint.cs" />
+    <Compile Include="SP\Output\Bill\SPOut_GetBuyNowInfo.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BeforeBookingStart.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_Booking.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BookingStart.cs" />
@@ -275,6 +278,7 @@
     <Compile Include="SP\Output\SPOutput_Base.cs" />
     <Compile Include="SP\Output\SPOutput_RefundBase.cs" />
     <Compile Include="SP\Output\SPOutput_InsTrade.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_CreateSubsMonth.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />

@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetMonthGroup([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
-            var ms_com = new MonSubsCommon();
+            var msp = new MonSubsSp();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -108,7 +108,7 @@ namespace WebAPI.Controllers
                 };
                 trace.traceAdd("spIn", spIn);
                 //取出月租列表
-                var sp_List = ms_com.sp_GetMonthGroup(spIn, ref errCode);
+                var sp_List = msp.sp_GetMonthGroup(spIn, ref errCode);
                 trace.traceAdd("sp_List", sp_List);
                 if (sp_List != null && sp_List.Count() > 0)
                 {

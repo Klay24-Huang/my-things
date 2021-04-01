@@ -24,6 +24,9 @@ using System.CodeDom;
 using Domain.SP.Input.Arrears;
 using WebAPI.Models.BillFunc;
 using Domain.SP.Input.Rent;
+using Domain.SP.Input.Bill;
+using Domain.SP.Input.Subscription;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -36,7 +39,8 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBuyNow([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
-            var ms_com = new MonSubsCommon();
+            var msp = new MonSubsSp();
+            var buyNxtCom = new BuyNowNxtCommon();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -52,8 +56,10 @@ namespace WebAPI.Controllers
             string funName = "BuyNowController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BuyNow apiInput = null;
-            OAPI_BuyNow outputApi = null;
+            var apiInput = new IAPI_BuyNow();
+            var outputApi = new OAPI_BuyNow();
+            outputApi.PayTypes = new List<OPAI_TypeListParam>();
+            outputApi.InvoTypes = new List<OPAI_TypeListParam>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -63,7 +69,10 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
 
+
             #endregion
+
+            trace.traceAdd("apiIn", value);
 
             try
             {
@@ -85,6 +94,43 @@ namespace WebAPI.Controllers
                             errCode = "ERR101";
                         }
                     }
+                    if (flag)
+                    {
+                        var DoPays = new List<int> { 0, 1 };
+                        if (!DoPays.Any(x=>x == apiInput.DoPay))
+                        {
+                            flag = false;
+                            errCode = "ERR266";//DoPay只可為0或1
+                        }
+                    }
+                    if (flag && apiInput.ApiID > 0)
+                    {
+                        buyNxtCom.ApiID = apiInput.ApiID;
+                        buyNxtCom.ApiJson = apiInput.ApiJson;
+                        flag = buyNxtCom.CkApiID();
+                        errCode = buyNxtCom.errCode;
+                    }
+
+                    if (flag)
+                    {
+                        if(apiInput.DoPay == 1)
+                        {
+                            if(apiInput.PayTypeId == 0 || apiInput.InvoTypeId == 0)
+                            {
+                                flag = false;
+                                errCode = "ERR268";
+                            }
+
+                            if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
+                            {
+                                flag = false;
+                                errCode = "ERR269";
+                            }
+                        }
+                    }
+
+                    trace.FlowList.Add("防呆");
+                    trace.traceAdd("InCk",new { flag, errCode });                    
                 }
 
                 #endregion
@@ -108,13 +154,88 @@ namespace WebAPI.Controllers
                         IDNO = token_re.IDNO;
                     }
                     trace.FlowList.Add("Token判斷");
+                    trace.traceAdd("TokenCk", new { flag, errCode });
                 }
 
                 #endregion
 
                 #region TB
 
+                if (flag)
+                {
+                    if (apiInput.DoPay == 0)
+                    {
+                        var spIn = new SPInput_GetBuyNowInfo()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID
+                        };
+                        trace.traceAdd("spIn", spIn);
+                        var spList = msp.sp_GetBuyNowInfo(spIn, ref errCode);
 
+                        if (spList != null && spList.Count() > 0)
+                        {
+                            trace.traceAdd("spList", spList);
+
+                            var payTypes = spList.Where(x => x.CodeGroup == "PayType").ToList();
+                            var invoTypes = spList.Where(x => x.CodeGroup == "InvoiceType").ToList();
+
+                            if (payTypes != null && payTypes.Count() > 0)
+                            {
+                                outputApi.PayTypes = (from a in payTypes
+                                                      select new OPAI_TypeListParam
+                                                      {
+                                                          CodeId = Convert.ToInt32(a.CodeId),
+                                                          CodeNm = a.CodeNm
+                                                      }).ToList();
+                            }
+
+                            if (invoTypes != null && invoTypes.Count() > 0)
+                            {
+                                outputApi.InvoTypes = (from a in invoTypes
+                                                       select new OPAI_TypeListParam
+                                                       {
+                                                           CodeId = Convert.ToInt32(a.CodeId),
+                                                           CodeNm = a.CodeNm
+                                                       }).ToList();
+                            }
+
+                            outputApi.ProdNm = apiInput.ProdNm;
+                            outputApi.ProdPrice = apiInput.ProPrice;
+                        }
+                    }
+                    else if (apiInput.DoPay == 1)//付款
+                    {
+                        bool PayResult = true;//信用卡交易
+                        trace.FlowList.Add("信用卡交易");
+                        trace.traceAdd("PayResult", PayResult);
+                        if (PayResult)
+                        {                            
+                            flag = buyNxtCom.exeNxt();
+                            errCode = buyNxtCom.errCode;
+                            outputApi.PayResult = flag ? 1 : 0;//呼叫api後續動作   
+
+                            trace.FlowList.Add("api後續");
+                            trace.traceAdd("apiNxt", flag);
+                        }
+                        else
+                        {
+                            flag = false;
+                            errCode = "ERR270";//信用卡交易失敗
+                        }
+                    }               
+                }
+
+                #endregion
+
+                #region trace
+
+                trace.traceAdd("apiOut", apiInput);
+
+                if (flag)
+                    carRepo.AddTraceLog(181, funName, eumTraceType.mark, trace);
+                else
+                    carRepo.AddTraceLog(181, funName, eumTraceType.followErr, trace);
 
                 #endregion
             }
@@ -122,7 +243,6 @@ namespace WebAPI.Controllers
             {
                 trace.BaseMsg = ex.Message;
                 carRepo.AddTraceLog(181, funName, eumTraceType.exception, trace);
-
             }
 
             #region 輸出
@@ -130,6 +250,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-
     }
 }
