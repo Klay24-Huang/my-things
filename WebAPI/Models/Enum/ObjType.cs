@@ -394,6 +394,7 @@ namespace WebAPI.Models.Enum
             /// 取得廣告資訊
             /// </summary>
             GetBanner,
+            GetCarTypeGroupList,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -945,6 +946,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
                     SPName = "usp_GetBanner";
+                    break;
+                case SPType.GetCarTypeGroupList:   
+                    SPName = "usp_GetCarTypeGroupList_Q1";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
