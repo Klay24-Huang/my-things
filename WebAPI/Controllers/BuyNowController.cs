@@ -177,8 +177,8 @@ namespace WebAPI.Controllers
                         {
                             trace.traceAdd("spList", spList);
 
-                            var payTypes = spList.Where(x => x.CodeGroup == "PayType").ToList();
-                            var invoTypes = spList.Where(x => x.CodeGroup == "InvoiceType").ToList();
+                            var payTypes = spList.Where(x => x.CodeGroup == "PayType").OrderBy(y=>y.Sort).ToList();
+                            var invoTypes = spList.Where(x => x.CodeGroup == "InvoiceType").OrderBy(y=>y.Sort).ToList();
 
                             if (payTypes != null && payTypes.Count() > 0)
                             {

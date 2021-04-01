@@ -12,6 +12,7 @@ namespace Domain.TB
         public string CodeNm { get; set; }
         public string CodeDisc { get; set; }
         public string CodeGroup { get; set; }
+        public int Sort { get; set; }
         public int UseFlag { get; set; }
     }
 }
