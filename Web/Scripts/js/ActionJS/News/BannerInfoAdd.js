@@ -4,25 +4,10 @@
     $("#fileImport").prop("disabled", "");
     clearFileInput("fileImport");
 
-    $("#btnDelete").on("click", function () {
-        console.log($.trim($("#fileName1").val));
-        if ($.trim($("#fileName1").val()) == "") {
-            swal({
-                title: 'Fail',
-                text: "請選擇圖片",
-                icon: 'error'
-            });
-            return;
-        }
-        $("#PIC1").attr('src', null);
-        $("#fileName1").val('');
-    });
-
-
     $("#btnUpload").on("click", function () {
-        if ($("#fileImport")[0].files.length != 0) {
+        if ($("#fileImport")[0].files.length != 0) { //length未上傳照片是0，上傳是1
             $("#fileName1").val($("#fileImport")[0].files[0].name);
-            handleFiles($("#fileImport")[0].files, 1);
+            handleFiles($("#fileImport")[0].files, 1); //呼叫圖片處理function
         } else {
             swal({
                 title: 'Fail',
@@ -30,15 +15,55 @@
                 icon: 'error'
             })
         }
-    });
+    })
     $("#PIC1").on("click", function () {
         if ($(this).attr("src") != "") {
-            console.log("路徑:" + $(this).attr("src"));
+            console.log("路徑:"+$(this).attr("src"));
             $("#tmpENVPIC").attr("src", $(this).attr("src"));
             $("#surrounding_modal").modal();
         }
     });
 
+    //這裡只做檢核而已 
+    /* 這段寫法的change事件只有第一次會觸發.......
+    $("#fileImport").on("change", function () {
+        console.log("b:" + $("#fileImport")[0].value);
+        console.log("b:" + $("#fileImport")[0].val);
+        console.log("b:" + $("#fileImport"));
+        console.log("b:" + $("#fileImport")[0]);
+
+        var file = this.files[0];
+        if (file != null) {
+            var fileName = file.name;
+            var ext = GetFileExtends(fileName);
+            var extName = "";
+            if (CheckStorageIsNull(ext)) {
+                extName = ext[0];
+            }
+            //if (file.width != 343 && file.height != 80) {
+            //    swal({
+            //        title: 'Fail',
+            //        text: "尺寸不對",
+            //        icon: 'error'
+            //    }).then(function (value) {
+            //        clearFileInput("fileImport");
+            //    });
+            //}
+            if (extName.toUpperCase() != "PNG") {
+                swal({
+                    title: 'Fail',
+                    text: "僅允許png格式",
+                    icon: 'error'
+                }).then(function (value) {
+                    $("#fileImport").prop("disabled", "");
+                    clearFileInput("fileImport");
+                });
+            }
+        }
+    })
+    */
+
+    
     //在 HTML 有提供 File、FileReader、Image 這三組 API，透過他們可以達到檔案上傳的格式、尺寸、大小檢查以及預覽功能
     $('body').on("change", "#fileImport", function () {
         var file = this.files[0]; //原生input file控制元件有個files屬性，該屬性是一個陣列
@@ -64,9 +89,9 @@
                     var width = image.width;
                     var height = image.height;
 
-                    console.log("Q:" + width)
-                    console.log("Q:" + height)
-                    if (width != 343 || height != 80) {
+                    //console.log("Q:"+width)
+                    //console.log("Q:" +height)
+                    if (width % 343 != 0 || height % 80 != 0 || width / 343 != height / 80) {
                         swal({
                             title: 'Fail',
                             text: "尺寸不對",
@@ -87,20 +112,70 @@
             //        clearFileInput("fileImport");
             //    });
             //}
-            if (extName.toUpperCase() != "PNG") {
+            if ((extName.toUpperCase() != "PNG") && (extName.toUpperCase() != "JPG")) {
                 swal({
                     title: 'Fail',
-                    text: "僅允許png",
+                    text: "僅允許png和jpg",
                     icon: 'error'
                 }).then(function (value) {
                     // $("#fileImport").val("");
                     clearFileInput("fileImport");
                 });
             }
+
+            var fileName2 = fileName.slice(0, -4) //擷取.png之前的文字
+            /*
+            為何不能用.....
+            entryLen = fileName2.length;
+            cnChar = entryVal.match(/[^\x00-\x80]/g);//利用match方法檢索出中文字元並返回一個存放中文的陣列
+            entryLen = cnChar.length;//算出實際的字元長度
+            if (entryLen > 0) {
+                swal({
+                    title: 'Fail',
+                    text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                    icon: 'error'
+                }).then(function (value) {
+                    // $("#fileImport").val("");
+                    clearFileInput("fileImport");
+                });
+            }
+            */
+            
+            /*
+            這是全中文字才會符合
+            var reg = /^[\u4E00-\u9FA5]+$/
+            if (reg.test(fileName2)) {
+                swal({
+                    title: 'Fail',
+                    text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                    icon: 'error'
+                }).then(function (value) {
+                    // $("#fileImport").val("");
+                    clearFileInput("fileImport");
+                });
+            }
+            */
+
+            //可以正確判斷，但用正則表達式比較好         
+            for (var i = 0; i < fileName2.length; i++) {
+                if (fileName2.charCodeAt(i) > 255) {
+                    swal({
+                        title: 'Fail',
+                        text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                        icon: 'error'
+                    }).then(function (value) {
+                        // $("#fileImport").val("");
+                        clearFileInput("fileImport");
+                    });
+                    break;
+                }
+            }
+            
         }
     })
-
     
+    
+
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料處理中…");
@@ -109,9 +184,17 @@
         var RunHorse = $("#RunHorse").val();
         var SDate = $("#SDate").val();
         var EDate = $("#EDate").val();
+        var fn = $("#fileData1").val();
         var flag = true;
-        var checkList = [SDate, EDate, URL, RunHorse];
-        var checkErrList = ["有效起日未填", "有效迄日未填", "睡覺喔? URL沒填啦", "跑馬燈拜託一下"];
+        var checkList = [SDate, EDate, URL, RunHorse, fn];
+        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填，妳有看到嗎?", "跑馬燈啦，填一下好嗎", "圖片沒傳，睏了嗎?"];
+
+        if (SDate !== "" && EDate !== "") {
+            if (SDate > EDate) {
+                flag = false;
+                errorMsg = "起始日期大於結束日期";
+            }
+        }
 
         var checkLen = checkList.length;
         if (flag) {
@@ -133,8 +216,7 @@
             obj.fileName1 = $("#fileName1").val();
             obj.fileData1 = $("#fileData1").val();
             obj.UserID = Account;
-            obj.SEQNO = $("#SEQ").val();
-            DoAjaxAfterGoBack(obj, "BE_Banner", "修改banner發生錯誤")
+            DoAjaxAfterGoBack(obj, "BE_Banner", "新增Banner發生錯誤")
         } else {
             disabledLoadingAndShowAlert(errorMsg)
         }
@@ -142,8 +224,6 @@
     });
 });
 
-
-var inPicSize = 0;
 //圖片處理
 function handleFiles(file, id) {
     console.log("call handleFiles");
@@ -171,33 +251,20 @@ function handleFiles(file, id) {
 
                 // console.log("before length:" + base64.length);
                 $('#PIC' + id).attr('src', url);
-
             };
             reader.readAsDataURL(tmpfile);
-
-
             // $('#tmpENVPIC').show();
             console.log("show")
             //  $("#btnReview").show();
-
         } else {
             //$("#btnReview").hide();
             // document.getElementById('tmpENVPICc').src = "";
             // $("#hidPic").val("");
-
-
         }
-
     }
-
 }
 
-
-
-
-
 document.getElementById("PIC1").addEventListener('load', function () {
-
     var cvs = document.createElement('canvas'),
         ctx = cvs.getContext('2d');
     var img = new Image(),
@@ -217,6 +284,9 @@ document.getElementById("PIC1").addEventListener('load', function () {
     var base64 = dataUrl.split(",");
     console.log(dataUrl);
 });
+
+
+
 document.getElementById('PIC1').addEventListener('change', function () {
     console.log("call PIC1 Change");
     var reader = new FileReader();

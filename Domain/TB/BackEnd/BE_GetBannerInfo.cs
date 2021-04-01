@@ -13,7 +13,7 @@ namespace Domain.TB.BackEnd
         public string MarqueeText { set; get; }
         public DateTime STARTDATE { set; get; }
         public DateTime ENDDATE { set; get; }
-        public string PIC { set; get; }
+        public string PIC_NAME { set; get; } //命名要和sp吐回的一樣
         public string SEQNO { set; get; } //設為int會出現null錯誤，沒找出為何，所以還是改string
     }
 }

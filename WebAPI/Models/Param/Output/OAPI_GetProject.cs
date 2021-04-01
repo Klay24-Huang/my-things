@@ -13,7 +13,7 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_GetProject
     {
         /// <summary>
-        /// 是否具有可租的卡片
+        /// 是否有可租的卡片
         /// </summary>
         //public bool HasRentCard { get; set; } = false;
         /// <summary>

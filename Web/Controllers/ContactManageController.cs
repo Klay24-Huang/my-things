@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebCommon;    //20210316 ADD BY ADAM
 
 namespace Web.Controllers
 {
@@ -623,6 +624,10 @@ namespace Web.Controllers
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
+                    //20210315 ADD BY ADAM REASON.合約參數改為AES加密
+                    string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                    string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                    obj.Data.AesEncode = HttpUtility.UrlEncode(AESEncrypt.EncryptAES128("OrderNum=" + tmpOrder.ToString() + "&ID=" + obj.Data.IDNO, KEY, IV));
                 }
                 else
                 {
@@ -670,6 +675,10 @@ namespace Web.Controllers
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
+                    //20210315 ADD BY ADAM REASON.合約參數改為AES加密
+                    string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                    string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                    obj.Data.AesEncode = HttpUtility.UrlEncode(AESEncrypt.EncryptAES128("OrderNum=" + tmpOrder.ToString() + "&ID=" + obj.Data.IDNO, KEY, IV));
                 }
                 else
                 {
@@ -714,6 +723,10 @@ namespace Web.Controllers
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
+                    //20210315 ADD BY ADAM REASON.合約參數改為AES加密
+                    string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                    string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                    obj.Data.AesEncode = HttpUtility.UrlEncode(AESEncrypt.EncryptAES128("OrderNum=" + tmpOrder.ToString() + "&ID=" + obj.Data.IDNO, KEY, IV));
                 }
                 else
                 {
@@ -759,6 +772,10 @@ namespace Web.Controllers
                         PaymentData = repository.GetOrderPaymentData(tmpOrder)
                     };
 
+                    //20210315 ADD BY ADAM REASON.合約參數改為AES加密
+                    string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                    string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                    obj.Data.AesEncode = HttpUtility.UrlEncode(AESEncrypt.EncryptAES128("OrderNum=" + tmpOrder.ToString() + "&ID=" + obj.Data.IDNO, KEY, IV));
                 }
                 else
                 {

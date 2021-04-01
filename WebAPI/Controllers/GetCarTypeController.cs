@@ -4,6 +4,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Car;
 using Domain.SP.Output.Common;
+using Domain.SP.Output.Rent;
 using Domain.TB;
 using Newtonsoft.Json;
 using Reposotory.Implement;
@@ -62,6 +63,8 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            string CarTypeList = "";
+            string SeatList = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -116,6 +119,12 @@ namespace WebAPI.Controllers
                             errCode = "ERR151";
                         }
                     }
+
+                    //if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                    //    CarTypeList = String.Join(",", apiInput.CarTypes);
+
+                    //if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
+                    //    SeatList = String.Join(",", apiInput.Seats.Select(x=>x.ToString()).ToList());
                 }
             }
 
@@ -171,10 +180,17 @@ namespace WebAPI.Controllers
                     StationID = apiInput.StationID,
                     SD = SDate,
                     ED = EDate,
+                    CarTypes = CarTypeList,
+                    Seats = SeatList,
                     IDNO = IDNO,
-                    LogID = LogID
+                    LogID = LogID,
+                    
                 };
-                var spList = GetStationCarType(spInput, ref flag, ref lstError, ref errCode);
+
+                var sp_re = GetStationCarType(spInput, ref flag, ref lstError, ref errCode);
+                var spList = new List<SPOutput_GetStationCarType_Cards>();
+                if (sp_re != null && sp_re.Cards != null && sp_re.Cards.Count() > 0)
+                    spList = sp_re.Cards;
 
                 if (QueryMode == 0)
                 {
@@ -227,10 +243,10 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                if (OAPI_Params != null && OAPI_Params.Count() > 0)
+                if (OAPI_Params != null && OAPI_Params.Count()>0)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
-                    {
+                    {                       
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };
                 }
@@ -243,8 +259,8 @@ namespace WebAPI.Controllers
                     };
                 }
 
-                //if (spList != null && spList.Count() > 0)
-                //    GetCarTypeAPI.IsFavStation = spList.FirstOrDefault().IsFavStation;
+                if (sp_re != null)
+                    GetCarTypeAPI.IsFavStation = sp_re.IsFavStation;
             }
             #endregion
 
@@ -268,15 +284,19 @@ namespace WebAPI.Controllers
         /// <param name="lstError">lstError</param>
         /// <param name="errCode">errCode</param>
         /// <returns></returns>
-        private List<SPOutput_GetStationCarType> GetStationCarType(SPInput_GetStationCarType spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
+        private SPOutput_GetStationCarType GetStationCarType(SPInput_GetStationCarType spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            List<SPOutput_GetStationCarType> re = new List<SPOutput_GetStationCarType>();
+            var re = new SPOutput_GetStationCarType();
+
+            List<SPOutput_GetStationCarType_Cards>  sp_list = new List<SPOutput_GetStationCarType_Cards>();
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarType);
-            SPOutput_Base spOut = new SPOutput_Base();
-            SQLHelper<SPInput_GetStationCarType, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarType, SPOutput_Base>(connetStr);
+            SPOutBase_GetStationCarType spOut = new SPOutBase_GetStationCarType();
+            SQLHelper<SPInput_GetStationCarType, SPOutBase_GetStationCarType> sqlHelp = new SQLHelper<SPInput_GetStationCarType, SPOutBase_GetStationCarType>(connetStr);
             DataSet ds = new DataSet();
-            flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref re, ref ds, ref lstError);
+            flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            re.IsFavStation = spOut.IsFavStation;
+            re.Cards = sp_list;
             return re;
         }
 

@@ -54,6 +54,12 @@ namespace Domain.WebAPI.output.rootAPI
         public int IsFavStation { set; get; }
 
         /// <summary>
+        /// 是否顯示牌卡
+        /// </summary>
+        /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
+        //public int IsShowCard { get; set; } = 1;
+
+        /// <summary>
         /// 專案資料
         /// </summary>
         public List<ProjectObj> ProjectObj { set; get; }

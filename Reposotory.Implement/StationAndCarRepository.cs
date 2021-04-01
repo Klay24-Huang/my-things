@@ -304,7 +304,9 @@ namespace Reposotory.Implement
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //20210318 ADD BY ADAM REASON.機車上線邏輯調整
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
@@ -336,7 +338,9 @@ namespace Reposotory.Implement
             SQL += " [PRONAME] AS ProjectName,[PRICE] AS Rental,2.5 AS Mileage,0 AS Insurance,0 As InsurancePrice,0 As ShowSpecial,'' As SpecialInfo ";
             SQL += " ,[Latitude] ,[Longitude],device3TBA AS 'Power',deviceRDistance AS RemainingMileage ";
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
+            //20210318 ADD BY ADAM REASON.機車上線邏輯調整
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";
@@ -375,7 +379,10 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationData> lstStation = null;
             int nowCount = 0;
-            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content] FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
+            //20210319 ADD BY ADAM REASON.補上欄位ContentForAPP,IsRequiredForReturn
+            string SQL = "SELECT [StationID],[StationName],[ADDR],[Tel],[Latitude],[Longitude],[Content],ContentForAPP,IsRequiredForReturn ";
+            SQL += " FROM [dbo].[VW_GetFavoriteStation] WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(IDNO) == false && string.IsNullOrWhiteSpace(IDNO) == false)

@@ -240,6 +240,7 @@
     <Compile Include="SP\Output\Booking\SPOutput_CarMachineCommon.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_CheckCarStatus.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_ReadCard.cs" />
+    <Compile Include="SP\Output\Car\SPOutBase_GetStationCarType.cs" />
     <Compile Include="SP\Output\Car\SPOutput_CarStatus.cs" />
     <Compile Include="SP\Output\Car\SPOutput_GetCarMillage.cs" />
     <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
