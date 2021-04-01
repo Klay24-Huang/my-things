@@ -97,6 +97,7 @@ DECLARE @tmpFileName1 VARCHAR(150);
 DECLARE @tmpFileName2 VARCHAR(150);
 DECLARE @tmpFileName3 VARCHAR(150);
 DECLARE @tmpFileName4 VARCHAR(150);
+DECLARE @tmpStationType INT;
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -119,7 +120,7 @@ SET @CarNo='';
 SET @ProjType=5;
 SET @StationID    =ISNULL (@StationID    ,'');
 SET @UserID    =ISNULL (@UserID    ,'');
-
+SET @tmpStationType=0;
 		BEGIN TRY
 
 		 
@@ -166,18 +167,14 @@ SET @UserID    =ISNULL (@UserID    ,'');
 											,@Latitude,@Longitude,@in_description,@show_description,@UniCode
 											,@CityID,@AreaID,@IsRequired,@StationPick,@FCode
 											,@SDate,@EDate,@StationType,@ParkingNum,@OnlineNum
-											,1,@Area,@UserID);
+											,3,@Area,@UserID);
 			   --寫入專案代碼至TB_ProjectStation
-			   IF @StationType=0
+			   IF @StationType IN (0,3)
 			   BEGIN
-			     INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID])	SELECT [PROJID],'I',@StationID  FROM [TB_Project] WHERE PROJTYPE=0 AND ShowEnd>GETDATE() AND PROJID<>'P999';
-				 INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID])	SELECT [PROJID],'O',@StationID  FROM [TB_Project] WHERE PROJTYPE=0 AND ShowEnd>GETDATE() AND PROJID<>'P999';
-			   END
-			   
-			   IF @StationType=3
-			   BEGIN
-			     INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID])	SELECT [PROJID],'I',@StationID  FROM [TB_Project] WHERE PROJTYPE=3 AND ShowEnd>GETDATE() AND PROJID<>'R049';
-				 INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID])	SELECT [PROJID],'O',@StationID  FROM [TB_Project] WHERE PROJTYPE=3 AND ShowEnd>GETDATE() AND PROJID<>'R049';
+			       INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
+				        --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=0 AND ShowEnd>GETDATE() AND PROJID<>'P999';
+					    --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=3 AND ShowEnd>GETDATE() AND PROJID<>'R049';
+						  INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
 			   END
 
 			   --寫入專案代碼至TB_ProjectStation結束
@@ -200,6 +197,8 @@ SET @UserID    =ISNULL (@UserID    ,'');
 			END
 			ELSE
 			BEGIN
+				SELECT @tmpStationType=ISNULL(IsNormalStation,-1) FROM TB_iRentStation	WHERE StationID=@StationID;
+
 				UPDATE TB_iRentStation
 				SET [ManageStationID]=@ManagerStationID ,[Location]=@StationName,[Tel]=@TEL,[ADDR]=@Addr
 				    ,[Latitude]=@Latitude,[Longitude]=@Longitude,[Content]=@in_description,[ContentForAPP]=@show_description,[UNICode]=@UniCode
@@ -236,6 +235,44 @@ SET @UserID    =ISNULL (@UserID    ,'');
 					UPDATE TB_iRentStationInfo SET StationPic=@fileName1,PicDescription=@fileDescript1 WHERE StationID=@StationID AND Sort=1
 				END
 
+				/*同步處理專案出入據點，自行決定要不要開啟*/
+				IF @tmpStationType IN (0,3)
+				BEGIN
+					IF @StationType=4
+					BEGIN
+						--移除舊的
+						DELETE FROM [TB_ProjectStation] WHERE StationID=@StationID;
+					END
+					ELSE
+					BEGIN
+						 --多做這段，避免有新專案時，舊據點沒有同步到
+						 --移除舊的
+				    	DELETE FROM [TB_ProjectStation] WHERE StationID=@StationID;
+				    	--寫入新的
+				        IF @StationType IN (0,3)
+				    	BEGIN
+				    	  INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
+				        --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=0 AND ShowEnd>GETDATE() AND PROJID<>'P999';
+					    --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=3 AND ShowEnd>GETDATE() AND PROJID<>'R049';
+						  INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
+				    	END
+					END
+					
+				END
+				ELSE
+				BEGIN --機車變汽車
+				       --移除舊的
+				    	DELETE FROM [TB_ProjectStation] WHERE StationID=@StationID;
+				    	--寫入新的
+				        IF @StationType IN (0,3)
+				    	BEGIN
+				    	  INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
+				        --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=0 AND ShowEnd>GETDATE() AND PROJID<>'P999';
+					    --INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'I',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE=3 AND ShowEnd>GETDATE() AND PROJID<>'R049';
+						  INSERT INTO [TB_ProjectStation]([PROJID],[IOType],[StationID],MKTime)	SELECT [PROJID],'O',@StationID,@NowTime  FROM [TB_Project] WHERE PROJTYPE IN(0,3) AND ShowEnd>GETDATE() AND PROJID NOT IN ('P999','R049');
+				    	END
+				END
+				/*同步處理專案出入據點END*/
 				IF @fileName2!=''
 				BEGIN
 					IF @tmpFileName2=''

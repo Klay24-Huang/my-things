@@ -374,6 +374,9 @@
     <Content Include="Scripts\js\ActionJS\MemberManage\ViewSameMobile.js" />
     <Content Include="Scripts\js\ActionJS\Message\Index.js" />
     <Content Include="Scripts\js\ActionJS\Monitor\Index.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerInfoAdd.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerInfoMaintain.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerSet.js" />
     <Content Include="Scripts\js\ActionJS\News\NewsManage.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarFeedBackQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ChargeParkingDetailQuery.js" />
@@ -686,6 +689,9 @@
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
+    <Content Include="Views\News\BannerInfoAdd.cshtml" />
+    <Content Include="Views\News\BannerInfoMaintain.cshtml" />
+    <Content Include="Views\News\BannerSet.cshtml" />
     <None Include="Web.iRent-Backend-Web - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
