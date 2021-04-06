@@ -27,6 +27,7 @@ using Domain.SP.Input.Rent;
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Subscription;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
@@ -36,7 +37,7 @@ namespace WebAPI.Controllers
     public class BuyNowController : ApiController
     {
         [HttpPost()]
-        public Dictionary<string, object> DoBuyNow([FromBody] Dictionary<string, object> value)
+        public async Task<Dictionary<string, object>> DoBuyNow([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var msp = new MonSubsSp();
@@ -210,19 +211,23 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("信用卡交易");
                         trace.traceAdd("PayResult", PayResult);
                         if (PayResult)
-                        {                            
-                            flag = buyNxtCom.exeNxt();
-                            errCode = buyNxtCom.errCode;
-                            outputApi.PayResult = flag ? 1 : 0;//呼叫api後續動作   
-
-                            trace.FlowList.Add("api後續");
-                            trace.traceAdd("apiNxt", flag);
+                        {           
+                            if(apiInput.ApiID > 0)
+                            {
+                                //呼叫建立月租  
+                                flag = buyNxtCom.exeNxt();
+                                errCode = buyNxtCom.errCode;
+                                trace.FlowList.Add("建立月租");
+                                trace.traceAdd("AddMonth", flag);
+                            }
                         }
                         else
                         {
                             flag = false;
                             errCode = "ERR270";//信用卡交易失敗
                         }
+
+                        outputApi.PayResult = flag ? 1 : 0;
                     }               
                 }
 

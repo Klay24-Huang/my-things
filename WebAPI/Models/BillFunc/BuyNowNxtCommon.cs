@@ -49,6 +49,7 @@ namespace WebAPI.Models.BillFunc
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && !string.IsNullOrWhiteSpace(spIn.MonProjID) &&
                             spIn.LogID > 0 && spIn.MonProPeriod > 0)
                         {
+                            spIn.SetPayOne = 1;//首期金額已付
                             return msp.sp_CreateSubsMonth(spIn, ref errCode);
                         }
                         else

@@ -15,5 +15,6 @@ namespace Domain.SP.Input.Subscription
         public int ShortDays { get; set; }
         public DateTime? SetNow { get; set; } = null;//不用填
         public Int64 SetSubGrop { get; set; } = 0;//不用填
+        public int SetPayOne { get; set; } = 0;
     }
 }
