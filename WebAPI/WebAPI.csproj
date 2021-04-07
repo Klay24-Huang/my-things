@@ -256,6 +256,7 @@
     <Compile Include="Controllers\ChangePWDController.cs" />
     <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
+    <Compile Include="Controllers\CheckAppVersionController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
@@ -440,6 +441,7 @@
     <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CheckAppVersion.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
@@ -554,6 +556,7 @@
     <Compile Include="Models\Param\Output\OAPI_BookingStart.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStartMotor.cs" />
     <Compile Include="Models\Param\Output\OAPI_ChangeCreditCardBind.cs" />
+    <Compile Include="Models\Param\Output\OAPI_CheckAppVersion.cs" />
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_CreditAndWalletQuery.cs" />

@@ -142,6 +142,7 @@
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_SetMotorStatus.cs" />
+    <Compile Include="SP\Input\Common\SPInput_CheckAppVersion.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenDevice.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
     <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
     <Compile Include="SP\Output\Car\SPOut_GetCarTypeGroupList.cs" />
+    <Compile Include="SP\Output\Common\SPOutput_CheckAppVersion.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />

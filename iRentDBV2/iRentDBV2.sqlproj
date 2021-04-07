@@ -492,6 +492,7 @@
     <Build Include="dbo\Tables\TB_AlertMailLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetCarTypeGroupList_Q1.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetAlertMailLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckAppVersion.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

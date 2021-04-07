@@ -395,6 +395,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetBanner,
             GetCarTypeGroupList,
+            /// <summary>
+            /// 檢查APP版本
+            /// </summary>
+            CheckAppVersion,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -708,8 +712,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckToken";
                     break;
                 case SPType.RefrashToken: //Refrash Token
-                    //SPName = "usp_RefrashToken";
-                    SPName = "usp_RefrashToken_ForTest";
+                    SPName = "usp_RefrashToken";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -949,6 +952,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetCarTypeGroupList:   
                     SPName = "usp_GetCarTypeGroupList_Q1";
+                    break;
+                case SPType.CheckAppVersion:    //檢查APP版本
+                    SPName = "usp_CheckAppVersion";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
