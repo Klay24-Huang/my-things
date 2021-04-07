@@ -296,7 +296,7 @@ namespace WebAPI.Controllers
             flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             re.IsFavStation = spOut.IsFavStation;
-
+            re.Cards = sp_list; //20210406 ADD BY ADAM REASON.少了這段會有BUG
             return re;
         }
 
