@@ -277,6 +277,7 @@
     <Compile Include="Controllers\GetMonthGroupController.cs" />
     <Compile Include="Controllers\GetMonthListController.cs" />
     <Compile Include="Controllers\GetMotorStatusController.cs" />
+    <Compile Include="Controllers\GetMySubsController.cs" />
     <Compile Include="Controllers\GetPayDetailController.cs" />
     <Compile Include="Controllers\GetPolygonController.cs" />
     <Compile Include="Controllers\GetAnyRentProjectController.cs" />
@@ -484,6 +485,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetMonthList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorStatus.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetMySubs.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
@@ -585,6 +587,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetMonthList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorStatus.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMySubs.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPayDetail.cs" />

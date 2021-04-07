@@ -82,6 +82,67 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public SPOut_GetMySubs sp_GetMySubs(SPInput_GetMySubs spInput, ref string errCode)
+        {
+            var re = new SPOut_GetMySubs();
+            re.Months = new List<SPOut_GetMySubs_Month>();
+            re.Codes = new List<SPOut_GetMySubs_Code>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthList);
+                string SPName = "usp_GetMySubs_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.MonType,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 3)
+                    {
+                        var months = objUti.ConvertToList<SPOut_GetMySubs_Month>(ds1.Tables[0]);
+                        if (months != null && months.Count() > 0)
+                            re.Months = months;
+
+                        var codes = objUti.ConvertToList<SPOut_GetMySubs_Code>(ds1.Tables[1]);
+                        if (codes != null && codes.Count() > 0)
+                            re.Codes = codes;
+                    }
+                    else 
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         /// <summary>
         /// 取得月租Group
         /// </summary>

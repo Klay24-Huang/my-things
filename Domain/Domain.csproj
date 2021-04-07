@@ -225,6 +225,7 @@
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_CreateSubsMonth.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_GetMySubs.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
@@ -279,6 +280,7 @@
     <Compile Include="SP\Output\SPOutput_RefundBase.cs" />
     <Compile Include="SP\Output\SPOutput_InsTrade.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_CreateSubsMonth.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_GetMySubs.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />
