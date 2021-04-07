@@ -1,3 +1,5 @@
+
+
 版本: 1.0
 
 # iRentApi2 WebAPI
@@ -10,6 +12,7 @@ iRentApi20 Web API版本
 
 - [Login 登入](#Login)
 - [RefrashToken 更新Token](#RefrashToken)
+- [CheckAppVersion 檢查APP版本](#CheckAppVersion)
 - [GetMemberStatus 取得會員狀態](#GetMemberStatus)
 
 首頁地圖相關
@@ -32,6 +35,8 @@ iRentApi20 Web API版本
 20210322 新增登入、更新Token、取得會員狀態
 
 20210324 增加地圖搜尋相關修改，有變動到的API清單為 GetNormalRent,GetCarType,GetProject
+
+20210407 新增檢查APP版本、還原更新Token
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -263,16 +268,15 @@ iRentApi20 Web API版本
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明              |  型態  | 範例          |
-| ------------ | --------------------- | :----: | ------------- |
-| Result       | 是否成功              |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼                | string | 000000        |
-| NeedRelogin  | 是否需重新登入        |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新    |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息              | string | Success       |
-| Data         | 資料物件              |        |               |
-| Token        | Token列表             |  List  |               |
-| MandatoryUPD | 強制更新 1=強更，0=否 |  int   | 1             |
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| Token        | Token列表          |  List  |               |
 
 * Token 參數說明
 
@@ -298,8 +302,72 @@ iRentApi20 Web API版本
             "Refrash_token": "51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF",
             "Rxpires_in": 86400,
             "Refrash_Rxpires_in": 604800
-        },
-        "MandatoryUPD": 0
+        }
+    }
+}
+```
+
+------
+
+<h5 id="CheckAppVersion" name="CheckAppVersion">20210407發佈</h5>
+
+# CheckAppVersion 檢查APP版本
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/CheckAppVersion/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                               |
+| ---------- | ------------------------ | :--: | :----: | ---------------------------------- |
+| DeviceID   | DeviceID                 |  Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA |
+| APP        | APP類型(0:Android 1:iOS) |  Y   |  int   | 1                                  |
+| APPVersion | APP版號                  |  Y   | string | 5.6.0                              |
+
+* input範例
+
+```
+{
+    "DeviceID": "171DD37E-E20A-4281-94C9-3DA48AAAAA",
+    "APP": 1,
+    "APPVersion": "5.6.0"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+| MandatoryUPD | 強制更新 (1=強更，0=否) |  int   | 1             |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "MandatoryUPD": 1
     }
 }
 ```
