@@ -1324,12 +1324,24 @@ namespace WebAPI.Models.BillFunc
                 var def = new TraceLogVM();
                 if (string.IsNullOrWhiteSpace(sour.CodeVersion))
                     sour.CodeVersion = def.CodeVersion;
+                else
+                    sour.CodeVersion = sour.CodeVersion.Replace("'", "''");
+
                 if (string.IsNullOrWhiteSpace(sour.ApiNm))
                     sour.ApiNm = def.ApiNm;
+                else
+                    sour.ApiNm = sour.ApiNm.Replace("'", "''");
+
                 if (string.IsNullOrWhiteSpace(sour.ApiMsg))
                     sour.ApiMsg = def.ApiMsg;
+                else
+                    sour.ApiMsg = sour.ApiMsg.Replace("'", "''");
+
                 if (string.IsNullOrWhiteSpace(sour.FlowStep))
                     sour.FlowStep = def.FlowStep;
+                else
+                    sour.FlowStep = sour.FlowStep.Replace("'", "''");
+
                 return xAddTraceLog(sour);
             }
             return false;
