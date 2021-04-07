@@ -572,6 +572,7 @@ iRentApi20 Web API版本
 
 <h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
 <h5>20210324修改 - 增加搜尋使用欄位CarTypes,Seats </h5>
+<h5>20210407修改 - input移除掉Seats </h5>
 
 # GetCarType同站以據點取出車型
 * ASP.NET Web API (REST API)
@@ -597,14 +598,13 @@ iRentApi20 Web API版本
 | SD | 預計取車時間 | N | string | 2021-03-01 00:00:00 |
 | ED | 預計還車時間 | N | string | 2021-03-01 23:59:59 |
 | ☆CarTypes | 車型代碼 | N | Array string | [ "PRIUSC" ]|
-| ☆Seats | 座椅數 | N | Array int | [ 5 ]|
+
 
 * input範例
 ```input範例
 {
     "StationID": "X0II",
-	"CarTypes":[ "PRIUSC" ],
-    "Seats":[ 5 ]
+	"CarTypes":[ "PRIUSC" ]
 }
 ```
 
@@ -690,6 +690,7 @@ iRentApi20 Web API版本
 
 <h5 id="GetProject" name="GetProject">20210315修改 - 增加是否為常用據點欄位</h5>
 <h5>20210324修改 - 增加搜尋欄位 </h5>
+<h5>20210407修改 - input移除掉Seats </h5>
 # GetProject取得專案與資費
 * ASP.NET Web API (REST API)
 
@@ -712,7 +713,7 @@ iRentApi20 Web API版本
 | --------- | -------- | :--: | :----: | ----------- |
 | StationID | 據點代碼 | Y | string | X0II |
 | ☆CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
-| ☆Seats | 座椅數 | N | Array int | [ 5 ] |
+
 
 * Seats 回傳參數說明
 | 參數名稱 | 參數說明     |  型態  | 範例 |
@@ -728,7 +729,7 @@ iRentApi20 Web API版本
 * input範例
 ```
 {
-    "CarType": "PRIUSC",
+    "CarTypes": [ "PRIUSC" ],
     "StationID": "X0II",
     "SDate": "2021-03-12 14:00:00",
     "Latitude": "",
@@ -1001,6 +1002,7 @@ iRentApi20 Web API版本
 ---------------
 
 <h5 id="GetNormalRent" name="GetNormalRent">20210324修改</h5>
+<h5>20210407修改 - input移除掉Seats </h5>
 
 # GetNormalRent 取得同站租還站點
 
@@ -1027,7 +1029,7 @@ iRentApi20 Web API版本
 | Longitude | 經度 | | float | |
 | Radius | 半徑 | | float | |
 | * CarTypes | 車型清單 | N | array string | |
-| * Seats | 座位數 | N | array int | |
+
 
 * input範例
 ```
@@ -1036,8 +1038,7 @@ iRentApi20 Web API版本
     "Latitude": 25.060368,
     "Longitude": 121.520260,
     "Radius": 2.5,
-    "CarTypes":[ "PRIUSC" ],
-    "Seats":[ 5 ]
+    "CarTypes":[ "PRIUSC" ]
 }
 ```
 
@@ -1114,3 +1115,137 @@ iRentApi20 Web API版本
 ```
 
 ----------------------------
+
+-------------
+
+<h5 id="GetCarTypeGroupList" name="GetCarTypeGroupList">20210331發佈</h5>
+
+# GetCarTypeGroupList 取得車型清單
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetCarTypeGroupList/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+
+* SeatGroups資料物件說明
+| 參數名稱    | 參數說明   |  型態  | 範例                                 |
+| Seat  	  | 座椅數 	   | int | 4 |
+| CarInfos 	  | 資料物件   | 	 |   |
+
+* CarInfos 參數說明
+| 參數名稱    | 參數說明   |  型態  | 範例                                 |
+| ----------- | ---------- | :----: | ------------------------------------------------------- |
+| Seat | 座椅數 | int | 4 |
+| CarType       | 車型名稱   | string | TOYOTA Altis |
+| CarTypePic    | 車型圖片   | string | altis |
+| CarTypeName	| 車型代碼   | string | ALTIS |
+
+
+* Output範例
+{
+    "Result": "0",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "SeatGroups": [
+            {
+                "Seat": 2,
+                "CarInfos": [
+                    {
+                        "Seat": 2,
+                        "CarType": "KYMCO MANY-110",
+                        "CarTypePic": "iretScooter",
+                        "CarTypeName": "MANY-110"
+                    }
+                ]
+            },
+            {
+                "Seat": 5,
+                "CarInfos": [
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA ALTIS",
+                        "CarTypePic": "altis",
+                        "CarTypeName": "ALTIS"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA CAMRY",
+                        "CarTypePic": "camry",
+                        "CarTypeName": "CAMRY"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA PRIUS PHV",
+                        "CarTypePic": "priusPhv",
+                        "CarTypeName": "PRIUS PHV"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA PRIUSc",
+                        "CarTypePic": "priusC",
+                        "CarTypeName": "PRIUSc"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA SIENTA5人",
+                        "CarTypePic": "sienta",
+                        "CarTypeName": "SIENTA5人"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA VIOS",
+                        "CarTypePic": "vios",
+                        "CarTypeName": "VIOS"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA YARIS",
+                        "CarTypePic": "yaris",
+                        "CarTypeName": "YARIS"
+                    }
+                ]
+            },
+            {
+                "Seat": 7,
+                "CarInfos": [
+                    {
+                        "Seat": 7,
+                        "CarType": "TOYOTA SIENTA7人",
+                        "CarTypePic": "sienta",
+                        "CarTypeName": "SIENTA7人"
+                    }
+                ]
+            }
+        ]
+    }
+}
