@@ -185,6 +185,7 @@ namespace Web.Controllers
                     {
                         data[k].BookingEnd = data[k].BookingEnd.AddHours(8);
                     }
+                    content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));
                 }
                 else
                 {
