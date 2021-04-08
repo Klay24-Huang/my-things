@@ -267,6 +267,9 @@ namespace WebAPI.Models.BillFunc
             else
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType);
 
+            if (sour.CancelMonthRent)
+                monthlyRentDatas = new List<MonthlyRentData>();
+
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
                 monthlyRentDatas.Insert(0,sour.VisMons[0]);
@@ -1819,6 +1822,10 @@ namespace WebAPI.Models.BillFunc
     }
     public class IBIZ_MonthRent
     {
+        /// <summary>
+        /// 取消所有月租
+        /// </summary>
+        public bool CancelMonthRent { get; set; } = false;
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
         public Int64 intOrderNO { get; set; }

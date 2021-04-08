@@ -941,6 +941,8 @@ namespace WebAPI.Controllers
 
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
+
+            string ProjID = "";
             #endregion
             #region trace-in
             trace.OrderNo = tmpOrder;
@@ -999,6 +1001,7 @@ namespace WebAPI.Controllers
                     ProjType = item.ProjType;
                     UseOrderPrice = item.UseOrderPrice;
                     OrderPrice = item.OrderPrice;
+                    ProjID = item.ProjID;
                 }
                 //取得專案狀態
                 if (flag)
@@ -1504,7 +1507,8 @@ namespace WebAPI.Controllers
                         Discount = Discount,
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
-                        carBaseMins = 60
+                        carBaseMins = 60,
+                        CancelMonthRent = (ProjID == "R024")
                     };
 
                     if (visMons != null && visMons.Count() > 0)
