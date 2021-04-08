@@ -143,7 +143,7 @@ namespace Reposotory.Implement
             List<Sync_OrderMain> ListData = new List<Sync_OrderMain>();
             Sync_OrderMain Result = new Sync_OrderMain();
 
-            string SQL = "SELECT TOP 1 order_number AS OrderNumber FROM TB_OrderMain WITH(NOLOCK) WHERE (car_mgt_status>0 AND car_mgt_status<16) AND cancel_status=0 ";
+            string SQL = "SELECT TOP 1 ISNULL(order_number,0) AS OrderNumber FROM TB_OrderMain WITH(NOLOCK) WHERE (car_mgt_status>0 AND car_mgt_status<16) AND cancel_status=0 ";
             int nowCount = 0;
             string term = "";
 

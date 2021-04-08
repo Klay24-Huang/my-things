@@ -53,6 +53,7 @@ namespace SendEventMail
                             SD = LastSend.SendTime.Value.AddMinutes(-5);
                     }
 
+                    //取出要發告警的Event資料
                     lstData = new EventHandleRepository(ConnStr).GetEventMessages(SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"));
 
                     if (lstData.Count > 0)
@@ -77,13 +78,12 @@ namespace SendEventMail
 
                         foreach (var GroupCar in GroupCarList)
                         {
-                            //取車子的告警類別事件最後一筆發送紀錄
-                            var LastSendList = new EventHandleRepository(ConnStr).GetHasSendMailList(GroupCar.CarNo, GroupCar.EventType);
-
                             //取要發送告警的最後一筆資料
                             var tempFirst = lstData.Where(x => x.CarNo == GroupCar.CarNo && x.EventType == GroupCar.EventType).OrderByDescending(x => x.MKTime).FirstOrDefault();
                             if (tempFirst != null)
                             {
+                                //取車子的告警類別事件最後一筆發送紀錄
+                                var LastSendList = new EventHandleRepository(ConnStr).GetHasSendMailList(GroupCar.CarNo, GroupCar.EventType);
                                 if (LastSendList.Count > 0 && LastSendList != null)
                                 {
                                     //有最後一筆發送紀錄就要判斷：
@@ -106,12 +106,14 @@ namespace SendEventMail
                                         EDate = MKTime.ToString("yyyy-MM-dd HH:mm:ss");
                                     }
 
+                                    var DoSend = false;
                                     if (LastSendTime != null && MKTime != null)
                                     {
+                                        //(上次發送 ~ 產生時間)中間有訂單的話，就要再發告警
                                         var OrderMain = new EventHandleRepository(ConnStr).GetOrderNumberData(GroupCar.CarNo, SDate, EDate);
                                         if (OrderMain.OrderNumber != 0)
                                         {
-                                            HandleList.Add(tempFirst);
+                                            DoSend = true;
                                         }
                                         else
                                         {
@@ -120,9 +122,30 @@ namespace SendEventMail
                                                 var DiffHour = (DateTime.Now - LastSendTime).TotalMinutes;
                                                 if (DiffHour >= 240)
                                                 {
-                                                    HandleList.Add(tempFirst);
+                                                    DoSend = true;
                                                 }
                                             }
+                                        }
+                                    }
+
+                                    if (DoSend)
+                                    {
+                                        //這三項視為一個群組，有其一事件另外兩個就不要發
+                                        //1:沒租約但是有時速 9:無租約但引擎被發動 8:無租約但電門被啟動
+                                        if (tempFirst.EventType == 1 || tempFirst.EventType == 9 || tempFirst.EventType == 8)
+                                        {
+                                            var TypeList = new List<int> { 1, 9, 8, };
+                                            var tempHandle = HandleList.Where(x => x.CarNo == tempFirst.CarNo && TypeList.Contains(x.EventType)).ToList();
+                                            if (tempHandle.Count == 0)
+                                            {
+                                                //沒有發過的直接發
+                                                HandleList.Add(tempFirst);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //沒有發過的直接發
+                                            HandleList.Add(tempFirst);
                                         }
                                     }
                                 }
