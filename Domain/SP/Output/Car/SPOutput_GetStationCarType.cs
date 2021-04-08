@@ -55,5 +55,6 @@ namespace Domain.SP.Output.Car
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        public string IsRent { get; set; }
     }
 }
