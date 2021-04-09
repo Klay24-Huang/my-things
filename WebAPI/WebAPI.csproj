@@ -347,6 +347,7 @@
     <Compile Include="Controllers\SetMemberDataController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
+    <Compile Include="Controllers\SetSubsNxtController.cs" />
     <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\TestTaishiBQController.cs" />
     <Compile Include="Controllers\TestTaishiBUController.cs" />
@@ -526,6 +527,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadFeedBackImage.cs" />
@@ -606,6 +608,7 @@
     <Compile Include="Models\Param\Output\OAPI_OrderDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_PersonNotice.cs" />
     <Compile Include="Models\Param\Output\OAPI_ReadCard.cs" />
+    <Compile Include="Models\Param\Output\OAPI_SetSubsNxt.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_UploadFeedBackImage.cs" />
     <Compile Include="Models\Param\Output\OAPI_UseInviteCode.cs" />
