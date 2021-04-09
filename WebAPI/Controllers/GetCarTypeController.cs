@@ -248,7 +248,7 @@ namespace WebAPI.Controllers
                 if (OAPI_Params != null && OAPI_Params.Count()>0)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
-                    {                       
+                    {      
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };
                 }
@@ -256,13 +256,15 @@ namespace WebAPI.Controllers
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
-                        IsFavStation = 0,
                         GetCarTypeObj = OAPI_Params
                     };
                 }
 
                 if (sp_re != null)
+                {
                     GetCarTypeAPI.IsFavStation = sp_re.IsFavStation;
+                    GetCarTypeAPI.IsRent = sp_re.IsRent;
+                }
             }
             #endregion
 
@@ -298,7 +300,8 @@ namespace WebAPI.Controllers
             flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             re.IsFavStation = spOut.IsFavStation;
-            re.Cards = sp_list; //20210406 ADD BY ADAM REASON.少了這段會有BUG
+            re.IsRent = spOut.IsRent;
+            re.Cards = sp_list; 
             return re;
         }
 
