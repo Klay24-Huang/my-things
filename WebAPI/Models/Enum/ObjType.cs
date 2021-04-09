@@ -394,6 +394,11 @@ namespace WebAPI.Models.Enum
             /// 取得廣告資訊
             /// </summary>
             GetBanner,
+            GetCarTypeGroupList,
+            /// <summary>
+            /// 檢查APP版本
+            /// </summary>
+            CheckAppVersion,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -707,8 +712,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckToken";
                     break;
                 case SPType.RefrashToken: //Refrash Token
-                    //SPName = "usp_RefrashToken";
-                    SPName = "usp_RefrashToken_ForTest";
+                    SPName = "usp_RefrashToken";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -848,10 +852,10 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarType:
                     //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210324";
+                    SPName = "usp_GetStationCarType_20210409";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -945,6 +949,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
                     SPName = "usp_GetBanner";
+                    break;
+                case SPType.GetCarTypeGroupList:   
+                    SPName = "usp_GetCarTypeGroupList_Q1";
+                    break;
+                case SPType.CheckAppVersion:    //檢查APP版本
+                    SPName = "usp_CheckAppVersion";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

@@ -2,13 +2,14 @@
 using Domain.SP.Output;
 using Domain.Sync.Input;
 using Domain.TB.Sync;
+using NLog;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading;
+using System.Threading.Tasks;
 using WebCommon;
 
 namespace SendEventMail
@@ -17,7 +18,7 @@ namespace SendEventMail
     {
         private static string ConnStr = ConfigurationManager.ConnectionStrings["iRent"].ToString();
         private static List<Sync_SendEventMessage> lstData = new List<Sync_SendEventMessage>();
-
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
             GetSendData();
@@ -27,6 +28,8 @@ namespace SendEventMail
         {
             try
             {
+                logger.Info(string.Format("{0}:告警MAIL發送開始", DateTime.Now));
+
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
 
                 // 刪除過期未發送的資料，以避免資料量太大導致排程程式跑不起來
@@ -50,6 +53,7 @@ namespace SendEventMail
                             SD = LastSend.SendTime.Value.AddMinutes(-5);
                     }
 
+                    //取出要發告警的Event資料
                     lstData = new EventHandleRepository(ConnStr).GetEventMessages(SD.ToString("yyyy-MM-dd HH:mm:ss"), ED.ToString("yyyy-MM-dd HH:mm:ss"));
 
                     if (lstData.Count > 0)
@@ -74,13 +78,12 @@ namespace SendEventMail
 
                         foreach (var GroupCar in GroupCarList)
                         {
-                            //取車子的告警類別事件最後一筆發送紀錄
-                            var LastSendList = new EventHandleRepository(ConnStr).GetHasSendMailList(GroupCar.CarNo, GroupCar.EventType);
-
                             //取要發送告警的最後一筆資料
                             var tempFirst = lstData.Where(x => x.CarNo == GroupCar.CarNo && x.EventType == GroupCar.EventType).OrderByDescending(x => x.MKTime).FirstOrDefault();
                             if (tempFirst != null)
                             {
+                                //取車子的告警類別事件最後一筆發送紀錄
+                                var LastSendList = new EventHandleRepository(ConnStr).GetHasSendMailList(GroupCar.CarNo, GroupCar.EventType);
                                 if (LastSendList.Count > 0 && LastSendList != null)
                                 {
                                     //有最後一筆發送紀錄就要判斷：
@@ -103,12 +106,14 @@ namespace SendEventMail
                                         EDate = MKTime.ToString("yyyy-MM-dd HH:mm:ss");
                                     }
 
+                                    var DoSend = false;
                                     if (LastSendTime != null && MKTime != null)
                                     {
+                                        //(上次發送 ~ 產生時間)中間有訂單的話，就要再發告警
                                         var OrderMain = new EventHandleRepository(ConnStr).GetOrderNumberData(GroupCar.CarNo, SDate, EDate);
                                         if (OrderMain.OrderNumber != 0)
                                         {
-                                            HandleList.Add(tempFirst);
+                                            DoSend = true;
                                         }
                                         else
                                         {
@@ -117,9 +122,30 @@ namespace SendEventMail
                                                 var DiffHour = (DateTime.Now - LastSendTime).TotalMinutes;
                                                 if (DiffHour >= 240)
                                                 {
-                                                    HandleList.Add(tempFirst);
+                                                    DoSend = true;
                                                 }
                                             }
+                                        }
+                                    }
+
+                                    if (DoSend)
+                                    {
+                                        //這三項視為一個群組，有其一事件另外兩個就不要發
+                                        //1:沒租約但是有時速 9:無租約但引擎被發動 8:無租約但電門被啟動
+                                        if (tempFirst.EventType == 1 || tempFirst.EventType == 9 || tempFirst.EventType == 8)
+                                        {
+                                            var TypeList = new List<int> { 1, 9, 8, };
+                                            var tempHandle = HandleList.Where(x => x.CarNo == tempFirst.CarNo && TypeList.Contains(x.EventType)).ToList();
+                                            if (tempHandle.Count == 0)
+                                            {
+                                                //沒有發過的直接發
+                                                HandleList.Add(tempFirst);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //沒有發過的直接發
+                                            HandleList.Add(tempFirst);
                                         }
                                     }
                                 }
@@ -148,8 +174,10 @@ namespace SendEventMail
 
                         if (HandleList != null && HandleList.Count > 0)
                         {
+                            logger.Info(string.Format("{0}:需寄發MAIL數量:{1}", DateTime.Now, HandleList.Count));
+
                             int i = 1;
-                            foreach (var Handle in HandleList)
+                            foreach (var Handle in HandleList.OrderBy(x => x.MKTime))
                             {
                                 string title = "";
                                 string body = "";
@@ -162,27 +190,31 @@ namespace SendEventMail
                                 switch (Handle.EventType)
                                 {
                                     case 1:
-                                        body = string.Format("{0}\n事件：{1}", title, "無租約，但有時速");
                                         title = string.Format("{0} 事件：{1}", title, "無租約，但有時速");
+                                        body = string.Format("{0}\n事件：{1}\n發生時間：{2}", title, "無租約，但有時速", Handle.MKTime);
                                         break;
                                     case 6:
-                                        body = string.Format("{0}\n事件：{1}", title, "低電量通知");
                                         title = string.Format("{0} 事件：{1}", title, "低電量通知");
+                                        body = string.Format("{0}\n事件：{1}\n發生時間：{2}", title, "低電量通知", Handle.MKTime);
                                         break;
                                     case 7:
-                                        body = string.Format("{0}\n事件：{1}", title, "無租約，車門被打開");
                                         title = string.Format("{0} 事件：{1}", title, "無租約，車門被打開");
+                                        body = string.Format("{0}\n事件：{1}\n發生時間：{2}", title, "無租約，車門被打開", Handle.MKTime);
                                         break;
                                     case 8:
-                                        body = string.Format("{0}\n事件：{1}", title, "無租約，電門被啟動");
                                         title = string.Format("{0} 事件：{1}", title, "無租約，電門被啟動");
+                                        body = string.Format("{0}\n事件：{1}\n發生時間：{2}", title, "無租約，電門被啟動", Handle.MKTime);
                                         break;
                                     case 9:
-                                        body = string.Format("{0}\n事件：{1}", title, "無租約，引擎被發動");
                                         title = string.Format("{0} 事件：{1}", title, "無租約，引擎被發動");
+                                        body = string.Format("{0}\n事件：{1}\n發生時間：{2}", title, "無租約，引擎被發動", Handle.MKTime);
                                         break;
                                 }
-                                int SendFlag = SendMail(Sender, Handle.AlertID, title, body, Handle.Receiver, "", ref lstError);
+
+                                //發信
+                                //int SendFlag = SendMail(Sender, Handle.AlertID, title, body, Handle.Receiver, "", ref lstError);
+                                int SendFlag = SendGuidMail(Handle.AlertID, title, body, Handle.Receiver, ref lstError);
+
                                 switch (SendFlag)
                                 {
                                     case 0:
@@ -201,8 +233,7 @@ namespace SendEventMail
 
                                 i++;
 
-                                Console.WriteLine(string.Format("發送{0},執行結果:{1}", Handle.Receiver, result));
-                                //Thread.Sleep(500);
+                                logger.Info(string.Format("{0}:發送{1},執行結果:{2}", Handle.CarNo, Handle.Receiver, result));
                             }
                         }
                     }
@@ -210,12 +241,11 @@ namespace SendEventMail
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.Error(ex.Message);
             }
             finally
             {
-                //Thread.Sleep(50000);
-                //GetSendData();
+                logger.Info(string.Format("{0}:告警MAIL發送結束", DateTime.Now));
             }
         }
 
@@ -286,6 +316,50 @@ namespace SendEventMail
                 }
                 Console.WriteLine("{0} Done,SendFlag=" + SendFlag, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             }
+            return SendFlag;
+        }
+
+        private static int SendGuidMail(Int64 AlterID, string Title, string Body, string receive, ref List<ErrorInfo> lstError)
+        {
+            bool flag = true;
+            int SendFlag = 0;
+
+            SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
+            {
+                AlertID = AlterID,
+                HasSend = 1,
+                Sender = "SendGuid",
+                LogID = 0
+            };
+            SPOutput_Base SPOutput = new SPOutput_Base();
+
+            try
+            {
+                SendMail send = new SendMail();
+                flag = Task.Run(() => send.DoSendMail(Title, Body, receive)).Result;
+
+                SPInput.SendTime = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                SendFlag = 1;
+                SPInput.HasSend = 2;
+            }
+            finally
+            {
+                string SPName = "usp_SYNC_UPDSendAlertMessage";
+
+                flag = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                if (flag == false)
+                {
+                    if (SendFlag == 1)
+                        SendFlag = 2;   //發送失敗，更新失敗
+                    else
+                        SendFlag = 3;   //發送成功，更新失敗
+                }
+            }
+
             return SendFlag;
         }
     }

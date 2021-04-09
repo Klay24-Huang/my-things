@@ -1,5 +1,7 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_GetMilageSetting]
+/****** Object:  StoredProcedure [dbo].[usp_CheckAppVersion]    Script Date: 2021/4/7 下午 02:35:00 ******/
+
+/****************************************************************
+** Name: [dbo].[usp_CheckAppVersion]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -29,27 +31,26 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_GetMilageSetting]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_CheckAppVersion]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
-** Auth:Eric 
-** Date:2020/9/10 下午 01:57:59 
+** Auth:Jet
+** Date:2021/4/7 14:34:00 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/9/10 下午 01:57:59    |  Eric|          First Release
+** 2021/4/7 14:34:00    |  Jet|          First Release
 **			 |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_GetMilageSetting]
-	@ProjID                 VARCHAR(10)           ,
-	@CarType                VARCHAR(20)           ,
-	@SDate                  DATETIME			  ,
-	@EDate                  DATETIME              ,
+CREATE PROCEDURE [dbo].[usp_CheckAppVersion]
+	@DeviceID               VARCHAR(128)          , --DeviceID
+	@APPVersion             VARCHAR(10)			  , --app版號
+	@APP                    TINYINT               , --0:ANDROID;1:iOS
 	@LogID                  BIGINT                ,
-	@MilageBase             FLOAT           OUTPUT,
+	@MandatoryUPD			INT				OUTPUT,	--強制更新 1=強更，0=否
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -60,50 +61,49 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @tmpCarType VARCHAR(20);
-DECLARE @tmpProjID VARCHAR(10);
+DECLARE @NowTime DATETIME;
+DECLARE @iRentVersion VARCHAR(10);	--iRent版號
+DECLARE @ChkTime DATETIME;			--強更時間
+DECLARE @UseFlag VARCHAR(1);		--啟動區分: Y = 啟動, N = 不啟動
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-
-SET @FunName='usp_GetMilageSetting';
+SET @FunName='usp_CheckAppVersion';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
-SET @ProjID    =ISNULL (@ProjID    ,'');
-SET @CarType=ISNULL (@CarType,'');
-SET @SDate=ISNULL(@SDate,DATEADD(HOUR,7,GETDATE()));
-SET @EDate=ISNULL(@EDate,DATEADD(HOUR,8,GETDATE()));
-SET @MilageBase=0;
-SET @tmpCarType='';
-SET @tmpProjID='';
+SET @DeviceID=ISNULL (@DeviceID,'');
+SET @APP=ISNULL(@APP,2);
+SET @APPVersion=ISNULL(@APPVersion,'');
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @MandatoryUPD=0;
 
 BEGIN TRY
-	IF @ProjID='' 
+	IF @DeviceID='' OR @APPVersion='' 
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
 	END
-		 
+
 	IF @Error=0
 	BEGIN
-		SELECT TOP 1 @tmpProjID=ISNULL(ProjID,''),@tmpCarType=ISNULL(CarType,''),@MilageBase=MilageBase
-		FROM TB_MilageSetting WITH(NOLOCK)
-		WHERE ProjID=@ProjID AND use_flag=1 
-		--AND (@SDate BETWEEN SDate AND EDate) 
-		ORDER BY SDate ASC;
-		   
-		IF @tmpProjID<>''
+		SELECT TOP 1 @iRentVersion=iRentVersion,@UseFlag=UseFlag,@ChkTime=ChkTime
+		FROM [dbo].[TB_ChkVersion] 
+		WHERE DATEADD(HOUR,8,GETDATE()) >= ChkTime ORDER BY ChkTime DESC;
+
+		IF @UseFlag='Y'
 		BEGIN
-			IF @tmpCarType<>'' AND @CarType<>@tmpCarType
+			IF @APPVersion <> @iRentVersion AND @NowTime >= @ChkTime
 			BEGIN
-				SET @MilageBase=-1.0;
+				SET @MandatoryUPD=1;
 			END
 		END
 	END
+
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -129,20 +129,5 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMilageSetting';
-
-
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckAppVersion';
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMilageSetting';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMilageSetting';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMilageSetting';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMilageSetting';

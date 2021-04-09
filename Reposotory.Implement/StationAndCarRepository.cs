@@ -90,7 +90,8 @@ namespace Reposotory.Implement
             //                ORDER BY StationID ASC;";
 
             string SQL = @"
-            SELECT s.StationID
+            SELECT distinct 
+                 s.StationID
 	            ,s.Location AS StationName
 	            ,s.Tel
 	            ,s.ADDR
@@ -146,7 +147,8 @@ namespace Reposotory.Implement
             //                WHERE use_flag=3 AND [IsNormalStation]=0 AND DATEADD(HOUR,8,GETDATE()) BETWEEN SDate AND EDate ";
 
             string SQL = @"
-            SELECT s.StationID
+            SELECT distinct 
+                 s.StationID
 	            ,s.Location AS StationName
 	            ,s.Tel
 	            ,s.ADDR

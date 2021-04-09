@@ -59,6 +59,7 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -111,7 +112,7 @@ BEGIN TRY
 		SELECT *
 		INTO #tmpOrderMain
 		FROM TB_OrderMain WITH(NOLOCK) 
-		WHERE start_time > DATEADD(MONTH,-1,@NowTime) AND (car_mgt_status >= 4 and car_mgt_status < 16) AND cancel_status=0
+		WHERE IDNO=@IDNO and start_time > DATEADD(MONTH,-1,@NowTime) AND (car_mgt_status >= 4 and car_mgt_status < 16) AND cancel_status=0
 		AND stop_time < @NowTime;
 
 		SELECT VW.lend_place AS StationID
@@ -189,7 +190,7 @@ BEGIN TRY
 			,OD.DeadLine AS OpenDoorDeadLine
 			,LOD.parkingSpace AS parkingSpace
         FROM VW_GetOrderData AS VW WITH(NOLOCK)
-        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 --AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用

@@ -143,6 +143,7 @@
     <Compile Include="SP\Input\Car\SPInput_GetStationCarType.cs" />
     <Compile Include="SP\Input\Car\SPInput_MotorStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_SetMotorStatus.cs" />
+    <Compile Include="SP\Input\Common\SPInput_CheckAppVersion.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckToken.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenDevice.cs" />
     <Compile Include="SP\Input\Common\SPInput_CheckTokenOnlyToken.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="SP\Input\OtherService\Machi\SPInput_InsParkingFeeData.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
+    <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNotificationList.cs" />
@@ -252,6 +254,8 @@
     <Compile Include="SP\Output\Car\SPOutput_GetCarMillage.cs" />
     <Compile Include="SP\Output\Car\SPOutput_GetStationCarType.cs" />
     <Compile Include="SP\Output\Car\SPOutput_MotorStatus.cs" />
+    <Compile Include="SP\Output\Car\SPOut_GetCarTypeGroupList.cs" />
+    <Compile Include="SP\Output\Common\SPOutput_CheckAppVersion.cs" />
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
@@ -263,6 +267,7 @@
     <Compile Include="SP\Output\OrderList\OrderQueryFullData.cs" />
     <Compile Include="SP\Output\OrderList\SPOutput_OrderListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
+    <Compile Include="SP\Output\PolygonList\SPOut_GetAlliRentStation.cs" />
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />

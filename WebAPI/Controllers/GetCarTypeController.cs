@@ -208,7 +208,8 @@ namespace WebAPI.Controllers
                                            OperatorScore = a.OperatorScore,
                                            Seat = a.Seat,
                                            //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, a.Price_N, a.Price_H, lstHoliday))
-                                           Price = a.Price                                           
+                                           Price = a.Price,
+                                           IsRent = a.IsRent
                                        }).ToList();
                     }
                 }
@@ -233,7 +234,8 @@ namespace WebAPI.Controllers
                                     OperatorScore = lstData[i].OperatorScore,
                                     Seat = lstData[i].Seat,
                                     //Price = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price_N, lstData[i].Price_H, lstHoliday))
-                                    Price = lstData[i].Price
+                                    Price = lstData[i].Price,
+                                    IsRent = lstData[i].IsRent
                                 };
                                 iRentStations.Add(obj);
                             }
@@ -246,7 +248,7 @@ namespace WebAPI.Controllers
                 if (OAPI_Params != null && OAPI_Params.Count()>0)
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
-                    {                       
+                    {      
                         GetCarTypeObj = OAPI_Params.OrderBy(x => x.Price).ToList()
                     };
                 }
@@ -254,13 +256,15 @@ namespace WebAPI.Controllers
                 {
                     GetCarTypeAPI = new OAPI_GetCarType()
                     {
-                        IsFavStation = 0,
                         GetCarTypeObj = OAPI_Params
                     };
                 }
 
                 if (sp_re != null)
+                {
                     GetCarTypeAPI.IsFavStation = sp_re.IsFavStation;
+                    GetCarTypeAPI.IsRent = sp_re.IsRent;
+                }
             }
             #endregion
 
@@ -296,7 +300,8 @@ namespace WebAPI.Controllers
             flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref sp_list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             re.IsFavStation = spOut.IsFavStation;
-
+            re.IsRent = spOut.IsRent;
+            re.Cards = sp_list; 
             return re;
         }
 

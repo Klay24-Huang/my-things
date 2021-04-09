@@ -8,10 +8,5 @@ namespace WebAPI.Models.Param.Output
         /// OAuth需使用，Token type=>Bearer
         /// </summary>
         public Token Token { set; get; }
-
-        /// <summary>
-        /// 強制更新 1=強更，0=否
-        /// </summary>
-        public int MandatoryUPD { get; set; }
     }
 }
