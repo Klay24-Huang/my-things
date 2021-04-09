@@ -63,22 +63,22 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
 
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            //flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
-            if(errCode == "ERR901")
-            {
-                flag = true;
-                errCode = "000000";
-                errMsg = "Success";
-            }
+            //if(errCode == "ERR901")
+            //{
+            //    flag = true;
+            //    errCode = "000000";
+            //    errMsg = "Success";
+            //}
 
-            if (flag)
-            {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetCarTypeGroupList>(Contentjson);
-                //寫入API Log
-                string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-            }
+            //if (flag)
+            //{
+            //    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetCarTypeGroupList>(Contentjson);
+            //    //寫入API Log
+            //    string ClientIP = baseVerify.GetClientIp(Request);
+            //    flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+            //}
 
             #endregion
             #region TB
