@@ -11,6 +11,9 @@ using System.Web.Mvc;
 //using Domain.SP.BE.Input;//20210218唐加
 //using Domain.SP.BE.Output;//20210218唐加
 //using Web.Models.Enum;//20210218唐加
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace Web.Controllers
 {
@@ -63,5 +66,48 @@ namespace Web.Controllers
         }
 
 
+
+
+
+        public ActionResult ExplodeMapQuery(string ExplodeOrderNum)
+        {
+            List<BE_MapList> lstRawDataOfMachi = new List<BE_MapList>();
+            EventHandleRepository _repository = new EventHandleRepository(connetStr);
+
+            Int64 tmpOrder = (string.IsNullOrEmpty(ExplodeOrderNum)) ? 0 : Convert.ToInt64(ExplodeOrderNum.Replace("H", ""));
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "車號", "GPS時間", "經度", "緯度" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstRawDataOfMachi = _repository.GetMapList(tmpOrder);
+            int len = lstRawDataOfMachi.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].CarNo);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].GPSTime);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Latitude);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Longitude);
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "地圖軌跡資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+
+
+        }
     }
 }

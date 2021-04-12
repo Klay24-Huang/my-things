@@ -133,9 +133,9 @@ namespace WebAPI.Controllers
                                     if (importData.CID.Length != 4 && importData.CID.Length != 5)
                                     {
                                         importFlag = false;
-                                        importMessage = (carInfoData.IsCens == 1) ? "興聯車機[CID]應為5碼" : "遠傳車機[CID]應為4碼";
+                                        importMessage = "遠傳車機[CID]應為4碼，興聯車機[CID]應為5碼";
                                     }
-                                    if (carInfoData.IsCens == 1)
+                                    if (importData.CID.Length == 5)
                                     {
                                         //興聯車機直接更新資料
                                         if (importFlag)

@@ -115,5 +115,24 @@ namespace Reposotory.Implement
             lstEV = GetObjList<BE_EvTimeLine>(ref flag, ref lstError, SQL, para, term);
             return lstEV;
         }
+
+
+
+        //20210408唐加
+        public List<BE_MapList> GetMapList(Int64? OrderNo)
+        {
+            List<BE_MapList> lstEV = new List<BE_MapList>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+       
+
+            SqlParameter[] para = new SqlParameter[0];
+            string SQL = " EXEC usp_BE_GetMapList '" + OrderNo.ToString() + "'";
+            string term = "";
+
+            lstEV = GetObjList<BE_MapList>(ref flag, ref lstError, SQL, para, term);
+            return lstEV;
+        }
+
     }
 }
