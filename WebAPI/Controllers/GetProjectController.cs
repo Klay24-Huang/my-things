@@ -272,6 +272,12 @@ namespace WebAPI.Controllers
                     {
                         lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
                     }
+
+                    if(LstCarTypes != null && LstCarTypes.Count() > 0)
+                    {
+                        lstData.ForEach(x => { if (!LstCarTypes.Any(y => y == x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0;}});
+                    }
+
                     //if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
                     //    lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
 
@@ -457,7 +463,7 @@ namespace WebAPI.Controllers
                     if (lstTmpData != null && lstTmpData.Count() > 0 && LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
                         lstTmpData.ForEach(x => {
-                            x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType)).ToList();
+                            x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType) && x.IsRent == "Y").ToList();
                             if (x.ProjectObj == null || x.ProjectObj.Count() == 0)
                                 x.IsRent = "N";
                             else
