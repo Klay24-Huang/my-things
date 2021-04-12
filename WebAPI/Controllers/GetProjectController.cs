@@ -65,6 +65,7 @@ namespace WebAPI.Controllers
             var bill = new BillCommon();
             var SeatGroups = new List<GetProject_SeatGroup>();
             string StrCarTypes = "";
+            var LstCarTypes = new List<string>();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -146,13 +147,18 @@ namespace WebAPI.Controllers
                         //
                         if (apiInput.CarType != null && apiInput.CarType != "")
                         {
-                            StrCarTypes = apiInput.CarType;
+                            //StrCarTypes = apiInput.CarType;
+                            LstCarTypes.Add(apiInput.CarType.ToUpper());
                         }
 
                         if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
                         {
-                            StrCarTypes = String.Join(",", apiInput.CarTypes);
+                            //StrCarTypes = String.Join(",", apiInput.CarTypes);
+                            LstCarTypes.AddRange(apiInput.CarTypes.Select(x=>x.ToUpper()).ToList());
                         }
+
+                        if (LstCarTypes != null && LstCarTypes.Count() > 0)
+                            LstCarTypes = LstCarTypes.GroupBy(x => x).Select(y => y.FirstOrDefault()).ToList();
                     }                     
                 }
             }
@@ -443,6 +449,25 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+
+                #region 車款過濾
+
+                if (flag)
+                {
+                    if (lstTmpData != null && lstTmpData.Count() > 0 && apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                    {
+                        lstTmpData.ForEach(x => {
+                            x.ProjectObj = x.ProjectObj.Where(y => apiInput.CarTypes.Any(z => z == y.CarType)).ToList();
+                            if (x.ProjectObj == null || x.ProjectObj.Count() == 0)
+                                x.IsRent = "N";
+                            else
+                                x.IsRent = "Y";
+                        });
+                    }
+                }
+
+                #endregion
+
 
                 outputApi = new OAPI_GetProject()
                 {
