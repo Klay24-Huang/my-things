@@ -239,6 +239,7 @@
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
+    <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
     <Compile Include="Controllers\BonusHistoryQueryController.cs" />
@@ -525,6 +526,7 @@
     <Compile Include="Models\Param\Input\IAPI_VerifySMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReSendEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_VER_USER_POW.cs" />
+    <Compile Include="Models\Param\Input\IAPI_RecieveTsac.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />

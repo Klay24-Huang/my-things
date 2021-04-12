@@ -421,6 +421,7 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetWalletInfo,
             GetWalletInfoByTrans,
+            SaveRecieveTSAC,
             /// <summary>
             /// 開戶+儲值
             /// </summary>
@@ -996,6 +997,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.HandleWallet:
                     SPName = "usp_HandleWallet";
+                    break;
+                case SPType.SaveRecieveTSAC:
+                    SPName = "usp_SaveRecieveTSAC";
                     break;
                 #endregion
                 #region 車麻吉
