@@ -855,7 +855,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarType_20210409";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210412";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
