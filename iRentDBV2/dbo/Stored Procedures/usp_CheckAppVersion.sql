@@ -97,7 +97,7 @@ BEGIN TRY
 
 		IF @UseFlag='Y'
 		BEGIN
-			IF @APPVersion <> @iRentVersion AND @NowTime >= @ChkTime
+			IF @APPVersion < @iRentVersion AND @NowTime >= @ChkTime
 			BEGIN
 				SET @MandatoryUPD=1;
 			END
