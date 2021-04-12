@@ -454,10 +454,10 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (lstTmpData != null && lstTmpData.Count() > 0 && apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                    if (lstTmpData != null && lstTmpData.Count() > 0 && LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
                         lstTmpData.ForEach(x => {
-                            x.ProjectObj = x.ProjectObj.Where(y => apiInput.CarTypes.Any(z => z == y.CarType)).ToList();
+                            x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType)).ToList();
                             if (x.ProjectObj == null || x.ProjectObj.Count() == 0)
                                 x.IsRent = "N";
                             else
