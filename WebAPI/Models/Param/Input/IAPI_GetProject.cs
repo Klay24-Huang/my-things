@@ -11,7 +11,7 @@ namespace WebAPI.Models.Param.Input
         /// 據點代碼
         /// </summary>
         public string StationID { set; get; }
-        //public string CarType { set; get; }
+        public string CarType { set; get; } //20210412 ADD BY ADAM REASON.目前搜尋api有可能兩邊都會丟
         /// <summary>
         ///座位數
         /// </summary>
