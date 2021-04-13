@@ -948,7 +948,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetCarReturnMillage";
                     break;
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
-                    SPName = "usp_GetBanner";
+                    //SPName = "usp_GetBanner";
+                    SPName = "usp_GetBanner_20210413";      //For安卓測試
                     break;
                 case SPType.GetCarTypeGroupList:   
                     SPName = "usp_GetCarTypeGroupList_Q1";
