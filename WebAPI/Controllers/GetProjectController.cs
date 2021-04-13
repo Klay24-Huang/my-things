@@ -508,8 +508,9 @@ namespace WebAPI.Controllers
                     if (lstTmpData != null && lstTmpData.Count() > 0 && LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
                         lstTmpData.ForEach(x => {
-                            x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType) && y.IsRent == "Y").ToList();
-                            if (x.ProjectObj == null || x.ProjectObj.Count() == 0)
+                            var ProjIsRents = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType) && y.IsRent == "Y").ToList();
+                            x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType)).ToList();
+                            if (ProjIsRents == null || ProjIsRents.Count() == 0)
                                 x.IsRent = "N";
                             else
                                 x.IsRent = "Y";
