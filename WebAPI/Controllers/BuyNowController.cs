@@ -183,7 +183,8 @@ namespace WebAPI.Controllers
                                                       select new OPAI_TypeListParam
                                                       {
                                                           CodeId = Convert.ToInt32(a.CodeId),
-                                                          CodeNm = a.CodeNm
+                                                          CodeNm = a.CodeNm,
+                                                          IsBind = a.IsBind
                                                       }).ToList();
                             }
 
@@ -193,7 +194,8 @@ namespace WebAPI.Controllers
                                                        select new OPAI_TypeListParam
                                                        {
                                                            CodeId = Convert.ToInt32(a.CodeId),
-                                                           CodeNm = a.CodeNm
+                                                           CodeNm = a.CodeNm,
+                                                           IsBind = a.IsBind
                                                        }).ToList();
                             }
 
@@ -233,12 +235,9 @@ namespace WebAPI.Controllers
                             {
                                 flag = buyNxtCom.exeNxt();
                                 errCode = buyNxtCom.errCode;
-                                trace.FlowList.Add("建立月租");
-                                trace.traceAdd("AddMonth", flag);
+                                trace.traceAdd("NxtApi", new { flag, errCode });
+                                trace.FlowList.Add("後續api處理");
                             }
-
-                            trace.traceAdd("NxtApi", new { flag, errCode });
-                            trace.FlowList.Add("後續api處理");
                         }
                         outputApi.PayResult = flag ? 1 : 0;
                     }               

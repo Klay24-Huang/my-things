@@ -9,6 +9,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     {
         public int CodeId { get; set; } = 0;
         public string CodeNm { get; set; } = "";
+        public int IsBind { get; set; } = 0;
         public string Disc { get; set; } = "";
     }
 }

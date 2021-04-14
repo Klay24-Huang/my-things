@@ -13,5 +13,9 @@ namespace Domain.SP.Output.Bill
         public string CodeDisc { get; set; }
         public string CodeGroup { get; set; }
         public int Sort { get; set; }
+        /// <summary>
+        /// 是否有綁定
+        /// </summary>
+        public int IsBind { get; set; }
     }
 }
