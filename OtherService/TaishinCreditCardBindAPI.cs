@@ -770,6 +770,13 @@ namespace OtherService
                 //  tmpOrder = Convert.ToInt64(tmp);
                 creditType = 3;
             }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
+                creditType = 4;
+            }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
                 amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額

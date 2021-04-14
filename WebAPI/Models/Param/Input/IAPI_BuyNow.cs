@@ -22,7 +22,7 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 產品價格
         /// </summary>
-        public int ProPrice { get; set; }
+        public int ProdPrice { get; set; }
         /// <summary>
         /// 執行付款
         /// <para>0不執行付款</para>

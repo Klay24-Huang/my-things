@@ -35,6 +35,6 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 付款錯誤訊息
         /// </summary>
-        public string PayErrMsg { get; set; } = "";
+        //public string PayErrMsg { get; set; } = "";
     }
 }
