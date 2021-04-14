@@ -127,7 +127,6 @@ namespace WebAPI.Controllers
                     }
 
                     trace.FlowList.Add("防呆");
-                    trace.traceAdd("InCk",new { flag, errCode });                    
                 }
 
                 #endregion
@@ -151,7 +150,6 @@ namespace WebAPI.Controllers
                         IDNO = token_re.IDNO;
                     }
                     trace.FlowList.Add("Token判斷");
-                    trace.traceAdd("TokenCk", new { flag, errCode });
                 }
 
                 #endregion
@@ -214,6 +212,9 @@ namespace WebAPI.Controllers
                             try
                             {
                                 flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
+
+                                if(WsOut != null)
+                                  trace.traceAdd("CarTradeResult", new { WsOut });
                             }
                             catch(Exception ex)
                             {
@@ -223,8 +224,7 @@ namespace WebAPI.Controllers
                                 throw new Exception("TSIBTrade Fail");
                             }
 
-                            trace.FlowList.Add("信用卡交易");
-                            trace.traceAdd("CarTradeResult", new { flag, errCode });
+                            trace.FlowList.Add("信用卡交易");                            
                         }
 
                         #endregion
@@ -235,7 +235,6 @@ namespace WebAPI.Controllers
                             {
                                 flag = buyNxtCom.exeNxt();
                                 errCode = buyNxtCom.errCode;
-                                trace.traceAdd("NxtApi", new { flag, errCode });
                                 trace.FlowList.Add("後續api處理");
                             }
                         }
@@ -245,26 +244,14 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                trace.traceAdd("apiOut", apiInput);
+                trace.traceAdd("outputApi", outputApi);
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
-            }
+            }            
 
-            #region trace
-
-            if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
-                carRepo.AddTraceLog(181, funName, eumTraceType.exception, trace);
-            else
-            {
-                if (flag)
-                    carRepo.AddTraceLog(181, funName, eumTraceType.mark, trace);
-                else
-                    carRepo.AddTraceLog(181, funName, eumTraceType.followErr, trace);
-            }
-
-            #endregion
+            carRepo.AddTraceLog(181, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);

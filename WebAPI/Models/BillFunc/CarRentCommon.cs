@@ -1303,6 +1303,18 @@ namespace WebAPI.Models.BillFunc
               ")";
             ExecNonResponse(ref flag, SQL);
             return flag;
+        }    
+        public bool AddTraceLog(int apiId, string funName, TraceCom trace, bool flag)
+        {
+            if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
+               return AddTraceLog(apiId, funName, eumTraceType.exception, trace);
+            else
+            {
+                if (flag)
+                    return AddTraceLog(apiId, funName, eumTraceType.mark, trace);
+                else
+                    return AddTraceLog(apiId, funName, eumTraceType.followErr, trace);
+            }
         }
         public bool AddTraceLog(int apiId ,string funName, eumTraceType traceType, TraceCom sour)
         {

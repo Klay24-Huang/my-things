@@ -153,21 +153,13 @@ namespace WebAPI.Controllers
                 }
 
                 #endregion
-
-                #region trace
-
-                if (flag)
-                    carRepo.AddTraceLog(184, funName, eumTraceType.mark, trace);
-                else
-                    carRepo.AddTraceLog(184, funName, eumTraceType.followErr, trace);
-
-                #endregion
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
-                carRepo.AddTraceLog(184, funName, eumTraceType.exception, trace);
             }
+
+            carRepo.AddTraceLog(184, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
