@@ -63,5 +63,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 方案迄日-8碼
         /// </summary>
         //public string EDATE { get; set; }
+        /// <summary>
+        /// 是否為優惠方案
+        /// </summary>
+        public int IsDiscount { get; set; }
     }
 }

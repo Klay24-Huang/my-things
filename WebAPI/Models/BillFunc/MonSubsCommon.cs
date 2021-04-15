@@ -478,6 +478,7 @@ namespace WebAPI.Models.BillFunc
                                  CarWDHours = a.CarWDHours,
                                  CarHDHours = a.CarHDHours,
                                  MotoTotalMins = a.MotoTotalMins,
+                                 IsDiscount = a.IsDiscount
                              }).ToList();
             }
             return re;

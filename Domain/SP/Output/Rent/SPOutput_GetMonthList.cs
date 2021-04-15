@@ -96,5 +96,9 @@ namespace Domain.SP.Output.Rent
         /// 是否有訂閱
         /// </summary>
         public int IsOrder { get; set; }
+        /// <summary>
+        /// 是否為優惠方案
+        /// </summary>
+        public int IsDiscount { get; set; }
     }
 }
