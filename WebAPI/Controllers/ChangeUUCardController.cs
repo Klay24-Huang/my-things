@@ -1,16 +1,17 @@
-﻿using Domain.Common;
-using Domain.CarMachine;
-using Domain.SP.BE.Input;
-using Domain.SP.BE.Output;
+﻿using Domain.CarMachine;
+using Domain.Common;
 using Domain.SP.Input.Booking;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
 using Domain.WebAPI.Input.CENS;
+using Domain.WebAPI.Input.FET;
+using Domain.WebAPI.Input.Param;
 using Domain.WebAPI.Output.CENS;
 using OtherService;
 using Reposotory.Implement;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -22,8 +23,6 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
-using Domain.WebAPI.Input.FET;
-using Domain.WebAPI.Input.Param;
 
 namespace WebAPI.Controllers
 {
@@ -55,11 +54,12 @@ namespace WebAPI.Controllers
 
             string Contentjson = "";
             bool isGuest = false;
-            int IsCens = 0;
-            string CardNo = "";     //新綁定卡號
+            int IsCens = 0;             //是否為興聯車機(0:否;1:是)
+            string CardNo = "";         //新悠遊卡卡號
             string IDNO = "";
-            string CID = "";
-            string OldCardNo = "";
+            string CID = "";            //車機編號
+            string DeviceToken = "";    //遠傳車機token
+            string OldCardNo = "";      //舊悠遊卡卡號
             List<CardList> lstCardList = new List<CardList>();
             #endregion
 
@@ -151,6 +151,8 @@ namespace WebAPI.Controllers
                 {
                     CID = spOut.CID;
                     IsCens = spOut.IsCens;
+                    DeviceToken = spOut.deviceToken;
+
                     List<ErrorInfo> lstCarError = new List<ErrorInfo>();
                     // 取得會員現在綁定的卡號
                     lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(IDNO, ref lstCarError);
@@ -164,7 +166,7 @@ namespace WebAPI.Controllers
                     {
                         CensWebAPI censWebAPI = new CensWebAPI();
                         WSOutput_Base WsOutput = new WSOutput_Base();
-                        flag = censWebAPI.NFCPower(spOut.CID, 1, LogID, ref WsOutput);
+                        flag = censWebAPI.NFCPower(CID, 1, LogID, ref WsOutput);
                         if (flag == false)
                         {
                             errCode = WsOutput.ErrorCode;
@@ -182,174 +184,210 @@ namespace WebAPI.Controllers
                     while (NowCount < 60)
                     {
                         Thread.Sleep(1000);
-                        ReadFlag = new CarCMDRepository(connetStr).CheckHasReadCard(spOut.CID, NowTime.ToString("yyyy-MM-dd HH:mm:ss"), ref CardNo);
+                        ReadFlag = new CarCMDRepository(connetStr).CheckHasReadCard(CID, NowTime.ToString("yyyy-MM-dd HH:mm:ss"), ref CardNo);
                         if (ReadFlag)
                         {
                             break;
                         }
                         NowCount++;
-                        
                     }
-                    
-                    if (ReadFlag == false)
+
+                    // 20210414 ADD REASON.更換悠遊卡的流程修正
+                    // 原流程：讀卡>解卡>綁卡>更新MemberData卡號
+                    // 因須等車機回應會花很多時間，因此將這支API拆掉，只做到讀卡，有讀到卡就回應，解卡以後的事情用排程去處理
+                    if (ReadFlag)
+                    {
+                        if (OldCardNo != CardNo)
+                        {
+                            string SPName2 = new ObjType().GetSPName(ObjType.SPType.ChangeUUCard);
+                            SPInput_ChangeUUCard SPInput = new SPInput_ChangeUUCard
+                            {
+                                OrderNo = tmpOrder,
+                                IDNO = IDNO,
+                                CID = CID,
+                                DeviceToken = DeviceToken,
+                                IsCens = IsCens,
+                                OldCardNo = OldCardNo,
+                                NewCardNo = CardNo,
+                                LogID = LogID
+                            };
+                            SPOutput_Base SPOutput = new SPOutput_Base();
+                            SQLHelper<SPInput_ChangeUUCard, SPOutput_Base> sqlBindHelp = new SQLHelper<SPInput_ChangeUUCard, SPOutput_Base>(connetStr);
+                            flag = sqlBindHelp.ExecuteSPNonQuery(SPName2, SPInput, ref SPOutput, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                        }
+
+                        if (flag)
+                            outputApi.HasBind = 1;
+                        else
+                            outputApi.HasBind = 0;
+                    }
+                    else
                     {
                         outputApi.HasBind = 0;
                     }
 
-                    // 讀到卡才解綁卡
-                    if (ReadFlag)
-                    {
-                        // 有舊卡才解卡
-                        if (!string.IsNullOrEmpty(OldCardNo))
-                        {
-                            CarCommonFunc CarComm = new CarCommonFunc();
-                            if (spOut.IsCens == 1)
-                            {
-                                SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
-                                SendCarNoData obj = new SendCarNoData()
-                                {
-                                    CardNo = OldCardNo,
-                                    CardType = 1
-                                };
-                                sendCarNoDatas[0] = obj;
-                                flag = CarComm.DoSetCensCustomerCard(CID, sendCarNoDatas, 0, ref errCode);
-                            }
-                            else
-                            {
-                                flag = CarComm.DoSetFETCustomerCard(CID, spOut.deviceToken, new string[] { OldCardNo }, 0, LogID, ref errCode);
-                            }
+                    #region Mark
+                    //if (ReadFlag == false)
+                    //{
+                    //    outputApi.HasBind = 0;
+                    //}
 
-                            if (!flag)
-                            {
-                                outputApi.HasBind = 0;
-                            }
-                        }
-                        
-                        // 有新卡才綁卡
-                        if (flag && OldCardNo != CardNo)
-                        {
-                            // 開始對車機做動作
-                            if (IsCens == 1)
-                            {
-                                // 興聯車機
-                                CensWebAPI webAPI = new CensWebAPI();
-                                // 取最新狀況
-                                WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
-                                flag = webAPI.GetInfo(CID, ref wsOutInfo);
-                                if (flag == false)
-                                {
-                                    errCode = wsOutInfo.ErrorCode;
-                                }
-                                else
-                                {
-                                    if (wsOutInfo.data.CID != CID)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR468";
-                                    }
-                                }
-                                // 寫入顧客卡
-                                if (flag)
-                                {
-                                    //要將卡號寫入車機
-                                    SendCarNoData[] CardData = new SendCarNoData[1];
-                                    //寫入顧客卡
-                                    WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                                    {
-                                        CID = CID,
-                                        mode = 1
-                                    };
+                    //// 讀到卡才解綁卡
+                    //if (ReadFlag)
+                    //{
+                    //    // 有舊卡才解卡
+                    //    if (!string.IsNullOrEmpty(OldCardNo))
+                    //    {
+                    //        CarCommonFunc CarComm = new CarCommonFunc();
+                    //        if (spOut.IsCens == 1)
+                    //        {
+                    //            SendCarNoData[] sendCarNoDatas = new SendCarNoData[1];
+                    //            SendCarNoData obj = new SendCarNoData()
+                    //            {
+                    //                CardNo = OldCardNo,
+                    //                CardType = 1
+                    //            };
+                    //            sendCarNoDatas[0] = obj;
+                    //            flag = CarComm.DoSetCensCustomerCard(CID, sendCarNoDatas, 0, ref errCode);
+                    //        }
+                    //        else
+                    //        {
+                    //            flag = CarComm.DoSetFETCustomerCard(CID, spOut.deviceToken, new string[] { OldCardNo }, 0, LogID, ref errCode);
+                    //        }
 
-                                    CardData[0] = new SendCarNoData();
-                                    CardData[0].CardNo = CardNo;
-                                    CardData[0].CardType = 1;
+                    //        if (!flag)
+                    //        {
+                    //            outputApi.HasBind = 0;
+                    //        }
+                    //    }
 
-                                    wsInput.data = new SendCarNoData[0];
-                                    wsInput.data = CardData;
-                                    WSOutput_Base wsOut = new WSOutput_Base();
-                                    Thread.Sleep(500);
-                                    flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                                    if (flag == false)
-                                    {
-                                        errCode = wsOut.ErrorCode;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // 遠傳
-                                //取最新狀況, 先送getlast之後從tb捉最近一筆
-                                FETCatAPI FetAPI = new FETCatAPI();
-                                string requestId = "";
-                                string CommandType = "";
-                                OtherService.Enum.MachineCommandType.CommandType CmdType;
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                                WSInput_Base<Params> input = new WSInput_Base<Params>()
-                                {
-                                    command = true,
-                                    method = CommandType,
-                                    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    _params = new Params()
-                                };
-                                requestId = input.requestId;
-                                string method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                                if (flag)
-                                {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                }
+                    //    // 有新卡才綁卡
+                    //    if (flag && OldCardNo != CardNo)
+                    //    {
+                    //        // 開始對車機做動作
+                    //        if (IsCens == 1)
+                    //        {
+                    //            // 興聯車機
+                    //            CensWebAPI webAPI = new CensWebAPI();
+                    //            // 取最新狀況
+                    //            WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
+                    //            flag = webAPI.GetInfo(CID, ref wsOutInfo);
+                    //            if (flag == false)
+                    //            {
+                    //                errCode = wsOutInfo.ErrorCode;
+                    //            }
+                    //            else
+                    //            {
+                    //                if (wsOutInfo.data.CID != CID)
+                    //                {
+                    //                    flag = false;
+                    //                    errCode = "ERR468";
+                    //                }
+                    //            }
+                    //            // 寫入顧客卡
+                    //            if (flag)
+                    //            {
+                    //                //要將卡號寫入車機
+                    //                SendCarNoData[] CardData = new SendCarNoData[1];
+                    //                //寫入顧客卡
+                    //                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                    //                {
+                    //                    CID = CID,
+                    //                    mode = 1
+                    //                };
 
-                                if (flag)
-                                {
-                                    string[] CardStr = new string[1];
-                                    CardStr[0] = CardNo;
+                    //                CardData[0] = new SendCarNoData();
+                    //                CardData[0].CardNo = CardNo;
+                    //                CardData[0].CardType = 1;
 
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
-                                    WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new ClientCardNoObj()
-                                        {
-                                            ClientCardNo = CardStr
-                                        }
-                                    };
-                                    requestId = SetCardInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
-                                }
-                            }
+                    //                wsInput.data = new SendCarNoData[0];
+                    //                wsInput.data = CardData;
+                    //                WSOutput_Base wsOut = new WSOutput_Base();
+                    //                Thread.Sleep(500);
+                    //                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                    //                if (flag == false)
+                    //                {
+                    //                    errCode = wsOut.ErrorCode;
+                    //                }
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            // 遠傳
+                    //            //取最新狀況, 先送getlast之後從tb捉最近一筆
+                    //            FETCatAPI FetAPI = new FETCatAPI();
+                    //            string requestId = "";
+                    //            string CommandType = "";
+                    //            OtherService.Enum.MachineCommandType.CommandType CmdType;
+                    //            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                    //            CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                    //            WSInput_Base<Params> input = new WSInput_Base<Params>()
+                    //            {
+                    //                command = true,
+                    //                method = CommandType,
+                    //                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //                _params = new Params()
+                    //            };
+                    //            requestId = input.requestId;
+                    //            string method = CommandType;
+                    //            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                    //            if (flag)
+                    //            {
+                    //                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //            }
 
-                            if (flag)
-                            {
-                                string SPName2 = new ObjType().GetSPName(ObjType.SPType.BindUUCard);
-                                SPInput_BindUUCard SPBindInput = new SPInput_BindUUCard()
-                                {
-                                    IDNO = IDNO,
-                                    OrderNo = tmpOrder,
-                                    Token = Access_Token,
-                                    CardNo = CardNo,
-                                    LogID = LogID
-                                };
-                                SPOutput_Base SPBindOutput = new SPOutput_Base();
-                                SQLHelper<SPInput_BindUUCard, SPOutput_Base> sqlBindHelp = new SQLHelper<SPInput_BindUUCard, SPOutput_Base>(connetStr);
-                                flag = sqlBindHelp.ExecuteSPNonQuery(SPName2, SPBindInput, ref SPBindOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                            }
+                    //            if (flag)
+                    //            {
+                    //                string[] CardStr = new string[1];
+                    //                CardStr[0] = CardNo;
 
-                            if (flag)
-                            {
-                                outputApi.HasBind = 1;
-                            }
-                        }
-                    }
+                    //                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
+                    //                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
+                    //                WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                    //                {
+                    //                    command = true,
+                    //                    method = CommandType,
+                    //                    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    //                    _params = new ClientCardNoObj()
+                    //                    {
+                    //                        ClientCardNo = CardStr
+                    //                    }
+                    //                };
+                    //                requestId = SetCardInput.requestId;
+                    //                method = CommandType;
+                    //                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                    //                if (flag)
+                    //                {
+                    //                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (flag)
+                    //        {
+                    //            string SPName2 = new ObjType().GetSPName(ObjType.SPType.BindUUCard);
+                    //            SPInput_BindUUCard SPBindInput = new SPInput_BindUUCard()
+                    //            {
+                    //                IDNO = IDNO,
+                    //                OrderNo = tmpOrder,
+                    //                Token = Access_Token,
+                    //                CardNo = CardNo,
+                    //                LogID = LogID
+                    //            };
+                    //            SPOutput_Base SPBindOutput = new SPOutput_Base();
+                    //            SQLHelper<SPInput_BindUUCard, SPOutput_Base> sqlBindHelp = new SQLHelper<SPInput_BindUUCard, SPOutput_Base>(connetStr);
+                    //            flag = sqlBindHelp.ExecuteSPNonQuery(SPName2, SPBindInput, ref SPBindOutput, ref lstError);
+                    //            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    //        }
+
+                    //        if (flag)
+                    //        {
+                    //            outputApi.HasBind = 1;
+                    //        }
+                    //    }
+                    //}
+                    #endregion
                 }
             }
             #endregion

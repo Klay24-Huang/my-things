@@ -22,6 +22,10 @@ iRentApi20 Web API版本
 - [GetNormalRent 取得同站租還站點](#GetNormalRent)
 - [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
 
+取還車跟車機操控相關
+
+- [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
+
 ----------
 # 修改歷程
 
@@ -37,6 +41,8 @@ iRentApi20 Web API版本
 
 20210407 GetCarTypeGroupList補文件，移除掉部分API的Seats欄位
 20210407 新增檢查APP版本、還原更新Token
+
+20210415 新增變更悠遊卡
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -1231,9 +1237,12 @@ iRentApi20 Web API版本
 
 
 * SeatGroups資料物件說明
-| 參數名稱    | 參數說明   |  型態  | 範例                                 |
-| Seat  	  | 座椅數 	   | int | 4 |
-| CarInfos 	  | 資料物件   | 	 |   |
+
+| 參數名稱 | 參數說明 | 型態 | 範例 |
+| -------- | -------- | :--: | ---- |
+| Seat     | 座椅數   | int  | 4    |
+| CarInfos | 資料物件 |      |      |
+
 
 * CarInfos 參數說明
 | 參數名稱    | 參數說明   |  型態  | 範例                                 |
@@ -1245,83 +1254,150 @@ iRentApi20 Web API版本
 
 
 * Output範例
+
+```
 {
-    "Result": "0",
+	"Result": "0",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"SeatGroups": [
+			{
+				"Seat": 2,
+				"CarInfos": [
+					{
+						"Seat": 2,
+						"CarType": "KYMCO MANY-110",
+						"CarTypePic": "iretScooter",
+						"CarTypeName": "MANY-110"
+					}
+				]
+			},
+			{
+				"Seat": 5,
+				"CarInfos": [
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA ALTIS",
+						"CarTypePic": "altis",
+						"CarTypeName": "ALTIS"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA CAMRY",
+						"CarTypePic": "camry",
+						"CarTypeName": "CAMRY"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA PRIUS PHV",
+						"CarTypePic": "priusPhv",
+						"CarTypeName": "PRIUS PHV"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA PRIUSc",
+						"CarTypePic": "priusC",
+						"CarTypeName": "PRIUSc"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA SIENTA5人",
+						"CarTypePic": "sienta",
+						"CarTypeName": "SIENTA5人"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA VIOS",
+						"CarTypePic": "vios",
+						"CarTypeName": "VIOS"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA YARIS",
+						"CarTypePic": "yaris",
+						"CarTypeName": "YARIS"
+					}
+				]
+			},
+			{
+				"Seat": 7,
+				"CarInfos": [
+					{
+						"Seat": 7,
+						"CarType": "TOYOTA SIENTA7人",
+						"CarTypePic": "sienta",
+						"CarTypeName": "SIENTA7人"
+					}
+				]
+			}
+		]
+	}
+}
+```
+
+# 取還車跟車機操控相關
+
+<h5 id="ChangeUUCard" name="ChangeUUCard">20210415發佈</h5>
+
+# ChangeUUCard 變更悠遊卡
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+  ### [/api/ChangeUUCard/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+
+- input範例
+
+```
+{
+    "OrderNo": "H0002630"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| HasBind      | 是否綁定           |  int   | 0:否 1:是     |
+
+* Output範例
+
+```
+{
+    "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "SeatGroups": [
-            {
-                "Seat": 2,
-                "CarInfos": [
-                    {
-                        "Seat": 2,
-                        "CarType": "KYMCO MANY-110",
-                        "CarTypePic": "iretScooter",
-                        "CarTypeName": "MANY-110"
-                    }
-                ]
-            },
-            {
-                "Seat": 5,
-                "CarInfos": [
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA ALTIS",
-                        "CarTypePic": "altis",
-                        "CarTypeName": "ALTIS"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA CAMRY",
-                        "CarTypePic": "camry",
-                        "CarTypeName": "CAMRY"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA PRIUS PHV",
-                        "CarTypePic": "priusPhv",
-                        "CarTypeName": "PRIUS PHV"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA PRIUSc",
-                        "CarTypePic": "priusC",
-                        "CarTypeName": "PRIUSc"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA SIENTA5人",
-                        "CarTypePic": "sienta",
-                        "CarTypeName": "SIENTA5人"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA VIOS",
-                        "CarTypePic": "vios",
-                        "CarTypeName": "VIOS"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA YARIS",
-                        "CarTypePic": "yaris",
-                        "CarTypeName": "YARIS"
-                    }
-                ]
-            },
-            {
-                "Seat": 7,
-                "CarInfos": [
-                    {
-                        "Seat": 7,
-                        "CarType": "TOYOTA SIENTA7人",
-                        "CarTypePic": "sienta",
-                        "CarTypeName": "SIENTA7人"
-                    }
-                ]
-            }
-        ]
+        "HasBind": 1
     }
 }
+```
+

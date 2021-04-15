@@ -240,6 +240,7 @@
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
+    <Compile Include="Controllers\BindUUCardJobController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
     <Compile Include="Controllers\BonusHistoryQueryController.cs" />
     <Compile Include="Controllers\BonusQueryController.cs" />
@@ -436,6 +437,7 @@
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BindUUCardJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
