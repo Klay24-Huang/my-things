@@ -21,6 +21,7 @@ using OtherService;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin;
 using System.Threading;
+using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -456,4 +457,31 @@ namespace WebAPI.Models.BillFunc
         }
     }
 
+    /// <summary>
+    /// 訂閱制VM相關Mapping
+    /// </summary>
+    public class MonSunsVMMap
+    {
+        public List<MonCardParam> FromSPOutput_GetMonthList(List<SPOutput_GetMonthList> sour)
+        {
+            var re = new List<MonCardParam>();
+            if(sour != null && sour.Count()>0)
+            {
+               re = (from a in sour
+                             select new MonCardParam
+                             {
+                                 MonProjID = a.MonProjID,
+                                 MonProjNM = a.MonProjNM,
+                                 MonProPeriod = a.MonProPeriod,
+                                 ShortDays = a.ShortDays,
+                                 PeriodPrice = a.PeriodPrice,
+                                 IsMoto = a.IsMoto,
+                                 CarWDHours = a.CarWDHours,
+                                 CarHDHours = a.CarHDHours,
+                                 MotoTotalMins = a.MotoTotalMins,
+                             }).ToList();
+            }
+            return re;
+        }
+    }
 }

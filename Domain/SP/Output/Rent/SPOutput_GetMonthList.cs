@@ -92,5 +92,9 @@ namespace Domain.SP.Output.Rent
         /// 機車假日優惠費率
         /// </summary>
         public double HDRateForMoto { get; set; }
+        /// <summary>
+        /// 是否有訂閱
+        /// </summary>
+        public int IsOrder { get; set; }
     }
 }

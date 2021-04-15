@@ -12,7 +12,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 是否為使用中
         /// </summary>
-        public int IsOrder { get; set; } = 0;
+        //public int IsOrder { get; set; } = 0;
         public List<GetMonthGroup_MonCardParam> MonCards { get; set; }
     }
 

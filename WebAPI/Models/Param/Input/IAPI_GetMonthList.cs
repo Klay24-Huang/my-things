@@ -10,9 +10,10 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 是否為機車
         /// <para>0汽車</para>
-        /// <para>1機車</para>
+        /// <para>1機車</para>        
         /// </summary>
-        public int IsMoto { get; set; }
+        /// <mark>全部月租列表必要參數</mark>
+        public int IsMoto { get; set; } = -1;
         /// <summary>
         /// 月租分類
         /// <para>0無</para>
@@ -20,6 +21,6 @@ namespace WebAPI.Models.Param.Input
         /// <para>2訂閱制</para>
         /// <para>3短租</para>
         /// </summary>
-        public int MonType { get; set; }
+        //public int MonType { get; set; }
     }
 }

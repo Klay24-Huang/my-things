@@ -113,6 +113,7 @@ namespace WebAPI.Controllers
                 if (sp_List != null && sp_List.Count() > 0)
                 {
                     var cards = (from a in sp_List
+                                 orderby a.MonProPeriod
                                  select new GetMonthGroup_MonCardParam
                                  {
                                      MonProjID = a.MonProjID,
@@ -128,7 +129,7 @@ namespace WebAPI.Controllers
                                  }).ToList();
 
                     outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
-                    outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
+                    //outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
                     outputApi.MonCards = cards;
                     trace.traceAdd("outputApi", outputApi);
                 }
