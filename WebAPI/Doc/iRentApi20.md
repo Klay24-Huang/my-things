@@ -1,5 +1,3 @@
-
-
 版本: 1.0
 
 # iRentApi2 WebAPI
@@ -22,6 +20,7 @@ iRentApi20 Web API版本
 - [GetProject取得專案與資費](#GetProject)
 - [GetBanner 取得廣告資訊](#GetBanner)
 - [GetNormalRent 取得同站租還站點](#GetNormalRent)
+- [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
 
 ----------
 # 修改歷程
@@ -36,6 +35,7 @@ iRentApi20 Web API版本
 
 20210324 增加地圖搜尋相關修改，有變動到的API清單為 GetNormalRent,GetCarType,GetProject
 
+20210407 GetCarTypeGroupList補文件，移除掉部分API的Seats欄位
 20210407 新增檢查APP版本、還原更新Token
 
 # Header參數相關說明
@@ -641,6 +641,7 @@ iRentApi20 Web API版本
 <h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
 <h5>20210324修改 - 增加搜尋使用欄位CarTypes,Seats </h5>
 <h5>20210407修改 - input移除掉Seats </h5>
+<h5>20210408修改 - 增加IsRent欄位</h5>
 
 # GetCarType同站以據點取出車型
 * ASP.NET Web API (REST API)
@@ -701,6 +702,7 @@ iRentApi20 Web API版本
 | OperatorScore | 業者評分 | Float | 5.0 |
 | Price | 價格 | int | 168 |
 | Seat | 座位數 | int | 5 |
+| IsRent | 是否可出租 | string | Y/N|
 
 * output範例
 ```
@@ -721,7 +723,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 5
+                "Seat": 5,
+                "IsRent": "Y"
             },
             {
                 "CarBrend": "TOYOTA",
@@ -731,7 +734,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 5
+                "Seat": 5,
+                "IsRent": "N"
             },
             {
                 "CarBrend": "TOYOTA",
@@ -741,7 +745,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 7
+                "Seat": 7,
+                "IsRent": "Y"
             }
         ]
     }
@@ -1134,6 +1139,7 @@ iRentApi20 Web API版本
 | ContentForAPP | 據點描述(app顯示用) | string | |
 | IsRequiredForReturn | 還車位置資訊必填 | int | 0:否 1:是 |
 | StationPic | 據點照片 | List | |
+| IsRent | 是否可租 | string | Y/N |
 
 
 * StationPic參數說明
@@ -1163,7 +1169,8 @@ iRentApi20 Web API版本
                 "Content": "",
                 "ContentForAPP": null,
                 "IsRequiredForReturn": 0,
-                "StationPic": null
+                "StationPic": null,
+                "IsRent": "Y"
             },
             {
                 "StationID": "X0AP",
@@ -1175,7 +1182,8 @@ iRentApi20 Web API版本
                 "Content": "",
                 "ContentForAPP": null,
                 "IsRequiredForReturn": 0,
-                "StationPic": null
+                "StationPic": null,
+                "IsRent":"N"
             }
         ]
     }
