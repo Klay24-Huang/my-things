@@ -13,7 +13,7 @@ namespace WebAPI.Models.Param.Input
         /// <para>1機車</para>        
         /// </summary>
         /// <mark>全部月租列表必要參數</mark>
-        public int IsMoto { get; set; } = -1;
+        public int IsMoto { get; set; } 
         /// <summary>
         /// 月租分類
         /// <para>0無</para>

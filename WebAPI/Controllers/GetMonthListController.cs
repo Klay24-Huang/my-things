@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
 
-            int ReMode = 0;//全部月租(1), 我的方案(2)
+            int ReMode = 1;//全部月租(1), 我的方案(2)
 
             #endregion
 
@@ -88,25 +88,17 @@ namespace WebAPI.Controllers
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                    List<int> IsMotorCk = new List<int>() {-1, 0, 1 };
+                    List<int> IsMotorCk = new List<int>() {0, 1 };
                     if(apiInput != null)
                     {
                         int IsMoto = apiInput.IsMoto;
-                        if (!IsMotorCk.Any(x=>x == IsMoto))
+                        if (!IsMotorCk.Any(x => x == IsMoto))
                         {
                             flag = false;
                             errCode = "ERR257";
                         }
                         else
-                        {
-                            if (IsMoto == -1)
-                                ReMode = 2;//我的方案
-                            else
-                                ReMode = 1;//全月租
-
-                            outApiMyCards.ReMode = ReMode;
-                            outApiAllCards.ReMode = ReMode;                            
-                        }
+                            outApiAllCards.IsMotor = IsMoto;
                     }
                 }
 
@@ -114,22 +106,19 @@ namespace WebAPI.Controllers
 
                 if (flag && isGuest == false) 
                 {
-                    if(ReMode == 2)
+                    var token_in = new IBIZ_TokenCk
                     {
-                        var token_in = new IBIZ_TokenCk
-                        {
-                            LogID = LogID,
-                            Access_Token = Access_Token
-                        };
-                        var token_re = cr_com.TokenCk(token_in);
-                        if (token_re != null)
-                        {
-                            flag = token_re.flag;
-                            errCode = token_re.errCode;
-                            lstError = token_re.lstError;
-                            IDNO = token_re.IDNO;
-                        }
-                    }
+                        LogID = LogID,
+                        Access_Token = Access_Token
+                    };
+                    var token_re = cr_com.TokenCk(token_in);
+                    if (token_re != null)
+                    {
+                        flag = token_re.flag;
+                        errCode = token_re.errCode;
+                        lstError = token_re.lstError;
+                        IDNO = token_re.IDNO;
+                    }                    
                 }
 
                 #region TB
@@ -140,7 +129,6 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         LogID = LogID,
-                        IsMoto = apiInput.IsMoto,
                         MonType = 2 //暫時只有訂閱制月租
                     };
                     trace.traceAdd("spIn", spIn);
@@ -149,7 +137,11 @@ namespace WebAPI.Controllers
                     trace.traceAdd("sp_mList", sp_mList);
                     if (sp_mList != null && sp_mList.Count() > 0)
                     {
-                        //我的方案
+                        if (sp_mList.Any(x => x.IsOrder == 1))
+                            ReMode = 2;//我的方案
+                        else
+                            ReMode = 1;//月租列表
+
                         if (ReMode == 2)
                         {
                             var myCards = sp_mList.Where(x => x.IsOrder == 1).ToList();
@@ -166,11 +158,11 @@ namespace WebAPI.Controllers
                                 if(otherCards != null && otherCards.Count()>0)
                                     outApiMyCards.OtherCards = map.FromSPOutput_GetMonthList(otherCards);
                             }
+                            trace.traceAdd("outApiMyCards", outApiMyCards);
                         }
-                        //月租列表
                         else
                         {
-                            var allmons = map.FromSPOutput_GetMonthList(sp_mList);
+                            var allmons = map.FromSPOutput_GetMonthList(sp_mList.Where(x=>x.IsMoto == apiInput.IsMoto).ToList());//區分汽機車
                             var mixCards = allmons.Where(x =>
                                (x.CarWDHours > 0 || x.CarHDHours > 0) && x.MotoTotalMins > 0).ToList();
                             var norCards = allmons.Where(x =>

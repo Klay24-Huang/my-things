@@ -13,6 +13,7 @@ namespace WebAPI.Models.Param.Output
 
     public class OAPI_AllMonthList: OAPI_GetMonthList
     {
+        public int IsMotor { get; set; }
         public List<MonCardParam> NorMonCards { get; set; }
 
         public List<MonCardParam> MixMonCards { get; set; }

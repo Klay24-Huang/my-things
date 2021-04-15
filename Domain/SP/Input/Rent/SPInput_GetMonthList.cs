@@ -11,12 +11,6 @@ namespace Domain.SP.Input.Rent
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
         /// <summary>
-        /// 是否為機車
-        /// <para>0汽車</para>
-        /// <para>1機車</para>
-        /// </summary>
-        public int IsMoto { get; set; }
-        /// <summary>
         /// 月租分類
         /// <para>0無</para>
         /// <para>1月租</para>

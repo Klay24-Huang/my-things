@@ -226,7 +226,6 @@ namespace WebAPI.Models.BillFunc
                     new object[] {
                         spInput.IDNO,
                         spInput.LogID,
-                        spInput.IsMoto,
                         spInput.MonType
                     },
                 };
