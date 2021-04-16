@@ -214,9 +214,11 @@ namespace WebAPI.Models.BillFunc
         /// <param name="spInput"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public List<SPOutput_GetMonthList> sp_GetMonthList(SPInput_GetMonthList spInput, ref string errCode)
+        public SPOutput_GetMonthList sp_GetMonthList(SPInput_GetMonthList spInput, ref string errCode)
         {
-            var re = new List<SPOutput_GetMonthList>();
+            var re = new SPOutput_GetMonthList();
+            re.MyMonths = new List<SPOutput_GetMonthList_Month>();
+            re.AllMonths = new List<SPOutput_GetMonthList_Month>();
 
             try
             {
@@ -239,8 +241,11 @@ namespace WebAPI.Models.BillFunc
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 2)
-                        re = objUti.ConvertToList<SPOutput_GetMonthList>(ds1.Tables[0]);
+                    if (ds1.Tables.Count >= 3)
+                    {
+                        re.MyMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[0]);
+                        re.AllMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[1]);
+                    }
                     else if (ds1.Tables.Count == 1)
                     {
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
@@ -461,7 +466,7 @@ namespace WebAPI.Models.BillFunc
     /// </summary>
     public class MonSunsVMMap
     {
-        public List<MonCardParam> FromSPOutput_GetMonthList(List<SPOutput_GetMonthList> sour)
+        public List<MonCardParam> FromSPOutput_GetMonthList_Month(List<SPOutput_GetMonthList_Month> sour)
         {
             var re = new List<MonCardParam>();
             if(sour != null && sour.Count()>0)

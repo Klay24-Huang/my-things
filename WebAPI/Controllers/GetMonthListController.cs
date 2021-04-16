@@ -133,36 +133,32 @@ namespace WebAPI.Controllers
                     };
                     trace.traceAdd("spIn", spIn);
                     //取出月租列表
-                    var sp_mList = msp.sp_GetMonthList(spIn, ref errCode);
-                    trace.traceAdd("sp_mList", sp_mList);
-                    if (sp_mList != null && sp_mList.Count() > 0)
+                    var sp_re = msp.sp_GetMonthList(spIn, ref errCode);
+                    trace.traceAdd("sp_re", sp_re);
+                    if (sp_re != null)
                     {
-                        if (sp_mList.Any(x => x.IsOrder == 1))
+                        if (sp_re.MyMonths != null && sp_re.MyMonths.Count()>0)
                             ReMode = 2;//我的方案
                         else
                             ReMode = 1;//月租列表
 
                         if (ReMode == 2)
                         {
-                            var myCards = sp_mList.Where(x => x.IsOrder == 1).ToList();
+                            var myCards = sp_re.MyMonths;
                             if (myCards != null && myCards.Count() > 0)
-                                outApiMyCards.MyCards = map.FromSPOutput_GetMonthList(myCards);
+                                outApiMyCards.MyCards = map.FromSPOutput_GetMonthList_Month(myCards);
 
-                            var otherCards = sp_mList.Where(x =>
-                              !myCards.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
+                            var otherCards = sp_re.AllMonths.Where(x =>
+                              !myCards.Any(y => y.MonProjID == x.MonProjID)).ToList();
                             if (otherCards != null && otherCards.Count() > 0)
-                            {
-                                if (myCards != null && myCards.Count() > 0)
-                                    otherCards = otherCards.Where(x => !myCards.Any(y => y.IsMoto == x.IsMoto)).ToList();
+                                outApiMyCards.OtherCards = map.FromSPOutput_GetMonthList_Month(otherCards);
 
-                                if(otherCards != null && otherCards.Count()>0)
-                                    outApiMyCards.OtherCards = map.FromSPOutput_GetMonthList(otherCards);
-                            }
+                            outApiMyCards.ReMode = 2;
                             trace.traceAdd("outApiMyCards", outApiMyCards);
                         }
                         else
                         {
-                            var allmons = map.FromSPOutput_GetMonthList(sp_mList.Where(x=>x.IsMoto == apiInput.IsMoto).ToList());//區分汽機車
+                            var allmons = map.FromSPOutput_GetMonthList_Month(sp_re.AllMonths.Where(x=>x.IsMoto == apiInput.IsMoto).ToList());//區分汽機車
                             var mixCards = allmons.Where(x =>
                                (x.CarWDHours > 0 || x.CarHDHours > 0) && x.MotoTotalMins > 0).ToList();
                             var norCards = allmons.Where(x =>
@@ -172,6 +168,8 @@ namespace WebAPI.Controllers
                                 outApiAllCards.MixMonCards = mixCards;
                             if (norCards != null && norCards.Count() > 0)
                                 outApiAllCards.NorMonCards = norCards;
+
+                            outApiAllCards.ReMode = 1;
                             trace.traceAdd("outApiAllCards", outApiAllCards);
                         }
                     }

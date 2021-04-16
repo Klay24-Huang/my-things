@@ -8,6 +8,12 @@ namespace Domain.SP.Output.Rent
 {
     public class SPOutput_GetMonthList
     {
+        public List<SPOutput_GetMonthList_Month> MyMonths { get; set; }
+        public List<SPOutput_GetMonthList_Month> AllMonths { get; set; }
+    }
+
+    public class SPOutput_GetMonthList_Month
+    {
         /// <summary>
         /// 方案代碼-key
         /// </summary>
@@ -101,4 +107,5 @@ namespace Domain.SP.Output.Rent
         /// </summary>
         public int IsDiscount { get; set; }
     }
+
 }

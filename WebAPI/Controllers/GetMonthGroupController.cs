@@ -27,6 +27,9 @@ using Domain.SP.Input.Rent;
 
 namespace WebAPI.Controllers
 {
+    /// <summary>
+    /// 取的專案群組
+    /// </summary>
     public class GetMonthGroupController : ApiController
     {
         [HttpPost()]
@@ -100,38 +103,41 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                var spIn = new SPInput_GetMonthGroup()
+                if (flag)
                 {
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    MonProjID = apiInput.MonProjID
-                };
-                trace.traceAdd("spIn", spIn);
-                //取出月租列表
-                var sp_List = msp.sp_GetMonthGroup(spIn, ref errCode);
-                trace.traceAdd("sp_List", sp_List);
-                if (sp_List != null && sp_List.Count() > 0)
-                {
-                    var cards = (from a in sp_List
-                                 orderby a.MonProPeriod
-                                 select new GetMonthGroup_MonCardParam
-                                 {
-                                     MonProjID = a.MonProjID,
-                                     MonProjNM = a.MonProjNM,
-                                     MonProPeriod = a.MonProPeriod,
-                                     ShortDays = a.ShortDays,
-                                     PeriodPrice = a.PeriodPrice,
-                                     IsMoto = a.IsMoto,
-                                     CarWDHours = a.CarWDHours,
-                                     CarHDHours = a.CarHDHours,
-                                     MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
-                                     IsOrder = a.IsOrder
-                                 }).ToList();
+                    var spIn = new SPInput_GetMonthGroup()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        MonProjID = apiInput.MonProjID
+                    };
+                    trace.traceAdd("spIn", spIn);
+                    //取出月租列表
+                    var sp_List = msp.sp_GetMonthGroup(spIn, ref errCode);
+                    trace.traceAdd("sp_List", sp_List);
+                    if (sp_List != null && sp_List.Count() > 0)
+                    {
+                        var cards = (from a in sp_List
+                                     orderby a.MonProPeriod
+                                     select new GetMonthGroup_MonCardParam
+                                     {
+                                         MonProjID = a.MonProjID,
+                                         MonProjNM = a.MonProjNM,
+                                         MonProPeriod = a.MonProPeriod,
+                                         ShortDays = a.ShortDays,
+                                         PeriodPrice = a.PeriodPrice,
+                                         IsMoto = a.IsMoto,
+                                         CarWDHours = a.CarWDHours,
+                                         CarHDHours = a.CarHDHours,
+                                         MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                                         //IsOrder = a.IsOrder
+                                     }).ToList();
 
-                    outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
-                    //outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
-                    outputApi.MonCards = cards;
-                    trace.traceAdd("outputApi", outputApi);
+                        outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
+                        //outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
+                        outputApi.MonCards = cards;
+                        trace.traceAdd("outputApi", outputApi);
+                    }
                 }
 
                 #endregion

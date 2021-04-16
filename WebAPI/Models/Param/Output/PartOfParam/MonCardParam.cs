@@ -65,6 +65,8 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         //public string EDATE { get; set; }
         /// <summary>
         /// 是否為優惠方案
+        /// <para>1是</para>
+        /// <para>0否</para>
         /// </summary>
         public int IsDiscount { get; set; }
     }
