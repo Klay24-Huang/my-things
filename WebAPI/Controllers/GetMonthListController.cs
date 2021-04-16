@@ -58,8 +58,6 @@ namespace WebAPI.Controllers
             outApiAllCards.MixMonCards = new List<MonCardParam>();
 
             var outApiMyCards = new OAPI_MyMonthList();
-            outApiMyCards.MyCards = new List<MonCardParam>();
-            outApiMyCards.OtherCards = new List<MonCardParam>();
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -146,13 +144,15 @@ namespace WebAPI.Controllers
                         {
                             var myCards = sp_re.MyMonths;
                             if (myCards != null && myCards.Count() > 0)
-                                outApiMyCards.MyCards = map.FromSPOutput_GetMonthList_Month(myCards);
+                            {
+                                var myCars = myCards.Where(x => x.IsMoto == 0).ToList();
+                                var myMotos = myCards.Where(x => x.IsMoto == 1).ToList();
 
-                            var otherCards = sp_re.AllMonths.Where(x =>
-                              !myCards.Any(y => y.MonProjID == x.MonProjID)).ToList();
-                            if (otherCards != null && otherCards.Count() > 0)
-                                outApiMyCards.OtherCards = map.FromSPOutput_GetMonthList_Month(otherCards);
-
+                                if (myCars != null && myCars.Count() > 0)
+                                    outApiMyCards.MyCar = map.FromSPOutput_GetMonthList_Month(myCars).FirstOrDefault();
+                                if (myMotos != null && myMotos.Count() > 0)
+                                    outApiMyCards.MyMoto = map.FromSPOutput_GetMonthList_Month(myMotos).FirstOrDefault();
+                            }
                             outApiMyCards.ReMode = 2;
                             trace.traceAdd("outApiMyCards", outApiMyCards);
                         }

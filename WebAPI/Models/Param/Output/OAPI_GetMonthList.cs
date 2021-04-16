@@ -21,7 +21,7 @@ namespace WebAPI.Models.Param.Output
     
     public class OAPI_MyMonthList: OAPI_GetMonthList
     {
-        public List<MonCardParam> MyCards { get; set; }
-        public List<MonCardParam> OtherCards { get; set; }
+        public MonCardParam MyCar { get; set; }
+        public MonCardParam MyMoto { get; set; }
     } 
 }
