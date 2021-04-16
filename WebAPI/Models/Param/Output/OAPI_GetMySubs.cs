@@ -7,7 +7,7 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetMySubs
     {
-        public List<OAPI_GetMySubs_Month> Months { get; set; }
+        public OAPI_GetMySubs_Month Month { get; set; }
         public List<OAPI_GetMySubs_Code> PayTypes { get; set; }
         public List<OAPI_GetMySubs_Code> InvoTypes { get; set; }
 
@@ -28,6 +28,10 @@ namespace WebAPI.Models.Param.Output
         /// 是否自動續訂
         /// </summary>
         public int SubsNxt { get; set; }
+        /// <summary>
+        /// 是否變更下期合約
+        /// </summary>
+        public int IsChange { get; set; }
     }
 
     public class OAPI_GetMySubs_Code

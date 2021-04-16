@@ -27,6 +27,10 @@ namespace Domain.SP.Output.Subscription
         /// 是否自動續訂
         /// </summary>
         public int SubsNxt { get; set; }
+        /// <summary>
+        /// 是否變更下期合約
+        /// </summary>
+        public int IsChange { get; set; }
     }
 
     public class SPOut_GetMySubs_Code

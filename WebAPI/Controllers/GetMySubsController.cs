@@ -64,6 +64,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            int MonType = 2;//暫時只有訂閱制月租
 
             #endregion
 
@@ -84,13 +85,6 @@ namespace WebAPI.Controllers
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                    if (apiInput.MonType == 0)
-                    {
-                        apiInput.MonType = 2; //暫時只有訂閱制月租
-                        //flag = false;
-                        //errCode = "ERR255";
-                    }
-
                     //不開放訪客
                     if (flag)
                     {
@@ -98,6 +92,15 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR101";
+                        }
+                    }
+
+                    if (flag)
+                    {
+                        if (string.IsNullOrWhiteSpace(apiInput.MonProjID) ||apiInput.MonProPeriod == 0)
+                        {
+                            flag = false;
+                            errCode = "ERR257";
                         }
                     }
                 }
@@ -125,89 +128,98 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                if (flag && isGuest == false)
-                {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
-                }
-
                 #region TB
 
-                var spIn = new SPInput_GetMySubs()
+                if (flag)
                 {
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    MonType = apiInput.MonType                };
-                trace.traceAdd("spIn", spIn);
-                //取出月租列表
-                var sp_re = msp.sp_GetMySubs(spIn, ref errCode);
-                trace.traceAdd("sp_re", sp_re);
-                if (sp_re != null)
-                {
-                    if(sp_re != null)
+                    var spIn = new SPInput_GetMySubs()
                     {
-                        if(sp_re.Months != null && sp_re.Months.Count() > 0)
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        MonType = MonType
+                    };
+                    trace.traceAdd("spIn", spIn);
+                    //取出月租列表
+                    var sp_re = msp.sp_GetMySubs(spIn, ref errCode);
+                    trace.traceAdd("sp_re", sp_re);
+                    if (sp_re != null)
+                    {  
+                        if (sp_re.Months != null && sp_re.Months.Count() > 0)
                         {
                             var months = (from a in sp_re.Months
-                                          select new OAPI_GetMySubs_Month
-                                          {
-                                              MonProjID = a.MonProjID,
-                                              MonProjNM = a.MonProjNM,
-                                              MonProPeriod = a.MonProPeriod,
-                                              ShortDays = a.ShortDays,
-                                              WorkDayHours = a.WorkDayHours,
-                                              HolidayHours = a.HolidayHours,
-                                              MotoTotalHours = a.MotoTotalHours,
-                                              StartDate = a.StartDate.ToString("MM/dd"),
-                                              EndDate = a.EndDate.ToString("MM/dd"),
-                                              SubsNxt = a.SubsNxt
-                                          }).ToList();
+                                            select new OAPI_GetMySubs_Month
+                                            {
+                                                MonProjID = a.MonProjID,
+                                                MonProjNM = a.MonProjNM,
+                                                MonProPeriod = a.MonProPeriod,
+                                                ShortDays = a.ShortDays,
+                                                WorkDayHours = a.WorkDayHours,
+                                                HolidayHours = a.HolidayHours,
+                                                MotoTotalHours = a.MotoTotalHours,
+                                                StartDate = a.StartDate.ToString("MM/dd"),
+                                                EndDate = a.EndDate.ToString("MM/dd"),
+                                                SubsNxt = a.SubsNxt,
+                                                IsChange = a.IsChange
+                                            }).ToList();
 
-                            outputApi.Months = months;
+                            var NowMon = months.Where(x => x.MonProjID == apiInput.MonProjID
+                                && x.MonProPeriod == apiInput.MonProPeriod && x.ShortDays == apiInput.ShortDays).ToList();
+
+                            if (NowMon != null && NowMon.Count() > 0)
+                                outputApi.Month = NowMon.FirstOrDefault();
+                            else
+                            {
+                                flag = false;
+                                errMsg = "查無指定月租";
+                                errCode = "ERR909";//專案不存在
+                            }
+                        }
+                        else
+                        {
+                            flag = false;
+                            errMsg = "查無指定月租";
+                            errCode = "ERR909";//專案不存在
                         }
 
-                        if(sp_re.Codes != null && sp_re.Codes.Count() > 0)
+                        if (flag)
                         {
-                            var payTypes = sp_re.Codes.Where(x => x.CodeGroup == "PayType").ToList();
-                            var invoTypes = sp_re.Codes.Where(x => x.CodeGroup == "InvoiceType").ToList();
-
-                            if(payTypes != null && payTypes.Count() > 0)
+                            if (sp_re.Codes != null && sp_re.Codes.Count() > 0)
                             {
-                                outputApi.PayTypes = (from a in payTypes
-                                                      select new OAPI_GetMySubs_Code
-                                                      {
-                                                          CodeId = a.CodeId,
-                                                          CodeNm = a.CodeNm,
-                                                          IsDef = a.IsDef
-                                                      }).ToList();
-                            }
+                                var payTypes = sp_re.Codes.Where(x => x.CodeGroup == "PayType").ToList();
+                                var invoTypes = sp_re.Codes.Where(x => x.CodeGroup == "InvoiceType").ToList();
 
-                            if (invoTypes != null && invoTypes.Count() > 0)
-                            {
-                                outputApi.InvoTypes = (from a in invoTypes
-                                                      select new OAPI_GetMySubs_Code
-                                                      {
-                                                          CodeId = a.CodeId,
-                                                          CodeNm = a.CodeNm,
-                                                          IsDef = a.IsDef
-                                                      }).ToList();
+                                if (payTypes != null && payTypes.Count() > 0)
+                                {
+                                    outputApi.PayTypes = (from a in payTypes
+                                                          select new OAPI_GetMySubs_Code
+                                                          {
+                                                              CodeId = a.CodeId,
+                                                              CodeNm = a.CodeNm,
+                                                              IsDef = a.IsDef
+                                                          }).ToList();
+                                }
+
+                                if (invoTypes != null && invoTypes.Count() > 0)
+                                {
+                                    outputApi.InvoTypes = (from a in invoTypes
+                                                           select new OAPI_GetMySubs_Code
+                                                           {
+                                                               CodeId = a.CodeId,
+                                                               CodeNm = a.CodeNm,
+                                                               IsDef = a.IsDef
+                                                           }).ToList();
+                                }
                             }
                         }
                     }
-                }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR908";//sp錯誤
+                    }
 
-                trace.traceAdd("outputApi", outputApi);
+                    trace.traceAdd("outputApi", outputApi);
+                }
 
                 #endregion
             }
