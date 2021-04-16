@@ -13,14 +13,13 @@ namespace WebAPI.Models.Param.Input
         /// <para>1機車</para>        
         /// </summary>
         /// <mark>全部月租列表必要參數</mark>
-        public int IsMoto { get; set; } 
+        public int IsMoto { get; set; }
         /// <summary>
-        /// 月租分類
-        /// <para>0無</para>
-        /// <para>1月租</para>
-        /// <para>2訂閱制</para>
-        /// <para>3短租</para>
+        /// 回傳模式
+        /// <para>0有使用中月租為2,沒有則為1</para>
+        /// <para>1所有月租</para>
+        /// <para>2我的方案</para>
         /// </summary>
-        //public int MonType { get; set; }
+        public int ReMode { get; set; } = 0;
     }
 }

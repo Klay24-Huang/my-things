@@ -67,8 +67,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-
-            int ReMode = 1;//全部月租(1), 我的方案(2)
+            int ReMode = 0;//全部月租(1), 我的方案(2)
 
             #endregion
 
@@ -97,6 +96,9 @@ namespace WebAPI.Controllers
                         }
                         else
                             outApiAllCards.IsMotor = IsMoto;
+
+                        if (flag)
+                            ReMode = apiInput.ReMode;                     
                     }
                 }
 
@@ -135,10 +137,13 @@ namespace WebAPI.Controllers
                     trace.traceAdd("sp_re", sp_re);
                     if (sp_re != null)
                     {
-                        if (sp_re.MyMonths != null && sp_re.MyMonths.Count()>0)
-                            ReMode = 2;//我的方案
-                        else
-                            ReMode = 1;//月租列表
+                        if(ReMode == 0)//未設定回傳模式會自動分類
+                        {
+                            if (sp_re.MyMonths != null && sp_re.MyMonths.Count() > 0)
+                                ReMode = 2;//我的方案
+                            else
+                                ReMode = 1;//月租列表
+                        }
 
                         if (ReMode == 2)
                         {
@@ -156,7 +161,7 @@ namespace WebAPI.Controllers
                             outApiMyCards.ReMode = 2;
                             trace.traceAdd("outApiMyCards", outApiMyCards);
                         }
-                        else
+                        else 
                         {
                             var allmons = map.FromSPOutput_GetMonthList_Month(sp_re.AllMonths.Where(x=>x.IsMoto == apiInput.IsMoto).ToList());//區分汽機車
                             var mixCards = allmons.Where(x =>
