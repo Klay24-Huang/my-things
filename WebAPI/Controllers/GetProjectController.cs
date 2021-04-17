@@ -70,6 +70,8 @@ namespace WebAPI.Controllers
             var LstCarTypes = new List<string>();
             var LstSeats = new List<string>();
             var LstStationIDs = new List<string>();
+            int ApiMode = 0;    //20210330 ADD BY ADAM REASON.增加特殊身分模式
+            
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -175,6 +177,17 @@ namespace WebAPI.Controllers
                             LstStationIDs.Add(apiInput.StationID); 
                     }                     
                 }
+
+                if (apiInput.Longitude == null)
+                {
+                    apiInput.Longitude = 0;
+                }
+
+                if (apiInput.Latitude == null)
+                {
+                    apiInput.Latitude = 0;
+                }
+
             }
             #endregion
 
@@ -263,6 +276,7 @@ namespace WebAPI.Controllers
                     CarTypes = String.Join(",",LstCarTypes),
                     IDNO = IDNO,
                     Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
+                    Mode = (apiInput.Latitude.Value > 0 && apiInput.Longitude.Value > 0) ? 1 : 0,       //20210416 ADD BY ADAM REASON.增加模式判斷，0沒有送定位點1則有送
                     LogID = LogID
                 };
 
