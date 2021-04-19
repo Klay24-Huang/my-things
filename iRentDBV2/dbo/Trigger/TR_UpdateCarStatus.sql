@@ -17,6 +17,7 @@ BEGIN
     DECLARE @Receiver       VARCHAR(450);	--收信者MAIL
 	DECLARE @EventType      TINYINT;		--告警事件
 	DECLARE @StationID		VARCHAR(10);	--據點代碼
+	DECLARE @IsMotor		INT;			--是否為機車（0:否;1:是)
 
 	SET @CarNo='';
 	SET @CID='';
@@ -29,14 +30,18 @@ BEGIN
 	SET @Receiver='';
 	SET @EventType=0;
 	SET @StationID='';
+	SET @IsMotor=0;
 
-	SELECT @CarNo=CarNo,
-		   @CID=CID,
-		   @SPEED=Speed,
-		   @DoorStatus=DoorStatus,
-		   @AccOn=ACCStatus,
-		   @PowOn=PowerOnStatus
-	FROM INSERTED;
+	SELECT @CarNo=A.CarNo,
+		   @CID=A.CID,
+		   @SPEED=A.Speed,
+		   @DoorStatus=ISNULL(A.DoorStatus,''),
+		   @AccOn=A.ACCStatus,
+		   @PowOn=ISNULL(A.PowerOnStatus,0),
+		   @IsMotor=C.IsMotor
+	FROM INSERTED A
+	INNER JOIN TB_Car B ON B.CarNo=A.CarNo AND B.available<>2
+	INNER JOIN TB_CarInfo C ON A.CarNo=C.CarNo;
 	
 	--收信者MAIL
 	--要寄給營管中心的就設定在AlertEmail，用AlertEmail來判斷
@@ -70,7 +75,7 @@ BEGIN
 		BEGIN
 			SET @EventType=1;
 
-			IF @OrderNum=0
+			IF ISNULL(@OrderNum,0)=0
 			BEGIN
 				INSERT INTO TB_EventHandle(EventType,MachineNo,CarNo,MKTime)VALUES(@EventType,@CID,@CarNo,@NowTime);
 				INSERT INTO TB_AlertMailLog([EventType],[Receiver],[Sender],[HasSend],CarNo,[MKTime])
@@ -79,11 +84,12 @@ BEGIN
 		END
 
 		--車輛無租約但引擎被發動(EventType:9)
-		IF @AccOn=1 AND @EventType=0
+		-- 20210419;機車不發此項
+		IF @AccOn=1 AND @EventType=0 AND @IsMotor=0
 		BEGIN
 			SET @EventType=9;
 
-			IF @OrderNum=0
+			IF ISNULL(@OrderNum,0)=0
 			BEGIN
 				INSERT INTO TB_EventHandle(EventType,MachineNo,CarNo,MKTime)VALUES(@EventType,@CID,@CarNo,@NowTime);
 				INSERT INTO TB_AlertMailLog([EventType],[Receiver],[Sender],[HasSend],CarNo,[MKTime])
@@ -96,7 +102,7 @@ BEGIN
 		BEGIN
 			SET @EventType=8;
 
-			IF @OrderNum=0
+			IF ISNULL(@OrderNum,0)=0
 			BEGIN
 				INSERT INTO TB_EventHandle(EventType,MachineNo,CarNo,MKTime)VALUES(@EventType,@CID,@CarNo,@NowTime);
 				INSERT INTO TB_AlertMailLog([EventType],[Receiver],[Sender],[HasSend],CarNo,[MKTime])
@@ -105,11 +111,11 @@ BEGIN
 		END
 
 		--車輛無租約但車門被打開(EventType:7)
-		IF @DoorStatus='0000'
+		IF @DoorStatus='0000' 
 		BEGIN
 			SET @EventType=7;
 
-			IF @OrderNum=0
+			IF ISNULL(@OrderNum,0)=0
 			BEGIN
 				INSERT INTO TB_EventHandle(EventType,MachineNo,CarNo,MKTime)VALUES(@EventType,@CID,@CarNo,@NowTime);
 				INSERT INTO TB_AlertMailLog([EventType],[Receiver],[Sender],[HasSend],CarNo,[MKTime])
