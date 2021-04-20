@@ -32,7 +32,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         ///座位數
         /// </summary>
-        public int Seat { set; get; }     
-
+        public int Seat { set; get; }
+        public string IsRent { get; set; }
     }
 }

@@ -930,10 +930,8 @@ namespace WebCommon
             bool flag = false;
             try
             {
-
                 StringBuilder tmpSQL = new StringBuilder();
                 SqlParameter[] sqlPara = GenerateSQL(ref tmpSQL, SQL, objInputPara, objOutputPara, "Error", SqlDbType.Int, 0); //CreateParameter(objInputPara, objOutputPara,ref SQL);
-
                 sqlCommand = new SqlCommand();
                 sqlCommand.Parameters.Clear();
                 string sqlParaString = "";
@@ -954,7 +952,6 @@ namespace WebCommon
                     sqlCommand.ExecuteNonQuery(); //這行會掛
                     GetSQLReturnValue(sqlCommand.Parameters, ref objOutputPara);
                 }
-
                 flag = true;
             }
             catch (Exception ex)
@@ -966,9 +963,7 @@ namespace WebCommon
             {
                 closeDB();
             }
-
             return flag;
         }
-
     }
 }

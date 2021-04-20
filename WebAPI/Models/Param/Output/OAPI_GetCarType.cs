@@ -13,6 +13,7 @@ namespace WebAPI.Models.Param.Output
         /// 是否是常用據點 20210315 ADD BY ADAM
         /// </summary>
         public int IsFavStation { set; get; }
+        public string IsRent { get; set; }
 
         public List<OAPI_GetCarTypeParam> GetCarTypeObj { get;set;}
     }

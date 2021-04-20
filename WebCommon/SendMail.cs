@@ -23,6 +23,14 @@ namespace WebCommon
             bool flag = SendGridMailAsync2(Title, Body, receive).Result;
             return flag;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Title"></param>
+        /// <param name="Body"></param>
+        /// <param name="receive"></param>
+        /// <returns></returns>
         public static async Task<bool> SendGridMailAsync2(string Title, string Body, string receive)
         {
             bool flag = true;
@@ -43,11 +51,11 @@ namespace WebCommon
                 HtmlContent = Body
             };
 
-            //msg.AddTo(new EmailAddress(receive));
             var MailList = receive.Split(';');
             foreach (var Mail in MailList)
             {
-                msg.AddTo(new EmailAddress(Mail));
+                if (!string.IsNullOrEmpty(Mail))
+                    msg.AddTo(new EmailAddress(Mail));
             }
             
             try

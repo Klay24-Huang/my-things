@@ -372,6 +372,9 @@ namespace Domain.TB.BackEnd
         /// AES編碼 20210316 ADD BY ADAM 
         /// </summary>
         public string AesEncode { set; get; }
+
+        //20210325唐加，不然匯出報表會錯，錯好久了
+        public string StationID { set; get; }
     }
 
     /// <summary>

@@ -1,14 +1,17 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.PolygonList;
 using Domain.SP.Output;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -26,6 +29,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> doGetNormalRent(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var staCom = new StationCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -45,6 +49,8 @@ namespace WebAPI.Controllers
             StationAndCarRepository _repository;
             string Contentjson = "";
             bool isGuest = true;
+            string StrCarTypeList = "";
+            string StrSeatList = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -73,6 +79,33 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+
+                    if (flag)
+                    {
+                        if(apiInput != null)
+                        {
+                            if(apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
+                            {
+                                StrCarTypeList = String.Join(",", apiInput.CarTypes);
+                            }
+
+                            if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
+                            {
+                                StrCarTypeList = String.Join(",", apiInput.Seats.Select(x=>x.ToString()).ToArray());
+                            }
+                        }
+                    }
+
+                    if (flag)
+                    {
+                        if(apiInput.ShowALL.HasValue &&  apiInput.ShowALL.Value == 1)
+                        {
+                            apiInput.Latitude = 0;
+                            apiInput.Longitude = 0;
+                            apiInput.Radius = 0;
+                        }
+                    }
+                
                 }
             }
             #endregion
@@ -95,15 +128,45 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                _repository = new StationAndCarRepository(connetStr);
+                #region mark-old
+                //_repository = new StationAndCarRepository(connetStr);
+                //if (apiInput.ShowALL == 1)
+                //{
+                //    iRentStations = _repository.GetAlliRentStation(apiInput.CarTypes, apiInput.Seats);
+                //}
+                //else
+                //{
+                //    iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value, apiInput.CarTypes, apiInput.Seats);
+                //}
+                #endregion
+
                 List<iRentStationData> iRentStations = new List<iRentStationData>();
-                if (apiInput.ShowALL == 1)
+                var spIn = new SpInput_GetAlliRentStation()
                 {
-                    iRentStations = _repository.GetAlliRentStation();
-                }
-                else
+                    LogID = LogID,
+                    lat = apiInput.Latitude?? 0,
+                    lng = apiInput.Longitude?? 0,
+                    radius = apiInput.Radius?? 0,
+                    CarTypes = StrCarTypeList,
+                    Seats = StrSeatList,
+                    SD = apiInput.SD,
+                    ED = apiInput.ED
+                };
+                var spList = staCom.sp_GetAlliRentStation(spIn, ref errCode);
+                if (spList != null && spList.Count() > 0)
                 {
-                    iRentStations = _repository.GetAlliRentStation(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                    iRentStations = (from a in spList
+                                     select new iRentStationData
+                                     {
+                                         StationID = a.StationID,
+                                         StationName = a.StationName,
+                                         Tel = a.Tel,
+                                         ADDR = a.ADDR,
+                                         Latitude = (decimal)a.Latitude,
+                                         Longitude = (decimal)a.Longitude,
+                                         Content = a.Content,
+                                         IsRent = a.IsRent
+                                     }).ToList();
                 }
 
                 ONormalRentAPI = new OAPI_NormalRent()
@@ -124,5 +187,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+    
     }
 }

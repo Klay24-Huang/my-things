@@ -35,6 +35,7 @@ namespace Domain.TB
         /// </summary>
         public int Seat { set; get; }
         public int PRICE_H { set; get; }
+        public string IsRent { get; set; }
 
     }
 }
