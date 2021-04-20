@@ -94,15 +94,40 @@ namespace WebAPI.Models.ComboFunc
                 {
                     if (wsOut.data.Count() > 0)
                     {
-                        //int len = wsOut.data.Count();                      
-                        //for(int i = 0; i < len; i++)
-                        //{
-                        //    ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
-                        //}
+                        var api_re = wsOut.data.ToList();
 
-                        var xre = wsOut.data.Where(x => StartDate >= x.details.parking_checked_in_at && EndDate <= x.details.parking_checked_out_at).ToList();
+                        //完全包含停車時間
+                        var xre = api_re.Where(x => StartDate <= x.details.parking_checked_in_at && EndDate >= x.details.parking_checked_out_at).ToList();                      
                         if (xre != null && xre.Count() > 0)
+                        {
                             ParkingBill += xre.Select(x => Convert.ToInt32(Convert.ToDouble(x.amount))).Sum();
+                            return flag;
+                        }
+                        else
+                        {
+                            ////進場時間>還車時間>出場時間
+                            //var ck = api_re.Where(x =>
+                            //  x.details.parking_checked_in_at <= x.details.parking_checked_out_at &&
+                            //  x.details.parking_checked_in_at >= EndDate &&
+                            //  EndDate >= x.details.parking_checked_out_at).ToList();
+
+                            ////停車場可還車?白名單過濾
+
+                            //double parkMins = 0;
+                            //if (ck != null && ck.Count() > 0)
+                            //    parkMins = api_re.Select(x => x.details.parking_checked_out_at.Subtract(x.details.parking_checked_in_at).TotalMinutes).Sum();
+
+                            //if(parkMins > 72)
+                            //{     
+                            //    //依比例掛帳
+                            //    ParkingBill += ck.Select(x => Convert.ToInt32(x.amount)).Sum();
+                            //}
+                            //else
+                            //{
+                            //    //事後全部掛帳
+                            //}
+                            //return flag;
+                        }
                     }
                 }
             }
