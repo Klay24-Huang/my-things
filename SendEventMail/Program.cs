@@ -254,17 +254,26 @@ namespace SendEventMail
 
                                 foreach(var ToSend in ToSendList)
                                 {
+                                    string SPName2 = "usp_SYNC_UPDSendAlertMessage";
                                     SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
                                     {
                                         AlertID = ToSend.AlertID,
                                         Sender = "SendGuid",
                                         HasSend = 1,
-                                        SendTime = DateTime.Now,
                                         LogID = 0
                                     };
                                     SPOutput_Base SPOutput = new SPOutput_Base();
 
-                                    flag = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                                    if (SendFlag == 0)
+                                    {
+                                        SPInput.SendTime = DateTime.Now;
+                                    }
+                                    else
+                                    {
+                                        SPInput.HasSend = 2;
+                                    }
+
+                                    flag = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName2, SPInput, ref SPOutput, ref lstError);
                                     if (flag == false)
                                     {
                                         if (SendFlag == 1)
