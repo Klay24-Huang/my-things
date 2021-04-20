@@ -181,10 +181,9 @@ namespace WebAPI.Models.ComboFunc
                                 SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base>(connetStr);
                                 string SPName = new ObjType().GetSPName(ObjType.SPType.InsMachiParkData);
                                 flag = sqlInsHelp.ExecuteSPNonQuery(SPName, spInsPark, ref spInsOut, ref lstError);
-                                ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
-                            }
-                           
-
+                                //ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
+                                ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
+                            }                        
                         }
                     }
                 }
