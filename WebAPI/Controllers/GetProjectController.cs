@@ -585,7 +585,7 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                outputApi.SeatGroups = SeatGroups;
+                //outputApi.SeatGroups = SeatGroups;
             }
             #endregion
 

@@ -407,6 +407,7 @@ namespace WebAPI.Models.Enum
             /// 綁定悠遊卡 20210415 ADD
             /// </summary>
             BindUUCardJob,
+            GetCarTypeGroupList,
             #region 渣渣
             /// <summary>
             /// 個人訊息
