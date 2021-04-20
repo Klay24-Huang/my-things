@@ -22,6 +22,7 @@ using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin;
 using System.Threading;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Models.Param.Output;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -322,6 +323,71 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 取得合約明細
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public SPOut_GetSubsCNT sp_GetSubsCNT(SPInput_GetSubsCNT spInput, ref string errCode)
+        {
+            var re = new SPOut_GetSubsCNT();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCNT);
+                string SPName = "usp_GetSubsCNT_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.MonProjID,
+                        spInput.MonProPeriod,
+                        spInput.ShortDays,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 3)
+                    {
+                        var nowCards = objUti.ConvertToList<SPOut_GetSubsCNT_NowCard>(ds1.Tables[0]);
+                        if (nowCards != null && nowCards.Count() > 0)
+                            re.NowCard = nowCards.FirstOrDefault();
+
+                        var nxtCards = objUti.ConvertToList<SPOut_GetSubsCNT_NxtCard>(ds1.Tables[1]);
+                        if (nxtCards != null && nxtCards.Count() > 0)
+                            re.NxtCard = nxtCards.FirstOrDefault();
+                    }
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// 取得月租Group
@@ -487,6 +553,27 @@ namespace WebAPI.Models.BillFunc
                              }).ToList();
             }
             return re;
+        }
+    
+        public OAPI_GetSubsCNT_Card FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
+        {
+            if (sour != null)
+            {
+                return new OAPI_GetSubsCNT_Card()
+                {
+                    MonProjID = sour.MonProjID,
+                    MonProPeriod = sour.MonProPeriod,
+                    ShortDays = sour.ShortDays,
+                    MonProjNM = sour.MonProjNM,
+                    CarWDHours = sour.WorkDayHours,
+                    CarHDHours = sour.HolidayHours,
+                    MotoTotalMins = sour.MotoTotalHours,
+                    SD = sour.StartDate.ToString("MM/dd"),
+                    ED = sour.EndDate.ToString("MM/dd")
+                };
+            }
+            else
+                return null;
         }
     }
 }

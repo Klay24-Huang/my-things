@@ -299,6 +299,7 @@
     <Compile Include="Controllers\GetPolygonForWebController.cs" />
     <Compile Include="Controllers\GetProjectController.cs" />
     <Compile Include="Controllers\GetServerTimeController.cs" />
+    <Compile Include="Controllers\GetSubsCNTController.cs" />
     <Compile Include="Controllers\GetUPDListController.cs" />
     <Compile Include="Controllers\InvoiceSettingController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -498,6 +499,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetSubsCNT.cs" />
     <Compile Include="Models\Param\Input\IAPI_InvoiceSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
@@ -605,6 +607,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetPolygonForWeb.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetServerTime.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetSubsCNT.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
