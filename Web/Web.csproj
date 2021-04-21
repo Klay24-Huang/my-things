@@ -382,6 +382,7 @@
     <Content Include="Scripts\js\ActionJS\Report\MonthlyMainQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MotorBatteryStatusQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ParkingCheckInQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\ReFund.js" />
     <Content Include="Scripts\js\ActionJS\Report\TradeQuery.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerInfoAdd.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerInfoMaintain.js" />
@@ -681,6 +682,7 @@
     <Content Include="Views\News\BannerInfoMaintain.cshtml" />
     <Content Include="Views\News\BannerInfoAdd.cshtml" />
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
+    <Content Include="Views\Report\ReFund.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
