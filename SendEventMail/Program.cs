@@ -21,9 +21,43 @@ namespace SendEventMail
         private static Logger logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
+            GetNoGPSData();
             GetSendData();
         }
 
+        /// <summary>
+        /// 寫入事件(10:車機失聯1小時)
+        /// </summary>
+        private static void GetNoGPSData()
+        {
+            try
+            {
+                logger.Info(string.Format("{0}:寫入事件(10:車機失聯1小時)開始", DateTime.Now));
+
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+                bool flag = true;
+                string SPName = "usp_InsNoGPSReponse";
+                SPInput_Base spInput = new SPInput_Base()
+                {
+                    LogID = 741852
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_Base, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                logger.Info(string.Format("{0}:寫入事件(10:車機失聯1小時)結束", DateTime.Now));
+            }
+        }
+
+        /// <summary>
+        /// 整理要發告警的資料
+        /// </summary>
         private static void GetSendData()
         {
             try
@@ -317,6 +351,17 @@ namespace SendEventMail
         }
 
         #region GMail寄信
+        /// <summary>
+        /// GMail寄信
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="AlterID"></param>
+        /// <param name="Title"></param>
+        /// <param name="Body"></param>
+        /// <param name="receive"></param>
+        /// <param name="attach"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendMail(int Sender, Int64 AlterID, string Title, string Body, string receive, string attach, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -389,6 +434,15 @@ namespace SendEventMail
         #endregion
 
         #region SendGrid-單發
+        /// <summary>
+        /// SendGrid-單發
+        /// </summary>
+        /// <param name="AlterID"></param>
+        /// <param name="Title"></param>
+        /// <param name="Body"></param>
+        /// <param name="receive"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendGridMail(Int64 AlterID, string Title, string Body, string receive, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -435,6 +489,14 @@ namespace SendEventMail
         #endregion
 
         #region SendGrid-依事件類型發送
+        /// <summary>
+        /// SendGrid-依事件類型發送
+        /// </summary>
+        /// <param name="EventType"></param>
+        /// <param name="Receiver"></param>
+        /// <param name="ToSendList"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendGridGroupSendMail(int EventType, string Receiver, List<Sync_SendEventMessage> ToSendList, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -464,6 +526,9 @@ namespace SendEventMail
                         break;
                     case 9:
                         Title = string.Format("異常告警：{0} 事件名單", "車輛無租約，引擎被發動");
+                        break;
+                    case 10:
+                        Title = string.Format("異常告警：{0} 事件名單", "車機失聯1小時");
                         break;
                 }
 

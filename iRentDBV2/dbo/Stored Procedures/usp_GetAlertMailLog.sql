@@ -22,5 +22,6 @@ FROM TB_AlertMailLog WITH(NOLOCK)
 WHERE 1=1 
 AND (HasSend=0 AND MKTime BETWEEN @SDate AND @EDate) 
 OR (HasSend=2 AND MKTime >= DATEADD(HOUR,-4,@NowDate))
+OR (HasSend=0 AND UPDTime BETWEEN @SDate AND @EDate)
 ORDER BY AlertID DESC;
 GO
