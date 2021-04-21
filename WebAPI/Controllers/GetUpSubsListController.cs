@@ -16,12 +16,12 @@ using Domain.SP.Output.Subscription;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 變更下期列表
+    /// 取得訂閱制升轉列表
     /// </summary>
-    public class GetChgSubsListController : ApiController
+    public class GetUpSubsListController : ApiController
     {
         [HttpPost()]
-        public Dictionary<string, object> DoGetChgSubsList([FromBody] Dictionary<string, object> value)
+        public Dictionary<string, object> DoGetUpSubsList([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var msp = new MonSubsSp();
@@ -35,10 +35,10 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GetChgSubsListController";
+            string funName = "DoGetUpSubsList";
             Int64 LogID = 0;
-            var apiInput = new IAPI_GetChgSubsList();
-            var outputApi = new OAPI_GetChgSubsList();
+            var apiInput = new IAPI_GetUpSubsList();
+            var outputApi = new OAPI_GetUpSubsList();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetChgSubsList>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetUpSubsList>(Contentjson);
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -113,7 +113,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    var spIn = new SPInput_GetChgSubsList()
+                    var spIn = new SPInput_GetUpSubsList()
                     {
                         IDNO = IDNO,
                         LogID = LogID,
@@ -122,21 +122,28 @@ namespace WebAPI.Controllers
                         ShortDays = apiInput.ShortDays
                     };
                     trace.traceAdd("spIn", spIn);
-                    var sp_re = msp.sp_GetChgSubsList(spIn, ref errCode);
+                    var sp_re = msp.sp_GetUpSubsList(spIn, ref errCode);
                     trace.traceAdd("sp_re", sp_re);
 
                     if (sp_re != null)
                     {
-                        if (sp_re.NowCard != null)
-                            outputApi.MyCard = objUti.TTMap<SPOut_GetChgSubsList_Card, OPAI_GetChgSubsList_Card>(sp_re.NowCard);
+                        if (sp_re.Cards != null && sp_re.Cards.Count() > 0)
+                        {
+                            var sour = sp_re.Cards;
+                            var mixs = sour.Where(x => (x.CarHDHours > 0 || x.CarWDHours > 0) && x.MotoTotalMins > 0).ToList();
+                            var nors = sour.Where(x => !mixs.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
 
-                        if(sp_re.OtrCards != null && sp_re.OtrCards.Count()>0)
-                            outputApi.OtrCards = objUti.TTMap<List<SPOut_GetChgSubsList_Card>, List<OPAI_GetChgSubsList_Card>>(sp_re.OtrCards);
-                    }
-                    else
-                    {
-                        flag = false;
-                        errCode = "ERR908";//sp錯誤
+                            if (mixs != null && mixs.Count() > 0)
+                                outputApi.MixCards = objUti.TTMap<List<SPOut_GetUpSubsList_Card>, List<OAPI_GetUpSubsList_Card>>(mixs);
+
+                            if (nors != null && nors.Count() > 0)
+                                outputApi.NorCards = objUti.TTMap<List<SPOut_GetUpSubsList_Card>, List<OAPI_GetUpSubsList_Card>>(nors);
+                        }
+                        else
+                        {
+                            flag = false;
+                            errCode = "ERR908";//sp錯誤
+                        }
                     }
 
                     trace.traceAdd("outputApi", outputApi);
@@ -147,7 +154,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
-                carRepo.AddTraceLog(187, funName, eumTraceType.exception, trace);
+                carRepo.AddTraceLog(188, funName, eumTraceType.exception, trace);
             }
 
             #region 輸出

@@ -384,6 +384,64 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public SPOut_GetUpSubsList sp_GetUpSubsList(SPInput_GetUpSubsList spInput, ref string errCode)
+        {
+            var re = new SPOut_GetUpSubsList();
+            re.Cards = new List<SPOut_GetUpSubsList_Card>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetUpSubsList);
+                string SPName = "usp_GetUpSubsList_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.MonProjID,
+                        spInput.MonProPeriod,
+                        spInput.ShortDays,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                    {
+                        var cards = objUti.ConvertToList<SPOut_GetUpSubsList_Card>(ds1.Tables[0]);
+                        if (cards != null && cards.Count() > 0)
+                            re.Cards = cards;
+                    }
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         /// <summary>
         /// 取得合約明細
         /// </summary>
