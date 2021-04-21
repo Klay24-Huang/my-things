@@ -13,7 +13,7 @@ namespace WebAPI.Models.BillFunc
         public string ApiJson = "";
         public string errCode = "000000";
         public string errMsg = "Success";
-        private readonly List<int> PayNxt = new List<int> { 179 };
+        private readonly List<int> PayNxt = new List<int> { 179,188 };
         private MonSubsSp msp = new MonSubsSp();
 
         public BuyNowNxtCommon()
@@ -37,6 +37,13 @@ namespace WebAPI.Models.BillFunc
         /// <returns></returns>
         public bool exeNxt()
         {
+            bool flag = false;
+            var carRepo = new CarRentRepo();
+            var trace = new TraceCom();
+            trace.traceAdd("apiIfo", new { ApiID, ApiJson });
+            string funNm = "exeNxt";
+            int funId = SiteUV.GetFunId(funNm);
+
             if (!CkApiID()) return false;
 
             try
@@ -50,29 +57,57 @@ namespace WebAPI.Models.BillFunc
                             spIn.LogID > 0 && spIn.MonProPeriod > 0)
                         {
                             spIn.SetPayOne = 1;//首期金額已付
-                            return msp.sp_CreateSubsMonth(spIn, ref errCode);
+                            flag = msp.sp_CreateSubsMonth(spIn, ref errCode);
+                            trace.traceAdd("CreateSubsMonth", new { flag, errCode });
                         }
                         else
                         {
                             errCode = "ERR257";//參數遺漏
-                            return false;
+                            flag = false;
                         }
                     }
                     else
                     {
                         errCode = "ERR267";//ApiJson錯誤
-                        return false;
+                        flag = false;
                     }
                 }
+                else if(ApiID == 188)
+                {
+                    if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
+                    {
+                        var spIn = JsonConvert.DeserializeObject<SPInput_UpSubsMonth>(ApiJson);
+                        if (!string.IsNullOrWhiteSpace(spIn.IDNO) && spIn.LogID > 0 &&
+                            !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&
+                            !string.IsNullOrWhiteSpace(spIn.UP_MonProjID) && spIn.UP_MonProPeriod > 0 )
+                        {
+                            flag = msp.sp_UpSubsMonth(spIn, ref errCode);
+                            trace.traceAdd("UpSubsMonth", new { flag,errCode });
+                        }
+                        else
+                        {
+                            errCode = "ERR257";//參數遺漏
+                            flag = false;
+                        }
+                    }
+                }
+                else
+                   errMsg = "無對應ApiID";
 
-                errMsg = "無對應ApiID";
-                return false;
+                trace.traceAdd("errCode", errCode);
+                trace.traceAdd("errMsg", errMsg);
+                carRepo.AddTraceLog(funId, funNm, trace, flag);
             }
             catch (Exception ex)
             {
+                flag = false;
                 errMsg = ex.Message;
+                trace.BaseMsg = ex.Message;
+                carRepo.AddTraceLog(funId, funNm, trace, flag);
                 throw ex;
-            }
+            }           
+
+            return flag;
         }
     
     }

@@ -624,6 +624,29 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
+        public bool sp_UpSubsMonth(SPInput_UpSubsMonth spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
+            string spName = "usp_UpSubsMonth_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOutBase = new SPOutput_Base();
+            var spOut = new SPOut_UpSubsMonth();
+            SQLHelper<SPInput_UpSubsMonth, SPOut_UpSubsMonth> sqlHelp = new SQLHelper<SPInput_UpSubsMonth, SPOut_UpSubsMonth>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+
         public bool sp_SetSubsNxt(SPInput_SetSubsNxt spInput, ref string errCode)
         {
             bool flag = false;
