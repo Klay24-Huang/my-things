@@ -175,7 +175,8 @@ namespace WebAPI.Models.ComboFunc
                                     machi_id = wsOut.data[i].id,
                                     machi_parking_id = wsOut.data[i].store_id,
                                     OrderNo = OrderNo,
-                                     LogID=LogID
+                                    CarNo = CarNo,  //20210421 ADD BY ADAM REASON.補上車號
+                                     LogID =LogID
                                 };
                                 SPOutput_Base spInsOut = new SPOutput_Base();
                                 SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base>(connetStr);
