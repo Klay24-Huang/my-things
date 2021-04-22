@@ -271,7 +271,7 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthList);
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMySubs);
                 string SPName = "usp_GetMySubs_Q1";//hack: fix spNm
                 object[][] parms1 = {
                     new object[] {
