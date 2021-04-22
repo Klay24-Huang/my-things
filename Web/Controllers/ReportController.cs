@@ -439,8 +439,7 @@ namespace Web.Controllers
         /// <param name="EDate"></param>
         /// <param name="userID"></param>
         /// <param name="isHandle"></param>
-        /// <returns></returns>
-       
+        /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
             List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
@@ -522,8 +521,7 @@ namespace Web.Controllers
         /// <summary>
         /// 月租報表
         /// </summary>
-        /// <returns></returns>
-        
+        /// <returns></returns>   
         public ActionResult MonthlyDetailQuery()
         {
             return View();
@@ -759,7 +757,6 @@ namespace Web.Controllers
            // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代收停車費明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-
         /// <summary>
         /// 光陽維運APP報表 - 20210119唐加
         /// </summary>
@@ -777,7 +774,6 @@ namespace Web.Controllers
             List<BE_GetKymcoList> lstData = new OtherRepository(connetStr).GetKymcoLists(AuditMode, StartDate, EndDate);
             return View(lstData);
         }
-
         public ActionResult ExplodeKymcoQuery(string ExplodeSDate, string ExplodeEDate, int ExplodeAuditMode)
         {
             List<BE_GetKymcoList> lstRawDataOfMachi = new List<BE_GetKymcoList>();
@@ -894,7 +890,6 @@ namespace Web.Controllers
             List<BE_MotorBatteryStatus> lstData = new CarCardCommonRepository(connetStr).GetMotorBatteryStatus(CarNo, StartDate, EndDate);
             return View(lstData);
         }
-
         public ActionResult ExplodeMotorBatteryStatusQuery(string ExplodeCarNo, string ExplodeSendDate)
         {
             if (string.IsNullOrEmpty(ExplodeSendDate))
@@ -1090,6 +1085,23 @@ namespace Web.Controllers
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員審核明細" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-        
+
+        /// <summary>
+        /// 悠遊付退款
+        /// </summary>
+        /// <returns></returns>  
+        public ActionResult ReFund()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ReFund(string IDNO)
+        {
+
+            List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
+
+            return View(lstData);
+
+        }
     }
 }

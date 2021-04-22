@@ -1,5 +1,3 @@
-
-
 版本: 1.0
 
 # iRentApi2 WebAPI
@@ -22,6 +20,11 @@ iRentApi20 Web API版本
 - [GetProject取得專案與資費](#GetProject)
 - [GetBanner 取得廣告資訊](#GetBanner)
 - [GetNormalRent 取得同站租還站點](#GetNormalRent)
+- [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
+
+取還車跟車機操控相關
+
+- [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 
 ----------
 # 修改歷程
@@ -36,7 +39,10 @@ iRentApi20 Web API版本
 
 20210324 增加地圖搜尋相關修改，有變動到的API清單為 GetNormalRent,GetCarType,GetProject
 
+20210407 GetCarTypeGroupList補文件，移除掉部分API的Seats欄位
 20210407 新增檢查APP版本、還原更新Token
+
+20210415 新增變更悠遊卡
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -641,6 +647,7 @@ iRentApi20 Web API版本
 <h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
 <h5>20210324修改 - 增加搜尋使用欄位CarTypes,Seats </h5>
 <h5>20210407修改 - input移除掉Seats </h5>
+<h5>20210408修改 - 增加IsRent欄位</h5>
 
 # GetCarType同站以據點取出車型
 * ASP.NET Web API (REST API)
@@ -701,6 +708,7 @@ iRentApi20 Web API版本
 | OperatorScore | 業者評分 | Float | 5.0 |
 | Price | 價格 | int | 168 |
 | Seat | 座位數 | int | 5 |
+| IsRent | 是否可出租 | string | Y/N|
 
 * output範例
 ```
@@ -721,7 +729,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 5
+                "Seat": 5,
+                "IsRent": "Y"
             },
             {
                 "CarBrend": "TOYOTA",
@@ -731,7 +740,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 5
+                "Seat": 5,
+                "IsRent": "N"
             },
             {
                 "CarBrend": "TOYOTA",
@@ -741,7 +751,8 @@ iRentApi20 Web API版本
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "Price": 168,
-                "Seat": 7
+                "Seat": 7,
+                "IsRent": "Y"
             }
         ]
     }
@@ -1134,6 +1145,7 @@ iRentApi20 Web API版本
 | ContentForAPP | 據點描述(app顯示用) | string | |
 | IsRequiredForReturn | 還車位置資訊必填 | int | 0:否 1:是 |
 | StationPic | 據點照片 | List | |
+| IsRent | 是否可租 | string | Y/N |
 
 
 * StationPic參數說明
@@ -1163,7 +1175,8 @@ iRentApi20 Web API版本
                 "Content": "",
                 "ContentForAPP": null,
                 "IsRequiredForReturn": 0,
-                "StationPic": null
+                "StationPic": null,
+                "IsRent": "Y"
             },
             {
                 "StationID": "X0AP",
@@ -1175,7 +1188,8 @@ iRentApi20 Web API版本
                 "Content": "",
                 "ContentForAPP": null,
                 "IsRequiredForReturn": 0,
-                "StationPic": null
+                "StationPic": null,
+                "IsRent":"N"
             }
         ]
     }
@@ -1223,9 +1237,12 @@ iRentApi20 Web API版本
 
 
 * SeatGroups資料物件說明
-| 參數名稱    | 參數說明   |  型態  | 範例                                 |
-| Seat  	  | 座椅數 	   | int | 4 |
-| CarInfos 	  | 資料物件   | 	 |   |
+
+| 參數名稱 | 參數說明 | 型態 | 範例 |
+| -------- | -------- | :--: | ---- |
+| Seat     | 座椅數   | int  | 4    |
+| CarInfos | 資料物件 |      |      |
+
 
 * CarInfos 參數說明
 | 參數名稱    | 參數說明   |  型態  | 範例                                 |
@@ -1237,83 +1254,150 @@ iRentApi20 Web API版本
 
 
 * Output範例
+
+```
 {
-    "Result": "0",
+	"Result": "0",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"SeatGroups": [
+			{
+				"Seat": 2,
+				"CarInfos": [
+					{
+						"Seat": 2,
+						"CarType": "KYMCO MANY-110",
+						"CarTypePic": "iretScooter",
+						"CarTypeName": "MANY-110"
+					}
+				]
+			},
+			{
+				"Seat": 5,
+				"CarInfos": [
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA ALTIS",
+						"CarTypePic": "altis",
+						"CarTypeName": "ALTIS"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA CAMRY",
+						"CarTypePic": "camry",
+						"CarTypeName": "CAMRY"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA PRIUS PHV",
+						"CarTypePic": "priusPhv",
+						"CarTypeName": "PRIUS PHV"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA PRIUSc",
+						"CarTypePic": "priusC",
+						"CarTypeName": "PRIUSc"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA SIENTA5人",
+						"CarTypePic": "sienta",
+						"CarTypeName": "SIENTA5人"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA VIOS",
+						"CarTypePic": "vios",
+						"CarTypeName": "VIOS"
+					},
+					{
+						"Seat": 5,
+						"CarType": "TOYOTA YARIS",
+						"CarTypePic": "yaris",
+						"CarTypeName": "YARIS"
+					}
+				]
+			},
+			{
+				"Seat": 7,
+				"CarInfos": [
+					{
+						"Seat": 7,
+						"CarType": "TOYOTA SIENTA7人",
+						"CarTypePic": "sienta",
+						"CarTypeName": "SIENTA7人"
+					}
+				]
+			}
+		]
+	}
+}
+```
+
+# 取還車跟車機操控相關
+
+<h5 id="ChangeUUCard" name="ChangeUUCard">20210415發佈</h5>
+
+# ChangeUUCard 變更悠遊卡
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+  ### [/api/ChangeUUCard/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+
+- input範例
+
+```
+{
+    "OrderNo": "H0002630"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| HasBind      | 是否綁定           |  int   | 0:否 1:是     |
+
+* Output範例
+
+```
+{
+    "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "SeatGroups": [
-            {
-                "Seat": 2,
-                "CarInfos": [
-                    {
-                        "Seat": 2,
-                        "CarType": "KYMCO MANY-110",
-                        "CarTypePic": "iretScooter",
-                        "CarTypeName": "MANY-110"
-                    }
-                ]
-            },
-            {
-                "Seat": 5,
-                "CarInfos": [
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA ALTIS",
-                        "CarTypePic": "altis",
-                        "CarTypeName": "ALTIS"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA CAMRY",
-                        "CarTypePic": "camry",
-                        "CarTypeName": "CAMRY"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA PRIUS PHV",
-                        "CarTypePic": "priusPhv",
-                        "CarTypeName": "PRIUS PHV"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA PRIUSc",
-                        "CarTypePic": "priusC",
-                        "CarTypeName": "PRIUSc"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA SIENTA5人",
-                        "CarTypePic": "sienta",
-                        "CarTypeName": "SIENTA5人"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA VIOS",
-                        "CarTypePic": "vios",
-                        "CarTypeName": "VIOS"
-                    },
-                    {
-                        "Seat": 5,
-                        "CarType": "TOYOTA YARIS",
-                        "CarTypePic": "yaris",
-                        "CarTypeName": "YARIS"
-                    }
-                ]
-            },
-            {
-                "Seat": 7,
-                "CarInfos": [
-                    {
-                        "Seat": 7,
-                        "CarType": "TOYOTA SIENTA7人",
-                        "CarTypePic": "sienta",
-                        "CarTypeName": "SIENTA7人"
-                    }
-                ]
-            }
-        ]
+        "HasBind": 1
     }
 }
+```
+

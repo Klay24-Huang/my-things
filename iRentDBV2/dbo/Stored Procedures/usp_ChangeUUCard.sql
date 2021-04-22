@@ -1,7 +1,7 @@
-/****** Object:  StoredProcedure [dbo].[usp_DeleteAlertMailLog]    Script Date: 2021/3/30 下午 05:04:55 ******/
+/****** Object:  StoredProcedure [dbo].[usp_ChangeUUCard]    Script Date: 2021/4/15 上午 09:22:43 ******/
 
 /****************************************************************
-** Name: [dbo].[usp_DeleteAlertMailLog]
+** Name: [dbo].[usp_ChangeUUCard]
 ** Desc: 
 **
 ** Return values: 0 成功 else 錯誤
@@ -31,33 +31,40 @@
 ** DECLARE @ErrorMsg  			NVARCHAR(100);
 ** DECLARE @SQLExceptionCode	VARCHAR(10);		
 ** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_DeleteAlertMailLog]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
+** EXEC @Error=[dbo].[usp_ChangeUUCard]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
-** Auth:
-** Date:
+** Auth:Jet
+** Date:2021/4/14 17:30:00 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2021/03/16 10:30:00 Jet Add
-** 
+** 2021/4/14 |  Jet		  |	First Release
+** 17:30:00  |			  |
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_DeleteAlertMailLog]
+CREATE PROCEDURE [dbo].[usp_ChangeUUCard]
+	@OrderNo			BIGINT					,	--訂單編號
+	@IDNO				VARCHAR(10)				,	--身分證字號
+	@CID				VARCHAR(10)				,	--車機編號
+	@DeviceToken		VARCHAR(256)			,	--遠傳車機token
+	@IsCens				INT						,	--是否為興聯車機(0:否;1:是)
+	@OldCardNo			VARCHAR(30)				,	--舊悠遊卡卡號
+	@NewCardNo			VARCHAR(30)				,	--新悠遊卡卡號
 	@LogID				BIGINT					,
-	@ErrorCode			VARCHAR(6)		OUTPUT	,--回傳錯誤代碼
-	@ErrorMsg			NVARCHAR(100)	OUTPUT	,--回傳錯誤訊息
-	@SQLExceptionCode	VARCHAR(10)		OUTPUT	,--回傳sqlException代碼
-	@SQLExceptionMsg	NVARCHAR(1000)	OUTPUT	 --回傳sqlException訊息
+	@ErrorCode			VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
+	@ErrorMsg			NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
+	@SQLExceptionCode	VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
+	@SQLExceptionMsg	NVARCHAR(1000)	OUTPUT		--回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
-DECLARE @SendTime DATETIME;
-DECLARE @NowDate Datetime;
+DECLARE @hasData TINYINT;
+DECLARE @NowTime DATETIME;
 
 /*初始設定*/
 SET @Error=0;
@@ -65,22 +72,47 @@ SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-SET @FunName='usp_DeleteAlertMailLog';
+SET @FunName='usp_ChangeUUCard';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @NowDate=DATEADD(HOUR,8,GETDATE());
+SET @hasData=0;
+SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @OrderNo=ISNULL(@OrderNo,0);
 
 BEGIN TRY
+	IF @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
+
 	IF @Error=0
 	BEGIN
-		SELECT TOP 1 @SendTime=ISNULL(SendTime,@NowDate) FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=1 ORDER BY SendTime DESC;
-		SET @SendTime = DATEADD(MINUTE,-5,@SendTime);
+		IF EXISTS(SELECT * FROM TB_BindUUCard WITH(NOLOCK) WHERE OrderNumber=@OrderNo)
+		BEGIN
+			UPDATE TB_BindUUCard
+			SET IDNO=@IDNO,
+				CID=@CID,
+				DeviceToken=@DeviceToken,
+				IsCens=@IsCens,
+				OldCardNo=@OldCardNo,
+				NewCardNo=@NewCardNo,
+				Result=0,
+				UPTime=@NowTime
+			WHERE OrderNumber=@OrderNo;
 
-		--將非(10:車機失聯1小時)的多餘資料刪除
-		DELETE FROM TB_AlertMailLog WHERE HasSend=0 AND EventType<>10 AND MKTime<=@SendTime;
+			INSERT INTO TB_BindUUCard_Log
+			SELECT @NowTime,* FROM TB_BindUUCard WITH(NOLOCK)
+			WHERE OrderNumber=@OrderNo;
+		END
+		ELSE
+		BEGIN
+			INSERT INTO TB_BindUUCard VALUES(@OrderNo,@IDNO,@CID,@DeviceToken,@IsCens,@OldCardNo,@NewCardNo,0,@NowTime,@NowTime);
 
-		--將(10:車機失聯1小時)的多餘資料刪除
-		DELETE FROM TB_AlertMailLog WHERE HasSend=0 AND EventType=10 AND UPDTime<=@SendTime;
+			INSERT INTO TB_BindUUCard_Log
+			SELECT @NowTime,* FROM TB_BindUUCard WITH(NOLOCK)
+			WHERE OrderNumber=@OrderNo;
+		END
 	END
 
 	--寫入錯誤訊息
@@ -108,6 +140,6 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_DeleteAlertMailLog';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_ChangeUUCard';
 GO
 

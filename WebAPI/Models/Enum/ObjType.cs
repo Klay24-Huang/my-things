@@ -399,6 +399,14 @@ namespace WebAPI.Models.Enum
             /// 檢查APP版本
             /// </summary>
             CheckAppVersion,
+            /// <summary>
+            /// 變更悠遊卡 20210415 ADD
+            /// </summary>
+            ChangeUUCard,
+            /// <summary>
+            /// 綁定悠遊卡 20210415 ADD
+            /// </summary>
+            BindUUCardJob,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -855,7 +863,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarType_20210409";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210416";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -955,6 +963,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.CheckAppVersion:    //檢查APP版本
                     SPName = "usp_CheckAppVersion";
+                    break;
+                case SPType.ChangeUUCard:    //變更悠遊卡 20210415 ADD
+                    SPName = "usp_ChangeUUCard";
+                    break;
+                case SPType.BindUUCardJob:    //綁定悠遊卡 20210415 ADD
+                    SPName = "usp_BindUUCardJob";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

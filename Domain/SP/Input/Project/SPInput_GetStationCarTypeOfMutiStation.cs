@@ -32,6 +32,7 @@ namespace Domain.SP.Input.Project
         /// 是否使用安心服務
         /// </summary>
         public int Insurance { set; get; }
+        public int Mode { get; set; }   //20210416 ADD BY ADAM REASON.模式判定，有送定位點=1,沒有設為0
         public Int64 LogID { get; set; }
     }
 }
