@@ -11,6 +11,7 @@ using System.Linq;
 using System.Web;
 using WebAPI.Models.Enum;
 using WebCommon;
+using Newtonsoft.Json;
 
 namespace WebAPI.Models.ComboFunc
 {
@@ -22,7 +23,9 @@ namespace WebAPI.Models.ComboFunc
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         List<ErrorInfo> lstError = new List<ErrorInfo>();
         MochiParkAPI WebAPI = new MochiParkAPI();
-        
+
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();  //20210422 ADD BY ADAM 
+
         public bool GetToken(Int64 LogID,ref string MochiToken)
         {
             bool flag = true;
@@ -145,45 +148,65 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="ParkingBill">回傳車麻吉停車費</param>
         /// <param name="wsOut"></param>
         /// <returns></returns>
-        public bool GetParkingBill(Int64 LogID,Int64 OrderNo, string CarNo, string StartDate, string EndDate, ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
+        public bool GetParkingBill(Int64 LogID,Int64 OrderNo, string CarNo, DateTime StartDate, DateTime EndDate, ref int ParkingBill, ref WebAPIOutput_QueryBillByCar wsOut)
         {
             //車麻吉重大提示，日期要隔一天才有效果，且只能查當天的資料，去掉車號只能查這台車當年的資料
             bool flag = true;
             string Token = "";
             flag = GetToken(LogID, ref Token);
-            DateTime SD = Convert.ToDateTime(StartDate);
-            DateTime ED = Convert.ToDateTime(EndDate);
+            //DateTime SD = Convert.ToDateTime(StartDate);
+            //DateTime ED = Convert.ToDateTime(EndDate);
             ParkingBill = 0;
             if (flag)
             {
-                flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate, EndDate, ref wsOut);
+                //logger.Info(JsonConvert.SerializeObject(new { Token, CarNo, StartDate, EndDate }));
+                flag = WebAPI.DoQueryBillByCar(Token, CarNo, StartDate.ToString("yyyyMMdd"), EndDate.ToString("yyyyMMdd"), ref wsOut);
                 if (wsOut != null)
                 {
+                    //logger.Info(JsonConvert.SerializeObject(wsOut));
+                    
                     if (wsOut.data.Count() > 0)
                     {
                         int len = wsOut.data.Count();
                         for (int i = 0; i < len; i++)
                         {
-                            if (wsOut.data[i].details.parking_checked_in_at > SD && wsOut.data[i].details.parking_checked_out_at <= ED && wsOut.data[i].plate_number == CarNo.Replace(" ", ""))
+                            
+                            if (wsOut.data[i].details.parking_checked_in_at > StartDate && wsOut.data[i].details.parking_checked_out_at <= EndDate && wsOut.data[i].plate_number == CarNo.Replace(" ", ""))
                             {
-                             
-                                SPInput_InsParkingFeeData spInsPark = new SPInput_InsParkingFeeData()
+                                try
                                 {
-                                    Amount = Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount)),
-                                    Check_in = Convert.ToDateTime(wsOut.data[i].details.parking_checked_in_at),
-                                    Check_out = Convert.ToDateTime(wsOut.data[i].details.parking_checked_out_at),
-                                    machi_id = wsOut.data[i].id,
-                                    machi_parking_id = wsOut.data[i].store_id,
-                                    OrderNo = OrderNo,
-                                    CarNo = CarNo,  //20210421 ADD BY ADAM REASON.補上車號
-                                     LogID =LogID
-                                };
-                                SPOutput_Base spInsOut = new SPOutput_Base();
-                                SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base>(connetStr);
-                                string SPName = new ObjType().GetSPName(ObjType.SPType.InsMachiParkData);
-                                flag = sqlInsHelp.ExecuteSPNonQuery(SPName, spInsPark, ref spInsOut, ref lstError);
+                                    SPInput_InsParkingFeeData spInsPark = new SPInput_InsParkingFeeData()
+                                    {
+                                        Amount = Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount)),
+                                        Check_in = Convert.ToDateTime(wsOut.data[i].details.parking_checked_in_at),
+                                        Check_out = Convert.ToDateTime(wsOut.data[i].details.parking_checked_out_at),
+                                        machi_id = wsOut.data[i].id,
+                                        machi_parking_id = wsOut.data[i].store_id,
+                                        OrderNo = OrderNo,
+                                        CarNo = CarNo,  //20210421 ADD BY ADAM REASON.補上車號
+                                        LogID = LogID
+                                    };
+
+                                    SPOutput_Base spInsOut = new SPOutput_Base();
+                                    SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base> sqlInsHelp = new SQLHelper<SPInput_InsParkingFeeData, SPOutput_Base>(connetStr);
+                                    string SPName = new ObjType().GetSPName(ObjType.SPType.InsMachiParkData);
+                                    flag = sqlInsHelp.ExecuteSPNonQuery(SPName, spInsPark, ref spInsOut, ref lstError);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.Error("spInsPark=" + ex.Message);
+                                    throw;
+                                }
                                 //ParkingBill += Convert.ToInt32(wsOut.data[i].amount);
-                                ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
+                                try
+                                {
+                                    ParkingBill += Convert.ToInt32(Convert.ToDouble(wsOut.data[i].amount));
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.Error("ParkingBill+=" + ex.Message);
+                                    throw;
+                                }
                             }                        
                         }
                     }
