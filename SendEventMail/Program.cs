@@ -21,23 +21,23 @@ namespace SendEventMail
         private static Logger logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            GetNoGPSData();
+            InsertAlertEvent();
             GetSendData();
         }
 
         /// <summary>
-        /// 寫入事件(10:車機失聯1小時)
+        /// 寫入告警事件
         /// </summary>
-        private static void GetNoGPSData()
+        private static void InsertAlertEvent()
         {
             try
             {
-                logger.Info(string.Format("{0}:寫入事件(10:車機失聯1小時)開始", DateTime.Now));
+                logger.Info(string.Format("{0}:寫入告警事件開始", DateTime.Now));
 
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
 
                 bool flag = true;
-                string SPName = "usp_InsNoGPSReponse";
+                string SPName = "usp_InsAlertEvent";
                 SPInput_Base spInput = new SPInput_Base()
                 {
                     LogID = 741852
@@ -51,7 +51,7 @@ namespace SendEventMail
             }
             finally
             {
-                logger.Info(string.Format("{0}:寫入事件(10:車機失聯1小時)結束", DateTime.Now));
+                logger.Info(string.Format("{0}:寫入告警事件結束", DateTime.Now));
             }
         }
 
@@ -286,7 +286,8 @@ namespace SendEventMail
 
                                 int SendFlag = SendGridGroupSendMail(GroupHandle.EventType, GroupHandle.Receiver, ToSendList, ref lstError);
 
-                                foreach(var ToSend in ToSendList)
+                                var NowDate = DateTime.Now;
+                                foreach (var ToSend in ToSendList)
                                 {
                                     string SPName2 = "usp_SYNC_UPDSendAlertMessage";
                                     SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
@@ -300,7 +301,7 @@ namespace SendEventMail
 
                                     if (SendFlag == 0)
                                     {
-                                        SPInput.SendTime = DateTime.Now;
+                                        SPInput.SendTime = NowDate;
                                     }
                                     else
                                     {
@@ -394,7 +395,7 @@ namespace SendEventMail
                     if (!string.IsNullOrEmpty(Receiver))
                         newMail.To.Add(new MailAddress(Receiver));
                 }
-                
+
                 SmtpClient MySmtp = new SmtpClient("smtp.gmail.com", 587);
                 MySmtp.Credentials = new System.Net.NetworkCredential(SendID, SendPWD);
                 //MySmtp.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -529,6 +530,12 @@ namespace SendEventMail
                         break;
                     case 10:
                         Title = string.Format("異常告警：{0} 事件名單", "車機失聯1小時");
+                        break;
+                    case 11:
+                        Title = string.Format("異常告警：{0} 事件名單", "超過15分鐘未完成還車作業");
+                        break;
+                    case 12:
+                        Title = string.Format("異常告警：{0} 事件名單", "超過預約還車時間30分鐘未還車");
                         break;
                 }
 
