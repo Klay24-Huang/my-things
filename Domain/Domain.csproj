@@ -128,10 +128,12 @@
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BindUUCard.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_BindUUCardJob.cs" />
     <Compile Include="SP\Input\Booking\SPInput_Booking.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BookingCancel.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BookingStart.cs" />
     <Compile Include="SP\Input\Booking\SPInput_CarMachineCommon.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_ChangeUUCard.cs" />
     <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
     <Compile Include="SP\Input\Car\SPInput_CarStatus.cs" />
@@ -304,6 +306,7 @@
     <Compile Include="TB\BackEnd\BE_FeedBackMainDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetBannerInfo.cs" />
     <Compile Include="TB\BackEnd\BE_GetCleanFixQueryForWeb.cs" />
+    <Compile Include="TB\BackEnd\BE_GetEasyWalletList.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />

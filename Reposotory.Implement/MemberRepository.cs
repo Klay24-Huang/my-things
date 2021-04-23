@@ -432,5 +432,20 @@ namespace Reposotory.Implement
             lstMember = GetS(SQL);
             return lstMember;
         }
+
+        /// 取得黑名單手機號碼
+        public List<BE_GetEasyWalletList> GetEasyWalletList(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetEasyWalletList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[3]; // term是空就用不到
+            string term = "";
+            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
+            string SQL = $" select orderNo,ITEM as projectName,IDNO,convert(char(8),A_SYSDT,112) as orderTime from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";
+
+            lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
     }
 }
