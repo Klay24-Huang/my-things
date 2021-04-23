@@ -297,6 +297,7 @@
     <Compile Include="TB\BackEnd\BE_CarBindImportDataResult.cs" />
     <Compile Include="TB\BackEnd\BE_CarData.cs" />
     <Compile Include="TB\BackEnd\BE_CarInfoForMachineData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarSettingRecord.cs" />
     <Compile Include="TB\BackEnd\BE_CleanData.cs" />
     <Compile Include="TB\BackEnd\BE_CleanDataWithoutPIC.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />

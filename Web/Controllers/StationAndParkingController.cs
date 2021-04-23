@@ -41,7 +41,16 @@ namespace Web.Controllers
             ViewData["NotMuch"] = (NotMach.HasValue)?"1":"0";
             List<BE_GetPartOfStationInfo> lstData = null;
             StationAndCarRepository repository = new StationAndCarRepository(connetStr);
+
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarSettingData> carLstData = new List<BE_CarSettingData>();
+            List<BE_CarSettingData> carLstData_unaccessable = new List<BE_CarSettingData>();
+            carLstData = carStatusCommon.GetCarSettingData(null, StationID, 3);
+            carLstData_unaccessable = carStatusCommon.GetCarSettingData(null, StationID, 2);
+
             lstData = repository.GetPartOfStation(StationID, NotMach.HasValue);
+            ViewBag.carData = carLstData.Count;
+            ViewBag.carDataNotOnBoard = carLstData.Count - carLstData_unaccessable.Count;
             return View(lstData);
         }
         /// <summary>
