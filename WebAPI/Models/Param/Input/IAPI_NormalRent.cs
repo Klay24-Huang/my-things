@@ -25,5 +25,9 @@ namespace WebAPI.Models.Param.Input
         /// 半徑
         /// </summary>
         public double? Radius { set; get; }
+        public List<string> CarTypes { get; set; } = new List<string>();
+        public List<int> Seats { get; set; } = new List<int>();
+        public DateTime? SD { get; set; }
+        public DateTime? ED { get; set; }
     }
 }

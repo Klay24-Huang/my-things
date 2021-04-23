@@ -34,6 +34,8 @@ namespace Domain.TB
         /// </summary>
         public string Content { set; get; }
 
+        public string IsRent { get; set; }
+
         /// <summary>
         /// 據點描述（app顯示）
         /// </summary>

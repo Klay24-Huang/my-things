@@ -388,9 +388,9 @@
     <Content Include="Scripts\js\ActionJS\Report\MotorBatteryStatusQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ParkingCheckInQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\TradeQuery.js" />
-    <Content Include="Scripts\js\ActionJS\StationAndParking\BannerInfoAdd.js" />
-    <Content Include="Scripts\js\ActionJS\StationAndParking\BannerInfoMaintain.js" />
-    <Content Include="Scripts\js\ActionJS\StationAndParking\BannerSet.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerInfoAdd.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerInfoMaintain.js" />
+    <Content Include="Scripts\js\ActionJS\News\BannerSet.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\ChargeParkingSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\PolygonMaintain.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoAdd.js" />
@@ -683,9 +683,9 @@
     <Content Include="Views\CommonObj\GetTypeleList.cshtml" />
     <Content Include="Views\Report\MemberDetailQuery.cshtml" />
     <Content Include="Views\Report\MotorBatteryStatusQuery.cshtml" />
-    <Content Include="Views\StationAndParking\BannerSet.cshtml" />
-    <Content Include="Views\StationAndParking\BannerInfoMaintain.cshtml" />
-    <Content Include="Views\StationAndParking\BannerInfoAdd.cshtml" />
+    <Content Include="Views\News\BannerSet.cshtml" />
+    <Content Include="Views\News\BannerInfoMaintain.cshtml" />
+    <Content Include="Views\News\BannerInfoAdd.cshtml" />
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />

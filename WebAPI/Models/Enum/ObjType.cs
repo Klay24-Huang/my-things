@@ -398,6 +398,16 @@ namespace WebAPI.Models.Enum
             /// 重新授權
             /// </summary>
             GetOrderAuthRetryList,
+            CheckAppVersion,
+            /// <summary>
+            /// 變更悠遊卡 20210415 ADD
+            /// </summary>
+            ChangeUUCard,
+            /// <summary>
+            /// 綁定悠遊卡 20210415 ADD
+            /// </summary>
+            BindUUCardJob,
+            GetCarTypeGroupList,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -865,10 +875,10 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetStationCarType:
                     //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210324";
+                    SPName = "usp_GetStationCarType_20210409";
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210319";
+                    SPName = "usp_GetStationCarTypeOfMutiStation_20210416";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     SPName = "usp_GetMemberStatus";
@@ -962,6 +972,18 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
                     SPName = "usp_GetBanner";
+                    break;
+                case SPType.GetCarTypeGroupList:   
+                    SPName = "usp_GetCarTypeGroupList_Q1";
+                    break;
+                case SPType.CheckAppVersion:    //檢查APP版本
+                    SPName = "usp_CheckAppVersion";
+                    break;
+                case SPType.ChangeUUCard:    //變更悠遊卡 20210415 ADD
+                    SPName = "usp_ChangeUUCard";
+                    break;
+                case SPType.BindUUCardJob:    //綁定悠遊卡 20210415 ADD
+                    SPName = "usp_BindUUCardJob";
                     break;
                 case SPType.GetOrderAuthRetryList:
                     SPName = "usp_GetOrderAuthRetryList";

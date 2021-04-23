@@ -241,6 +241,7 @@
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
+    <Compile Include="Controllers\BindUUCardJobController.cs" />
     <Compile Include="Controllers\BonusGivingController.cs" />
     <Compile Include="Controllers\BonusHistoryQueryController.cs" />
     <Compile Include="Controllers\BonusQueryController.cs" />
@@ -257,11 +258,13 @@
     <Compile Include="Controllers\ChangePWDController.cs" />
     <Compile Include="Controllers\ChangeUUCardController.cs" />
     <Compile Include="Controllers\CheckAccountExistController.cs" />
+    <Compile Include="Controllers\CheckAppVersionController.cs" />
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CreditAuthRetryJobController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
     <Compile Include="Controllers\GetBannerController.cs" />
+    <Compile Include="Controllers\GetCarTypeGroupListController.cs" />
     <Compile Include="Controllers\GetMemberInvoiceSettingController.cs" />
     <Compile Include="Controllers\CityListController.cs" />
     <Compile Include="Controllers\ConfirmBeforeGivingController.cs" />
@@ -369,6 +372,7 @@
     <Compile Include="Models\BillFunc\BillCommon.cs" />
     <Compile Include="Models\BillFunc\CarRentCommon.cs" />
     <Compile Include="Models\BillFunc\SiteUV.cs" />
+    <Compile Include="Models\BillFunc\StationCommon.cs" />
     <Compile Include="Models\ComboFunc\ContactComm.cs" />
     <Compile Include="Models\ComboFunc\CreditAuthComm.cs" />
     <Compile Include="Models\ComboFunc\MachiComm.cs" />
@@ -438,12 +442,14 @@
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BindUUCardJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CheckAppVersion.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Input\IAPI_AnyRent.cs" />
@@ -474,6 +480,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarStatus.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarType.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetCarTypeGroupList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMachiParkToken.cs" />
@@ -558,6 +565,7 @@
     <Compile Include="Models\Param\Output\OAPI_BookingStart.cs" />
     <Compile Include="Models\Param\Output\OAPI_BookingStartMotor.cs" />
     <Compile Include="Models\Param\Output\OAPI_ChangeCreditCardBind.cs" />
+    <Compile Include="Models\Param\Output\OAPI_CheckAppVersion.cs" />
     <Compile Include="Models\Param\Output\OAPI_CityList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_CreditAndWalletQuery.cs" />
@@ -570,6 +578,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetCardBindList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCarStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCarType.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCarTypeGroupList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFeedBackKind.cs" />

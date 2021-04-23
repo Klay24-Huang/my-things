@@ -102,9 +102,9 @@ namespace OtherService
         public async Task<WebAPIOutput_Base> DoBindSend(WebAPIInput_Bind input)
         {
             string Site = BaseURL + GetCardPage;
+            Site = AzureAPIBaseURL + @"api/TestTaishiBU";
             //20201125紀錄接收資料
             logger.Trace("DoBindSend:"+ Site);
-            //Site = AzureAPIBaseURL + @"api/TestTaishiBU";
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;

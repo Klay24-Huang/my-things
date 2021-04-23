@@ -12,6 +12,7 @@ namespace Domain.SP.Output.Car
         /// 是否是常用據點 20210315 ADD BY ADAM
         /// </summary>
         public int IsFavStation { set; get; }
+        public string IsRent { get; set; }
 
         public List<SPOutput_GetStationCarType_Cards> Cards { get; set; }
     }
@@ -55,5 +56,6 @@ namespace Domain.SP.Output.Car
         ///座位數
         /// </summary>
         public int Seat { set; get; }
+        public string IsRent { get; set; }
     }
 }

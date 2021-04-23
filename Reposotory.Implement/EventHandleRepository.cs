@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -18,18 +15,170 @@ namespace Reposotory.Implement
         {
             this.ConnectionString = ConnStr;
         }
-        public List<Sync_SendEventMessage> GetEventMessages()
+
+        /// <summary>
+        /// 取得已發告警信件的最後一筆發送時間
+        /// </summary>
+        /// <returns></returns>
+        public Sync_SendEventMessage GetLastSendData()
         {
+            Sync_SendEventMessage Result = new Sync_SendEventMessage();
             List<Sync_SendEventMessage> lstEVMessage = new List<Sync_SendEventMessage>();
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT AlertID,EventType,Receiver,CarNo FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=0 ORDER BY AlertID DESC";
-            int nowCount = 0;
+            string SQL = "SELECT TOP 1 AlertID,EventType,Receiver,CarNo,HasSend,SendTime,MKTime FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=1 ORDER BY SendTime DESC";
             string term = "";
 
             SqlParameter[] para = new SqlParameter[3];
             lstEVMessage = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
+            if (lstEVMessage != null && lstEVMessage.Count > 0)
+            {
+                Result = lstEVMessage[0];
+            }
+            return Result;
+        }
+
+        /// <summary>
+        /// 取得尚未發送告警MAIL的資料
+        /// </summary>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public List<Sync_SendEventMessage> GetEventMessages(string SDate, string EDate)
+        {
+            List<Sync_SendEventMessage> lstEVMessage = new List<Sync_SendEventMessage>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            //string SQL = "SELECT AlertID,EventType,Receiver,CarNo,HasSend,SendTime,MKTime FROM TB_AlertMailLog WITH(NOLOCK) WHERE 1=1 ";
+            //int nowCount = 0;
+            //string term = "";
+            //SqlParameter[] para = new SqlParameter[2];
+            //if (!string.IsNullOrEmpty(SDate) && !string.IsNullOrEmpty(EDate))
+            //{
+            //    term += " AND (HasSend=0 AND MKTime BETWEEN @SDate AND @EDate) ";
+            //    para[nowCount] = new SqlParameter("@SDate", SqlDbType.VarChar, 30);
+            //    para[nowCount].Value = SDate;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+
+            //    para[nowCount] = new SqlParameter("@EDate", SqlDbType.VarChar, 30);
+            //    para[nowCount].Value = EDate;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+
+            //SQL += term;
+            //SQL += " OR (HasSend=2 AND MKTime >= DATEADD(HOUR,-4,DATEADD(HOUR,8,GETDATE())) )";
+            //SQL += " ORDER BY AlertID DESC";
+
+            //lstEVMessage = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
+
+            SqlParameter[] para = new SqlParameter[0];
+            string SQL = " EXEC usp_GetAlertMailLog '" + SDate + "','" + EDate + "'";
+            string term = "";
+
+            lstEVMessage = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
+
             return lstEVMessage;
+        }
+
+        /// <summary>
+        /// 取得特定車號的告警事件最後一筆發放紀錄
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="EventType"></param>
+        /// <returns></returns>
+        public List<Sync_SendEventMessage> GetHasSendMailList(string CarNo,int EventType)
+        {
+            List<Sync_SendEventMessage> ResultList = new List<Sync_SendEventMessage>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT TOP 1 AlertID,EventType,Receiver,CarNo,HasSend,SendTime,MKTime FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=1 AND SendTime is not null ";
+            int nowCount = 0;
+            string term = "";
+
+            SqlParameter[] para = new SqlParameter[2];
+            if (!string.IsNullOrEmpty(CarNo))
+            {
+                term += " AND CarNo=@CarNo ";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (EventType != 0)
+            {
+                if (EventType == 1 || EventType == 9 || EventType == 8) //1:沒租約但是有時速 9:無租約但引擎被發動 8:無租約但電門被啟動
+                {
+                    term += " AND EventType in (1, 9, 8) ";
+                }
+                else
+                {
+                    term += " AND EventType=@EventType ";
+                    para[nowCount] = new SqlParameter("@EventType", SqlDbType.Int);
+                    para[nowCount].Value = EventType;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
+            }
+            SQL += term;
+            SQL += " ORDER BY SendTime DESC";
+
+            ResultList = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
+            return ResultList;
+        }
+
+        /// <summary>
+        /// 取得訂單號碼
+        /// </summary>
+        /// <param name="CarNo"></param>
+        /// <param name="SDate"></param>
+        /// <param name="EDate"></param>
+        /// <returns></returns>
+        public Sync_OrderMain GetOrderNumberData(string CarNo, string SDate, string EDate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<Sync_OrderMain> ListData = new List<Sync_OrderMain>();
+            Sync_OrderMain Result = new Sync_OrderMain();
+
+            string SQL = "SELECT TOP 1 ISNULL(order_number,0) AS OrderNumber FROM TB_OrderMain WITH(NOLOCK) WHERE (car_mgt_status>0 AND car_mgt_status<16) AND cancel_status=0 ";
+            int nowCount = 0;
+            string term = "";
+
+            SqlParameter[] para = new SqlParameter[3];
+            if (!string.IsNullOrEmpty(CarNo))
+            {
+                term += " AND CarNo=@CarNo ";
+                para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 10);
+                para[nowCount].Value = CarNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (!string.IsNullOrEmpty(SDate) && !string.IsNullOrEmpty(EDate))
+            {
+                term += " AND start_time BETWEEN @SDate AND @EDate ";
+                para[nowCount] = new SqlParameter("@SDate", SqlDbType.VarChar, 30);
+                para[nowCount].Value = SDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+
+                para[nowCount] = new SqlParameter("@EDate", SqlDbType.VarChar, 30);
+                para[nowCount].Value = EDate;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            SQL += term;
+
+            ListData = GetObjList<Sync_OrderMain>(ref flag, ref lstError, SQL, para, term);
+            if (ListData != null && ListData.Count>0)
+            {
+                Result = ListData[0];
+            }
+
+            return Result;
         }
 
         public List<BE_EvTimeLine> GetMapDataByTimeLine(string CarNo, string SD, string ED)
@@ -76,6 +225,7 @@ namespace Reposotory.Implement
             lstEV = GetObjList<BE_EvTimeLine>(ref flag, ref lstError, SQL, para, term);
             return lstEV;
         }
+
         public List<BE_EvTimeLine> GetMapDataByTimeLine(Int64? OrderNo)
         {
             List<BE_EvTimeLine> lstEV = new List<BE_EvTimeLine>();

@@ -57,7 +57,7 @@ namespace Domain.WebAPI.output.rootAPI
         /// 是否顯示牌卡
         /// </summary>
         /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
-        //public int IsShowCard { get; set; } = 1;
+        public int IsShowCard { get; set; } = 1;
 
         /// <summary>
         /// 專案資料

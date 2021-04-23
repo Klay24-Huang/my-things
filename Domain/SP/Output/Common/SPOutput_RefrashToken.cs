@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.SP.Output.Common
+﻿namespace Domain.SP.Output.Common
 {
-    public class SPOutput_RefrashToken:SPOutput_Base
+    public class SPOutput_RefrashToken : SPOutput_Base
     {
         /// <summary>
         /// 存取token
         /// </summary>
-        public string Access_Token { set; get; }
+        public string Access_Token { get; set; }
+
         /// <summary>
         /// refrash token
         /// </summary>
-        public string Refrash_Token { set; get; }
+        public string Refrash_Token { get; set; }
     }
 }
