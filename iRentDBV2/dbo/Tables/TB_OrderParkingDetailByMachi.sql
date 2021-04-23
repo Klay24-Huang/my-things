@@ -1,8 +1,9 @@
 ﻿CREATE TABLE [dbo].[TB_OrderParkingDetailByMachi]
 (
-	    [Id]               BIGINT       IDENTITY (1, 1) NOT NULL,
+    [Id]               BIGINT       IDENTITY (1, 1) NOT NULL,
     [machi_id]         VARCHAR (50)  DEFAULT ('') NOT NULL,
     [order_number]     BIGINT        DEFAULT ((0)) NOT NULL,
+    [carno]            varchar(20)   DEFAULT ('') NOT NULL,
     [machi_parking_id] VARCHAR (50) NOT NULL,
     [Amount]           INT           DEFAULT ((0)) NOT NULL,
     [Check_in]         DATETIME     NOT NULL,
