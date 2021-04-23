@@ -1,15 +1,9 @@
-﻿using Domain;
-using Domain.TB;
+﻿using Domain.TB;
 using Domain.TB.BackEnd;
 using Domain.TB.Mochi;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -17,7 +11,7 @@ namespace Reposotory.Implement
     /// <summary>
     /// 停車場相關
     /// </summary>
-    public class ParkingRepository:BaseRepository
+    public class ParkingRepository : BaseRepository
     {
         private string _connectionString { set; get; }
         public ParkingRepository(string ConnStr)
@@ -102,11 +96,11 @@ namespace Reposotory.Implement
                 //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
                 SQL += string.Format(" AND (Latitude>={0} AND Latitude<={1}) AND (Longitude>={2} AND Longitude<={3})", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3]);
             }
-      
+
             lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
         }
-        public List<ParkingData> GetAllParkingByType(int ParkType,double lat, double lng, double radius)
+        public List<ParkingData> GetAllParkingByType(int ParkType, double lat, double lng, double radius)
         {
             bool flag = false, hasRange = true;
             double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
@@ -136,7 +130,7 @@ namespace Reposotory.Implement
             if (hasRange)
             {
                 //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
-                SQL += string.Format(" AND (Latitude>={0} AND Latitude<={1}) AND (Longitude>={2} AND Longitude<={3}) AND ParkingType={4}", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3],ParkType);
+                SQL += string.Format(" AND (Latitude>={0} AND Latitude<={1}) AND (Longitude>={2} AND Longitude<={3}) AND ParkingType={4}", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3], ParkType);
             }
             //SQL += "ORDER BY StationID ASC;";
             lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
@@ -150,7 +144,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             string SQL = "SELECT Id,Name,0 as use_flag FROM [TB_MochiPark] WHERE use_flag=1 "; //已修改TB指向
-           lstStation = GetObjList<SyncMachiParkId>(ref flag, ref lstError, SQL, para, term);
+            lstStation = GetObjList<SyncMachiParkId>(ref flag, ref lstError, SQL, para, term);
 
             return lstStation;
         }
@@ -170,10 +164,10 @@ namespace Reposotory.Implement
             string term = "";
             if (string.IsNullOrEmpty(ParkingName) == false && string.IsNullOrWhiteSpace(ParkingName) == false)
             {
-              //  SQL += string.Format(" WITH(NOLOCK) WHERE ParkingName like '%{0}%' ", ParkingName);
+                //  SQL += string.Format(" WITH(NOLOCK) WHERE ParkingName like '%{0}%' ", ParkingName);
                 term = " ParkingName like @ParkingName";
                 para[nowCount] = new SqlParameter("@ParkingName", SqlDbType.NVarChar, 100);
-                para[nowCount].Value = "%"+ParkingName+"%";
+                para[nowCount].Value = "%" + ParkingName + "%";
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
@@ -216,8 +210,10 @@ namespace Reposotory.Implement
             lstParking = GetObjList<BE_ChargeParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
         }
+
+        #region 進出停車場明細
         /// <summary>
-        /// 取得代收停車費明細
+        /// 進出停車場明細
         /// </summary>
         /// <param name="OrderNum"></param>
         /// <returns></returns>
@@ -229,9 +225,8 @@ namespace Reposotory.Implement
             string SQL = "SELECT [Name],[city],[addr],[Amount],[Check_in],[Check_out] FROM VW_BE_GetParkingDetail ";
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
-            if (null != OrderNum)
+            if (OrderNum != null)
             {
-
                 if (OrderNum != "")
                 {
                     if ("" != term) { term += " AND "; }
@@ -239,9 +234,8 @@ namespace Reposotory.Implement
                     para[0] = new SqlParameter("@OrderNo", SqlDbType.VarChar, 50);
                     para[0].Value = OrderNum;
                     para[0].Direction = ParameterDirection.Input;
-
                 }
-                if ("" != term)
+                if (term != "")
                 {
                     SQL += " WHERE " + term;
                 }
@@ -251,6 +245,9 @@ namespace Reposotory.Implement
             }
             return lstDetail;
         }
+        #endregion
+
+        #region 代收停車費明細
         /// <summary>
         /// 取得車麻吉原始訂單
         /// </summary>
@@ -263,7 +260,7 @@ namespace Reposotory.Implement
             bool flag = true;
             List<BE_RawDataOfMachi> lstReport = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = "SELECT * FROM VW_BE_GetRawDataOfMachi  ";
+            string SQL = "SELECT * FROM VW_BE_GetRawDataOfMachi ";
 
             SqlParameter[] para = new SqlParameter[3];
             string term = "";
@@ -271,9 +268,7 @@ namespace Reposotory.Implement
 
             if (flag)
             {
-
-
-                if (false == string.IsNullOrEmpty(SD))
+                if (string.IsNullOrEmpty(SD) == false)
                 {
                     term = " Check_in>=@SD ";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30)
@@ -283,10 +278,9 @@ namespace Reposotory.Implement
                     };
                     nowCount++;
                 }
-                if (false == string.IsNullOrEmpty(ED))
+                if (string.IsNullOrEmpty(ED) == false)
                 {
-
-                    if ("" != term) { term += " AND "; }
+                    if (term != "") { term += " AND "; }
                     term += " Check_out<=@ED ";
                     para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30)
                     {
@@ -296,10 +290,9 @@ namespace Reposotory.Implement
                     nowCount++;
 
                 }
-                if (false == string.IsNullOrEmpty(CarNo))
+                if (string.IsNullOrEmpty(CarNo) == false)
                 {
-
-                    if ("" != term) { term += " AND "; }
+                    if (term != "") { term += " AND "; }
                     term += " CarNo=@CarNo ";
                     para[nowCount] = new SqlParameter("@CarNo", SqlDbType.VarChar, 30)
                     {
@@ -307,20 +300,19 @@ namespace Reposotory.Implement
                         Direction = ParameterDirection.Input
                     };
                     nowCount++;
-
                 }
 
-
-                if ("" != term)
+                if (term != "")
                 {
                     SQL += " WHERE " + term;
                 }
-                SQL += "  ORDER BY Check_in ASC";
+                SQL += " ORDER BY Check_in ASC";
 
                 lstReport = GetObjList<BE_RawDataOfMachi>(ref flag, ref lstError, SQL, para, term);
             }
 
             return lstReport;
         }
+        #endregion
     }
 }
