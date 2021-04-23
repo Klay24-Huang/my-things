@@ -94,13 +94,14 @@
         return false;
     });
 
-    $("#isExport").on("click", function () {
+    $("#btnExport").on("click", function () {
         ShowLoading("資料處理中...");
         var flag = checkDate();
         var message = "";
         var StationID = $("#StationID").val();
         var StartTime = $("#Time_Start").val();
         var EndTime = $("#Time_End").val();
+        $('#isExport').val("true");
 
         if (flag) {
             var obj = new Object();
@@ -111,6 +112,10 @@
             var json = JSON.stringify(obj);
             $("#queryData").val(json);
             $("#frmCarDashBoard").submit();
+
+            setTimeout(function () {
+                window.location.reload();
+            }, 1000);
         } else {
             disabledLoadingAndShowAlert(message);
         }
