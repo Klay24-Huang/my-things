@@ -349,7 +349,11 @@ namespace Reposotory.Implement
             if (false == string.IsNullOrWhiteSpace(StationID))
             {
                 term += (term == "") ? "" : " AND ";
-                term += " (StationID like @StationID OR nowStationID like @StationID) ";
+
+                //20210426 ADD BY ADAM REASON.查詢不需要用所屬據點去查
+                //term += " (StationID like @StationID OR nowStationID like @StationID) ";
+                term += " (nowStationID like @StationID) ";
+                
                 para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
                 para[nowCount].Value = string.Format("%{0}%", StationID);
                 para[nowCount].Direction = ParameterDirection.Input;
