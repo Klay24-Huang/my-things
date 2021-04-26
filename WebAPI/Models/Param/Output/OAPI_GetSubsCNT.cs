@@ -22,6 +22,7 @@ namespace WebAPI.Models.Param.Output
         public double MotoTotalMins { get; set; }
         public string SD { get; set; }
         public string ED { get; set; }
+        public string MonProDisc { get; set; }
     }
 
 }

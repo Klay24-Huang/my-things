@@ -40,8 +40,10 @@ namespace WebAPI.Models.BillFunc
             var TSIB_In = new IFN_TSIBCardTrade();
             TSIB_In.IDNO = IDNO;
             TSIB_In.MerchantTradeNo = string.Format("{0}M_{1}",IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
-            TSIB_In.ProdNm = string.Format("{0}月租", IDNO);           
-            return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
+            TSIB_In.ProdNm = string.Format("{0}月租", IDNO);
+
+            return true;//hack: 信用卡交易暫時關閉,上線再打開
+            //return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
         }
 
         /// <summary>
@@ -186,6 +188,7 @@ namespace WebAPI.Models.BillFunc
             }
             catch (Exception ex)
             {
+                flag = false;
                 trace.BaseMsg = ex.Message;
             }
 
@@ -711,7 +714,8 @@ namespace WebAPI.Models.BillFunc
                     CarHDHours = sour.HolidayHours,
                     MotoTotalMins = sour.MotoTotalHours,
                     SD = sour.StartDate.ToString("MM/dd"),
-                    ED = sour.EndDate.ToString("MM/dd")
+                    ED = sour.EndDate.ToString("MM/dd"),
+                    MonProDisc = sour.MonProDisc
                 };
             }
             else

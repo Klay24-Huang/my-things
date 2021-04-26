@@ -205,18 +205,18 @@ namespace WebAPI.Controllers
                     {
                         #region 信用卡交易
 
-                        var WsOut = new WebAPIOutput_Auth();                      
-                        if(ProdPrice >0) //有價格才進行信用卡交易
+                        var WsOut = new WebAPIOutput_Auth();
+                        if (ProdPrice > 0) //有價格才進行信用卡交易
                         {
-                            trace.traceAdd("CarTradeIn", new { IDNO,ProdPrice,errCode});
+                            trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
                             try
                             {
                                 flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
 
-                                if(WsOut != null)
-                                  trace.traceAdd("CarTradeResult", new { WsOut });
+                                if (WsOut != null)
+                                    trace.traceAdd("CarTradeResult", new { WsOut });
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 flag = false;
                                 errCode = "ERR270";
@@ -224,7 +224,7 @@ namespace WebAPI.Controllers
                                 throw new Exception("TSIBTrade Fail");
                             }
 
-                            trace.FlowList.Add("信用卡交易");                            
+                            trace.FlowList.Add("信用卡交易");
                         }
 
                         #endregion
@@ -258,5 +258,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
+    
     }
 }
