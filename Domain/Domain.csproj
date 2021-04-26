@@ -232,6 +232,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetChgSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetMySubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsCNT.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_GetSubsHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetUpSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetChgSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetMySubs.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsCNT.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_GetSubsHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetUpSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />

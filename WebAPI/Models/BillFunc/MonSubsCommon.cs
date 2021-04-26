@@ -444,7 +444,6 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
-
         /// <summary>
         /// 取得合約明細
         /// </summary>
@@ -649,7 +648,6 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
-
         public bool sp_SetSubsNxt(SPInput_SetSubsNxt spInput, ref string errCode)
         {
             bool flag = false;
@@ -670,6 +668,60 @@ namespace WebAPI.Models.BillFunc
 
             return flag;
         }
+
+        public List<SPOut_GetSubsHist> sp_GetSubsHist(SPInput_GetSubsHist spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsHist>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsHist);
+                string SPName = "usp_GetSubsHist_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                    {
+                        var Hists = objUti.ConvertToList<SPOut_GetSubsHist>(ds1.Tables[0]);
+                        if (Hists != null && Hists.Count() > 0)
+                            re = Hists;
+                    }
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
     /// <summary>
