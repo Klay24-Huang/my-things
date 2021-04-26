@@ -16,6 +16,8 @@ namespace Domain.TB.BackEnd
         public int OffBoard { get; set; }
         public int LowBattery_3TBA { get; set; }
         public int LowBattery_2TBA { get; set; }
+        public int IsMotor { get; set; }
+        public int  Volt { get; set; }
         public int Nonresponse_OneHour { get; set; }
         public int Nonresponse { get; set; }
     }

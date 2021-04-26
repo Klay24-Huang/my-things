@@ -6,10 +6,17 @@
 
     int ResultLen = 0;
 
+
     List<Domain.TB.BackEnd.BE_CarSettingRecord> lstData = new List<Domain.TB.BackEnd.BE_CarSettingRecord>();
+    int isMotor = 1;
     if (Model != null)
     {
         lstData = Model.ToList();
+
+        if (lstData.Count != 0)
+        {
+            isMotor = lstData[0].IsMotor;
+        }
 
         ResultLen = lstData.Count();
     }
@@ -85,58 +92,116 @@
 
 <!--查詢介面結束-->
 <!--輸出表格-->
-<div class="container mt-4">
-    <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
-        <thead class="text-white bg-primary">
-            <tr>
-                <th data-sort-ignore="true"></th>
-                <th data-type="date">時間</th>
-                <th scope="col">據點</th>
-                <th scope="col">總數量</th>
-                <th scope="col">出租中</th>
-                <th scope="col">可出租</th>
-                <th scope="col">待上線</th>
-                <th scope="col">低電量(3TBA)</th>
-                <th scope="col">低電量(2TBA)</th>
-                <th scope="col">一小時無回應</th>
-                <th scope="col">無回應</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (ResultLen > 0)
-            {
-                for (int i = 0; i < ResultLen; i++)
+@if (isMotor == 1)
+{
+    <div class="container mt-4">
+        <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
+            <thead class="text-white bg-primary">
+                <tr>
+                    <th data-sort-ignore="true"></th>
+                    <th data-type="date">時間</th>
+                    <th scope="col">據點</th>
+                    <th scope="col">總數量</th>
+                    <th scope="col">出租中</th>
+                    <th scope="col">可出租</th>
+                    <th scope="col">待上線</th>
+                    <th scope="col">低電量(3TBA)</th>
+                    <th scope="col">低電量(2TBA)</th>
+                    <th scope="col">一小時無回應</th>
+                    <th scope="col">無回應</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@(lstData[i].Time.ToString())</td>
+                            <td scope="col">@(lstData[i].Station.Trim())</td>
+                            <td scope="col">@(lstData[i].Total.ToString())</td>
+                            <td scope="col">@(lstData[i].Renting.ToString())</td>
+                            <td scope="col">@(lstData[i].OnBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].OffBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].LowBattery_3TBA.ToString())</td>
+                            <td scope="col">@(lstData[i].LowBattery_2TBA.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse_OneHour.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse.ToString())</td>
+                        </tr>
+                    }
+
+                }
+                else
                 {
                     <tr>
-                        <td></td>
-                        <td scope="row">@(lstData[i].Time.ToString())</td>
-                        <td scope="col">@(lstData[i].Station.Trim())</td>
-                        <td scope="col">@(lstData[i].Total.ToString())</td>
-                        <td scope="col">@(lstData[i].Renting.ToString())</td>
-                        <td scope="col">@(lstData[i].OnBoard.ToString())</td>
-                        <td scope="col">@(lstData[i].OffBoard.ToString())</td>
-                        <td scope="col">@(lstData[i].LowBattery_3TBA.ToString())</td>
-                        <td scope="col">@(lstData[i].LowBattery_2TBA.ToString())</td>
-                        <td scope="col">@(lstData[i].Nonresponse_OneHour.ToString())</td>
-                        <td scope="col">@(lstData[i].Nonresponse.ToString())</td>
+                        <td colspan="11">無資料</td>
                     </tr>
                 }
-
-            }
-            else
-            {
+            </tbody>
+            <tfoot class="hide-if-no-paging">
                 <tr>
-                    <td colspan="11">無資料</td>
+                    <td colspan="5" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
                 </tr>
-            }
-        </tbody>
-        <tfoot class="hide-if-no-paging">
-            <tr>
-                <td colspan="5" class="text-center">
-                    <ul class="pagination"></ul>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-</div>
+            </tfoot>
+        </table>
+    </div>
+}
+@if (isMotor == 0)
+{
+    <div class="container mt-4">
+        <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
+            <thead class="text-white bg-primary">
+                <tr>
+                    <th data-sort-ignore="true"></th>
+                    <th data-type="date">時間</th>
+                    <th scope="col">據點</th>
+                    <th scope="col">總數量</th>
+                    <th scope="col">出租中</th>
+                    <th scope="col">可出租</th>
+                    <th scope="col">待上線</th>
+                    <th scope="col">低電量</th>
+                    <th scope="col">一小時無回應</th>
+                    <th scope="col">無回應</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@(lstData[i].Time.ToString())</td>
+                            <td scope="col">@(lstData[i].Station.Trim())</td>
+                            <td scope="col">@(lstData[i].Total.ToString())</td>
+                            <td scope="col">@(lstData[i].Renting.ToString())</td>
+                            <td scope="col">@(lstData[i].OnBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].OffBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].Volt.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse_OneHour.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse.ToString())</td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">無資料</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
 <!--輸出表格結束-->
