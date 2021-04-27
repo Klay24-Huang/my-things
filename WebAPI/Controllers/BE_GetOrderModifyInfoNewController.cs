@@ -4,6 +4,8 @@ using Domain.SP.BE.Output;
 using Domain.TB;
 using Domain.TB.BackEnd;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Newtonsoft.Json;
+using NLog;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -26,6 +28,7 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BE_GetOrderModifyInfoNewController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 【後台】修改合約前取得資料
@@ -53,20 +56,15 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string IDNO = "";
             bool isGuest = true;
-            Int16 APPKind = 2;
             string Contentjson = "";
             Int64 tmpOrder = 0;
-            bool clearFlag = false;
             int OldCarPoint = 0;
             int OldMotorPoint = 0;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
             List<BE_CarScheduleTimeLog> lstOrder = null;
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -97,29 +95,25 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                 }
-
             }
             #endregion
 
             #region TB
-
             if (flag)
             {
                 string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderInfoBeforeModifyV3);
                 SPOutput_BE_GetOrderInfoBeforeModify spOut = new SPOutput_BE_GetOrderInfoBeforeModify();
                 SPInput_BE_GetOrderInfoBeforeModify spInput = new SPInput_BE_GetOrderInfoBeforeModify()
                 {
+                    OrderNo = tmpOrder,
                     UserID = apiInput.UserID,
-                    LogID = LogID,
-                    OrderNo = tmpOrder
+                    LogID = LogID
                 };
 
                 SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify> sqlHelp = new SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify>(connetStr);
-                //flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 List<BE_GetOrderModifyDataNewV2> OrderDataLists = new List<BE_GetOrderModifyDataNewV2>();
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref OrderDataLists, ref ds, ref lstError);
@@ -147,27 +141,22 @@ namespace WebAPI.Controllers
                     {
                         if (OrderDataLists.Count > 0)
                         {
-                           
                             apiOutput.OrderData = OrderDataLists[0];
                             OldCarPoint = OrderDataLists[0].gift_point;
                             OldMotorPoint = OrderDataLists[0].gift_motor_point;
-
                         }
                     }
                 }
             }
-
             #endregion
+
             #region TB
-
-
             //開始送短租查詢
             if (flag)
             {
                 WebAPIOutput_NPR270Query wsOutput = new WebAPIOutput_NPR270Query();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
                 flag = wsAPI.NPR270Query(apiOutput.OrderData.IDNO, ref wsOutput);
-
 
                 if (flag)
                 {
@@ -195,7 +184,6 @@ namespace WebAPI.Controllers
                             if (DateFlag && (tmpDate >= DateTime.Now) && PointFlag)
                             {
                                 //  totalPoint += tmpPoint;
-
                                 BonusData objPoint = new BonusData()
                                 {
                                     //20201021 ADD BY ADAM REASON.補上流水號
@@ -207,7 +195,6 @@ namespace WebAPI.Controllers
                                     GIFTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].GIFTPOINT) ? "0" : wsOutput.Data[i].GIFTPOINT,
                                     LASTPOINT = string.IsNullOrEmpty(wsOutput.Data[i].LASTPOINT) ? "0" : wsOutput.Data[i].LASTPOINT,
                                     AllowSend = string.IsNullOrEmpty(wsOutput.Data[i].RCVFLG) ? 0 : ((wsOutput.Data[i].RCVFLG == "Y") ? 1 : 0)
-
                                 };
                                 if (objPoint.PointType == 0)
                                 {
@@ -230,23 +217,17 @@ namespace WebAPI.Controllers
                                     TotalLastTransPointMotor += (objPoint.AllowSend == 1 ? int.Parse(objPoint.LASTPOINT) : 0);
                                 }
 
-
                                 //點數加總
                                 TotalGiftPoint += int.Parse(objPoint.GIFTPOINT);
                                 TotalLastPoint += int.Parse(objPoint.LASTPOINT);
-
-
                             }
-
                         }
-
 
                         apiOutput.Bonus = new BonusForOrder()
                         {
-                            TotalLASTPOINT = TotalLastPoint+ OldCarPoint+OldMotorPoint, //回補已使用的汽機車點數
-                            TotalCarLASTPOINT = TotalLastPointCar+ OldCarPoint,         //汽車剩餘
-                            TotalMotorLASTPOINT = TotalLastPointMotor+ OldMotorPoint    //機車剩餘
-
+                            TotalLASTPOINT = TotalLastPoint + OldCarPoint + OldMotorPoint, //回補已使用的汽機車點數
+                            TotalCarLASTPOINT = TotalLastPointCar + OldCarPoint,         //汽車剩餘
+                            TotalMotorLASTPOINT = TotalLastPointMotor + OldMotorPoint    //機車剩餘
                         };
                         SD = Convert.ToDateTime(apiOutput.OrderData.FS);
                         DateTime ED = Convert.ToDateTime(apiOutput.OrderData.FE);
@@ -272,23 +253,21 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            if(apiOutput.OrderData.PROJTYPE<4 && hours == 0)
+                            if (apiOutput.OrderData.PROJTYPE < 4 && hours == 0)
                             {
                                 needPointer = 60;
                             }
                             apiOutput.Bonus.CanUseTotalMotorPoint = 0;
                             if ((needPointer % 30) >= 15)
                             {
-                                needPointer += (30-(needPointer % 30));
+                                needPointer += (30 - (needPointer % 30));
                             }
                             else
                             {
                                 needPointer -= (needPointer % 30);
                             }
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
-
                         }
-
                     }
                 }
                 else
@@ -296,12 +275,13 @@ namespace WebAPI.Controllers
                     //errCode = "ERR";
                     //errMsg = wsOutput.Message;
                 }
-
             }
 
+            // 20210427;增加LOG方便查問題
+            logger.Trace(string.Format("OrderNo:{0} ApiOutput:{1}", tmpOrder, JsonConvert.SerializeObject(apiOutput)));
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
