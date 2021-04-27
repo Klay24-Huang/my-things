@@ -722,6 +722,27 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public bool sp_DelSubsHist(SPInput_DelSubsHist spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.DelSubsHist);
+            string spName = "usp_DelSubsHist_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_DelSubsHist();
+            SQLHelper<SPInput_DelSubsHist, SPOut_DelSubsHist> sqlHelp = new SQLHelper<SPInput_DelSubsHist, SPOut_DelSubsHist>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
     }
 
     /// <summary>

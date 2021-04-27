@@ -480,6 +480,7 @@
     <Compile Include="Models\Param\Input\IAPI_CreditAndWalletQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_DeleteCreditCardAuth.cs" />
+    <Compile Include="Models\Param\Input\IAPI_DelSubsHist.cs" />
     <Compile Include="Models\Param\Input\IAPI_EDI_STATION.cs" />
     <Compile Include="Models\Param\Input\IAPI_EnforceReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_FeedBack.cs" />
@@ -589,6 +590,7 @@
     <Compile Include="Models\Param\Output\OAPI_ConfirmBeforeGiving.cs" />
     <Compile Include="Models\Param\Output\OAPI_CreditAndWalletQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
+    <Compile Include="Models\Param\Output\OAPI_DelSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
