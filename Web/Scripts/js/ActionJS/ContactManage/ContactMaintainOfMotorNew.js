@@ -25,10 +25,18 @@ $(document).ready(function () {
         var flag = true;
         var errMsg = "";
         ShowLoading("資料查詢中…");
+
         if (OrderNo == "") {
             flag = false;
-            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字";
+            errMsg = "訂單編號未填";
         }
+        else {
+            if (false == RegexOrderNo(OrderNo)) {
+                flag = false;
+                errMsg = "訂單編號格式不符（格式：H+數字)";
+            }
+        }
+
         if (flag) {
             var Account = $("#Account").val();
             var obj = new Object();
