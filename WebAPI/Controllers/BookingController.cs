@@ -371,7 +371,9 @@ namespace WebAPI.Controllers
 
                     outputApi = new OAPI_Booking()
                     {
-                        OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(7, '0'),
+                        //OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(7, '0'),
+                        //20210427 ADD BY ADAM REASON.針對編碼調整
+                        OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(spOut.OrderNum.ToString().Length, '0'),
                         LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss")
                     };
                 }
