@@ -1099,7 +1099,9 @@ namespace Web.Controllers
             return View(lstData);
 
         }
+        #endregion
 
+        #region 營運狀態記錄報表
         /// <summary>
         /// 營運狀態記錄報表
         /// </summary>
