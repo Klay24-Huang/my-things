@@ -322,6 +322,29 @@ namespace Reposotory.Implement
 
             return lstAudits;
         }
+
+        public List<BE_AuditImage> UpdateMemberData(string IDNO, string MEMNAME, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG, string USERID)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditImage> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+            string term2 = "";
+            string SQL = " EXEC usp_BE_UpdateMemberData  '" + IDNO + "'," +
+                "N'" + MEMNAME + "'," +
+                "'" + Mobile + "'," +
+                "'" + Power + "'," +
+                "'" + MEMEMAIL + "'," +
+                "'" + HasVaildEMail + "'," +
+                "'" + (MEMMSG == "1" ? "Y" : "N") + "'," +
+                "'" + USERID + "'"; //20210113唐改，強制改unicode解決難字出現?問題
+            int nowCount = 0;
+            lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
         /// <summary>
         /// 取得審核歷史
         /// </summary>

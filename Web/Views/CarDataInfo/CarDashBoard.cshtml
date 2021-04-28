@@ -8,12 +8,16 @@
     string QueryData = (ViewData["QueryData"] == null) ? "" : ViewData["QueryData"].ToString();
     //機車參數
     int MotorRent = 0;
+    int MotorAccessable = 0;
+    int MotorUnaccessable = 0;
     int MotoOneHour = 0;
     int MotoNoResponse = 0;
     int TBA3Low = 0;
     int TBA2Low = 0;
     //汽車參數
     int CarRent = 0;
+    int CarAccessable = 0;
+    int CarUnaccessable = 0;
     int CarOneHour = 0;
     int CarNoResponse = 0;
     int NoiButton = 0;
@@ -47,6 +51,8 @@
                        select data).ToList();
         MotoResultLen = lstMotoData.Count();
         MotorRent = lstMotoData.Count(p => p.NowStatus == 0);
+        MotorUnaccessable =  lstMotoData.Count(p => p.NowStatus == 2);
+        MotorAccessable = lstMotoData.Count(p => p.NowStatus == 1);
         MotoOneHour = lstMotoData.Count(p => p.LastUpdate != "" && Convert.ToDateTime(p.LastUpdate) <= NoReponseOneHour && Convert.ToDateTime(p.LastUpdate) >= NoResponse);
         //MotoNoResponse = lstMotoData.Count(p => p.LastUpdate == "" && Convert.ToDateTime(p.LastUpdate) < NoResponse && Convert.ToDateTime(p.LastUpdate) > NoReponseOneHour);
         MotoNoResponse = lstMotoData.Count(p => p.LastUpdate == "" || Convert.ToDateTime(p.LastUpdate) < NoResponse);
@@ -58,6 +64,8 @@
                       select data).ToList();
         CarResultLen = lstCarData.Count();
         CarRent = lstCarData.Count(p=>p.NowStatus==0);
+        CarUnaccessable = lstCarData.Count(p => p.NowStatus == 2);
+        CarAccessable = lstCarData.Count(p => p.NowStatus == 1);
         CarOneHour = lstCarData.Count(p=> p.LastUpdate!="" && Convert.ToDateTime(p.LastUpdate)<=NoReponseOneHour);
         CarNoResponse = lstCarData.Count(p => p.LastUpdate == "" && Convert.ToDateTime(p.LastUpdate) < NoResponse && Convert.ToDateTime(p.LastUpdate)> NoReponseOneHour);
         //NoiButton = lstCarData.Count(p => p.iButton == 0 && p.iButtonKey!="");
@@ -216,7 +224,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col text-white bg-primary">
-                    共有@(MotoResultLen)輛<br />機車目前租約中：@MotorRent;一小時無回應:@(MotoOneHour)輛;完全無回應:@(MotoNoResponse)輛;低電量(3TBA)：@(TBA3Low)輛;低電量(2TBA)：@(TBA2Low)輛
+                    共有@(MotoResultLen)輛　可出租:@(MotorAccessable)輛　待上線:@(MotorUnaccessable)輛<br />機車目前租約中：@MotorRent;一小時無回應:@(MotoOneHour)輛;完全無回應:@(MotoNoResponse)輛;低電量(3TBA)：@(TBA3Low)輛;低電量(2TBA)：@(TBA2Low)輛
                 </div>
 
             </div>
@@ -332,7 +340,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col text-white bg-primary">
-                共有@(CarResultLen)輛<br />
+                共有@(CarResultLen)輛　可出租:@(CarAccessable)輛　待上線:@(CarUnaccessable)輛<br />
                 汽車目前租約中：@CarRent; 一小時無回應：@(CarOneHour)輛; 完全無回應：@(CarNoResponse)輛; 低電量：@(lowPow)輛; iButton有掛回：@(iButton)輛; iButton無掛回：@(NoiButton)輛; iButton無Key：@(NoiButtonKey)輛
             </div>
 

@@ -5,11 +5,15 @@
     string NotMach = (ViewData["NotMuch"] == null) ? "0" : ViewData["NotMuch"].ToString();
     string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     int ResultLen = -1;
+    int carLstDataLen = 0;
+    int carLstDataNotOnBoard = 0;
 
     if (Model != null)
     {
         lstData = Model.ToList();
         ResultLen = lstData.Count;
+        carLstDataLen = ViewBag.carData;
+        carLstDataNotOnBoard = ViewBag.carDataNotOnBoard;
     }
 
 }
@@ -83,10 +87,12 @@
                 <th scope="col">ID</th>
                 <th scope="col">名稱</th>
                 <th scope="col">地址</th>
+                @*20210413 MARK BY FRANK REASON.需求要求移除經緯度
                 <th scope="col" data-ng-hide="All">緯度</th>
-                <th scope="col" data-ng-hide="All">經度</th>
+                <th scope="col" data-ng-hide="All">經度</th>*@
                 <th scope="col" data-sort-ignore="true">地圖</th>
                 <th scope="col">車位數</th>
+                <th scope="col">庫位車輛數</th>
                 <th scope="col">實際上線</th>
                 <th scope="col" data-sort-ignore="true"></th>
             </tr>
@@ -108,8 +114,10 @@
                             <th scope="row">@(lstData[i].StationID)</th>
                             <th scope="col">@(lstData[i].Location)</th>
                             <th scope="col">@(string.Format("{0}{1}{2}",lstData[i].CityName, lstData[i].AreaName, lstData[i].ADDR))</th>
+                            @*20210413 MARK BY FRANK REASON.需求要求移除經緯度
                             <th scope="col">@(lstData[i].Latitude)</th>
                             <th scope="col">@(lstData[i].Longitude)</th>
+                            </th>*@
                             <th scope="col">
                                 <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
@@ -124,9 +132,9 @@
                                     </svg>
                                 </a>
 
-                            </th>
                             <th scope="col">@(lstData[i].AllowParkingNum)</th>
-                            <th scope="col">@(lstData[i].NowOnlineNum)</th>
+                            <th scope="col">@(carLstDataLen)</th>
+                            <th scope="col">@(carLstDataNotOnBoard)</th>
 
                             <th scope="col"><button class="btn btn-outline-info" id="btn_@(lstData[i].StationID)" name="btn_@(lstData[i].StationID)" onclick="goMaintain('@(lstData[i].StationID)')">修改</button></th>
                         </tr>

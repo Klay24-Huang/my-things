@@ -887,7 +887,7 @@ function detailMap(lat, lng) {
 }
 function RegexOrderNo(str) {
     var flag = true;
-    var patt = /^(H|h)[0-9]{7}$/; //20201208唐改/(H)[0-9]{1,}/g
+    var patt = /^(H|h)[0-9]{1,}$/; //20201208唐改/(H)[0-9]{1,}/g
     return patt.test(str);
 }
 function pad(number, length) {

@@ -17,7 +17,7 @@ DECLARE @NowDate Datetime;
 
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
-SELECT AlertID,EventType,Receiver,CarNo,HasSend,SendTime,MKTime 
+SELECT AlertID,EventType,Receiver,CarNo,OrderNo,HasSend,SendTime,MKTime 
 FROM TB_AlertMailLog WITH(NOLOCK) 
 WHERE 1=1 
 AND (HasSend=0 AND MKTime BETWEEN @SDate AND @EDate) 

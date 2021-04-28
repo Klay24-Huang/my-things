@@ -5,6 +5,7 @@ using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.output.FET;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -71,7 +72,9 @@ namespace Web.Controllers
             ViewData["StationID"] = StationID;
             List<BE_CarSettingData> lstData = new List<BE_CarSettingData>();
             lstData = carStatusCommon.GetCarSettingData(CarNo, StationID, ShowType);
+           
             return View(lstData);
+            
         }
         /// <summary>
         /// 車輛車機綁定
@@ -251,7 +254,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CarDataSetting(string CarNo, string StationID, int ShowType = 3)
+        public ActionResult CarDataSetting(string isExport,string CarNo, string StationID, int ShowType = 3)
         {
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
@@ -260,7 +263,65 @@ namespace Web.Controllers
             ViewData["ShowType"] = ShowType;
             List<BE_GetPartOfCarDataSettingData> lstData = new List<BE_GetPartOfCarDataSettingData>();
             lstData = carStatusCommon.GetCarDataSettingData(CarNo, StationID, ShowType);
-            return View(lstData);
+
+            if(isExport == "true")
+            {
+
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                sheet.Cells[1, col++].Value = "ID";
+                sheet.Cells[1, col++].Value = "車號";
+                sheet.Cells[1, col++].Value = "車型";
+                sheet.Cells[1, col++].Value = "營運狀態";
+                sheet.Cells[1, col++].Value = "CID";
+                sheet.Cells[1, col++].Value = "目前庫位";
+                sheet.Cells[1, col++].Value = "所屬庫位";
+                sheet.Cells[1, col++].Value = "備註";
+
+                int row = 2;
+                
+                foreach (var i in lstData)
+                {
+                    col = 1;
+                    string NowStr = "";
+                    sheet.Cells[row, col++].Value = row - 1;
+                    sheet.Cells[row, col++].Value = i.CarNo;
+                    sheet.Cells[row, col++].Value = i.CarTypeName;
+
+                    if (i.NowStatus == 1)
+                    {
+                        NowStr = "可出租";
+                    }
+                    else if (i.NowStatus == 2)
+                    {
+                        NowStr = "待上線";
+                    }
+                    else if (i.NowStatus == 0)
+                    {
+                        NowStr = "出租中";
+                    }
+
+                    sheet.Cells[row, col++].Value = NowStr;
+                    sheet.Cells[row, col++].Value = i.CID;
+                    sheet.Cells[row, col++].Value = i.NowStationName;
+                    sheet.Cells[row, col++].Value = i.StationName;
+                    sheet.Cells[row, col++].Value = i.Memo;
+                    row++;
+                }
+
+                MemoryStream fileStream = new MemoryStream();
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "車輛資料管理.xlsx");
+            }
+            else
+            {
+                return View(lstData);
+            }
         }
         [HttpPost]
         public ActionResult ViewCarDetail(string ShowCarNo)
@@ -272,6 +333,106 @@ namespace Web.Controllers
             return View(obj);
            
         }
+
+        /// <summary>
+        /// 匯出中控車輛記錄
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ExportCarSettingData()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ExportCarSettingData(string isExport, string StationID, string Time_Start, string Time_End)
+        {
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
+            lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
+
+
+            if (isExport == "true")
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                int row = 2;
+                MemoryStream fileStream = new MemoryStream();
+
+                if(StationID == "X0SR" || StationID == "X0R4" || StationID == "X0U4" || StationID == "X1V4")
+                {
+                    sheet.Cells[1, col++].Value = "時間";
+                    sheet.Cells[1, col++].Value = "據點";
+                    sheet.Cells[1, col++].Value = "總數量";
+                    sheet.Cells[1, col++].Value = "出租中";
+                    sheet.Cells[1, col++].Value = "可出租";
+                    sheet.Cells[1, col++].Value = "待上線";
+                    sheet.Cells[1, col++].Value = "低電量";
+                    sheet.Cells[1, col++].Value = "一小時無回應";
+                    sheet.Cells[1, col++].Value = "無回應";
+
+
+                    foreach (var i in lstData)
+                    {
+                        col = 1;
+                        sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                        sheet.Cells[row, col++].Value = i.Station;
+                        sheet.Cells[row, col++].Value = i.Total;
+                        sheet.Cells[row, col++].Value = i.Renting;
+                        sheet.Cells[row, col++].Value = i.OnBoard;
+                        sheet.Cells[row, col++].Value = i.OffBoard;
+                        sheet.Cells[row, col++].Value = i.Volt;
+                        sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                        sheet.Cells[row, col++].Value = i.Nonresponse;
+                        row++;
+                    }
+
+                    ep.SaveAs(fileStream);
+                    ep.Dispose();
+                    fileStream.Position = 0;
+                    return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_車輛中控記錄.xlsx");
+                }
+
+                sheet.Cells[1, col++].Value = "時間";
+                sheet.Cells[1, col++].Value = "據點";
+                sheet.Cells[1, col++].Value = "總數量";
+                sheet.Cells[1, col++].Value = "出租中";
+                sheet.Cells[1, col++].Value = "可出租";
+                sheet.Cells[1, col++].Value = "待上線";
+                sheet.Cells[1, col++].Value = "低電量(3TBA)";
+                sheet.Cells[1, col++].Value = "低電量(2TBA)";
+                sheet.Cells[1, col++].Value = "一小時無回應";
+                sheet.Cells[1, col++].Value = "無回應";
+
+
+                foreach (var i in lstData)
+                {
+                    col = 1;
+                    sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                    sheet.Cells[row, col++].Value = i.Station;
+                    sheet.Cells[row, col++].Value = i.Total;
+                    sheet.Cells[row, col++].Value = i.Renting;
+                    sheet.Cells[row, col++].Value = i.OnBoard;
+                    sheet.Cells[row, col++].Value = i.OffBoard;
+                    sheet.Cells[row, col++].Value = i.LowBattery_3TBA;
+                    sheet.Cells[row, col++].Value = i.LowBattery_2TBA;
+                    sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                    sheet.Cells[row, col++].Value = i.Nonresponse;
+                    row++;
+                }
+
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_車輛中控記錄.xlsx");
+            }
+            else
+            {
+                return View(lstData);
+            }
+        }
+
         /// <summary>
         /// 匯入機車車輛檔
         /// </summary>

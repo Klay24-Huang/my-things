@@ -191,7 +191,7 @@
                                 <div class="form-group" id="OrderTerm" name="OrderTerm">
                                     <label for="number" class="col-sm-2 control-label">合約編號</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="OrderNum" name="OrderNum" pattern="(H)[0-9]{1,7}" placeholder="輸入合約編號" value="@((ViewData["OrderNum"]==null)?"":"H"+ ViewData["OrderNum"].ToString().PadLeft(7,'0'))">
+                                        <input type="text" class="form-control" id="OrderNum" name="OrderNum" pattern="(H)[0-9]{1,8}" placeholder="輸入合約編號" value="@((ViewData["OrderNum"]==null)?"":"H"+ ViewData["OrderNum"].ToString().PadLeft(8,'0'))">
                                     </div>
                                 </div>
                                 <div class="form-group" id="CarNoTerm" name="CarNoTerm">
