@@ -22,7 +22,7 @@ namespace Reposotory.Implement
             get { return _connectionString; }
             set { _connectionString = value; }
         }
-       public void SetConnect(string ConnStr)
+        public void SetConnect(string ConnStr)
         {
             this.ConnectionString = ConnStr;
         }

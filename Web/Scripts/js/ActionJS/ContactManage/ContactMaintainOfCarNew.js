@@ -32,7 +32,7 @@ $(document).ready(function () {
         else {
             if (false == RegexOrderNo(OrderNo)) {
                 flag = false;
-                errMsg = "訂單編號格式不符（格式：H+7碼數字，未滿7碼左補0)";
+                errMsg = "訂單編號格式不符（格式：H+數字)";
             }
         }
 

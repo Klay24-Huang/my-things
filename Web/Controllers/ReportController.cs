@@ -18,6 +18,8 @@ namespace Web.Controllers
     public class ReportController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
+        #region 整備人員報表查詢
         /// <summary>
         /// 整備人員報表查詢
         /// </summary>
@@ -177,13 +179,21 @@ namespace Web.Controllers
                 content.CreateCell(14).SetCellValue(totalDayStr);
                 content.CreateCell(15).SetCellValue(data[k].lastRentTimes);
                 content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
-
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
 
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "整備人員查詢結果_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 車況回饋查詢
         /// <summary>
         /// 車況回饋查詢
         /// </summary>
@@ -352,23 +362,21 @@ namespace Web.Controllers
                 content.CreateCell(8).SetCellValue((lstFeedBack[k].isHandle == 0) ? "未處理" : "已處理");   //處理狀態
                 content.CreateCell(9).SetCellValue(lstFeedBack[k].handleDescript);   //處理結果
                 content.CreateCell(10).SetCellValue(lstFeedBack[k].opt);   //處理者
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-                sheet.AutoSizeColumn(9);
-                sheet.AutoSizeColumn(10);
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "車況回饋_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 綠界交易記錄查詢
         /// <summary>
         /// 綠界交易記錄查詢
         /// </summary>
@@ -377,6 +385,9 @@ namespace Web.Controllers
         {
             return View();
         }
+        #endregion
+
+        #region 月租總表
         /// <summary>
         /// 月租總表
         /// </summary>
@@ -491,33 +502,26 @@ namespace Web.Controllers
                 content.CreateCell(1).SetCellValue(lstSubScription[k].ProjID);   //ID
                 content.CreateCell(2).SetCellValue(lstSubScription[k].ProjNM);   //ID
                 content.CreateCell(3).SetCellValue(lstSubScription[k].StartDate.ToString("yyyy-MM-dd HH:mm"));  //合約起
-                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
-                                                                                                                // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
-                                                                                                                // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
+                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄
                 content.CreateCell(5).SetCellValue(lstSubScription[k].IDNO);   //ID
                 content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
                 content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
                 content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
-
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-
-                /* sheet.AutoSizeColumn(8);
-                 sheet.AutoSizeColumn(9);
-                 sheet.AutoSizeColumn(10);*/
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             //workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱總表_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 月租報表
         /// <summary>
         /// 月租報表
         /// </summary>
@@ -579,7 +583,6 @@ namespace Web.Controllers
 
             string tSDate = "", tEDate = "", tUserID = "", tOrderNum = "";
 
-
             if (!string.IsNullOrEmpty(SDate))
             {
                 tSDate = SDate;
@@ -614,7 +617,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             int len = lstSubScription.Count;
@@ -622,9 +625,6 @@ namespace Web.Controllers
             {
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue("H" + lstSubScription[k].OrderNo.ToString().PadLeft(7, '0'));  //訂單編號
-                                                                                                                  //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
-                                                                                                                  // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
-                                                                                                                  // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
                 content.CreateCell(1).SetCellValue(lstSubScription[k].IDNO);   //ID
                 content.CreateCell(2).SetCellValue(lstSubScription[k].lend_place);   //ID
                 content.CreateCell(3).SetCellValue(lstSubScription[k].UseWorkDayHours);   //汽車－平日
@@ -634,25 +634,18 @@ namespace Web.Controllers
                 content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
                 content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //ID
                 content.CreateCell(9).SetCellValue(lstSubScription[k].ProjNM);   //汽車－平日
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-                sheet.AutoSizeColumn(9);
-
-                /* sheet.AutoSizeColumn(8);
-                 sheet.AutoSizeColumn(9);
-                 sheet.AutoSizeColumn(10);*/
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
 
         #region 進出停車場明細
         /// <summary>
@@ -755,6 +748,7 @@ namespace Web.Controllers
         }
         #endregion
 
+        #region 光陽維運APP報表
         /// <summary>
         /// 光陽維運APP報表 - 20210119唐加
         /// </summary>
@@ -860,9 +854,10 @@ namespace Web.Controllers
                 // workbook.Close();
                 return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
-
-
         }
+        #endregion
+
+        #region 機車電池狀態查詢
         /// <summary>
         /// 機車電池狀態查詢
         /// </summary>
@@ -1013,6 +1008,9 @@ namespace Web.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 ExplodeSendDate.Replace("-", "") + "_" + ExplodeCarNo + ".xlsx");
         }
+        #endregion
+
+        #region 會員審核明細報表
         /// <summary>
         /// 會員審核明細報表 - 20210305唐加
         /// </summary>
@@ -1083,7 +1081,9 @@ namespace Web.Controllers
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員審核明細" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
 
+        #region 悠遊付退款
         /// <summary>
         /// 悠遊付退款
         /// </summary>
@@ -1095,9 +1095,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ReFund(string IDNO)
         {
-
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
-
             return View(lstData);
 
         }
@@ -1200,5 +1198,6 @@ namespace Web.Controllers
                 return View(lstData);
             }
         }
+        #endregion
     }
 }

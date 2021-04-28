@@ -19,6 +19,9 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using Newtonsoft.Json;
+using NLog;
+
 namespace WebAPI.Controllers
 {
     /// <summary>
@@ -26,7 +29,9 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BE_HandleOrderModifyNewController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
         /// <summary>
         /// 【後台】合約修改(汽機車整合2021新版)
         /// </summary>
@@ -55,7 +60,6 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string IDNO = "";
             bool isGuest = true;
-            Int16 APPKind = 2;
             string Contentjson = "";
             Int64 tmpOrder = 0;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
@@ -66,14 +70,12 @@ namespace WebAPI.Controllers
             CreditAuthComm Credit = new CreditAuthComm();
             int OldCarPoint = 0;
             int OldMotorPoint = 0;
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleOrderModify>(Contentjson);
+                apiInput = JsonConvert.DeserializeObject<IAPI_BE_HandleOrderModify>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -100,7 +102,6 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-
                         }
                     }
                     if (flag)
@@ -116,46 +117,48 @@ namespace WebAPI.Controllers
                             errCode = "ERR769";
                         }
                     }
-                }
 
+                    // 20210427;增加LOG方便查問題
+                    logger.Trace(string.Format("OrderNo:{0} ApiInput:{1}", tmpOrder, Contentjson));
+                }
             }
             #endregion
 
             #region TB
-
             if (flag)
             {
-
                 obj = new ContactRepository(connetStr).GetModifyDataNew(tmpOrder);
+
+                // 20210427;增加LOG方便查問題
+                logger.Trace(string.Format("OrderNo:{0} 資料查詢obj:{1}", tmpOrder, JsonConvert.SerializeObject(obj)));
+
                 BillCommon billCommon = new BillCommon();
-                int totalPointer = 0;
                 if (obj == null)
                 {
                     flag = false;
                 }
                 else
                 {
-
                     IDNO = obj.IDNO;
                     OldCarPoint = obj.gift_point;
                     OldMotorPoint = obj.gift_motor_point;
-                    if(obj.ArrearAMT==0 && obj.Paid > 0)
+                    if (obj.ArrearAMT == 0 && obj.Paid > 0)
                     {
                         obj.Paid -= obj.RefundAmount;
-                    }else if (obj.ArrearAMT > 0 && obj.Paid == 0)
+                    }
+                    else if (obj.ArrearAMT > 0 && obj.Paid == 0)
                     {
                         obj.ArrearAMT -= obj.RefundAmount;
-                    }else if(obj.ArrearAMT > 0 && obj.Paid > 0)
-                    {
-                        obj.Paid = (obj.Paid +obj.ArrearAMT)- obj.RefundAmount;
-                        
                     }
-                 
-                   
+                    else if (obj.ArrearAMT > 0 && obj.Paid > 0)
+                    {
+                        obj.Paid = (obj.Paid + obj.ArrearAMT) - obj.RefundAmount;
+                    }
+
                     PointerComm pointer = new PointerComm();
                     int TotalLastPoint = 0, TotalLastPointCar = 0, TotalLastPointMotor = 0, CanUseTotalCarPoint = 0, CanUseTotalMotorPoint = 0;
                     obj.FT = ""; //忽略逾時
-                    flag = pointer.GetPointer(IDNO, obj.FS, obj.ED, obj.FE, obj.FT, obj.PROJTYPE,obj.BaseMinutes, ref TotalLastPoint, ref TotalLastPointCar, ref TotalLastPointMotor, ref CanUseTotalCarPoint, ref CanUseTotalMotorPoint);
+                    flag = pointer.GetPointer(IDNO, obj.FS, obj.ED, obj.FE, obj.FT, obj.PROJTYPE, obj.BaseMinutes, ref TotalLastPoint, ref TotalLastPointCar, ref TotalLastPointMotor, ref CanUseTotalCarPoint, ref CanUseTotalMotorPoint);
                     if (flag)
                     {
                         CanUseTotalCarPoint += OldCarPoint;     //回補
@@ -174,7 +177,7 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS == "N" && STATUS=="4")
+                            if (INVSTATUS == "N" && STATUS == "4")
                             {
                                 flag = false;
                                 errCode = "ERR760";
@@ -189,8 +192,11 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
+                        // 20210427;增加LOG方便查問題
+                        logger.Trace(string.Format("OrderNo:{0} 存檔前obj:{1}", tmpOrder, JsonConvert.SerializeObject(obj)));
+
                         /*判斷是否要取款或是刷退*/
-                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT==0) || apiInput.DiffPrice < 0)
+                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
                         {
                             //直接更新
                             flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
@@ -239,7 +245,6 @@ namespace WebAPI.Controllers
                                         {
 
                                         }
-
                                     }
                                     else
                                     {
@@ -261,7 +266,6 @@ namespace WebAPI.Controllers
                                 //    }
                                 //    else
                                 //    {
-
                                 //        WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
                                 //        if (obj.ServerOrderNo != "")
                                 //        {
@@ -279,7 +283,6 @@ namespace WebAPI.Controllers
                                 //                errCode = "";
                                 //            }
                                 //        }
-
                                 //        if (flag)
                                 //        {
                                 //            if (DiffFinalPrice <= Convert.ToInt32(WSAuthQueryOutput.ResponseParams.ResultData.PayAmount) / 100)
@@ -301,25 +304,14 @@ namespace WebAPI.Controllers
                                     flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                                 }
                             }
-
-
-
                         }
                     }
-                   
-
-
-
-
-
                 }
-
             }
-
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -327,10 +319,12 @@ namespace WebAPI.Controllers
             #region 輸出
 
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
-           
+
             return objOutput;
             #endregion
         }
+
+        #region DB存檔
         public bool SaveToTB(BE_GetOrderModifyDataNew obj, IAPI_BE_HandleOrderModify apiInput, Int64 OrderNo, Int64 LogID, ref string errCode, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -369,16 +363,21 @@ namespace WebAPI.Controllers
                 PAYAMT = apiInput.DiffPrice,
                 Insurance_price = apiInput.Insurance_price,
                 Mileage = apiInput.Mileage,
-                 Pure=apiInput.Pure
-
+                Pure = apiInput.Pure
             };
             SPOutput_Base spOut = new SPOutput_Base();
+
+            // 20210427;增加LOG方便查問題
+            logger.Trace(string.Format("OrderNo:{0} SaveToTB SPInput:{1}", OrderNo, JsonConvert.SerializeObject(spInput)));
 
             SQLHelper<SPInput_BE_OrderModify, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_OrderModify, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
+        #endregion
+
+        #region 傳送短租136
         public bool DoSendNPR136(Int64 OrderNo, Int64 LogID, int DiffPrice, string UserID, ref string errCode, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -454,7 +453,7 @@ namespace WebAPI.Controllers
                     PAYTYPE = "1",
                     PAYMENTTYPE = "1",
                     PAYMEMO = "租金",
-                    PORDNO = (obj.TaishinTradeNo=="")?obj.ArrearTaishinTradeNo : obj.TaishinTradeNo
+                    PORDNO = (obj.TaishinTradeNo == "") ? obj.ArrearTaishinTradeNo : obj.TaishinTradeNo
                 });
 
                 WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
@@ -462,15 +461,16 @@ namespace WebAPI.Controllers
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_NPR136Success);
                 SPInput_BE_NPR136Success spInput = new SPInput_BE_NPR136Success()
                 {
-
                     LogID = LogID,
-
                     OrderNo = OrderNo,
                     isRetry = 0,
                     UserID = UserID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base>(connetStr);
+
+                // 20210427;增加LOG方便查問題
+                logger.Trace(string.Format("OrderNo:{0} DoSendNPR136 WSInput:{1}", OrderNo, JsonConvert.SerializeObject(wsInput)));
 
                 flag = hiEasyRentAPI.NPR136Save(wsInput, ref wsOutput);
                 if (flag)
@@ -493,7 +493,6 @@ namespace WebAPI.Controllers
                 }
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-
             }
             else
             {
@@ -502,5 +501,6 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
+        #endregion
     }
 }
