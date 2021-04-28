@@ -1,9 +1,12 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using NLog.Internal;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using WebCommon;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Reposotory.Implement
 {
@@ -469,6 +472,44 @@ namespace Reposotory.Implement
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
+        }
+
+        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if(IRent_Only == "on")
+            {
+                SqlParameter[] para = new SqlParameter[3];
+                string term = "";
+                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
+                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
+                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
+                SQL += " DROP TABLE tmp_DelMemberList";
+
+                ExecNonResponse(ref flag, SQL);
+            }
+            else
+            {
+                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
+                SqlParameter[] para = new SqlParameter[3];
+                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
+                SQL += $" insert into tmp_DelMemberList values('{IDNO}')";
+                SQL += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,GETDATE(),'{Account}'from tmp_DelMemberList";
+                SQL += " DROP TABLE tmp_DelMemberList";
+
+                ExecNonResponse(ref flag, SQL);
+            }
         }
     }
 }

@@ -61,12 +61,6 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "車輛資料設定";
             break;
-
-        case "ExportCarSettingData":
-            ControllerStrName = "車輛管理";
-            ActionStrName = "匯出車輛中控記錄";
-            break;
-
         case "ImportMotorData":
             ControllerStrName = "車輛管理";
             ActionStrName = "匯入機車車輛檔";
@@ -222,6 +216,10 @@
             ControllerStrName = "會員管理";
             ActionStrName = "會員資料修改";
             break;
+        case "DeleteMember": //20210427 Frank加
+            ControllerStrName = "會員管理";
+            ActionStrName = "會員資料刪除";
+            break;
         #endregion
         #region 帳號管理
         case "FranchiseesMaintain":
@@ -290,6 +288,11 @@
             ControllerStrName = "報表專區";
             ActionStrName = "會員審核明細";
             break;
+        case "ExportCarSettingData": //20210427 Frank加
+            ControllerStrName = "報表專區";
+            ActionStrName = "營運狀態記錄報表";
+            break;
+
             #endregion
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);

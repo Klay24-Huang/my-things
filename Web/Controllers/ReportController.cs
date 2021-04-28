@@ -1,6 +1,7 @@
 ﻿using Domain.TB.BackEnd;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -1099,6 +1100,105 @@ namespace Web.Controllers
 
             return View(lstData);
 
+        }
+
+        /// <summary>
+        /// 營運狀態記錄報表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ExportCarSettingData()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ExportCarSettingData(string isExport, string StationID, string Time_Start, string Time_End)
+        {
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
+            lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
+
+
+            if (isExport == "true")
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                int row = 2;
+                MemoryStream fileStream = new MemoryStream();
+
+                if (StationID == "X0SR" || StationID == "X0R4" || StationID == "X0U4" || StationID == "X1V4")
+                {
+                    sheet.Cells[1, col++].Value = "時間";
+                    sheet.Cells[1, col++].Value = "據點";
+                    sheet.Cells[1, col++].Value = "總數量";
+                    sheet.Cells[1, col++].Value = "出租中";
+                    sheet.Cells[1, col++].Value = "可出租";
+                    sheet.Cells[1, col++].Value = "待上線";
+                    sheet.Cells[1, col++].Value = "低電量";
+                    sheet.Cells[1, col++].Value = "一小時無回應";
+                    sheet.Cells[1, col++].Value = "無回應";
+
+
+                    foreach (var i in lstData)
+                    {
+                        col = 1;
+                        sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                        sheet.Cells[row, col++].Value = i.Station;
+                        sheet.Cells[row, col++].Value = i.Total;
+                        sheet.Cells[row, col++].Value = i.Renting;
+                        sheet.Cells[row, col++].Value = i.OnBoard;
+                        sheet.Cells[row, col++].Value = i.OffBoard;
+                        sheet.Cells[row, col++].Value = i.Volt;
+                        sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                        sheet.Cells[row, col++].Value = i.Nonresponse;
+                        row++;
+                    }
+
+                    ep.SaveAs(fileStream);
+                    ep.Dispose();
+                    fileStream.Position = 0;
+                    return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_營運狀態記錄.xlsx");
+                }
+
+                sheet.Cells[1, col++].Value = "時間";
+                sheet.Cells[1, col++].Value = "據點";
+                sheet.Cells[1, col++].Value = "總數量";
+                sheet.Cells[1, col++].Value = "出租中";
+                sheet.Cells[1, col++].Value = "可出租";
+                sheet.Cells[1, col++].Value = "待上線";
+                sheet.Cells[1, col++].Value = "低電量(3TBA)";
+                sheet.Cells[1, col++].Value = "低電量(2TBA)";
+                sheet.Cells[1, col++].Value = "一小時無回應";
+                sheet.Cells[1, col++].Value = "無回應";
+
+
+                foreach (var i in lstData)
+                {
+                    col = 1;
+                    sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                    sheet.Cells[row, col++].Value = i.Station;
+                    sheet.Cells[row, col++].Value = i.Total;
+                    sheet.Cells[row, col++].Value = i.Renting;
+                    sheet.Cells[row, col++].Value = i.OnBoard;
+                    sheet.Cells[row, col++].Value = i.OffBoard;
+                    sheet.Cells[row, col++].Value = i.LowBattery_3TBA;
+                    sheet.Cells[row, col++].Value = i.LowBattery_2TBA;
+                    sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                    sheet.Cells[row, col++].Value = i.Nonresponse;
+                    row++;
+                }
+
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_營運狀態記錄.xlsx");
+            }
+            else
+            {
+                return View(lstData);
+            }
         }
     }
 }
