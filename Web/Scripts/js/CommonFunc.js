@@ -335,7 +335,8 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
 //20210421唐加，悠遊付退款專用
 function DoAjaxAfterGoBack_EW(obj, FailMessage) {
     var json = JSON.stringify(obj);
-    var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
+    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
+    var site = "http://localhost:60985/api/Exec/refundECOrder"
     $.ajax({
         url: site,
         type: 'POST',
@@ -375,6 +376,49 @@ function DoAjaxAfterGoBack_EW(obj, FailMessage) {
     });
 }
 
+//20210427唐加，悠遊付退款專用
+function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
+    var json = JSON.stringify(obj);
+    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder2"
+    var site = "http://localhost:60985/api/Exec/refundECOrder2"
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    history.back();
+                });
+            } else {
+
+                swal({
+                    title: 'Fail1',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail2',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+
+    });
+}
 
 /**
  * 執行完將API回傳的資料丟入callback函式內
