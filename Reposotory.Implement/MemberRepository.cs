@@ -1,9 +1,12 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using NLog.Internal;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using WebCommon;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Reposotory.Implement
 {
@@ -322,6 +325,29 @@ namespace Reposotory.Implement
 
             return lstAudits;
         }
+
+        public List<BE_AuditImage> UpdateMemberData(string IDNO, string MEMNAME, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG, string USERID)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_AuditImage> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+            string term2 = "";
+            string SQL = " EXEC usp_BE_UpdateMemberData  '" + IDNO + "'," +
+                "N'" + MEMNAME + "'," +
+                "'" + Mobile + "'," +
+                "'" + Power + "'," +
+                "'" + MEMEMAIL + "'," +
+                "'" + HasVaildEMail + "'," +
+                "'" + (MEMMSG == "1" ? "Y" : "N") + "'," +
+                "'" + USERID + "'"; //20210113唐改，強制改unicode解決難字出現?問題
+            int nowCount = 0;
+            lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
         /// <summary>
         /// 取得審核歷史
         /// </summary>
@@ -439,13 +465,53 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetEasyWalletList> lstAudits = null;
-            SqlParameter[] para = new SqlParameter[3]; // term是空就用不到
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select orderNo,ITEM as projectName,IDNO,convert(char(8),A_SYSDT,112) as orderTime from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";
+            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME " +
+                $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
+                $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
+        }
+
+        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if(IRent_Only == "on")
+            {
+                SqlParameter[] para = new SqlParameter[3];
+                string term = "";
+                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
+                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
+                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
+                SQL += " DROP TABLE tmp_DelMemberList";
+
+                ExecNonResponse(ref flag, SQL);
+            }
+            else
+            {
+                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
+                SqlParameter[] para = new SqlParameter[3];
+                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
+                SQL += $" insert into tmp_DelMemberList values('{IDNO}')";
+                SQL += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,GETDATE(),'{Account}'from tmp_DelMemberList";
+                SQL += " DROP TABLE tmp_DelMemberList";
+
+                ExecNonResponse(ref flag, SQL);
+            }
         }
     }
 }

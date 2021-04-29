@@ -539,13 +539,30 @@ namespace SendEventMail
                         break;
                 }
 
-                Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>發生時間</th></tr>";
-
-                foreach (var ToSend in ToSendList)
+                // 依照事件類型調整TABLE內容
+                switch (EventType)
                 {
-                    Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
-                }
+                    case 11:
+                    case 12:
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>訂單編號</th><th>發生時間</th></tr>";
 
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}",ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                        }
+
+                        break;
+                    default:
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>發生時間</th></tr>";
+
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                        }
+
+                        break;
+                }
+                
                 Table += "</table>";
 
                 Body = string.Format("<p>{0}</p>", Table);

@@ -30,6 +30,11 @@ namespace Domain.TB.Sync
         public string CarNo { get; set; }
 
         /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int OrderNo { get; set; }
+
+        /// <summary>
         /// 是否發送：0:否;1:是;2:失敗;3:不處理
         /// </summary>
         public int HasSend { get; set; }

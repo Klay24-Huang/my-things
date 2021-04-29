@@ -22,7 +22,6 @@
         </div>
         @using (Html.BeginForm("ReFund", "Report", FormMethod.Post, new { id = "frmEasyWallet", @class = "form-horizontal", enctype = "multipart/form-data" }))
         {
-
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
 
@@ -81,9 +80,62 @@
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
+                            <div class="col-md-2">
+                                客人名字
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="NAME" id="NAME" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                merchantOrderNo
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="merchantOrderNo" id="merchantOrderNo" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                點數方案名稱
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="GIFTNAME" id="GIFTNAME" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                PBATCHNO
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="PBATCHNO" id="PBATCHNO" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" id="btnSubmit" class="btn btn-info">查詢</button>
                                 <button type="button" id="btnSend" name="btnSend" class="btn btn-info">退款</button>
+                                <button type="button" id="btnSend_2" name="btnSend_2" class="btn btn-info">退款2</button>
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
                         </div>
@@ -91,7 +143,7 @@
                 </li>
             </ul>
         }
-     </div>
+    </div>
     <!--end card-->
 </div>
 
@@ -114,6 +166,8 @@
                 <th scope="col">時數名稱</th>
                 <th scope="col">身份證字號</th>
                 <th scope="col">購買日期</th>
+                <th scope="col">merchantOrderNo</th>
+                <th scope="col">客人名字</th>
             </tr>
         </thead>
         <tbody>
@@ -135,6 +189,8 @@
                         <td scope="col">@(lstData[i].projectName)</td>
                         <td scope="col">@(lstData[i].IDNO)</td>
                         <td scope="col">@(lstData[i].orderTime)</td>
+                        <td scope="col">@(lstData[i].merchantOrderNo)</td>
+                        <td scope="col">@(lstData[i].MEMCNAME)</td>
                     </tr>
                 }
 

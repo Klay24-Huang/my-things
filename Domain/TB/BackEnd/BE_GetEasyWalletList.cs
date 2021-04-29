@@ -27,5 +27,13 @@ namespace Domain.TB.BackEnd
         /// 申請日期
         /// </summary>
         public string orderTime { set; get; }
+        /// <summary>
+        /// merchantOrderNo
+        /// </summary>
+        public string merchantOrderNo { set; get; }
+        /// <summary>
+        /// 客人名字
+        /// </summary>
+        public string MEMCNAME { set; get; }
     }
 }
