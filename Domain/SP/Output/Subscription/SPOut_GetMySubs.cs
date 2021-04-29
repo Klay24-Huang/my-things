@@ -31,6 +31,10 @@ namespace Domain.SP.Output.Subscription
         /// 是否變更下期合約
         /// </summary>
         public int IsChange { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 
     public class SPOut_GetMySubs_Code

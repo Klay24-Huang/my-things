@@ -722,6 +722,68 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public SPOut_GetArrsSubsList sp_GetArrsSubsList(SPInput_GetArrsSubsList spInput, ref string errCode)
+        {
+            var re = new SPOut_GetArrsSubsList();
+            re.DateRange = new SPOut_GetArrsSubsList_Date();
+            re.Arrs = new List<SPOut_GetArrsSubsList_Card>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrsSubsList);
+                string SPName = "usp_GetArrsSubsList_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.MonProjID,
+                        spInput.MonProPeriod,
+                        spInput.ShortDays,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 3)
+                    {
+                        var subDayRanges = objUti.ConvertToList<SPOut_GetArrsSubsList_Date>(ds1.Tables[0]);
+                        if (subDayRanges != null && subDayRanges.Count() > 0)
+                            re.DateRange = subDayRanges.FirstOrDefault();
+
+                        var arrs = objUti.ConvertToList<SPOut_GetArrsSubsList_Card>(ds1.Tables[1]);
+                        if (arrs != null && arrs.Count() > 0)
+                            re.Arrs = arrs;
+                    }
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool sp_DelSubsHist(SPInput_DelSubsHist spInput, ref string errCode)
         {
             bool flag = false;
@@ -794,5 +856,23 @@ namespace WebAPI.Models.BillFunc
             else
                 return null;
         }
+
+        public List<OAPI_GetArrsSubsList_arrs> FromSPOut_GetArrsSubsList(List<SPOut_GetArrsSubsList_Card> sour)
+        {
+            var re = new List<OAPI_GetArrsSubsList_arrs>();
+
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetArrsSubsList_arrs
+                      {
+                          Period = a.MonProPeriod,
+                          ArresPrice = a.PeriodPayPrice
+                      }).ToList();
+            }
+
+            return re;
+        }
+        
     }
 }

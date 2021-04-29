@@ -262,6 +262,7 @@
     <Compile Include="Controllers\CheckCarStatusController.cs" />
     <Compile Include="Controllers\CreditAuthReturnJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobController.cs" />
+    <Compile Include="Controllers\GetArrsSubsListController.cs" />
     <Compile Include="Controllers\GetBannerController.cs" />
     <Compile Include="Controllers\GetCarTypeGroupListController.cs" />
     <Compile Include="Controllers\GetChgSubsListController.cs" />
@@ -487,6 +488,7 @@
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetAnyRentProject.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCancelOrderList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetCarStatus.cs" />
@@ -593,6 +595,7 @@
     <Compile Include="Models\Param\Output\OAPI_DelSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBindURL.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCancelOrderList.cs" />
