@@ -114,7 +114,6 @@ namespace WebAPI.Controllers
                         MonProjID = apiInput.MonProjID,
                         MonProPeriod = apiInput.MonProPeriod,
                         ShortDays = apiInput.ShortDays
-                        , SetNow = Convert.ToDateTime("2021-06-26")
                     };
                     trace.traceAdd("spIn", spIn);
                     var sp_re = msp.sp_GetArrsSubsList(spIn, ref errCode);
