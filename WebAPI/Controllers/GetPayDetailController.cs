@@ -25,6 +25,7 @@ using WebCommon;
 using Domain.WebAPI.output.Mochi;
 using WebAPI.Utils;
 using System.Linq;
+using Domain.SP.Input.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -446,6 +447,21 @@ namespace WebAPI.Controllers
                             }                             
                         }
                         #endregion
+                    }
+
+                    //取得使用中訂閱制月租
+                    if (flag)
+                    {
+                        var sp_in = new SPInput_GetNowSubs()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            SD = SD,
+                            ED = FED
+                        };
+                        var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                        if (sp_list != null && sp_list.Count() > 0)
+                            outputApi.NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
                     }
 
                     if (flag)

@@ -86,6 +86,9 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public string DiscountAlertMsg { set; get; }
  
-
+        /// <summary>
+        /// 目前可使用訂閱制月租
+        /// </summary>
+        public List<OAPI_NowSubsCard> NowSubsCards { get; set; }
     }
 }

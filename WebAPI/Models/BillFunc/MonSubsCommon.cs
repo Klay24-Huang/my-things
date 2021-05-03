@@ -23,6 +23,7 @@ using Domain.WebAPI.Input.Taishin;
 using System.Threading;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Models.Param.Output;
+using Domain.TB;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -805,6 +806,62 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
+        /// <summary>
+        /// 取得使用中訂閱制月租
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetNowSubs> sp_GetNowSubs(SPInput_GetNowSubs spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetNowSubs>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetNowSubs);
+                string SPName = "usp_GetNowSubs_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.SD,
+                        spInput.ED
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                       re = objUti.ConvertToList<SPOut_GetNowSubs>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
     /// <summary>
@@ -873,6 +930,55 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-        
+
+        /// <summary>
+        /// 使用中訂閱制卡片(前端顯示)
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public List<OAPI_NowSubsCard> NowSubsCard_FromGetNowSubs(List<SPOut_GetNowSubs> sour)
+        {
+            var re = new List<OAPI_NowSubsCard>();
+            if(sour != null && sour.Count()>0)
+                re = objUti.TTMap<List<SPOut_GetNowSubs>, List<OAPI_NowSubsCard>>(sour);
+            return re;
+        }
+
+        /// <summary>
+        /// 使用中訂閱制卡片(月租涵式使用)
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public List<MonthlyRentData> MonthlyRentData_FromGetNowSubs(List<SPOut_GetNowSubs> sour)
+        {
+            var re = new List<MonthlyRentData>();
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new MonthlyRentData
+                      {
+                          Mode = a.Mode,
+                          MonthlyRentId = a.MonthlyRentId,
+                          MonLvl = a.MonLvl,
+                          MonType = a.MonType,
+                          //IDNO = "",不包含IDNO
+                          CarTotalHours = Convert.ToSingle(a.CarTotalHours),
+                          WorkDayHours = Convert.ToSingle(a.WorkDayHours),
+                          HolidayHours = Convert.ToSingle(a.HolidayHours),
+                          MotoTotalHours = Convert.ToSingle(a.MotoTotalMins),
+                          MotoWorkDayMins = Convert.ToSingle(a.MotoWorkDayMins),
+                          MotoHolidayMins = Convert.ToSingle(a.MotoHolidayMins),
+                          WorkDayRateForCar = Convert.ToSingle(a.WorkDayRateForCar),
+                          HoildayRateForCar = Convert.ToSingle(a.HoildayRateForCar),
+                          WorkDayRateForMoto = Convert.ToSingle(a.WorkDayRateForMoto),
+                          HoildayRateForMoto = Convert.ToSingle(a.HoildayRateForMoto),
+                          StartDate = a.StartDate,
+                          EndDate = a.EndDate
+                      }).ToList();
+            }
+            return re;
+        }
+    
     }
+
 }
