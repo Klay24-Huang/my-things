@@ -745,6 +745,7 @@
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\MemberManage\DeleteMember.cshtml" />
+    <Content Include="Views\MemberManage\ChangeID.cshtml" />
     <None Include="Web.iRent-Backend-Web - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

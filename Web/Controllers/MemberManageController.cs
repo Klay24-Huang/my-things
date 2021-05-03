@@ -736,5 +736,29 @@ namespace Web.Controllers
             repository.DeleteMember(IDNO, IRent_Only, Account);
             return View();
         }
+
+        /// <summary>
+        /// 修改身份證字號
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ChangeID()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        {
+            MemberRepository repository = new MemberRepository(connetStr);
+            if(repository.ChangeID(TARGET_ID, AFTER_ID, Account))
+            {
+                ViewData["result"] = true;
+            }
+            else
+            {
+                ViewData["result"] = false;
+            }
+            return View();
+        }
     }
 }
