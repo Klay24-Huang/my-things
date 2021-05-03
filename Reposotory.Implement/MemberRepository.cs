@@ -507,11 +507,95 @@ namespace Reposotory.Implement
                 SQL += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
                 SQL += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
                 SQL += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,GETDATE(),'{Account}'from tmp_DelMemberList";
+                SQL += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,DATEADD(HOUR,8,GETDATE()),'{Account}'from tmp_DelMemberList";
                 SQL += " DROP TABLE tmp_DelMemberList";
 
                 ExecNonResponse(ref flag, SQL);
             }
+        }
+
+        public bool ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        {
+            bool result = true;
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SqlParameter[] para = new SqlParameter[3];
+            string term = "";
+            string SQL = "BEGIN TRAN";
+            SQL += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
+            SQL += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
+            SQL += " DECLARE @NOW			DATETIME	SET @NOW			= DATEADD(HOUR,8,GETDATE())";
+            SQL += " update TB_MemberData			set MEMIDNO = @AFTER_IDNO	,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO ";
+            SQL += " update TB_MemberDataOfAutdit	set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO ";
+            SQL += " update TB_MemberBySocial		set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO";
+            SQL += " update TB_CrentialsPIC			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_CrentialsPIC_NULL		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_Credentials    		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
+            SQL += " update TB_tmpCrentialsPIC		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
+            SQL += " update TB_AuditHistory			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_AuditCredentials		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " delete TB_AuditCrentialsReject												where IDNO = @AFTER_IDNO";
+            SQL += " update TB_AuditCrentialsReject	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_OrderMain				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_VerifyCode            set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_MemberCardBinding		set IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
+            SQL += " update TB_MonthlyRent			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_MonthlyRentHistory	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_MonthlyRentHistory_LOG set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_MemberDataBlock       set MEMIDNO = @AFTER_IDNO						where MEMIDNO = @TARGET_IDNO";
+            SQL += " update TB_BookingStatusOfUser	SET IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
+            SQL += " update TB_BookingInsuranceOfUser set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
+            SQL += " update TB_BookingInsuranceOfUserHIS set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
+            SQL += " update TB_FeedBack				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_FavoriteStation		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += " update TB_PersonNotification	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
+            SQL += $" insert into TB_ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, DATEADD(HOUR,8,GETDATE()), {Account})";
+            SQL += " COMMIT TRAN";
+
+            if(Execuate(ref flag, SQL) <= 1)
+            {
+                result = false;
+            }
+
+            this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
+            bool flag06 = false;
+            string SQL06 = "BEGIN TRAN";
+            SQL06 += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
+            SQL06 += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
+            SQL06 += " DECLARE @NOW			DATETIME	SET @NOW			= GETDATE()";
+            SQL06 += " update MEMBER_NEW			set  MEMIDNO = @AFTER_IDNO,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO";
+            SQL06 += " update MEMBER_NEW_LOG		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
+            SQL06 += " update IRENT_GIFTMINSMF		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
+            SQL06 += " update IRENT_GIFTMINSHIS	set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
+            SQL06 += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
+            SQL06 += " COMMIT TRAN";
+
+            if (Execuate(ref flag06, SQL06) <= 1)
+            {
+                result = false;
+            }
+
+            this.ConnectionString = ConfigurationManager.ConnectionStrings["01VM_LS"].ConnectionString;
+            bool flag01_LS = false;
+            string SQL01_LS = "BEGIN TRAN";
+            SQL01_LS += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
+            SQL01_LS += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
+            SQL01_LS += " UPDATE LSRENTMF	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()	where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF_LOG	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE IRENT_SIGNATURE			SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE LC..LCCUBKDF				SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE LC..LCCUSTAGREEDF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE IRENT_INSURANCE_LEVEL	SET CUSTID = @AFTER_IDNO							where CUSTID = @TARGET_IDNO";
+            SQL01_LS += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
+            SQL01_LS += " COMMIT TRAN";
+
+            if (Execuate(ref flag01_LS, SQL01_LS) <= 1)
+            {
+                result = false;
+            }
+
+            return result;
         }
     }
 }

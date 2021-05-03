@@ -23,6 +23,7 @@ using WebAPI.Models.Param.Output;
 using WebAPI.Models.ComboFunc;
 using WebCommon;
 using Domain.WebAPI.output.Mochi;
+using Domain.SP.Output.Rent;
 using WebAPI.Utils;
 using System.Linq;
 using Domain.SP.Input.Subscription;
@@ -98,7 +99,7 @@ namespace WebAPI.Controllers
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//車資料
             int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
-
+            int CityParkingPrice = 0;   //城市車旅停車費 20210429 ADD BY ADAM 
             //double nor_car_wDisc = 0;//只有一般時段時平日折扣
             //double nor_car_hDisc = 0;//只有一般時段時價日折扣
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
@@ -694,6 +695,39 @@ namespace WebAPI.Controllers
                             outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
                         }
                         trace.FlowList.Add("車麻吉");
+                    }
+                    //20210428 ADD BY ADAM REASON.串接停車場
+                    if (flag && OrderDataLists[0].ProjType != 4)
+                    {
+                        //
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
+                        SPInput_CalCityParkingFee SPInput = new SPInput_CalCityParkingFee()
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder,
+                            SD = SD,
+                            ED = FED,
+                            LogID = LogID,
+                        };
+
+                        SPOutput_CalCityParkingFee SPOutput = new SPOutput_CalCityParkingFee();
+                        SQLHelper<SPInput_CalCityParkingFee, SPOutput_CalCityParkingFee> SQLBookingStartHelp = new SQLHelper<SPInput_CalCityParkingFee, SPOutput_CalCityParkingFee>(connetStr);
+                        flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                        flag = !(SPOutput.Error == 1 || SPOutput.ErrorCode != "0000");
+                        if (SPOutput.ErrorCode == "0000" && lstError.Count > 0)
+                        {
+                            SPOutput.ErrorCode = lstError[0].ErrorCode;
+                        }
+                        if (flag)
+                        {
+                            CityParkingPrice = SPOutput.ParkingFee;
+                            if (CityParkingPrice > 0)
+                            {
+                                outputApi.Rent.ParkingFee += CityParkingPrice;
+                            }
+                        }
+                        //baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
+                        trace.FlowList.Add("CityParkingFee");
                     }
 
                     #endregion

@@ -640,6 +640,8 @@ namespace WebAPI.Models.Enum
             MA_CheckCarStatusByReturn,
             #endregion
 
+            GetCityParkingFee,    //20210429 ADD BY ADAM REASON.增加CityPark停車費綁定
+
             GetEstimate,
             GetOrderAuthList,
             UpdateOrderAuthList,
@@ -1158,6 +1160,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetBindingCard:
                     SPName = "usp_GetBindingCard";
+                    break;
+                case SPType.GetCityParkingFee:      //20210429 ADD BY ADAM REASON.增加CityPark停車費綁定
+                    SPName = "usp_GetCityParkingFee";
                     break;
                 #endregion
                 #region 整備人員

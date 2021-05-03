@@ -206,6 +206,7 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingControl.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CalCityParkingFee.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CalCityParkingFee.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
