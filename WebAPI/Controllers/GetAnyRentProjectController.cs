@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Subscription;
 using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
@@ -13,8 +14,10 @@ using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
+using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -25,10 +28,13 @@ namespace WebAPI.Controllers
     public class GetAnyRentProjectController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+
         [HttpPost]
         public Dictionary<string, object> DoGetAnyRentProject(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var bill = new BillCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -52,6 +58,7 @@ namespace WebAPI.Controllers
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
             string IDNO = "";
+            var OAPI_NowSubsCards = new List<OAPI_NowSubsCard>();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -133,6 +140,25 @@ namespace WebAPI.Controllers
                 }
             }
 
+            //取得汽車使用中訂閱制月租
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(IDNO))
+                {
+                    var sp_in = new SPInput_GetNowSubs()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        SD = SDate,
+                        ED = EDate,
+                        IsMoto = 0
+                    };
+                    var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                        OAPI_NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                }
+            }
+
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
@@ -147,10 +173,13 @@ namespace WebAPI.Controllers
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
                         {
-                            int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
+                            //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
                             int isMin = 1;
 
-                            lstTmpData.Add(new ProjectObj()
+                            int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, apiInput.MonId) +
+                                     bill.CarMilageCompute(SDate, EDate, lstData[0].MilageBase, Mildef, 20, new List<Holiday>());
+
+                     lstTmpData.Add(new ProjectObj()
                             {
                                 StationID = lstData[0].StationID,
                                 CarBrend = lstData[0].CarBrend,
@@ -178,7 +207,11 @@ namespace WebAPI.Controllers
                             {
                                 for (int i = 1; i < DataLen; i++)
                                 {
-                                    tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    //tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+
+                                    tmpBill = GetPriceBill(lstData[i], IDNO, LogID, lstHoliday, SDate, EDate, apiInput.MonId) +
+                                             bill.CarMilageCompute(SDate, EDate, lstData[i].MilageBase, Mildef, 20, new List<Holiday>());
+
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (ProjectObj proj)
                                     {
@@ -239,6 +272,10 @@ namespace WebAPI.Controllers
                 {
                     GetAnyRentProjectObj = lstTmpData
                 };
+
+
+                if (OAPI_NowSubsCards != null && OAPI_NowSubsCards.Count() > 0)
+                    outputApi.NowSubsCards = OAPI_NowSubsCards;
             }
             #endregion
 
@@ -253,5 +290,29 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        private int GetPriceBill(ProjectAndCarTypeData spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, Int64 MonId = 0)
+        {
+            int re = 0;
+
+            var input = new ICF_GetCarRentPrice()
+            {
+                MonId = MonId,
+                IDNO = IDNO,
+                SD = SD,
+                ED = ED,
+                priceN = spItem.Price / 10,
+                priceH = spItem.PRICE_H / 10,
+                daybaseMins = 60,
+                dayMaxHour = 10,
+                lstHoliday = lstHoliday,
+                Discount = 0,
+                FreeMins = 0
+            };
+            re = Convert.ToInt32(new MonSubsCommon().GetCarRentPrice(input));            
+
+            return re;
+        }
+
     }
 }
