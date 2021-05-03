@@ -24,6 +24,8 @@ using System.Threading;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Models.Param.Output;
 using Domain.TB;
+using Reposotory.Implement;
+using WebAPI.Models.Param.CusFun.Input;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -35,6 +37,7 @@ namespace WebAPI.Models.BillFunc
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         public bool Month_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -43,7 +46,7 @@ namespace WebAPI.Models.BillFunc
             TSIB_In.MerchantTradeNo = string.Format("{0}M_{1}",IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
             TSIB_In.ProdNm = string.Format("{0}月租", IDNO);
 
-            return true;//hack: 信用卡交易暫時關閉,上線再打開
+            return true;//hack: fix 信用卡交易暫時關閉,上線再打開
             //return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
         }
 
@@ -205,6 +208,63 @@ namespace WebAPI.Models.BillFunc
 
             return flag;
         }
+
+        /// <summary>
+        /// 取得指定月租後汽車租金
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public double GetCarRentPrice(ICF_GetCarRentPrice sour)
+        {
+            double re = 0;
+            if(sour != null)
+            {
+                sour.lstHoliday = sour.lstHoliday ?? new List<Holiday>();
+                sour.mOri = sour.mOri ?? new List<MonthlyRentData>();
+
+                if (sour.MonId > 0)
+                {
+                    var monthlyRentRepository = new MonthlyRentRepository(connetStr);
+                    var mOri = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonId.ToString());
+
+                    if(mOri != null && mOri.Count()>0)
+                       sour.mOri = mOri;
+                }
+
+                var fn_re = CarRentInCompute(sour);
+                if (fn_re != null && fn_re.RentInPay > 0)
+                    re = fn_re.RentInPay;
+            }
+            return re;
+        }
+
+        /// <summary>
+        /// 區間租金計算,可包含多月租,一般平假日,前n免費
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public CarRentInfo CarRentInCompute(ICF_CarRentInCompute sour)
+        {
+            var re = new CarRentInfo();
+
+            if(sour != null)
+            {
+                re = new BillCommon().CarRentInCompute(
+                    sour.SD,
+                    sour.ED,
+                    sour.priceN,
+                    sour.priceH,
+                    sour.daybaseMins,
+                    sour.dayMaxHour,
+                    sour.lstHoliday,
+                    sour.mOri,
+                    sour.Discount,
+                    sour.FreeMins);
+            }
+
+            return re;
+        }
+
     }
 
     /// <summary>
@@ -825,7 +885,8 @@ namespace WebAPI.Models.BillFunc
                         spInput.IDNO,
                         spInput.LogID,
                         spInput.SD,
-                        spInput.ED
+                        spInput.ED,
+                        spInput.IsMoto
                     },
                 };
 

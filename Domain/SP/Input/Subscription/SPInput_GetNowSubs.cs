@@ -12,5 +12,6 @@ namespace Domain.SP.Input.Subscription
         public Int64 LogID { get; set; }
         public DateTime? SD { get; set; }
         public DateTime? ED { get; set; }
+        public int IsMoto { get; set; } = -1;
     }
 }

@@ -121,7 +121,7 @@ namespace Reposotory.Implement
             WorkDayRateForCar,HoildayRateForCar,
             WorkDayRateForMoto,HoildayRateForMoto,
             StartDate,EndDate
-            FROM TB_MonthlyRent ";
+            FROM TB_MonthlyRent_test ";//hack: fix TB_MonthlyRent_test(名稱修正)
 
             SqlParameter[] para = new SqlParameter[1];
             string term = "";

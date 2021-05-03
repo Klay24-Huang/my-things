@@ -449,6 +449,8 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
+    <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
+    <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
@@ -704,6 +706,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Doc\" />
     <Folder Include="Models\Param\Bill\Output\" />
+    <Folder Include="Models\Param\CusFun\Output\" />
     <Folder Include="Service\" />
   </ItemGroup>
   <ItemGroup>

@@ -452,16 +452,28 @@ namespace WebAPI.Controllers
                     //取得使用中訂閱制月租
                     if (flag)
                     {
-                        var sp_in = new SPInput_GetNowSubs()
+                        List<int> CarCodes = new List<int>() { 0, 3 };
+
+                        int isMoto = -1;
+                        if (ProjType == 4)
+                            isMoto = 1;
+                        else if (CarCodes.Any(x => x == ProjType))
+                            isMoto = 0;
+
+                        if(isMoto != -1 && !string.IsNullOrWhiteSpace(IDNO))
                         {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            SD = SD,
-                            ED = FED
-                        };
-                        var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
-                        if (sp_list != null && sp_list.Count() > 0)
-                            outputApi.NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                            var sp_in = new SPInput_GetNowSubs()
+                            {
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                SD = SD,
+                                ED = FED,
+                                IsMoto = isMoto
+                            };
+                            var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                            if (sp_list != null && sp_list.Count() > 0)
+                                outputApi.NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                        }
                     }
 
                     if (flag)

@@ -230,7 +230,7 @@ namespace OtherService
         }
         
         public bool DoGetCreditCardListCache(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output,bool refresh=false)
-        {//hack: DoGetCreditCardListCache
+        {
             bool flag = false;
             string cacheNm = "BankCardCache";
             string bankNm = "TSIB";

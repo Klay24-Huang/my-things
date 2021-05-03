@@ -29,6 +29,11 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public List<GetProject_SeatGroup> SeatGroups { get; set; }
 
+        /// <summary>
+        /// 目前可使用訂閱制月租
+        /// </summary>
+        public List<OAPI_NowSubsCard> NowSubsCards { get; set; }
+
         public List<GetProjectObj> GetProjectObj { set; get; }
     }
 }

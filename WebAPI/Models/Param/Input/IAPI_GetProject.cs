@@ -57,6 +57,11 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         //public int PriceMax { get; set; } 
 
+        /// <summary>
+        /// 選擇的訂閱制制月租
+        /// </summary>
+        public Int64 MonId { get; set; }
+
         public List<string> CarTypes { get; set; } = new List<string>();
         public List<int> Seats { get; set; } = new List<int>();
     }
