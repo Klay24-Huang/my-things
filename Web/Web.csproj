@@ -385,6 +385,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDataSetting.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarSetting.js" />
+    <Content Include="Scripts\js\ActionJS\Report\CarLocationQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ExportCarSettingData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarBindData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarData.js" />
@@ -746,6 +747,7 @@
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\MemberManage\DeleteMember.cshtml" />
     <Content Include="Views\MemberManage\ChangeID.cshtml" />
+    <Content Include="Views\Report\CarLocationQuery.cshtml" />
     <None Include="Web.iRent-Backend-Web - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

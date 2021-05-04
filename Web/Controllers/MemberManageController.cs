@@ -733,7 +733,14 @@ namespace Web.Controllers
         public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            repository.DeleteMember(IDNO, IRent_Only, Account);
+            if (repository.DeleteMember(IDNO, IRent_Only, Account))
+            {
+                ViewData["result"] = true;
+            }
+            else
+            {
+                ViewData["result"] = false;
+            }
             return View();
         }
 

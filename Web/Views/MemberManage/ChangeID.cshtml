@@ -68,7 +68,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header text-white bg-primary">
-            查詢結果：@(result == "True"? "身份證字號更換成功" : "無結果")
+            執行結果：@(result == "True" ? "身份證字號更換成功" : result == "False" ? "查無此身分證字號" : "")
         </div>
     </div>
 </div>

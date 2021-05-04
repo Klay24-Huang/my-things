@@ -585,6 +585,102 @@ namespace Reposotory.Implement
             return lstCarSettingRecord;
         }
 
-            
+        public List<BE_CarLocationData> GetCarLocationData(string Time_Start, string Time_End, string IsCar)
+        {
+            List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
+
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.Transaction = tran;
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+
+            cmd.Parameters.Add("@FirDATE", SqlDbType.VarChar, 8).Value = Time_Start.Substring(0,10).Replace("-", "");
+            cmd.Parameters.Add("@EndDATE", SqlDbType.VarChar, 8).Value = Time_End.Substring(0,10).Replace("-", "");
+
+            if(IsCar == "true")
+            {
+                cmd.CommandText = "SP_CarLocationHis_Q01";
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                foreach(DataRow dr in dt.Rows)
+                {
+                    BE_CarLocationData data = new BE_CarLocationData();
+                    data.CID = dr.Field<string>("CID");
+                    data.CarNo = dr.Field<string>("CarNo");
+                    data.final_start_time = dr.Field<DateTime>("final_start_time");
+
+                    if (Convert.IsDBNull(dr[7]))
+                    {
+                        data.final_stop_time = new DateTime();
+                    }
+                    else
+                    {
+                        data.final_stop_time = dr.Field<DateTime>("final_stop_time");
+                    }
+
+                    data.IDNO = dr.Field<string>("IDNO");
+                    data.lend_place = dr.Field<string>("lend_place");
+                    data.order_number = dr.Field<Int64>("order_number");
+                    data.ProjID = dr.Field<string>("ProjID");
+                    data.PRONAME = dr.Field<string>("PRONAME");
+                    data.start_Lat = dr.Field<string>("start_Lat");
+                    data.start_Lng = dr.Field<string>("start_Lng");
+                    data.stop_Lat = dr.Field<string>("stop_Lat");
+                    data.stop_Lng = dr.Field<string>("stop_Lng");
+
+                    lstData.Add(data);
+                };
+                reader.Close();
+            }
+            else
+            {
+                cmd.CommandText = "SP_CarLocationHisMOTO_Q01";
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    BE_CarLocationData data = new BE_CarLocationData();
+                    data.CID = dr.Field<string>("CID");
+                    data.CarNo = dr.Field<string>("CarNo");
+                    data.final_start_time = dr.Field<DateTime>("final_start_time");
+                    if (Convert.IsDBNull(dr[7]))
+                    {
+                        data.final_stop_time = new DateTime(); 
+                    }
+                    else
+                    {
+                        data.final_stop_time = dr.Field<DateTime>("final_stop_time");
+                    }
+                    data.IDNO = dr.Field<string>("IDNO");
+                    data.lend_place = dr.Field<string>("lend_place");
+                    data.order_number = dr.Field<Int64>("OrderNo");
+                    data.ProjID = dr.Field<string>("ProjID");
+                    data.PRONAME = dr.Field<string>("PRONAME");
+                    data.start_Lat = dr[9].ToString();
+                    data.start_Lng = dr[10].ToString();
+                    data.stop_Lat = dr[11].ToString();
+                    data.stop_Lng = dr[12].ToString();
+
+                    lstData.Add(data);
+                };
+                reader.Close();
+            }
+
+            tran.Commit();
+            conn.Close();
+            conn.Dispose();
+            return lstData;
+        }    
     }
 }
