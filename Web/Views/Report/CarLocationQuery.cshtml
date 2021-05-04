@@ -1,0 +1,47 @@
+﻿@{
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    @using (Html.BeginForm("CarLocationQuery", "Report", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                車輛隨租定位
+            </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                查詢日期
+                            </div>
+                            <div class="col-md-3">
+                                起：<input name="Time_Start" id="Time_Start" class="form-control dateTimePicker" />
+                                迄：<input name="Time_End" id="Time_End" class="form-control dateTimePicker" />
+                                ．日期格不得為空<br />
+                                ．日期間距不得大於31天<br />
+                                ．起日不得晚於迄日<br />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-5 offset-md-2">
+                                <button type="submit" id="ExportCar" name="ExportCar" class="btn btn-primary">汽車匯出</button>
+                                <button type="submit" id="ExportMoto" name="ExportMoto" class="btn btn-primary ml-2">機車匯出</button>
+                                <button type="button" id="Clear" name="Clear" class="btn btn-outline-primary ml-2">清除</button>
+                                <input type="hidden" id="IsCar" name="IsCar" value="false" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+        </div>
+        <!--end card-->
+    }
