@@ -1,0 +1,74 @@
+﻿
+@{
+string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
+
+int ResultLen = -1;
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            會員資料刪除
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <!--card start-->
+
+    <div class="card">
+        <div class="card-header text-white" style="background-color: #9fa4ac;">
+            輸入內容
+        </div>
+        @using (Html.BeginForm("DeleteMember", "MemberManage", FormMethod.Post, new { id = "frmDelete", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+    <ul class="list-group list-group-flush">
+        <!--每一個li是一項查詢條件-->
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        身分證字號
+                    </div>
+                    <div class="col-md-3">
+                        <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        僅刪除IRent會員
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input " type="checkbox" name="IRent_Only" id="IRent_Only" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3 offset-md-2">
+                        <button type="submit" class="btn btn-info btn-submit">確認刪除</button>
+                        <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
+                        <input type="hidden" id="len" name="len" value="@ResultLen" />
+                        <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+        }
+    </div>
+    <!--end card-->
+</div>
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+        var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+            var ResultDataLen = '@(ResultLen)';
+</script>

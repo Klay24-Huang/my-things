@@ -48,6 +48,17 @@ namespace Web.Controllers
             carLstData = carStatusCommon.GetCarSettingData(null, StationID, 3);
             carLstData_unaccessable = carStatusCommon.GetCarSettingData(null, StationID, 2);
 
+            //if(NotMach == 1)
+            //{
+            //    var stationList = repository.GetPartOfStation("", false);
+            //    foreach(var i in stationList)
+            //    {
+            //        i.AllowParkingNum = carStatusCommon.GetCarSettingData(null, i.Location, 3).Count.ToString();
+            //        i.NowOnlineNum = (carStatusCommon.GetCarSettingData(null, i.Location, 2).Count - int.Parse(i.AllowParkingNum)).ToString();
+            //    }
+            //    return View(stationList);
+            //}
+
             lstData = repository.GetPartOfStation(StationID, NotMach.HasValue);
             ViewBag.carData = carLstData.Count;
             ViewBag.carDataNotOnBoard = carLstData.Count - carLstData_unaccessable.Count;

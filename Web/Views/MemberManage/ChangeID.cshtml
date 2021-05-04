@@ -1,0 +1,79 @@
+﻿
+@{
+    string TARGET_ID = (ViewData["TARGET_ID"] == null) ? "" : ViewData["TARGET_ID"].ToString();
+    string AFTER_ID = (ViewData["AFTER_ID"] == null) ? "" : ViewData["AFTER_ID"].ToString();
+    string result = (ViewData["result"] == null) ? "" : ViewData["result"].ToString();
+
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            變更身分證字號
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <!--card start-->
+
+    <div class="card">
+        <div class="card-header text-white" style="background-color: #9fa4ac;">
+            輸入內容
+        </div>
+        @using (Html.BeginForm("ChangeID", "MemberManage", FormMethod.Post, new { id = "frmDelete", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                原身分證字號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="TARGET_ID" id="TARGET_ID" value="@TARGET_ID" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                新身分證字號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="AFTER_ID" id="AFTER_ID" value="@AFTER_ID" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="submit" class="btn btn-info btn-submit">確認變更</button>
+                                <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+    <!--end card-->
+</div>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header text-white bg-primary">
+            查詢結果：@(result == "True"? "身份證字號更換成功" : "無結果")
+        </div>
+    </div>
+</div>
+
+<script>
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+        var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+</script>

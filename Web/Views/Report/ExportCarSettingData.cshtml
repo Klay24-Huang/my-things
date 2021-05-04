@@ -24,11 +24,11 @@
 <!--查詢介面-->
 <div class="container mt-4">
     <!--card start-->
-    @using (Html.BeginForm("ExportCarSettingData", "CarDataInfo", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+    @using (Html.BeginForm("ExportCarSettingData", "Report", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
     {
         <div class="card">
             <div class="card-header bg-secondary text-white">
-                車輛中控台
+                營業記錄報表
             </div>
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
