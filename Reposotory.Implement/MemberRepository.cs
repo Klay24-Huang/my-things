@@ -493,7 +493,7 @@ namespace Reposotory.Implement
                 SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
                 SQL += " DROP TABLE tmp_DelMemberList";
 
-                if (Execuate(ref flag, SQL) <= 1)
+                if (Execuate(ref flag, SQL) <= 2)
                 {
                     result = false;
                 }
@@ -510,7 +510,7 @@ namespace Reposotory.Implement
                 SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
                 SQL += " DROP TABLE tmp_DelMemberList";
 
-                if (Execuate(ref flag, SQL) <= 1)
+                if (Execuate(ref flag, SQL) <= 2)
                 {
                     result = false;
                 }
