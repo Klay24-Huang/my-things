@@ -1095,6 +1095,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ReFund(string IDNO)
         {
+            ViewData["IDNO"] = IDNO;
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
 
