@@ -39,6 +39,20 @@ namespace WebAPI.Models.BillFunc
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
+        public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
+        {
+            var TSIB_In = new IFN_TSIBCardTrade();
+            TSIB_In.IDNO = IDNO;
+            TSIB_In.MerchantTradeNo = string.Format("{0}MA_{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
+            TSIB_In.ProdNm = string.Format("{0}月租欠費", IDNO);
+
+            string ck = ckMerchantTradeNo(TSIB_In.MerchantTradeNo);
+            if (!string.IsNullOrWhiteSpace(ck))
+                throw new Exception(ck);
+
+            return TSIBCardTrade(TSIB_In, ref WSAuthOutput, ref Amount, ref errCode);
+        }
+
         public bool Month_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
             var TSIB_In = new IFN_TSIBCardTrade();
@@ -46,14 +60,23 @@ namespace WebAPI.Models.BillFunc
             TSIB_In.MerchantTradeNo = string.Format("{0}M_{1}",IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
             TSIB_In.ProdNm = string.Format("{0}月租", IDNO);
 
+            string ck = ckMerchantTradeNo(TSIB_In.MerchantTradeNo);
+            if (!string.IsNullOrWhiteSpace(ck))
+                throw new Exception(ck);
+
+            return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
+        }
+
+        private bool TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
+        {
             return true;//hack: fix 信用卡交易暫時關閉,上線再打開
-            //return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
+            //return ori_TSIBCardTrade(sour,ref WSAuthOutput, ref Amount, ref errCode);
         }
 
         /// <summary>
         /// 台新信用卡交易
         /// </summary>
-        private bool TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
+        private bool ori_TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -263,6 +286,18 @@ namespace WebAPI.Models.BillFunc
             }
 
             return re;
+        }
+
+        public string ckMerchantTradeNo(string sour)
+        {
+            if (string.IsNullOrWhiteSpace(sour))
+                return "MerchantTradeNo必填";
+            else
+            {
+                if (sour.Length > 30)
+                    return "MerchantTradeNo長度不可超過30";
+            }
+            return "";
         }
 
     }

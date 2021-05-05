@@ -93,10 +93,16 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        if(string.IsNullOrWhiteSpace(apiInput.ProdNm))
+                        if(apiInput.ApiID == 190)//月租欠費不顯示產品名稱
                         {
-                            flag = false;
-                            errCode = "ERR269";
+                        }
+                        else
+                        {
+                            if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
+                            {
+                                flag = false;
+                                errCode = "ERR269";
+                            }
                         }
                     }
                     
@@ -112,10 +118,21 @@ namespace WebAPI.Controllers
                     {
                         if(apiInput.DoPay == 1)
                         {
-                            if(apiInput.PayTypeId == 0 || apiInput.InvoTypeId == 0)
+                            if(apiInput.ApiID == 190)//月租欠費只需要付款方式
                             {
-                                flag = false;
-                                errCode = "ERR268";
+                                if (apiInput.PayTypeId == 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR268";
+                                }
+                            }
+                            else
+                            {
+                                if (apiInput.PayTypeId == 0 || apiInput.InvoTypeId == 0)
+                                {
+                                    flag = false;
+                                    errCode = "ERR268";
+                                }
                             }
                         }
                     }
@@ -211,7 +228,10 @@ namespace WebAPI.Controllers
                             trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
                             try
                             {
-                                flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
+                                if(apiInput.ApiID == 190)//月租欠費
+                                    flag = mscom.MonArrears_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
+                                else
+                                    flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
 
                                 if (WsOut != null)
                                     trace.traceAdd("CarTradeResult", new { WsOut });

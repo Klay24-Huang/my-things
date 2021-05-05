@@ -13,7 +13,6 @@ namespace WebAPI.Models.BillFunc
         public string ApiJson = "";
         public string errCode = "000000";
         public string errMsg = "Success";
-        private readonly List<int> PayNxt = new List<int> { 179,188 };
         private MonSubsSp msp = new MonSubsSp();
 
         public BuyNowNxtCommon()
@@ -22,7 +21,7 @@ namespace WebAPI.Models.BillFunc
 
         public bool CkApiID()
         {
-            if (PayNxt.Any(x => x == ApiID))
+            if (SiteUV.BuyNow_PayNxt.Any(x => x == ApiID))
                 return true;
             else
             {
@@ -48,6 +47,7 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
+                //月租專案群組
                 if (ApiID == 179)
                 {
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
@@ -72,7 +72,8 @@ namespace WebAPI.Models.BillFunc
                         flag = false;
                     }
                 }
-                else if(ApiID == 188)
+                //取得訂閱制升轉列表
+                else if (ApiID == 188)
                 {
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
                     {
@@ -90,6 +91,11 @@ namespace WebAPI.Models.BillFunc
                             flag = false;
                         }
                     }
+                }
+                //訂閱牌卡制欠費查詢
+                else if (ApiID == 190)
+                {
+
                 }
                 else
                    errMsg = "無對應ApiID";
