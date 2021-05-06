@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.BackEnd.Input
 {
-    public class IAPI_BE_HandleOrderModify:IAPI_BE_Base
+    public class IAPI_BE_HandleOrderModify : IAPI_BE_Base
     {
         /// <summary>
         /// 訂單編號
@@ -133,5 +130,10 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 純租金
         /// </summary>
         public int Pure { set; get; }
+
+        /// <summary>
+        /// 停車費用(總)     // 20210506;ADD BY YEH REASON.新增停車費用(總)
+        /// </summary>
+        public int ParkingFeeTotal { get; set; }
     }
 }

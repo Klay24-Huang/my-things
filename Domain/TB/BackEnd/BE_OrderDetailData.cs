@@ -176,6 +176,12 @@ namespace Domain.TB.BackEnd
         /// 使用的機車點數
         /// </summary>
         public int MotorPoint { set; get; }
+
+        /// <summary>
+        /// 停車費(總)
+        /// </summary>
+        public int ParkingFeeTotal { get; set; }    // 20210506;ADD BY YEH REASON.顯示合約的總停車費
+
         /// <summary>
         /// 逾時時間
         /// </summary>
