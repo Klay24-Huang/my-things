@@ -12,6 +12,7 @@ namespace Domain.TB.BackEnd
         public string NAME { set; get; }
         public string HIID { set; get; }
         public string Group { set; get; }
+        public string DATE_NEW { set; get; }
         public string DATE { set; get; }
         public string ITEM { set; get; }
         public string TYPE { set; get; }
