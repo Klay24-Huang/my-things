@@ -9,6 +9,15 @@ namespace WebAPI.Models.BillFunc
 {
     public class BuyNowNxtCommon
     {
+        /// <summary>
+        /// 付款方式
+        /// </summary>
+        public Int64 PayTypeId { get; set; } = 0;
+        /// <summary>
+        /// 發票設定
+        /// </summary>
+        public Int64 InvoTypeId { get; set; } = 0;
+
         public int ApiID  = 0;
         public string ApiJson = "";
         public string errCode = "000000";
@@ -56,6 +65,8 @@ namespace WebAPI.Models.BillFunc
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && !string.IsNullOrWhiteSpace(spIn.MonProjID) &&
                             spIn.LogID > 0 && spIn.MonProPeriod > 0)
                         {
+                            spIn.PayTypeId = PayTypeId;
+                            spIn.InvoTypeId = InvoTypeId;
                             spIn.SetPayOne = 1;//首期金額已付
                             flag = msp.sp_CreateSubsMonth(spIn, ref errCode);
                             trace.traceAdd("CreateSubsMonth", new { flag, errCode });
@@ -117,6 +128,8 @@ namespace WebAPI.Models.BillFunc
 
                             if (ck)
                             {
+                                spIn.PayTypeId = PayTypeId;
+                                spIn.InvoTypeId = InvoTypeId;
                                 flag = msp.sp_ArrearsPaySubs(spIn, ref errCode);
                                 trace.traceAdd("ArrearsPaySubs", new { flag, errCode });
                             }

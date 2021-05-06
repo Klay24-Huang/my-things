@@ -11,6 +11,8 @@ namespace Domain.SP.Input.Subscription
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
         public string MonthlyRentIds { get; set; }
+        public Int64 PayTypeId { get; set; }
+        public Int64 InvoTypeId { get; set; }
         public DateTime? SetNow { get; set; }
     }
 }

@@ -93,17 +93,30 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
+                        if(apiInput.DoPay == 0)
                         {
-                            flag = false;
-                            errCode = "ERR269";
-                        }                        
+                            if (apiInput.ApiID == 190)
+                            {
+
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
+                                {
+                                    flag = false;
+                                    errCode = "ERR269";
+                                }
+                            }
+                        }                     
                     }
                     
+                    //載入後續Api所需資料
                     if (flag && apiInput.ApiID > 0)
                     {
                         buyNxtCom.ApiID = apiInput.ApiID;
                         buyNxtCom.ApiJson = apiInput.ApiJson;
+                        buyNxtCom.PayTypeId = apiInput.PayTypeId;
+                        buyNxtCom.InvoTypeId = apiInput.InvoTypeId;
                         flag = buyNxtCom.CkApiID();
                         errCode = buyNxtCom.errCode;
                     }
@@ -112,22 +125,11 @@ namespace WebAPI.Controllers
                     {
                         if(apiInput.DoPay == 1)
                         {
-                            if(apiInput.ApiID == 190)//月租欠費只需要付款方式
+                            if (apiInput.PayTypeId == 0 || apiInput.InvoTypeId == 0)
                             {
-                                if (apiInput.PayTypeId == 0)
-                                {
-                                    flag = false;
-                                    errCode = "ERR268";
-                                }
-                            }
-                            else
-                            {
-                                if (apiInput.PayTypeId == 0 || apiInput.InvoTypeId == 0)
-                                {
-                                    flag = false;
-                                    errCode = "ERR268";
-                                }
-                            }
+                                flag = false;
+                                errCode = "ERR268";
+                            }                            
                         }
                     }
 

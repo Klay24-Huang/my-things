@@ -36,10 +36,10 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 選定付款方式
         /// </summary>
-        public int PayTypeId { get; set; } = 0;
+        public Int64 PayTypeId { get; set; } = 0;
         /// <summary>
         /// 選定發票設定
         /// </summary>
-        public int InvoTypeId { get; set; } = 0;
+        public Int64 InvoTypeId { get; set; } = 0;
     }
 }
