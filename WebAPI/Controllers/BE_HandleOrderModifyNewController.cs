@@ -363,7 +363,8 @@ namespace WebAPI.Controllers
                 PAYAMT = apiInput.DiffPrice,
                 Insurance_price = apiInput.Insurance_price,
                 Mileage = apiInput.Mileage,
-                Pure = apiInput.Pure
+                Pure = apiInput.Pure,
+                ParkingFeeTotal = apiInput.ParkingFeeTotal
             };
             SPOutput_Base spOut = new SPOutput_Base();
 

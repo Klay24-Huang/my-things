@@ -1,49 +1,49 @@
 ﻿CREATE VIEW [dbo].[VW_BE_BeforeNPR136GetData]
 	AS 
-	SELECT [PROCD]
-      ,[ORDNO]
+	SELECT A.[PROCD]
+      ,[ORDNO]=CASE WHEN A.ORDNO='' THEN B.ORDNO ELSE A.ORDNO END
       ,[IRENTORDNO]
       ,[CUSTID]
       ,[CUSTNM]
       ,[BIRTH]
       ,[CUSTTYPE]
-      ,[ODCUSTID]
-      ,[CARTYPE]
-      ,[CARNO]
-      ,[TSEQNO]
-      ,[GIVEDATE]
-      ,[GIVETIME]
+      ,A.[ODCUSTID]
+      ,A.[CARTYPE]
+      ,A.[CARNO]
+      ,A.[TSEQNO]
+      ,A.[GIVEDATE]
+      ,A.[GIVETIME]
       ,[RENTDAYS]
       ,[GIVEKM]
       ,[OUTBRNHCD]
-      ,[RNTDATE]
-      ,[RNTTIME]
+      ,A.[RNTDATE]
+      ,A.[RNTTIME]
       ,[RNTKM]
       ,[INBRNHCD]
-      ,[RPRICE]
+      ,A.[RPRICE]
       ,[RINSU]
-      ,[DISRATE]
+      ,A.[DISRATE]
       ,[OVERHOURS]
       ,[OVERAMT2]
-      ,[RNTAMT]
+      ,A.[RNTAMT]
       ,[RENTAMT]
       ,[LOSSAMT2]
       ,[PROJID]
-      ,[REMARK]
-      ,[INVKIND]
-      ,[UNIMNO]
-      ,[INVTITLE]
+      ,A.[REMARK]
+      ,A.[INVKIND]
+      ,A.[UNIMNO]
+      ,A.[INVTITLE]
       ,[INVADDR]
       ,[GIFT]
       ,[GIFT_MOTO]
       ,[CARDNO]
-      ,[PAYAMT]
+      ,A.[PAYAMT]
       ,[AUTHCODE]
-      ,[isRetry]
-      ,[RetryTimes]
-      ,[CARRIERID]
-      ,[NPOBAN]
-      ,[NOCAMT]  
+      ,A.[isRetry]
+      ,A.[RetryTimes]
+      ,A.[CARRIERID]
+      ,A.[NPOBAN]
+      ,A.[NOCAMT]  
       ,ISNULL(OtherFee.CarDispatch,'0') AS CTRLAMT
 	  ,ISNULL(OtherFee.DispatchRemark,'') AS CTRLMEMO
 	  ,ISNULL(OtherFee.CleanFee,'0') AS CLEANAMT
@@ -56,9 +56,14 @@
 	  ,ISNULL(OtherFee.OtherFeeRemark,'') AS OTHERMEMO
 	  ,ISNULL(OtherFee.ParkingFee,'0') AS PARKINGAMT
 	  ,ISNULL(OtherFee.ParkingFeeRemark,'') AS PARKINGMEMO
-	   , ISNULL(OtherFee.ParkingFeeByMachi, 0) AS PARKINGAMT2
-	  , ISNULL(OtherFee.ParkingFeeByMachiRemark, '') AS PARKINGMEMO2
-  FROM [dbo].[TB_ReturnCarControl] AS ReturnCar LEFT JOIN TB_OrderOtherFee AS OtherFee ON ReturnCar.IRENTORDNO=OtherFee.OrderNo 
+	  --,ISNULL(OtherFee.ParkingFeeByMachi, 0) AS PARKINGAMT2
+	  -- 20210506;UPD BY YEH REASON.停車費改抓Detail的總和
+	  ,ISNULL(Detail.parkingFee, 0) AS PARKINGAMT2
+	  ,ISNULL(OtherFee.ParkingFeeByMachiRemark, '') AS PARKINGMEMO2
+  FROM [dbo].[TB_ReturnCarControl] AS A WITH(NOLOCK)
+  JOIN TB_BookingControl B WITH(NOLOCK) ON B.order_number=A.IRENTORDNO
+  LEFT JOIN TB_OrderOtherFee AS OtherFee WITH(NOLOCK) ON A.IRENTORDNO=OtherFee.OrderNo
+  LEFT JOIN TB_OrderDetail AS Detail WITH(NOLOCK) ON A.IRENTORDNO=Detail.order_number
   GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_BE_BeforeNPR136GetData';
 GO

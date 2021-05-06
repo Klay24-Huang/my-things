@@ -9,6 +9,7 @@ $(document).ready(function () {
             $("#OrderNo").val($(this).val().toUpperCase())
         }
     })
+
     $("#UseStatus").on("change", function () {
         console.log('b');
         if ($(this).val() == "3") {
@@ -17,6 +18,7 @@ $(document).ready(function () {
             $("#remark_input").prop("readonly", "readonly");
         }
     });
+
     $("#btnQuery").on("click", function () {
         console.log('a');
         var OrderNo = $("#OrderNo").val();
@@ -45,39 +47,38 @@ $(document).ready(function () {
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
-
     });
+
     $("#btnCal").on("click", function () {
         ShowLoading("計算中…");
         hasReCal = true;
 
-        var oldPrice = parseInt($("#spn_finalPrice").html());
-        var Insurance_price = $("#Insurance_price_input").val();
-        var Mileage = $("#Mileage_input").val();
-        var pure = $("#pure_price_input").val();
-        var SM = $("#start_mile_input").val();
-        var EM = $("#end_mile_input").val();
-        var FP = $("#fine_price_input").val();
-        var SD = $("#StartDate").val();
-        var ED = $("#EndDate").val();
-        var Other_1 = $("#CarDispatch_input").val();
-        var Other_2 = $("#CleanFee_input").val();
-        var Other_3 = $("#DestroyFee_input").val();
-        var Other_4 = $("#ParkingFee_input").val();
-        var Other_5 = $("#DraggingFee_input").val();
-        var Other_6 = $("#OtherFee_input").val();
-        var Other_7 = $("#ParkingFeeByMachi_input").val();
-        var finalPrice = $("#spn_finalPrice").html();
+        var oldPrice = parseInt($("#spn_finalPrice").html());       //結算金額(原始)
+        var Insurance_price = $("#Insurance_price_input").val();    //安心服務
+        var Mileage = $("#Mileage_input").val();                    //里程費用
+        var pure = $("#pure_price_input").val();                    //租金
+        var SM = $("#start_mile_input").val();                      //取車里程
+        var EM = $("#end_mile_input").val();                        //還車里程
+        var FP = $("#fine_price_input").val();                      //逾時費用
+        var SD = $("#StartDate").val();                             //實際取車時間
+        var ED = $("#EndDate").val();                               //實際還車時間
+        var Other_1 = $("#CarDispatch_input").val();                //車輛調度
+        var Other_2 = $("#CleanFee_input").val();                   //清潔費
+        var Other_3 = $("#DestroyFee_input").val();                 //物品損壞/遺失
+        var Other_4 = $("#ParkingFee_input").val();                 //非配合場停車費
+        var Other_5 = $("#DraggingFee_input").val();                //拖吊費
+        var Other_6 = $("#OtherFee_input").val();                   //其他
+        var Other_7 = $("#ParkingFeeByMachi_input").val();          //特約停車場
+        var ParkingFeeTotal = $("#ParkingFeeTotal_input").val();    //停車費用(總)   // 20210506;ADD BY YEH REASON.新增停車費用(總)
 
-        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP);
-        $("#final_price_input").val(totalAmt);
-        var final_price = $("#final_price_input").val();
+        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP) + parseInt(ParkingFeeTotal);   //結算金額(計算後) = 租金 + 安心服務 + 里程費用 + 逾時費用 + 停車費用(總)
+        $("#final_price_input").val(totalAmt);  //結算金額
+        var final_price = $("#final_price_input").val();    
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
-          //  var final_amt = ((oldPrice) - parseInt(final_price)) + (oldOtherPrice - OtherPrice); //(oldPrice ) - (parseInt(final_price) + OtherPrice);
-            var final_amt = (oldPrice) - (parseInt(final_price) + OtherPrice);
+            // 營損總和 = 車輛調度 + 清潔費 + 物品損壞/遺失 + 非配合場停車費 + 拖吊費 + 其他 + 特約停車場
 
-
+            var final_amt = (oldPrice) - (parseInt(final_price) + OtherPrice);  //差額 = 結算金額(原始) - 結算金額(計算後) + 營損總和
 
             $("#pure_price_input").prop("readonly", "readonly");
             $("#start_mile_input").prop("readonly", "readonly");
@@ -95,13 +96,14 @@ $(document).ready(function () {
             $("#OtherFee_input").prop("readonly", "readonly");
             $("#ParkingFeeByMachi_input").prop("readonly", "readonly");
             $("#Insurance_price_input").prop("readonly", "readonly");
-            $("#final_amt").val(final_amt);
+            $("#ParkingFeeTotal_input").prop("readonly", "readonly");   // 20210506;ADD BY YEH REASON.新增停車費用(總)
+
+            $("#final_amt").val(final_amt);     //差額
             console.log(oldPrice);
             disabledLoading();
         }
-
-
     });
+
     $("#btnReset").on("click", function () {
         var OrderNo = $("#spn_OrderNo").html();
         console.log(OrderNo);
@@ -109,10 +111,18 @@ $(document).ready(function () {
         var flag = true;
         var errMsg = "";
         ShowLoading("資料查詢中…");
+
         if (OrderNo == "") {
             flag = false;
-            errMsg = "請輸入要修改的訂單編號，格式為H+7碼純數字b";
+            errMsg = "訂單編號未填";
         }
+        else {
+            if (false == RegexOrderNo(OrderNo)) {
+                flag = false;
+                errMsg = "訂單編號格式不符（格式：H+數字)";
+            }
+        }
+
         if (flag) {
             var Account = $("#Account").val();
             var obj = new Object();
@@ -123,9 +133,11 @@ $(document).ready(function () {
             disabledLoadingAndShowAlert(errMsg);
         }
     });
+
     $("#final_price_input").on("change", function () {
         hasReCal = false;
-    })
+    });
+
     $("#btnSave").on("click", function () {
         var flag = true;
         var errMsg = "";
@@ -177,6 +189,8 @@ $(document).ready(function () {
                 var diffPrice = $("#final_amt").val();
                 var finalPrice = $("#final_price_input").val();
                 var Account = $("#Account").val();
+                var ParkingFeeTotal = $("#ParkingFeeTotal_input").val();    // 20210506;ADD BY YEH REASON.新增停車費用(總)
+
                 var obj = new Object();
                 obj.UserID = Account;
                 obj.OrderNo = "H" + pad(OrderObj.OrderNo, 7);
@@ -205,6 +219,7 @@ $(document).ready(function () {
                 obj.Insurance_price = Insurance_price;
                 obj.Mileage = Mileage;
                 obj.Pure = PurePrice;
+                obj.ParkingFeeTotal = ParkingFeeTotal;
 
                 if (OrderObj.PROJTYPE == 4) {
                     obj.CarPoint = CarPoint;
@@ -223,9 +238,6 @@ $(document).ready(function () {
             } else {
                 disabledLoadingAndShowAlert(errMsg);
             }
-
-
-
         } else {
             disabledLoadingAndShowAlert("請先修改後按下重新計算");
         }
@@ -254,7 +266,9 @@ function SetData(data) {
             var FS = new Date(OrderObj.FS).Format("yyyy-MM-dd HH:mm:ss")
             var FE = new Date(OrderObj.FE).Format("yyyy-MM-dd HH:mm:ss")
             var FineTime = new Date(OrderObj.FineTime).Format("yyyy-MM-dd HH:mm:ss")
-            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.parkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
+
+            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.OtherParkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
+
             $("#panelResult").show();
             $("#spn_OrderNo").html("H" + pad(OrderObj.OrderNo, 7))
             $("#spn_IDNO").html(OrderObj.IDNO)
@@ -304,30 +318,26 @@ function SetData(data) {
             $("#final_price_input").val(OrderObj.final_price + oldOtherPrice).prop("readonly", "");
             $("#final_price_input").prop("readonly", "readonly");
             $("#final_amt").val();
+
+            // 20210506 ADD BY YEH REASON.新增停車費用(總)
+            $("#spn_ParkingFeeTotal").html(OrderObj.parkingFee);
+            $("#ParkingFeeTotal_input").val(OrderObj.parkingFee).prop("readonly", "");
+
             /*營損開始*/
             $("#CarDispatch_input").val(OrderObj.CarDispatch).prop("readonly", "");
             $("#DispatchRemark_input").val(OrderObj.DispatchRemark);
-
             $("#CleanFee_input").val(OrderObj.CleanFee).prop("readonly", "");
             $("#CleanFeeRemark_input").val(OrderObj.CleanFeeRemark);
-
             $("#DestroyFee_input").val(OrderObj.DestroyFee).prop("readonly", "");
             $("#DestroyFeeRemark_input").val(OrderObj.DestroyFeeRemark);
-
             $("#ParkingFee_input").val(OrderObj.OtherParkingFee).prop("readonly", "");
             $("#ParkingFeeRemark_input").val(OrderObj.ParkingFeeRemark);
-
-
-
             $("#DraggingFee_input").val(OrderObj.DraggingFee).prop("readonly", "");
             $("#DraggingFeeRemark_input").val(OrderObj.DraggingFeeRemark);
-
             $("#OtherFee_input").val(OrderObj.OtherFee).prop("readonly", "");
             $("#OtherFeeRemark_input").val(OrderObj.OtherFeeRemark);
             $("#ParkingFeeByMachi_input").val(OrderObj.PARKINGAMT2).prop("readonly", "").hide();
             $("#ParkingFeeByMachiRemark_input").val(OrderObj.PARKINGMEMO2).hide();
-            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.OtherParkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
-
             /*營損結束*/
 
             if (parseInt(OrderObj.CarPoint) > 0) {
@@ -383,11 +393,9 @@ function SetData(data) {
                     $("#spn_OneDay").html(OrderObj.HoildayPrice);
                 }
             }
-
         }
     } else {
         $("#panelResult").hide();
         ShowFailMessage("此訂單非汽車訂單");
     }
-
 }
