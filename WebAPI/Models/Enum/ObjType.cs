@@ -1042,7 +1042,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_ChangePWD";
                     break;
                 case SPType.BE_HandleStation:
-                    SPName = "usp_BE_HandleStation";
+                    SPName = "usp_BE_HandleStationNew";
                     break;
                 case SPType.BE_HandleTransParking:
                     SPName = "usp_BE_HandleTransParking";
