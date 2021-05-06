@@ -204,7 +204,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetMemList> lstAudits = null;
-            SqlParameter[] para = new SqlParameter[8];
+            SqlParameter[] para = new SqlParameter[9];
             string term = "";
             //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
             string SQL = " EXEC usp_BE_GetMemList  '" + AuditMode.ToString() +
