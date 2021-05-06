@@ -93,6 +93,8 @@ namespace WebAPI.Models.BillFunc
                             !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.UP_MonProjID) && spIn.UP_MonProPeriod > 0 )
                         {
+                            spIn.PayTypeId = PayTypeId;
+                            spIn.InvoTypeId = InvoTypeId;
                             flag = msp.sp_UpSubsMonth(spIn, ref errCode);
                             trace.traceAdd("UpSubsMonth", new { flag,errCode });
                         }

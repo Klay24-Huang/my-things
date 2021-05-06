@@ -16,6 +16,8 @@ namespace Domain.SP.Input.Subscription
         public string UP_MonProjID { get; set; }
         public int UP_MonProPeriod { get; set; }
         public int UP_ShortDays { get; set; }
+        public Int64 PayTypeId { get; set; }
+        public Int64 InvoTypeId { get; set; }
         public DateTime? SetNow { get; set; }
     }
 }
