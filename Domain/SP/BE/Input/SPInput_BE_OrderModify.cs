@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.BE.Input
 {
-    public class SPInput_BE_OrderModify:SPInput_Base
+    public class SPInput_BE_OrderModify : SPInput_Base
     {
         /// <summary>
         /// 訂單編號
@@ -139,6 +139,15 @@ namespace Domain.SP.BE.Input
         /// 純租金
         /// </summary>
         public int Pure { set; get; }
+
+        /// <summary>
+        /// 停車費用(總)     // 20210506;ADD BY YEH REASON.新增停車費用(總)
+        /// </summary>
+        public int ParkingFeeTotal { get; set; }
+
+        /// <summary>
+        /// 修改者
+        /// </summary>
         public string UserID { set; get; }
     }
 }
