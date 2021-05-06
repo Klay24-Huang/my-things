@@ -47,7 +47,7 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //月租專案群組
+                //月租專案群組:建立月租
                 if (ApiID == 179)
                 {
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
@@ -72,7 +72,7 @@ namespace WebAPI.Models.BillFunc
                         flag = false;
                     }
                 }
-                //取得訂閱制升轉列表
+                //取得訂閱制升轉列表:升轉
                 else if (ApiID == 188)
                 {
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
@@ -92,10 +92,47 @@ namespace WebAPI.Models.BillFunc
                         }
                     }
                 }
-                //訂閱牌卡制欠費查詢
+                //訂閱牌卡制欠費查詢:繳費
                 else if (ApiID == 190)
                 {
+                    if(!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
+                    {
+                        var spIn = JsonConvert.DeserializeObject<SPInput_ArrearsPaySubs>(ApiJson);
+                        if(string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0 ||
+                           string.IsNullOrWhiteSpace(spIn.MonthlyRentIds))
+                        {
+                            errCode = "ERR257";//參數遺漏
+                            flag = false;
+                        }
+                        else
+                        {
+                            bool ck = true;
+                            Int64 ckInt = 0;
+                            var MonIds = spIn.MonthlyRentIds.Split(',').ToList();
+                            if(MonIds != null && MonIds.Count() > 0)
+                            {
+                                if (MonIds.Any(x => !Int64.TryParse(x, out ckInt)))
+                                    ck = false;
+                            }
 
+                            if (ck)
+                            {
+                                flag = msp.sp_ArrearsPaySubs(spIn, ref errCode);
+                                trace.traceAdd("ArrearsPaySubs", new { flag, errCode });
+                            }
+                            else
+                            {
+                                errCode = "ERR267";
+                                errMsg = "MonthlyRentIds錯誤";
+                                flag = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        errCode = "ERR267";//ApiJson錯誤
+                        flag = false;
+                    }
                 }
                 else
                    errMsg = "無對應ApiID";

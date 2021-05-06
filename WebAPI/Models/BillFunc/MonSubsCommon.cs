@@ -765,6 +765,34 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
+        /// <summary>
+        /// 訂閱制月租繳款
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_ArrearsPaySubs(SPInput_ArrearsPaySubs spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.ArrearsPaySubs);
+            string spName = "usp_ArrearsPaySubs_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOutBase = new SPOutput_Base();
+            var spOut = new SPOut_ArrearsPaySubs();
+            SQLHelper<SPInput_ArrearsPaySubs, SPOut_ArrearsPaySubs> sqlHelp = new SQLHelper<SPInput_ArrearsPaySubs, SPOut_ArrearsPaySubs>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
         public List<SPOut_GetSubsHist> sp_GetSubsHist(SPInput_GetSubsHist spInput, ref string errCode)
         {
             var re = new List<SPOut_GetSubsHist>();

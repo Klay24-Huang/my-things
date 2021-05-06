@@ -53,9 +53,12 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             var apiInput = new IAPI_GetMonthList();
 
-            var outApiAllCards = new OAPI_AllMonthList();
+            var outApiAllCards = new OAPI_AllMonthList_Car();
             outApiAllCards.NorMonCards = new List<MonCardParam>();
             outApiAllCards.MixMonCards = new List<MonCardParam>();
+
+            var outApiAllMotos = new OAPI_AllMonthList_Moto();
+            outApiAllMotos.NorMonCards = new List<MonCardParam>();
 
             var outApiMyCards = new OAPI_MyMonthList();
 
@@ -158,6 +161,7 @@ namespace WebAPI.Controllers
                                 if (myMotos != null && myMotos.Count() > 0)
                                     outApiMyCards.MyMoto = map.FromSPOutput_GetMonthList_Month(myMotos).FirstOrDefault();
                             }
+
                             outApiMyCards.ReMode = 2;
                             trace.traceAdd("outApiMyCards", outApiMyCards);
                         }
@@ -169,12 +173,21 @@ namespace WebAPI.Controllers
                             var norCards = allmons.Where(x =>
                                !mixCards.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
 
-                            if (mixCards != null && mixCards.Count() > 0)
-                                outApiAllCards.MixMonCards = mixCards;
-                            if (norCards != null && norCards.Count() > 0)
-                                outApiAllCards.NorMonCards = norCards;
-
-                            outApiAllCards.ReMode = 1;
+                            if(apiInput.IsMoto == 0)
+                            {
+                                if (mixCards != null && mixCards.Count() > 0)
+                                    outApiAllCards.MixMonCards = mixCards;
+                                if (norCards != null && norCards.Count() > 0)
+                                    outApiAllCards.NorMonCards = norCards;
+                                outApiAllCards.ReMode = 1;
+                            }
+                            else if(apiInput.IsMoto == 1)
+                            {
+                                if (norCards != null && norCards.Count() > 0)
+                                    outApiAllMotos.NorMonCards = norCards;
+                                outApiAllMotos.ReMode = 1;
+                            }
+                            
                             trace.traceAdd("outApiAllCards", outApiAllCards);
                         }
                     }
@@ -193,7 +206,12 @@ namespace WebAPI.Controllers
             if(ReMode == 2)
                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outApiMyCards, token);
             else
-               baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outApiAllCards, token);
+            {
+                if(apiInput.IsMoto == 1)
+                   baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outApiAllMotos, token);
+                else
+                   baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outApiAllCards, token);
+            }
 
             return objOutput;
             #endregion        

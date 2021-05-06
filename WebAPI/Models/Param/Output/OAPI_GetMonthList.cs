@@ -11,14 +11,20 @@ namespace WebAPI.Models.Param.Output
         public int ReMode { get; set; } = 0;
     }
 
-    public class OAPI_AllMonthList: OAPI_GetMonthList
+    public class OAPI_AllMonthList_Car: OAPI_GetMonthList
     {
         public int IsMotor { get; set; }
         public List<MonCardParam> NorMonCards { get; set; }
 
         public List<MonCardParam> MixMonCards { get; set; }
     }
-    
+
+    public class OAPI_AllMonthList_Moto : OAPI_GetMonthList
+    {
+        public int IsMotor { get; set; }
+        public List<MonCardParam> NorMonCards { get; set; }
+    }
+
     public class OAPI_MyMonthList: OAPI_GetMonthList
     {
         public MonCardParam MyCar { get; set; }

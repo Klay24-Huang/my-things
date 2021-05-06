@@ -93,17 +93,11 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        if(apiInput.ApiID == 190)//月租欠費不顯示產品名稱
+                        if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
                         {
-                        }
-                        else
-                        {
-                            if (string.IsNullOrWhiteSpace(apiInput.ProdNm))
-                            {
-                                flag = false;
-                                errCode = "ERR269";
-                            }
-                        }
+                            flag = false;
+                            errCode = "ERR269";
+                        }                        
                     }
                     
                     if (flag && apiInput.ApiID > 0)
@@ -214,7 +208,13 @@ namespace WebAPI.Controllers
                                                        }).ToList();
                             }
 
-                            outputApi.ProdNm = apiInput.ProdNm;
+
+                            if(apiInput.ApiID != 190)
+                            {
+                                outputApi.ProdNm = apiInput.ProdNm;
+                                outputApi.ProdDisc = apiInput.ProdDisc;
+                            }
+
                             outputApi.ProdPrice = apiInput.ProdPrice;
                         }
                     }

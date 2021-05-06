@@ -10,11 +10,11 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 方案代碼-key
         /// </summary>
-        public string MonProjID { get; set; }
+        public string MonProjID { get; set; } = "";
         /// <summary>
         /// 方案名稱
         /// </summary>
-        public string MonProjNM { get; set; }
+        public string MonProjNM { get; set; } = "";
         /// <summary>
         /// 總期數-key
         /// </summary>

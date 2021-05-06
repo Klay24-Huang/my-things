@@ -20,6 +20,10 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string ProdNm { get; set; }
         /// <summary>
+        /// 產品描述
+        /// </summary>
+        public string ProdDisc { get; set; } = "";
+        /// <summary>
         /// 產品價格
         /// </summary>
         public int ProdPrice { get; set; }
