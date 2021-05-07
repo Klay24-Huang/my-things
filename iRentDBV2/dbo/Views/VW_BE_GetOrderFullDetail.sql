@@ -35,6 +35,7 @@ SELECT OrderMain.[order_number] AS OrderNo,
 	   ISNULL(Detail.TransDiscount, 0) AS TransDiscount ,
 	   ISNULL(Detail.gift_point, 0) AS CarPoint,
 	   ISNULL(Detail.gift_motor_point, 0) AS MotorPoint ,
+	   ISNULL(Detail.parkingFee, 0) AS ParkingFeeTotal ,	-- 20210506;ADD BY YEH REASON.顯示合約的總停車費
 	   ISNULL([fine_Time], '1911-01-01 00:00:00') AS FineTime,
 	   [Insurance],
 	   [Insurance_price],	--20210204唐改，由預估金額改抓實際的金額

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.TB.BackEnd
 {
-    public class BE_GetOrderModifyDataNewV2: BE_GetOrderModifyDataNew
+    public class BE_GetOrderModifyDataNewV2 : BE_GetOrderModifyDataNew
     {
         public string CardToken { set; get; }
         public string ArrearCardToken { set; get; }
