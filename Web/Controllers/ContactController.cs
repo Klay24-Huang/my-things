@@ -22,7 +22,7 @@ namespace Web.Controllers
 
             //20210315 ADD BY ADAM REASON.合約參數改為AES加密
             string IDNO = "";
-            if (p != "")
+            if (!string.IsNullOrEmpty(p))
             {
                 //base64解碼
                 string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
@@ -74,6 +74,32 @@ namespace Web.Controllers
 
                     List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(obj.Data.IDNO);
                     for(int i=0;i< lstAudits.Count; i++)
+                    {
+                        if (lstAudits[i].CrentialsType == 11)
+                        {
+                            obj.CredentialImage = lstAudits[i];
+                        }
+                        if (lstAudits[i].AlreadyType == 11)
+                        {
+                            obj.CredentialImage = lstAudits[i];
+                        }
+                    }
+                }
+                else if (OrderNum != "" && IDNO == "")
+                {
+                    tmpOrder = Convert.ToInt64(OrderNum.Replace("H", ""));
+
+                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
+                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
+                    obj = new BE_OrderDataCombind()
+                    {
+                        Data = repository.GetOrderDetail(tmpOrder),
+                        PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false)
+                    };
+
+                    List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(obj.Data.IDNO);
+                    for (int i = 0; i < lstAudits.Count; i++)
                     {
                         if (lstAudits[i].CrentialsType == 11)
                         {

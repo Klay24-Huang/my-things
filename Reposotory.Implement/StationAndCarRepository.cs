@@ -366,7 +366,7 @@ namespace Reposotory.Implement
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
             //20210318 ADD BY ADAM REASON.機車上線邏輯調整
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-60,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
@@ -400,7 +400,7 @@ namespace Reposotory.Implement
             SQL += " ,[OperatorICon] As Operator,[Score] As OperatorScore, [PROJID] As ProjID, [BaseMinutes], [BaseMinutesPrice] As BasePrice, [PerMinutesPrice] ";
             //SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND device3TBA>=30 ";
             //20210318 ADD BY ADAM REASON.機車上線邏輯調整
-            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-60,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
+            SQL += " FROM [VW_GetAllMotorAnyRentData] WITH(NOLOCK) WHERE GPSTime>=DATEADD(MINUTE,-30,dbo.GET_TWDATE()) AND deviceMBA>=80 AND device2TBA>=20 ";
             SQL += " AND available=1 ";     //20201018 ADD BY ADAM REASON.過濾可使用的車輛
             //20210226 ADD BY ADAM REASON.過濾車輛改為一個月內的訂單
             //SQL += " AND CarNo NOT IN (SELECT CarNo FROM TB_OrderMain M WITH(NOLOCK) WHERE car_mgt_status < 16 AND cancel_status = 0 AND booking_status<5 AND ProjType=4) ";

@@ -33,9 +33,8 @@ namespace Domain.SP.Input.OtherService.Machi
         /// </summary>
         public DateTime Check_out { set; get; }
         
-        /// <summary>
-        /// 車號
+        /// 車號 20210421 ADD BY ADAM REASON.
         /// </summary>
-        public string CarNo { get; set; }
+        public string CarNo { set; get; }
     }
 }

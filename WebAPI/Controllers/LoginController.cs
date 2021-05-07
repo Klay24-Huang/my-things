@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
 
         private string android = ConfigurationManager.AppSettings.Get("android");
         private string ios = ConfigurationManager.AppSettings.Get("ios");
-        private int Rxpires_in = (ConfigurationManager.AppSettings.Get("Rxpires_in")==null)?1800:Convert.ToInt32(ConfigurationManager.AppSettings.Get("Rxpires_in").ToString());
+        private int Rxpires_in = (ConfigurationManager.AppSettings.Get("Rxpires_in") == null) ? 1800 : Convert.ToInt32(ConfigurationManager.AppSettings.Get("Rxpires_in").ToString());
         private int Refrash_Rxpires_in = (ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in") == null) ? 1800 : Convert.ToInt32(ConfigurationManager.AppSettings.Get("Refrash_Rxpires_in").ToString());
         /// <summary>
         /// 會員登入
@@ -53,7 +53,7 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            Int16 APPKind=2;
+            Int16 APPKind = 2;
             string Contentjson = "";
             string FileName = "";
             #endregion
@@ -64,12 +64,12 @@ namespace WebAPI.Controllers
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_Login>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode,ref LogID);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO, apiInput.PWD,apiInput.DeviceID, apiInput.APPVersion }; 
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900" };   
+                string[] checkList = { apiInput.IDNO, apiInput.PWD, apiInput.DeviceID, apiInput.APPVersion };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
-                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName,LogID);
+                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (flag)
                 {
                     //2.判斷格式
@@ -90,14 +90,14 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     flag = (apiInput.APP.HasValue);
-                    if (false==flag)
+                    if (false == flag)
                     {
                         errCode = "ERR900";
                     }
                     else
                     {
                         APPKind = apiInput.APP.Value;
-                        if(APPKind<0 || APPKind > 1)
+                        if (APPKind < 0 || APPKind > 1)
                         {
                             flag = false;
                             errCode = "ERR105";
@@ -127,7 +127,7 @@ namespace WebAPI.Controllers
                 List<RegisterData> lstOut = new List<RegisterData>();
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(spName, SPInputMemberLogin, ref SPOutputMemberLogin, ref lstOut, ref ds, ref lstError);
-                baseVerify.checkSQLResult(ref flag,  SPOutputMemberLogin.Error,SPOutputMemberLogin.ErrorCode, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, SPOutputMemberLogin.Error, SPOutputMemberLogin.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
                     token = new Token()
@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -200,7 +200,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-
-
     }
 }

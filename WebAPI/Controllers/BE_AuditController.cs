@@ -17,7 +17,6 @@ using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
-
 namespace WebAPI.Controllers
 {
     /// <summary>
@@ -81,7 +80,7 @@ namespace WebAPI.Controllers
             {
                 SPInput_BE_AuditImage spInput = new SPInput_BE_AuditImage()
                 {
-                    IDNO=apiInput.IDNO,
+                    IDNO = apiInput.IDNO,
                     UserID = apiInput.UserID,
                     ID_1 = apiInput.ImageData.ID_1_new,
                     ID_1_Audit = (apiInput.ImageData.ID_1_Audit == 1) ? 2 : apiInput.ImageData.ID_1_Audit,
@@ -152,15 +151,15 @@ namespace WebAPI.Controllers
             {
                 string CarRentType = "0";
                 string MotorRentType = "0";
-                for(int i = 0; i < apiInput.Driver.Count; i++)
+                for (int i = 0; i < apiInput.Driver.Count; i++)
                 {
-                    if(apiInput.Driver[i]== "CarDriver")
+                    if (apiInput.Driver[i] == "CarDriver")
                     {
                         CarRentType = "1";
                     }
                     else
                     {
-                        if(apiInput.Driver[i]== "MotoDriver2")
+                        if (apiInput.Driver[i] == "MotoDriver2")
                         {
                             MotorRentType = "2";
                         }
@@ -204,7 +203,7 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
                 logger.Trace("AuditSave:" + JsonConvert.SerializeObject(spInput));
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                logger.Trace("AuditSaveResult:" + JsonConvert.SerializeObject(spOut)+",Error:"+ JsonConvert.SerializeObject(lstError));
+                logger.Trace("AuditSaveResult:" + JsonConvert.SerializeObject(spOut) + ",Error:" + JsonConvert.SerializeObject(lstError));
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
             }
@@ -216,7 +215,7 @@ namespace WebAPI.Controllers
 
                 WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save() //宣告好多欄位傳去NPR010，但下面只有部分設定，部分還直接寫死
                 {
-                    user_id= "HLC",
+                    user_id = "HLC",
                     MEMIDNO = apiInput.IDNO,
                     //MEMCNAME = apiInput.MEMCNAME,
                     //InvoiceType = apiInput.InvoiceType,
@@ -235,7 +234,7 @@ namespace WebAPI.Controllers
                     tbExtSigninList = new List<ExtSigninList>(),
                     //20210218唐:這邊還要加 IRENTFLG(N未審T審失敗Y審通過)
                     //PROCD = (apiInput.IsNew==1) ? "A" : "U",
-                    IRENTFLG = (apiInput.AuditStatus==0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")
+                    IRENTFLG = (apiInput.AuditStatus == 0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")
                 };
                 flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }
@@ -247,9 +246,10 @@ namespace WebAPI.Controllers
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
-            
+
+            #region 會員審核簡訊傳送
             //會員審核簡訊傳送
-            if (apiInput.SendMessage==1)
+            if (apiInput.SendMessage == 1)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
@@ -258,16 +258,13 @@ namespace WebAPI.Controllers
                 {
                     if (apiInput.IsNew == 1)
                     {
-                        Message = "iRent審核通過：" +
-                            "您已成功成為iRent會員，" +
-                            "快前往體驗最方便的共享汽機車服務吧！" +
-                            "新手上路前，完成小學堂教學及測驗即可拿免費時數：https://bit.ly/3pAeK9R";
+                        Message = "iRent會員審核通過：" +
+                            "快前往體驗最方便的共享汽機車服務！" +
+                            "新手上路前，完成小學堂測驗拿免費時數：https://bit.ly/3pAeK9R";
                     }
                     else
                     {
-                        Message = string.Format("iRent會員通知：" +
-                            "已收到您上傳的資料，" +
-                            "並成功變更「iRent共享汽機車會員」身分(此變更自{0}起)。" +
+                        Message = string.Format("您已成功變更「iRent會員」身分。" +
                             "租車前完成小學堂教學及測驗即可拿免費時數：https://bit.ly/3pAeK9R", DateTime.Today.ToString("yyyy/MM/dd"));
                     }
                 }
@@ -276,22 +273,20 @@ namespace WebAPI.Controllers
                     if (apiInput.IsNew == 1)
                     {
                         Message = string.Format("iRent審核未通過：" +
-                            "您尚未通過iRent會員申請，" +
                             "原因為({0}，請登入App重新操作，" +
                             "如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
                     }
                     else
                     {
-                        Message = string.Format("iRent會員通知：" +
-                        "很抱歉，" +
-                        "您申請變更「iRent共享汽機車會員」身分審核" +
-                        "({0})未通過，" +
-                        "請登入App重新操作，如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
+                        Message = string.Format("iRent會員變更未通過：" +
+                            "原因為({0})，請登入App重新操作，" +
+                            "如有疑問請洽客服0800-024-550", apiInput.RejectReason == "" ? apiInput.NotAuditReason : apiInput.RejectReason);
                     }
                 }
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
-            
+            #endregion
+
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
@@ -302,14 +297,13 @@ namespace WebAPI.Controllers
             string ImgURL = StorageBaseURL + credentialContainer + "/";
             return fileName.Replace(ImgURL, "");
         }
-        private string CheckNeedChangeName(int OldType,int NewType,string OldFileName)
+        private string CheckNeedChangeName(int OldType, int NewType, string OldFileName)
         {
             //string[] suff = { "", "ID_1", "ID_2", "Driver_1", "Driver_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
             string[] suff = { "", "ID_1", "ID_2", "Car_1", "Car_2", "Moto_1", "Moto_2", "Self_1", "F1", "Other_1", "Business_1", "Signture_1" };
-            string fileName = OldFileName.Replace(suff[OldType],suff[NewType]);
+            string fileName = OldFileName.Replace(suff[OldType], suff[NewType]);
             bool flag = new AzureStorageHandle().RenameFromAzureStorage(fileName, OldFileName, credentialContainer);
             return fileName;
         }
-
     }
 }

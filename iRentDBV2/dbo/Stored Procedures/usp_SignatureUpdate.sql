@@ -1,10 +1,10 @@
-/****** Object:  StoredProcedure [dbo].[usp_SignatureUpdate]    Script Date: 2021/2/26 上午 11:25:56 ******/
+/****** Object:  StoredProcedure [dbo].[usp_SignatureUpdate]    Script Date: 2021/2/26 上� 11:25:56 ******/
 
 /****************************************************************
 ** Name: [dbo].[usp_SignatureUpdate]
 ** Desc: 
 **
-** Return values: 0 成功 else 錯誤
+** Return values: 0 �� else �誤
 ** Return Recordset: 
 **
 ** Called by: 
@@ -35,24 +35,24 @@
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/8/6 上午 07:21:25 
+** Date:2020/8/6 上� 07:21:25 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/8/6 上午 07:21:25    |  Eric|          First Release
+** 2020/8/6 上� 07:21:25    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SignatureUpdate]
 	@IDNO                   VARCHAR(10)           ,
 	@CrentialsFile          VARCHAR(150)           ,
 	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@ErrorCode 				VARCHAR(6)		OUTPUT,	--�傳�誤仢�
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--�傳�誤訊息
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--�傳sqlException仢�
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--�傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -62,7 +62,7 @@ DECLARE @hasData TINYINT;
 DECLARE @tmpPWD VARCHAR(20);
 DECLARE @NowDate DATETIME;
 
-/*初始設定*/
+/*��設�*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
@@ -94,7 +94,7 @@ BEGIN TRY
 		END
 		ELSE
 		BEGIN
-			-- 20210507 UPD BY YEH REASON:從短租補簽名檔改為判斷TB_tmpCrentialsPIC是否有檔案，沒檔案才INSERT進待審檔，並把狀態改為待審
+			-- 20210507 UPD BY YEH REASON:從短租�簽�檔改�判�TB_tmpCrentialsPIC�否��案�沒�案�INSERT��審�，並��改���
 			IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11 AND CrentialsFile='')
 			BEGIN
 				INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
@@ -108,7 +108,7 @@ BEGIN TRY
 			COMMIT TRAN;
 		END
 	END
-	--寫入錯誤訊息
+	--寫入�誤訊息
 	IF @Error=1
 	BEGIN
 		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
@@ -118,7 +118,7 @@ END TRY
 BEGIN CATCH
 	SET @Error=-1;
 	SET @ErrorCode='ERR999';
-	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @ErrorMsg='��寫錯誤�;
 	SET @SQLExceptionCode=ERROR_NUMBER();
 	SET @SQLExceptionMsg=ERROR_MESSAGE();
 	IF @@TRANCOUNT > 0

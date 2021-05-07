@@ -254,6 +254,8 @@ namespace WebAPI.Controllers
                         else
                         {
                             if (apiOutput.OrderData.PROJTYPE < 4 && hours == 0)
+                            //20210324 ADD BY ADAM REASON.補上日期判斷
+                            if(apiOutput.OrderData.PROJTYPE<4 && hours == 0 && days ==0)
                             {
                                 needPointer = 60;
                             }
@@ -267,7 +269,9 @@ namespace WebAPI.Controllers
                                 needPointer -= (needPointer % 30);
                             }
                             apiOutput.Bonus.CanUseTotalCarPoint = Math.Min(TotalLastPointCar, needPointer);
+
                         }
+
                     }
                 }
                 else

@@ -478,7 +478,7 @@ namespace WebAPI.Controllers
                                     //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
                                     int tmpBill = lstData[i].Price;
                                     int isMin = 0;
-                                    if (tmpBill < lstTmpData[index].Minimum)
+                                    if (tmpBill <= lstTmpData[index].Minimum)
                                     {
                                         isMin = 1;
                                         lstTmpData[index].Minimum = tmpBill;
@@ -585,7 +585,7 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                outputApi.SeatGroups = SeatGroups;
+                //outputApi.SeatGroups = SeatGroups;
             }
             #endregion
 

@@ -36,6 +36,7 @@ namespace OtherService
         private string DeleteCreditCardAuth = ConfigurationManager.AppSettings["DeleteCreditCardAuth"].ToString();  //刪除綁卡
         private string GetCreditCardList = ConfigurationManager.AppSettings["GetCreditCardList"].ToString();        //取得綁卡列表
         private string GetPaymentInfo = ConfigurationManager.AppSettings["GetPaymentInfo"].ToString();              //查詢訂單狀態
+        private string GetECOrderInfo = ConfigurationManager.AppSettings["GetECOrderInfo"].ToString();              //查詢訂單狀態
         private string ECRefund = ConfigurationManager.AppSettings["ECRefund"].ToString();                          //退貨
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
         private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
@@ -102,6 +103,8 @@ namespace OtherService
         {
             string Site = BaseURL + GetCardPage;
             Site = AzureAPIBaseURL + @"api/TestTaishiBU";
+            //20201125紀錄接收資料
+            logger.Trace("DoBindSend:"+ Site);
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -121,6 +124,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
 
@@ -133,6 +137,11 @@ namespace OtherService
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
+                        //20201125紀錄接收資料
+                        logger.Trace(responseStr);
+                        reader.Close();
+                        reader.Dispose();
+
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_Base>(responseStr);
 
@@ -146,16 +155,24 @@ namespace OtherService
                             };
                         }
 
-                        //20201125紀錄接收資料
-                        logger.Trace(responseStr);
                     }
-
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
-                //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
-                //requestClose.Connection = "Close";
-                //HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
-                //myHttpWebResponse.Close();
+                //try
+                //{
+                //    HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
+                //    requestClose.KeepAlive = false;
+                //    requestClose.Method = "POST";
+                //    HttpWebResponse myHttpWebResponse = (HttpWebResponse)requestClose.GetResponse();
+                //    myHttpWebResponse.Close();
+                //}
+                //catch (Exception exc)
+                //{
+                //    logger.Error(exc.Message);
+                //}
             }
             catch (Exception ex)
             {
@@ -165,6 +182,7 @@ namespace OtherService
                     RtnCode="0",
                     RtnMessage=ex.Message
                 };
+                logger.Error(ex.Message);
             }
             finally
             {
@@ -183,6 +201,9 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+                //增加關閉Request的處理
+                request.Abort();
             }
 
 
@@ -332,6 +353,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
 
@@ -359,8 +381,13 @@ namespace OtherService
 
                         //20201125紀錄接收資料
                         logger.Trace(responseStr);
+                        reader.Close();
+                        reader.Dispose();
                     }
 
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
                 //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
@@ -393,6 +420,8 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                //增加關閉Request的處理
+                request.Abort();
             }
 
 
@@ -465,6 +494,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
 
@@ -482,8 +512,13 @@ namespace OtherService
 
                         //20201125紀錄接收資料
                         logger.Trace(responseStr);
+                        reader.Close();
+                        reader.Dispose();
                     }
 
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
                 //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
@@ -515,6 +550,8 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                //增加關閉Request的處理
+                request.Abort();
             }
 
 
@@ -582,6 +619,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
 
@@ -596,8 +634,13 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_GetPaymentInfo>(responseStr);
+                        reader.Close();
+                        reader.Dispose();
                     }
 
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
                 //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
@@ -630,6 +673,124 @@ namespace OtherService
                 string errCode = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                //增加關閉Request的處理
+                request.Abort();
+            }
+
+
+            return output;
+        }
+
+
+        /// <summary>
+        /// 查詢訂單狀態，ApiVer要用1.0.1
+        /// </summary>
+        /// <param name="wsInput"></param>
+        /// <param name="errCode"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool DoECOrderQuery(PartOfGetECOrderInfo wsInput, ref string errCode, ref WebAPIOutput_GetPaymentInfo output)
+        {
+            bool flag = true;
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string checksum = GenerateSign(ori);
+
+            WebAPIInput_GetECOrderInfo Input = new WebAPIInput_GetECOrderInfo()
+            {
+                ApiVer = wsInput.ApiVer,
+                ApposId = wsInput.ApposId,
+                Random = wsInput.Random,
+                RequestParams = wsInput.RequestParams,
+                CheckSum = checksum,
+                TimeStamp = wsInput.TimeStamp,
+                TransNo = wsInput.TransNo
+            };
+
+
+            output = DoECOrderQuerySend(Input).Result;
+            if (output.RtnCode == "1000")
+            {
+                if (output.ResponseParams.ResultCode != "1000")
+                {
+                    flag = false;
+                }
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_GetPaymentInfo> DoECOrderQuerySend(WebAPIInput_GetECOrderInfo input)
+        {
+            string Site = ECBaseURL.Replace("ECPay/", "ws/" + GetECOrderInfo);
+            WebAPIOutput_GetPaymentInfo output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.KeepAlive = false;
+            //SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 78000;
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_GetPaymentInfo>(responseStr);
+                        reader.Close();
+                        reader.Dispose();
+                    }
+
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_GetPaymentInfo()
+                {
+                    RtnCode = "0",
+                    RtnMessage = ex.Message
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "GetECOrderInfo",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + GetECOrderInfo
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                //增加關閉Request的處理
+                request.Abort();
             }
 
 
@@ -836,6 +997,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
                 
@@ -853,8 +1015,13 @@ namespace OtherService
 
                         //20201125紀錄接收資料
                         logger.Trace(responseStr);
+                        reader.Close();
+                        reader.Dispose();
                     }
 
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
                 //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
@@ -975,6 +1142,8 @@ namespace OtherService
                     new WebAPILogCommon().UpdCreditAuthData(UpdInput, ref flag, ref errCode, ref lstError);
                 }
                 #endregion
+                //增加關閉Request的處理
+                request.Abort();
             }
 
 
@@ -1061,6 +1230,7 @@ namespace OtherService
                 using (Stream reqStream = request.GetRequestStream())
                 {
                     reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
                 }
 
 
@@ -1075,8 +1245,13 @@ namespace OtherService
                         responseStr = reader.ReadToEnd();
                         RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_ECRefund>(responseStr);
+                        reader.Close();
+                        reader.Dispose();
                     }
 
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
                 }
                 //增加關閉連線的呼叫
                 //HttpWebRequest requestClose = (HttpWebRequest)WebRequest.Create(Site);
@@ -1181,7 +1356,9 @@ namespace OtherService
                     UpdInput.RetMsg = output.ResponseParams.ResultMessage;
                 }
                 new WebAPILogCommon().UpdCreditRefundData(UpdInput, ref flag, ref errCode, ref lstError);
-                
+                //增加關閉Request的處理
+                request.Abort();
+
             }
 
 

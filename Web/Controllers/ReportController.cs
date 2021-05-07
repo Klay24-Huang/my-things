@@ -133,11 +133,14 @@ namespace Web.Controllers
                     OrderStatus = "逾時未還車(排程取消)";
                 }
 
-                double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
+                //  double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
+                //  string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00") ? -1 : data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays);
                 string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
                 if (data[k].OrderStatus < 2)
                 {
-                    totalDayStr = DateTime.Now.Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays.ToString();
+                    //totalDayStr = DateTime.Now.Date.Subtract(Convert.ToDateTime(data[k].lastCleanTime).Date).TotalDays.ToString();
+                    totalDayStr = "";
                 }
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(data[k].Account);
@@ -154,6 +157,7 @@ namespace Web.Controllers
                 {
                     content.CreateCell(6).SetCellValue(data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車"));  //實際取車
                 }
+
                 if (data[k].OrderStatus < 1 || data[k].OrderStatus == 4)
                 {
                     content.CreateCell(7).SetCellValue("未取車");     //實際還車
@@ -164,7 +168,26 @@ namespace Web.Controllers
                 }
                 else if (data[k].OrderStatus == 5)
                 {
-                    content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                    if(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")!= "1900-01-01 00:00:00" && data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss") != "1900-01-01 00:00:00")
+                    {
+                        if (data[k].BookingEnd < data[k].BookingStart)
+                        {
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                        }
+                        else
+                        {
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                        }
+                    }
+                   
+                   
+                }else if (data[k].OrderStatus == 2)
+                {
+                    if (data[k].BookingEnd < data[k].BookingStart)
+                    {
+                        data[k].BookingEnd = data[k].BookingEnd.AddHours(8);
+                    }
+                    content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));
                 }
                 else
                 {
@@ -645,8 +668,8 @@ namespace Web.Controllers
             workbook.Write(ms);
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-        #endregion
 
+        #region 進出停車場明細
         #region 進出停車場明細
         /// <summary>
         /// 進出停車場明細
@@ -855,7 +878,7 @@ namespace Web.Controllers
                 return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
         }
-        #endregion
+
 
         #region 機車電池狀態查詢
         /// <summary>
