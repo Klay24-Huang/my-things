@@ -500,6 +500,9 @@
     <Build Include="dbo\Stored Procedures\usp_BindUUCardJob.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsAlertEvent.sql" />
     <Build Include="usp_GetCityParkingFee.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_BookingCancelNew.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsReturnControl.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

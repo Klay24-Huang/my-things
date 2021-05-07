@@ -47,7 +47,7 @@ SELECT PROCD,
 	   --,ISNULL(Trade.AUTHAMT,0)-ISNULL(BookingDetail.Etag,0) AS PAYAMT
 	   --20210127 ADD BY ADAM REASON.調整轉NPR130時，先以排程取款的資料為主
        CASE WHEN OA.order_number IS NULL THEN ISNULL(Trade.AUTHAMT, 0)-ISNULL(BookingDetail.Etag, 0) ELSE ISNULL(OA.final_price, 0)-ISNULL(BookingDetail.Etag, 0) END AS PAYAMT ,
-       ISNULL(Machi.Amount, 0) AS PARKINGAMT2,
+       ISNULL(BookingDetail.parkingFee, 0) AS PARKINGAMT2,	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
        ISNULL(BookingDetail.Etag, 0) AS eTag
 FROM TB_lendCarControl AS LendCarControl WITH(NOLOCK)
 JOIN TB_OrderMain M WITH(NOLOCK) ON LendCarControl.IRENTORDNO=M.order_number
