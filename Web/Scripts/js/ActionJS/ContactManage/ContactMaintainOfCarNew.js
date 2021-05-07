@@ -61,6 +61,10 @@ $(document).ready(function () {
         var EM = $("#end_mile_input").val();                        //還車里程
         var FP = $("#fine_price_input").val();                      //逾時費用
         var SD = $("#StartDate").val();                             //實際取車時間
+        var SM = $("#start_mile_input").val();                      //取車里程
+        var EM = $("#end_mile_input").val();                        //還車里程
+        var FP = $("#fine_price_input").val();                      //逾時費用
+        var SD = $("#StartDate").val();                             //實際取車時間
         var ED = $("#EndDate").val();                               //實際還車時間
         var Other_1 = $("#CarDispatch_input").val();                //車輛調度
         var Other_2 = $("#CleanFee_input").val();                   //清潔費
@@ -70,7 +74,8 @@ $(document).ready(function () {
         var Other_6 = $("#OtherFee_input").val();                   //其他
         var Other_7 = $("#ParkingFeeByMachi_input").val();          //特約停車場
         var ParkingFeeTotal = $("#ParkingFeeTotal_input").val();    //停車費用(總)   // 20210506;ADD BY YEH REASON.新增停車費用(總)
-
+	var finalPrice = $("#spn_finalPrice").html();
+	
         var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP) + parseInt(ParkingFeeTotal);   //結算金額(計算後) = 租金 + 安心服務 + 里程費用 + 逾時費用 + 停車費用(總)
         $("#final_price_input").val(totalAmt);  //結算金額
         var final_price = $("#final_price_input").val();    
@@ -338,6 +343,8 @@ function SetData(data) {
             $("#OtherFeeRemark_input").val(OrderObj.OtherFeeRemark);
             $("#ParkingFeeByMachi_input").val(OrderObj.PARKINGAMT2).prop("readonly", "").hide();
             $("#ParkingFeeByMachiRemark_input").val(OrderObj.PARKINGMEMO2).hide();
+            oldOtherPrice = OrderObj.CarDispatch + OrderObj.CleanFee + OrderObj.DestroyFee + OrderObj.OtherParkingFee + OrderObj.DraggingFee + OrderObj.OtherFee + OrderObj.PARKINGAMT2;
+
             /*營損結束*/
 
             if (parseInt(OrderObj.CarPoint) > 0) {

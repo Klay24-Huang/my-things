@@ -6,8 +6,9 @@
         ShowLoading("資料查詢中");
         var StationID = $("#StationID").val();
         var isMach = $("#NotMach").prop("checked");
+        var isMach2 = $("#NotMach2").prop("checked");
         console.log(isMach);
-        if (isMach == false && StationID == "") {
+        if (isMach == false && StationID == "" && isMach2 == false) {
             disabledLoadingAndShowAlert("請至少選擇一個查詢條件");
         } else {
             $("#frmStationSetting").submit();

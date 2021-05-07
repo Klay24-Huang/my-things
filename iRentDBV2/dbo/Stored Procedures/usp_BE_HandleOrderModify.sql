@@ -197,8 +197,8 @@ BEGIN TRY
 											[fine_rate],[gift_point],[gift_motor_point],[monthly_workday],[monthly_holiday],
 											[Etag],[already_payment],[start_mile],[end_mile],[trade_status],
 											[parkingFee], [parkingSpace], [TransDiscount], 
-											[U_USERID],[U_SYSDT],[U_Reson],[U_Remark])
-			SELECT *,@UserID,@NowTime,@Reson,@Remark FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
+											U_PRGID,[U_USERID],[U_SYSDT],[U_Reson],[U_Remark])
+			SELECT *,'176',@UserID,@NowTime,@Reson,@Remark FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
 
 			UPDATE TB_OrderDetail
 			SET gift_motor_point=@MotorPoint,
