@@ -152,6 +152,7 @@
                 </th>
                 <th scope="col">orderNo</th>
                 <th scope="col">時數名稱</th>
+                <th scope="col">時數金額</th>
                 <th scope="col">身份證字號</th>
                 <th scope="col">購買日期</th>
                 <th scope="col">merchantOrderNo</th>
@@ -176,6 +177,7 @@
                         <td data-sort="false"></td>
                         <td scope="col" id=@(i.ToString()+"oNo")>@(lstData[i].orderNo)</td>
                         <td scope="col" id=@(i.ToString()+"pNa")>@(lstData[i].projectName)</td>
+                        <td scope="col" id=@(i.ToString()+"Am")>@(lstData[i].orderAmount)</td>
                         <td scope="col" id=@(i.ToString()+"No")>@(lstData[i].IDNO)</td>
                         <td scope="col" id=@(i.ToString()+"Ti")>@(lstData[i].orderTime)</td>
                         <td scope="col" id=@(i.ToString()+"mNo")>@(lstData[i].merchantOrderNo)</td>

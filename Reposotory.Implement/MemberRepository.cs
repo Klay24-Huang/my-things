@@ -475,7 +475,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME " +
+            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount " +
                 $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
                 $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
