@@ -21,7 +21,6 @@
         // 使用「正規表達式」檢驗格式
         if (IDNO.search(regExpID) == -1) {
             // 基本格式錯誤
-            alert("請仔細填寫身份證號碼");
             return false;
         } else {
             // 取出第一個字元和最後一個數字。
