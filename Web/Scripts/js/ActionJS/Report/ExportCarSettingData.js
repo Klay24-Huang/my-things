@@ -115,7 +115,7 @@
 
             setTimeout(function () {
                 window.location.reload();
-            }, 1000);
+            }, 3000);
         } else {
             disabledLoadingAndShowAlert(message);
         }

@@ -474,7 +474,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME " +
+            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount " +
                 $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
                 $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
@@ -501,44 +501,56 @@ namespace Reposotory.Implement
             }
         }
 
-        public bool DeleteMember(string IDNO, string IRent_Only, string Account)
+        public void DeleteMember(string IDNO, string IRent_Only, string Account)
         {
-            bool result = true;
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
             if(IRent_Only == "on")
             {
-                SqlParameter[] para = new SqlParameter[3];
-                string term = "";
-                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
-                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL += " DROP TABLE tmp_DelMemberList";
 
-                if (Execuate(ref flag, SQL) <= 2)
-                {
-                    result = false;
-                }
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
 
-                return result;
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+
             }
             else
             {
-                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
-                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL += " DROP TABLE tmp_DelMemberList";
+                
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
 
-                if (Execuate(ref flag, SQL) <= 2)
-                {
-                    result = false;
-                }
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
 
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
@@ -566,53 +578,33 @@ namespace Reposotory.Implement
                 HttpResponseMessage apiResponse = new HttpResponseMessage();
                 apiResponse = client.PostAsync(apiAddress, postContent).Result;
                 string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
-
-                return result;
             }
         }
 
-        public bool ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)
         {
-            bool result = true;
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            SqlParameter[] para = new SqlParameter[3];
-            string term = "";
-            string SQL = "BEGIN TRAN";
-            SQL += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL += " DECLARE @NOW			DATETIME	SET @NOW			= DATEADD(HOUR,8,GETDATE())";
-            SQL += " update TB_MemberData			set MEMIDNO = @AFTER_IDNO	,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO ";
-            SQL += " update TB_MemberDataOfAutdit	set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO ";
-            SQL += " update TB_MemberBySocial		set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO";
-            SQL += " update TB_CrentialsPIC			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_CrentialsPIC_NULL		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_Credentials    		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
-            SQL += " update TB_tmpCrentialsPIC		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
-            SQL += " update TB_AuditHistory			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_AuditCredentials		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " delete TB_AuditCrentialsReject												where IDNO = @AFTER_IDNO";
-            SQL += " update TB_AuditCrentialsReject	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_OrderMain				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_VerifyCode            set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MemberCardBinding		set IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRent			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRentHistory	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRentHistory_LOG set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MemberDataBlock       set MEMIDNO = @AFTER_IDNO						where MEMIDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingStatusOfUser	SET IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingInsuranceOfUser set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingInsuranceOfUserHIS set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
-            SQL += " update TB_FeedBack				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_FavoriteStation		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_PersonNotification	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += $" insert into TB_ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, DATEADD(HOUR,8,GETDATE()), {Account})";
-            SQL += " COMMIT TRAN";
 
-            if(Execuate(ref flag, SQL) <= 1)
-            {
-                result = false;
-            }
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Transaction = tran;
+            cmd.CommandText = "usp_ChangeID";
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("TARGET_IDNO", SqlDbType.VarChar, 11).Value = TARGET_ID;
+            cmd.Parameters.Add("AFTER_IDNO", SqlDbType.VarChar, 11).Value = AFTER_ID;
+            cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+            cmd.ExecuteNonQuery();
+            tran.Commit();
+
+            conn.Close();
+            conn.Dispose();
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/ChangeID";
@@ -641,8 +633,6 @@ namespace Reposotory.Implement
             HttpResponseMessage apiResponse = new HttpResponseMessage();
             apiResponse = client.PostAsync(apiAddress, postContent).Result;
             string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
-
-            return result;
         }
     }
 }
