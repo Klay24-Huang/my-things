@@ -179,12 +179,14 @@ namespace WebAPI.Controllers
                                     outApiAllCards.MixMonCards = mixCards;
                                 if (norCards != null && norCards.Count() > 0)
                                     outApiAllCards.NorMonCards = norCards;
+                                outApiAllCards.IsMotor = 0;
                                 outApiAllCards.ReMode = 1;
                             }
                             else if(apiInput.IsMoto == 1)
                             {
                                 if (norCards != null && norCards.Count() > 0)
                                     outApiAllMotos.NorMonCards = norCards;
+                                outApiAllMotos.IsMotor = 1;
                                 outApiAllMotos.ReMode = 1;
                             }
                             
