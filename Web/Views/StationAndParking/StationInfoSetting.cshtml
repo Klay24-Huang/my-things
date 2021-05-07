@@ -3,17 +3,14 @@
     List<Domain.TB.BackEnd.BE_GetPartOfStationInfo> lstData = null;
     string StationID = (ViewData["StationID"] == null) ? "" : ViewData["StationID"].ToString();
     string NotMach = (ViewData["NotMuch"] == null) ? "0" : ViewData["NotMuch"].ToString();
+    string NotMach2 = (ViewData["NotMuch2"] == null) ? "0" : ViewData["NotMuch2"].ToString();
     string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     int ResultLen = -1;
-    int carLstDataLen = 0;
-    int carLstDataNotOnBoard = 0;
 
     if (Model != null)
     {
         lstData = Model.ToList();
         ResultLen = lstData.Count;
-        carLstDataLen = ViewBag.carData;
-        carLstDataNotOnBoard = ViewBag.carDataNotOnBoard;
     }
 
 }
@@ -55,6 +52,12 @@
                                     <input class="form-check-input" type="checkbox" id="NotMach" name="NotMach" value="1" @((NotMach == "0") ? "" : " checked")>
                                     <label class="form-check-label" for="NotMach">
                                         庫位車輛數與實際上線數不相符
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="NotMach2" name="NotMach2" value="1" @((NotMach2 == "0") ? "" : " checked")>
+                                    <label class="form-check-label" for="NotMach2">
+                                        庫位數與庫位車輛數數不相符
                                     </label>
                                 </div>
                             </div>
@@ -133,8 +136,8 @@
                                 </a>
 
                             <th scope="col">@(lstData[i].AllowParkingNum)</th>
-                            <th scope="col">@(carLstDataLen)</th>
-                            <th scope="col">@(carLstDataNotOnBoard)</th>
+                            <th scope="col">@(lstData[i].TotalCar)</th>
+                            <th scope="col">@(lstData[i].TotalCar - lstData[i].UnavailbleCar)</th>
 
                             <th scope="col"><button class="btn btn-outline-info" id="btn_@(lstData[i].StationID)" name="btn_@(lstData[i].StationID)" onclick="goMaintain('@(lstData[i].StationID)')">修改</button></th>
                         </tr>

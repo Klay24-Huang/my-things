@@ -980,46 +980,90 @@ namespace Reposotory.Implement
             lstCarScheduleTimeLog = GetObjList<BE_CarScheduleTimeLog>(ref flag, ref lstError, SQL, para, term);
             return lstCarScheduleTimeLog;
         }
-        public List<BE_GetPartOfStationInfo> GetPartOfStation(string StationID, bool isNotMach)
+        public List<BE_GetPartOfStationInfo> GetPartOfStation(string StationID)
         {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_GetPartOfStationInfo> lstStation = null;
-            string SQL = " SELECT * FROM VW_BE_GetPartOfStationList ";
+            //bool flag = false;
+            //List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            //string SQL = " SELECT * FROM VW_BE_GetPartOfStationList ";
 
 
-            SqlParameter[] para = new SqlParameter[3];
-            string term = "";
-            string term2 = "";
-            int nowCount = 0;
-            if (StationID != "")
+            //SqlParameter[] para = new SqlParameter[3];
+            //string term = "";
+            //string term2 = "";
+            //int nowCount = 0;
+            //if (StationID != "")
+            //{
+            //    term = "  StationID=@StationID";
+            //    para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
+            //    para[nowCount].Value = StationID;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (isNotMach)
+            //{
+            //    if (term != "")
+            //    {
+            //        term += " AND ";
+            //    }
+            //    term += "  AllowParkingNum<> NowOnlineNum";
+
+            //}
+
+
+            //if ("" != term)
+            //{
+            //    SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            //}
+
+            //SQL += "  ORDER BY StationID ASC";
+
+            //lstStation = GetObjList<BE_GetPartOfStationInfo>(ref flag, ref lstError, SQL, para, term);
+            //return lstStation;
+
+            List<BE_GetPartOfStationInfo> lstStation = new List<BE_GetPartOfStationInfo>();
+
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.Transaction = tran;
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+
+            cmd.Parameters.Add("@StationID", SqlDbType.VarChar, 8).Value = (StationID == null) ? "" : StationID;
+            cmd.CommandText = "usp_GetPartOfStationList_Q01";
+
+            SqlDataReader reader = cmd.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+            foreach(DataRow dr in dt.Rows)
             {
-                term = "  StationID=@StationID";
-                para[nowCount] = new SqlParameter("@StationID", SqlDbType.VarChar, 10);
-                para[nowCount].Value = StationID;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
+                BE_GetPartOfStationInfo data = new BE_GetPartOfStationInfo();
+                data.ADDR = dr.Field<string>("ADDR");
+                data.AllowParkingNum = dr.Field<int>("AllowParkingNum");
+                data.AreaName = dr.Field<string>("AreaName");
+                data.CityName = dr.Field<string>("CityName");
+                data.Latitude = dr.Field<decimal>("Latitude").ToString();
+                data.Location = dr.Field<string>("Location");
+                data.Longitude = dr.Field<decimal>("Longitude").ToString();
+                data.StationID = dr.Field<string>("StationID");
+                data.TotalCar = dr.Field<int>("TotalCar");
+                data.UnavailbleCar = dr.Field<int>("UnavailbleCar");
+
+                lstStation.Add(data);
             }
-            if (isNotMach)
-            {
-                if (term != "")
-                {
-                    term += " AND ";
-                }
-                term += "  AllowParkingNum<> NowOnlineNum";
-
-            }
-
-
-            if ("" != term)
-            {
-                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
-            }
-
-            SQL += "  ORDER BY StationID ASC";
-
-            lstStation = GetObjList<BE_GetPartOfStationInfo>(ref flag, ref lstError, SQL, para, term);
+            reader.Close();
+            tran.Commit();
+            conn.Close();
+            conn.Dispose();
             return lstStation;
+
         }
         /// <summary>
         /// 後台取得據點明細

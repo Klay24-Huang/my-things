@@ -733,14 +733,16 @@ namespace Web.Controllers
         public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if (repository.DeleteMember(IDNO, IRent_Only, Account))
+            if (repository.IsMemberExist(IDNO))
             {
+                repository.DeleteMember(IDNO, IRent_Only, Account);
                 ViewData["result"] = true;
             }
             else
             {
                 ViewData["result"] = false;
             }
+
             return View();
         }
 
@@ -757,8 +759,9 @@ namespace Web.Controllers
         public ActionResult ChangeID(string TARGET_ID, string AFTER_ID, string Account)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if(repository.ChangeID(TARGET_ID, AFTER_ID, Account))
+            if (repository.IsMemberExist(TARGET_ID))
             {
+                repository.ChangeID(TARGET_ID, AFTER_ID, Account);
                 ViewData["result"] = true;
             }
             else

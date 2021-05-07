@@ -42,11 +42,15 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 車位數
         /// </summary>
-        public string AllowParkingNum {set;get;}
+        public int AllowParkingNum {set;get;}
         /// <summary>
-        /// 目前上線數
+        /// 目前庫位車輛未上線數
         /// </summary>
-        public string NowOnlineNum { set; get; }
+        public int UnavailbleCar { set; get; }
+        /// <summary>
+        /// 當前庫位總車輛數
+        /// </summary>
+        public int TotalCar { get; set; }
 
     }
 }

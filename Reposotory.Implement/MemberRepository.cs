@@ -1,12 +1,19 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using Newtonsoft.Json;
 using NLog.Internal;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using WebCommon;
-using ConfigurationManager = System.Configuration.ConfigurationManager;
+using ConfigurationManager = System.Configuration.ConfigurationManager; 
 
 namespace Reposotory.Implement
 {
@@ -476,6 +483,25 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
+        public bool IsMemberExist(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
+            string term = "";
+            string SQL = $" SELECT * FROM TB_MemberData WHERE MEMIDNO = '{IDNO}'";
+            List<BE_MemberData> result = new List<BE_MemberData>();
+            result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+            if(result.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public bool DeleteMember(string IDNO, string IRent_Only, string Account)
         {
             bool result = true;
@@ -515,24 +541,32 @@ namespace Reposotory.Implement
                     result = false;
                 }
 
-                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
-                SqlParameter[] para = new SqlParameter[3];
-                string SQL06 = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL06 += $" insert into tmp_DelMemberList values('{IDNO}')";
-                SQL06 += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL06 += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,DATEADD(HOUR,8,GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL06 += " DROP TABLE tmp_DelMemberList";
-
-                if (Execuate(ref flag, SQL) <= 1)
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
+                HttpClient client = new HttpClient()
                 {
-                    result = false;
-                }
+                    BaseAddress = new System.Uri(apiAddress)
+                };
+
+                string EncryptStr = "";
+                string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+                ASCIIEncoding enc = new ASCIIEncoding();
+                SHA1 sha = new SHA1CryptoServiceProvider();
+                byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+                EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+                string param = JsonConvert.SerializeObject(new
+                {
+                    IDNO = IDNO,
+                    Account = Account,
+                    user_id = ConfigurationManager.AppSettings["userid"],
+                    sig = EncryptStr
+                });
+                HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+                HttpResponseMessage apiResponse = new HttpResponseMessage();
+                apiResponse = client.PostAsync(apiAddress, postContent).Result;
+                string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
 
                 return result;
             }
@@ -581,44 +615,33 @@ namespace Reposotory.Implement
                 result = false;
             }
 
-            this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
-            bool flag06 = false;
-            string SQL06 = "BEGIN TRAN";
-            SQL06 += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL06 += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL06 += " DECLARE @NOW			DATETIME	SET @NOW			= GETDATE()";
-            SQL06 += " update MEMBER_NEW			set  MEMIDNO = @AFTER_IDNO,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update MEMBER_NEW_LOG		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update IRENT_GIFTMINSMF		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update IRENT_GIFTMINSHIS	set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
-            SQL06 += " COMMIT TRAN";
-
-            if (Execuate(ref flag06, SQL06) <= 1)
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/ChangeID";
+            HttpClient client = new HttpClient()
             {
-                result = false;
-            }
+                BaseAddress = new System.Uri(apiAddress)
+            };
 
-            this.ConnectionString = ConfigurationManager.ConnectionStrings["01VM_LS"].ConnectionString;
-            bool flag01_LS = false;
-            string SQL01_LS = "BEGIN TRAN";
-            SQL01_LS += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL01_LS += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL01_LS += " UPDATE LSRENTMF	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()	where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF_LOG	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_SIGNATURE			SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUBKDF				SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUSTAGREEDF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUSTMF		    SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_INSURANCE_LEVEL	SET CUSTID = @AFTER_IDNO							where CUSTID = @TARGET_IDNO";
-            SQL01_LS += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
-            SQL01_LS += " COMMIT TRAN";
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
 
-            if (Execuate(ref flag01_LS, SQL01_LS) <= 1)
+
+            string param = JsonConvert.SerializeObject(new
             {
-                result = false;
-            }
+                TARGET_IDNO = TARGET_ID,
+                AFTER_IDNO = AFTER_ID,
+                Account = Account,
+                user_id = ConfigurationManager.AppSettings["userid"],
+                sig = EncryptStr
+            });
+            HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+            HttpResponseMessage apiResponse = new HttpResponseMessage();
+            apiResponse = client.PostAsync(apiAddress, postContent).Result;
+            string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
 
             return result;
         }
