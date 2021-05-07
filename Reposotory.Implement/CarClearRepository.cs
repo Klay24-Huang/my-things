@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using WebCommon;
 namespace Reposotory.Implement
 {
@@ -197,7 +198,10 @@ namespace Reposotory.Implement
                 {
                     term += " AND ";
                 }
-                term += string.Format("  UserID='{0}'", userID);
+                if(userID.All(char.IsDigit))
+                    term += $"  UserID='{userID}'";
+                else
+                    term +=$"  Manager.UserName='{userID}'";
 
             }
 
@@ -218,7 +222,7 @@ namespace Reposotory.Implement
 
             if ("" != term)
             {
-                SQL += " WHERE (NOT VW.Account IS NULL) AND (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
+                SQL += " WHERE (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
             }
             else
             {
