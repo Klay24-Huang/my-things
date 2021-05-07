@@ -247,8 +247,10 @@ namespace Web.Controllers
             //   return View();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+
+        #region 合約資料查詢
         /// <summary>
-        /// 預約查詢
+        /// 合約資料查詢
         /// </summary>
         /// <returns></returns>
         public ActionResult ContactQuery()
@@ -336,6 +338,8 @@ namespace Web.Controllers
 
             return View(lstData);
         }
+        #endregion
+
         /// <summary>
         /// 訂單記錄歷程查詢
         /// </summary>
@@ -589,10 +593,12 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        #region 合約明細
         /// <summary>
-        /// 訂單（合約）明細
+        /// 合約明細
         /// </summary>
-        /// <param name="OrderNo"></param>
+        /// <param name="DetailOrderNo"></param>
         /// <returns></returns>
         [HttpGet]
         public ActionResult ContactDetail(string DetailOrderNo)
@@ -604,17 +610,13 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(DetailOrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (DetailOrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
 
-                    //lstBook = _repository.GetBookingDetailNew(OrderNO);
-                    //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     obj = new BE_OrderDataCombind()
                     {
                         Data = repository.GetOrderDetail(tmpOrder),
@@ -635,10 +637,8 @@ namespace Web.Controllers
                 }
             }
             return View(obj);
-
         }
-
-
+        
         /// <summary>
         /// 訂單（合約）明細修改停車格
         /// </summary>
@@ -688,6 +688,8 @@ namespace Web.Controllers
             return View(obj);
 
         }
+        #endregion
+
         /// <summary>
         /// 訂單（合約）明細（機車）
         /// </summary>

@@ -499,6 +499,7 @@
     <Build Include="dbo\Tables\TB_BindUUCard_Log.sql" />
     <Build Include="dbo\Stored Procedures\usp_BindUUCardJob.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsAlertEvent.sql" />
+    <Build Include="usp_GetCityParkingFee.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

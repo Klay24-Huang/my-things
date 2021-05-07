@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Domain.TB.BackEnd.BE_GetEasyWalletList>
 
 @{
-    
+    string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
     int ResultLen = -1;
     List<Domain.TB.BackEnd.BE_GetEasyWalletList> lstData = null;
     if (Model != null)
@@ -29,10 +29,10 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                身份證
+                                身份證 (查詢必要)
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="IDNO" id="IDNO" />
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO"/>
                             </div>
                         </div>
                     </div>
@@ -116,18 +116,6 @@
                     </div>
                 </li>
 
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                PBATCHNO
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" type="text" name="PBATCHNO" id="PBATCHNO" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
 
                 <li class="list-group-item">
                     <div class="container-fluid">
@@ -135,7 +123,7 @@
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" id="btnSubmit" class="btn btn-info">查詢</button>
                                 <button type="button" id="btnSend" name="btnSend" class="btn btn-info">退款</button>
-                                <button type="button" id="btnSend_2" name="btnSend_2" class="btn btn-info">退款2</button>
+                                <!--<button type="button" id="btnSend_2" name="btnSend_2" class="btn btn-info">退款2</button>-->
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
                         </div>

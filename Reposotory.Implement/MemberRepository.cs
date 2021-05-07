@@ -469,15 +469,16 @@ namespace Reposotory.Implement
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
             string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME " +
-                $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
-                $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) order by a.U_SYSDT desc ";
+                $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
+                $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
 
-        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        public bool DeleteMember(string IDNO, string IRent_Only, string Account)
         {
+            bool result = true;
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             if(IRent_Only == "on")
@@ -492,25 +493,48 @@ namespace Reposotory.Implement
                 SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
                 SQL += " DROP TABLE tmp_DelMemberList";
 
-                ExecNonResponse(ref flag, SQL);
+                if (Execuate(ref flag, SQL) <= 2)
+                {
+                    result = false;
+                }
+
+                return result;
             }
             else
             {
-                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
-                SqlParameter[] para = new SqlParameter[3];
                 string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL += $" insert into tmp_DelMemberList values('{IDNO}')";
-                SQL += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,DATEADD(HOUR,8,GETDATE()),'{Account}'from tmp_DelMemberList";
+                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
+                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
                 SQL += " DROP TABLE tmp_DelMemberList";
 
-                ExecNonResponse(ref flag, SQL);
+                if (Execuate(ref flag, SQL) <= 2)
+                {
+                    result = false;
+                }
+
+                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
+                SqlParameter[] para = new SqlParameter[3];
+                string SQL06 = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
+                SQL06 += $" insert into tmp_DelMemberList values('{IDNO}')";
+                SQL06 += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
+                SQL06 += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
+                SQL06 += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,DATEADD(HOUR,8,GETDATE()),'{Account}'from tmp_DelMemberList";
+                SQL06 += " DROP TABLE tmp_DelMemberList";
+
+                if (Execuate(ref flag, SQL) <= 1)
+                {
+                    result = false;
+                }
+
+                return result;
             }
         }
 
@@ -586,6 +610,7 @@ namespace Reposotory.Implement
             SQL01_LS += " UPDATE IRENT_SIGNATURE			SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
             SQL01_LS += " UPDATE LC..LCCUBKDF				SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
             SQL01_LS += " UPDATE LC..LCCUSTAGREEDF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
+            SQL01_LS += " UPDATE LC..LCCUSTMF		    SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
             SQL01_LS += " UPDATE IRENT_INSURANCE_LEVEL	SET CUSTID = @AFTER_IDNO							where CUSTID = @TARGET_IDNO";
             SQL01_LS += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
             SQL01_LS += " COMMIT TRAN";

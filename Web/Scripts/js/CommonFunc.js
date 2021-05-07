@@ -335,8 +335,8 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
 //20210421唐加，悠遊付退款專用
 function DoAjaxAfterGoBack_EW(obj, FailMessage) {
     var json = JSON.stringify(obj);
-    var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
-    //var site = "http://localhost:60985/api/Exec/refundECOrder"
+    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
+    var site = "http://localhost:60985/api/Exec/refundECOrder"
     $.ajax({
         url: site,
         type: 'POST',
@@ -379,8 +379,8 @@ function DoAjaxAfterGoBack_EW(obj, FailMessage) {
 //20210427唐加，悠遊付退款專用
 function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
     var json = JSON.stringify(obj);
-    var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder2"
-    //var site = "http://localhost:60985/api/Exec/refundECOrder2"
+    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder2"
+    var site = "http://localhost:60985/api/Exec/refundECOrder2"
     $.ajax({
         url: site,
         type: 'POST',
@@ -402,7 +402,7 @@ function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
             } else {
 
                 swal({
-                    title: 'Fail1',
+                    title: 'Fail3',
                     text: data.ErrorMessage,
                     icon: 'error'
                 });
@@ -411,7 +411,7 @@ function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
         error: function (e) {
             $.busyLoadFull("hide");
             swal({
-                title: 'Fail2',
+                title: 'Fail4',
                 text: FailMessage,
                 icon: 'error'
             });

@@ -1048,7 +1048,7 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
 
-            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "審核結果", "不通過原因", "處理項目" };
+            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -1066,6 +1066,7 @@ namespace Web.Controllers
                 content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
                 content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
                 content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
                 content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
                 content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
@@ -1095,6 +1096,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ReFund(string IDNO)
         {
+            ViewData["IDNO"] = IDNO;
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
 
@@ -1199,6 +1201,72 @@ namespace Web.Controllers
             {
                 return View(lstData);
             }
+        }
+        #endregion
+
+        #region 車輛隨租定位
+        /// <summary>
+        /// 車輛隨租定位
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CarLocationQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CarLocationQuery(string IsCar, string Time_Start, string Time_End, string Account)
+        {
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
+            lstData = carStatusCommon.GetCarLocationData(Time_Start, Time_End, IsCar);
+            string carType = (IsCar == "true") ? "汽車" : "機車";
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage ep = new ExcelPackage();
+            ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+            int col = 1;
+            int row = 2;
+            MemoryStream fileStream = new MemoryStream();
+
+            sheet.Cells[1, col++].Value = "order_number";
+            sheet.Cells[1, col++].Value = "IDNO";
+            sheet.Cells[1, col++].Value = "CarNo";
+            sheet.Cells[1, col++].Value = "PRONAME";
+            sheet.Cells[1, col++].Value = "ProjID";
+            sheet.Cells[1, col++].Value = "lend_place";
+            sheet.Cells[1, col++].Value = "final_start_time";
+            sheet.Cells[1, col++].Value = "final_stop_time";
+            sheet.Cells[1, col++].Value = "CID";
+            sheet.Cells[1, col++].Value = "start_Lat";
+            sheet.Cells[1, col++].Value = "start_Lng";
+            sheet.Cells[1, col++].Value = "stop_Lat";
+            sheet.Cells[1, col++].Value = "stop_Lng";
+
+            foreach (var i in lstData)
+            {
+                col = 1;
+                sheet.Cells[row, col++].Value = i.order_number;
+                sheet.Cells[row, col++].Value = i.IDNO;
+                sheet.Cells[row, col++].Value = i.CarNo;
+                sheet.Cells[row, col++].Value = i.PRONAME;
+                sheet.Cells[row, col++].Value = i.ProjID;
+                sheet.Cells[row, col++].Value = i.lend_place;
+                sheet.Cells[row, col++].Value = i.final_start_time.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, col++].Value = i.final_stop_time.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, col++].Value = i.CID;
+                sheet.Cells[row, col++].Value = i.start_Lat;
+                sheet.Cells[row, col++].Value = i.start_Lng;
+                sheet.Cells[row, col++].Value = i.stop_Lat;
+                sheet.Cells[row, col++].Value = i.stop_Lng;
+
+                row++;
+            }
+
+            ep.SaveAs(fileStream);
+            ep.Dispose();
+            fileStream.Position = 0;
+            return File(fileStream, "application/xlsx", $"{Time_Start}_to_{Time_End}_車輛隨租定位({carType}).xlsx");
         }
         #endregion
     }

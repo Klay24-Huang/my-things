@@ -128,10 +128,11 @@ BEGIN TRY
 			MEMADDR=@MEMADDR,
 			MEMEMAIL=@MEMEMAIL,
 			IrFlag=1,
+			MEMRFNBR=@MEMRFNBR,		--更新短租會員流水號
+			MEMUPDT=@NowTime,		--20210503 ADD
 			U_PRGID=6,
 			U_USERID=@IDNO,
-			U_SYSDT=@NowTime,
-			MEMRFNBR=@MEMRFNBR		--更新短租會員流水號
+			U_SYSDT=@NowTime
 		WHERE MEMIDNO=@IDNO;
 
 		-- 20210225;新增LOG檔
