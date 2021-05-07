@@ -375,14 +375,14 @@ namespace WebAPI.Controllers
             SPOutput_Base spOut = new SPOutput_Base();
 
             // 20210427;增加LOG方便查問題
-            logger.Trace(string.Format("OrderNo:{0} SaveToTB SPInput:{1}", OrderNo, JsonConvert.SerializeObject(spInput)));
+            //logger.Trace(string.Format("OrderNo:{0} SaveToTB SPInput:{1}", OrderNo, JsonConvert.SerializeObject(spInput)));
 
             SQLHelper<SPInput_BE_OrderModify, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_OrderModify, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        #endregion
+        
 
         #region 傳送短租136
         public bool DoSendNPR136(Int64 OrderNo, Int64 LogID, int DiffPrice, string UserID, ref string errCode, ref List<ErrorInfo> lstError)
@@ -479,7 +479,7 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_NPR136Success, SPOutput_Base>(connetStr);
 
                 // 20210427;增加LOG方便查問題
-                logger.Trace(string.Format("OrderNo:{0} DoSendNPR136 WSInput:{1}", OrderNo, JsonConvert.SerializeObject(wsInput)));
+                //logger.Trace(string.Format("OrderNo:{0} DoSendNPR136 WSInput:{1}", OrderNo, JsonConvert.SerializeObject(wsInput)));
 
                 flag = hiEasyRentAPI.NPR136Save(wsInput, ref wsOutput);
                 if (flag)
