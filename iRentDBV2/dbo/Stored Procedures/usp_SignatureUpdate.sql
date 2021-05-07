@@ -60,6 +60,8 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @tmpPWD VARCHAR(20);
+DECLARE @NowDate DATETIME;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -71,6 +73,7 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
 SET @IDNO=ISNULL (@IDNO,'');
+SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
 	IF  @IDNO=''
@@ -91,21 +94,16 @@ BEGIN TRY
 		END
 		ELSE
 		BEGIN
-			IF NOT EXISTS (SELECT * FROM TB_CrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11)
+			-- 20210507 UPD BY YEH REASON:從短租補簽名檔改為判斷TB_tmpCrentialsPIC是否有檔案，沒檔案才INSERT進待審檔，並把狀態改為待審
+			IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11 AND CrentialsFile='')
 			BEGIN
-				INSERT INTO TB_CrentialsPIC(IDNO, CrentialsType, CrentialsFile, LSFLG, MKTime, UPDTime) 
-				SELECT IDNO=@IDNO
-					, CrentialsType=11
-					, CrentialsFile=@CrentialsFile
-					, LSFLG=0
-					, MKTime=DATEADD(HOUR,8,GETDATE())
-					, UPDTime=DATEADD(HOUR,8,GETDATE())
+				INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
+				VALUES (@IDNO,11,@CrentialsFile,@NowDate,@NowDate);
 
 				UPDATE TB_Credentials
-				SET Signture=2,
-					MKTime=DATEADD(HOUR,8,GETDATE()),
-					UPDTime=DATEADD(HOUR,8,GETDATE())
-				WHERE IDNO=@IDNO
+				SET Signture=1,
+					UPDTime=@NowDate
+				WHERE IDNO=@IDNO;
 			END
 			COMMIT TRAN;
 		END
