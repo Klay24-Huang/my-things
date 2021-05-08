@@ -765,8 +765,6 @@
     <None Include="Web.iRent-Backend-Web-Test - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
