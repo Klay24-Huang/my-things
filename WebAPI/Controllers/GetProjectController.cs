@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             var apiInput = new IAPI_GetProject();
             var outputApi = new OAPI_GetProject();
-            outputApi.SeatGroups = new List<GetProject_SeatGroup>();
+            //outputApi.SeatGroups = new List<GetProject_SeatGroup>();
             outputApi.NowSubsCards = new List<OAPI_NowSubsCard>();
             List<GetProjectObj> lstTmpData = new List<GetProjectObj>();
             Token token = null;
@@ -599,7 +599,7 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                outputApi.SeatGroups = SeatGroups;
+                //outputApi.SeatGroups = SeatGroups;
 
                 if (OAPI_NowSubsCards != null && OAPI_NowSubsCards.Count() > 0)
                     outputApi.NowSubsCards = OAPI_NowSubsCards;
