@@ -1,7 +1,7 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
 using Newtonsoft.Json;
-using NLog.Internal;
+//using NLog.Internal;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
