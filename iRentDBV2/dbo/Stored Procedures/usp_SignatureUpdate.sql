@@ -1,10 +1,10 @@
-/****** Object:  StoredProcedure [dbo].[usp_SignatureUpdate]    Script Date: 2021/2/26 ‰∏äÂ 11:25:56 ******/
+/****** Object:  StoredProcedure [dbo].[usp_SignatureUpdate]    Script Date: 2021/5/10 §W§» 09:22:18 ******/
 
 /****************************************************************
 ** Name: [dbo].[usp_SignatureUpdate]
 ** Desc: 
 **
-** Return values: 0 êÂ else ØË™§
+** Return values: 0 ¶®•\ else ø˘ª~
 ** Return Recordset: 
 **
 ** Called by: 
@@ -35,24 +35,24 @@
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
 ** Auth:Eric 
-** Date:2020/8/6 ‰∏äÂ 07:21:25 
+** Date:2020/8/6 §W§» 07:21:25 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/8/6 ‰∏äÂ 07:21:25    |  Eric|          First Release
+** 2020/8/6 §W§» 07:21:25    |  Eric|          First Release
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SignatureUpdate]
 	@IDNO                   VARCHAR(10)           ,
 	@CrentialsFile          VARCHAR(150)           ,
 	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--ûÂÇ≥ØË™§‰ª¢º
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--ûÂÇ≥ØË™§Ë®äÊÅØ
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--ûÂÇ≥sqlException‰ª¢º
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--ûÂÇ≥sqlExceptionË®äÊÅØ
+	@ErrorCode 				VARCHAR(6)		OUTPUT,	--¶^∂«ø˘ª~•NΩX
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--¶^∂«ø˘ª~∞TÆß
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--¶^∂«sqlException•NΩX
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--¶^∂«sqlException∞TÆß
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -62,7 +62,7 @@ DECLARE @hasData TINYINT;
 DECLARE @tmpPWD VARCHAR(20);
 DECLARE @NowDate DATETIME;
 
-/*ùÂË®≠Â*/
+/*™Ï©l≥]©w*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
@@ -94,21 +94,41 @@ BEGIN TRY
 		END
 		ELSE
 		BEGIN
-			-- 20210507 UPD BY YEH REASON:ÂæûÁü≠ÁßüËÁ∞ΩÂÊ™îÊîπ∫Âà§∑TB_tmpCrentialsPICØÂê¶âÊÊ°àÔÊ≤íÊÊ°àÊINSERT≤ÂÂØ©ÊÔºå‰∏¶äÁãÊîπ∫ÂÂØ
-			IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11 AND CrentialsFile='')
-			BEGIN
-				INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
-				VALUES (@IDNO,11,@CrentialsFile,@NowDate,@NowDate);
+			DECLARE @Signture INT;
+			SELECT @Signture=Signture FROM TB_Credentials WHERE IDNO=@IDNO;
 
-				UPDATE TB_Credentials
-				SET Signture=1,
-					UPDTime=@NowDate
-				WHERE IDNO=@IDNO;
+			-- 20210510 UPD BY YEH REASON.•ø¶°API•u≠nµn§J¥N∑|©I•s¶π§Ë™k°A•º¡◊ßK±NºfπL™∫√±¶W¿…¿£±º°A•[¶πßP¬_
+			IF @Signture <> 2
+			BEGIN
+				-- 20210507 UPD BY YEH REASON:±qµuØ≤∏…√±¶W¿…ßÔ¨∞ßP¬_TB_tmpCrentialsPIC¨Oß_¶≥¿…Æ◊°A®S¿…Æ◊§~INSERT∂i´›ºf¿…°A®√ß‚™¨∫AßÔ¨∞´›ºf
+				IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11)
+				BEGIN
+					INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
+					VALUES (@IDNO,11,@CrentialsFile,@NowDate,@NowDate);
+
+					UPDATE TB_Credentials
+					SET Signture=1,
+						UPDTime=@NowDate
+					WHERE IDNO=@IDNO;
+				END
+				ELSE
+				BEGIN
+					UPDATE TB_tmpCrentialsPIC
+					SET CrentialsType=@CrentialsFile,
+						UPDTime=@NowDate
+					WHERE IDNO=@IDNO AND CrentialsType=11;
+
+					UPDATE TB_Credentials
+					SET Signture=1,
+						UPDTime=@NowDate
+					WHERE IDNO=@IDNO;
+				END
 			END
+
 			COMMIT TRAN;
 		END
 	END
-	--ÂØ´ÂÖ•ØË™§Ë®äÊÅØ
+	--ºg§Jø˘ª~∞TÆß
 	IF @Error=1
 	BEGIN
 		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
@@ -118,7 +138,7 @@ END TRY
 BEGIN CATCH
 	SET @Error=-1;
 	SET @ErrorCode='ERR999';
-	SET @ErrorMsg='ëËÂØ´ÈåØË™§Ë;
+	SET @ErrorMsg='ß⁄≠nºgø˘ª~∞TÆß';
 	SET @SQLExceptionCode=ERROR_NUMBER();
 	SET @SQLExceptionMsg=ERROR_MESSAGE();
 	IF @@TRANCOUNT > 0
@@ -135,4 +155,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SignatureUpdate';
 GO
-

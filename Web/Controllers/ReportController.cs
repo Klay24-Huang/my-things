@@ -668,8 +668,8 @@ namespace Web.Controllers
             workbook.Write(ms);
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-
-        #region 進出停車場明細
+        #endregion
+        
         #region 進出停車場明細
         /// <summary>
         /// 進出停車場明細
@@ -878,7 +878,7 @@ namespace Web.Controllers
                 return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
         }
-
+        #endregion
 
         #region 機車電池狀態查詢
         /// <summary>

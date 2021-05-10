@@ -376,7 +376,7 @@ namespace WebAPI.Controllers
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        
+        #endregion
 
         #region 傳送短租136
         public bool DoSendNPR136(Int64 OrderNo, Int64 LogID, int DiffPrice, string UserID, ref string errCode, ref List<ErrorInfo> lstError)
