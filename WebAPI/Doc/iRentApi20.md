@@ -1776,7 +1776,7 @@ iRentApi20 Web API版本
 ```
 {
     "ApiID":179,
-    "ApiJson":"{\"IDNO\":\"A122364317\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
+    "ApiJson":"{\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
     "ProdNm":"測試_汽包機66-3",
     "ProdPrice":7000,
     "DoPay":0,
