@@ -49,6 +49,8 @@ iRentApi20 Web API版本
 
 20210415 新增變更悠遊卡
 
+20210510 新增月租訂閱制相關
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -1558,7 +1560,7 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "IsMotor": 0,
+        "IsMotor": 1,
         "NorMonCards": [
             {
                 "MonProjID": "MR200",
@@ -1745,16 +1747,30 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例                                                                                               |
-| ---------- | ------------------------ | :--: | :----:  | -------------------------------------------------------------------------------------------------- |
-| ApiID      | 呼叫端apiId              |  Y   |  int    | 179                                                                                                |
-| ApiJson    | 呼叫端ApiJson            |  N   |  string | {\"IDNO\":\"A122364317\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}  |
-| ProdNm     | 產品名稱                 |  N   |  string | 測試_汽包機66-3                                                                                    |
-| ProdDisc   | 產品描述                 |  N   |  string | 測試                                                                                    |
-| ProdPrice  | 產品價格                 |  Y   |  int    | 7000                                                                                    |
-| DoPay      | 執行付款(0顯示,1付款)    |  Y   |  int    | 0                                                                                    |
-| PayTypeId  | 選定付款方式             |  N   |  int    | 5                                                                                    |
-| InvoTypeId | 選定發票設定             |  N   |  int    | 6                                                                                    |
+| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| ApiID      | 呼叫端apiId                |  Y   |  int   | 179                            |
+| ApiJson    | 呼叫端ApiJson-序列化後字串 |  N   | string | 請參考ApiJson 序列化後字串範例 |
+| ProdNm     | 產品名稱                   |  N   | string | 測試_汽包機66-3                |
+| ProdDisc   | 產品描述                   |  N   | string | 測試                           |
+| ProdPrice  | 產品價格                   |  Y   |  int   | 7000                           |
+| DoPay      | 執行付款(0顯示,1付款)      |  Y   |  int   | 0                              |
+| PayTypeId  | 選定付款方式               |  N   |  int   | 5                              |
+| InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
+
+* ApiJson(ApiID=179)參數說明
+| 參數名稱      | 參數說明                 | 必要 |  型態   | 範例                    |
+| ------------- | ------------------------ | :--: | :----:  | ------------------------|
+|  IDNO         |       身分證號           |  Y   | string  |       A123456789        |
+|  LogID        |       LogID              |  Y   |  int    |       123               |
+|  MonProjID    |       專案編號(key       |  Y   | string  |       MR66              |
+|  MonProPeriod |       期數(key)          |  Y   | int     |       3                 |
+|  ShortDays    |       短天期(key)        |  Y   | int     |       3                 |
+
+* ApiJson 序列化後字串範例
+|    ApiID      |    ApiJson               |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+|    179        | {\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0} |
 
 * input範例 (購買月租179)
 ```
