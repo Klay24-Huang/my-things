@@ -740,7 +740,6 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.RefrashToken: //Refrash Token
                     SPName = "usp_RefrashToken";
-                    //SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
