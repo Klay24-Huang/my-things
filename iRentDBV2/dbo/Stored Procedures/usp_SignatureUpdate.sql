@@ -94,35 +94,28 @@ BEGIN TRY
 		END
 		ELSE
 		BEGIN
-			DECLARE @Signture INT;
-			SELECT @Signture=Signture FROM TB_Credentials WHERE IDNO=@IDNO;
-
-			-- 20210510 UPD BY YEH REASON.正式API只要登入就會呼叫此方法，未避免將審過的簽名檔壓掉，加此判斷
-			IF @Signture <> 2
+			-- 20210507 UPD BY YEH REASON:從短租補簽名檔改為判斷TB_tmpCrentialsPIC是否有檔案，沒檔案才寫至待審檔，並把狀態改為待審
+			IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11)
 			BEGIN
-				-- 20210507 UPD BY YEH REASON:從短租補簽名檔改為判斷TB_tmpCrentialsPIC是否有檔案，沒檔案才INSERT進待審檔，並把狀態改為待審
-				IF NOT EXISTS (SELECT * FROM TB_tmpCrentialsPIC WITH(NOLOCK) WHERE IDNO=@IDNO AND CrentialsType=11)
-				BEGIN
-					INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
-					VALUES (@IDNO,11,@CrentialsFile,@NowDate,@NowDate);
+				INSERT INTO TB_tmpCrentialsPIC (IDNO,CrentialsType,CrentialsFile,MKTime,UPDTime)
+				VALUES (@IDNO,11,@CrentialsFile,@NowDate,@NowDate);
 
-					UPDATE TB_Credentials
-					SET Signture=1,
-						UPDTime=@NowDate
-					WHERE IDNO=@IDNO;
-				END
-				ELSE
-				BEGIN
-					UPDATE TB_tmpCrentialsPIC
-					SET CrentialsType=@CrentialsFile,
-						UPDTime=@NowDate
-					WHERE IDNO=@IDNO AND CrentialsType=11;
+				UPDATE TB_Credentials
+				SET Signture=1,
+					UPDTime=@NowDate
+				WHERE IDNO=@IDNO;
+			END
+			ELSE
+			BEGIN
+				UPDATE TB_tmpCrentialsPIC
+				SET CrentialsFile=@CrentialsFile,
+					UPDTime=@NowDate
+				WHERE IDNO=@IDNO AND CrentialsType=11;
 
-					UPDATE TB_Credentials
-					SET Signture=1,
-						UPDTime=@NowDate
-					WHERE IDNO=@IDNO;
-				END
+				UPDATE TB_Credentials
+				SET Signture=1,
+					UPDTime=@NowDate
+				WHERE IDNO=@IDNO;
 			END
 
 			COMMIT TRAN;
