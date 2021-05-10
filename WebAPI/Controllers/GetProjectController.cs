@@ -25,6 +25,8 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using WebAPI.Utils;
+using Domain.SP.Output.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -55,8 +57,6 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             var apiInput = new IAPI_GetProject();
             var outputApi = new OAPI_GetProject();
-            //outputApi.SeatGroups = new List<GetProject_SeatGroup>();
-            outputApi.NowSubsCards = new List<OAPI_NowSubsCard>();
             List<GetProjectObj> lstTmpData = new List<GetProjectObj>();
             Token token = null;
             baseVerify = new CommonFunc();
@@ -70,12 +70,11 @@ namespace WebAPI.Controllers
             string IDNO = "";
             var bill = new BillCommon();
             var SeatGroups = new List<GetProject_SeatGroup>();
-            string StrCarTypes = "";
             var LstCarTypes = new List<string>();
             var LstSeats = new List<string>();
             var LstStationIDs = new List<string>();
-            int ApiMode = 0;    //20210330 ADD BY ADAM REASON.增加特殊身分模式
-            var OAPI_NowSubsCards = new List<OAPI_NowSubsCard>();
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
+
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -239,8 +238,10 @@ namespace WebAPI.Controllers
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
-                        OAPI_NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                        InUseMonth = sp_list;
                 }
+                else
+                    apiInput.MonId = 0;
             }
 
             if (flag)
@@ -548,7 +549,6 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-
                 outputApi = new OAPI_GetProject()
                 {
                     GetProjectObj = lstTmpData
@@ -599,10 +599,53 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                //outputApi.SeatGroups = SeatGroups;
+                #region 產出月租&Project虛擬卡片 
 
-                if (OAPI_NowSubsCards != null && OAPI_NowSubsCards.Count() > 0)
-                    outputApi.NowSubsCards = OAPI_NowSubsCards;
+                if(outputApi.GetProjectObj != null && outputApi.GetProjectObj.Count() > 0)
+                {
+                    var VisProObjs = new List<GetProjectObj>();
+                    var ProObjs = outputApi.GetProjectObj;                    
+                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count()>0)
+                    {
+                        ProObjs.ForEach(x => {
+                           if(x.ProjectObj != null && x.ProjectObj.Count() > 0)
+                           {
+                                var newGetProjObj = objUti.Clone(x);
+                                newGetProjObj.ProjectObj = new List<ProjectObj>();
+                                x.ProjectObj.ForEach(y =>
+                                {
+                                    newGetProjObj.ProjectObj.Add(y);
+                                    InUseMonth.ForEach(z =>
+                                    {
+                                        ProjectObj newItem = objUti.Clone(y);
+                                        newItem.MonthlyRentId = z.MonthlyRentId;
+                                        newItem.ProjName += "_" + z.MonProjNM;
+                                        var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
+                                        {
+                                            PriceBill = y.Price, //給預設
+                                            PROJID = y.ProjID,
+                                            CarType = y.CarType,
+                                            Price = y.WorkdayPerHour * 10,
+                                            PRICE_H = y.HolidayPerHour * 10,
+                                        };
+                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId:z.MonthlyRentId);
+                                        newGetProjObj.ProjectObj.Add(newItem);
+                                    });
+                                });
+                                if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
+                                {
+                                    newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                    VisProObjs.Add(newGetProjObj);
+                                }
+                            }
+                        });
+                        outputApi.GetProjectObj = VisProObjs;
+                    }                  
+                }
+
+                #endregion
+
+                outputApi.GetProjectObj = outputApi.GetProjectObj ?? new List<GetProjectObj>();
 
             }
             #endregion
