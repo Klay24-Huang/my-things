@@ -35,5 +35,9 @@ namespace Domain.TB.BackEnd
         /// 客人名字
         /// </summary>
         public string MEMCNAME { set; get; }
+        /// <summary>
+        /// 錢錢
+        /// </summary>
+        public string orderAmount { set; get; }
     }
 }

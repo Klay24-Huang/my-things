@@ -124,15 +124,19 @@ BEGIN TRY
 	END
 
 	--維護卡登入
-	--IF DATEADD(Hour,8,GETDATE()) >= '2021-03-03 01:00:00' and DATEADD(Hour,8,GETDATE()) < '2021-03-03 05:00:00'
+	IF DATEADD(Hour,8,GETDATE()) >= '2021-05-12 01:00:00' and DATEADD(Hour,8,GETDATE()) < '2021-05-12 05:00:00'
+	AND @MEMIDNO != 'A122364317'
+	BEGIN
+		SET @Error=1
+		SET @ErrorCode='ERR905'
+	END
+	--IF (DATEADD(Hour,8,GETDATE()) >= '2021-03-11 01:00:00' and DATEADD(Hour,8,GETDATE()) < '2021-03-11 05:00:00') 
 	--BEGIN
-	--	SET @Error=1
-	--	SET @ErrorCode='ERR905'
-	--END
-	--ELSE IF DATEADD(Hour,8,GETDATE()) >= '2021-03-11 01:00:00' and DATEADD(Hour,8,GETDATE()) < '2021-03-11 05:00:00'
-	--BEGIN
+	--	if  @MEMIDNO<>'A122364317'
+	--	BEGIN
 	--	SET @Error=1
 	--	SET @ErrorCode='ERR906'
+	--	END
 	--END
 
 	--2.產生Token
@@ -189,7 +193,7 @@ BEGIN TRY
 					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
 					--,PushREGID
 					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)		--20201126 ADD BY ADAM REASON.增加短租流水號
-					,D.[SIGNATURE]
+					,ISNULL(D.[SIGNATURE],'') AS SIGNATURE
 			FROM TB_MemberData A WITH(NOLOCK)
 			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
 			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11
@@ -237,7 +241,7 @@ BEGIN TRY
 					,CASE WHEN ISNULL(CrentialsFile,'')='' THEN '' ELSE 'https://irentv2data.blob.core.windows.net/credential/' + TRIM(CrentialsFile) END AS SigntureCode
 					--,PushREGID
 					,MEMRFNBR='ir'+CAST(A.MEMRFNBR AS VARCHAR)		--20201126 ADD BY ADAM REASON.增加短租流水號
-					,D.[SIGNATURE]
+					,ISNULL(D.[SIGNATURE],'') AS SIGNATURE
 			FROM TB_MemberData A WITH(NOLOCK)
 			Left Join TB_Credentials B WITH(NOLOCK) on B.IDNO=A.MEMIDNO
 			LEFT JOIN TB_CrentialsPIC C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO AND CrentialsType=11

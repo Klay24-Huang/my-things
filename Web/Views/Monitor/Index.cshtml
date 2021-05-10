@@ -93,7 +93,7 @@
                                         <th>衛星狀態</th>
                                         <th>速度</th>
                                         @* <th>回報位置</th>
-        <th>景點</th>*@
+                                            <th>景點</th>*@
                                         <th>回報時間</th>
                                     </tr>
                                 </thead>
@@ -103,26 +103,21 @@
                                         string address = "addr" + i.ToString();
                                         string Lat = "Lat" + i.ToString();
                                         string Lng = "Lng" + i.ToString();
-                                    <tr>
-                                        <td>@(i+1)</td>
-                                        <td>@lstEv[i].CarNo</td>
-                                        <td>開機</td>
-                                        <td>@((lstEv[i].CarStatus==0)?"可出租":"H"+ lstEv[i].CarStatus.ToString().PadLeft(7,'0'))</td>
-                                        <td>@((lstEv[i].GPSStatus == 0)?"未定位":"已定位")</td>
-                                        <td>@((lstEv[i].Speed <0) ? 0 : Convert.ToInt32(lstEv[i].Speed))</td>
-                                        @*  <td>
-             <input type="hidden" id="@Lat" value="@lstEv[i].Latitude"><input type="hidden" id="@Lng" value="@lstEv[i].Longitude">
-             <span class="icon-1 @((lstEv[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstEv[i].Latitude,@lstEv[i].Longitude)"></span>
-         </td>
-        <td></td>*@
-                                        <td>@lstEv[i].GPSTime</td>
-
-
-                                    </tr>
+                                        <tr>
+                                            <td>@(i+1)</td>
+                                            <td>@lstEv[i].CarNo</td>
+                                            <td>開機</td>
+                                            <td>@((lstEv[i].CarStatus==0)?"可出租":"H"+ lstEv[i].CarStatus.ToString().PadLeft(7,'0'))</td>
+                                            <td>@((lstEv[i].GPSStatus == 0)?"未定位":"已定位")</td>
+                                            <td>@((lstEv[i].Speed <0) ? 0 : Convert.ToInt32(lstEv[i].Speed))</td>
+                                            @*  <td>
+                                                     <input type="hidden" id="@Lat" value="@lstEv[i].Latitude"><input type="hidden" id="@Lng" value="@lstEv[i].Longitude">
+                                                     <span class="icon-1 @((lstEv[i].GPSStatus==1)?" text-danger":"")" onclick="detailMap(@lstEv[i].Latitude,@lstEv[i].Longitude)"></span>
+                                                 </td>
+                                                <td></td>*@
+                                            <td>@lstEv[i].GPSTime</td>
+                                        </tr>
                                     }
-
-
-
                                 </tbody>
                                 <tfoot class="hide-if-no-paging">
                                     <tr>
@@ -133,32 +128,13 @@
                                 </tfoot>
                             </table>
                             <!-- / Add News: WYSIWYG Edior -->
-
-
-
                         </div>
-
-
                         <!-- / Add News: Content-->
-
-
-
                     </div>
-
-
                     <!--/ Add News: Box-->
-
-
-
                 </div>
-
-
             </div>
-
-
         </div>
-
-
     </div>
 
 
@@ -243,6 +219,10 @@
 
                                 </div>
                             </form>
+
+                            <!--20210408唐加-->
+                            <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
+
                         </div>
                         <div class="well no-padding" id="InforContent">
                             <label for="neer" class="col-sm-12 control-label">車輛軌跡資訊</label>
@@ -302,6 +282,14 @@
             </div>
         </div>
     </div>
+
+
+    <!--20210408唐加-->
+    @using (Html.BeginForm("ExplodeMapQuery", "Monitor", FormMethod.Post, new { id = "frmMapExplode" }))
+    {
+        <input type="hidden" id="ExplodeOrderNum" name="ExplodeOrderNum" value="">
+    }
+
     <!-- Javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -337,35 +325,43 @@
 				parent.siblings().addClass("drawer-close");
 				parent.siblings().removeClass("drawer-open");
 			}
-		});
+        });
+
+        //20210408唐加，寫在index.js沒反應
+        $("#btnExplode").on("click", function () {
+            console.log('dddddddddddddddddd')
+            //ShowLoading("資料查詢中…");
+            $("#ExplodeOrderNum").val($("#OrderNum").val());
+            //disabledLoading();
+            $("#frmMapExplode").submit();
+        });
+
+
 		var Mode = '@Mode';
-    console.log("Mode="+Mode);
-   // $("#Mode").val(Mode);
- //   $('#Mode option').filter('[value="' + Mode + '"]').attr("checked", true);
-    // document.getElementsByName("Mode").options[parseInt(Mode,10)].checked=true;
-    document.getElementById("Mode"+Mode).checked = true;
-    switch (Mode) {
-        case "0":
-            $('#OrderTerm').show();
-            $('#CarNoTerm').hide();
-            $('#DateTerm').hide();
+        console.log("Mode="+Mode);
+        // $("#Mode").val(Mode);
+        // $('#Mode option').filter('[value="' + Mode + '"]').attr("checked", true);
+        // document.getElementsByName("Mode").options[parseInt(Mode,10)].checked=true;
+        document.getElementById("Mode"+Mode).checked = true;
+        switch (Mode) {
+            case "0":
+                $('#OrderTerm').show();
+                $('#CarNoTerm').hide();
+                $('#DateTerm').hide();
 
-            break;
-        case "1":
-            $('#OrderTerm').hide();
-            $('#CarNoTerm').show();
-            $('#DateTerm').show();
+                break;
+            case "1":
+                $('#OrderTerm').hide();
+                $('#CarNoTerm').show();
+                $('#DateTerm').show();
 
-            break;
-    }
+                break;
+        }
 
         var len = '@len';
     </script>
 
 </body>
-
-
-
 
 <!-- Mirrored from lycaste.co/projects/avocadopanel/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 27 Jul 2016 07:40:43 GMT -->
 </html>

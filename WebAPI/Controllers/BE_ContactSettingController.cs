@@ -7,13 +7,13 @@ using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Car;
 using Domain.SP.Output.OrderList;
+using Domain.SP.Output.Rent;
 using Domain.TB;
 using Domain.TB.BackEnd;
 using Domain.WebAPI.Input.CENS;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Domain.WebAPI.output.HiEasyRentAPI;
-using Domain.WebAPI.output.Mochi;
 using Domain.WebAPI.Output.CENS;
 using Newtonsoft.Json;
 using OtherService;
@@ -28,7 +28,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.ComboFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output;
@@ -918,6 +917,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
+            int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH 
 
             double nor_car_wDisc = 0;//只有一般時段時平日折扣
             double nor_car_hDisc = 0;//只有一般時段時價日折扣
@@ -1459,7 +1459,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("建空模");
                 }
 
-                if (flag && OrderDataLists[0].ProjType != 4 && false)//20201224 add by adam 問題未確定前先關掉車麻吉
+                if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     //檢查有無車麻吉停車費用
                     var input = new IBIZ_CarMagi()
@@ -1478,6 +1478,38 @@ namespace WebAPI.Controllers
                         outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
                     }
                     trace.FlowList.Add("車麻吉");
+                }
+
+                //20210507 ADD BY YEH REASON.串接CityParking停車場
+                if (flag && OrderDataLists[0].ProjType != 4)
+                {
+                    string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
+                    SPInput_CalCityParkingFee SPInput = new SPInput_CalCityParkingFee()
+                    {
+                        IDNO = IDNO,
+                        OrderNo = tmpOrder,
+                        SD = SD,
+                        ED = FED,
+                        LogID = LogID,
+                    };
+
+                    SPOutput_CalCityParkingFee SPOutput = new SPOutput_CalCityParkingFee();
+                    SQLHelper<SPInput_CalCityParkingFee, SPOutput_CalCityParkingFee> SQLBookingStartHelp = new SQLHelper<SPInput_CalCityParkingFee, SPOutput_CalCityParkingFee>(connetStr);
+                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                    flag = !(SPOutput.Error == 1 || SPOutput.ErrorCode != "0000");
+                    if (SPOutput.ErrorCode == "0000" && lstError.Count > 0)
+                    {
+                        SPOutput.ErrorCode = lstError[0].ErrorCode;
+                    }
+                    if (flag)
+                    {
+                        CityParkingPrice = SPOutput.ParkingFee;
+                        if (CityParkingPrice > 0)
+                        {
+                            outputApi.Rent.ParkingFee += CityParkingPrice;
+                        }
+                    }
+                    trace.FlowList.Add("CityParkingFee");
                 }
                 #endregion
                 #region 月租

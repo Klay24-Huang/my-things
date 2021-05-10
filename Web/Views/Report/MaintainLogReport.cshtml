@@ -246,8 +246,8 @@
                     string status = "已預約";
                     string inPic = "";
                     string outPic = "";
-                    double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss")== "1900-01-01 00:00:00") ? DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalDays : -1);
-                    string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(DateTime.Now.Subtract(lstCleanData[i].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                    double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss")== "1900-01-01 00:00:00") ? -1: lstCleanData[i].BookingStart.Subtract(lstCleanData[i].lastCleanTime).TotalDays );
+                    string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(lstCleanData[i].BookingStart.Subtract(lstCleanData[i].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
                     string StartTime =(lstCleanData[i].OrderStatus<1|| lstCleanData[i].OrderStatus==4)?"未取車":lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
                     string EndTime = (lstCleanData[i].OrderStatus == 1 ) ? "未還車":lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
                     if (EndTime!="未還車" && StartTime != "未取車")

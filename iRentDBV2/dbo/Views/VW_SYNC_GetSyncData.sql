@@ -9,13 +9,12 @@
                             ISNULL(LoginData.CardNo, N'') AS CardNo, BookingMain.car_mgt_status, BookingMain.booking_status, 
                             BookingMain.cancel_status, CarInfo.CID, ISNULL(LoginData.PushREGID,'') AS DeviceToken
                             , BookingMain.ProjID, ISNULL(Project.PROJTYPE, - 1) 
-                            AS PROJTYPE,BookingMain.spec_status
-FROM              dbo.TB_OrderMain AS BookingMain LEFT OUTER JOIN
-                            dbo.TB_OrderDetail AS BookingDetail ON 
-                            BookingMain.order_number = BookingDetail.order_number LEFT OUTER JOIN
-                            dbo.TB_Project AS Project ON Project.PROJID = BookingMain.ProjID LEFT OUTER JOIN
-                            dbo.TB_MemberData AS LoginData ON LoginData.MEMIDNO = BookingMain.IDNO LEFT OUTER JOIN
-                            dbo.TB_CarInfo AS CarInfo ON CarInfo.CarNo = BookingMain.CarNO 
+                            AS PROJTYPE,BookingMain.spec_status,BookingMain.stop_pick_time AS stop_pick_time
+FROM              dbo.TB_OrderMain AS BookingMain WITH(NOLOCK) 
+		LEFT OUTER JOIN  dbo.TB_OrderDetail AS BookingDetail WITH(NOLOCK) ON  BookingMain.order_number = BookingDetail.order_number 
+		LEFT OUTER JOIN  dbo.TB_Project AS Project WITH(NOLOCK) ON Project.PROJID = BookingMain.ProjID 
+		LEFT OUTER JOIN  dbo.TB_MemberData AS LoginData WITH(NOLOCK) ON LoginData.MEMIDNO = BookingMain.IDNO 
+		LEFT OUTER JOIN  dbo.TB_CarInfo AS CarInfo WITH(NOLOCK) ON CarInfo.CarNo = BookingMain.CarNO
 
                             GO
   EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_SYNC_GetSyncData';

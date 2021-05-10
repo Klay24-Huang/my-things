@@ -20,7 +20,7 @@
         <div class="card-header text-white" style="background-color: #9fa4ac;">
             輸入內容
         </div>
-        @using (Html.BeginForm("ChangeID", "MemberManage", FormMethod.Post, new { id = "frmDelete", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("ChangeID", "MemberManage", FormMethod.Post, new { id = "frmChangeID", @class = "form-horizontal", enctype = "multipart/form-data" }))
         {
             <ul class="list-group list-group-flush">
                 <!--每一個li是一項查詢條件-->
@@ -52,7 +52,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <button type="submit" class="btn btn-info btn-submit">確認變更</button>
+                                <button type="button" id="change" class="btn btn-info btn-submit">確認變更</button>
                                 <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>

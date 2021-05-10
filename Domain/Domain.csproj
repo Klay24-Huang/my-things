@@ -374,8 +374,10 @@
     <Compile Include="TB\BackEnd\BE_GetUserData.cs" />
     <Compile Include="TB\BackEnd\BE_HoildayData.cs" />
     <Compile Include="TB\BackEnd\BE_LandControl.cs" />
+    <Compile Include="TB\BackEnd\BE_MapList.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCardData.cs" />
+    <Compile Include="TB\BackEnd\BE_MemberData.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSetting.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />

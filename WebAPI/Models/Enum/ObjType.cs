@@ -394,10 +394,10 @@ namespace WebAPI.Models.Enum
             /// 取得廣告資訊
             /// </summary>
             GetBanner,
-            GetCarTypeGroupList,
             /// <summary>
-            /// 檢查APP版本
+            /// 重新授權
             /// </summary>
+            GetOrderAuthRetryList,
             CheckAppVersion,
             /// <summary>
             /// 變更悠遊卡 20210415 ADD
@@ -407,6 +407,7 @@ namespace WebAPI.Models.Enum
             /// 綁定悠遊卡 20210415 ADD
             /// </summary>
             BindUUCardJob,
+            GetCarTypeGroupList,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -430,6 +431,7 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetWalletInfo,
             GetWalletInfoByTrans,
+            SaveRecieveTSAC,
             /// <summary>
             /// 開戶+儲值
             /// </summary>
@@ -473,6 +475,10 @@ namespace WebAPI.Models.Enum
             /// 新增及修改據點
             /// </summary>
             BE_HandleStation,
+            /// <summary>
+            /// 新增及修改據點（包括同步進專案)
+            /// </summary>
+            BE_HandleStationNew,
             /// <summary>
             /// 特約停車場處理
             /// </summary>
@@ -635,6 +641,14 @@ namespace WebAPI.Models.Enum
             BE_GetReturnCarControl,
 
             GetBindingCard,
+            /// <summary>
+            /// 匯入車機車輛綁定資料
+            /// </summary>
+            BE_ImportCarBindData,
+            /// <summary>
+            /// 更新遠傳DeviceId與DeveiceToken
+            /// </summary>
+            BE_UpdCATDeviceToken,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -726,6 +740,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.RefrashToken: //Refrash Token
                     SPName = "usp_RefrashToken";
+                    //SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -740,7 +755,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    SPName = "usp_Booking";
+                    SPName = "usp_Booking_20210325";
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";
@@ -976,6 +991,9 @@ namespace WebAPI.Models.Enum
                 case SPType.BindUUCardJob:    //綁定悠遊卡 20210415 ADD
                     SPName = "usp_BindUUCardJob";
                     break;
+                case SPType.GetOrderAuthRetryList:
+                    SPName = "usp_GetOrderAuthRetryList";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
@@ -1007,6 +1025,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.HandleWallet:
                     SPName = "usp_HandleWallet";
+                    break;
+                case SPType.SaveRecieveTSAC:
+                    SPName = "usp_SaveRecieveTSAC";
                     break;
                 #endregion
                 #region 車麻吉
@@ -1042,6 +1063,9 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_ChangePWD";
                     break;
                 case SPType.BE_HandleStation:
+                    SPName = "usp_BE_HandleStationNew";
+                    break;
+                case SPType.BE_HandleStationNew:
                     SPName = "usp_BE_HandleStationNew";
                     break;
                 case SPType.BE_HandleTransParking:
@@ -1167,6 +1191,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetCityParkingFee:      //20210429 ADD BY ADAM REASON.增加CityPark停車費綁定
                     SPName = "usp_GetCityParkingFee";
+                    break;
+                case SPType.BE_ImportCarBindData:
+                    SPName = "usp_BE_ImportCarBindData";
+                    break;
+                case SPType.BE_UpdCATDeviceToken:
+                    SPName = "usp_BE_UpdCATDeviceToken";
                     break;
                 #endregion
                 #region 整備人員

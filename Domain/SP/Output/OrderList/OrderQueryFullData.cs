@@ -279,6 +279,10 @@ namespace Domain.SP.Output.OrderList
         /// CardToken
         /// </summary>
         public string CardToken { set; get; }
+        /// <summary>
+        /// 台新訂單編號
+        /// </summary>
+        public string transaction_no { set; get; }
     }
 
 

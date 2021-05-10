@@ -73,6 +73,10 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "匯入車機資料(含SIM)";
             break;
+        case "ImportCarBindData":
+            ControllerStrName = "車輛管理";
+            ActionStrName = "匯入車機綁定資料";
+            break;
         #endregion
         #region 卡片管理
         case "MasterCardSetting":
@@ -300,7 +304,11 @@
             ControllerStrName = "報表專區";
             ActionStrName = "車輛隨租定位";
             break;
-
+        case "MotorBatteryStatusQuery":
+            ControllerStrName = "報表專區";
+            ActionStrName = "機車電池狀態歷程查詢";
+            break;
+            
             #endregion
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);

@@ -187,11 +187,12 @@ namespace WebAPI.Controllers
                     };
                     requestId = input.requestId;
                     string method = CommandType;
-                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                    if (flag)
-                    {
-                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    }
+                    //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
+                    //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                    //if (flag)
+                    //{
+                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                    //}
 
                     if (flag)
                     {
@@ -234,6 +235,30 @@ namespace WebAPI.Controllers
                         flag = SQLBookingControlHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingControlOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPBookingControlOutput, ref lstError, ref errCode);
                     }
+                    //20210325 ADD BY ADAM REASON.車機指令優化
+                    #region 開啟電源 
+                    if (flag)
+                    {
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
+                        input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+
+                        };
+                        method = CommandType;
+                        requestId = input.requestId;
+                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
+                    }
+                    #endregion
+
                     #region 設定租約
                     if (flag)
                     {

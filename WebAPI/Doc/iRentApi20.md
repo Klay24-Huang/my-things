@@ -26,6 +26,11 @@ iRentApi20 Web API版本
 
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 
+月租訂閱制相關
+- [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
+- [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
+- [BuyNow 立即購買](#BuyNow)
+
 ----------
 # 修改歷程
 
@@ -43,6 +48,8 @@ iRentApi20 Web API版本
 20210407 新增檢查APP版本、還原更新Token
 
 20210415 新增變更悠遊卡
+
+20210510 新增月租訂閱制相關
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -1400,4 +1407,508 @@ iRentApi20 Web API版本
     }
 }
 ```
+
+------
+
+<h5 id="GetMonthList" name="GetMonthList">20210510發佈</h5>
+
+# GetMonthList 取得訂閱制月租列表/我的所有方案
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetMonthList/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                                                                                |
+| ---------- | ------------------------ | :--: | :----: | ----------------------------------                                                  |
+| IsMoto     | 是否為機車               |  N   |  int   | 0:否 1:是                                                                           |
+| ReMode     | 回傳模式                 |  N   |  int   | 0:自動判定(若已有購買月租為我的所有方案2,若無則為月租列表1) 1:月租列表 2:我的所有方案 |
+
+* input範例
+
+```
+{
+    "IsMoto": 0,
+    "ReMode": 1,
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明,汽車牌卡(ReMode=1, IsMoto=0)
+
+| 參數名稱    | 參數說明                    | 型態 | 範例 |
+| --------    | --------                    | :--: | ---- |
+| IsMotor     | 是否為機車                  | int  |  0   |
+| NorMonCards | 汽車牌卡(資料物件list)      |      |      |
+| MixMonCards | 城市車手牌卡(資料物件list)  |      |      |
+| ReMode      | 模式(1:月租，2我的所有方案) | int  |  1   |
+
+
+* 資料物件說明,機車牌卡(ReMode=1, IsMoto=1)
+
+| 參數名稱    | 參數說明                    | 型態 | 範例 |
+| --------    | --------                    | :--: | ---- |
+| IsMotor     | 是否為機車                  | int  |   1  |
+| NorMonCards | 機車牌卡(資料物件List)      |      |      |
+| ReMode      | 模式(1:月租，2我的所有方案) | int  |   1  |
+
+* 資料物件說明,我的所有方案(ReMode=2)
+| 參數名稱    | 參數說明                    | 型態 | 範例 |
+| --------    | --------                    | :--: | ---- |
+| MyCar       | 汽車牌卡(資料物件obj)       |      |      |
+| MyMoto      | 機車牌卡(資料物件obj)       |      |      |
+| ReMode      | 模式(1:月租，2我的所有方案) | int  |  2   |
+
+
+* NorMonCards, MixMonCards, MyCar, MyMoto 參數說明
+| 參數名稱      | 參數說明             |  型態  | 範例     |
+| -----------   | ----------           | :----: | ---------|
+| MonProjID     | 方案代碼(key)        | string | MR66     |
+| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProPeriod  | 總期數(key)          | int    | 3        |
+| ShortDays	    | 短期總天數(key)      | int    | 0        |
+| PeriodPrice	| 方案價格             | int    | 7000     |
+| IsMoto	    | 是否為機車0否1是     | int    | 0        |
+| CarWDHours	| 汽車平日時數         | double | 10       |
+| CarHDHours	| 汽車假日時數         | double | 0        |
+| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
+| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+
+* Output範例,汽車牌卡(ReMode=1, IsMoto=0)
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"IsMotor": 0,
+		"NorMonCards": [
+			{
+				"MonProjID": "MR01",
+				"MonProjNM": "汽車平日入門2期",
+				"MonProPeriod": 2,
+				"ShortDays": 0,
+				"PeriodPrice": 149,
+				"IsMoto": 0,
+				"CarWDHours": 1.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"IsDiscount": 0
+			},
+			{
+				"MonProjID": "MR02",
+				"MonProjNM": "汽車平日低資費6期",
+				"MonProPeriod": 6,
+				"ShortDays": 0,
+				"PeriodPrice": 2999,
+				"IsMoto": 0,
+				"CarWDHours": 33.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"IsDiscount": 0
+			}
+		],
+		"MixMonCards": [
+			{
+				"MonProjID": "MR66",
+				"MonProjNM": "測試_汽包機66-1",
+				"MonProPeriod": 1,
+				"ShortDays": 0,
+				"PeriodPrice": 6000,
+				"IsMoto": 0,
+				"CarWDHours": 1.0,
+				"CarHDHours": 1.0,
+				"MotoTotalMins": 100,
+				"IsDiscount": 0
+			}
+		],
+		"ReMode": 1
+	}
+}
+```
+
+* Output範例,機車牌卡(ReMode=1, IsMoto=1)
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "IsMotor": 1,
+        "NorMonCards": [
+            {
+                "MonProjID": "MR200",
+                "MonProjNM": "測試_機車2000",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 2000,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 600,
+                "IsDiscount": 0
+            },
+            {
+                "MonProjID": "MR201",
+                "MonProjNM": "測試_機車3000",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 3000,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 800,
+                "IsDiscount": 0
+            }
+        ],
+        "ReMode": 1
+    }
+}
+```
+
+* Output範例,我的所有方案(ReMode=2)
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "MyCar": {
+            "MonProjID": "MR103",
+            "MonProjNM": "測試_汽包機103-3",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "PeriodPrice": 7800,
+            "IsMoto": 0,
+            "CarWDHours": 4.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300,
+            "IsDiscount": 0
+        },
+        "MyMoto": null,
+        "ReMode": 2
+    }
+}
+```
+
+------
+
+<h5 id="GetMonthGroup" name="GetMonthGroup">20210510發佈</h5>
+
+# GetMonthGroup 月租專案群組
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetMonthGroup/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例                              |
+| ---------- | ------------------------ | :--: | :----:  | ----------------------------------|
+| MonProjID  | 專案代碼                 |  Y   |  string | MR66                              |
+
+* input範例
+
+```
+{
+    "MonProjID": "MR66",
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| MonProDisc  | 注意事項                    | string  |  汽包機66-1注意事項   |
+| MonCards    | 汽機車牌卡(資料物件list)    |         |      |
+
+* MonCards 參數說明
+| 參數名稱      | 參數說明             |  型態  | 範例     |
+| -----------   | ----------           | :----: | ---------|
+| MonProjID     | 方案代碼(key)        | string | MR66     |
+| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProPeriod  | 總期數(key)          | int    | 3        |
+| ShortDays	    | 短期總天數(key)      | int    | 0        |
+| PeriodPrice	| 方案價格             | int    | 7000     |
+| IsMoto	    | 是否為機車0否1是     | int    | 0        |
+| CarWDHours	| 汽車平日時數         | double | 10       |
+| CarHDHours	| 汽車假日時數         | double | 0        |
+| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
+| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "MonProDisc": "汽包機66-1注意事項",
+        "MonCards": [
+            {
+                "MonProjID": "MR66",
+                "MonProjNM": "測試_汽包機66-3",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 7000,
+                "IsMoto": 0,
+                "CarWDHours": 3.0,
+                "CarHDHours": 3.0,
+                "MotoTotalMins": 300,
+                "IsDiscount": 0
+            },
+            {
+                "MonProjID": "MR66",
+                "MonProjNM": "測試_汽包機66-6",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 9000,
+                "IsMoto": 0,
+                "CarWDHours": 6.0,
+                "CarHDHours": 6.0,
+                "MotoTotalMins": 600,
+                "IsDiscount": 0
+            }
+        ]
+    }
+}
+```
+
+------
+
+<h5 id="BuyNow" name="BuyNow">20210510發佈</h5>
+
+# BuyNow 立即購買
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/BuyNow/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| ApiID      | 呼叫端apiId                |  Y   |  int   | 179                            |
+| ApiJson    | 呼叫端ApiJson-序列化後字串 |  N   | string | 請參考ApiJson 序列化後字串範例 |
+| ProdNm     | 產品名稱                   |  N   | string | 測試_汽包機66-3                |
+| ProdDisc   | 產品描述                   |  N   | string | 測試                           |
+| ProdPrice  | 產品價格                   |  Y   |  int   | 7000                           |
+| DoPay      | 執行付款(0顯示,1付款)      |  Y   |  int   | 0                              |
+| PayTypeId  | 選定付款方式               |  N   |  int   | 5                              |
+| InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
+
+* ApiJson(ApiID=179)參數說明
+| 參數名稱      | 參數說明                 | 必要 |  型態   | 範例                    |
+| ------------- | ------------------------ | :--: | :----:  | ------------------------|
+|  IDNO         |       身分證號           |  Y   | string  |       A123456789        |
+|  LogID        |       LogID              |  Y   |  int    |       123               |
+|  MonProjID    |       專案編號(key       |  Y   | string  |       MR66              |
+|  MonProPeriod |       期數(key)          |  Y   | int     |       3                 |
+|  ShortDays    |       短天期(key)        |  Y   | int     |       3                 |
+
+* ApiJson 序列化後字串範例
+|    ApiID      |    ApiJson               |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+|    179        | {\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0} |
+
+* input範例 (購買月租179)
+```
+{
+    "ApiID":179,
+    "ApiJson":"{\"IDNO\":\"A122364317\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
+    "ProdNm":"測試_汽包機66-3",
+    "ProdPrice":7000,
+    "DoPay":0,
+    "PayTypeId":5,
+    "InvoTypeId":6
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明(DoPay=0 顯示)
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| ProdNm      | 產品名稱                    | string  |  測試_汽包機66-3      |
+| ProdDisc    | 產品描述                    | string  |  空字串               |
+| ProdPrice   | 產品價格                    | int     |  7000                 |
+| PayTypes    | 資料物件:付款方式(list)     |         |                       |
+| InvoTypes   | 資料物件:發票設定(list)     |         |                       |
+| PayResult   | 付費結果(0失敗 1成功)       | int     |    0                  |
+
+
+* 資料物件說明(DoPay=1 付款)
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| ProdNm      | 產品名稱                    | string  |  空字串  |
+| ProdDisc    | 產品描述                    | string  |  空字串  |
+| ProdPrice   | 產品價格                    | int     |  皆為0   |
+| PayTypes    | 資料物件:付款方式(list)     |         |  空陣列  |
+| InvoTypes   | 資料物件:發票設定(list)     |         |  空陣列  |
+| PayResult   | 付費結果(0失敗 1成功)       | int     |    1     |
+
+* PayTypes, InvoTypes 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| CodeId        | 代碼                  | int    | 5                  |
+| CodeNm        | 名稱                  | string | 信用卡,手機條碼    |
+| IsBind        | 是否為預設值(0否 1是) | int    | 0                  |
+| Disc          | 其它描述              | string | (預留)目前為空字串 |
+
+* Output範例,汽車牌卡(DoPay=0 顯示)
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "ProdNm": "測試_汽包機66-3",
+        "ProdDisc": "",
+        "ProdPrice": 7000,
+        "PayTypes": [
+            {
+                "CodeId": 5,
+                "CodeNm": "信用卡",
+                "IsBind": 1,
+                "Disc": ""
+            }
+        ],
+        "InvoTypes": [
+            {
+                "CodeId": 9,
+                "CodeNm": "手機條碼",
+                "IsBind": 0,
+                "Disc": ""
+            },
+            {
+                "CodeId": 10,
+                "CodeNm": "自然人憑證",
+                "IsBind": 0,
+                "Disc": ""
+            },
+            {
+                "CodeId": 7,
+                "CodeNm": "二聯",
+                "IsBind": 0,
+                "Disc": ""
+            },
+            {
+                "CodeId": 8,
+                "CodeNm": "三聯",
+                "IsBind": 0,
+                "Disc": ""
+            },
+            {
+                "CodeId": 6,
+                "CodeNm": "捐贈碼",
+                "IsBind": 0,
+                "Disc": ""
+            },
+            {
+                "CodeId": 12,
+                "CodeNm": "email",
+                "IsBind": 1,
+                "Disc": ""
+            }
+        ],
+        "PayResult": 0
+    }
+}
+```
+
+* Output範例,汽車牌卡(DoPay=1 付款)
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "ProdNm": "",
+        "ProdDisc": "",
+        "ProdPrice": 0,
+        "PayTypes": [],
+        "InvoTypes": [],
+        "PayResult": 1
+    }
+}
+```
+
+
 

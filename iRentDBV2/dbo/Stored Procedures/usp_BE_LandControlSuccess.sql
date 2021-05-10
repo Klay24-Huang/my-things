@@ -75,61 +75,63 @@ SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
-SET @OrderNo    =ISNULL (@OrderNo    ,0);
-SET @CNTRNO		=ISNULL(@CNTRNO,'')
+SET @OrderNo=ISNULL (@OrderNo,0);
+SET @CNTRNO=ISNULL(@CNTRNO,'')
 
-		BEGIN TRY
-
+BEGIN TRY
+	IF @OrderNo='' 
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @OrderNo='' 
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	IF @IsSuccess=0
-			BEGIN
-			 UPDATE TB_lendCarControl 
-			 SET isRetry=1,RetryTimes=RetryTimes+1,UPDTime=@NowTime
-			 WHERE IRENTORDNO=@OrderNo
-			END
-			ELSE
-			BEGIN
-		     UPDATE TB_lendCarControl 
-			 SET isRetry=0,UPDTime=@NowTime
-			 ,CNTRNO=@CNTRNO		--20201127 ADD BY ADAM REASON.增加合約編號
-			 WHERE IRENTORDNO=@OrderNo
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		IF @IsSuccess=0
+		BEGIN
+			UPDATE TB_lendCarControl 
+			SET isRetry=1,RetryTimes=RetryTimes+1,UPDTime=@NowTime
+			WHERE IRENTORDNO=@OrderNo
+		END
+		ELSE
+		BEGIN
+			UPDATE TB_lendCarControl 
+			SET isRetry=0,
+				UPDTime=@NowTime,
+				CNTRNO=@CNTRNO			--20201127 ADD BY ADAM REASON.增加合約編號
+			WHERE IRENTORDNO=@OrderNo
 
-			 --順便更新，如果有延遲轉送的話
-			 UPDATE TB_ReturnCarControl SET CNTRNO=@CNTRNO WHERE IRENTORDNO=@OrderNo AND CNTRNO=''
-			END
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+			--順便更新，如果有延遲轉送的話
+			UPDATE TB_ReturnCarControl 
+			SET CNTRNO=@CNTRNO,
+				UPDTime=@NowTime
+			WHERE IRENTORDNO=@OrderNo AND CNTRNO=''
+		END
+	END
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BE_LandControlSuccess';

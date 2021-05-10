@@ -611,13 +611,21 @@ namespace WebAPI.Controllers
                         {
                             OrderNo = apiInput.OrderNo
                         };
-                        var etag_re = cr_com.ETagCk(input);
-                        if (etag_re != null)
+                        trace.traceAdd("etag_in", input);
+                        try
                         {
-                            trace.traceAdd(nameof(etag_re), etag_re);
-                            flag = etag_re.flag;
-                            errCode = etag_re.errCode;
-                            etagPrice = etag_re.etagPrice;
+                            var etag_re = cr_com.ETagCk(input);
+                            if (etag_re != null)
+                            {
+                                trace.traceAdd(nameof(etag_re), etag_re);
+                                //flag = etag_re.flag;
+                                errCode = etag_re.errCode;
+                                etagPrice = etag_re.etagPrice;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            trace.BaseMsg += "etag_err:" + ex.Message;
                         }
                         trace.FlowList.Add("查ETAG");
                     }
@@ -687,12 +695,20 @@ namespace WebAPI.Controllers
                             ED = FED.AddDays(1),
                             OrderNo = tmpOrder
                         };
-                        var magi_Re = cr_com.CarMagi(input);
-                        if (magi_Re != null)
+                        trace.traceAdd("magi_in", input);
+                        try
                         {
-                            trace.traceAdd(nameof(magi_Re), magi_Re);
-                            flag = magi_Re.flag;
-                            outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
+                            var magi_Re = cr_com.CarMagi(input);
+                            if (magi_Re != null)
+                            {
+                                trace.traceAdd(nameof(magi_Re), magi_Re);
+                                //flag = magi_Re.flag;
+                                outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            trace.BaseMsg += "magi_err:" + ex.Message;
                         }
                         trace.FlowList.Add("車麻吉");
                     }
@@ -1048,7 +1064,7 @@ namespace WebAPI.Controllers
                         CodeVersion = trace.codeVersion,
                         FlowStep = trace.FlowStep(),
                         OrderNo = trace.OrderNo,
-                        TraceType = !flag ? eumTraceType.followErr : eumTraceType.mark
+                        TraceType = string.IsNullOrWhiteSpace(trace.BaseMsg) ? (flag ? eumTraceType.mark : eumTraceType.followErr) : eumTraceType.exception
                     };
                     carRepo.AddTraceLog(errItem);
                 }

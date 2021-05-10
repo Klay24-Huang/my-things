@@ -1,12 +1,19 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
-using NLog.Internal;
+using Newtonsoft.Json;
+//using NLog.Internal;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using WebCommon;
-using ConfigurationManager = System.Configuration.ConfigurationManager;
+using ConfigurationManager = System.Configuration.ConfigurationManager; 
 
 namespace Reposotory.Implement
 {
@@ -303,8 +310,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
             string term2 = "";
-            //string SQL = " EXEC usp_BE_GetAuditImage '" + IDNO + "'";
-            string SQL = " EXEC usp_BE_GetAuditImage_Tang '" + IDNO + "'";
+            string SQL = " EXEC usp_BE_GetAuditImage  '" + IDNO + "'";
             int nowCount = 0;
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
     
@@ -468,7 +474,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME " +
+            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount " +
                 $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
                 $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
@@ -476,151 +482,157 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
-        public bool DeleteMember(string IDNO, string IRent_Only, string Account)
+        public bool IsMemberExist(string IDNO)
         {
-            bool result = true;
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            if(IRent_Only == "on")
+            SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
+            string term = "";
+            string SQL = $" SELECT * FROM TB_MemberData WHERE MEMIDNO = '{IDNO}'";
+            List<BE_MemberData> result = new List<BE_MemberData>();
+            result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+            if(result.Count == 0)
             {
-                SqlParameter[] para = new SqlParameter[3];
-                string term = "";
-                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
-                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL += " DROP TABLE tmp_DelMemberList";
-
-                if (Execuate(ref flag, SQL) <= 2)
-                {
-                    result = false;
-                }
-
-                return result;
+                return false;
             }
             else
             {
-                string SQL = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL += $"insert into tmp_DelMemberList values('{IDNO}')";
-                SQL += " delete TB_MemberData FROM TB_MemberData A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_MemberDataOfAutdit FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL += " delete TB_AuditHistory FROM TB_MemberDataOfAutdit A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL += $" insert into AlreadyDeleteMember select N'測試',IDNO,DATEADD(HOUR, 8, GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL += " DROP TABLE tmp_DelMemberList";
-
-                if (Execuate(ref flag, SQL) <= 2)
-                {
-                    result = false;
-                }
-
-                this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
-                SqlParameter[] para = new SqlParameter[3];
-                string SQL06 = "Create TABLE tmp_DelMemberList(IDNO varchar(11))";
-                SQL06 += $" insert into tmp_DelMemberList values('{IDNO}')";
-                SQL06 += " delete MEMBER_NEW FROM MEMBER_NEW A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO";
-                SQL06 += " delete [dbo].[IRENT_GIFTMINSHIS] FROM [dbo].[IRENT_GIFTMINSHIS] A JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[IRENT_GIFTMINSMF] FROM [dbo].[IRENT_GIFTMINSMF] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[IRENT_SIGNATURE]	FROM [dbo].[IRENT_SIGNATURE] A  JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_API]		FROM [dbo].[MEMBER_API] A		JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_API_LOG]	FROM [dbo].[MEMBER_API_LOG] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += " delete [dbo].[MEMBER_VERIFY]	FROM [dbo].[MEMBER_VERIFY] A	JOIN tmp_DelMemberList B ON A.MEMIDNO = B.IDNO ";
-                SQL06 += $" insert into AlreadyDeleteMember select N'測試 ',IDNO,DATEADD(HOUR,8,GETDATE()),'{Account}'from tmp_DelMemberList";
-                SQL06 += " DROP TABLE tmp_DelMemberList";
-
-                if (Execuate(ref flag, SQL) <= 1)
-                {
-                    result = false;
-                }
-
-                return result;
+                return true;
             }
         }
 
-        public bool ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        public void DeleteMember(string IDNO, string IRent_Only, string Account)
         {
-            bool result = true;
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            SqlParameter[] para = new SqlParameter[3];
-            string term = "";
-            string SQL = "BEGIN TRAN";
-            SQL += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL += " DECLARE @NOW			DATETIME	SET @NOW			= DATEADD(HOUR,8,GETDATE())";
-            SQL += " update TB_MemberData			set MEMIDNO = @AFTER_IDNO	,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO ";
-            SQL += " update TB_MemberDataOfAutdit	set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO ";
-            SQL += " update TB_MemberBySocial		set MEMIDNO = @AFTER_IDNO	,UPDTime = @NOW	where MEMIDNO = @TARGET_IDNO";
-            SQL += " update TB_CrentialsPIC			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_CrentialsPIC_NULL		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_Credentials    		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
-            SQL += " update TB_tmpCrentialsPIC		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO ";
-            SQL += " update TB_AuditHistory			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_AuditCredentials		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " delete TB_AuditCrentialsReject												where IDNO = @AFTER_IDNO";
-            SQL += " update TB_AuditCrentialsReject	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_OrderMain				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_VerifyCode            set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MemberCardBinding		set IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRent			set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRentHistory	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MonthlyRentHistory_LOG set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_MemberDataBlock       set MEMIDNO = @AFTER_IDNO						where MEMIDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingStatusOfUser	SET IDNO = @AFTER_IDNO		,UPDTime = @NOW	where IDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingInsuranceOfUser set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
-            SQL += " update TB_BookingInsuranceOfUserHIS set IDNO = @AFTER_IDNO,UPDTime = DATEADD(HOUR,8,GETDATE()) where  IDNO = @TARGET_IDNO";
-            SQL += " update TB_FeedBack				set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_FavoriteStation		set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += " update TB_PersonNotification	set IDNO = @AFTER_IDNO						where IDNO = @TARGET_IDNO";
-            SQL += $" insert into TB_ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, DATEADD(HOUR,8,GETDATE()), {Account})";
-            SQL += " COMMIT TRAN";
-
-            if(Execuate(ref flag, SQL) <= 1)
+            if(IRent_Only == "on")
             {
-                result = false;
+
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
+
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+
             }
-
-            this.ConnectionString = ConfigurationManager.ConnectionStrings["06VM"].ConnectionString;
-            bool flag06 = false;
-            string SQL06 = "BEGIN TRAN";
-            SQL06 += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL06 += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL06 += " DECLARE @NOW			DATETIME	SET @NOW			= GETDATE()";
-            SQL06 += " update MEMBER_NEW			set  MEMIDNO = @AFTER_IDNO,U_SYSDT = @NOW	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update MEMBER_NEW_LOG		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update IRENT_GIFTMINSMF		set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += " update IRENT_GIFTMINSHIS	set  MEMIDNO = @AFTER_IDNO	where MEMIDNO = @TARGET_IDNO";
-            SQL06 += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
-            SQL06 += " COMMIT TRAN";
-
-            if (Execuate(ref flag06, SQL06) <= 1)
+            else
             {
-                result = false;
+                
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
+
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
+                HttpClient client = new HttpClient()
+                {
+                    BaseAddress = new System.Uri(apiAddress)
+                };
+
+                string EncryptStr = "";
+                string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+                ASCIIEncoding enc = new ASCIIEncoding();
+                SHA1 sha = new SHA1CryptoServiceProvider();
+                byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+                EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+                string param = JsonConvert.SerializeObject(new
+                {
+                    IDNO = IDNO,
+                    Account = Account,
+                    user_id = ConfigurationManager.AppSettings["userid"],
+                    sig = EncryptStr
+                });
+                HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+                HttpResponseMessage apiResponse = new HttpResponseMessage();
+                apiResponse = client.PostAsync(apiAddress, postContent).Result;
+                string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
             }
+        }
 
-            this.ConnectionString = ConfigurationManager.ConnectionStrings["01VM_LS"].ConnectionString;
-            bool flag01_LS = false;
-            string SQL01_LS = "BEGIN TRAN";
-            SQL01_LS += $" DECLARE @TARGET_IDNO	VARCHAR(10) SET @TARGET_IDNO	= '{TARGET_ID}'";
-            SQL01_LS += $" DECLARE @AFTER_IDNO		VARCHAR(10) SET @AFTER_IDNO		= '{AFTER_ID}'";
-            SQL01_LS += " UPDATE LSRENTMF	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()	where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_MONTH_RENTMF_LOG	SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_SIGNATURE			SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUBKDF				SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUSTAGREEDF		SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE LC..LCCUSTMF		    SET CUSTID = @AFTER_IDNO,U_SYSDT = GETDATE()		where CUSTID = @TARGET_IDNO";
-            SQL01_LS += " UPDATE IRENT_INSURANCE_LEVEL	SET CUSTID = @AFTER_IDNO							where CUSTID = @TARGET_IDNO";
-            SQL01_LS += $" insert into ChangeID_LOG (OLD_ID, NEW_ID, A_SYSDT, A_USERID) values(@TARGET_IDNO, @AFTER_IDNO, GETDATE(), {Account})";
-            SQL01_LS += " COMMIT TRAN";
+        public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        {
 
-            if (Execuate(ref flag01_LS, SQL01_LS) <= 1)
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Transaction = tran;
+            cmd.CommandText = "usp_ChangeID";
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("TARGET_IDNO", SqlDbType.VarChar, 11).Value = TARGET_ID;
+            cmd.Parameters.Add("AFTER_IDNO", SqlDbType.VarChar, 11).Value = AFTER_ID;
+            cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+            cmd.ExecuteNonQuery();
+            tran.Commit();
+
+            conn.Close();
+            conn.Dispose();
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/ChangeID";
+            HttpClient client = new HttpClient()
             {
-                result = false;
-            }
+                BaseAddress = new System.Uri(apiAddress)
+            };
 
-            return result;
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+            string param = JsonConvert.SerializeObject(new
+            {
+                TARGET_IDNO = TARGET_ID,
+                AFTER_IDNO = AFTER_ID,
+                Account = Account,
+                user_id = ConfigurationManager.AppSettings["userid"],
+                sig = EncryptStr
+            });
+            HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+            HttpResponseMessage apiResponse = new HttpResponseMessage();
+            apiResponse = client.PostAsync(apiAddress, postContent).Result;
+            string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
         }
     }
 }

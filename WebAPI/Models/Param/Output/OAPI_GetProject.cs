@@ -27,7 +27,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 車款下拉
         /// </summary>
-        public List<GetProject_SeatGroup> SeatGroups { get; set; }
+        //public List<GetProject_SeatGroup> SeatGroups { get; set; }
 
         /// <summary>
         /// 目前可使用訂閱制月租

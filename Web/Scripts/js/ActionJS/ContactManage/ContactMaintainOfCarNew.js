@@ -57,10 +57,10 @@ $(document).ready(function () {
         var Insurance_price = $("#Insurance_price_input").val();    //安心服務
         var Mileage = $("#Mileage_input").val();                    //里程費用
         var pure = $("#pure_price_input").val();                    //租金
-        var SM = $("#start_mile_input").val();                      //取車里程
-        var EM = $("#end_mile_input").val();                        //還車里程
-        var FP = $("#fine_price_input").val();                      //逾時費用
-        var SD = $("#StartDate").val();                             //實際取車時間
+
+        //20210324 ADD BY ADAM REASON.補ETAG
+        var eTag = $("#spn_eTag").html();
+
         var SM = $("#start_mile_input").val();                      //取車里程
         var EM = $("#end_mile_input").val();                        //還車里程
         var FP = $("#fine_price_input").val();                      //逾時費用
@@ -78,7 +78,11 @@ $(document).ready(function () {
 	
         var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP) + parseInt(ParkingFeeTotal);   //結算金額(計算後) = 租金 + 安心服務 + 里程費用 + 逾時費用 + 停車費用(總)
         $("#final_price_input").val(totalAmt);  //結算金額
-        var final_price = $("#final_price_input").val();    
+        //var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP);
+        //20210324 ADD BY ADAM REASON.補ETAG
+        var totalAmt = parseInt(pure) + parseInt(Insurance_price) + parseInt(Mileage) + parseInt(FP) + parseInt(eTag);
+        $("#final_price_input").val(totalAmt);
+        var final_price = $("#final_price_input").val();
         if (pure != "" && SM != "" && EM != "" && SD != "" && ED != "" && FP != "" && final_price != "") {
             var OtherPrice = parseInt(Other_1) + parseInt(Other_2) + parseInt(Other_3) + parseInt(Other_4) + parseInt(Other_5) + parseInt(Other_6) + parseInt(Other_7);
             // 營損總和 = 車輛調度 + 清潔費 + 物品損壞/遺失 + 非配合場停車費 + 拖吊費 + 其他 + 特約停車場

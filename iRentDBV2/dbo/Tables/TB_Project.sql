@@ -23,6 +23,7 @@
 	[PayMode] [tinyint] NOT NULL  DEFAULT ((0)) ,
 	[SORT] [int] NOT NULL  DEFAULT ((99)) , 
 	[IsMonthRent] [TINYINT] NOT NULL DEFAULT(0),
+	[IsRegional] [int] NOT NULL  DEFAULT ((0)) ,
     CONSTRAINT [PK_TB_Project] PRIMARY KEY ([PROJID]),
 )
 
