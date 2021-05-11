@@ -12,11 +12,6 @@ namespace WebAPI.Models.Param.Output
     /// </summary>
     public class OAPI_GetAnyRentProject
     {
-        /// <summary>
-        /// 目前可使用訂閱制月租
-        /// </summary>
-        public List<OAPI_NowSubsCard> NowSubsCards { get; set; }
-
         public List<ProjectObj> GetAnyRentProjectObj { set; get; }
     }
 }
