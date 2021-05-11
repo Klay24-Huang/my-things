@@ -986,6 +986,66 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 取得使用中訂閱制月租
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetSubsBookingMonth> sp_GetSubsBookingMonth(Int64 OrderNo, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsBookingMonth>();
+
+            var spInput = new SPInput_GetSubsBookingMonth();
+
+            try
+            {
+                if (OrderNo > 0)
+                    spInput.OrderNo = OrderNo;
+                else
+                    return null;
+
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsBookingMonth);
+                string SPName = "usp_GetSubsBookingMonth_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.OrderNo
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetSubsBookingMonth>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
     /// <summary>

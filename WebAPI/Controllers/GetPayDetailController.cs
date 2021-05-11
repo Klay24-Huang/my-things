@@ -46,6 +46,7 @@ namespace WebAPI.Controllers
             var cr_sp = new CarRentSp();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo(connetStr);
+            var monSp = new MonSubsSp();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -139,8 +140,7 @@ namespace WebAPI.Controllers
                         OrderNo = apiInput.OrderNo,
                         Discount = apiInput.Discount,
                         MotorDiscount = apiInput.MotorDiscount,
-                        isGuest = isGuest,
-                        MonIds = apiInput.MonIds
+                        isGuest = isGuest
                     };
                     var inck_re = cr_com.InCheck(input);
                     if (inck_re != null)
@@ -151,8 +151,6 @@ namespace WebAPI.Controllers
                         Discount = inck_re.Discount;
                         tmpOrder = inck_re.longOrderNo;                      
                     }
-                    if (flag)
-                        MonIds = apiInput.MonIds;
 
                     trace.FlowList.Add("input檢查");
 
@@ -461,19 +459,14 @@ namespace WebAPI.Controllers
                         else if (CarCodes.Any(x => x == ProjType))
                             isMoto = 0;
 
-                        if(isMoto != -1 && !string.IsNullOrWhiteSpace(IDNO))
+                        if(isMoto != -1 && tmpOrder > 0)
                         {
-                            var sp_in = new SPInput_GetNowSubs()
-                            {
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                SD = SD,
-                                ED = FED,
-                                IsMoto = isMoto
-                            };
-                            var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                            var sp_list = monSp.sp_GetSubsBookingMonth(tmpOrder, ref errCode);
                             if (sp_list != null && sp_list.Count() > 0)
-                                outputApi.NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                            {
+                                List<string> mIds = sp_list.Select(x => x.MonthlyRentId.ToString()).ToList();
+                                MonIds = string.Join(",", mins);
+                            }
                         }
                     }
 

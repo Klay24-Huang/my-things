@@ -619,22 +619,6 @@ namespace WebAPI.Models.BillFunc
                 re.Discount = sour.Discount + sour.MotorDiscount;
             }
 
-            //短期格式檢查
-            if (re.flag && !string.IsNullOrWhiteSpace(sour.MonIds) && !string.IsNullOrEmpty(sour.MonIds))
-            {
-                string strMonIds = sour.MonIds;
-                List<string> lst_MonIds = strMonIds.Split(',').ToList();              
-                foreach(var s in lst_MonIds)
-                {
-                    if (!Int32.TryParse(s, out int sNm))
-                    {                      
-                        re.flag = false;
-                        re.errCode = "ERR246";
-                        break;
-                    }
-                }
-            }
-
             return re;
         }
 
