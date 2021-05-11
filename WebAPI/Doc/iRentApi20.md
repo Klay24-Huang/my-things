@@ -1761,8 +1761,6 @@ iRentApi20 Web API版本
 * ApiJson(ApiID=179 / 購買月租)參數說明
 | 參數名稱      | 參數說明                 | 必要 |  型態   | 範例                    |
 | ------------- | ------------------------ | :--: | :----:  | ------------------------|
-|  IDNO         |       身分證號           |  Y   | string  |       A123456789        |
-|  LogID        |       LogID              |  Y   |  int    |       123               |
 |  MonProjID    |       專案編號(key       |  Y   | string  |       MR66              |
 |  MonProPeriod |       期數(key)          |  Y   | int     |       3                 |
 |  ShortDays    |       短天期(key)        |  Y   | int     |       3                 |
@@ -1770,13 +1768,13 @@ iRentApi20 Web API版本
 * ApiJson 序列化後字串範例
 |    ApiID      |  Api名稱                |                    ApiJson                                                                        |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------------------------- |
-|    179        |        購買月租         | {\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0} |
+|    179        |        購買月租         | {\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}                                       |
 
 * input範例 (購買月租179)
 ```
 {
     "ApiID":179,
-    "ApiJson":"{\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
+    "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
     "ProdNm":"測試_汽包機66-3",
     "ProdPrice":7000,
     "DoPay":0,
