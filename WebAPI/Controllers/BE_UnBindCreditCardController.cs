@@ -1,12 +1,14 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
 using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -14,12 +16,6 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using Domain.WebAPI.Input.Taishin;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.output.Taishin;
-using Domain.WebAPI.output.Taishin.ResultData;
-using OtherService;
-using System.Threading;
 
 namespace WebAPI.Controllers
 {
@@ -35,17 +31,12 @@ namespace WebAPI.Controllers
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-        /// <summary>
-        /// 【後台】設定車輛上下線
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+
         [HttpPost]
         public Dictionary<string, object> DoBE_UnBindCreditCard(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -61,14 +52,13 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string IDNO = "";
+            string IDNO = "";       //身分證號
+            string CardToken = "";  //信用卡密鑰
             bool isGuest = true;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool hasFind = false;
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
@@ -107,7 +97,6 @@ namespace WebAPI.Controllers
                     Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                     TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
                     TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-
                 };
                 WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                 flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
@@ -116,12 +105,12 @@ namespace WebAPI.Controllers
                     int Len = wsOutput.ResponseParams.ResultData.Count;
                     if (Len > 0)
                     {
-                   
-                            hasFind = true;
-                    
+                        hasFind = true;
                     }
-                    if (hasFind)//有找到，可以做刪除
+                    if (hasFind)    //有找到，可以做刪除
                     {
+                        CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+
                         Thread.Sleep(1000);
                         PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
                         {
@@ -150,14 +139,29 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR195";
                     }
-
                 }
+            }
+            #endregion
 
+            #region 異動DB
+            if (flag && hasFind)
+            {
+                string spName = new ObjType().GetSPName(ObjType.SPType.BE_UnBindCreditCard);
+                SPInput_BE_UnBindCard spInput = new SPInput_BE_UnBindCard()
+                {
+                    IDNO = IDNO,
+                    CardToken = CardToken,
+                    LogID = LogID,
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_BE_UnBindCard, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_UnBindCard, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
