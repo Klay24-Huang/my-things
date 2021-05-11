@@ -504,6 +504,7 @@
     <Build Include="dbo\Stored Procedures\usp_BE_BookingCancelNew.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsReturnControl.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_UnBindCreditCard.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
