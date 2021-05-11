@@ -28,6 +28,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
+using Domain.SP.Input.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -46,6 +47,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var cr_com = new CarRentCommon();
+            var monSp = new MonSubsSp();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -340,6 +342,25 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                #region 寫入訂單對應訂閱制月租
+
+                if (flag)
+                {
+                    if (spOut != null && spOut.haveCar == 1 && spOut.OrderNum > 0 && apiInput.MonId >0)
+                    {
+                        var sp_in = new SPInput_SetSubsBookingMonth()
+                        {
+                            OrderNo = spOut.OrderNum,
+                            MonthlyRentId = apiInput.MonId
+                        };
+                        monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
+                        //不擋booking
+                    }
+                }
+
+                #endregion
+
                 if (flag && spOut.haveCar == 1)
                 {
                     //車機指令改善 機車先送report now

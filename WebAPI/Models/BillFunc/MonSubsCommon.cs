@@ -930,6 +930,33 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 設定訂單使用的訂閱制月租
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SetSubsBookingMonth(SPInput_SetSubsBookingMonth spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsBookingMonth);
+            string spName = "usp_SetSubsBookingMonth_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetSubsBookingMonth();
+            SQLHelper<SPInput_SetSubsBookingMonth, SPOut_SetSubsBookingMonth> sqlHelp = new SQLHelper<SPInput_SetSubsBookingMonth, SPOut_SetSubsBookingMonth>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
         /// 取得使用中訂閱制月租
         /// </summary>
         /// <param name="spInput"></param>
