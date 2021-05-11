@@ -32,6 +32,10 @@ namespace WebAPI.Models.Param.Output
         /// 是否變更下期合約
         /// </summary>
         public int IsChange { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 
     public class OAPI_GetMySubs_Code

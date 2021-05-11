@@ -159,7 +159,8 @@ namespace WebAPI.Controllers
                                                 StartDate = a.StartDate.ToString("MM/dd"),
                                                 EndDate = a.EndDate.ToString("MM/dd"),
                                                 SubsNxt = a.SubsNxt,
-                                                IsChange = a.IsChange
+                                                IsChange = a.IsChange,
+                                                IsPay = a.IsPay
                                             }).ToList();
 
                             var NowMon = months.Where(x => x.MonProjID == apiInput.MonProjID
