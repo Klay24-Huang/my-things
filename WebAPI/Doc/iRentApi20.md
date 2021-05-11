@@ -1490,15 +1490,26 @@ iRentApi20 Web API版本
 | ShortDays	    | 短期總天數(key)      | int    | 0        |
 | PeriodPrice	| 方案價格             | int    | 7000     |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
-| CarWDHours	| 汽車平日時數         | double | 10       |
-| CarHDHours	| 汽車假日時數         | double | 0        |
-| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
+| CarWDHours	| 汽車平日時數         | double | 3.0    |
+| CarHDHours	| 汽車假日時數         | double | 3.0      |
+| MotoTotalMins	| 機車不分平假日分鐘數 | double | 300   |
+| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
+| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
+| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
+| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+| IsPay	| 是否有繳費0否1是 | int | 1 |
 
 * Output範例,汽車牌卡(ReMode=1, IsMoto=0)
 
 ```
 {
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {{
 	"Result": "1",
 	"ErrorCode": "000000",
 	"NeedRelogin": 0,
@@ -1517,7 +1528,12 @@ iRentApi20 Web API版本
 				"CarWDHours": 1.0,
 				"CarHDHours": 0.0,
 				"MotoTotalMins": 0,
-				"IsDiscount": 0
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 2.0,
+				"HDRateForMoto": 2.0,
+				"IsDiscount": 0,
+				"IsPay": 0
 			},
 			{
 				"MonProjID": "MR02",
@@ -1529,10 +1545,83 @@ iRentApi20 Web API版本
 				"CarWDHours": 33.0,
 				"CarHDHours": 0.0,
 				"MotoTotalMins": 0,
-				"IsDiscount": 0
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.8,
+				"HDRateForMoto": 1.8,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR99",
+				"MonProjNM": "測試_汽車平日6000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 6000,
+				"IsMoto": 0,
+				"CarWDHours": 40.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR100",
+				"MonProjNM": "測試_汽平7000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7000,
+				"IsMoto": 0,
+				"CarWDHours": 50.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 160.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR101",
+				"MonProjNM": "測試_汽平8000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 8000,
+				"IsMoto": 0,
+				"CarWDHours": 60.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
 			}
 		],
 		"MixMonCards": [
+			{
+				"MonProjID": "MR10",
+				"MonProjNM": "汽車平日299入門方案",
+				"MonProPeriod": 6,
+				"ShortDays": 0,
+				"PeriodPrice": 299,
+				"IsMoto": 0,
+				"CarWDHours": 2.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 30,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 2.0,
+				"HDRateForMoto": 2.0,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
 			{
 				"MonProjID": "MR66",
 				"MonProjNM": "測試_汽包機66-1",
@@ -1543,7 +1632,46 @@ iRentApi20 Web API版本
 				"CarWDHours": 1.0,
 				"CarHDHours": 1.0,
 				"MotoTotalMins": 100,
-				"IsDiscount": 0
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR102",
+				"MonProjNM": "測試_汽包機102-3",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7300,
+				"IsMoto": 0,
+				"CarWDHours": 4.0,
+				"CarHDHours": 4.0,
+				"MotoTotalMins": 400,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR103",
+				"MonProjNM": "測試_汽包機103-3",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7800,
+				"IsMoto": 0,
+				"CarWDHours": 4.0,
+				"CarHDHours": 3.0,
+				"MotoTotalMins": 300,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
 			}
 		],
 		"ReMode": 1
@@ -1563,6 +1691,74 @@ iRentApi20 Web API版本
         "IsMotor": 1,
         "NorMonCards": [
             {
+                "MonProjID": "MR03",
+                "MonProjNM": "機車入門2期",
+                "MonProPeriod": 2,
+                "ShortDays": 0,
+                "PeriodPrice": 99,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 50,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.5,
+                "HDRateForMoto": 1.5,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR04",
+                "MonProjNM": "機車低資費6期",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 299,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 200,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.3,
+                "HDRateForMoto": 1.3,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR05",
+                "MonProjNM": "機車中資費6期",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 599,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 550,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.0,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR98",
+                "MonProjNM": "測試_機車不分平假日899",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 899,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 1000,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.2,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
                 "MonProjID": "MR200",
                 "MonProjNM": "測試_機車2000",
                 "MonProPeriod": 3,
@@ -1572,7 +1768,12 @@ iRentApi20 Web API版本
                 "CarWDHours": 0.0,
                 "CarHDHours": 0.0,
                 "MotoTotalMins": 600,
-                "IsDiscount": 0
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
             },
             {
                 "MonProjID": "MR201",
@@ -1584,7 +1785,29 @@ iRentApi20 Web API版本
                 "CarWDHours": 0.0,
                 "CarHDHours": 0.0,
                 "MotoTotalMins": 800,
-                "IsDiscount": 0
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR202",
+                "MonProjNM": "測試_機車5000",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 5000,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 1200,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
             }
         ],
         "ReMode": 1
@@ -1602,16 +1825,21 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
-            "MonProjID": "MR103",
-            "MonProjNM": "測試_汽包機103-3",
+            "MonProjID": "MR66",
+            "MonProjNM": "測試_汽包機66-3",
             "MonProPeriod": 3,
             "ShortDays": 0,
-            "PeriodPrice": 7800,
+            "PeriodPrice": 7000,
             "IsMoto": 0,
-            "CarWDHours": 4.0,
+            "CarWDHours": 3.0,
             "CarHDHours": 3.0,
             "MotoTotalMins": 300,
-            "IsDiscount": 0
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "IsDiscount": 0,
+            "IsPay": 1
         },
         "MyMoto": null,
         "ReMode": 2
@@ -1758,25 +1986,23 @@ iRentApi20 Web API版本
 | PayTypeId  | 選定付款方式               |  N   |  int   | 5                              |
 | InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
 
-* ApiJson(ApiID=179)參數說明
+* ApiJson(ApiID=179 / 購買月租)參數說明
 | 參數名稱      | 參數說明                 | 必要 |  型態   | 範例                    |
 | ------------- | ------------------------ | :--: | :----:  | ------------------------|
-|  IDNO         |       身分證號           |  Y   | string  |       A123456789        |
-|  LogID        |       LogID              |  Y   |  int    |       123               |
 |  MonProjID    |       專案編號(key       |  Y   | string  |       MR66              |
 |  MonProPeriod |       期數(key)          |  Y   | int     |       3                 |
 |  ShortDays    |       短天期(key)        |  Y   | int     |       3                 |
 
 * ApiJson 序列化後字串範例
-|    ApiID      |    ApiJson               |
-| ------------- | ------------------------------------------------------------------------------------------------- |
-|    179        | {\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0} |
+|    ApiID      |  Api名稱                |                    ApiJson                                                                        |
+| ------------- | ----------------------- | ------------------------------------------------------------------------------------------------- |
+|    179        |        購買月租         | {\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}                                       |
 
 * input範例 (購買月租179)
 ```
 {
     "ApiID":179,
-    "ApiJson":"{\"IDNO\":\"A123456789\",\"LogID\":123,\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
+    "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
     "ProdNm":"測試_汽包機66-3",
     "ProdPrice":7000,
     "DoPay":0,

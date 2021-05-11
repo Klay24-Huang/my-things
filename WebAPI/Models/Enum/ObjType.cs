@@ -649,6 +649,10 @@ namespace WebAPI.Models.Enum
             /// 更新遠傳DeviceId與DeveiceToken
             /// </summary>
             BE_UpdCATDeviceToken,
+            /// <summary>
+            /// 解除綁定信用卡     // 20210511 ADD BY YEH REASON.後台解綁要將DB壓失效
+            /// </summary>
+            BE_UnBindCreditCard,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -1197,9 +1201,15 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_UpdCATDeviceToken:
                     SPName = "usp_BE_UpdCATDeviceToken";
                     break;
+
                 case SPType.BE_InsertChargeParkingData:
                     //SPName = "usp_BE_HandleTransParking";
                     SPName = "usp_BE_InsertChargeParkingData";
+                    break;
+
+                case SPType.BE_UnBindCreditCard:      // 20210511 ADD BY YEH REASON.後台解綁要將DB壓失效
+                    SPName = "usp_BE_UnBindCreditCard";
+
                     break;
                 #endregion
                 #region 整備人員

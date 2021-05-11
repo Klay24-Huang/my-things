@@ -100,6 +100,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_UnBindCard.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UpdCATDeviceToken.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
