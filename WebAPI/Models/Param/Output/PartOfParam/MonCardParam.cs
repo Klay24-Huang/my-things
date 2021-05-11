@@ -65,5 +65,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <para>0否</para>
         /// </summary>
         public int IsDiscount { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 }

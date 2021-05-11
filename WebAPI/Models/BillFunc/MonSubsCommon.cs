@@ -1101,7 +1101,8 @@ namespace WebAPI.Models.BillFunc
                                  HDRateForCar = a.HDRateForCar,
                                  WDRateForMoto = a.WDRateForMoto,
                                  HDRateForMoto = a.HDRateForMoto,
-                                 IsDiscount = a.IsDiscount
+                                 IsDiscount = a.IsDiscount,
+                                 IsPay = a.IsPay
                              }).ToList();
             }
             return re;

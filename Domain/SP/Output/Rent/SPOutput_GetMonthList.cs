@@ -106,6 +106,10 @@ namespace Domain.SP.Output.Rent
         /// 是否為優惠方案
         /// </summary>
         public int IsDiscount { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 
 }
