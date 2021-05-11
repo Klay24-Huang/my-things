@@ -9,6 +9,8 @@ namespace WebAPI.Models.BillFunc
 {
     public class BuyNowNxtCommon
     {
+        public string IDNO { get; set; } = "";
+        public Int64 LogID { get; set; } = 0;
         /// <summary>
         /// 付款方式
         /// </summary>
@@ -62,6 +64,11 @@ namespace WebAPI.Models.BillFunc
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
                     {
                         var spIn = JsonConvert.DeserializeObject<SPInput_CreateSubsMonth>(ApiJson);
+                        if(spIn != null)
+                        {
+                            spIn.IDNO = IDNO;
+                            spIn.LogID = LogID;
+                        }
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && !string.IsNullOrWhiteSpace(spIn.MonProjID) &&
                             spIn.LogID > 0 && spIn.MonProPeriod > 0)
                         {
@@ -89,6 +96,11 @@ namespace WebAPI.Models.BillFunc
                     if (!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
                     {
                         var spIn = JsonConvert.DeserializeObject<SPInput_UpSubsMonth>(ApiJson);
+                        if (spIn != null)
+                        {
+                            spIn.IDNO = IDNO;
+                            spIn.LogID = LogID;
+                        }
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && spIn.LogID > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.UP_MonProjID) && spIn.UP_MonProPeriod > 0 )
@@ -111,7 +123,12 @@ namespace WebAPI.Models.BillFunc
                     if(!string.IsNullOrEmpty(ApiJson) && !string.IsNullOrWhiteSpace(ApiJson))
                     {
                         var spIn = JsonConvert.DeserializeObject<SPInput_ArrearsPaySubs>(ApiJson);
-                        if(string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0 ||
+                        if (spIn != null)
+                        {
+                            spIn.IDNO = IDNO;
+                            spIn.LogID = LogID;
+                        }
+                        if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0 ||
                            string.IsNullOrWhiteSpace(spIn.MonthlyRentIds))
                         {
                             errCode = "ERR257";//參數遺漏

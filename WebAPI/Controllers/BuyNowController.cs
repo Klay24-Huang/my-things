@@ -72,6 +72,7 @@ namespace WebAPI.Controllers
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+                    
                     //不開放訪客
                     if (flag)
                     {
@@ -113,6 +114,7 @@ namespace WebAPI.Controllers
                     //載入後續Api所需資料
                     if (flag && apiInput.ApiID > 0)
                     {
+                        buyNxtCom.LogID = LogID;
                         buyNxtCom.ApiID = apiInput.ApiID;
                         buyNxtCom.ApiJson = apiInput.ApiJson;
                         buyNxtCom.PayTypeId = apiInput.PayTypeId;
@@ -161,6 +163,8 @@ namespace WebAPI.Controllers
                         errCode = token_re.errCode;
                         lstError = token_re.lstError;
                         IDNO = token_re.IDNO;
+
+                        buyNxtCom.IDNO = IDNO;                      
                     }
                     trace.FlowList.Add("Token判斷");
                 }
