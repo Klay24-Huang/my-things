@@ -36,7 +36,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 收費金額
         /// </summary>
-        public int SettingPrice { set; get; }
+        //public int SettingPrice { set; get; }
         #region 暫時封印
         /// <summary>
         /// 開始時間
@@ -47,5 +47,14 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public DateTime CloseTime { set; get; }
         #endregion
+
+        /// <summary>
+        /// 是否加入調度停車場
+        /// </summary>
+        public string PID { set; get; }
+        /// <summary>
+        /// 停車場ID
+        /// </summary>
+        public string Id { set; get; }
     }
 }

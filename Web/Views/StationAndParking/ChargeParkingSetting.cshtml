@@ -57,11 +57,13 @@
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort-ignore="true"></th>
-                <th data-type="numeric" ></th>
+                <th data-type="numeric"></th>
                 <th>名稱</th>
                 <th>營運商</th>
                 <th>地址</th>
-                <th>收費金額</th>
+                <!--<th>收費金額</th>-->
+                <th>加入調度停車場</th>
+                <th>停車場Id</th>
                 <th data-sort-ignore="true">地圖</th>
                 <th data-sort-ignore="true"></th>
                 <th data-hide="all">緯度</th>
@@ -81,59 +83,77 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-                <tr>
-                    <td></td>
-                    <td >@(i + 1)</td>
-                    <td>
-                        @(lstData[i].ParkingName)
-                        <input type="text" name="ParkingName_@(lstData[i].ParkId)" id="ParkingName_@(lstData[i].ParkId)" value="@(lstData[i].ParkingName)" class="form-control" style="display:none" />
-                    </td>
-                    <td>
-                        @(lstData[i].Operator)
-                        <input type="text" name="Operator_@(lstData[i].ParkId)" id="Operator_@(lstData[i].ParkId)" value="@(lstData[i].Operator)" class="form-control" style="display:none" />
-                    </td>
-                    <td>
-                        @(lstData[i].ParkingAddress)
-                        <input type="text" name="ParkingAddress_@(lstData[i].ParkId)" id="ParkingAddress_@(lstData[i].ParkId)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" />
-                    </td>
-                    <td>
-                        @(lstData[i].SettingPrice)
-                        <input type="text" TextMode="Number" min="0" max="9999" name="SettingPrice_@(lstData[i].ParkId)" id="SettingPrice_@(lstData[i].ParkId)" value="@(lstData[i].SettingPrice)" class="form-control" style="display:none" />
-                    </td>
-                    <td>
-                        <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
-                                <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
-                                <g transform="translate(6.135)">
-                                    <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
-                                    <g transform="translate(0.004)">
-                                        <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
-                                        <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
-                                    </g>
-                                </g>
-                            </svg>
-                        </a>
-                    </td>
-                    <td>
-                        <Button type="button" id="btnEdit_@(lstData[i].ParkId)" name="btnEdit_@(lstData[i].ParkId)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].ParkId)');>修改</Button>
-                        <Button type="button" id="btnSave_@(lstData[i].ParkId)" name="btnSave_@(lstData[i].ParkId)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].ParkId)');>儲存</Button>
-                        <Button type="button" id="btnReset_@(lstData[i].ParkId)" name="btnReset_@(lstData[i].ParkId)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].ParkId)');>取消</Button>
-                    </td>
-                    <td>@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkId)" id="Latitude_@(lstData[i].ParkId)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
-                    <td>@lstData[i].Longitude<input type="text" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkId)" id="Longitude_@(lstData[i].ParkId)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
-                    <td>
-                        @lstData[i].StartTime.ToString("yyyy-MM-dd")
-                        <div class="custom-datepicker">
-                            <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkId)" name="OpenTime_@(lstData[i].ParkId)" value="@lstData[i].StartTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
-                        </div>
-                    </td>
-                    <td>
-                        @lstData[i].CloseTime.ToString("yyyy-MM-dd")
-                        <div class="custom-datepicker">
-                            <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkId)" name="CloseTime_@(lstData[i].ParkId)" value="@lstData[i].CloseTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
-                        </div>
-                    </td>
-                </tr>
+        <tr>
+            <td></td>
+            <td>@(i + 1)</td>
+            <td>
+                @(lstData[i].ParkingName)
+                <input type="text" name="ParkingName_@(lstData[i].ParkId)" id="ParkingName_@(lstData[i].ParkId)" value="@(lstData[i].ParkingName)" class="form-control" style="display:none" />
+            </td>
+            <td>
+                @(lstData[i].Operator)
+                <input type="text" name="Operator_@(lstData[i].ParkId)" id="Operator_@(lstData[i].ParkId)" value="@(lstData[i].Operator)" class="form-control" style="display:none" />
+            </td>
+            <td>
+                @(lstData[i].ParkingAddress)
+                <input type="text" name="ParkingAddress_@(lstData[i].ParkId)" id="ParkingAddress_@(lstData[i].ParkId)" value="@(lstData[i].ParkingAddress)" class="form-control" style="display:none" />
+            </td>
+            <!--
+    <td>
+        @*(lstData[i].SettingPrice)*@
+        <input type="text" TextMode="Number" min="0" max="9999" name="SettingPrice_@(lstData[i].ParkId)" id="SettingPrice_@(lstData[i].ParkId)" value="@*(lstData[i].SettingPrice)*@" class="form-control" style="display:none" />
+    </td>
+    -->
+            <!--20210511唐加-->
+            <td>
+                @if (lstData[i].PID == "1")
+                {
+
+                }
+                else
+                {
+                    <input type="button" value="加入" id="PIDIN_@(lstData[i].ParkId)" onclick=DoIn('@(lstData[i].ParkId)')>
+                }
+            </td>
+            <td>
+                @(lstData[i].Id)
+                <input type="text" name="Id_@(lstData[i].ParkId)" id="Id_@(lstData[i].ParkId)" value="@(lstData[i].Id)" class="form-control" style="display:none" />
+            </td>
+
+            <td>
+                <a onclick="detailMap(@lstData[i].Longitude,@lstData[i].Latitude)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="23.5" viewBox="0 0 41.045 46.614">
+                        <path d="M622.622,642.891a1.371,1.371,0,0,0-1.185-.682h-24.53a1.369,1.369,0,0,0-1.184.682l-5.864,10.122a1.369,1.369,0,0,0,1.185,2.055H627.3a1.369,1.369,0,0,0,1.184-2.055Z" transform="translate(-588.649 -609.454)" fill="#fff" stroke="#d7000f" stroke-miterlimit="10" stroke-width="2" />
+                        <g transform="translate(6.135)">
+                            <path d="M620.231,616.77l-14.1,2.266-.023,0-.023,0-14.1-2.266s-.278,4.384,3.56,10.991c2.5,4.3,5.678,8.312,8.028,10.124a4.151,4.151,0,0,0,2.515.866l.023,0,.023,0a4.15,4.15,0,0,0,2.515-.866c2.35-1.812,5.531-5.825,8.028-10.124C620.51,621.154,620.231,616.77,620.231,616.77Z" transform="translate(-591.976 -602.642)" fill="#d7000f" />
+                            <g transform="translate(0.004)">
+                                <ellipse cx="14.128" cy="14.128" rx="14.128" ry="14.128" fill="#d7000f" />
+                                <ellipse cx="6.647" cy="6.647" rx="6.647" ry="6.647" transform="translate(7.481 7.481)" fill="#fff" />
+                            </g>
+                        </g>
+                    </svg>
+                </a>
+            </td>
+            <td>
+                <Button type="button" id="btnEdit_@(lstData[i].ParkId)" name="btnEdit_@(lstData[i].ParkId)" class="btn btn-outline-secondary" onclick=DoEdit('@(lstData[i].ParkId)');>修改</Button>
+                <Button type="button" id="btnSave_@(lstData[i].ParkId)" name="btnSave_@(lstData[i].ParkId)" class="btn btn-outline-secondary" style="display:none" onclick=DoSave('@(lstData[i].ParkId)');>儲存</Button>
+                <Button type="button" id="btnReset_@(lstData[i].ParkId)" name="btnReset_@(lstData[i].ParkId)" class="btn btn-outline-secondary" style="display:none" onclick=DoReset('@(lstData[i].ParkId)');>取消</Button>
+            </td>
+            <td>@lstData[i].Latitude<input type="text" TextMode="Number" step="0.000001" min="22" max="26" name="Latitude_@(lstData[i].ParkId)" id="Latitude_@(lstData[i].ParkId)" value="@(lstData[i].Latitude)" class="form-control" style="display:none" /></td>
+            <td>@lstData[i].Longitude<input type="text" step="0.000001" min="120" max="123" name="Longitude_@(lstData[i].ParkId)" id="Longitude_@(lstData[i].ParkId)" value="@(lstData[i].Longitude)" class="form-control" style="display:none" /></td>
+            <td>
+                @lstData[i].StartTime.ToString("yyyy-MM-dd")
+                <div class="custom-datepicker">
+                    <input class="dateTimePicker form-control" type="text" id="OpenTime_@(lstData[i].ParkId)" name="OpenTime_@(lstData[i].ParkId)" value="@lstData[i].StartTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                </div>
+            </td>
+            <td>
+                @lstData[i].CloseTime.ToString("yyyy-MM-dd")
+                <div class="custom-datepicker">
+                    <input class="dateTimePicker form-control" type="text" id="CloseTime_@(lstData[i].ParkId)" name="CloseTime_@(lstData[i].ParkId)" value="@lstData[i].CloseTime.ToString(" yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                </div>
+            </td>
+        </tr>
                 }
             }
         </tbody>

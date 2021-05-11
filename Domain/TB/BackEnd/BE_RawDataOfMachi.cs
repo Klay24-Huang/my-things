@@ -40,5 +40,19 @@ namespace Domain.TB.BackEnd
         /// 停車場費用
         /// </summary>
         public string Amount { set; get; }
+
+        //20210510唐加
+        /// <summary>
+        /// 調度停車場
+        /// </summary>
+        public string PP { set; get; }
+        /// <summary>
+        /// 場內還車
+        /// </summary>
+        public string returnFlg { set; get; }
+        /// <summary>
+        /// 停車場業者
+        /// </summary>
+        public string OP { set; get; }
     }
 }

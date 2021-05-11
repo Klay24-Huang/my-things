@@ -661,8 +661,8 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
             UpdateOrderAuthReturnList,
-            BE_Banner//20210316唐加
-
+            BE_Banner,//20210316唐加
+            BE_InsertChargeParkingData,//20210511唐加
         }
         /// <summary>
         /// 取出SPName
@@ -1196,6 +1196,10 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_UpdCATDeviceToken:
                     SPName = "usp_BE_UpdCATDeviceToken";
+                    break;
+                case SPType.BE_InsertChargeParkingData:
+                    //SPName = "usp_BE_HandleTransParking";
+                    SPName = "usp_BE_InsertChargeParkingData";
                     break;
                 #endregion
                 #region 整備人員
