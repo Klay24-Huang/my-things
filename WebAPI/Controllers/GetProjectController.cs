@@ -240,8 +240,6 @@ namespace WebAPI.Controllers
                     if (sp_list != null && sp_list.Count() > 0)
                         InUseMonth = sp_list;
                 }
-                else
-                    apiInput.MonId = 0;
             }
 
             if (flag)
@@ -322,7 +320,7 @@ namespace WebAPI.Controllers
                                    // 預估金額 = 租金 + 里程費 + 安心服務費
                                    //Price = a.PriceBill, //租金改抓sp
                                    //20210115;因應春節專案，預估金額改用特殊算法
-                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate, funName, apiInput.MonId) +
+                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate, funName, 0) +
                                             bill.CarMilageCompute(SDate, EDate, a.MilageBase, Mildef, 20, new List<Holiday>()) +
                                             ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, a.InsurancePerHours * 10, a.InsurancePerHours * 10, 10, lstHoliday) : 0),
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
