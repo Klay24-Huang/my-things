@@ -96,5 +96,9 @@ namespace Domain.WebAPI.output.rootAPI
         /// 剩餘里程
         /// </summary>
         public float RemainingMileage { set; get; }
+        /// <summary>
+        /// 訂閱制月租Id
+        /// </summary>
+        public Int64 MonthlyRentId { get; set; } = 0;
     }
 }

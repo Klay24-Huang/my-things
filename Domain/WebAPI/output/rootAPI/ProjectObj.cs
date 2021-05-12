@@ -110,6 +110,9 @@ namespace Domain.WebAPI.output.rootAPI
         /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
         public int IsShowCard { get; set; } = 1;
 
+        /// <summary>
+        /// 訂閱制月租Id
+        /// </summary>
         public Int64 MonthlyRentId { get; set; } = 0;
     }
 }

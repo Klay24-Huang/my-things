@@ -1,4 +1,6 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Subscription;
+using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -9,8 +11,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -25,6 +29,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetMotorRentProject(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var cr_com = new CarRentCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -47,6 +52,8 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
+            string IDNO = "";
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -100,6 +107,9 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
+
+            #region Token
+
             //Token判斷
             //if (flag && isGuest == false)
             //{
@@ -114,6 +124,41 @@ namespace WebAPI.Controllers
             //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
             //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             //}
+
+            if (flag && isGuest == false)
+            {
+                var token_in = new IBIZ_TokenCk
+                {
+                    LogID = LogID,
+                    Access_Token = Access_Token
+                };
+                var token_re = cr_com.TokenCk(token_in);
+                if (token_re != null)
+                {
+                    IDNO = token_re.IDNO ?? "";
+                }
+            }
+
+            #endregion
+
+            //取得機車使用中訂閱制月租
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(IDNO))
+                {
+                    var sp_in = new SPInput_GetNowSubs()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        SD = SDate,
+                        ED = EDate,
+                        IsMoto = 1
+                    };
+                    var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                        InUseMonth = sp_list;
+                }
+            }
 
             if (flag)
             {
@@ -214,6 +259,30 @@ namespace WebAPI.Controllers
                 {
                     GetMotorProjectObj = lstTmpData
                 };
+
+                #region 產出月租&Project虛擬卡片 
+
+                if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
+                {
+                    var VisProObjs = new List<MotorProjectObj>();
+                    var ProObjs = outputApi.GetMotorProjectObj;
+                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                    {
+                        ProObjs.ForEach(x => {
+                            VisProObjs.Add(x);
+                            InUseMonth.ForEach(z =>
+                            {
+                                MotorProjectObj newItem = objUti.Clone(x);
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.ProjName += "_" + z.MonProjNM;
+                                VisProObjs.Add(newItem);
+                            });
+                        });
+                        outputApi.GetMotorProjectObj = VisProObjs;
+                    }
+                }
+
+                #endregion
             }
             #endregion
 
@@ -228,5 +297,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
     }
 }
