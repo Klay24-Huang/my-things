@@ -42,13 +42,29 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public double MotoTotalMins { get; set; }
         /// <summary>
+        /// 汽車平日優惠價
+        /// </summary>
+        public double WDRateForCar { get; set; }
+        /// <summary>
+        /// 汽車假日優惠價
+        /// </summary>
+        public double HDRateForCar { get; set; }
+        /// <summary>
+        /// 機車平日優惠價
+        /// </summary>
+        public double WDRateForMoto { get; set; }
+        /// <summary>
+        /// 機車假日優惠價
+        /// </summary>
+        public double HDRateForMoto { get; set; }
+        /// <summary>
         /// 起日
         /// </summary>
-        public string SD { get; set; }
+        public string StartDate { get; set; }
         /// <summary>
         /// 迄日
         /// </summary>
-        public string ED { get; set; }
+        public string EndDate { get; set; }
         /// <summary>
         /// 注意事項
         /// </summary>

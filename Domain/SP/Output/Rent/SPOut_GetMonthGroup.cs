@@ -30,6 +30,10 @@ namespace Domain.SP.Output.Rent
         public double HDRateForCar { get; set; }
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
+        /// <summary>
+        /// 是否為優惠方案0(否),1(是)
+        /// </summary>
+        public int IsDiscount { get; set; }
         public int IsOrder { get; set; }
     }
 }

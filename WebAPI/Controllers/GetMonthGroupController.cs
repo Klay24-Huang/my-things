@@ -130,7 +130,11 @@ namespace WebAPI.Controllers
                                          CarWDHours = a.CarWDHours,
                                          CarHDHours = a.CarHDHours,
                                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
-                                         //IsOrder = a.IsOrder
+                                         WDRateForCar = a.WDRateForCar,
+                                         HDRateForCar = a.HDRateForCar,
+                                         WDRateForMoto = a.WDRateForMoto,
+                                         HDRateForMoto = a.HDRateForMoto,
+                                         IsDiscount = a.IsDiscount
                                      }).ToList();
 
                         outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;

@@ -1151,8 +1151,12 @@ namespace WebAPI.Models.BillFunc
                     CarWDHours = sour.WorkDayHours,
                     CarHDHours = sour.HolidayHours,
                     MotoTotalMins = sour.MotoTotalHours,
-                    SD = sour.StartDate.ToString("MM/dd"),
-                    ED = sour.EndDate.ToString("MM/dd"),
+                    WDRateForCar = sour.WorkDayRateForCar,
+                    HDRateForCar = sour.HoildayRateForCar,
+                    WDRateForMoto = sour.WorkDayRateForMoto,
+                    HDRateForMoto = sour.HoildayRateForMoto,
+                    StartDate = sour.StartDate.ToString("MM/dd"),
+                    EndDate = sour.EndDate.ToString("MM/dd"),
                     MonProDisc = sour.MonProDisc
                 };
             }
