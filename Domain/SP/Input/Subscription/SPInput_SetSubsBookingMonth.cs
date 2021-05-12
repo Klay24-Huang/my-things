@@ -8,6 +8,8 @@ namespace Domain.SP.Input.Subscription
 {
     public class SPInput_SetSubsBookingMonth
     {
+        public string IDNO { get; set; }
+        public Int64 LogID { get; set; }
         public Int64 OrderNo { get; set; }
         public Int64 MonthlyRentId { get; set; }
         public DateTime? SetNow { get; set; }
