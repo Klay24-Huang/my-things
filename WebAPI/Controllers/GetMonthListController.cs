@@ -157,9 +157,9 @@ namespace WebAPI.Controllers
                                 var myMotos = myCards.Where(x => x.IsMoto == 1).ToList();
 
                                 if (myCars != null && myCars.Count() > 0)
-                                    outApiMyCards.MyCar = map.FromSPOutput_GetMonthList_Month(myCars).FirstOrDefault();
+                                    outApiMyCards.MyCar = map.FromSPOutput_GetMonthList_My(myCars).FirstOrDefault();
                                 if (myMotos != null && myMotos.Count() > 0)
-                                    outApiMyCards.MyMoto = map.FromSPOutput_GetMonthList_Month(myMotos).FirstOrDefault();
+                                    outApiMyCards.MyMoto = map.FromSPOutput_GetMonthList_My(myMotos).FirstOrDefault();
                             }
 
                             outApiMyCards.ReMode = 2;

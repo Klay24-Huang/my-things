@@ -8,8 +8,14 @@ namespace Domain.SP.Output.Rent
 {
     public class SPOutput_GetMonthList
     {
-        public List<SPOutput_GetMonthList_Month> MyMonths { get; set; }
+        public List<SPOutput_GetMonthList_My> MyMonths { get; set; }
         public List<SPOutput_GetMonthList_Month> AllMonths { get; set; }
+    }
+
+    public class SPOutput_GetMonthList_My: SPOutput_GetMonthList_Month
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class SPOutput_GetMonthList_Month

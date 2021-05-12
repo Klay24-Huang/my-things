@@ -317,7 +317,7 @@ namespace WebAPI.Models.BillFunc
         public SPOutput_GetMonthList sp_GetMonthList(SPInput_GetMonthList spInput, ref string errCode)
         {
             var re = new SPOutput_GetMonthList();
-            re.MyMonths = new List<SPOutput_GetMonthList_Month>();
+            re.MyMonths = new List<SPOutput_GetMonthList_My>();
             re.AllMonths = new List<SPOutput_GetMonthList_Month>();
 
             try
@@ -343,7 +343,7 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (ds1.Tables.Count >= 3)
                     {
-                        re.MyMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[0]);
+                        re.MyMonths = objUti.ConvertToList<SPOutput_GetMonthList_My>(ds1.Tables[0]);
                         re.AllMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[1]);
                     }
                     else if (ds1.Tables.Count == 1)
@@ -1107,7 +1107,37 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-    
+
+        public List<MonCardParam_My> FromSPOutput_GetMonthList_My(List<SPOutput_GetMonthList_My> sour)
+        {
+            var re = new List<MonCardParam_My>();
+            if (sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new MonCardParam_My
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProjNM = a.MonProjNM,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          PeriodPrice = a.PeriodPrice,
+                          IsMoto = a.IsMoto,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = a.MotoTotalMins,
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount,
+                          IsPay = a.IsPay,
+                          StartDate =  a.StartDate.ToString("HHmm") == "0000"? a.StartDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.StartDate.ToString("MM/dd HH:mm"),
+                          EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
+                      }).ToList();
+            }
+            return re;
+        }
+
         public OAPI_GetSubsCNT_Card FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
         {
             if (sour != null)

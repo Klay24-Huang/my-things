@@ -70,4 +70,17 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public int IsPay { get; set; }
     }
+
+    public class MonCardParam_My: MonCardParam
+    {
+        /// <summary>
+        /// 訂閱制月租起日
+        /// </summary>
+        public string StartDate { get; set; }
+        /// <summary>
+        /// 訂閱制月租迄日
+        /// </summary>
+        public string EndDate { get; set; }
+    }
+
 }
