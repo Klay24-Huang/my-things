@@ -34,15 +34,15 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 汽車平日時數
         /// </summary>
-        public double WorkDayHours { get; set; }
+        public double CarWDHours { get; set; }
         /// <summary>
         /// 汽車假日時數
         /// </summary>
-        public double HolidayHours { get; set; }
+        public double CarHDHours { get; set; }
         /// <summary>
         /// 機車不分平假日分鐘數
         /// </summary>
-        public double MotoTotalHours { get; set; }
+        public double MotoTotalMins { get; set; }
         /// <summary>
         /// 起日
         /// </summary>
