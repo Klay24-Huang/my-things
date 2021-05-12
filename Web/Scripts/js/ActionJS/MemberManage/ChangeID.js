@@ -104,11 +104,11 @@
     $("#change").on('click', function () {
         var targetId = $("#TARGET_ID").val();
         var afterId = $("#AFTER_ID").val();
-        var flag = (checkId(targetId) && checkId(afterId));
+        var flag = (checkId(afterId));
         if (flag) {
             $("#frmChangeID").submit();
         } else {
-            var message = "身分證格式錯誤";
+            var message = "新身分證號格式錯誤";
             disabledLoadingAndShowAlert(message);
         }
     })

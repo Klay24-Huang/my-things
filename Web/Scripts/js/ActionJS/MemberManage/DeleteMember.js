@@ -106,7 +106,8 @@
 
     $("#delete").on('click', function () {
         var flag = checkId();
-        if (flag) {
+        //舊有ID有許多不符格式，暫且移除檢核
+        if (true) {
             $("#frmDelete").submit();
         } else {
             var message = "身分證格式錯誤";
