@@ -30,6 +30,8 @@ iRentApi20 Web API版本
 - [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
 - [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
 - [BuyNow 立即購買](#BuyNow)
+- [GetMySubs我的方案牌卡明細](#GetMySubs)
+- [GetSubsCNT取得合約明細](#GetSubsCNT)
 
 ----------
 # 修改歷程
@@ -50,7 +52,7 @@ iRentApi20 Web API版本
 20210415 新增變更悠遊卡
 
 20210510 新增月租訂閱制相關
-
+20210511 新增月租訂閱制相關(GetMySubs,GetSubsCNT)
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -2136,5 +2138,240 @@ iRentApi20 Web API版本
 }
 ```
 
+<h5 id="GetMySubs" name="GetMySubs">20210511發佈</h5>
+
+# GetMySubs 我的方案牌卡明細
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetMySubs/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
+| ---------- | ------------------------ | :--: | :----:  | -------------------------|
+| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
+| MonProPeriod | 總期數					|  Y   | int | 6  |
+| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+
+* input範例
+
+```
+{
+    "MonProjID": "MR66",
+	"MonProPeriod": 6,
+	"ShortDays" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| Month       | 資料物件 | | |
+| PayTypes    | 資料物件 | | |
+| InvoTypes   | 資料物件 | | |
+
+* Month 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| MonProjID     | 月租專案代碼  | string | MR66 |
+| MonProPeriod  | 總期數		| int | 6 |
+| ShortDays		| 短天期天數    | int | 0 |
+| MonProjNM		| 月租專案名稱  | string | |
+| WorkDayHours	| 平日時數		| double | 10.0 |
+| HolidayHours	| 假日時數		| double | 10.0 |
+| MotoTotalHours | 機車時數 	| double | 0.0 |
+| StartDate 	| 起日 			| string | 20210101 |
+| EndDate 		| 迄日 			| string | 20210131 |
+| SubsNxt		| 是否自動續訂 	| int | 0 |
+| IsChange		| 是否變更下期合約 | int | 0 |
+| IsPay 		| 是否當期有繳費 	| int | 0 |
 
 
+* PayTypes, InvoTypes 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| CodeId        | 代碼                  | int    | 5                  |
+| CodeNm        | 名稱                  | string | 信用卡,手機條碼    |
+| IsDef         | 是否為預設值(0否 1是) | int    | 0                  |
+
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "Month": {
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "WorkDayHours": 3.0,
+            "HolidayHours": 3.0,
+            "MotoTotalHours": 300.0,
+            "StartDate": "05/11",
+            "EndDate": "06/10",
+            "SubsNxt": 0,
+            "IsChange": 0,
+            "IsPay": 1
+        },
+        "PayTypes": [
+            {
+                "CodeId": 5,
+                "CodeNm": "信用卡",
+                "IsDef": 1
+            }
+        ],
+        "InvoTypes": [
+            {
+                "CodeId": 9,
+                "CodeNm": "手機條碼",
+                "IsDef": 1
+            },
+            {
+                "CodeId": 10,
+                "CodeNm": "自然人憑證",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 8,
+                "CodeNm": "三聯",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 6,
+                "CodeNm": "捐贈碼",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 12,
+                "CodeNm": "會員載具",
+                "IsDef": 0
+            }
+        ]
+    }
+}
+```
+
+
+<h5 id="GetSubsCNT" name="GetSubsCNT">20210511發佈</h5>
+
+# GetSubsCNT 取得合約明細
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+  ### [/api/GetSubsCNT/]
+
+  ### 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
+| ---------- | ------------------------ | :--: | :----:  | -------------------------|
+| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
+| MonProPeriod | 總期數					|  Y   | int | 6  |
+| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+
+* input範例
+
+```
+{
+    "MonProjID": "MR66",
+	"MonProPeriod": 3,
+	"ShortDays" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| NowCard		| 資料物件  |  |  |
+| NxtCard 		| 資料物件 | | |
+
+
+* Month 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| MonProjID     | 月租專案代碼  | string | MR66 |
+| MonProPeriod  | 總期數		| int | 6 |
+| ShortDays		| 短天期天數    | int | 0 |
+| MonProjNM		| 月租專案名稱  | string | |
+| CarWDHours	| 汽車平日時數	| double | 10.0 |
+| CarHDHours	| 汽車假日時數	| double | 10.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 	| double | 0.0 |
+| SD 			| 起日 			| string | 20210101 |
+| ED	 		| 迄日 			| string | 20210131 |
+| MonProDisc  	| 注意事項      | string  |  汽包機66-1注意事項   |
+
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "NowCard": {
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "CarWDHours": 3.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300.0,
+            "SD": "05/11",
+            "ED": "06/10",
+            "MonProDisc": "汽包機66-3注意事項"
+        },
+        "NxtCard": null
+    }
+}
+```

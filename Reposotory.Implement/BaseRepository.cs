@@ -95,33 +95,6 @@ namespace Reposotory.Implement
 
         }
 
-        public int Execuate(ref bool flag, string SQL)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(this.ConnectionString))
-                using (SqlCommand command = new SqlCommand(SQL, conn))
-                {
-
-                    command.CommandType = CommandType.Text;
-                    command.CommandTimeout = 180;
-
-                    if (conn.State != ConnectionState.Open) conn.Open();
-
-                    int result = command.ExecuteNonQuery();
-                    conn.Close();
-                    conn.Dispose();
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                flag = false;
-                return 0;
-            }
-        }
-
-
         public void ExecNonResponse(ref bool flag,string SQL)
         {
             try
