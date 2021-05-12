@@ -16,6 +16,7 @@ using Domain.SP.Input.Bill;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Domain.WebAPI.output.Taishin;
+using Domain.SP.Input.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -226,6 +227,23 @@ namespace WebAPI.Controllers
                     }
                     else if (apiInput.DoPay == 1)//付款
                     {
+                        #region 修改預設付款方式
+
+                        if(!string.IsNullOrWhiteSpace(IDNO) &&
+                           LogID >0 && apiInput.PayTypeId >0 && apiInput.InvoTypeId > 0)
+                        {
+                            var xspin = new SPInput_SetSubsPayInvoDef()
+                            {
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                InvoTypeId = apiInput.InvoTypeId,
+                                PayTypeId = apiInput.PayTypeId
+                            };
+                            msp.sp_SubsPayInvoDef(xspin, ref errCode);
+                        }
+
+                        #endregion
+
                         #region 信用卡交易
 
                         var WsOut = new WebAPIOutput_Auth();

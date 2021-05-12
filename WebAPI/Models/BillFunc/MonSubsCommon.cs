@@ -766,6 +766,33 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 設定會員預設付款方式,發票方式
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SubsPayInvoDef(SPInput_SetSubsPayInvoDef spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
+            string spName = "usp_SetSubsPayInvoDef_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetSubsPayInvoDef();
+            SQLHelper<SPInput_SetSubsPayInvoDef, SPOut_SetSubsPayInvoDef> sqlHelp = new SQLHelper<SPInput_SetSubsPayInvoDef, SPOut_SetSubsPayInvoDef>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
         /// 訂閱制月租繳款
         /// </summary>
         /// <param name="spInput"></param>
