@@ -27,6 +27,10 @@ namespace WebAPI.Models.Param.Output
         public double CarWDHours { get; set; }
         public double CarHDHours { get; set; }
         public double MotoTotalMins { get; set; }
+        public double WDRateForCar { get; set; }
+        public double HDRateForCar { get; set; }
+        public double WDRateForMoto { get; set; }
+        public double HDRateForMoto { get; set; }
         public int IsDiscount { get; set; }
     }
 
