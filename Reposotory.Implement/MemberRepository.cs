@@ -465,7 +465,7 @@ namespace Reposotory.Implement
             return lstMember;
         }
 
-        /// 取得黑名單手機號碼
+        /// 取得悠遊付專案
         public List<BE_GetEasyWalletList> GetEasyWalletList(string IDNO)
         {
             bool flag = false;
@@ -479,6 +479,21 @@ namespace Reposotory.Implement
                 $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+        //取得悠遊付訂單
+        public List<BE_Refund> GetEasyWalletOrder()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_Refund> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
+            string SQL = $" select orderNo, IDNO, ITEM, PRICE " +
+                $"from EASYPAY_Order";
+
+            lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
 

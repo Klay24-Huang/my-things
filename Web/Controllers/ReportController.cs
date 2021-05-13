@@ -1127,6 +1127,43 @@ namespace Web.Controllers
             return View(lstData);
 
         }
+        public ActionResult ExplodeReFund()
+        {
+            List<BE_Refund> lstData = null;
+            MemberRepository repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "訂單編號", "購買者id", "購買方案", "購買價格" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetEasyWalletOrder();
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].orderNo);
+                content.CreateCell(1).SetCellValue(lstData[k].IDNO);
+                content.CreateCell(2).SetCellValue(lstData[k].ITEM);
+                content.CreateCell(3).SetCellValue(lstData[k].PRICE);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "悠遊付訂單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
         #endregion
 
         #region 營運狀態記錄報表
