@@ -18,6 +18,15 @@ $(document).ready(function () {
 })
 
 //20210511唐加
+$("#btnExplode").on("click", function () {
+    ShowLoading("資料查詢中…");
+
+    $("#ExplodeParkingName").val($("#ParkingName").val());
+    disabledLoading();
+    $("#frmChargeParkingSettingExplode").submit();
+});
+
+//20210511唐加
 function DoIn(Id) {
     var SParkingName = $("#ParkingName_" + Id).val();
     var SParkingAddress = $("#ParkingAddress_" + Id).val();
