@@ -50,30 +50,6 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            //string SQL = "SELECT AlertID,EventType,Receiver,CarNo,HasSend,SendTime,MKTime FROM TB_AlertMailLog WITH(NOLOCK) WHERE 1=1 ";
-            //int nowCount = 0;
-            //string term = "";
-            //SqlParameter[] para = new SqlParameter[2];
-            //if (!string.IsNullOrEmpty(SDate) && !string.IsNullOrEmpty(EDate))
-            //{
-            //    term += " AND (HasSend=0 AND MKTime BETWEEN @SDate AND @EDate) ";
-            //    para[nowCount] = new SqlParameter("@SDate", SqlDbType.VarChar, 30);
-            //    para[nowCount].Value = SDate;
-            //    para[nowCount].Direction = ParameterDirection.Input;
-            //    nowCount++;
-
-            //    para[nowCount] = new SqlParameter("@EDate", SqlDbType.VarChar, 30);
-            //    para[nowCount].Value = EDate;
-            //    para[nowCount].Direction = ParameterDirection.Input;
-            //    nowCount++;
-            //}
-
-            //SQL += term;
-            //SQL += " OR (HasSend=2 AND MKTime >= DATEADD(HOUR,-4,DATEADD(HOUR,8,GETDATE())) )";
-            //SQL += " ORDER BY AlertID DESC";
-
-            //lstEVMessage = GetObjList<Sync_SendEventMessage>(ref flag, ref lstError, SQL, para, term);
-
             SqlParameter[] para = new SqlParameter[0];
             string SQL = " EXEC usp_GetAlertMailLog '" + SDate + "','" + EDate + "'";
             string term = "";

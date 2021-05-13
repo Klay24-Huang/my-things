@@ -47,6 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=5.6.2.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.5.6.2\lib\net45\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.Excel.2.1.1\lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -57,6 +60,9 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.4.1\lib\net46\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
@@ -78,10 +84,16 @@
     <Reference Include="NPOI.OpenXmlFormats, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.Excel.2.1.1\lib\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -311,6 +323,47 @@
     <Content Include="Content\plugins\polygon\leaflet.js" />
     <Content Include="Content\plugins\polygon\map.js" />
     <Content Include="Content\plugins\polygon\turf.min.js" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="assets\helpers\_variables.scss" />
@@ -320,6 +373,8 @@
     <Content Include="Content\css\bootstrap.css.map" />
     <Content Include="Content\css\docs.css.map" />
     <Content Include="Content\css\style.css.map" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FranchiseesMaintain.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FuncGroupMaintain.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FuncMaintain.js" />
@@ -330,6 +385,9 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDataSetting.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarSetting.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\DeleteMember.js" />
+    <Content Include="Scripts\js\ActionJS\Report\CarLocationQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\ExportCarSettingData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarBindData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarMachineData.js" />
@@ -387,6 +445,7 @@
     <Content Include="Scripts\js\ActionJS\Report\MonthlyMainQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MotorBatteryStatusQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ParkingCheckInQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\ReFund.js" />
     <Content Include="Scripts\js\ActionJS\Report\TradeQuery.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerInfoAdd.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerInfoMaintain.js" />
@@ -511,6 +570,7 @@
     <Content Include="Scripts\plugin\footable-bootstrap\js\footable.js" />
     <Content Include="Scripts\plugin\footable-bootstrap\js\footable.min.js" />
     <Content Include="Scripts\plugin\sweetalert\dist\sweetalert.min.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\ChangeID.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -687,6 +747,13 @@
     <Content Include="Views\News\BannerInfoMaintain.cshtml" />
     <Content Include="Views\News\BannerInfoAdd.cshtml" />
     <Content Include="Views\CarDataInfo\ImportCarBindData.cshtml" />
+    <Content Include="Views\Report\ReFund.cshtml" />
+    <Content Include="Views\Report\ExportCarSettingData.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMember.cshtml" />
+    <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
+    <Content Include="Views\MemberManage\DeleteMember.cshtml" />
+    <Content Include="Views\MemberManage\ChangeID.cshtml" />
+    <Content Include="Views\Report\CarLocationQuery.cshtml" />    
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\News\BannerInfoAdd.cshtml" />
@@ -723,6 +790,26 @@
       <Project>{2A4A3C9D-372F-4F8B-AF38-911ACFF3FB2E}</Project>
       <Name>WebCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -7,6 +7,7 @@ CREATE TABLE [dbo].[TB_AlertMailLog](
 	[Sender] [varchar](256) NOT NULL,
 	[HasSend] [tinyint] NOT NULL,
 	[CarNo] [varchar](20) NOT NULL,
+	[OrderNo] [bigint] NOT NULL,
 	[SendTime] [datetime] NULL,
 	[MKTime] [datetime] NOT NULL,
 	[UPDTime] [datetime] NULL,
@@ -30,6 +31,9 @@ ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF__TB_AlertM__HasSe__50DC9
 GO
 
 ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_CarNo]  DEFAULT ('') FOR [CarNo]
+GO
+
+ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_OrderNo]  DEFAULT ((0)) FOR [OrderNo]
 GO
 
 ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF__TB_AlertM__MKTim__51D0C381]  DEFAULT (dateadd(hour,(8),getdate())) FOR [MKTime]

@@ -1,0 +1,207 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_CarSettingRecord>
+@using System.Text;
+@{
+
+    string StationID = "";
+
+    int ResultLen = 0;
+
+
+    List<Domain.TB.BackEnd.BE_CarSettingRecord> lstData = new List<Domain.TB.BackEnd.BE_CarSettingRecord>();
+    int isMotor = 1;
+    if (Model != null)
+    {
+        lstData = Model.ToList();
+
+        if (lstData.Count != 0)
+        {
+            isMotor = lstData[0].IsMotor;
+        }
+
+        ResultLen = lstData.Count();
+    }
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    @using (Html.BeginForm("ExportCarSettingData", "Report", FormMethod.Post, new { id = "frmCarDashBoard", @class = "form-horizontal" }))
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                營業記錄報表
+            </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                報表日期
+                            </div>
+                            <div class="col-md-3">
+                                起：<input name="Time_Start" id="Time_Start" class="form-control dateTimePicker" />
+                                迄：<input name="Time_End" id="Time_End" class="form-control dateTimePicker" />
+                                ．日期格不得為空<br />
+                                ．日期間距不得大於31天<br />
+                                ．起日不得晚於迄日<br />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                服務據點
+                            </div>
+                            <div class="col-md-10">
+                                <input class="form-control col-md-2" type="text" name="StationID" id="StationID" value="@StationID" />
+                                <span class="form-inline" id="StationName" name="StationName"></span>
+                                <button type="button" id="btnSearch_X0WR" name="btnSearch_X0WR" class="btn btn-primary">雙北【機車】</button>
+                                <button type="button" id="btnSearch_X1JT" name="btnSearch_X1JT" class="btn btn-primary">台南【機車】</button>
+                                <button type="button" id="btnSearch_X1KZ" name="btnSearch_X1KZ" class="btn btn-primary">高雄【機車】</button>
+                                <button type="button" id="btnSearch_X1KY" name="btnSearch_X1KY" class="btn btn-primary">台中【機車】</button>
+                                <button type="button" id="btnSearch_X1ZZ" name="btnSearch_X1ZZ" class="btn btn-primary">宜蘭【機車】</button>
+                                <button type="button" id="btnSearch_X0SR" name="btnSearch_X0SR" class="btn btn-primary">台北【汽車】</button>
+                                <button type="button" id="btnSearch_X0R4" name="btnSearch_X0R4" class="btn btn-primary">台中【汽車】</button>
+                                <button type="button" id="btnSearch_X0U4" name="btnSearch_X0U4" class="btn btn-primary">台南【汽車】</button>
+                                <button type="button" id="btnSearch_X1V4" name="btnSearch_X1V4" class="btn btn-primary">高雄【汽車】</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="button" id="btnSearch" name="btnSearch" class="btn btn-primary">查詢</button>
+                                <button type="button" id="Clear" name="Clear" class="btn btn-outline-primary ml-2">清除</button>
+                                <button type="submit" id="btnExport" name="btnExport" class="btn btn-primary ml-2" value="true">匯出</button>
+                                <input type="hidden" id="isExport" name="isExport" value="false" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <input type="hidden" id="len" name="len" value="@ResultLen" />
+            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+        </div>
+        <!--end card-->
+    }
+</div>
+
+<!--查詢介面結束-->
+<!--輸出表格-->
+@if (isMotor == 1)
+{
+    <div class="container mt-4">
+        <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
+            <thead class="text-white bg-primary">
+                <tr>
+                    <th data-sort-ignore="true"></th>
+                    <th data-type="date">時間</th>
+                    <th scope="col">據點</th>
+                    <th scope="col">總數量</th>
+                    <th scope="col">出租中</th>
+                    <th scope="col">可出租</th>
+                    <th scope="col">待上線</th>
+                    <th scope="col">低電量(3TBA)</th>
+                    <th scope="col">低電量(2TBA)</th>
+                    <th scope="col">一小時無回應</th>
+                    <th scope="col">無回應</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@(lstData[i].Time.ToString())</td>
+                            <td scope="col">@(lstData[i].Station.Trim())</td>
+                            <td scope="col">@(lstData[i].Total.ToString())</td>
+                            <td scope="col">@(lstData[i].Renting.ToString())</td>
+                            <td scope="col">@(lstData[i].OnBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].OffBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].LowBattery_3TBA.ToString())</td>
+                            <td scope="col">@(lstData[i].LowBattery_2TBA.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse_OneHour.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse.ToString())</td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">無資料</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+@if (isMotor == 0)
+{
+    <div class="container mt-4">
+        <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
+            <thead class="text-white bg-primary">
+                <tr>
+                    <th data-sort-ignore="true"></th>
+                    <th data-type="date">時間</th>
+                    <th scope="col">據點</th>
+                    <th scope="col">總數量</th>
+                    <th scope="col">出租中</th>
+                    <th scope="col">可出租</th>
+                    <th scope="col">待上線</th>
+                    <th scope="col">低電量</th>
+                    <th scope="col">一小時無回應</th>
+                    <th scope="col">無回應</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ResultLen > 0)
+                {
+                    for (int i = 0; i < ResultLen; i++)
+                    {
+                        <tr>
+                            <td></td>
+                            <td scope="row">@(lstData[i].Time.ToString())</td>
+                            <td scope="col">@(lstData[i].Station.Trim())</td>
+                            <td scope="col">@(lstData[i].Total.ToString())</td>
+                            <td scope="col">@(lstData[i].Renting.ToString())</td>
+                            <td scope="col">@(lstData[i].OnBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].OffBoard.ToString())</td>
+                            <td scope="col">@(lstData[i].Volt.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse_OneHour.ToString())</td>
+                            <td scope="col">@(lstData[i].Nonresponse.ToString())</td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">無資料</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <ul class="pagination"></ul>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+<!--輸出表格結束-->

@@ -1,6 +1,7 @@
 ﻿using Domain.TB.BackEnd;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace Web.Controllers
     public class ReportController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
+        #region 整備人員報表查詢
         /// <summary>
         /// 整備人員報表查詢
         /// </summary>
@@ -199,13 +202,21 @@ namespace Web.Controllers
                 content.CreateCell(14).SetCellValue(totalDayStr);
                 content.CreateCell(15).SetCellValue(data[k].lastRentTimes);
                 content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
-
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
 
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "整備人員查詢結果_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 車況回饋查詢
         /// <summary>
         /// 車況回饋查詢
         /// </summary>
@@ -374,23 +385,21 @@ namespace Web.Controllers
                 content.CreateCell(8).SetCellValue((lstFeedBack[k].isHandle == 0) ? "未處理" : "已處理");   //處理狀態
                 content.CreateCell(9).SetCellValue(lstFeedBack[k].handleDescript);   //處理結果
                 content.CreateCell(10).SetCellValue(lstFeedBack[k].opt);   //處理者
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-                sheet.AutoSizeColumn(9);
-                sheet.AutoSizeColumn(10);
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "車況回饋_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 綠界交易記錄查詢
         /// <summary>
         /// 綠界交易記錄查詢
         /// </summary>
@@ -399,6 +408,9 @@ namespace Web.Controllers
         {
             return View();
         }
+        #endregion
+
+        #region 月租總表
         /// <summary>
         /// 月租總表
         /// </summary>
@@ -461,8 +473,7 @@ namespace Web.Controllers
         /// <param name="EDate"></param>
         /// <param name="userID"></param>
         /// <param name="isHandle"></param>
-        /// <returns></returns>
-       
+        /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
             List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
@@ -514,38 +525,30 @@ namespace Web.Controllers
                 content.CreateCell(1).SetCellValue(lstSubScription[k].ProjID);   //ID
                 content.CreateCell(2).SetCellValue(lstSubScription[k].ProjNM);   //ID
                 content.CreateCell(3).SetCellValue(lstSubScription[k].StartDate.ToString("yyyy-MM-dd HH:mm"));  //合約起
-                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
-                                                                                                                // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
-                                                                                                                // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
+                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄
                 content.CreateCell(5).SetCellValue(lstSubScription[k].IDNO);   //ID
                 content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
                 content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
                 content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
-
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-
-                /* sheet.AutoSizeColumn(8);
-                 sheet.AutoSizeColumn(9);
-                 sheet.AutoSizeColumn(10);*/
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             //workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱總表_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
+
+        #region 月租報表
         /// <summary>
         /// 月租報表
         /// </summary>
-        /// <returns></returns>
-        
+        /// <returns></returns>   
         public ActionResult MonthlyDetailQuery()
         {
             return View();
@@ -603,7 +606,6 @@ namespace Web.Controllers
 
             string tSDate = "", tEDate = "", tUserID = "", tOrderNum = "";
 
-
             if (!string.IsNullOrEmpty(SDate))
             {
                 tSDate = SDate;
@@ -638,7 +640,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             int len = lstSubScription.Count;
@@ -646,9 +648,6 @@ namespace Web.Controllers
             {
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue("H" + lstSubScription[k].OrderNo.ToString().PadLeft(7, '0'));  //訂單編號
-                                                                                                                  //合約迄                                                                                 //  content.CreateCell(1).SetCellValue((lstFeedBack[k].isHandle == 1) ? "還車" : "取車");         //處理狀態
-                                                                                                                  // content.CreateCell(2).SetCellValue("H" + lstFeedBack[k].order_number.ToString().PadLeft(7, '0'));   //合約
-                                                                                                                  // content.CreateCell(3).SetCellValue(lstFeedBack[k].CarNo);   //車號
                 content.CreateCell(1).SetCellValue(lstSubScription[k].IDNO);   //ID
                 content.CreateCell(2).SetCellValue(lstSubScription[k].lend_place);   //ID
                 content.CreateCell(3).SetCellValue(lstSubScription[k].UseWorkDayHours);   //汽車－平日
@@ -658,26 +657,19 @@ namespace Web.Controllers
                 content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
                 content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //ID
                 content.CreateCell(9).SetCellValue(lstSubScription[k].ProjNM);   //汽車－平日
-                sheet.AutoSizeColumn(0);
-                sheet.AutoSizeColumn(1);
-                sheet.AutoSizeColumn(2);
-                sheet.AutoSizeColumn(3);
-                sheet.AutoSizeColumn(4);
-                sheet.AutoSizeColumn(5);
-                sheet.AutoSizeColumn(6);
-                sheet.AutoSizeColumn(7);
-                sheet.AutoSizeColumn(8);
-                sheet.AutoSizeColumn(9);
-
-                /* sheet.AutoSizeColumn(8);
-                 sheet.AutoSizeColumn(9);
-                 sheet.AutoSizeColumn(10);*/
             }
+
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-
+        #endregion
+        
         #region 進出停車場明細
         /// <summary>
         /// 進出停車場明細
@@ -779,6 +771,7 @@ namespace Web.Controllers
         }
         #endregion
 
+        #region 光陽維運APP報表
         /// <summary>
         /// 光陽維運APP報表 - 20210119唐加
         /// </summary>
@@ -796,7 +789,6 @@ namespace Web.Controllers
             List<BE_GetKymcoList> lstData = new OtherRepository(connetStr).GetKymcoLists(AuditMode, StartDate, EndDate);
             return View(lstData);
         }
-
         public ActionResult ExplodeKymcoQuery(string ExplodeSDate, string ExplodeEDate, int ExplodeAuditMode)
         {
             List<BE_GetKymcoList> lstRawDataOfMachi = new List<BE_GetKymcoList>();
@@ -885,10 +877,10 @@ namespace Web.Controllers
                 // workbook.Close();
                 return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "光陽維護資料" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
             }
-
-
         }
+        #endregion
 
+        #region 機車電池狀態查詢
         /// <summary>
         /// 機車電池狀態查詢
         /// </summary>
@@ -914,7 +906,6 @@ namespace Web.Controllers
             List<BE_MotorBatteryStatus> lstData = new CarCardCommonRepository(connetStr).GetMotorBatteryStatus(CarNo, StartDate, EndDate);
             return View(lstData);
         }
-
         public ActionResult ExplodeMotorBatteryStatusQuery(string ExplodeCarNo, string ExplodeSendDate)
         {
             if (string.IsNullOrEmpty(ExplodeSendDate))
@@ -1040,6 +1031,9 @@ namespace Web.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 ExplodeSendDate.Replace("-", "") + "_" + ExplodeCarNo + ".xlsx");
         }
+        #endregion
+
+        #region 會員審核明細報表
         /// <summary>
         /// 會員審核明細報表 - 20210305唐加
         /// </summary>
@@ -1077,7 +1071,7 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
 
-            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "審核日期", "審核結果", "不通過原因", "處理項目" };
+            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -1095,6 +1089,7 @@ namespace Web.Controllers
                 content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
                 content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
                 content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
                 content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
                 content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
@@ -1110,8 +1105,192 @@ namespace Web.Controllers
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員審核明細" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
+        #endregion
 
-    
+        #region 悠遊付退款
+        /// <summary>
+        /// 悠遊付退款
+        /// </summary>
+        /// <returns></returns>  
+        public ActionResult ReFund()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ReFund(string IDNO)
+        {
+            ViewData["IDNO"] = IDNO;
+            List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
+            return View(lstData);
 
+        }
+        #endregion
+
+        #region 營運狀態記錄報表
+        /// <summary>
+        /// 營運狀態記錄報表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ExportCarSettingData()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ExportCarSettingData(string isExport, string StationID, string Time_Start, string Time_End)
+        {
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
+            lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
+
+
+            if (isExport == "true")
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                int row = 2;
+                MemoryStream fileStream = new MemoryStream();
+
+                if (StationID == "X0SR" || StationID == "X0R4" || StationID == "X0U4" || StationID == "X1V4")
+                {
+                    sheet.Cells[1, col++].Value = "時間";
+                    sheet.Cells[1, col++].Value = "據點";
+                    sheet.Cells[1, col++].Value = "總數量";
+                    sheet.Cells[1, col++].Value = "出租中";
+                    sheet.Cells[1, col++].Value = "可出租";
+                    sheet.Cells[1, col++].Value = "待上線";
+                    sheet.Cells[1, col++].Value = "低電量";
+                    sheet.Cells[1, col++].Value = "一小時無回應";
+                    sheet.Cells[1, col++].Value = "無回應";
+
+
+                    foreach (var i in lstData)
+                    {
+                        col = 1;
+                        sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                        sheet.Cells[row, col++].Value = i.Station;
+                        sheet.Cells[row, col++].Value = i.Total;
+                        sheet.Cells[row, col++].Value = i.Renting;
+                        sheet.Cells[row, col++].Value = i.OnBoard;
+                        sheet.Cells[row, col++].Value = i.OffBoard;
+                        sheet.Cells[row, col++].Value = i.Volt;
+                        sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                        sheet.Cells[row, col++].Value = i.Nonresponse;
+                        row++;
+                    }
+
+                    ep.SaveAs(fileStream);
+                    ep.Dispose();
+                    fileStream.Position = 0;
+                    return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_營運狀態記錄.xlsx");
+                }
+
+                sheet.Cells[1, col++].Value = "時間";
+                sheet.Cells[1, col++].Value = "據點";
+                sheet.Cells[1, col++].Value = "總數量";
+                sheet.Cells[1, col++].Value = "出租中";
+                sheet.Cells[1, col++].Value = "可出租";
+                sheet.Cells[1, col++].Value = "待上線";
+                sheet.Cells[1, col++].Value = "低電量(3TBA)";
+                sheet.Cells[1, col++].Value = "低電量(2TBA)";
+                sheet.Cells[1, col++].Value = "一小時無回應";
+                sheet.Cells[1, col++].Value = "無回應";
+
+
+                foreach (var i in lstData)
+                {
+                    col = 1;
+                    sheet.Cells[row, col++].Value = i.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                    sheet.Cells[row, col++].Value = i.Station;
+                    sheet.Cells[row, col++].Value = i.Total;
+                    sheet.Cells[row, col++].Value = i.Renting;
+                    sheet.Cells[row, col++].Value = i.OnBoard;
+                    sheet.Cells[row, col++].Value = i.OffBoard;
+                    sheet.Cells[row, col++].Value = i.LowBattery_3TBA;
+                    sheet.Cells[row, col++].Value = i.LowBattery_2TBA;
+                    sheet.Cells[row, col++].Value = i.Nonresponse_OneHour;
+                    sheet.Cells[row, col++].Value = i.Nonresponse;
+                    row++;
+                }
+
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{Time_Start}_to_{Time_End}_營運狀態記錄.xlsx");
+            }
+            else
+            {
+                return View(lstData);
+            }
+        }
+        #endregion
+
+        #region 車輛隨租定位
+        /// <summary>
+        /// 車輛隨租定位
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CarLocationQuery()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CarLocationQuery(string IsCar, string Time_Start, string Time_End, string Account)
+        {
+            CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
+            List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
+            lstData = carStatusCommon.GetCarLocationData(Time_Start, Time_End, IsCar);
+            string carType = (IsCar == "true") ? "汽車" : "機車";
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage ep = new ExcelPackage();
+            ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+            int col = 1;
+            int row = 2;
+            MemoryStream fileStream = new MemoryStream();
+
+            sheet.Cells[1, col++].Value = "order_number";
+            sheet.Cells[1, col++].Value = "IDNO";
+            sheet.Cells[1, col++].Value = "CarNo";
+            sheet.Cells[1, col++].Value = "PRONAME";
+            sheet.Cells[1, col++].Value = "ProjID";
+            sheet.Cells[1, col++].Value = "lend_place";
+            sheet.Cells[1, col++].Value = "final_start_time";
+            sheet.Cells[1, col++].Value = "final_stop_time";
+            sheet.Cells[1, col++].Value = "CID";
+            sheet.Cells[1, col++].Value = "start_Lat";
+            sheet.Cells[1, col++].Value = "start_Lng";
+            sheet.Cells[1, col++].Value = "stop_Lat";
+            sheet.Cells[1, col++].Value = "stop_Lng";
+
+            foreach (var i in lstData)
+            {
+                col = 1;
+                sheet.Cells[row, col++].Value = i.order_number;
+                sheet.Cells[row, col++].Value = i.IDNO;
+                sheet.Cells[row, col++].Value = i.CarNo;
+                sheet.Cells[row, col++].Value = i.PRONAME;
+                sheet.Cells[row, col++].Value = i.ProjID;
+                sheet.Cells[row, col++].Value = i.lend_place;
+                sheet.Cells[row, col++].Value = i.final_start_time.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, col++].Value = i.final_stop_time.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, col++].Value = i.CID;
+                sheet.Cells[row, col++].Value = i.start_Lat;
+                sheet.Cells[row, col++].Value = i.start_Lng;
+                sheet.Cells[row, col++].Value = i.stop_Lat;
+                sheet.Cells[row, col++].Value = i.stop_Lng;
+
+                row++;
+            }
+
+            ep.SaveAs(fileStream);
+            ep.Dispose();
+            fileStream.Position = 0;
+            return File(fileStream, "application/xlsx", $"{Time_Start}_to_{Time_End}_車輛隨租定位({carType}).xlsx");
+        }
+        #endregion
     }
 }

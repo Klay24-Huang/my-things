@@ -500,5 +500,187 @@ namespace Reposotory.Implement
 
         }
 
+        public List<BE_CarSettingRecord> GetCarSettingRecord(string StationID, string Time_Start, string Time_End)
+        {
+            string stationName = null;
+            DateTime St_Dt;
+            DateTime Ed_Dt;
+            switch (StationID)
+            {
+                case "X0WR":
+                    stationName = "iRent路邊租還[機車]_台北";
+                    break;
+                case "X1JT":
+                    stationName = "iRent路邊租還[機車]_台南";
+                    break;
+                case "X1KZ":
+                    stationName = "iRent路邊租還[機車]_高雄";
+                    break;
+                case "X1KY":
+                    stationName = "iRent路邊租還[機車]_台中";
+                    break;
+                case "X1ZZ":
+                    stationName = "iRent機車_宜蘭";
+                    break;
+                case "X0SR":
+                    stationName = "iRent隨租隨還_台北";
+                    break;
+                case "X0R4":
+                    stationName = "iRent隨租隨還_台中";
+                    break;
+                case "X0U4":
+                    stationName = "iRent隨租隨還_台南";
+                    break;
+                case "X1V4":
+                    stationName = "iRent隨租隨還_高雄";
+                    break;
+            }
+
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_CarSettingRecord> lstCarSettingRecord = null;
+
+            int nowCount = 0;
+            string SQL = " SELECT * FROM TB_CarSettingRecord ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (false == string.IsNullOrWhiteSpace(stationName))
+            {
+                term += " Station = @Station";
+                para[nowCount] = new SqlParameter("@Station", SqlDbType.NVarChar, 20);
+                para[nowCount].Value = stationName;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if (false == string.IsNullOrWhiteSpace(Time_Start))
+            {
+                St_Dt = Convert.ToDateTime(Time_Start);
+                para[nowCount] = new SqlParameter("@Time_Start", SqlDbType.DateTime);
+                para[nowCount].Value = St_Dt;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if (false == string.IsNullOrWhiteSpace(Time_End))
+            {
+                Ed_Dt = Convert.ToDateTime(Time_End);
+                term += (term == "") ? "" : " AND ";
+                term += " (@Time_End >= Time AND Time >= @Time_Start ) ";
+                para[nowCount] = new SqlParameter("@Time_End", SqlDbType.DateTime);
+                para[nowCount].Value = Ed_Dt;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term + "ORDER BY Time DESC";
+            }
+
+            lstCarSettingRecord = GetObjList<BE_CarSettingRecord>(ref flag, ref lstError, SQL, para, term);
+
+            return lstCarSettingRecord;
+        }
+
+        public List<BE_CarLocationData> GetCarLocationData(string Time_Start, string Time_End, string IsCar)
+        {
+            List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
+
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.Transaction = tran;
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+
+            cmd.Parameters.Add("@FirDATE", SqlDbType.VarChar, 8).Value = Time_Start.Substring(0,10).Replace("-", "");
+            cmd.Parameters.Add("@EndDATE", SqlDbType.VarChar, 8).Value = Time_End.Substring(0,10).Replace("-", "");
+
+            if(IsCar == "true")
+            {
+                cmd.CommandText = "SP_CarLocationHis_Q01";
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                foreach(DataRow dr in dt.Rows)
+                {
+                    BE_CarLocationData data = new BE_CarLocationData();
+                    data.CID = dr.Field<string>("CID");
+                    data.CarNo = dr.Field<string>("CarNo");
+                    data.final_start_time = dr.Field<DateTime>("final_start_time");
+
+                    if (Convert.IsDBNull(dr[7]))
+                    {
+                        data.final_stop_time = new DateTime();
+                    }
+                    else
+                    {
+                        data.final_stop_time = dr.Field<DateTime>("final_stop_time");
+                    }
+
+                    data.IDNO = dr.Field<string>("IDNO");
+                    data.lend_place = dr.Field<string>("lend_place");
+                    data.order_number = dr.Field<Int64>("order_number");
+                    data.ProjID = dr.Field<string>("ProjID");
+                    data.PRONAME = dr.Field<string>("PRONAME");
+                    data.start_Lat = dr.Field<string>("start_Lat");
+                    data.start_Lng = dr.Field<string>("start_Lng");
+                    data.stop_Lat = dr.Field<string>("stop_Lat");
+                    data.stop_Lng = dr.Field<string>("stop_Lng");
+
+                    lstData.Add(data);
+                };
+                reader.Close();
+            }
+            else
+            {
+                cmd.CommandText = "SP_CarLocationHisMOTO_Q01";
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    BE_CarLocationData data = new BE_CarLocationData();
+                    data.CID = dr.Field<string>("CID");
+                    data.CarNo = dr.Field<string>("CarNo");
+                    data.final_start_time = dr.Field<DateTime>("final_start_time");
+                    if (Convert.IsDBNull(dr[7]))
+                    {
+                        data.final_stop_time = new DateTime(); 
+                    }
+                    else
+                    {
+                        data.final_stop_time = dr.Field<DateTime>("final_stop_time");
+                    }
+                    data.IDNO = dr.Field<string>("IDNO");
+                    data.lend_place = dr.Field<string>("lend_place");
+                    data.order_number = dr.Field<Int64>("OrderNo");
+                    data.ProjID = dr.Field<string>("ProjID");
+                    data.PRONAME = dr.Field<string>("PRONAME");
+                    data.start_Lat = dr[9].ToString();
+                    data.start_Lng = dr[10].ToString();
+                    data.stop_Lat = dr[11].ToString();
+                    data.stop_Lng = dr[12].ToString();
+
+                    lstData.Add(data);
+                };
+                reader.Close();
+            }
+
+            tran.Commit();
+            conn.Close();
+            conn.Dispose();
+            return lstData;
+        }    
     }
 }

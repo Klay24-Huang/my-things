@@ -48,7 +48,7 @@ DECLARE @ParkingFee INT =0
 EXEC usp_GetCityParkingFee 10053662,'2021-04-19 17:00:00','2021-04-21 17:00:00','A122364317',9999,@ParkingFee OUTPUT,'','','',''
 SELECT @ParkingFee
 */
-ALTER PROCEDURE [dbo].[usp_GetCityParkingFee]
+CREATE PROCEDURE [dbo].[usp_GetCityParkingFee]
 	@OrderNo			BIGINT,					--案件編號
 	@SD					DATETIME,				--
 	@ED					DATETIME,				--
@@ -67,6 +67,7 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @Descript NVARCHAR(200);
+DECLARE @CarNo VARCHAR(20);
 
 /*初始設定*/
 SET @Error=0;
@@ -102,13 +103,16 @@ BEGIN TRY
 
 	--	--SELECT * FROM TB_OrderMain WITH(NOLOCK) WHERE 
 	--END
-
+	
 	IF @Error=0
 	BEGIN
+		select @CarNo=CarNo FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
+
 		SELECT * INTO #TB_CityParking FROM TB_CityParking with(NOLOCK)	
 		WHERE meter_started_at >= @SD AND meter_ended_at <= @ED
 		AND CancelMark=''
 		AND request_amount IS NOT NULL
+		AND license_plate_number=REPLACE(@CarNo,'-','')
 
 		IF EXISTS(SELECT * FROM #TB_CityParking)
 		BEGIN
@@ -126,13 +130,14 @@ BEGIN TRY
 			SELECT @ParkingFee = SUM(request_amount) 
 			FROM TB_CityParking with(NOLOCK) 
 			WHERE meter_started_at >= @SD AND meter_ended_at <= @ED
+			AND ID IN (SELECT ID FROM #TB_CityParking)
 			
 		END
 		ELSE
 		BEGIN
 			SET @ParkingFee=0
 		END
-
+		--SET @ParkingFee=0
 		DROP TABLE #TB_CityParking
 	END
 		
@@ -162,3 +167,4 @@ BEGIN CATCH
 END CATCH
 
 RETURN 0
+GO
