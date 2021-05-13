@@ -20,6 +20,14 @@
 
     });
 
+    //20210511唐加
+    $("#btnExplode").on("click", function () {
+        ShowLoading("資料查詢中…");
+
+        disabledLoading();
+        $("#frmReFundExplode").submit();
+    });
+
     $("#0bt").on("click", function () {
         //ShowLoading("資料查詢中…");
         $("#orderNo").val($("#0oNo").text())
