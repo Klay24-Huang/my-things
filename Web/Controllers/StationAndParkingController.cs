@@ -177,7 +177,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
+                        string[] field = { "ID", "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -203,7 +203,8 @@ namespace Web.Controllers
                                 {
                                     ParkingName = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
                                     ParkingAddress = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    UserID = UserId
+                                    UserID = UserId,
+                                    ID = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
                                 };
                                 flag = Decimal.TryParse(sheet.GetRow(i).GetCell(2).ToString(), out Longitude);
                                 if (flag == false)
@@ -266,13 +267,8 @@ namespace Web.Controllers
                                         errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
                                     }
                                 }
-
                             }
-
                         }
-
-                    
-
                     }
                     else
                     {
@@ -295,7 +291,6 @@ namespace Web.Controllers
                     ViewData["errorLine"] = errorLine.ToString();
                 }
             }
-
 
             // return this.JavaScript(js);
             //return JavaScriptResult(js);
