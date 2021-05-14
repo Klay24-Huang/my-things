@@ -876,7 +876,7 @@ namespace WebAPI.Models.BillFunc
         public SPOut_GetArrsSubsList sp_GetArrsSubsList(SPInput_GetArrsSubsList spInput, ref string errCode)
         {
             var re = new SPOut_GetArrsSubsList();
-            re.DateRange = new SPOut_GetArrsSubsList_Date();
+            re.DateRange = new List<SPOut_GetArrsSubsList_Date>();
             re.Arrs = new List<SPOut_GetArrsSubsList_Card>();
 
             try
@@ -907,7 +907,7 @@ namespace WebAPI.Models.BillFunc
                     {
                         var subDayRanges = objUti.ConvertToList<SPOut_GetArrsSubsList_Date>(ds1.Tables[0]);
                         if (subDayRanges != null && subDayRanges.Count() > 0)
-                            re.DateRange = subDayRanges.FirstOrDefault();
+                            re.DateRange = subDayRanges;
 
                         var arrs = objUti.ConvertToList<SPOut_GetArrsSubsList_Card>(ds1.Tables[1]);
                         if (arrs != null && arrs.Count() > 0)
@@ -1290,6 +1290,41 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
+    
+        public List<OAPI_GetArrsSubsList_card> FromSPOut_GetArrsSubsList(SPOut_GetArrsSubsList sour)
+        {
+            var re = new List<OAPI_GetArrsSubsList_card>();
+
+            if(sour != null 
+                && sour.DateRange != null && sour.DateRange.Count()>0
+                && sour.Arrs != null && sour.Arrs.Count() > 0)
+            {
+                var arrs = sour.Arrs;
+                sour.DateRange.ForEach(a =>
+                {
+                    var nObj = new OAPI_GetArrsSubsList_card();
+                    nObj.Arrs = new List<OAPI_GetArrsSubsList_arrs>();
+                    nObj.StartDate = a.StartDate.ToString("yyyy/MM/dd");
+                    nObj.EndDate = a.EndDate.ToString("yyyy/MM/dd");
+                    var nArrs = arrs.Where(y => y.SubsId == a.SubsId).ToList();
+                    if(nArrs != null && nArrs.Count() > 0)
+                    {
+                        nObj.ProjNm = nArrs.FirstOrDefault().MonProjNM;
+                        var tmpArrs = (from k in nArrs
+                                     select new OAPI_GetArrsSubsList_arrs
+                                     {
+                                         Period = k.rw,
+                                         ArresPrice = k.PeriodPayPrice
+                                     }).ToList();
+                        nObj.Arrs = tmpArrs;
+                    }
+                    re.Add(nObj);
+                });
+            }
+
+            return re;
+        }
+    
     }
 
 }

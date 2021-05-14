@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_GetArrsSubsList();
             var outputApi = new OAPI_GetArrsSubsList();
-            outputApi.Arrs = new List<OAPI_GetArrsSubsList_arrs>();
+            outputApi.Cards = new List<OAPI_GetArrsSubsList_card>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -119,26 +119,9 @@ namespace WebAPI.Controllers
                     trace.traceAdd("spIn", spIn);
                     var sp_re = msp.sp_GetArrsSubsList(spIn, ref errCode);
                     trace.traceAdd("sp_re", sp_re);
-                    if (sp_re != null )
-                    {
-                        if(sp_re.DateRange != null)
-                        {
-                            var reDate = sp_re.DateRange;
-                            if (!string.IsNullOrWhiteSpace(reDate.SD))
-                                outputApi.StartDate = Convert.ToDateTime(reDate.SD).ToString("yyyy/MM/dd");
-
-                            if (!string.IsNullOrWhiteSpace(reDate.ED))
-                                outputApi.EndDate = Convert.ToDateTime(reDate.ED).ToString("yyyy/MM/dd");
-                        }
-
-                        if(sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
-                        {
-                            var arrs = sp_re.Arrs;
-                            outputApi.ProjNm = arrs.FirstOrDefault().MonProjNM;
-                            outputApi.Arrs = map.FromSPOut_GetArrsSubsList(arrs);
-                        }
-                    }
-
+                    if (sp_re != null && sp_re.DateRange != null && sp_re.DateRange.Count()>0
+                        && sp_re.Arrs != null && sp_re.Arrs.Count()>0)
+                        outputApi.Cards = map.FromSPOut_GetArrsSubsList(sp_re);
                     trace.traceAdd("outputApi", outputApi);
                 }
 
