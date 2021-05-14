@@ -30,6 +30,12 @@ iRentApi20 Web API版本
 - [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
 - [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
 - [BuyNow 立即購買](#BuyNow)
+- [GetMySubs我的方案牌卡明細](#GetMySubs)
+- [GetSubsCNT取得合約明細](#GetSubsCNT)
+- [GetChgSubsList 變更下期續約列表](#GetChgSubsList)
+- [GetUpSubsList 訂閱制升轉列表](#GetUpSubsList)
+- [GetSubsHist 訂閱制歷史紀錄](#GetSubsHist)
+- [GetArrsSubsList 訂閱制欠費查詢](#GetArrsSubsList)
 
 ----------
 # 修改歷程
@@ -45,11 +51,14 @@ iRentApi20 Web API版本
 20210324 增加地圖搜尋相關修改，有變動到的API清單為 GetNormalRent,GetCarType,GetProject
 
 20210407 GetCarTypeGroupList補文件，移除掉部分API的Seats欄位
+
 20210407 新增檢查APP版本、還原更新Token
 
 20210415 新增變更悠遊卡
 
 20210510 新增月租訂閱制相關
+
+20210511 新增月租訂閱制相關(GetMySubs,GetSubsCNT)
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -74,9 +83,11 @@ iRentApi20 Web API版本
 
 # 登入相關
 
-<h5 id="Login" name="Login">20210322發佈</h5>
+##  Login 登入 
 
-# Login 登入
+### [/api/Login/]
+
+* 20210322發佈
 
 * ASP.NET Web API (REST API)
 
@@ -88,9 +99,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/Login/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -233,11 +242,12 @@ iRentApi20 Web API版本
 }
 ```
 
+-------
 
+## RefrashToken 更新Token
+### [/api/RefrashToken/]
 
-<h5 id="RefrashToken" name="RefrashToken">20210322發佈</h5>
-
-# RefrashToken 更新Token
+* 20210322發佈
 
 * ASP.NET Web API (REST API)
 
@@ -251,9 +261,7 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/RefrashToken/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -322,9 +330,12 @@ iRentApi20 Web API版本
 
 ------
 
-<h5 id="CheckAppVersion" name="CheckAppVersion">20210407發佈</h5>
 
-# CheckAppVersion 檢查APP版本
+
+## CheckAppVersion 檢查APP版本
+### [/api/CheckAppVersion/]
+
+* 20210407發佈
 
 * ASP.NET Web API (REST API)
 
@@ -336,9 +347,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/CheckAppVersion/]
-
-  ### 動作 [POST]
+*  動作 [POST]
 
 * input傳入參數說明
 
@@ -387,9 +396,12 @@ iRentApi20 Web API版本
 
 ------
 
-<h5 id="GetMemberStatus" name="GetMemberStatus">20210322發佈</h5>
 
-# GetMemberStatus 取得會員狀態
+
+## GetMemberStatus 取得會員狀態
+### [/api/GetMemberStatus/]
+
+* 20210322發佈
 
 * ASP.NET Web API (REST API)
 
@@ -403,9 +415,7 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/GetMemberStatus/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -490,9 +500,11 @@ iRentApi20 Web API版本
 
 # 首頁地圖相關
 
-<h5 id="GetFavoriteStation" name="GetFavoriteStation">20210315發佈</h5>
+## GetFavoriteStation取得常用站點
+### [/api/GetFavoriteStation/]
 
-# GetFavoriteStation取得常用站點
+* 20210315發佈
+
 * ASP.NET Web API (REST API)
 
 * api位置
@@ -505,8 +517,8 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/GetFavoriteStation/]
-  ### 動作 [POST]
+
+* 動作 [POST]
   
 * input傳入參數說明
 
@@ -515,6 +527,7 @@ iRentApi20 Web API版本
 | 無參數 | | | |
 
 * output回傳參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | Result | 是否成功 | int | 0:失敗 1:成功  |
@@ -523,9 +536,10 @@ iRentApi20 Web API版本
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | ErrorMessage | 錯誤訊息 | string | Success |
 | Data | 資料物件 | | |
-| FavoriteObj   | 常用站點列表 |  List  | |
+| FavoriteObj   | 常用站點列表 |  List  |  |
 
 * FavoriteObj 參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationID | 據點代碼 | string | X0II |
@@ -540,10 +554,11 @@ iRentApi20 Web API版本
 | StationPic | 據點照片 | List | 若空值則為null |
 
 * StationPic 參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationPic | 據點照片URL位置 | string | |
-| PicDescription | 據點說明 | string | |
+| PicDescription | 據點說明 | string |  |
 
 * Output範例
 ```Output範例
@@ -573,9 +588,13 @@ iRentApi20 Web API版本
 ```
 ---------------
 
-<h5 id="SetFavoriteStation" name="SetFavoriteStation">20210315發佈</h5>
 
-# SetFavoriteStation設定常用站點
+
+## SetFavoriteStation設定常用站點
+### [/api/SetFavoriteStation/]
+
+* 20210315發佈
+
 * ASP.NET Web API (REST API)
 
 * api位置
@@ -588,16 +607,17 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/SetFavoriteStation/]
-  ### 動作 [POST]
+* 動作 [POST]
   
 * input傳入參數說明
+
 | 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
 | --------- | -------- | :--: | :----: | ----------- |
 | FavoriteStations | 常用據點清單 | Y | List | |
 
 
 * FavoriteStations 參數說明
+
 | 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
 | --------- | -------- | :--: | :----: | ----------- |
 | StationID | 據點代碼 | Y | string | X0II |
@@ -620,6 +640,7 @@ iRentApi20 Web API版本
 ```
 
 * output回傳參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | Result | 是否成功 | int | 0:失敗 1:成功  |
@@ -627,7 +648,7 @@ iRentApi20 Web API版本
 | ErrorMessage | 錯誤訊息 | string | |
 | NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| Data | 資料物件 | | |
+| Data | 資料物件 | |  |
 
 
 * output範例
@@ -651,12 +672,17 @@ iRentApi20 Web API版本
 
 ----------------
 
-<h5 id="GetCarType" name="GetCarType">20210315修改 - 增加是否為常用據點欄位</h5>
-<h5>20210324修改 - 增加搜尋使用欄位CarTypes,Seats </h5>
-<h5>20210407修改 - input移除掉Seats </h5>
-<h5>20210408修改 - 增加IsRent欄位</h5>
+## GetCarType同站以據點取出車型
+###[/api/GetCarType/]
 
-# GetCarType同站以據點取出車型
+* 20210315修改 - 增加是否為常用據點欄位
+ 
+* 20210324修改 - 增加搜尋使用欄位CarTypes,Seats 
+ 
+* 20210407修改 - input移除掉Seats 
+
+* 20210408修改 - 增加IsRent欄位
+
 * ASP.NET Web API (REST API)
 
 * api位置
@@ -669,8 +695,7 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(可不填)**
 
-  ### [/api/GetCarType/]
-  ### 動作 [POST]
+* 動作 [POST]
   
 * input傳入參數說明
 
@@ -701,7 +726,7 @@ iRentApi20 Web API版本
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | Data | 資料物件 | | |
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
-| GetCarTypeObj | 車型牌卡清單 | List | |
+| GetCarTypeObj | 車型牌卡清單 | List |  |
 
 * GetCarTypeObj回傳參數說明
 
@@ -774,10 +799,14 @@ iRentApi20 Web API版本
 
 ----------------
 
-<h5 id="GetProject" name="GetProject">20210315修改 - 增加是否為常用據點欄位</h5>
-<h5>20210324修改 - 增加搜尋欄位 </h5>
-<h5>20210407修改 - input移除掉Seats </h5>
-# GetProject取得專案與資費
+
+## GetProject取得專案與資費
+### [/api/GetProject/]
+
+* 20210315修改 - 增加是否為常用據點欄位
+* 20210324修改 - 增加搜尋欄位 
+* 20210407修改 - input移除掉Seats 
+
 * ASP.NET Web API (REST API)
 
 * api位置
@@ -790,8 +819,7 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/GetProject/]
-  ### 動作 [POST]
+* 動作 [POST]
   
 * input傳入參數說明
 
@@ -856,10 +884,11 @@ iRentApi20 Web API版本
 | IsRent | 是否有車可租(BY據點) | string | Y/N |
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
 | ProjectObj | 專案清單 | List | |
-| StationInfoObj | 站點照片 | List | |
+| StationInfoObj | 站點照片 | List |  |
 
 
 * ProjectObj參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationID | 據點代碼 | string | X0II |
@@ -884,6 +913,7 @@ iRentApi20 Web API版本
 | IsRent | 是否可租 | string | Y/N |
 
 * StationInfoObj參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationPic | 據點照片URL位置 | string | |
@@ -975,9 +1005,12 @@ iRentApi20 Web API版本
 
 -------------
 
-<h5 id="GetBanner" name="GetBanner">20210316發佈</h5>
 
-# GetBanner 取得廣告資訊
+
+## GetBanner 取得廣告資訊
+### [/api/GetBanner/]
+
+* 20210316發佈
 
 * ASP.NET Web API (REST API)
 
@@ -989,9 +1022,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/GetBanner/]
-
-  ### 動作 [GET]
+* 動作 [GET]
 
 * input傳入參數說明
 
@@ -1087,10 +1118,13 @@ iRentApi20 Web API版本
 
 ---------------
 
-<h5 id="GetNormalRent" name="GetNormalRent">20210324修改</h5>
-<h5>20210407修改 - input移除掉Seats </h5>
 
-# GetNormalRent 取得同站租還站點
+
+## GetNormalRent 取得同站租還站點
+### [/api/GetNormalRent/]
+
+* 20210324修改
+* 20210407修改 - input移除掉Seats 
 
 * ASP.NET Web API (REST API)
 
@@ -1102,9 +1136,9 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/GetNormalRent/]
 
-  ### 動作 [GET]
+
+* 動作 [GET]
 
 * input傳入參數說明
 
@@ -1207,9 +1241,12 @@ iRentApi20 Web API版本
 
 -------------
 
-<h5 id="GetCarTypeGroupList" name="GetCarTypeGroupList">20210331發佈</h5>
 
-# GetCarTypeGroupList 取得車型清單
+
+## GetCarTypeGroupList 取得車型清單
+* ### [/api/GetCarTypeGroupList/]
+
+* 20210331發佈
 
 * ASP.NET Web API (REST API)
 
@@ -1221,9 +1258,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/GetCarTypeGroupList/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -1347,9 +1382,12 @@ iRentApi20 Web API版本
 
 # 取還車跟車機操控相關
 
-<h5 id="ChangeUUCard" name="ChangeUUCard">20210415發佈</h5>
 
-# ChangeUUCard 變更悠遊卡
+
+## ChangeUUCard 變更悠遊卡
+### [/api/ChangeUUCard/]
+
+* 20210415發佈
 
 * ASP.NET Web API (REST API)
 
@@ -1363,9 +1401,9 @@ iRentApi20 Web API版本
 
 * HEADER帶入AccessToken**(必填)**
 
-  ### [/api/ChangeUUCard/]
 
-  ### 動作 [POST]
+
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -1407,12 +1445,15 @@ iRentApi20 Web API版本
     }
 }
 ```
+----
 
-------
+# 月租訂閱制相關
 
-<h5 id="GetMonthList" name="GetMonthList">20210510發佈</h5>
 
-# GetMonthList 取得訂閱制月租列表/我的所有方案
+## GetMonthList 取得訂閱制月租列表/我的所有方案
+###  [/api/GetMonthList/]
+
+* 20210510發佈
 
 * ASP.NET Web API (REST API)
 
@@ -1424,9 +1465,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/GetMonthList/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -1490,15 +1529,26 @@ iRentApi20 Web API版本
 | ShortDays	    | 短期總天數(key)      | int    | 0        |
 | PeriodPrice	| 方案價格             | int    | 7000     |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
-| CarWDHours	| 汽車平日時數         | double | 10       |
-| CarHDHours	| 汽車假日時數         | double | 0        |
-| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
+| CarWDHours	| 汽車平日時數         | double | 3.0    |
+| CarHDHours	| 汽車假日時數         | double | 3.0      |
+| MotoTotalMins	| 機車不分平假日分鐘數 | double | 300   |
+| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
+| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
+| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
+| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+| IsPay	| 是否有繳費0否1是 | int | 1 |
 
 * Output範例,汽車牌卡(ReMode=1, IsMoto=0)
 
 ```
 {
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {{
 	"Result": "1",
 	"ErrorCode": "000000",
 	"NeedRelogin": 0,
@@ -1517,7 +1567,12 @@ iRentApi20 Web API版本
 				"CarWDHours": 1.0,
 				"CarHDHours": 0.0,
 				"MotoTotalMins": 0,
-				"IsDiscount": 0
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 2.0,
+				"HDRateForMoto": 2.0,
+				"IsDiscount": 0,
+				"IsPay": 0
 			},
 			{
 				"MonProjID": "MR02",
@@ -1529,10 +1584,83 @@ iRentApi20 Web API版本
 				"CarWDHours": 33.0,
 				"CarHDHours": 0.0,
 				"MotoTotalMins": 0,
-				"IsDiscount": 0
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.8,
+				"HDRateForMoto": 1.8,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR99",
+				"MonProjNM": "測試_汽車平日6000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 6000,
+				"IsMoto": 0,
+				"CarWDHours": 40.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR100",
+				"MonProjNM": "測試_汽平7000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7000,
+				"IsMoto": 0,
+				"CarWDHours": 50.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 160.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR101",
+				"MonProjNM": "測試_汽平8000",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 8000,
+				"IsMoto": 0,
+				"CarWDHours": 60.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 0,
+				"WDRateForCar": 90.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.5,
+				"HDRateForMoto": 1.5,
+				"IsDiscount": 0,
+				"IsPay": 0
 			}
 		],
 		"MixMonCards": [
+			{
+				"MonProjID": "MR10",
+				"MonProjNM": "汽車平日299入門方案",
+				"MonProPeriod": 6,
+				"ShortDays": 0,
+				"PeriodPrice": 299,
+				"IsMoto": 0,
+				"CarWDHours": 2.0,
+				"CarHDHours": 0.0,
+				"MotoTotalMins": 30,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 2.0,
+				"HDRateForMoto": 2.0,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
 			{
 				"MonProjID": "MR66",
 				"MonProjNM": "測試_汽包機66-1",
@@ -1543,7 +1671,46 @@ iRentApi20 Web API版本
 				"CarWDHours": 1.0,
 				"CarHDHours": 1.0,
 				"MotoTotalMins": 100,
-				"IsDiscount": 0
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR102",
+				"MonProjNM": "測試_汽包機102-3",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7300,
+				"IsMoto": 0,
+				"CarWDHours": 4.0,
+				"CarHDHours": 4.0,
+				"MotoTotalMins": 400,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
+			},
+			{
+				"MonProjID": "MR103",
+				"MonProjNM": "測試_汽包機103-3",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"PeriodPrice": 7800,
+				"IsMoto": 0,
+				"CarWDHours": 4.0,
+				"CarHDHours": 3.0,
+				"MotoTotalMins": 300,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsPay": 0
 			}
 		],
 		"ReMode": 1
@@ -1563,6 +1730,74 @@ iRentApi20 Web API版本
         "IsMotor": 1,
         "NorMonCards": [
             {
+                "MonProjID": "MR03",
+                "MonProjNM": "機車入門2期",
+                "MonProPeriod": 2,
+                "ShortDays": 0,
+                "PeriodPrice": 99,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 50,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.5,
+                "HDRateForMoto": 1.5,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR04",
+                "MonProjNM": "機車低資費6期",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 299,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 200,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.3,
+                "HDRateForMoto": 1.3,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR05",
+                "MonProjNM": "機車中資費6期",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 599,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 550,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.0,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR98",
+                "MonProjNM": "測試_機車不分平假日899",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 899,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 1000,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.2,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
                 "MonProjID": "MR200",
                 "MonProjNM": "測試_機車2000",
                 "MonProPeriod": 3,
@@ -1572,7 +1807,12 @@ iRentApi20 Web API版本
                 "CarWDHours": 0.0,
                 "CarHDHours": 0.0,
                 "MotoTotalMins": 600,
-                "IsDiscount": 0
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
             },
             {
                 "MonProjID": "MR201",
@@ -1584,7 +1824,29 @@ iRentApi20 Web API版本
                 "CarWDHours": 0.0,
                 "CarHDHours": 0.0,
                 "MotoTotalMins": 800,
-                "IsDiscount": 0
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
+            },
+            {
+                "MonProjID": "MR202",
+                "MonProjNM": "測試_機車5000",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "PeriodPrice": 5000,
+                "IsMoto": 1,
+                "CarWDHours": 0.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 1200,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
             }
         ],
         "ReMode": 1
@@ -1602,16 +1864,21 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
-            "MonProjID": "MR103",
-            "MonProjNM": "測試_汽包機103-3",
+            "MonProjID": "MR66",
+            "MonProjNM": "測試_汽包機66-3",
             "MonProPeriod": 3,
             "ShortDays": 0,
-            "PeriodPrice": 7800,
+            "PeriodPrice": 7000,
             "IsMoto": 0,
-            "CarWDHours": 4.0,
+            "CarWDHours": 3.0,
             "CarHDHours": 3.0,
             "MotoTotalMins": 300,
-            "IsDiscount": 0
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "IsDiscount": 0,
+            "IsPay": 1
         },
         "MyMoto": null,
         "ReMode": 2
@@ -1621,9 +1888,12 @@ iRentApi20 Web API版本
 
 ------
 
-<h5 id="GetMonthGroup" name="GetMonthGroup">20210510發佈</h5>
 
-# GetMonthGroup 月租專案群組
+
+## GetMonthGroup 月租專案群組
+### [/api/GetMonthGroup/]
+
+* 20210510發佈
 
 * ASP.NET Web API (REST API)
 
@@ -1635,9 +1905,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/GetMonthGroup/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -1727,9 +1995,12 @@ iRentApi20 Web API版本
 
 ------
 
-<h5 id="BuyNow" name="BuyNow">20210510發佈</h5>
 
-# BuyNow 立即購買
+
+## BuyNow 立即購買
+### [/api/BuyNow/]
+
+* 20210510發佈
 
 * ASP.NET Web API (REST API)
 
@@ -1741,9 +2012,7 @@ iRentApi20 Web API版本
 
 * 傳送跟接收採JSON格式
 
-  ### [/api/BuyNow/]
-
-  ### 動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
@@ -1909,4 +2178,600 @@ iRentApi20 Web API版本
 ```
 
 
+
+## GetMySubs 我的方案牌卡明細
+### [/api/GetMySubs/]
+
+* 20210511發佈
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
+| ---------- | ------------------------ | :--: | :----:  | -------------------------|
+| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
+| MonProPeriod | 總期數					|  Y   | int | 6  |
+| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+
+* input範例
+
+```
+{
+    "MonProjID": "MR66",
+	"MonProPeriod": 6,
+	"ShortDays" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |               |
+
+* 資料物件說明
+
+| 參數名稱    | 參數說明                    | 型態    | 範例                  |
+| --------    | --------                    | :--:    | ----------------------|
+| Month       | 資料物件 | | |
+| PayTypes    | 資料物件 | | |
+| InvoTypes   | 資料物件 | | |
+
+* Month 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| MonProjID     | 月租專案代碼  | string | MR66 |
+| MonProPeriod  | 總期數		| int | 6 |
+| ShortDays		| 短天期天數    | int | 0 |
+| MonProjNM		| 月租專案名稱  | string | |
+| WorkDayHours	| 平日時數		| double | 10.0 |
+| HolidayHours	| 假日時數		| double | 10.0 |
+| MotoTotalHours | 機車時數 	| double | 0.0 |
+| StartDate 	| 起日 			| string | 20210101 |
+| EndDate 		| 迄日 			| string | 20210131 |
+| SubsNxt		| 是否自動續訂 	| int | 0 |
+| IsChange		| 是否變更下期合約 | int | 0 |
+| IsPay 		| 是否當期有繳費 	| int | 0 |
+
+
+* PayTypes, InvoTypes 參數說明
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | -------------------|
+| CodeId        | 代碼                  | int    | 5                  |
+| CodeNm        | 名稱                  | string | 信用卡,手機條碼    |
+| IsDef         | 是否為預設值(0否 1是) | int    | 0                  |
+
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "Month": {
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "WorkDayHours": 3.0,
+            "HolidayHours": 3.0,
+            "MotoTotalHours": 300.0,
+            "StartDate": "05/11",
+            "EndDate": "06/10",
+            "SubsNxt": 0,
+            "IsChange": 0,
+            "IsPay": 1
+        },
+        "PayTypes": [
+            {
+                "CodeId": 5,
+                "CodeNm": "信用卡",
+                "IsDef": 1
+            }
+        ],
+        "InvoTypes": [
+            {
+                "CodeId": 9,
+                "CodeNm": "手機條碼",
+                "IsDef": 1
+            },
+            {
+                "CodeId": 10,
+                "CodeNm": "自然人憑證",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 8,
+                "CodeNm": "三聯",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 6,
+                "CodeNm": "捐贈碼",
+                "IsDef": 0
+            },
+            {
+                "CodeId": 12,
+                "CodeNm": "會員載具",
+                "IsDef": 0
+            }
+        ]
+    }
+}
+```
+
+
+
+
+## GetSubsCNT 取得合約明細
+
+### [/api/GetSubsCNT/]
+
+* 20210511發佈
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
+| ---------- | ------------------------ | :--: | :----:  | -------------------------|
+| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
+| MonProPeriod | 總期數					|  Y   | int | 6  |
+| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+
+
+* input範例
+
+```
+{
+    "MonProjID": "MR66",
+	"MonProPeriod": 3,
+	"ShortDays" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |        　       |
+
+
+* 資料物件說明
+
+| 參數名稱    | 參數說明   | 型態    | 範例               |
+| --------    | --------  | :--:    | ---------------------- |
+| NowCard		| 資料物件 | 　 |  　 |
+| NxtCard 		| 資料物件 | 　 |  　 |
+
+
+* Month 參數說明
+
+| 參數名稱      | 參數說明              |  型態  | 範例               |
+| -----------   | ----------            | :----: | ------------------- |
+| MonProjID     | 月租專案代碼  | string | MR66 |
+| MonProPeriod  | 總期數		| int | 6 |
+| ShortDays		| 短天期天數    | int | 0 |
+| MonProjNM		| 月租專案名稱  | string | |
+| CarWDHours	| 汽車平日時數	| double | 10.0 |
+| CarHDHours	| 汽車假日時數	| double | 10.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 	| double | 0.0 |
+| SD 			| 起日 			| string | 20210101 |
+| ED	 		| 迄日 			| string | 20210131 |
+| MonProDisc  	| 注意事項      | string  |  汽包機66-1注意事項   |
+
+
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "NowCard": {
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "CarWDHours": 3.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300.0,
+            "SD": "05/11",
+            "ED": "06/10",
+            "MonProDisc": "汽包機66-3注意事項"
+        },
+        "NxtCard": null
+    }
+}
+```
+
+---
+
+## GetChgSubsList 變更下期續約列表
+
+### [/api/GetChgSubsList/DoGetChgSubsList]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
+| MonProPeriod | 總期數(key)               |  N   | int    | MR66測試                      |
+| ShortDays    | 短期總天數(key)            |  N   | int    | 0                              |
+
+
+* input範例
+```
+{
+    "MonProID"::"MR66",
+    "MonProPeriod:"MR66測試",
+    "ShortDays":"0"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱      | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| MyCard       | 資料物件                  |        |                 |
+| OtrCards     | 資料物件                  |        |  　  |
+
+
+* 資料物件說明(MyCard)
+
+| 參數名稱      | 參數說明             |  型態  | 範例     |
+| -----------   | ----------           | :----: | ---------|
+| MonProjID     | 方案代碼(key)        | string | MR66     |
+| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProPeriod  | 總期數(key)          | int    | 3        |
+| ShortDays	    | 短期總天數(key)      | int    | 0        |
+| PeriodPrice	| 方案價格            | int    | 7000     |
+| IsMoto	    | 是否為機車0否1是     | int    | 0        |
+| CarWDHours	| 汽車平日時數         | double | 10       |
+| CarHDHours	| 汽車假日時數         | double | 0        |
+| MotoTotalMins	| 機車不分平假日分鐘數   | double | 120      |
+| IsDiscount	| 是否為優惠方案0否1是  | int    | 1        |
+
+
+* Output範例
+
+```
+{
+    "MyCard":{
+        "MonProjID":"MR66",
+        "MonProjNM":"MR66測試",
+        "MonProPeriod":"3",
+        "ShortDays":"0",
+        "PeriodPrice":"7000",
+        "IsMoto":"0",
+        "CarWDHours":"10",
+        "CarHDHours":"0",
+        "MotoTotalMins":"120",
+        "IsDiscount":"1"    
+    },
+    "OtrCards":[
+        {
+            "MonProjID":"MR66",
+            "MonProjNM":"MR66測試",
+            "MonProPeriod":"3",
+            "ShortDays":"0",
+            "PeriodPrice":"7000",
+            "IsMoto":"0",
+            "CarWDHours":"10",
+            "CarHDHours":"0",
+            "MotoTotalMins":"120",
+            "IsDiscount":"1"   
+        },
+        ...
+    ]
+
+}
+```
+
+---
+
+## GetUpSubsList 取得訂閱制升轉列表
+
+### [/api/GetUpSubsList/DoGetUpSubsList]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+  
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
+| MonProPeriod | 總期數(key)               |  N   | int    | MR66測試                      |
+| ShortDays    | 短期總天數(key)            |  N   | int    | 0                              |
+
+
+* input範例
+```
+{
+    "MonProID"::"MR66",
+    "MonProPeriod:"MR66測試",
+    "ShortDays":"0",
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| NorCards     | 資料物件                 |        |                 |
+| MixCards     | 資料物件                 |        |  　       |
+
+
+* 資料物件說明(NorCards/MixCards)
+
+| 參數名稱      | 參數說明             |  型態  | 範例     |
+| -----------   | ----------           | :----: | ---------|
+| MonProjID     | 方案代碼(key)        | string | MR66     |
+| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProPeriod  | 總期數(key)          | int    | 3        |
+| ShortDays	    | 短期總天數(key)      | int    | 0        |
+| PeriodPrice	| 方案價格             | int    | 7000     |
+| CarWDHours	| 汽車平日時數         | double | 10       |
+| CarHDHours	| 汽車假日時數         | double | 0        |
+| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
+| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+
+
+* Output範例
+
+```
+{
+    "NorCards":[
+        {
+            "MonProjID":"MR66",
+            "MonProjNM":"MR66測試",
+            "MonProPeriod":"3",
+            "ShortDays":"0",
+            "PeriodPrice":"7000",
+            "CarWDHours":"10",
+            "CarHDHours":"0",
+            "MotoTotalMins":"120",
+            "IsDiscount":"1"
+        },
+        ...
+    ],
+    "MixCards":[
+        {
+            "MonProjID":"MR66",
+            "MonProjNM":"MR66測試",
+            "MonProPeriod":"3",
+            "ShortDays":"0",
+            "PeriodPrice":"7000",
+            "CarWDHours":"10",
+            "CarHDHours":"0",
+            "MotoTotalMins":"120",
+            "IsDiscount":"1"  
+        },
+        ...
+    ]
+}
+```
+
+---
+
+
+## GetSubsHist 訂閱制歷史紀錄
+
+### [/api/GetSubsHist/DoGetSubsHist]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                      | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| SetNow     |                            |  N   | DateTime | 　   |
+
+
+* input範例
+```
+{
+    "SetNow":""
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Hists       | 資料物件                  |        |  　     |
+
+
+
+* 資料物件說明(Hists)
+
+| 參數名稱    | 參數說明                 | 型態    | 範例                  |
+| --------     | --------             | :--:    |----------------------|
+| MonProjID    | 方案代碼(key)         | string  | MR66                 |
+| MonProPeriod | 總期數(key)           | int     | 3                    |
+| ShortDays    | 短期總天數(key)        | int     | 0                    |
+| MonProjNM    | 車型名稱               | string  | MR66測試              |
+| PeriodPrice  | 方案價格               | int     | 7000                 |
+| CarWDHours   | 汽車平日時數            | double  | 10                   |
+| CarHDHours   | 汽車假日時數            | double  | 0                    |
+| MotoTotalMins| 機車不分平假日分鐘數     | double  | 120                  |
+| IsMoto       | 是否為機車0否1是        | int     | 0                    |
+| StartDate    |                       | DateTime|                      |
+| EndDate      |                       | DateTime|                      |
+| PerNo        |                       | int     |                      |
+| MonthlyRentId|                       | int64   |                      |
+| InvType      |                       | string  |                      |
+| unified_business_no|                 | string  |                      |
+| invoiceCode  |                       | string  |                      |
+| invoice_date |                       | string  |                      |
+| invoice_price|                       | int     |     　                |
+
+
+
+* Output範例
+
+```
+{
+    "MonProjID":"MR66",
+    "MonProjNM":"MR66測試",
+    "ShortDays":"0",
+    "MonProPeriod":"3",
+    "PeriodPrice":"7000",
+    "CarWDHours":"10",
+    "CarHDHours":"0",
+    "MotoTotalMins":"120",
+    "IsMotor":"0",
+    "StartDate":"",
+    "EndDate":"",
+    "PerNo":"",
+    "MonthlyRentId":"",
+    "InvType":"",
+    "unified_business_no":"",
+    "invoiceCode":"",
+    "invoice_date":"",
+    "invoice_price":"",
+}
+```
+
+---
+
+## GetArrsSubsList 訂閱制欠費查詢
+
+### [/api/GetArrsSubsList/DoGetArrsSubsList]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
+| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
+| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
+| MonProPeriod | 總期數(key)               |  N   | int    | MR66測試                      |
+| ShortDays    | 短期總天數(key)            |  N   | int    | 0                              |
+
+* input範例
+```
+{
+    "MonProID"::"MR66",
+    "MonProPeriod:"MR66測試",
+    "ShortDays":"0"
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| SD           |                         | string |                 |
+| ED           |                         | string |                 |
+| ProjNm       |                         | string |                 |
+| Arrs         | 資料物件                  |        |  　 |
+
+
+
+* 資料物件說明(Arrs)
+
+| 參數名稱    | 參數說明               | 型態   | 範例                  |
+| --------   | --------             | :--:   |----------------------|
+| Period     | 方案代碼(key)         | int    |                      |
+| ArresPrice | 總期數(key)           | int    |  　            |
+
+
+
+* Output範例
+
+
+```
+{
+    "SD":"",
+    "ED":"",
+    "ProjNm":"",
+    "Arrs":{
+        "Period":"",
+        "ArresPrice":""
+    }
+}
+```
 

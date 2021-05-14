@@ -465,7 +465,7 @@ namespace Reposotory.Implement
             return lstMember;
         }
 
-        /// 取得黑名單手機號碼
+        /// 取得悠遊付專案
         public List<BE_GetEasyWalletList> GetEasyWalletList(string IDNO)
         {
             bool flag = false;
@@ -479,6 +479,21 @@ namespace Reposotory.Implement
                 $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+        //取得悠遊付訂單
+        public List<BE_Refund> GetEasyWalletOrder()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_Refund> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
+            string SQL = $" select orderNo, IDNO, ITEM, PRICE " +
+                $"from EASYPAY_Order";
+
+            lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
 
@@ -502,83 +517,57 @@ namespace Reposotory.Implement
         }
 
         public void DeleteMember(string IDNO, string IRent_Only, string Account)
-        {
-            if(IRent_Only == "on")
+        {                
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Transaction = tran;
+            cmd.CommandText = "usp_DeleteMember";
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+            cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+            cmd.ExecuteNonQuery();
+            tran.Commit();
+
+            conn.Close();
+            conn.Dispose();
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
+            HttpClient client = new HttpClient()
             {
+                BaseAddress = new System.Uri(apiAddress)
+            };
 
-                SqlConnection conn = new SqlConnection(ConnectionString);
-                conn.Open();
-                SqlTransaction tran;
-                tran = conn.BeginTransaction();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = conn;
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Transaction = tran;
-                cmd.CommandText = "usp_DeleteMember";
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
 
-                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
-                MSG.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
-                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
 
-                cmd.ExecuteNonQuery();
-                tran.Commit();
-
-                conn.Close();
-                conn.Dispose();
-
-            }
-            else
+            string param = JsonConvert.SerializeObject(new
             {
-                
-                SqlConnection conn = new SqlConnection(ConnectionString);
-                conn.Open();
-                SqlTransaction tran;
-                tran = conn.BeginTransaction();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = conn;
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Transaction = tran;
-                cmd.CommandText = "usp_DeleteMember";
+                IDNO = IDNO,
+                Account = Account,
+                user_id = ConfigurationManager.AppSettings["userid"],
+                sig = EncryptStr,
+                IRentOnly = IRent_Only
+            });
 
-                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
-                MSG.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
-                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
-
-                cmd.ExecuteNonQuery();
-                tran.Commit();
-
-                conn.Close();
-                conn.Dispose();
-
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
-                HttpClient client = new HttpClient()
-                {
-                    BaseAddress = new System.Uri(apiAddress)
-                };
-
-                string EncryptStr = "";
-                string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
-                ASCIIEncoding enc = new ASCIIEncoding();
-                SHA1 sha = new SHA1CryptoServiceProvider();
-                byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
-                EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
-
-
-                string param = JsonConvert.SerializeObject(new
-                {
-                    IDNO = IDNO,
-                    Account = Account,
-                    user_id = ConfigurationManager.AppSettings["userid"],
-                    sig = EncryptStr
-                });
-                HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
-                HttpResponseMessage apiResponse = new HttpResponseMessage();
-                apiResponse = client.PostAsync(apiAddress, postContent).Result;
-                string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
-            }
+            HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+            HttpResponseMessage apiResponse = new HttpResponseMessage();
+            apiResponse = client.PostAsync(apiAddress, postContent).Result;
+            string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
+            
         }
 
         public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)

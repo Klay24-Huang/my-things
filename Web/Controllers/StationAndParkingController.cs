@@ -177,7 +177,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
+                        string[] field = { "ID", "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -203,7 +203,8 @@ namespace Web.Controllers
                                 {
                                     ParkingName = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
                                     ParkingAddress = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    UserID = UserId
+                                    UserID = UserId,
+                                    ID = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
                                 };
                                 flag = Decimal.TryParse(sheet.GetRow(i).GetCell(2).ToString(), out Longitude);
                                 if (flag == false)
@@ -266,13 +267,8 @@ namespace Web.Controllers
                                         errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
                                     }
                                 }
-
                             }
-
                         }
-
-                    
-
                     }
                     else
                     {
@@ -295,7 +291,6 @@ namespace Web.Controllers
                     ViewData["errorLine"] = errorLine.ToString();
                 }
             }
-
 
             // return this.JavaScript(js);
             //return JavaScriptResult(js);
@@ -325,6 +320,47 @@ namespace Web.Controllers
             ParkingRepository repository = new ParkingRepository(connetStr);
             lstData = repository.GetChargeParking(ParkingName);
             return View(lstData);
+        }
+        public ActionResult ExplodeChargeParkingSetting(string ExplodeParkingName)
+        {
+            List<BE_ChargeParkingData> lstData = null;
+            ParkingRepository repository = new ParkingRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "ID", "名稱", "營運商", "地址", "緯度", "經度", "開放時間(起)", "開放時間(迄)" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetChargeParking(ExplodeParkingName);
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].Id);
+                content.CreateCell(1).SetCellValue(lstData[k].ParkingName);
+                content.CreateCell(2).SetCellValue(lstData[k].Operator);
+                content.CreateCell(3).SetCellValue(lstData[k].ParkingAddress);
+                content.CreateCell(4).SetCellValue(Decimal.ToDouble(lstData[k].Longitude));
+                content.CreateCell(5).SetCellValue(Decimal.ToDouble(lstData[k].Latitude));
+                content.CreateCell(6).SetCellValue(lstData[k].StartTime);
+                content.CreateCell(7).SetCellValue(lstData[k].CloseTime);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "停車便利付清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #region 共用元件類型
         #endregion

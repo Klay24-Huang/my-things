@@ -32,7 +32,7 @@
                                 身份證 (查詢必要)
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO"/>
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
                             </div>
                         </div>
                     </div>
@@ -123,6 +123,7 @@
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" id="btnSubmit" class="btn btn-info">查詢</button>
                                 <button type="button" id="btnSend" name="btnSend" class="btn btn-info">退款</button>
+                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
                                 <!--<button type="button" id="btnSend_2" name="btnSend_2" class="btn btn-info">退款2</button>-->
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
@@ -135,6 +136,10 @@
     <!--end card-->
 </div>
 
+@using (Html.BeginForm("ExplodeReFund", "Report", FormMethod.Post, new { id = "frmReFundExplode" }))
+{
+    
+}
 
 <div class="container mt-4">
     <div class="card">
