@@ -746,12 +746,12 @@ namespace Web.Controllers
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);   //訂單編號(車麻吉)
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);  //訂單編號(車麻吉)
                 content.CreateCell(1).SetCellValue(((lstRawDataOfMachi[k].OrderNo == 0) ? "未掛帳" : "H" + lstRawDataOfMachi[k].OrderNo.ToString().PadLeft(7, '0'))); //合約編號
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);   //車牌號碼
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].OP);   //@停車場業者,20210510唐加
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Name);   //停車場名稱
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].PP);  //@調度停車場,20210510唐加
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);     //車牌號碼
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].OP);        //@停車場業者,20210510唐加
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Name);      //停車場名稱
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].PP);        //@調度停車場,20210510唐加
                 content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].Check_in.ToString("yyyy-MM-dd HH:mm:ss"));   //入場時間
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].Check_out.ToString("yyyy-MM-dd HH:mm:ss"));   //出場時間
                 TimeSpan diffSecond = lstRawDataOfMachi[k].Check_out.Subtract(lstRawDataOfMachi[k].Check_in).Duration();

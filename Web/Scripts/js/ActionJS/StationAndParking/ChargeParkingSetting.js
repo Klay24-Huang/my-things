@@ -46,7 +46,7 @@ function DoIn(Id) {
     var json = JSON.stringify(obj);
     console.log(json);
     var site = jsHost + "BE_InsertChargeParking";
-    var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
+    //var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
     console.log("site:" + site);
     $.ajax({
         url: site,

@@ -343,7 +343,7 @@ namespace Web.Controllers
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstData[k].ParkId);
+                content.CreateCell(0).SetCellValue(lstData[k].Id);
                 content.CreateCell(1).SetCellValue(lstData[k].ParkingName);
                 content.CreateCell(2).SetCellValue(lstData[k].Operator);
                 content.CreateCell(3).SetCellValue(lstData[k].ParkingAddress);
@@ -360,7 +360,7 @@ namespace Web.Controllers
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
-            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代收停車費報表修改" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "停車便利付清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #region 共用元件類型
         #endregion
