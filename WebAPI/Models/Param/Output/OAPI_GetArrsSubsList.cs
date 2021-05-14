@@ -7,9 +7,9 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetArrsSubsList
     {
-        public string SD { get; set; }
-        public string ED { get; set; }
-        public string ProjNm { get; set; }
+        public string StartDate { get; set; } = "";
+        public string EndDate { get; set; } = "";
+        public string ProjNm { get; set; } = "";
         public List<OAPI_GetArrsSubsList_arrs> Arrs { get; set; }
     }
 

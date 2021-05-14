@@ -125,10 +125,10 @@ namespace WebAPI.Controllers
                         {
                             var reDate = sp_re.DateRange;
                             if (!string.IsNullOrWhiteSpace(reDate.SD))
-                                outputApi.SD = Convert.ToDateTime(reDate.SD).ToString("yyyy/MM/dd");
+                                outputApi.StartDate = Convert.ToDateTime(reDate.SD).ToString("yyyy/MM/dd");
 
                             if (!string.IsNullOrWhiteSpace(reDate.ED))
-                                outputApi.ED = Convert.ToDateTime(reDate.ED).ToString("yyyy/MM/dd");
+                                outputApi.EndDate = Convert.ToDateTime(reDate.ED).ToString("yyyy/MM/dd");
                         }
 
                         if(sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
