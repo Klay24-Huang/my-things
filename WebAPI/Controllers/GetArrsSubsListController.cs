@@ -113,7 +113,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         MonProjID = apiInput.MonProjID,
                         MonProPeriod = apiInput.MonProPeriod,
-                        ShortDays = apiInput.ShortDays
+                        ShortDays = apiInput.ShortDays,
+                        SetNow = apiInput.SetNow
                     };
                     trace.traceAdd("spIn", spIn);
                     var sp_re = msp.sp_GetArrsSubsList(spIn, ref errCode);

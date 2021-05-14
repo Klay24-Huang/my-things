@@ -31,6 +31,7 @@ namespace WebAPI.Controllers
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
+            var map = new MonSunsVMMap();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -122,7 +123,7 @@ namespace WebAPI.Controllers
                         var hasInvos = sp_list.Where(x => !string.IsNullOrWhiteSpace(x.invoiceCode)).ToList();
                         if (hasInvos != null & hasInvos.Count() > 0)
                         {
-                            var hists = objUti.TTMap<List<SPOut_GetSubsHist>, List<OAPI_GetSubsHist_Param>>(hasInvos);
+                            var hists = map.FromSPOut_GetSubsHist(hasInvos);
                             if (hists != null && hists.Count() > 0)
                                 outputApi.Hists = hists;
                         }

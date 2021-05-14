@@ -25,8 +25,8 @@ namespace WebAPI.Models.Param.Output
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
         public int IsMoto { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
         public int PerNo { get; set; }
         public Int64? MonthlyRentId { get; set; }
         public string InvType { get; set; }

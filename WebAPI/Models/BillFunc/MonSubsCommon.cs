@@ -1200,7 +1200,7 @@ namespace WebAPI.Models.BillFunc
                 re = (from a in sour
                       select new OAPI_GetArrsSubsList_arrs
                       {
-                          Period = a.MonProPeriod,
+                          Period = a.rw,
                           ArresPrice = a.PeriodPayPrice
                       }).ToList();
             }
@@ -1256,6 +1256,40 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     
+        public List<OAPI_GetSubsHist_Param> FromSPOut_GetSubsHist(List<SPOut_GetSubsHist> sour)
+        {
+            var re = new List<OAPI_GetSubsHist_Param>();
+            if (sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetSubsHist_Param
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          PeriodPrice = a.PeriodPrice,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = a.MotoTotalMins,
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsMoto = a.IsMoto,
+                          StartDate = a.StartDate.ToString("yyyy/MM/dd"),
+                          EndDate = a.EndDate.ToString("yyyy/MM/dd"),
+                          PerNo = a.PerNo,
+                          MonthlyRentId = a.MonthlyRentId,
+                          InvType = a.InvType,
+                          unified_business_no = a.unified_business_no,
+                          invoiceCode = a.invoiceCode,
+                          invoice_date = a.invoice_date,
+                          invoice_price = a.invoice_price
+                      }).ToList();
+            }
+            return re;
+        }
     }
 
 }
