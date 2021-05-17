@@ -96,9 +96,34 @@ namespace Domain.WebAPI.output.rootAPI
         /// 剩餘里程
         /// </summary>
         public float RemainingMileage { set; get; }
+
+        #region 訂閱制月租
+
         /// <summary>
         /// 訂閱制月租Id
         /// </summary>
         public Int64 MonthlyRentId { get; set; } = 0;
+        /// <summary>
+        /// 機車不分平假日時數
+        /// </summary>
+        public double MotoTotalMins { get; set; }
+        /// <summary>
+        /// 機車平日優惠價
+        /// </summary>
+        public double WDRateForMoto { get; set; }
+        /// <summary>
+        /// 機車假日優惠價
+        /// </summary>
+        public double HDRateForMoto { get; set; }
+        /// <summary>
+        /// 開始日(月租全期)
+        /// </summary>
+        public string MonthStartDate { get; set; } = "";
+        /// <summary>
+        /// 結束日(月租全期)
+        /// </summary>
+        public string MonthEndDate { get; set; } = "";
+
+        #endregion
     }
 }

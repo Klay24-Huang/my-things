@@ -129,11 +129,11 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public double MotoTotalMins { get; set; }
         /// <summary>
-        /// 氣車平日優惠價
+        /// 汽車平日優惠價
         /// </summary>
         public double WDRateForCar { get; set; }
         /// <summary>
-        /// 氣車假日優惠價
+        /// 汽車假日優惠價
         /// </summary>
         public double HDRateForCar { get; set; }
         /// <summary>

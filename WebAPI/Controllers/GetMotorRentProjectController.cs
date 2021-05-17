@@ -273,8 +273,17 @@ namespace WebAPI.Controllers
                             InUseMonth.ForEach(z =>
                             {
                                 MotorProjectObj newItem = objUti.Clone(x);
-                                newItem.MonthlyRentId = z.MonthlyRentId;
+
+                                #region 月租卡片欄位給值
                                 newItem.ProjName += "_" + z.MonProjNM;
+                                newItem.MotoTotalMins = z.MotoTotalMins;
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                #endregion
+
                                 VisProObjs.Add(newItem);
                             });
                         });
