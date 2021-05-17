@@ -288,14 +288,29 @@ namespace WebAPI.Controllers
                             InUseMonth.ForEach(z =>
                             {
                                 ProjectObj newItem = objUti.Clone(x);
-                                newItem.MonthlyRentId = z.MonthlyRentId;
+
+                                #region 月租卡片欄位給值
                                 newItem.ProjName += "_" + z.MonProjNM;
+                                newItem.CarWDHours = z.WorkDayHours;
+                                newItem.CarHDHours = z.HolidayHours;
+                                newItem.MotoTotalMins = z.MotoTotalMins;
+                                newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.WDRateForCar = z.WorkDayRateForCar;
+                                newItem.HDRateForCar = z.HoildayRateForCar;
+                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = z.HoildayRateForMoto;
                                 var fn_in = new ProjectAndCarTypeData()
                                 {
-                                    Price = x.WorkdayPerHour * 10, 
+                                    Price = x.WorkdayPerHour * 10,
                                     PRICE_H = x.HolidayPerHour * 10
                                 };
                                 newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                #endregion
+
                                 VisProObjs.Add(newItem);
                             });
                         });

@@ -616,17 +616,14 @@ namespace WebAPI.Controllers
                                     InUseMonth.ForEach(z =>
                                     {
                                         ProjectObj newItem = objUti.Clone(y);
-                                        
+
+                                        #region 月租卡片欄位給值
                                         newItem.ProjName += "_" + z.MonProjNM;
                                         newItem.CarWDHours = z.WorkDayHours;
                                         newItem.CarHDHours = z.HolidayHours;
                                         newItem.MotoTotalMins = z.MotoTotalMins;
-
-                                        #region 置換月租卡片顯示價格
                                         newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
                                         newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
-                                        #endregion
-
                                         newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
                                         newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
                                         newItem.MonthlyRentId = z.MonthlyRentId;
@@ -642,7 +639,9 @@ namespace WebAPI.Controllers
                                             Price = y.WorkdayPerHour * 10,
                                             PRICE_H = y.HolidayPerHour * 10,
                                         };
-                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId:z.MonthlyRentId);
+                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                        #endregion
+
                                         newGetProjObj.ProjectObj.Add(newItem);
                                     });
                                 });
