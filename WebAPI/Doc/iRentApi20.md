@@ -60,6 +60,8 @@ iRentApi20 Web API版本
 
 20210511 新增月租訂閱制相關(GetMySubs,GetSubsCNT)
 
+20210517 GetMemberStatus增加會員積分相關欄位
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -459,6 +461,9 @@ iRentApi20 Web API版本
 | AnyRentCount    | 目前路邊出租數                                               |  int   | 0          |
 | MotorRentCount  | 目前路邊出租數                                               |  int   | 0          |
 | TotalRentCount  | 目前全部出租數                                               |  int   | 0          |
+| Score           | 會員積分                                                     |  int   | 100        |
+| BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
+| BLOCK_EDATE     | 停權截止日                                                   | string |            |
 
 * Output範例
 
@@ -490,7 +495,10 @@ iRentApi20 Web API版本
             "NormalRentCount": 0,
             "AnyRentCount": 0,
             "MotorRentCount": 0,
-            "TotalRentCount": 0
+            "TotalRentCount": 0,
+            "Score": 100,
+            "BlockFlag": 0,
+            "BLOCK_EDATE": ""
         }
     }
 }
@@ -676,9 +684,9 @@ iRentApi20 Web API版本
 ###[/api/GetCarType/]
 
 * 20210315修改 - 增加是否為常用據點欄位
- 
+
 * 20210324修改 - 增加搜尋使用欄位CarTypes,Seats 
- 
+
 * 20210407修改 - input移除掉Seats 
 
 * 20210408修改 - 增加IsRent欄位
