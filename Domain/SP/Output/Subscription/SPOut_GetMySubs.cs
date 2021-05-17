@@ -21,6 +21,10 @@ namespace Domain.SP.Output.Subscription
         public double WorkDayHours { get; set; }
         public double HolidayHours { get; set; }
         public double MotoTotalHours { get; set; }
+        public double WorkDayRateForCar { get; set; }
+        public double HoildayRateForCar { get; set; }
+        public double WorkDayRateForMoto { get; set; }
+        public double HoildayRateForMoto { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         /// <summary>

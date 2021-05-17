@@ -156,8 +156,12 @@ namespace WebAPI.Controllers
                                                 CarWDHours = a.WorkDayHours,
                                                 CarHDHours = a.HolidayHours,
                                                 MotoTotalMins = a.MotoTotalHours,
+                                                WDRateForCar = a.WorkDayRateForCar,
+                                                HDRateForCar  = a.HoildayRateForCar,
+                                                WDRateForMoto = a.WorkDayRateForMoto,
+                                                HDRateForMoto = a.HoildayRateForMoto,
                                                 StartDate = a.StartDate.ToString("MM/dd"),
-                                                EndDate = a.EndDate.ToString("MM/dd"),
+                                                EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
                                                 SubsNxt = a.SubsNxt,
                                                 IsChange = a.IsChange,
                                                 IsPay = a.IsPay
