@@ -32,6 +32,10 @@ namespace Domain.SP.Output.Subscription
 
     public class SPOut_GetSubsCNT_NxtCard
     {
+        /// <summary>
+        /// 是否已變更下期合約
+        /// </summary>
+        public int IsChange { get; set; }
         public string MonProjID { get; set; }
         public int MonProPeriod { get; set; }
         public int ShortDays { get; set; }

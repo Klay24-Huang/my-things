@@ -158,7 +158,7 @@ namespace WebAPI.Controllers
                         {
                             if (sp_re.NxtCard != null)
                             {
-                                outputApi.NxtCard = objUti.TTMap<SPOut_GetSubsCNT_NxtCard, OAPI_GetSubsCNT_Card>(sp_re.NxtCard);
+                                outputApi.NxtCard = objUti.TTMap<SPOut_GetSubsCNT_NxtCard, OAPI_GetSubsCNT_NxtCard>(sp_re.NxtCard);
                                 outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd");
                                 outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
                             }

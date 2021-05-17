@@ -1165,11 +1165,11 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
-        public OAPI_GetSubsCNT_Card FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
+        public OAPI_GetSubsCNT_NowCard FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
         {
             if (sour != null)
             {
-                return new OAPI_GetSubsCNT_Card()
+                return new OAPI_GetSubsCNT_NowCard()
                 {
                     MonProjID = sour.MonProjID,
                     MonProPeriod = sour.MonProPeriod,
