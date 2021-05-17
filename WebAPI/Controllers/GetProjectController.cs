@@ -616,8 +616,24 @@ namespace WebAPI.Controllers
                                     InUseMonth.ForEach(z =>
                                     {
                                         ProjectObj newItem = objUti.Clone(y);
-                                        newItem.MonthlyRentId = z.MonthlyRentId;
+                                        
                                         newItem.ProjName += "_" + z.MonProjNM;
+                                        newItem.CarWDHours = z.WorkDayHours;
+                                        newItem.CarHDHours = z.HolidayHours;
+                                        newItem.MotoTotalMins = z.MotoTotalMins;
+
+                                        #region 置換月租卡片顯示價格
+                                        newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                        newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                        #endregion
+
+                                        newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                        newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                        newItem.MonthlyRentId = z.MonthlyRentId;
+                                        newItem.WDRateForCar = z.WorkDayRateForCar;
+                                        newItem.HDRateForCar = z.HoildayRateForCar;
+                                        newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                        newItem.HDRateForMoto = z.HoildayRateForMoto;
                                         var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
                                         {
                                             PriceBill = y.Price, //給預設

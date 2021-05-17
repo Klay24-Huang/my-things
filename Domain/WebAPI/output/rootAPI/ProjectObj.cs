@@ -110,9 +110,49 @@ namespace Domain.WebAPI.output.rootAPI
         /// <mark>未包含在查詢條件則為0:此邏輯有確認過</mark>
         public int IsShowCard { get; set; } = 1;
 
+        #region 訂閱制月租
+
         /// <summary>
         /// 訂閱制月租Id
         /// </summary>
         public Int64 MonthlyRentId { get; set; } = 0;
+        /// <summary>
+        /// 汽車平日時數
+        /// </summary>
+        public double CarWDHours { get; set; }
+        /// <summary>
+        /// 汽車假日時數
+        /// </summary>
+        public double CarHDHours { get; set; }
+        /// <summary>
+        /// 機車不分平假日時數
+        /// </summary>
+        public double MotoTotalMins { get; set; }
+        /// <summary>
+        /// 氣車平日優惠價
+        /// </summary>
+        public double WDRateForCar { get; set; }
+        /// <summary>
+        /// 氣車假日優惠價
+        /// </summary>
+        public double HDRateForCar { get; set; }
+        /// <summary>
+        /// 機車平日優惠價
+        /// </summary>
+        public double WDRateForMoto { get; set; }
+        /// <summary>
+        /// 機車假日優惠價
+        /// </summary>
+        public double HDRateForMoto { get; set; }
+        /// <summary>
+        /// 開始日(月租全期)
+        /// </summary>
+        public string MonthStartDate { get; set; } = "";
+        /// <summary>
+        /// 結束日(月租全期)
+        /// </summary>
+        public string MonthEndDate { get; set; } = "";
+        #endregion
+
     }
 }
