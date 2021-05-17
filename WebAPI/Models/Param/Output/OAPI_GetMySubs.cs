@@ -68,6 +68,10 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public string EndDate { get; set; }
         /// <summary>
+        /// 是否已升級
+        /// </summary>
+        public int IsUpd { get; set; }
+        /// <summary>
         /// 是否自動續訂
         /// </summary>
         public int SubsNxt { get; set; }

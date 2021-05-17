@@ -162,6 +162,7 @@ namespace WebAPI.Controllers
                                                 HDRateForMoto = a.HoildayRateForMoto,
                                                 StartDate = a.StartDate.ToString("MM/dd"),
                                                 EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
+                                                IsUpd = a.IsUpd,
                                                 SubsNxt = a.SubsNxt,
                                                 IsChange = a.IsChange,
                                                 IsPay = a.IsPay
