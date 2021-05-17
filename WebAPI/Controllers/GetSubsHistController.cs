@@ -120,13 +120,8 @@ namespace WebAPI.Controllers
                     trace.traceAdd("sp_list", sp_list);
                     if (sp_list != null && sp_list.Count()>0)
                     {
-                        var hasInvos = sp_list.Where(x => !string.IsNullOrWhiteSpace(x.invoiceCode)).ToList();
-                        if (hasInvos != null & hasInvos.Count() > 0)
-                        {
-                            var hists = map.FromSPOut_GetSubsHist(hasInvos);
-                            if (hists != null && hists.Count() > 0)
-                                outputApi.Hists = hists;
-                        }
+                        var hists = map.FromSPOut_GetSubsHist(sp_list);
+                            outputApi.Hists = hists;
                     }
 
                     trace.traceAdd("outputApi", outputApi);

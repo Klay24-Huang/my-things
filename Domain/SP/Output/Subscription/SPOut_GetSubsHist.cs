@@ -16,6 +16,7 @@ namespace Domain.SP.Output.Subscription
         public double CarWDHours { get; set; }
         public double CarHDHours { get; set; }
         public double MotoTotalMins { get; set; }
+        public Int64 MonthlyRentId { get; set; }
         public double WDRateForCar { get; set; }
         public double HDRateForCar { get; set; }
         public double WDRateForMoto { get; set; }
@@ -23,8 +24,8 @@ namespace Domain.SP.Output.Subscription
         public int IsMoto { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int PerNo { get; set; }
-        public Int64 MonthlyRentId { get; set; }
+        public int PerNo { get; set; }        
+        public int TradeNo { get; set; }
         public string InvType { get; set; }
         public string unified_business_no { get; set; }
         public string invoiceCode { get; set; }
