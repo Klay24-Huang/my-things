@@ -1376,6 +1376,31 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        public List<OAPI_GetUpSubsList_Card> FromSPOut_GetUpSubsList_Card(List<SPOut_GetUpSubsList_Card> sour)
+        {
+            var re = new List<OAPI_GetUpSubsList_Card>();
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetUpSubsList_Card
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          PeriodPrice = a.PeriodPrice,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount
+                      }).ToList();
+            }
+            return re;
+        }
     }
 
 }

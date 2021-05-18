@@ -147,12 +147,6 @@ namespace WebAPI.Controllers
                     {
                         if (sp_re.NowCard != null)
                             outputApi.NowCard = map.FromSPOut_GetSubsCNT_NowCard(sp_re.NowCard);
-                        else
-                        {
-                            flag = false;
-                            errMsg = "目前月租為空";
-                            errCode = "ERR908";
-                        }
 
                         if (flag)
                         {
@@ -163,11 +157,6 @@ namespace WebAPI.Controllers
                                 outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
                             }
                         }
-                    }
-                    else
-                    {
-                        flag = false;
-                        errCode = "ERR908";//sp錯誤
                     }
 
                     trace.traceAdd("outputApi", outputApi);

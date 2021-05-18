@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var msp = new MonSubsSp();
+            var map = new MonSunsVMMap();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -136,10 +137,10 @@ namespace WebAPI.Controllers
                             var nors = sour.Where(x => !mixs.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
 
                             if (mixs != null && mixs.Count() > 0)
-                                outputApi.MixCards = objUti.TTMap<List<SPOut_GetUpSubsList_Card>, List<OAPI_GetUpSubsList_Card>>(mixs);
+                                outputApi.MixCards = map.FromSPOut_GetUpSubsList_Card(mixs);
 
                             if (nors != null && nors.Count() > 0)
-                                outputApi.NorCards = objUti.TTMap<List<SPOut_GetUpSubsList_Card>, List<OAPI_GetUpSubsList_Card>>(nors);
+                                outputApi.NorCards = map.FromSPOut_GetUpSubsList_Card(nors);
                         }
                     }
 
