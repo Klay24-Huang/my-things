@@ -1981,15 +1981,20 @@ iRentApi20 Web API版本
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProjNM     | 方案名稱        | string | MR66測試 |
 | MonProPeriod  | 總期數(key)          | int    | 3        |
 | ShortDays	    | 短期總天數(key)      | int    | 0        |
 | PeriodPrice	| 方案價格             | int    | 7000     |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
 | CarWDHours	| 汽車平日時數         | double | 10       |
 | CarHDHours	| 汽車假日時數         | double | 0        |
-| MotoTotalMins	| 機車不分平假日分鐘數 | double | 120      |
-| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
+| MotoTotalMins	| 機車不分平假日分鐘數 | int | 120      |
+| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
+| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
+| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
+| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
+| IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
+| IsPay	| 當期是否有繳費(0否1是) | int | 1 |
 
 * Output範例
 ```
@@ -2000,20 +2005,8 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "MonProDisc": "汽包機66-1注意事項",
+        "MonProDisc": "汽包機66-6注意事項",
         "MonCards": [
-            {
-                "MonProjID": "MR66",
-                "MonProjNM": "測試_汽包機66-3",
-                "MonProPeriod": 3,
-                "ShortDays": 0,
-                "PeriodPrice": 7000,
-                "IsMoto": 0,
-                "CarWDHours": 3.0,
-                "CarHDHours": 3.0,
-                "MotoTotalMins": 300,
-                "IsDiscount": 0
-            },
             {
                 "MonProjID": "MR66",
                 "MonProjNM": "測試_汽包機66-6",
@@ -2024,7 +2017,12 @@ iRentApi20 Web API版本
                 "CarWDHours": 6.0,
                 "CarHDHours": 6.0,
                 "MotoTotalMins": 600,
-                "IsDiscount": 0
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0
             }
         ]
     }
@@ -2066,16 +2064,39 @@ iRentApi20 Web API版本
 | InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
 
 * ApiJson(ApiID=179 / 購買月租)參數說明
-| 參數名稱      | 參數說明                 | 必要 |  型態   | 範例                    |
-| ------------- | ------------------------ | :--: | :----:  | ------------------------|
-|  MonProjID    |       專案編號(key       |  Y   | string  |       MR66              |
-|  MonProPeriod |       期數(key)          |  Y   | int     |       3                 |
-|  ShortDays    |       短天期(key)        |  Y   | int     |       3                 |
+| 參數名稱     | 參數說明     | 必要 |  型態  | 範例 |
+| ------------ | ------------ | :--: | :----: | ---- |
+| MonProjID    | 專案編號(key |  Y   | string | MR66 |
+| MonProPeriod | 期數(key)    |  Y   |  int   | 3    |
+| ShortDays    | 短天期(key)  |  Y   |  int   | 0    |
+
+* ApiJson(ApiID=188 /月租升轉)參數說明
+
+  | 參數名稱        | 參數說明          | 必要 | 型態   | 範例  |
+  | --------------- | ----------------- | ---- | ------ | ----- |
+  | MonProjID       | 專案編號(key)     | Y    | string | MR66  |
+  | MonProPeriod    | 期數(key)         | Y    | int    | 3     |
+  | ShortDays       | 短天期(key)       | Y    | int    | 0     |
+  | UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
+  | UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
+  | UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
+  | PayTypeId       | 付款方式          | Y    | int    | 5     |
+  | InvoTypeId      | 發票方式          | Y    | int    | 6     |
+
+* ApiJson(ApiID=190 /月租欠費繳交)參數說明
+
+  | 參數名稱       | 參數說明                  | 必要 | 型態   | 範例    |
+  | -------------- | ------------------------- | ---- | ------ | ------- |
+  | MonthlyRentIds | 月租Id(多筆以逗號","分隔) | Y    | string | 832,833 |
+
+  
 
 * ApiJson 序列化後字串範例
-|    ApiID      |  Api名稱                |                    ApiJson                                                                        |
-| ------------- | ----------------------- | ------------------------------------------------------------------------------------------------- |
-|    179        |        購買月租         | {\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}                                       |
+| ApiID | Api名稱      | ApiJson                                                      |
+| ----- | ------------ | ------------------------------------------------------------ |
+| 179   | 購買月租     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0} |
+| 188   | 月租升轉     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"UP_MonProjID\\":\\"MR102\\",\\"UP_MonProPeriod\\":3,\\"UP_ShortDays\\":0} |
+| 190   | 月租欠費繳交 | {\\"MonthlyRentIds\\":\\"832,833\\"}                         |
 
 * input範例 (購買月租179)
 ```
@@ -2089,6 +2110,36 @@ iRentApi20 Web API版本
     "InvoTypeId":6
 }
 ```
+
+* input範例 (月租升轉188)
+
+  ```
+  {
+      "ApiID":188,
+      "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0,\"UP_MonProjID\":\"MR102\",\"UP_MonProPeriod\":3,\"UP_ShortDays\":0}",
+      "ProdNm":"測試_汽包機102-3",
+      "ProdPrice":7300,
+      "DoPay":1,
+      "PayTypeId":5,
+      "InvoTypeId":6
+  }
+  ```
+
+* input範例 (月租欠費繳交190)
+
+  ```
+  {
+      "ApiID":190,
+      "ApiJson":"{\"MonthlyRentIds\":\"832,833\"}",
+      "ProdNm":"",
+      "ProdPrice":7000,
+      "DoPay":1,
+      "PayTypeId":5,
+      "InvoTypeId":12
+  }
+  ```
+
+  
 
 * Output回傳參數說明
 
@@ -2431,8 +2482,8 @@ iRentApi20 Web API版本
 
 | 參數名稱    | 參數說明   | 型態    | 範例               |
 | --------    | --------  | :--:    | ---------------------- |
-| NowCard		| 資料物件(目前方案) | 　 |  　 |
-| NxtCard 		| 資料物件(下期合約) | 　 |  　 |
+| NowCard		| 資料物件(目前方案) | obj |  　 |
+| NxtCard 		| 資料物件(下期合約) | obj |  　 |
 
 
 * NowCard, NxtCard參數說明
@@ -2649,15 +2700,15 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
 | ---------- | -------------------------- | :--: | :----: | ------------------------------ |
 | MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
-| MonProPeriod | 總期數(key)               |  N   | int    | MR66測試                      |
-| ShortDays    | 短期總天數(key)            |  N   | int    | 0                              |
+| MonProPeriod | 總期數(key)               |  Y  | int    | 3                      |
+| ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
 
 
 * input範例
 ```
 {
     "MonProID"::"MR66",
-    "MonProPeriod:"MR66測試",
+    "MonProPeriod:3,
     "ShortDays":"0",
 }
 ```
@@ -2667,8 +2718,8 @@ iRentApi20 Web API版本
 
 | 參數名稱      | 參數說明                |  型態  | 範例          |
 | ------------ | ----------------------- | :----: | ------------- |
-| NorCards     | 資料物件                 |        |                 |
-| MixCards     | 資料物件                 |        |  　       |
+| NorCards     | 資料物件(只有機車時數或只有機車時數) | list |                 |
+| MixCards     | 資料物件(同時有汽車及機車時數)     | list |  　       |
 
 
 * 資料物件說明(NorCards/MixCards)
