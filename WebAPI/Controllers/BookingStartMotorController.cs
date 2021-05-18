@@ -259,6 +259,23 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
+                    #region 20210514 開啟電源後須紀錄電量
+                    if (flag)
+                    {
+                        string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
+                        SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
+                        {
+                            OrderNo = tmpOrder,
+                            EventCD = "1",  //取車電量
+                            LogID = LogID
+                        };
+                        SPOutput_Base SPInsMotorBattLogOutput = new SPOutput_Base();
+                        SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base> SQLInsMotorBattLogHelp = new SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base>(connetStr);
+                        flag = SQLInsMotorBattLogHelp.ExecuteSPNonQuery(SPInsMotorBattLogName, SPInsMotorBattLogInput, ref SPInsMotorBattLogOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPInsMotorBattLogOutput, ref lstError, ref errCode);
+                    }
+                    #endregion
+
                     #region 設定租約
                     if (flag)
                     {
