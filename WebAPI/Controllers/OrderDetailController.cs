@@ -362,7 +362,14 @@ namespace WebAPI.Controllers
                             TowingBill = orderFinishDataLists[0].DraggingFee,
                             OtherBill = orderFinishDataLists[0].OtherFee,
                             UseOrderPrice = UseOrderPrice,
-                            ReturnOrderPrice = orderFinishDataLists[0].ReturnOrderPrice
+                            ReturnOrderPrice = orderFinishDataLists[0].ReturnOrderPrice,
+                            //20210517 ADD BY ADAM REASON.新換電獎勵需求
+                            ChangePoint = orderFinishDataLists[0].ChangePoint,
+                            ChangeTimes = orderFinishDataLists[0].ChangeTimes,
+                            RSOC_S = orderFinishDataLists[0].RSOC_S,
+                            RSOC_E = orderFinishDataLists[0].RSOC_E,
+                            RewardPoint = orderFinishDataLists[0].RewardPoint,
+                            TotalRewardPoint = orderFinishDataLists[0].TotalRewardPoint
                         };
                     }
                 }
