@@ -1325,6 +1325,57 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     
+        public OPAI_GetChgSubsList_Card FromSPOut_GetChgSubsList_Card(SPOut_GetChgSubsList_Card sour)
+        {
+            var re = new OPAI_GetChgSubsList_Card();
+            if (sour != null)
+            {
+                re.MonProjID = sour.MonProjID;
+                re.MonProPeriod = sour.MonProPeriod;
+                re.ShortDays = sour.ShortDays;
+                re.MonProjNM = sour.MonProjNM;
+                re.PeriodPrice = sour.PeriodPrice;
+                re.CarWDHours = sour.CarWDHours;
+                re.CarHDHours = sour.CarHDHours;
+                re.MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins);
+                re.WDRateForCar = sour.WDRateForCar;
+                re.HDRateForCar = sour.HDRateForCar;
+                re.WDRateForMoto = sour.WDRateForMoto;
+                re.HDRateForMoto = sour.HDRateForMoto;
+                re.IsDiscount = sour.IsDiscount;
+                return re;
+            }
+            else
+                return null;
+        }
+
+        public List<OPAI_GetChgSubsList_Card> FromSPOut_GetChgSubsList_Card(List<SPOut_GetChgSubsList_Card> sour)
+        {
+            var re = new List<OPAI_GetChgSubsList_Card>();
+
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OPAI_GetChgSubsList_Card
+                      {
+                            MonProjID = a.MonProjID,
+                            MonProPeriod = a.MonProPeriod,
+                            ShortDays = a.ShortDays,
+                            MonProjNM = a.MonProjNM,
+                            PeriodPrice = a.PeriodPrice,
+                            CarWDHours = a.CarWDHours,
+                            CarHDHours = a.CarHDHours,
+                            MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                            WDRateForCar = a.WDRateForCar,
+                            HDRateForCar = a.HDRateForCar,
+                            WDRateForMoto = a.WDRateForMoto,
+                            HDRateForMoto = a.HDRateForMoto,
+                            IsDiscount = a.IsDiscount
+                      }).ToList();
+            }
+            return re;
+        }
+
     }
 
 }

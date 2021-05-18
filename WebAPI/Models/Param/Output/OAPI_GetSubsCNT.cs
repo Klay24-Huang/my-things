@@ -7,7 +7,13 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetSubsCNT
     {
+        /// <summary>
+        /// 目前方案
+        /// </summary>
         public OAPI_GetSubsCNT_NowCard NowCard { get; set; }
+        /// <summary>
+        /// 下期合約
+        /// </summary>
         public OAPI_GetSubsCNT_NxtCard NxtCard { get; set; }
     }
 
