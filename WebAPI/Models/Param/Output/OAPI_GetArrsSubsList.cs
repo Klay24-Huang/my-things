@@ -7,6 +7,7 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetArrsSubsList
     {
+        public int TotalArresPrice { get; set; }
         public List<OAPI_GetArrsSubsList_card> Cards { get; set; }
     }
 

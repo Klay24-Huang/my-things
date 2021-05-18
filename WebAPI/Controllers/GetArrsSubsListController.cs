@@ -119,9 +119,16 @@ namespace WebAPI.Controllers
                     trace.traceAdd("spIn", spIn);
                     var sp_re = msp.sp_GetArrsSubsList(spIn, ref errCode);
                     trace.traceAdd("sp_re", sp_re);
-                    if (sp_re != null && sp_re.DateRange != null && sp_re.DateRange.Count()>0
-                        && sp_re.Arrs != null && sp_re.Arrs.Count()>0)
+                    if (sp_re != null && sp_re.DateRange != null && sp_re.DateRange.Count() > 0
+                        && sp_re.Arrs != null && sp_re.Arrs.Count() > 0) { 
                         outputApi.Cards = map.FromSPOut_GetArrsSubsList(sp_re);
+
+                        if(outputApi.Cards != null && outputApi.Cards.Count() > 0)
+                        {
+                            var cards = outputApi.Cards;
+                            outputApi.TotalArresPrice = cards.Select(x => x.Arrs.Select(y => y.ArresPrice).Sum()).Sum();
+                        }                      
+                    }
                     trace.traceAdd("outputApi", outputApi);
                 }
 
