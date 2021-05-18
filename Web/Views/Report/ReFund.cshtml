@@ -123,7 +123,7 @@
                             <div class="col-md-3 offset-md-2">
                                 <button type="button" id="btnSubmit" class="btn btn-info">查詢</button>
                                 <button type="button" id="btnSend" name="btnSend" class="btn btn-info">退款</button>
-                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
+                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">報表資料匯出</button>
                                 <!--<button type="button" id="btnSend_2" name="btnSend_2" class="btn btn-info">退款2</button>-->
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
@@ -159,7 +159,8 @@
                 <th scope="col">時數名稱</th>
                 <th scope="col">時數金額</th>
                 <th scope="col">身份證字號</th>
-                <th scope="col">購買日期</th>
+                <th scope="col">購買日</th>
+                <th scope="col">到期日</th>
                 <th scope="col">merchantOrderNo</th>
                 <th scope="col">客人名字</th>
                 <th scope="col">載入</th>
@@ -169,7 +170,7 @@
             @if (ResultLen == 0)
             {
                 <tr>
-                    <td colspan="5" class="text-center">
+                    <td colspan="10" class="text-center">
                         查無結果
                     </td>
                 </tr>
@@ -183,8 +184,9 @@
                         <td scope="col" id=@(i.ToString()+"oNo")>@(lstData[i].orderNo)</td>
                         <td scope="col" id=@(i.ToString()+"pNa")>@(lstData[i].projectName)</td>
                         <td scope="col" id=@(i.ToString()+"Am")>@(lstData[i].orderAmount)</td>
-                        <td scope="col" id=@(i.ToString()+"No")>@(lstData[i].IDNO)</td>
-                        <td scope="col" id=@(i.ToString()+"Ti")>@(lstData[i].orderTime)</td>
+                        <td scope="col" >@(lstData[i].IDNO)</td>
+                        <td scope="col" >@(lstData[i].orderTime)</td>
+                        <td scope="col" >@(lstData[i].endTime)</td>
                         <td scope="col" id=@(i.ToString()+"mNo")>@(lstData[i].merchantOrderNo)</td>
                         <td scope="col" id=@(i.ToString()+"mNa")>@(lstData[i].MEMCNAME)</td>
                         <td scope="col"><button type="button" id=@(i.ToString()+"bt") class="btn btn-info">載入</button></td>

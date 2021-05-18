@@ -1136,7 +1136,7 @@ namespace Web.Controllers
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
-            string[] headerField = { "訂單編號", "購買者id", "購買方案", "購買價格" };
+            string[] headerField = { "訂單編號", "購買者id", "購買卡號", "購買日", "到期日", "購買方案", "收款總額", "手續費", "實收金額", "退款日期" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -1152,8 +1152,14 @@ namespace Web.Controllers
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(lstData[k].orderNo);
                 content.CreateCell(1).SetCellValue(lstData[k].IDNO);
-                content.CreateCell(2).SetCellValue(lstData[k].ITEM);
-                content.CreateCell(3).SetCellValue(lstData[k].PRICE);
+                content.CreateCell(2).SetCellValue(lstData[k].paymentNo);
+                content.CreateCell(3).SetCellValue(lstData[k].orderTime);
+                content.CreateCell(4).SetCellValue(lstData[k].endTime);
+                content.CreateCell(5).SetCellValue(lstData[k].ITEM);
+                content.CreateCell(6).SetCellValue(lstData[k].PRICE);
+                content.CreateCell(7).SetCellValue(lstData[k].tax);
+                content.CreateCell(8).SetCellValue(lstData[k].amount);
+                content.CreateCell(9).SetCellValue(lstData[k].refunddate);
 
             }
             for (int l = 0; l < headerFieldLen; l++)
