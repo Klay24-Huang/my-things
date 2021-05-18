@@ -1074,7 +1074,7 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
 
-            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
+            string[] headerField = { "身分證字號", "會員編號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -1089,14 +1089,15 @@ namespace Web.Controllers
             {
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].ID);
-                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].MEMRFNBR);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].NAME);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].HIID);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].DATE);
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
-                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].REASON);
+                content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].TYPE);
+                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].REASON);
 
             }
             for (int l = 0; l < headerFieldLen; l++)
