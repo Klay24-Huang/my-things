@@ -1528,24 +1528,34 @@ iRentApi20 Web API版本
 | ReMode      | 模式(1:月租，2我的所有方案) | int  |  2   |
 
 
-* NorMonCards, MixMonCards, MyCar, MyMoto 參數說明
+* NorMonCards, MixMonCards  參數說明
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProjNM     | 車型名稱             | string | MR66測試 |
+| MonProjNM     | 方案名稱      | string | MR66測試 |
 | MonProPeriod  | 總期數(key)          | int    | 3        |
 | ShortDays	    | 短期總天數(key)      | int    | 0        |
 | PeriodPrice	| 方案價格             | int    | 7000     |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
 | CarWDHours	| 汽車平日時數         | double | 3.0    |
 | CarHDHours	| 汽車假日時數         | double | 3.0      |
-| MotoTotalMins	| 機車不分平假日分鐘數 | double | 300   |
+| MotoTotalMins	| 機車不分平假日分鐘數 | int | 300   |
 | WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
 | HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
 | WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
 | IsPay	| 是否有繳費0否1是 | int | 1 |
+
+* MyCar, MyMoto 參數說明
+
+  | 參數名稱  | 參數說明       | 型態   | 範例                                   |
+  | --------- | -------------- | ------ | -------------------------------------- |
+  | 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
+  | StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
+  | EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
+
+  
 
 * Output範例,汽車牌卡(ReMode=1, IsMoto=0)
 
@@ -1872,6 +1882,8 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
+            "StartDate": "05/18 00:00",
+            "EndDate": "06/16 23:59",
             "MonProjID": "MR66",
             "MonProjNM": "測試_汽包機66-3",
             "MonProPeriod": 3,
@@ -1888,7 +1900,25 @@ iRentApi20 Web API版本
             "IsDiscount": 0,
             "IsPay": 1
         },
-        "MyMoto": null,
+        "MyMoto": {
+            "StartDate": "05/18 00:00",
+            "EndDate": "06/16 23:59",
+            "MonProjID": "MR200",
+            "MonProjNM": "測試_機車2000",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "PeriodPrice": 2000,
+            "IsMoto": 1,
+            "CarWDHours": 0.0,
+            "CarHDHours": 0.0,
+            "MotoTotalMins": 600,
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "IsDiscount": 0,
+            "IsPay": 1
+        },
         "ReMode": 2
     }
 }
@@ -2209,15 +2239,15 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
 | ---------- | ------------------------ | :--: | :----:  | -------------------------|
 | MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
-| MonProPeriod | 總期數					|  Y   | int | 6  |
-| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+| MonProPeriod | 總期數					|  Y   | int | 3 |
+| ShortDays | 短期總天數,非短期則為0  |  Y   | int | 0 |
 
 * input範例
 
 ```
 {
     "MonProjID": "MR66",
-	"MonProPeriod": 6,
+	"MonProPeriod": 3,
 	"ShortDays" : 0
 }
 ```
@@ -2237,25 +2267,34 @@ iRentApi20 Web API版本
 
 | 參數名稱    | 參數說明                    | 型態    | 範例                  |
 | --------    | --------                    | :--:    | ----------------------|
-| Month       | 資料物件 | | |
-| PayTypes    | 資料物件 | | |
-| InvoTypes   | 資料物件 | | |
+| Month       | 資料物件 | obj | |
+| PayTypes    | 資料物件 | list | |
+| InvoTypes   | 資料物件 | list | |
 
 * Month 參數說明
 | 參數名稱      | 參數說明              |  型態  | 範例               |
 | -----------   | ----------            | :----: | -------------------|
 | MonProjID     | 月租專案代碼  | string | MR66 |
-| MonProPeriod  | 總期數		| int | 6 |
+| MonProPeriod  | 總期數		| int | 3 |
 | ShortDays		| 短天期天數    | int | 0 |
-| MonProjNM		| 月租專案名稱  | string | |
-| WorkDayHours	| 平日時數		| double | 10.0 |
-| HolidayHours	| 假日時數		| double | 10.0 |
-| MotoTotalHours | 機車時數 	| double | 0.0 |
-| StartDate 	| 起日 			| string | 20210101 |
-| EndDate 		| 迄日 			| string | 20210131 |
-| SubsNxt		| 是否自動續訂 	| int | 0 |
-| IsChange		| 是否變更下期合約 | int | 0 |
-| IsPay 		| 是否當期有繳費 	| int | 0 |
+| MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
+| CarWDHours	| 汽車平日時數	| double | 3.0             |
+| CarHDHours	| 汽車假日時數	| double | 3.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 | double | 300.0 |
+| WDRateForCar | 汽車平日優惠價 | double | 99.0 |
+| HDRateForCar | 汽車假日優惠價 | double | 168.0 |
+| WDRateForMoto | 機車平日優惠價 | double | 1.0 |
+| HDRateForMoto | 機車假日優惠價 | double | 1.2 |
+| StartDate 	| 起日 			| string | 05/18 |
+| EndDate 		| 迄日 			| string | 06/16 23:59 |
+| MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
+| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
+| NxtMonProPeriod | 下期續訂總期數 | string | 3 |
+| IsMix | 是否為城市車手 (0否1是) | int | 1 |
+| IsUpd | 是否已升級 (0否1是) | int | 0 |
+| SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
+| IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
+| IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
 
 
 * PayTypes, InvoTypes 參數說明
@@ -2280,12 +2319,21 @@ iRentApi20 Web API版本
             "MonProPeriod": 3,
             "ShortDays": 0,
             "MonProjNM": "測試_汽包機66-3",
-            "WorkDayHours": 3.0,
-            "HolidayHours": 3.0,
-            "MotoTotalHours": 300.0,
-            "StartDate": "05/11",
-            "EndDate": "06/10",
-            "SubsNxt": 0,
+            "CarWDHours": 3.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300.0,
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "StartDate": "05/18",
+            "EndDate": "06/16 23:59",
+            "MonthStartDate": "2021/05/18",
+            "MonthEndDate": "2021/08/16",
+            "NxtMonProPeriod": 3,
+            "IsMix": 1,
+            "IsUpd": 0,
+            "SubsNxt": 1,
             "IsChange": 0,
             "IsPay": 1
         },
@@ -2300,7 +2348,7 @@ iRentApi20 Web API版本
             {
                 "CodeId": 9,
                 "CodeNm": "手機條碼",
-                "IsDef": 1
+                "IsDef": 0
             },
             {
                 "CodeId": 10,
@@ -2320,7 +2368,7 @@ iRentApi20 Web API版本
             {
                 "CodeId": 12,
                 "CodeNm": "會員載具",
-                "IsDef": 0
+                "IsDef": 1
             }
         ]
     }
@@ -2354,7 +2402,7 @@ iRentApi20 Web API版本
 | ---------- | ------------------------ | :--: | :----:  | -------------------------|
 | MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
 | MonProPeriod | 總期數					|  Y   | int | 6  |
-| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 30 |
+| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 0 |
 
 
 * input範例
@@ -2383,24 +2431,28 @@ iRentApi20 Web API版本
 
 | 參數名稱    | 參數說明   | 型態    | 範例               |
 | --------    | --------  | :--:    | ---------------------- |
-| NowCard		| 資料物件 | 　 |  　 |
-| NxtCard 		| 資料物件 | 　 |  　 |
+| NowCard		| 資料物件(目前方案) | 　 |  　 |
+| NxtCard 		| 資料物件(下期合約) | 　 |  　 |
 
 
-* Month 參數說明
+* NowCard, NxtCard參數說明
 
 | 參數名稱      | 參數說明              |  型態  | 範例               |
 | -----------   | ----------            | :----: | ------------------- |
 | MonProjID     | 月租專案代碼  | string | MR66 |
-| MonProPeriod  | 總期數		| int | 6 |
+| MonProPeriod  | 總期數		| int | 3 |
 | ShortDays		| 短天期天數    | int | 0 |
-| MonProjNM		| 月租專案名稱  | string | |
-| CarWDHours	| 汽車平日時數	| double | 10.0 |
-| CarHDHours	| 汽車假日時數	| double | 10.0 |
-| MotoTotalMins | 機車不分平假日分鐘數 	| double | 0.0 |
-| SD 			| 起日 			| string | 20210101 |
-| ED	 		| 迄日 			| string | 20210131 |
-| MonProDisc  	| 注意事項      | string  |  汽包機66-1注意事項   |
+| MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
+| CarWDHours	| 汽車平日時數	| double | 3.0 |
+| CarHDHours	| 汽車假日時數	| double | 3.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 	| double | 300.0 |
+| WDRateForCar | 汽車平日優惠價 | double | 99.0 |
+| HDRateForCar | 機車平日優惠價 | double | 168.0 |
+| WDRateForMoto | 機車平日優惠價 | double | 1.0 |
+| HDRateForMoto | 機車假日優惠價 | double | 1.2 |
+| StartDate | 起日 			| string | 05/18 |
+| EndDate	| 迄日 			| string | 08/16 |
+| MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
 
 
 
@@ -2421,11 +2473,31 @@ iRentApi20 Web API版本
             "CarWDHours": 3.0,
             "CarHDHours": 3.0,
             "MotoTotalMins": 300.0,
-            "SD": "05/11",
-            "ED": "06/10",
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "StartDate": "05/18",
+            "EndDate": "08/16",
             "MonProDisc": "汽包機66-3注意事項"
         },
-        "NxtCard": null
+        "NxtCard": {
+            "IsChange": 0,
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "CarWDHours": 3.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300.0,
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "StartDate": "2021/08/16",
+            "EndDate": "2021/11/14",
+            "MonProDisc": "汽包機66-3注意事項"
+        }
     }
 }
 ```
@@ -2453,15 +2525,15 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
 | ---------- | -------------------------- | :--: | :----: | ------------------------------ |
 | MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
-| MonProPeriod | 總期數(key)               |  N   | int    | MR66測試                      |
-| ShortDays    | 短期總天數(key)            |  N   | int    | 0                              |
+| MonProPeriod | 總期數(key)               |  Y  | int    | 3                     |
+| ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
 
 
 * input範例
 ```
 {
     "MonProID"::"MR66",
-    "MonProPeriod:"MR66測試",
+    "MonProPeriod:3,
     "ShortDays":"0"
 }
 ```
@@ -2470,8 +2542,8 @@ iRentApi20 Web API版本
 
 | 參數名稱      | 參數說明                |  型態  | 範例          |
 | ------------ | ----------------------- | :----: | ------------- |
-| MyCard       | 資料物件                  |        |                 |
-| OtrCards     | 資料物件                  |        |  　  |
+| MyCard       | 資料物件(目前訂閱)        | obj |                 |
+| OtrCards     | 資料物件(其他方案)            | list |  　  |
 
 
 * 資料物件說明(MyCard)
@@ -2479,49 +2551,78 @@ iRentApi20 Web API版本
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProjNM     | 車型名稱             | string | MR66測試 |
 | MonProPeriod  | 總期數(key)          | int    | 3        |
 | ShortDays	    | 短期總天數(key)      | int    | 0        |
+| MonProjNM	| 方案名稱 | string | 測試_汽包機66-3 |
 | PeriodPrice	| 方案價格            | int    | 7000     |
-| IsMoto	    | 是否為機車0否1是     | int    | 0        |
-| CarWDHours	| 汽車平日時數         | double | 10       |
-| CarHDHours	| 汽車假日時數         | double | 0        |
+| CarWDHours	| 汽車平日時數         | double | 3.0    |
+| CarHDHours	| 汽車假日時數         | double | 3.0      |
 | MotoTotalMins	| 機車不分平假日分鐘數   | double | 120      |
-| IsDiscount	| 是否為優惠方案0否1是  | int    | 1        |
+| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
+| HDRateForCar	| 假日平日優惠費率 | double | 168.0 |
+| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
+| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
+| IsDiscount	| 是否為優惠方案0否1是  | int    | 0       |
 
 
 * Output範例
 
 ```
 {
-    "MyCard":{
-        "MonProjID":"MR66",
-        "MonProjNM":"MR66測試",
-        "MonProPeriod":"3",
-        "ShortDays":"0",
-        "PeriodPrice":"7000",
-        "IsMoto":"0",
-        "CarWDHours":"10",
-        "CarHDHours":"0",
-        "MotoTotalMins":"120",
-        "IsDiscount":"1"    
-    },
-    "OtrCards":[
-        {
-            "MonProjID":"MR66",
-            "MonProjNM":"MR66測試",
-            "MonProPeriod":"3",
-            "ShortDays":"0",
-            "PeriodPrice":"7000",
-            "IsMoto":"0",
-            "CarWDHours":"10",
-            "CarHDHours":"0",
-            "MotoTotalMins":"120",
-            "IsDiscount":"1"   
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "MyCard": {
+            "MonProjID": "MR66",
+            "MonProPeriod": 3,
+            "ShortDays": 0,
+            "MonProjNM": "測試_汽包機66-3",
+            "PeriodPrice": 7000,
+            "CarWDHours": 3.0,
+            "CarHDHours": 3.0,
+            "MotoTotalMins": 300,
+            "WDRateForCar": 99.0,
+            "HDRateForCar": 168.0,
+            "WDRateForMoto": 1.0,
+            "HDRateForMoto": 1.2,
+            "IsDiscount": 0
         },
-        ...
-    ]
-
+        "OtrCards": [
+            {
+                "MonProjID": "MR102",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "MonProjNM": "測試_汽包機102-3",
+                "PeriodPrice": 7300,
+                "CarWDHours": 4.0,
+                "CarHDHours": 4.0,
+                "MotoTotalMins": 400.0,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0
+            },
+            {
+                "MonProjID": "MR103",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "MonProjNM": "測試_汽包機103-3",
+                "PeriodPrice": 7800,
+                "CarWDHours": 4.0,
+                "CarHDHours": 3.0,
+                "MotoTotalMins": 300.0,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0
+            }
+        ]
+    }
 }
 ```
 
