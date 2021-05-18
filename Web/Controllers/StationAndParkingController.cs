@@ -177,7 +177,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)" };
+                        string[] field = { "停車場名稱", "地址", "經度", "緯度", "開放時間(起)", "開放時間(迄)", "ID" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
