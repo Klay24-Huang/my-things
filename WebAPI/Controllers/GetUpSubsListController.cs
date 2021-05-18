@@ -139,11 +139,6 @@ namespace WebAPI.Controllers
                             if (nors != null && nors.Count() > 0)
                                 outputApi.NorCards = objUti.TTMap<List<SPOut_GetUpSubsList_Card>, List<OAPI_GetUpSubsList_Card>>(nors);
                         }
-                        else
-                        {
-                            flag = false;
-                            errCode = "ERR908";//sp錯誤
-                        }
                     }
 
                     trace.traceAdd("outputApi", outputApi);

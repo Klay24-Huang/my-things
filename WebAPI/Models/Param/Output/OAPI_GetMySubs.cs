@@ -67,6 +67,18 @@ namespace WebAPI.Models.Param.Output
         /// 迄日
         /// </summary>
         public string EndDate { get; set; }
+        public string MonthStartDate { get; set; }
+        public string MonthEndDate { get; set; }
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }
+        /// <summary>
+        /// 是否為城市車手
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMix { get; set; }
         /// <summary>
         /// 是否已升級
         /// </summary>

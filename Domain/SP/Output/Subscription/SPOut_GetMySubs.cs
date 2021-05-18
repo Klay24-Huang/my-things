@@ -27,20 +27,40 @@ namespace Domain.SP.Output.Subscription
         public double HoildayRateForMoto { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime MonthStartDate { get; set; }
+        public DateTime MonthEndDate { get; set; }
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }
+        /// <summary>
+        /// 是否為城市車手
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int IsMix { get; set; }
         /// <summary>
         /// 是否已升級
+        /// <para>0:否</para>
+        /// <para>1:是</para>
         /// </summary>
         public int IsUpd { get; set; }
         /// <summary>
-        /// 是否自動續訂
+        /// 是否自動續
+        /// <para>0:否</para>
+        /// <para>1:是</para>
         /// </summary>
         public int SubsNxt { get; set; }
         /// <summary>
         /// 是否變更下期合約
+        /// <para>0:否</para>
+        /// <para>1:是</para>
         /// </summary>
         public int IsChange { get; set; }
         /// <summary>
         /// 當期是否有繳費
+        /// <para>0:否</para>
+        /// <para>1:是</para>
         /// </summary>
         public int IsPay { get; set; }
     }
