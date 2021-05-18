@@ -4,7 +4,6 @@ using Domain.SP.Input.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -91,6 +90,7 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberStatus);
@@ -117,11 +117,12 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
+
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputAPI, token);
             return objOutput;
