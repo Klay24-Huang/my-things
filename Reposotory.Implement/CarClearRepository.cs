@@ -128,9 +128,9 @@ namespace Reposotory.Implement
             bool flag = false;
             List<BE_CleanDataWithoutPIC> lstCardList = null;
             string SQL = "SELECT  distinct ISNULL(VW.Account,UserID) AS Account,OrderNum,ISNULL(ISNULL(IIF(LEN(UserID)=5 AND SUBSTRING(UserID,1,1) IN ('1','2','3','4','5','6','7','8','9'),Maintain.UserName,VW.UserID),Manager.UserName),VW.UserID) AS UserID,";
-            SQL+= " outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place FROM VW_BE_CleanDataQueryWithOutPIC AS VW  WITH(NOLOCK)";
+            SQL+= " outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place FROM VW_BE_CleanDataQueryWithOutPIC AS VW  WITH(NOLOCK) ";
             SQL += " LEFT JOIN TB_Maintain_User AS Maintain ON Maintain.Account=VW.Account ";
-            SQL += " LEFT JOIN TB_Manager AS Manager ON Manager.Account = VW.Account";
+            SQL += " LEFT JOIN TB_Manager AS Manager ON Manager.Account = VW.Account ";
             SqlParameter[] para = new SqlParameter[8];
             string term = "";
             int nowCount = 0;
@@ -218,7 +218,7 @@ namespace Reposotory.Implement
 
             if ("" != term)
             {
-                SQL += " WHERE AND (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
+                SQL += " WHERE 1=1 AND (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
             }
             else
             {

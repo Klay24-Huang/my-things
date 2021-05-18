@@ -69,7 +69,7 @@ namespace Web.Controllers
 
 
 
-        public ActionResult ExplodeMapQuery(string ExplodeOrderNum)
+        public ActionResult ExplodeMapQuery(int ExplodeMode, string ExplodeOrderNum, string ExplodeCarNo, string ExplodeSDATE, string ExplodeEDATE)
         {
             List<BE_MapList> lstRawDataOfMachi = new List<BE_MapList>();
             EventHandleRepository _repository = new EventHandleRepository(connetStr);
@@ -88,7 +88,7 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 sheet.AutoSizeColumn(j);
             }
-            lstRawDataOfMachi = _repository.GetMapList(tmpOrder);
+            lstRawDataOfMachi = _repository.GetMapList(ExplodeMode, tmpOrder, ExplodeCarNo, ExplodeSDATE, ExplodeEDATE);
             int len = lstRawDataOfMachi.Count;
             for (int k = 0; k < len; k++)
             {

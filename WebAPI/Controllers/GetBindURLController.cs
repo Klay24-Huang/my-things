@@ -125,7 +125,7 @@ namespace WebAPI.Controllers
                 TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
                 WebAPIInput_Base wsInput = new WebAPIInput_Base()
                 {
-                    ApiVer = "1.0.1",
+                    ApiVer = "1.0.2",
                     ApposId = TaishinAPPOS,
                     RequestParams = new RequestParamsData()
                     {

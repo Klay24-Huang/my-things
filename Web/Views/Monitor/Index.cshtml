@@ -219,11 +219,10 @@
 
                                 </div>
                             </form>
-
                             <!--20210408唐加-->
                             <button type="button" name="btnExplode" id="btnExplode" class="btn btn-info">匯出</button>
-
                         </div>
+
                         <div class="well no-padding" id="InforContent">
                             <label for="neer" class="col-sm-12 control-label">車輛軌跡資訊</label>
                             <form class="form-horizontal" role="form">
@@ -287,7 +286,11 @@
     <!--20210408唐加-->
     @using (Html.BeginForm("ExplodeMapQuery", "Monitor", FormMethod.Post, new { id = "frmMapExplode" }))
     {
+        <input type="hidden" id="ExplodeMode" name="ExplodeMode" value="">
         <input type="hidden" id="ExplodeOrderNum" name="ExplodeOrderNum" value="">
+        <input type="hidden" id="ExplodeCarNo" name="ExplodeCarNo" value="">
+        <input type="hidden" id="ExplodeSDATE" name="ExplodeSDATE" value="">
+        <input type="hidden" id="ExplodeEDATE" name="ExplodeEDATE" value="">
     }
 
     <!-- Javascript
@@ -328,13 +331,13 @@
         });
 
         //20210408唐加，寫在index.js沒反應
-        $("#btnExplode").on("click", function () {
-            console.log('dddddddddddddddddd')
-            //ShowLoading("資料查詢中…");
-            $("#ExplodeOrderNum").val($("#OrderNum").val());
-            //disabledLoading();
-            $("#frmMapExplode").submit();
-        });
+        //$("#btnExplode").on("click", function () {
+        //    console.log('dddddddddddddddddd')
+        //    //ShowLoading("資料查詢中…");
+        //    $("#ExplodeOrderNum").val($("#OrderNum").val());
+        //    //disabledLoading();
+        //    $("#frmMapExplode").submit();
+        //});
 
 
 		var Mode = '@Mode';
@@ -359,6 +362,28 @@
         }
 
         var len = '@len';
+
+        //20210514唐加，寫在index.js沒反應
+        switch (Mode) {
+            case "0":
+                $("#btnExplode").on("click", function () {
+                    $("#ExplodeMode").val(0);
+                    $("#ExplodeOrderNum").val($("#OrderNum").val());
+                    $("#frmMapExplode").submit();
+                });
+
+                break;
+            case "1":
+                $("#btnExplode").on("click", function () {
+                    $("#ExplodeMode").val(1);
+                    $("#ExplodeCarNo").val($("#ObjCar").val());
+                    $("#ExplodeSDATE").val($("#start").val());
+                    $("#ExplodeEDATE").val($("#end").val());
+                    $("#frmMapExplode").submit();
+                });
+
+                break;
+        }
     </script>
 
 </body>
