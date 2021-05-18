@@ -39,6 +39,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_GetUpSubsList();
             var outputApi = new OAPI_GetUpSubsList();
+            outputApi.NorCards = new List<OAPI_GetUpSubsList_Card>();
+            outputApi.MixCards = new List<OAPI_GetUpSubsList_Card>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();

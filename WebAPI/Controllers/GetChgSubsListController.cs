@@ -39,6 +39,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_GetChgSubsList();
             var outputApi = new OAPI_GetChgSubsList();
+            outputApi.OtrCards = new List<OPAI_GetChgSubsList_Card>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
