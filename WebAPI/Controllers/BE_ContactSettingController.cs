@@ -1683,7 +1683,17 @@ namespace WebAPI.Controllers
                     //20201202 ADD BY ADAM REASON.ETAG費用
                     outputApi.Rent.ETAGRental = etagPrice;
 
-                    var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
+                    #region 轉乘優惠只能抵租金
+
+                    int xCarRental = outputApi.Rent.CarRental;
+                    int xTransferPrice = outputApi.Rent.TransferPrice;
+                    int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
+                    outputApi.Rent.TransferPrice = FinalTransferPrice;
+                    xCarRental = (xCarRental - FinalTransferPrice);
+
+                    #endregion
+
+                    var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
                     xTotalRental -= UseOrderPrice;//使用訂金
                     outputApi.UseOrderPrice = UseOrderPrice;
                     outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
