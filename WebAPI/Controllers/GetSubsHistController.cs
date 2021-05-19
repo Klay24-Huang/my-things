@@ -242,8 +242,9 @@ namespace WebAPI.Controllers
                         SetNow = apiInput.SetNow
                     };
                     trace.traceAdd("spIn", spIn);
-                    flag = msp.sp_DelSubsHist(spIn, ref errCode);
+                    flag = msp.sp_DelSubsHist(spIn, ref errCode);                    
                     trace.traceAdd("sp_re", flag);
+                    outputApi.DelResult = flag ? 1 : 0;
                     trace.traceAdd("outputApi", outputApi);
                 }
 
