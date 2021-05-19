@@ -1271,7 +1271,7 @@ namespace WebAPI.Models.BillFunc
                           PeriodPrice = a.PeriodPrice,
                           CarWDHours = a.CarWDHours,
                           CarHDHours = a.CarHDHours,
-                          MotoTotalMins = a.MotoTotalMins,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
                           WDRateForCar = a.WDRateForCar,
                           HDRateForCar = a.HDRateForCar,
                           WDRateForMoto = a.WDRateForMoto,
