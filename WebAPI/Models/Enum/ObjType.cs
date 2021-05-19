@@ -412,6 +412,10 @@ namespace WebAPI.Models.Enum
             /// 寫入電量LOG 20210516 ADD BY ADAM
             /// </summary>
             InsMotorBattLog,
+            /// <summary>
+            /// 取得會員積分 20210519 ADD BY YEH
+            /// </summary>
+            GetMemberScore,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -1003,6 +1007,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.InsMotorBattLog:    //寫入機車電量 20210516 ADD BY ADAM
                     SPName = "usp_InsMotorBattLog";
+                    break;
+                case SPType.GetMemberScore:     //取得會員積分 20210519 ADD BY YEH
+                    SPName = "usp_GetMemberScore_Q1";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
