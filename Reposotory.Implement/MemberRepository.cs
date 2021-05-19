@@ -340,7 +340,7 @@ namespace Reposotory.Implement
             BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
-            string term2 = "";
+            //string term2 = "";
             string SQL = " EXEC usp_BE_UpdateMemberData  '" + IDNO + "'," +
                 "N'" + MEMNAME + "'," +
                 "'" + Mobile + "'," +
@@ -384,6 +384,27 @@ namespace Reposotory.Implement
                 SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
             }
             lstAudits = GetObjList<BE_AuditHistory>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        /// <summary>
+        /// 取得徽章
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <returns></returns>
+        public List<BE_MileStone> GetMileStone(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MileStone> lstAudits = null;
+            BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+
+            string SQL = " EXEC SP_GetMileStone  '" + IDNO + "'" ; 
+
+            lstAudits = GetObjList<BE_MileStone>(ref flag, ref lstError, SQL, para, term);
 
             return lstAudits;
         }
