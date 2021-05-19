@@ -23,7 +23,6 @@ iRentApi20 Web API版本
 - [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
 
 取還車跟車機操控相關
-
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 
 月租訂閱制相關
@@ -36,6 +35,9 @@ iRentApi20 Web API版本
 - [GetUpSubsList 訂閱制升轉列表](#GetUpSubsList)
 - [GetSubsHist 訂閱制歷史紀錄](#GetSubsHist)
 - [GetArrsSubsList 訂閱制欠費查詢](#GetArrsSubsList)
+
+訂單相關
+- [OrderDetail 歷史訂單明細](#OrderDetail)
 
 ----------
 # 修改歷程
@@ -61,6 +63,8 @@ iRentApi20 Web API版本
 20210511 新增月租訂閱制相關(GetMySubs,GetSubsCNT)
 
 20210517 GetMemberStatus增加會員積分相關欄位
+
+20210518 訂單明細增加回饋明細
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -671,6 +675,7 @@ iRentApi20 Web API版本
 }
 ```
 * 錯誤代碼清單
+
 | 錯誤代碼 | 說明 |
 | ------- | ------- |
 | ERR147 | 您並未設定此常用站點 |
@@ -681,12 +686,13 @@ iRentApi20 Web API版本
 ----------------
 
 ## GetCarType同站以據點取出車型
-###[/api/GetCarType/]
+
+### [/api/GetCarType/]
 
 * 20210315修改 - 增加是否為常用據點欄位
-
+ 
 * 20210324修改 - 增加搜尋使用欄位CarTypes,Seats 
-
+ 
 * 20210407修改 - input移除掉Seats 
 
 * 20210408修改 - 增加IsRent欄位
@@ -799,6 +805,7 @@ iRentApi20 Web API版本
 }
 ```
 * 錯誤代碼清單
+
 | 錯誤代碼 | 說明 |
 | ------- | ------- |
 | ERR151 | 起始日期格式不符 |
@@ -838,6 +845,7 @@ iRentApi20 Web API版本
 
 
 * Seats 回傳參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | SDate | 預計取車時間 | Y | string | 2021-03-12 14:00:00 |
@@ -877,6 +885,7 @@ iRentApi20 Web API版本
 
 
 * GetProjectObj參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationID | 據點代碼 | string | X0II |
@@ -929,6 +938,7 @@ iRentApi20 Web API版本
 
 
 * output變數
+
 ```
 {
     "Result": "1",
@@ -1003,7 +1013,9 @@ iRentApi20 Web API版本
 }
 
 ```
+
 * 錯誤代碼清單
+
 | 錯誤代碼 | 說明 |
 | ------- | ------- |
 | ERR151 | 起始日期格式不符 |
@@ -1016,6 +1028,7 @@ iRentApi20 Web API版本
 
 
 ## GetBanner 取得廣告資訊
+
 ### [/api/GetBanner/]
 
 * 20210316發佈
@@ -1129,9 +1142,11 @@ iRentApi20 Web API版本
 
 
 ## GetNormalRent 取得同站租還站點
+
 ### [/api/GetNormalRent/]
 
 * 20210324修改
+
 * 20210407修改 - input移除掉Seats 
 
 * ASP.NET Web API (REST API)
@@ -1171,6 +1186,7 @@ iRentApi20 Web API版本
 ```
 
 * output回傳參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | Result | 是否成功 | int | 0:失敗 1:成功  |
@@ -1182,6 +1198,7 @@ iRentApi20 Web API版本
 | NormalRentObj   | 常用站點列表 |  List  | |
 
 * NormalRentObj 參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationID | 據點代碼 | string | X0II |
@@ -1198,6 +1215,7 @@ iRentApi20 Web API版本
 
 
 * StationPic參數說明
+
 | 參數名稱 | 參數說明     |  型態  | 範例 |
 | -------- | ------------ | :----: | ---- |
 | StationPic | 據點照片 | string | |
@@ -1252,7 +1270,8 @@ iRentApi20 Web API版本
 
 
 ## GetCarTypeGroupList 取得車型清單
-* ### [/api/GetCarTypeGroupList/]
+
+### [/api/GetCarTypeGroupList/]
 
 * 20210331發佈
 
@@ -1295,6 +1314,7 @@ iRentApi20 Web API版本
 
 
 * CarInfos 參數說明
+
 | 參數名稱    | 參數說明   |  型態  | 範例                                 |
 | ----------- | ---------- | :----: | ------------------------------------------------------- |
 | Seat | 座椅數 | int | 4 |
@@ -1393,6 +1413,7 @@ iRentApi20 Web API版本
 
 
 ## ChangeUUCard 變更悠遊卡
+
 ### [/api/ChangeUUCard/]
 
 * 20210415發佈
@@ -1419,7 +1440,7 @@ iRentApi20 Web API版本
 | -------- | -------- | :--: | :----: | -------- |
 | OrderNo  | 訂單編號 |  Y   | string | H0002630 |
 
-- input範例
+* input範例
 
 ```
 {
@@ -1459,6 +1480,7 @@ iRentApi20 Web API版本
 
 
 ## GetMonthList 取得訂閱制月租列表/我的所有方案
+
 ###  [/api/GetMonthList/]
 
 * 20210510發佈
@@ -1521,6 +1543,7 @@ iRentApi20 Web API版本
 | ReMode      | 模式(1:月租，2我的所有方案) | int  |   1  |
 
 * 資料物件說明,我的所有方案(ReMode=2)
+
 | 參數名稱    | 參數說明                    | 型態 | 範例 |
 | --------    | --------                    | :--: | ---- |
 | MyCar       | 汽車牌卡(資料物件obj)       |      |      |
@@ -1529,6 +1552,7 @@ iRentApi20 Web API版本
 
 
 * NorMonCards, MixMonCards  參數說明
+
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
@@ -1737,6 +1761,7 @@ iRentApi20 Web API版本
 ```
 
 * Output範例,機車牌卡(ReMode=1, IsMoto=1)
+
 ```
 {
     "Result": "1",
@@ -1978,6 +2003,7 @@ iRentApi20 Web API版本
 | MonCards    | 汽機車牌卡(資料物件list)    |         |      |
 
 * MonCards 參數說明
+
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
@@ -2064,6 +2090,7 @@ iRentApi20 Web API版本
 | InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
 
 * ApiJson(ApiID=179 / 購買月租)參數說明
+
 | 參數名稱     | 參數說明     | 必要 |  型態  | 範例 |
 | ------------ | ------------ | :--: | :----: | ---- |
 | MonProjID    | 專案編號(key |  Y   | string | MR66 |
@@ -2092,6 +2119,7 @@ iRentApi20 Web API版本
   
 
 * ApiJson 序列化後字串範例
+
 | ApiID | Api名稱      | ApiJson                                                      |
 | ----- | ------------ | ------------------------------------------------------------ |
 | 179   | 購買月租     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0} |
@@ -2176,6 +2204,7 @@ iRentApi20 Web API版本
 | PayResult   | 付費結果(0失敗 1成功)       | int     |    1     |
 
 * PayTypes, InvoTypes 參數說明
+
 | 參數名稱      | 參數說明              |  型態  | 範例               |
 | -----------   | ----------            | :----: | -------------------|
 | CodeId        | 代碼                  | int    | 5                  |
@@ -2323,6 +2352,7 @@ iRentApi20 Web API版本
 | InvoTypes   | 資料物件 | list | |
 
 * Month 參數說明
+
 | 參數名稱      | 參數說明              |  型態  | 範例               |
 | -----------   | ----------            | :----: | -------------------|
 | MonProjID     | 月租專案代碼  | string | MR66 |
@@ -2349,6 +2379,7 @@ iRentApi20 Web API版本
 
 
 * PayTypes, InvoTypes 參數說明
+
 | 參數名稱      | 參數說明              |  型態  | 範例               |
 | -----------   | ----------            | :----: | -------------------|
 | CodeId        | 代碼                  | int    | 5                  |
@@ -2935,3 +2966,182 @@ iRentApi20 Web API版本
 }
 ```
 
+
+
+# 訂單相關
+
+
+
+## OrderDetail
+
+### [/api/OrderDetail/]
+
+* 20210517修改
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H10455246 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H10455246"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderNo      | 訂單編號           | string | H10455246     |
+| ContactURL   | 合約網址			| string | 				 |
+| Operator     | 營運商				| string | supplierIrent |
+| CarTypePic   | 車輛圖片			| string | iretScooter   |
+| CarNo		   | 車號				| string | RAA-1122      |
+| Seat		   | 座椅數				| int    | 5			 |
+| CarBrend     | 汽車廠牌			| string | KYMCO		 |
+| CarTypeName  | 車型名稱			| string | MANY-110		 |
+| StationName  | 據點名稱			| string | iRent路邊租還[機車]_台北 |
+| OperatorScore| 評分				| float  | 5.0			 |
+| ProjName	   | 專案名稱			| string | 10載便利北北桃 |
+| CarRentBill  | 車輛租金			| int	 | 2000			 |
+| TotalHours   | 使用時數			| string | 0天0時0分	 |
+| MonthlyHours | 月租折抵			| string | 0天0時0分	 |
+| GiftPoint	   | 折抵時數			| string | 0天0時0分	 |
+| PayHours	   | 計費時數			| string | 0天0時0分	 |
+| MileageBill  | 里程費				| int	 | 100			 |
+| InsuranceBill| 安心服務費			| int 	 | 100 			 |
+| EtagBill     | eTag費用			| int	 | 10			 |
+| OverTimeBill | 逾時費				| int	 | 100			 |
+| ParkingBill  | 代收停車費			| int 	 | 100			 |
+| TransDiscount |轉乘優惠折抵		| int 	 | 100			 |
+| TotalBill    | 總金額				| int 	 | 1000			 |
+| InvoiceType  | 發票類型			| string | 1:愛心碼 2:email 3:二聯 4:三聯 5:手機條碼 6:自然人憑證 |
+| CARRIERID    | 載具條碼			| string | 				 |
+| NPOBAN  	   | 捐贈碼				| string |  			 |
+| NPOBAN_Name  | 捐贈協會名稱		| string | 				 |
+| Unified_business_no | 統編		| string | 50885758		 |
+| InvoiceNo	   | 發票號碼			| string | AA12345678    |
+| InvoiceDate  | 發票日期			| string | 2021-03-01 	 |
+| InvoiceBill  | 發票金額			| int    | 1000			 |
+| InvoiceURL   | 發票網址			| string | 				 |
+| StartTime    | 開始時間			| string | 2021-05-14 00:02 |
+| EndTime	   | 結束時間			| string | 2021-05-14 00:02 |
+| Millage	   | 里程				| float  | 1234.5		 |
+| CarOfArea	   | 據點區域			| string | 北北桃		 |
+| DiscountAmount | 優惠折抵金額 	| int 	 | 100			 |
+| DiscountName | 折抵專案名稱		| string | 				 |
+| CtrlBill	   | 營損-車輛調度費	| int 	 | 0			 |
+| ClearBill    | 營損-清潔費		| int    | 0			 |
+| EquipBill	   | 營損-物品損壞		| int 	 | 0			 |
+| ParkingBill2 | 營損-非約定停車費  | int    | 0			 |
+| TowingBill   | 營損-拖吊費		| int    | 0			 |
+| OtherBill	   | 營損-其他費用		| int    | 0			 |
+| UseOrderPrice | 使用訂金  		| int    | 0 			 |
+| ReturnOrderPrice | 返還訂金		| int 	 | 0 			 |
+| ChangePoint  | 換電時數			| int 	 | 0			 |
+| ChangeTimes  | 換電次數			| int    | 0			 |
+| RSOC_S	   | 取車電量			| float  | 0			 |
+| RSOC_E 	   | 還車電量			| float  | 0			 |
+| RewardPoint  | 獎勵時數			| int    | 0			 |
+| TotalRewardPoint | 總回饋時數		| int    | 0 			 |
+
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+		"OrderNo": "H10455246",
+        "ContactURL": "",
+        "Operator": "supplierIrent",
+        "CarTypePic": "iretScooter",
+        "CarNo": "EWA-0132",
+        "Seat": 2,
+        "CarBrend": "KYMCO",
+        "CarTypeName": "MANY-110",
+        "StationName": "iRent路邊租還[機車]_台北",
+        "OperatorScore": 5.0,
+        "ProjName": "10載便利北北桃",
+        "CarRentBill": 0,
+        "TotalHours": "0天0時0分",
+        "MonthlyHours": "0天0時0分",
+        "GiftPoint": "0天0時6分",
+        "PayHours": "0天0時0分",
+        "MileageBill": 0,
+        "InsuranceBill": 0,
+        "EtagBill": 0,
+        "OverTimeBill": 0,
+        "ParkingBill": 0,
+        "TransDiscount": 0,
+        "TotalBill": 0,
+        "InvoiceType": 2,
+        "CARRIERID": "",
+        "NPOBAN": "",
+        "NPOBAN_Name": "",
+        "Unified_business_no": "",
+        "InvoiceNo": "",
+        "InvoiceDate": "",
+        "InvoiceBill": 0,
+        "InvoiceURL": "",
+        "StartTime": "2021-05-14 00:02",
+        "EndTime": "2021-05-14 00:02",
+        "Millage": 0.0,
+        "CarOfArea": "北北桃",
+        "DiscountAmount": 0,
+        "DiscountName": "",
+        "CtrlBill": 0,
+        "ClearBill": 0,
+        "EquipBill": 0,
+        "ParkingBill2": 0,
+        "TowingBill": 0,
+        "OtherBill": 0,
+        "UseOrderPrice": 0,
+        "ReturnOrderPrice": 0,
+		"ChangePoint" : 0,
+		"ChangeTimes" : 0,
+		"RSOC_S": 90.0,
+		"RSOC_E": 80.0,
+		"RewardPoint": 0,
+		"TotalRewardPoint" : 0
+    
+	}
+    
+}
+```
+----
