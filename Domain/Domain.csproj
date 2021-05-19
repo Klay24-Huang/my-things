@@ -259,6 +259,7 @@
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
+    <Compile Include="SP\Output\Member\MemberScoreList.cs" />
     <Compile Include="SP\Output\Mochi\SPOutput_GetMachiToken.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderFinishDataList.cs" />
