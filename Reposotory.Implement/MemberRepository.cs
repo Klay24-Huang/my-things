@@ -398,7 +398,7 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_MileStone> lstAudits = null;
-            BE_AuditDetail obj = null;
+            //BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
 
@@ -408,6 +408,7 @@ namespace Reposotory.Implement
 
             return lstAudits;
         }
+
 
         /// <summary>
         /// 取得安心保險清單

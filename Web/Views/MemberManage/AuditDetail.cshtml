@@ -137,6 +137,7 @@
         BlockMobileLen = (obj.mobileBlock == null) ? 0 : obj.mobileBlock.Count();//20210310唐加
         HistoryLen = (obj.History == null) ? 0 : obj.History.Count();
         MileStoneLen = (obj.MileStone == null) ? 0 : obj.MileStone.Count();
+        //MileStoneDetailLen = (obj.MileStoneD == null) ? 0 : obj.MileStoneD.Count();
 
         if (HistoryLen > 0)
         {
@@ -806,7 +807,7 @@
                                     會員勳章
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="button" id="btnMileStone" name="btnMileStone" class="btn btn-info" data-toggle="modal" data-target="#mileStone_modal">顯示會員勳章</button>
+                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#mileStone_modal">顯示會員勳章</button>
                                 </div>
                             </div>
                         </div>
@@ -1655,7 +1656,7 @@
 
 
 
-    
+
     <div id="mileStone_modal" class="modal fade">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -1689,7 +1690,8 @@
                                         <td scope="col">@(obj.MileStone[i].ActionName)</td>
                                         @*<td scope="col">@(Convert.ToDateTime(obj.MileStone[i].MKTime).ToString("yyyy-MM-dd HH:mm:ss"))</td>*@
                                         <td scope="col">@(obj.MileStone[i].MKTime)</td>
-                                        <td scope="col">@(obj.MileStone[i].Detail)</td>
+                                        @*<td scope="col"> <button type="button" name="btnMileStoneDetail" id="btnMileStoneDetail" class="btn btn-info" data-toggle="modal">@(obj.MileStone[i].Detail)</button> </td>*@
+                                        <td scope="col"><button name="btnMileStoneDetail_@(i)" id="btnMileStoneDetail_@(i)" onclick="MileStoneDetail('@(obj.MileStone[i].ActionName)')" class="btn btn-info">@(obj.MileStone[i].Detail)</button></td>
                                     </tr>
                                 }
 
@@ -1710,11 +1712,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
 
 
 

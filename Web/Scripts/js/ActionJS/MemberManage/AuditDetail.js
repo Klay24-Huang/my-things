@@ -417,6 +417,14 @@ $(function () {
 
     setPostbackValue();
 })
+
+function MileStoneDetail(ActionName) {
+    //ShowLoading("資料讀取中…");
+    //$("#ACTION").val(ActionName);
+    //$("#frmMileStone").submit();
+}
+
+
 function ShowPIC(site) {
     if (site != "") {
         window.open(site);

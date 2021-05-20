@@ -400,10 +400,8 @@ namespace Web.Controllers
                 }
             }
 
-
             return View(Data);
         }
-
 
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
@@ -700,11 +698,6 @@ namespace Web.Controllers
 
             return View(Data);
         }
-
-
-
-
-
 
         public ActionResult AuditHistory(string IDNO)
         {
