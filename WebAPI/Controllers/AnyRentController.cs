@@ -1,8 +1,10 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Car;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -13,9 +15,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -42,7 +46,8 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_AnyRent apiInput = null;
-            OAPI_AnyRent OAnyRentAPI = null;
+            var OAnyRentAPI = new OAPI_AnyRent();
+            OAnyRentAPI.AnyRentObj = new List<OAPI_AnyRent_Param>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -50,6 +55,10 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            DateTime SDate = DateTime.Now;
+            DateTime EDate = DateTime.Now.AddHours(1);
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
+            var _AnyRentObj = new List<OAPI_AnyRent_Param>();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -111,6 +120,25 @@ namespace WebAPI.Controllers
                 }
             }
 
+            //取得汽車使用中訂閱制月租
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(IDNO))
+                {
+                    var sp_in = new SPInput_GetNowSubs()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        SD = SDate,
+                        ED = EDate,
+                        IsMoto = 0
+                    };
+                    var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                        InUseMonth = sp_list;
+                }
+            }
+
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
@@ -153,9 +181,36 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                if(ListOutCorrect!= null && ListOutCorrect.Count() > 0)
+                    _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOutCorrect);
+
+                #region 加入月租資訊
+
+                if(_AnyRentObj != null && _AnyRentObj.Count() > 0)
+                {
+                    if(InUseMonth != null && InUseMonth.Count() > 0)
+                    {
+                        var f = InUseMonth.FirstOrDefault();
+                        _AnyRentObj.ForEach(x =>
+                        {
+                            x.MonthlyRentId = f.MonthlyRentId;
+                            x.MonProjNM = f.MonProjNM;
+                            x.CarWDHours = f.WorkDayHours;
+                            x.CarHDHours = f.HolidayHours;
+                            x.MotoTotalMins = Convert.ToInt32(f.MotoTotalMins);
+                            x.WDRateForCar = f.WorkDayRateForCar;
+                            x.HDRateForCar = f.HoildayRateForCar;
+                            x.WDRateForMoto = f.WorkDayRateForMoto;
+                            x.HDRateForMoto = f.HoildayRateForMoto;
+                        });
+                    }
+                }
+
+                #endregion
+
                 OAnyRentAPI = new OAPI_AnyRent()
                 {
-                    AnyRentObj = ListOutCorrect
+                    AnyRentObj = _AnyRentObj
                 };
             }
             #endregion
