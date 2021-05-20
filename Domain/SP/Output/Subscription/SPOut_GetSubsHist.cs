@@ -21,6 +21,7 @@ namespace Domain.SP.Output.Subscription
         public double HDRateForCar { get; set; }
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
+        public DateTime PayDate { get; set; }//null值於map過濾
         public int IsMoto { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

@@ -1276,6 +1276,7 @@ namespace WebAPI.Models.BillFunc
                           HDRateForCar = a.HDRateForCar,
                           WDRateForMoto = a.WDRateForMoto,
                           HDRateForMoto = a.HDRateForMoto,
+                          PayDate = a.PayDate.ToString("yyyyMMdd") == "00010101"?"":a.PayDate.ToString("yyyy/MM/dd HH:mm"),
                           IsMoto = a.IsMoto,
                           StartDate = a.StartDate.ToString("yyyy/MM/dd"),
                           EndDate = a.EndDate.ToString("yyyy/MM/dd"),
