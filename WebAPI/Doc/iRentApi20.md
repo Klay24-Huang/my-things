@@ -546,6 +546,14 @@ iRentApi20 Web API版本
 | -------- | -------- | :--: | :--: | ------------------- |
 | NowPage  | 目前頁數 |      | int  | 1 (可不輸入，預帶1) |
 
+* input範例
+
+```
+{
+    "NowPage": 1
+}
+```
+
 * output 回傳參數說明
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
@@ -602,6 +610,66 @@ iRentApi20 Web API版本
             }
         ]
     }
+}
+```
+
+
+
+## SetMemberScoreDetail 修改會員積分明細
+
+### [/api/SetMemberScoreDetail/]
+
+- 20210519發佈
+
+- ASP.NET Web API (REST API)
+
+- api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| SEQ      | 序號     |  Y   | int  | 1    |
+
+* input範例
+
+```
+{
+    "SEQ": 113
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
 }
 ```
 

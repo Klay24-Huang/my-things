@@ -115,93 +115,225 @@ BEGIN TRY
 		AND stop_time > DATEADD(DAY,-90,GETDATE())
 		GROUP BY ProjType
 
-		SELECT MEMIDNO
-			,MEMCNAME AS MEMNAME
-			,Login				= 'Y'		--登入
-			,Register			= IrFlag	--註冊
-			,Audit 
-			,Audit_ID			= ISNULL(C.ID_1,0)				--身分證
-			,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
-										WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
-										WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-										WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
-										ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
-			,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
-										WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
-										WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-										WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
-										ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
-			,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
-			,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
-			,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
-			--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
-			,MenuCTRL			= CASE WHEN IrFlag=0 THEN 1
-										--身分證未上傳,駕照只要上其中一個
-										WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR C.Self_1=0 THEN 2
-										WHEN Audit=0 THEN 3
-										WHEN Audit=2 THEN 4
-										WHEN Audit=1 AND C.ID_1=1 THEN 5
-										WHEN Audit=1 AND C.CarDriver_1=1 THEN 5
-										WHEN Audit=1 AND C.MotorDriver_1=1 THEN 5
-										WHEN Audit=1 AND C.Self_1=1 THEN 5
-										WHEN Audit=1 AND C.Signture=1 THEN 5
-										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-													AND C.Law_Agent=1 THEN 5
-										WHEN Audit=1 AND C.ID_1=-1 THEN 6
-										WHEN Audit=1 AND C.CarDriver_1=-1 THEN 6
-										WHEN Audit=1 AND C.MotorDriver_1=-1 THEN 6
-										WHEN Audit=1 AND C.Self_1=-1 THEN 6
-										WHEN Audit=1 AND C.Signture=-1 THEN 6
-										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-													AND C.Law_Agent=-1 THEN 6
-										ELSE 0 END
-			--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
-			,MenuStatusText		= CASE WHEN Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND C.Signture=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-													AND C.Law_Agent=1 THEN '身分變更審核中'
-										WHEN Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
-										WHEN Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
-										WHEN Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
-										WHEN Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
-										WHEN Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
-										WHEN Audit=1 AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-													AND DATEDIFF(MONTH,MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
-													AND C.Law_Agent=-1 THEN '身分變更審核失敗'
-										ELSE '' END
-			,BlackList			= 'N'
-			,StatusTextCar		= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
-										WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
-										WHEN C.CarDriver_1=1 THEN '身分審核中~'
-										WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
-										ELSE '' END
-			,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
-										WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
-										WHEN C.MotorDriver_1=1 THEN '身分審核中~'
-										WHEN C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
-										ELSE '' END
-			--20201204 ADD BY ADAM REASON.改為線上統計
-			--,NormalRentCount	= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0)
-			--,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
-			--,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
-			--,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
+		SELECT @Audit=Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
-			-- 20201229 期間限定：因應舊資料進來有漏，但有預約就無法修改會員資料，因此判斷在白名單中可以修正，訂單數強制給0
-			,NormalRentCount	= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0))
-			,AnyRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0))
-			,MotorRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0))
-			,TotalRentCount		= IIF(ISNULL(D.IDNO,'')<>'',0, ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0))
-		FROM TB_MemberData A WITH(NOLOCK)
-		LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
-		LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
-		LEFT JOIN TB_MemberDataWhiteList D WITH(NOLOCK) ON A.MEMIDNO=D.IDNO AND D.StartDate <= @NowTime AND D.EndDate >= @NowTime
-		WHERE A.MEMIDNO=@IDNO
+		IF @Audit = 1	--審核過以主檔判定，沒過用待審
+		BEGIN
+			SELECT A.MEMIDNO
+				,A.MEMCNAME AS MEMNAME
+				,Login				= 'Y'		--登入
+				,Register			= A.IrFlag	--註冊
+				,A.Audit 
+				,Audit_ID			= ISNULL(C.ID_1,0)				--身分證
+				,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
+				,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN ISNULL(C.CarDriver_1,0)=2 THEN 2
+											ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
+				,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
+				,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
+				,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
+				--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
+				,MenuCTRL			= CASE WHEN A.IrFlag=0 THEN 1
+											-- 20210504 ADD BY JET 姓名/生日/地址未填，顯示1:未完成註冊
+											WHEN ISNULL(A.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, A.MEMBIRTH, 111),'')='' OR ISNULL(A.MEMADDR,'')='' THEN 2
+											--身分證未上傳,駕照只要上其中一個
+											--WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR C.Self_1=0 THEN 2
+											--20210105 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
+											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR (C.Self_1=0 AND Audit<>1)  THEN 2
+											-- 20210504 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN 2
+											WHEN A.Audit=0 THEN 3
+											WHEN A.Audit=2 THEN 4
+											WHEN A.Audit=1 AND C.ID_1=1 THEN 5
+											WHEN A.Audit=1 AND C.CarDriver_1=1 THEN 5
+											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN 5
+											--20210104 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
+											WHEN A.Audit=1 AND (C.CarDriver_1=2 OR C.MotorDriver_1=2) THEN 0
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 AND ISNULL(C.CarDriver_1,0)=2 THEN 0
+											WHEN A.Audit=1 AND C.Self_1=1 THEN 5
+											WHEN A.Audit=1 AND C.Signture=1 THEN 5
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN 5
+											WHEN A.Audit=1 AND C.ID_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.CarDriver_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.Self_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.Signture=-1 THEN 6
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN 6
+											ELSE 0 END
+				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
+				,MenuStatusText		= CASE WHEN A.Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.Signture=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
+											ELSE '' END
+				,BlackList			= 'N'
+				,StatusTextCar		= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+											-- 20210507 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+											WHEN ISNULL(A.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, A.MEMBIRTH, 111),'')='' OR ISNULL(A.MEMADDR,'')='' THEN '完成註冊/審核，即可開始租車'
+											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.CarDriver_2=0) OR (C.Self_1=0 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+											WHEN C.CarDriver_1=1 THEN '身分審核中~'
+											WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
+											ELSE '' END
+				,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+											-- 20210519 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+											WHEN ISNULL(A.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, A.MEMBIRTH, 111),'')='' OR ISNULL(A.MEMADDR,'')='' THEN '完成註冊/審核，即可開始租車'
+											WHEN C.ID_1=0 OR ((C.MotorDriver_1=0 AND C.MotorDriver_2=0) AND (C.CarDriver_1=0 AND C.CarDriver_2=0)) OR (C.Self_1=0 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+											WHEN C.MotorDriver_1=1 THEN '身分審核中~'
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN C.MotorDriver_1=-1 AND ISNULL(C.CarDriver_1,0)=2 THEN ''
+											WHEN C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
+											ELSE '' END
+				--20201204 ADD BY ADAM REASON.改為線上統計
+				,NormalRentCount	= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0)
+				,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
+				,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
+				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
+			FROM TB_MemberData A WITH(NOLOCK)
+			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
+			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+			WHERE A.MEMIDNO=@IDNO
+		END
+		ELSE
+		BEGIN
+			SELECT A.MEMIDNO
+				,E.MEMCNAME AS MEMNAME
+				,Login				= 'Y'		--登入
+				,Register			= A.IrFlag	--註冊
+				,A.Audit 
+				,Audit_ID			= ISNULL(C.ID_1,0)				--身分證
+				,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
+				,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
+											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
+											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN ISNULL(C.CarDriver_1,0)=2 THEN 2
+											ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
+				,Audit_Selfie		= ISNULL(C.Self_1,0)			--自拍照
+				,Audit_F01			= ISNULL(C.Law_Agent,0)			--法定代理人
+				,Audit_Signture		= ISNULL(C.Signture,0)			--簽名檔
+				--會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗)
+				,MenuCTRL			= CASE WHEN A.IrFlag=0 THEN 1
+											-- 20210504 ADD BY YEH 姓名/生日/地址未填，顯示1:未完成註冊
+											WHEN ISNULL(E.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, E.MEMBIRTH, 111),'')='' OR ISNULL(E.MEMADDR,'')='' THEN 2
+											--身分證未上傳,駕照只要上其中一個
+											--WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR C.Self_1=0 THEN 2
+											--20210105 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
+											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR (C.Self_1=0 AND Audit<>1)  THEN 2
+											-- 20210504 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN 2
+											WHEN A.Audit=0 THEN 3
+											WHEN A.Audit=2 THEN 4
+											WHEN A.Audit=1 AND C.ID_1=1 THEN 5
+											WHEN A.Audit=1 AND C.CarDriver_1=1 THEN 5
+											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN 5
+											--20210104 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
+											WHEN A.Audit=1 AND (C.CarDriver_1=2 OR C.MotorDriver_1=2) THEN 0
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 AND ISNULL(C.CarDriver_1,0)=2 THEN 0
+											WHEN A.Audit=1 AND C.Self_1=1 THEN 5
+											WHEN A.Audit=1 AND C.Signture=1 THEN 5
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN 5
+											WHEN A.Audit=1 AND C.ID_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.CarDriver_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.Self_1=-1 THEN 6
+											WHEN A.Audit=1 AND C.Signture=-1 THEN 6
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN 6
+											ELSE 0 END
+				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
+				,MenuStatusText		= CASE WHEN A.Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.Signture=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=1 THEN '身分變更審核中'
+											WHEN A.Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
+											ELSE '' END
+				,BlackList			= 'N'
+				,StatusTextCar		= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+											-- 20210507 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+											WHEN ISNULL(E.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, E.MEMBIRTH, 111),'')='' OR ISNULL(E.MEMADDR,'')='' THEN '完成註冊/審核，即可開始租車'
+											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.CarDriver_2=0) OR (C.Self_1=0 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+											WHEN C.CarDriver_1=1 THEN '身分審核中~'
+											WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
+											ELSE '' END
+				,StatusTextMotor	= CASE WHEN A.IrFlag < 1 THEN '完成註冊/審核，即可開始租車'
+											-- 20210519 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+											WHEN ISNULL(E.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, E.MEMBIRTH, 111),'')='' OR ISNULL(E.MEMADDR,'')='' THEN '完成註冊/審核，即可開始租車'
+											WHEN C.ID_1=0 OR ((C.CarDriver_1=0 AND C.CarDriver_2=0) AND (C.MotorDriver_1=0 AND C.MotorDriver_2=0)) OR (C.Self_1=0 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
+											WHEN C.MotorDriver_1=1 THEN '身分審核中~'
+											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+											WHEN C.MotorDriver_1=-1 AND ISNULL(C.CarDriver_1,0)=2 THEN ''
+											WHEN C.MotorDriver_1=-1 THEN '審核不通過，請重新提交資料'
+											ELSE '' END
+				--20201204 ADD BY ADAM REASON.改為線上統計
+				,NormalRentCount	= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=0),0)
+				,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
+				,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
+				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
+			FROM TB_MemberData A WITH(NOLOCK)
+			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
+			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+			LEFT JOIN TB_MemberDataOfAutdit E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
+			WHERE A.MEMIDNO=@IDNO
+		END
 
 		DROP TABLE #OrderProjCount
 	END

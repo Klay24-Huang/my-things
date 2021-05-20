@@ -252,6 +252,9 @@ BEGIN TRY
 		BEGIN
 			INSERT INTO [TB_BookingInsuranceOfUser] VALUES(@IDNO,3,0,0,@NowTime,@NowTime);
 		END
+
+		-- 20210520 ADD BY YEH
+		EXEC @Error=usp_InsAuditHistory @IDNO,@LogID,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
 	END
 
 	--寫入錯誤訊息
