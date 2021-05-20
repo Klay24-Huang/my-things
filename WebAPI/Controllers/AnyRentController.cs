@@ -182,13 +182,12 @@ namespace WebAPI.Controllers
                 }
 
                 if(ListOutCorrect!= null && ListOutCorrect.Count() > 0)
-                    _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOutCorrect);
-
-                #region 加入月租資訊
+                    _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOutCorrect);              
 
                 if(_AnyRentObj != null && _AnyRentObj.Count() > 0)
                 {
-                    if(InUseMonth != null && InUseMonth.Count() > 0)
+                    #region 加入月租資訊
+                    if (InUseMonth != null && InUseMonth.Count() > 0)
                     {
                         var f = InUseMonth.FirstOrDefault();
                         _AnyRentObj.ForEach(x =>
@@ -204,14 +203,9 @@ namespace WebAPI.Controllers
                             x.HDRateForMoto = f.HoildayRateForMoto;
                         });
                     }
+                    #endregion
+                    OAnyRentAPI.AnyRentObj = _AnyRentObj;
                 }
-
-                #endregion
-
-                OAnyRentAPI = new OAPI_AnyRent()
-                {
-                    AnyRentObj = _AnyRentObj
-                };
             }
             #endregion
 
