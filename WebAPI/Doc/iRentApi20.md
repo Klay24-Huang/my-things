@@ -2254,11 +2254,12 @@ iRentApi20 Web API版本
 
 * ApiJson(ApiID=179 / 購買月租)參數說明
 
-| 參數名稱     | 參數說明     | 必要 |  型態  | 範例 |
-| ------------ | ------------ | :--: | :----: | ---- |
-| MonProjID    | 專案編號(key |  Y   | string | MR66 |
-| MonProPeriod | 期數(key)    |  Y   |  int   | 3    |
-| ShortDays    | 短天期(key)  |  Y   |  int   | 0    |
+| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
+| ------------ | --------------------- | :--: | :----: | ---- |
+| MonProjID    | 專案編號(key          |  Y   | string | MR66 |
+| MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
+| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
+| SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
 
 * ApiJson(ApiID=188 /月租升轉)參數說明
 
@@ -2285,7 +2286,7 @@ iRentApi20 Web API版本
 
 | ApiID | Api名稱      | ApiJson                                                      |
 | ----- | ------------ | ------------------------------------------------------------ |
-| 179   | 購買月租     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0} |
+| 179   | 購買月租     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"SetSubsNxt\\":0} |
 | 188   | 月租升轉     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"UP_MonProjID\\":\\"MR102\\",\\"UP_MonProPeriod\\":3,\\"UP_ShortDays\\":0} |
 | 190   | 月租欠費繳交 | {\\"MonthlyRentIds\\":\\"832,833\\"}                         |
 
@@ -2293,7 +2294,7 @@ iRentApi20 Web API版本
 ```
 {
     "ApiID":179,
-    "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0}",
+    "ApiJson":"{\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"SetSubsNxt\\":1}",
     "ProdNm":"測試_汽包機66-3",
     "ProdPrice":7000,
     "DoPay":0,
@@ -3044,6 +3045,7 @@ iRentApi20 Web API版本
 | HDRateForCar | 汽車假日優惠價格 | double | 168.0 |
 | WDRateForMoto | 機車平日優惠價格 | double | 1.0 |
 | HDRateForMoto | 機車假日優惠價格 | double | 1.2 |
+| PayDate | 付款日期 | string | 2021/05/21 11:09 |
 | IsMoto       | 是否為機車0否1是        | int     | 0                    |
 | StartDate  | 月租起日 | string | 2021/05/18 |
 | EndDate      | 月租迄日 | string | 2021/06/17 |
@@ -3081,6 +3083,7 @@ iRentApi20 Web API版本
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
+                "PayDate": "2021/05/17 23:00",
                 "IsMoto": 0,
                 "StartDate": "2021/05/18",
                 "EndDate": "2021/06/17",
@@ -3105,6 +3108,7 @@ iRentApi20 Web API版本
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
+                "PayDate": "2021/07/16 23:00",
                 "IsMoto": 0,
                 "StartDate": "2021/07/17",
                 "EndDate": "2021/08/16",
