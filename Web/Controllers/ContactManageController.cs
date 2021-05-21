@@ -562,6 +562,14 @@ namespace Web.Controllers
             return View();
         }
         /// <summary>
+        /// 合約修改(汽機車整併)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactMaintainNew()
+        {
+            return View();
+        }
+        /// <summary>
         /// 時數折抵
         /// </summary>
         /// <returns></returns>

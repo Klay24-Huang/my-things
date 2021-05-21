@@ -195,12 +195,18 @@ namespace WebAPI.Controllers
                         // 20210427;增加LOG方便查問題
                         logger.Trace(string.Format("OrderNo:{0} 存檔前obj:{1}", tmpOrder, JsonConvert.SerializeObject(obj)));
 
+
                         /*判斷是否要取款或是刷退*/
-                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
+                        // 20210520 ADJUST BY FRANK REASON.儲存資料不串金流
+                        //if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
+                        if(true)
                         {
                             //直接更新
                             flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
-                            if (flag)
+
+                            // 20210520 ADJUST BY FRANK REASON.資料不回拋短租
+                            //if (flag)
+                            if(false)
                             {
                                 flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                             }
@@ -339,6 +345,7 @@ namespace WebAPI.Controllers
                 OrderNo = OrderNo,
                 Remark = apiInput.Remark,
                 Reson = apiInput.UseStatus,
+                eTag = apiInput.eTag,
                 CarDispatch = apiInput.CarDispatch,
                 CleanFee = apiInput.CleanFee,
                 CleanFeeRemark = apiInput.CleanFeeRemark,
@@ -374,6 +381,7 @@ namespace WebAPI.Controllers
             SQLHelper<SPInput_BE_OrderModify, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_OrderModify, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
             return flag;
         }
         #endregion
