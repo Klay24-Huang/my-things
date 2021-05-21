@@ -420,6 +420,14 @@ namespace WebAPI.Models.Enum
             /// 修改會員積分明細 20210519 ADD BY YEH
             /// </summary>
             SetMemberScoreDetail,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMemberMedal,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMapMedal,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -898,7 +906,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarTypeOfMutiStation_20210416";
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
-                    SPName = "usp_GetMemberStatus";
+                    //SPName = "usp_GetMemberStatus";
+                    SPName = "usp_GetMemberStatus_ForTest";     // 20210521 ADD BY YEH FOR TEST
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";
@@ -1013,6 +1022,12 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.SetMemberScoreDetail:     //修改會員積分明細 20210519 ADD BY YEH
                     SPName = "usp_SetMemberScoreDetail";
+                    break;
+                case SPType.GetMemberMedal:     //取得會員徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMemberMedal";
+                    break;
+                case SPType.GetMapMedal:     //取得地圖徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMapMedal";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

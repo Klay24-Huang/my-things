@@ -58,6 +58,7 @@ DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
+DECLARE @Audit	INT;
 
 /*初始設定*/
 SET @Error=0;
@@ -71,7 +72,6 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
-
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
