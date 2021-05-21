@@ -358,7 +358,6 @@
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
     <Compile Include="TB\BackEnd\BE_MileStone.cs" />
-    <Compile Include="TB\BackEnd\BE_MileStoneDetail.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyQuery.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyReportData.cs" />
     <Compile Include="TB\BackEnd\BE_MotorBatteryStatus.cs" />
