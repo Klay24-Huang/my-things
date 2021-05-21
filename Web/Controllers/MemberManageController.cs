@@ -12,6 +12,11 @@ using System.Web;
 using System.Web.Mvc;
 using Web.Models.Params;
 using Web.Utilities;
+using Domain.SP.BE.Input;
+using Domain.SP.Output;
+using WebCommon;
+using WebAPI.Models.BaseFunc;
+using Web.Models.Enum;
 
 namespace Web.Controllers
 {
@@ -796,5 +801,73 @@ namespace Web.Controllers
             }
             return View();
         }
+
+
+        public ActionResult MedalMileStone()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect)
+        {
+            string Mode = AuditMode;
+            ViewData["Mode"] = Mode;
+
+            ViewData["IDNO"] = IDNO;
+            ViewData["AuditMode"] = AuditMode;
+
+            string errorLine = "";
+            string errorMsg = "";
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+
+            if (AuditMode == "0")
+            {
+                List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
+                return View(lstData);
+            }
+            else
+            {
+                ////MemberRepository obj = new MemberRepository(connetStr).InsertMileStone(IDNO,ChoiceSelect); //會錯
+                //MemberRepository obj = new MemberRepository(connetStr);
+                //obj.InsertMileStone(IDNO, ChoiceSelect);
+                //return View();
+
+
+
+                bool flag = true;
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
+                {
+                    IDNO = IDNO,
+                    ChoiceSelect = ChoiceSelect,
+                    USERID = Session["Account"].ToString()
+                };
+                SPOutput_Base SPOutput = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                if (flag == false)
+                {
+                    errorLine = "錯誤";
+                    errorMsg = "錯誤";
+                }
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorMsg"] = errorMsg;
+                    ViewData["errorLine"] = errorLine;
+                }
+            };
+
+            return View();
+        }
+
+        
     }
 }

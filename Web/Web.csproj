@@ -386,6 +386,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDataSetting.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarSetting.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\DeleteMember.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\MedalMileStone.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarLocationQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ExportCarSettingData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarBindData.js" />
@@ -753,12 +754,13 @@
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\MemberManage\DeleteMember.cshtml" />
     <Content Include="Views\MemberManage\ChangeID.cshtml" />
-    <Content Include="Views\Report\CarLocationQuery.cshtml" />    
+    <Content Include="Views\Report\CarLocationQuery.cshtml" />
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\News\BannerInfoAdd.cshtml" />
     <Content Include="Views\News\BannerInfoMaintain.cshtml" />
     <Content Include="Views\News\BannerSet.cshtml" />
+    <Content Include="Views\MemberManage\MedalMileStone.cshtml" />
     <None Include="Web.iRent-Backend-Web - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

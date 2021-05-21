@@ -649,5 +649,7 @@ namespace Reposotory.Implement
             apiResponse = client.PostAsync(apiAddress, postContent).Result;
             string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
         }
+
+
     }
 }
