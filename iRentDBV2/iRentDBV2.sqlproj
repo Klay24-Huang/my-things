@@ -508,6 +508,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetMemberScore_Q1.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberScoreDetail.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsAuditHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMapMedal.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMemberMedal.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

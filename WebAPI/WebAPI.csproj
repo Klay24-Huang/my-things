@@ -240,6 +240,8 @@
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
+    <Compile Include="Controllers\GetMapMedalController.cs" />
+    <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
@@ -589,6 +591,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFeedBackKind.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberScore.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
@@ -603,6 +606,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />

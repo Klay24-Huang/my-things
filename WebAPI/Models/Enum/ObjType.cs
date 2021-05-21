@@ -421,9 +421,13 @@ namespace WebAPI.Models.Enum
             /// </summary>
             SetMemberScoreDetail,
             /// <summary>
-            /// 取得會員徽章 20210520 ADD BY YEH
+            /// 取得會員徽章 20210521 ADD BY YEH
             /// </summary>
-            //GetMemberMedal,
+            GetMemberMedal,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMapMedal,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -1019,9 +1023,12 @@ namespace WebAPI.Models.Enum
                 case SPType.SetMemberScoreDetail:     //修改會員積分明細 20210519 ADD BY YEH
                     SPName = "usp_SetMemberScoreDetail";
                     break;
-                //case SPType.GetMemberMedal:     //取得會員徽章 20210520 ADD BY YEH
-                //    SPName = "usp_GetMemberMedal";
-                //    break;
+                case SPType.GetMemberMedal:     //取得會員徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMemberMedal";
+                    break;
+                case SPType.GetMapMedal:     //取得地圖徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMapMedal";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
