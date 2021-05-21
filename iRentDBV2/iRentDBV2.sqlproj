@@ -505,6 +505,9 @@
     <Build Include="dbo\Stored Procedures\usp_InsReturnControl.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_UnBindCreditCard.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMemberScore_Q1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberScoreDetail.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsAuditHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

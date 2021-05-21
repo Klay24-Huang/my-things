@@ -138,10 +138,14 @@ namespace Web.Controllers
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
+
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
+            Data.MileStone = new List<BE_MileStone>();
+            Data.MileStone = lstMileStone;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -396,10 +400,8 @@ namespace Web.Controllers
                 }
             }
 
-
             return View(Data);
         }
-
 
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
@@ -696,11 +698,6 @@ namespace Web.Controllers
 
             return View(Data);
         }
-
-
-
-
-
 
         public ActionResult AuditHistory(string IDNO)
         {

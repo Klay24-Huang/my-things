@@ -42,9 +42,9 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string IDNO = "";
+            //string IDNO = "";
             bool isGuest = true;
-            Int16 APPKind = 2;
+            //Int16 APPKind = 2;
             string Contentjson = "";
             DateTime SD = DateTime.Now, ED = DateTime.Now;
             #endregion
@@ -58,8 +58,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.ParkingAddress, apiInput.ParkingName, apiInput.OpenTime, apiInput.CloseTime, apiInput.Id };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.ParkingAddress, apiInput.ParkingName, apiInput.OpenTime, apiInput.CloseTime };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 if (apiInput.Latitude <= 0 || apiInput.Longitude <= 0)

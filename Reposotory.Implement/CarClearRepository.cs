@@ -218,7 +218,7 @@ namespace Reposotory.Implement
 
             if ("" != term)
             {
-                SQL += " WHERE AND (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
+                SQL += " WHERE (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
             }
             else
             {

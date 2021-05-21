@@ -5,7 +5,7 @@ namespace Domain.SP.BE.Input
 {
     public class SPInput_BE_InsTransParking : SPInput_Base
     {
-      
+        
         /// <summary>
         /// 停車場名稱
         /// </summary>
@@ -35,5 +35,9 @@ namespace Domain.SP.BE.Input
         /// 操作者帳號
         /// </summary>
         public string UserID { set; get; }
+        /// <summary>
+        /// ID
+        /// </summary>
+        public string ID { set; get; }
     }
 }

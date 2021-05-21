@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 namespace Domain.TB.BackEnd
 {
     /// <summary>
-    /// 後台會員審核列表
+    /// 悠遊付退款查詢
     /// </summary>
     public class BE_GetEasyWalletList
     {
         /// <summary>
-        /// 申請日期
-        /// </summary>
-        public string IDNO { set; get; }
-        /// <summary>
-        /// 申請日期
+        /// orderNo
         /// </summary>
         public string orderNo { set; get; }
         /// <summary>
-        /// 申請日期
+        /// 方案名稱
         /// </summary>
         public string projectName { set; get; }
         /// <summary>
-        /// 申請日期
+        /// IDNO
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
+        /// 購買日
         /// </summary>
         public string orderTime { set; get; }
         /// <summary>
@@ -39,5 +39,6 @@ namespace Domain.TB.BackEnd
         /// 錢錢
         /// </summary>
         public string orderAmount { set; get; }
+        public string endTime { set; get; }
     }
 }

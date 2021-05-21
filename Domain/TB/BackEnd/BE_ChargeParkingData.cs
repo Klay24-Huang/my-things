@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.TB.BackEnd
 {
-   public  class BE_ChargeParkingData
+   public class BE_ChargeParkingData
     {
         /// <summary>
         /// tb pk

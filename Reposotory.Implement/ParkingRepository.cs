@@ -190,7 +190,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_ChargeParkingData> lstParking = null;
             int nowCount = 0;
-            string SQL = "SELECT  * FROM [dbo].[VW_BE_GetChargeParking] ";
+            string SQL = "SELECT * FROM [dbo].[VW_BE_GetChargeParking] ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(ParkingName) == false && string.IsNullOrWhiteSpace(ParkingName) == false)
