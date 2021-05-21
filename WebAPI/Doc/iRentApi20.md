@@ -79,7 +79,7 @@ iRentApi20 Web API版本
 
 20210520 新增會員積分紀錄刪除(SetMemberScoreDetail)
 
-20210521 新增取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)
+20210521 新增取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)、修改取得會員積分(GetMemberScore)
 
 # Header參數相關說明
 | KEY | VALUE |
