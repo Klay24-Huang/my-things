@@ -869,7 +869,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CalFinalPrice";
                     break;
                 case SPType.DonePayRentBill:
-                    SPName = "usp_DonePayRentBillNew";
+                    SPName = "usp_DonePayRentBillNew_20170517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";

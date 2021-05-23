@@ -71,5 +71,10 @@
         /// 電池蓋
         /// </summary>
         public int deviceBat_Cover { get; set; }
+
+        /// <summary>
+        /// 儀表板電量 20210522 ADD BY ADAM
+        /// </summary>
+        public string deviceRSOC { get; set; }
     }
 }
