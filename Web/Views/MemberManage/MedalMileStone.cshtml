@@ -3,8 +3,9 @@
 
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
-    string Mode = (ViewData["Mode"] == null) ? "" : ViewData["Mode"].ToString();
     string AuditMode = (ViewData["AuditMode"] == null) ? "" : ViewData["AuditMode"].ToString();
+    // 這邊定義的值在js抓不到，這是給view的
+    //var errorLine = (ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString();
 
     int ResultLen = -1;
     List<Domain.TB.BackEnd.BE_MileStone> lstData = null;
@@ -46,14 +47,14 @@
                                 <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
                                     <option value="0">查詢</option>
                                     <option value="1">新增</option>
-                                    @*<option value="2">批次匯入</option>*@
+                                    <option value="2">批次匯入</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </li>
 
-                <li class="list-group-item">
+                <li class="list-group-item" id="ID">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -74,11 +75,34 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" name="ChoiceSelect" id="ChoiceSelect">
-                                    <option value="1">回報違規停車照片給客服</option>
-                                    <option value="2">填寫官方問卷</option>
-                                    <option value="3">回報系統bug</option>
-                                    <option value="4">提供iRent建議</option>
+                                    <option value="Report">回報違規停車照片給客服</option>
+                                    <option value="Question">填寫官方問卷</option>
+                                    <option value="debug">回報系統bug</option>
+                                    <option value="Advice">提供iRent建議</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item" id="Import" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入清單
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+
+                            </div>
+                            <div class="col-md-2">
+                                限定.XLS/XLSX檔
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+
                             </div>
                         </div>
                     </div>
@@ -90,8 +114,8 @@
                             <div class="col-md-3 offset-md-2">
                                 @*<button type="submit" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>*@ @*會強制查詢，就算id沒填也一樣*@
                                 <button type="button" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>
+                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit" style="display:none;">批次新增</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
-                                <input type="hidden" id="modeData" name="modeData" value="@(Mode)" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                             </div>
                         </div>
@@ -163,10 +187,17 @@
 <!--輸出表格結束-->
 
 <script>
-    var Mode = '@Mode';
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
-    //var ResultDataLen = '@(ResultLen)';
+    if (errorLine != "") {
+        var message = errorLine
+        window.alert(message)
+    }
+
+    var errorLine2 = '@((ViewData["errorLine2"]==null)?"": ViewData["errorLine2"].ToString())';
+    if (errorLine2 != "") {
+        var message = errorLine2
+        window.alert(message)
+    }
 </script>
 
 
