@@ -26,5 +26,15 @@
         /// APP顯示的描述
         /// </summary>
         public string Describe { get; set; }
+
+        /// <summary>
+        /// 是否獲得
+        /// </summary>
+        public int GetFlag { get; set; }
+
+        /// <summary>
+        /// 徽章獲得時間
+        /// </summary>
+        public string GetMedalTime { get; set; }
     }
 }

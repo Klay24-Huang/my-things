@@ -81,6 +81,8 @@ iRentApi20 Web API版本
 
 20210521 新增取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)、修改取得會員積分(GetMemberScore)
 
+20210524 取得會員徽章(GetMemberMedal)增加欄位
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -734,12 +736,15 @@ iRentApi20 Web API版本
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| MileStone     | 徽章代碼 | string | AuditPass1 |
-| MileStoneName | 徽章名稱 | string | 新手上路   |
-| Norm          | 門檻指標 |  int   | 1          |
-| Progress      | 目前進度 |  int   | 1          |
+| 參數名稱      | 參數說明                   |  型態  | 範例                    |
+| ------------- | -------------------------- | :----: | ----------------------- |
+| MileStone     | 徽章代碼                   | string | AuditPass1              |
+| MileStoneName | 徽章名稱                   | string | 新手上路                |
+| Norm          | 門檻指標                   |  int   | 1                       |
+| Progress      | 目前進度                   |  int   | 1                       |
+| Describe      | APP顯示的描述              | string | 通過會員審核            |
+| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                       |
+| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45.437 |
 
 * Output 範例
 
@@ -756,19 +761,19 @@ iRentApi20 Web API版本
                 "MileStone": "AuditPass1",
                 "MileStoneName": "新手上路",
                 "Norm": 1,
-                "Progress": 1
+                "Progress": 1,
+                "Describe": "通過會員審核",
+                "GetFlag": 1,
+                "GetMedalTime": "2021-05-20T14:27:45.437"
             },
             {
                 "MileStone": "School1",
                 "MileStoneName": "有所作為",
                 "Norm": 11,
-                "Progress": 0
-            },
-            {
-                "MileStone": "Wallet1",
-                "MileStoneName": "荷包滿滿",
-                "Norm": 1,
-                "Progress": 0
+                "Progress": 0,
+                "Describe": "完成小學堂",
+                "GetFlag": 0,
+                "GetMedalTime": ""
             }
         ]
     }
