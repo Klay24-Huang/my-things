@@ -69,7 +69,9 @@ BEGIN TRY
 			A.MileStoneName,
 			A.Norm,
 			ISNULL(B.Progress,0) AS Progress,
-			A.Describe
+			A.Describe,
+			CASE WHEN ISNULL(B.Progress,0) >= A.Norm THEN 1 ELSE 0 END AS GetFlag,
+			ISNULL(CONVERT(VARCHAR, B.GetMedalTime, 126),'') AS GetMedalTime
 		FROM [dbo].[TB_MedalConfig] A
 		LEFT JOIN [TB_MedalMileStone] B ON A.Class=B.Class AND A.Series=B.Series AND A.Action=B.Action AND A.MileStone=B.MileStone AND B.IDNO=@IDNO;
 	END
