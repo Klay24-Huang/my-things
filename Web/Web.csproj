@@ -764,10 +764,7 @@
     <Content Include="Views\News\BannerSet.cshtml" />
     <Content Include="Views\MemberManage\MedalMileStone.cshtml" />
     <Content Include="Views\ContactManage\ContactMaintainNew.cshtml" />
-    <None Include="Web.iRent-Backend-Web - Web Deploy.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.iRent-Backend-Web-Test - Web Deploy.config">
+    <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
@@ -819,6 +816,9 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'backend-web-test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
