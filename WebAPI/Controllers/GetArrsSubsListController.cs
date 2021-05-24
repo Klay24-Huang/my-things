@@ -111,9 +111,6 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         LogID = LogID,
-                        MonProjID = apiInput.MonProjID,
-                        MonProPeriod = apiInput.MonProPeriod,
-                        ShortDays = apiInput.ShortDays,
                         SetNow = apiInput.SetNow
                     };
                     trace.traceAdd("spIn", spIn);

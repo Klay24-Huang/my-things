@@ -873,6 +873,12 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 訂閱牌卡制欠費查詢
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
         public SPOut_GetArrsSubsList sp_GetArrsSubsList(SPInput_GetArrsSubsList spInput, ref string errCode)
         {
             var re = new SPOut_GetArrsSubsList();
@@ -887,9 +893,6 @@ namespace WebAPI.Models.BillFunc
                     new object[] {
                         spInput.IDNO,
                         spInput.LogID,
-                        spInput.MonProjID,
-                        spInput.MonProPeriod,
-                        spInput.ShortDays,
                         spInput.SetNow
                     },
                 };
