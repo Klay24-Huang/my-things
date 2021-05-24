@@ -409,6 +409,21 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
+        public List<BE_MileStoneDetail> GetMileStoneDetail(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MileStoneDetail> lstAudits = null;
+            //BE_AuditDetail obj = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+
+            string SQL = " SELECT * FROM VW_GetMileStoneDetail where IDNO='" + IDNO + "' order by Action,MKTime desc";
+
+            lstAudits = GetObjList<BE_MileStoneDetail>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
 
         /// <summary>
         /// 取得安心保險清單
