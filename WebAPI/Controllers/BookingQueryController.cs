@@ -232,7 +232,9 @@ namespace WebAPI.Controllers
                                 };
                                 obj.MotorPowerBaseObj = new Domain.TB.MotorPowerInfoBase()
                                 {
-                                    Power = Convert.ToInt32(OrderDataLists[i].device3TBA),
+                                    //Power = Convert.ToInt32(OrderDataLists[i].device3TBA),
+                                    //20210522 ADD BY ADAM REASON.如果可以讀到儀表板電量就以rsoc為主
+                                    Power = OrderDataLists[i].deviceRSOC == "NA" || OrderDataLists[i].deviceRSOC == "" ? OrderDataLists[i].device3TBA : Convert.ToInt32(OrderDataLists[i].deviceRSOC),
                                     RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToInt32(Convert.ToSingle(OrderDataLists[i].RemainingMilage))
                                 };
 

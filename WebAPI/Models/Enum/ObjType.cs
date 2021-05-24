@@ -802,7 +802,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery";
+                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
@@ -857,7 +857,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CalFinalPrice";
                     break;
                 case SPType.DonePayRentBill:
-                    SPName = "usp_DonePayRentBillNew_20170517";     //20210523 ADD BY ADAM REASON.
+                    SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";
