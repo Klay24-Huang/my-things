@@ -116,7 +116,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -276,7 +276,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -364,7 +364,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -430,7 +430,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -539,7 +539,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 - 傳送跟接收採JSON格式
 
@@ -646,7 +646,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 - 傳送跟接收採JSON格式
 
@@ -706,7 +706,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 - 傳送跟接收採JSON格式
 
@@ -790,7 +790,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -880,7 +880,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -970,7 +970,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1095,7 +1095,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1306,7 +1306,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1422,7 +1422,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1546,7 +1546,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1687,7 +1687,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 - 傳送跟接收採JSON格式
 
@@ -1760,7 +1760,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1827,7 +1827,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -1909,11 +1909,11 @@ iRentApi20 Web API版本
 
 * MyCar, MyMoto 參數說明
 
-  | 參數名稱  | 參數說明       | 型態   | 範例                                   |
-  | --------- | -------------- | ------ | -------------------------------------- |
-  | 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
-  | StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
-  | EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
+| 參數名稱  | 參數說明       | 型態   | 範例                                   |
+| --------- | -------------- | ------ | -------------------------------------- |
+| 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
+| StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
+| EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
 
   
 
@@ -2300,7 +2300,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -2406,7 +2406,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -2436,22 +2436,22 @@ iRentApi20 Web API版本
 
 * ApiJson(ApiID=188 /月租升轉)參數說明
 
-  | 參數名稱        | 參數說明          | 必要 | 型態   | 範例  |
-  | --------------- | ----------------- | ---- | ------ | ----- |
-  | MonProjID       | 專案編號(key)     | Y    | string | MR66  |
-  | MonProPeriod    | 期數(key)         | Y    | int    | 3     |
-  | ShortDays       | 短天期(key)       | Y    | int    | 0     |
-  | UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
-  | UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
-  | UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
-  | PayTypeId       | 付款方式          | Y    | int    | 5     |
-  | InvoTypeId      | 發票方式          | Y    | int    | 6     |
+| 參數名稱        | 參數說明          | 必要 | 型態   | 範例  |
+| --------------- | ----------------- | ---- | ------ | ----- |
+| MonProjID       | 專案編號(key)     | Y    | string | MR66  |
+| MonProPeriod    | 期數(key)         | Y    | int    | 3     |
+| ShortDays       | 短天期(key)       | Y    | int    | 0     |
+| UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
+| UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
+| UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
+| PayTypeId       | 付款方式          | Y    | int    | 5     |
+| InvoTypeId      | 發票方式          | Y    | int    | 6     |
 
 * ApiJson(ApiID=190 /月租欠費繳交)參數說明
 
-  | 參數名稱       | 參數說明                  | 必要 | 型態   | 範例    |
-  | -------------- | ------------------------- | ---- | ------ | ------- |
-  | MonthlyRentIds | 月租Id(多筆以逗號","分隔) | Y    | string | 832,833 |
+| 參數名稱       | 參數說明                  | 必要 | 型態   | 範例    |
+| -------------- | ------------------------- | ---- | ------ | ------- |
+| MonthlyRentIds | 月租Id(多筆以逗號","分隔) | Y    | string | 832,833 |
 
   
 
@@ -2645,7 +2645,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -2809,7 +2809,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -2933,7 +2933,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -3057,7 +3057,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -3175,7 +3175,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -3184,15 +3184,6 @@ iRentApi20 Web API版本
 * input傳入參數說明
 
   不需傳入參數
-
-
-* input範例
-```
-{
-   
-}
-```
-
 
 * Output回傳參數說明
 
@@ -3310,7 +3301,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -3332,9 +3323,9 @@ iRentApi20 Web API版本
 
 * Output回傳參數說明
 
-  | 參數名稱  | 參數說明               | 型態 | 範例 |
-  | --------- | ---------------------- | ---- | ---- |
-  | DelResult | 刪除結果(0:失敗1:成功) | int  | 1    |
+| 參數名稱  | 參數說明               | 型態 | 範例 |
+| --------- | ---------------------- | ---- | ---- |
+| DelResult | 刪除結果(0:失敗1:成功) | int  | 1    |
 
 * Output範例
 
@@ -3363,7 +3354,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
@@ -3378,6 +3369,7 @@ iRentApi20 Web API版本
 | ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
 
 * input範例
+
 ```
 {
     "MonProID"::"MR66",
@@ -3476,7 +3468,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentv2-app-api.irent-ase.p.azurewebsites.net/
+  測試環境：https://irentcar-app-test.azurefd.net
 
 * 傳送跟接收採JSON格式
 
