@@ -37,4 +37,13 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         //public string PayErrMsg { get; set; } = "";
     }
+
+    public class OAPI_BuyNow_Base
+    {
+        /// <summary>
+        /// 付費結果
+        /// </summary>
+        public int PayResult { get; set; } = 0;
+    }
+
 }

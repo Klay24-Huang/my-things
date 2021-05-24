@@ -38,6 +38,7 @@ namespace WebAPI.Models.BillFunc
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private MonSubsSp msp = new MonSubsSp();
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -299,6 +300,43 @@ namespace WebAPI.Models.BillFunc
             }
             return "";
         }
+
+        /// <summary>
+        /// 取得發票方式的CodeId
+        /// </summary>
+        /// <param name="InvoId">發票代碼</param>
+        /// <mark>InvoId對應TB_MemberData的MEMSENDCD</mark>
+        /// <returns></returns>
+        public Int64 GetInvoCodeId(int InvoId)
+        {
+            Int64 re = 0;
+
+            try
+            {
+                if (InvoId > 0)
+                {
+                    string errCode = "";
+                    var spin = new SPInput_GetTBCode()
+                    {
+                        CodeGroup = "InvoiceType",
+                    };
+                    var splist = msp.sp_GetTBCode(spin, ref errCode);
+                    if (splist != null && splist.Count() > 0)
+                    {
+                        int tryInt = 0;
+                        var splist2 = splist.Where(x => !string.IsNullOrWhiteSpace(x.MapCode) && Int32.TryParse(x.MapCode, out tryInt) && Convert.ToInt32(x.MapCode) == InvoId).ToList();
+                        if (splist2 != null && splist2.Count() > 0)
+                            re = splist2.FirstOrDefault().CodeId;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                re = 0;
+            }
+
+            return re;
+        } 
 
     }
 
@@ -1021,6 +1059,103 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (ds1.Tables.Count >= 2)
                        re = objUti.ConvertToList<SPOut_GetNowSubs>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SPOut_GetTBCode> sp_GetTBCode(SPInput_GetTBCode spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetTBCode>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetTBCode);
+                string SPName = "usp_GetTBCode_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.CodeGroup
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetTBCode>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SPOut_GetMonSetInfo> sp_GetMonSetInfo(SPInput_GetMonSetInfo spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetMonSetInfo>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonSetInfo);
+                string SPName = "usp_GetMonSetInfo_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.LogID,
+                        spInput.MonProjID,
+                        spInput.MonProPeriod,
+                        spInput.ShortDays
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetMonSetInfo>(ds1.Tables[0]);
                     else
                     {
                         int lstIndex = ds1.Tables.Count - 1;
