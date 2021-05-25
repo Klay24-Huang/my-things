@@ -1155,7 +1155,7 @@ namespace Web.Controllers
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(lstData[k].orderNo);
                 content.CreateCell(1).SetCellValue(lstData[k].IDNO);
-                content.CreateCell(2).SetCellValue(lstData[k].paymentNo);
+                content.CreateCell(2).SetCellValue(lstData[k].easyCardNo);
                 content.CreateCell(3).SetCellValue(lstData[k].orderTime);
                 content.CreateCell(4).SetCellValue(lstData[k].endTime);
                 content.CreateCell(5).SetCellValue(lstData[k].ITEM);

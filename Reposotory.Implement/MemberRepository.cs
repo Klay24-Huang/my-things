@@ -535,7 +535,7 @@ namespace Reposotory.Implement
                 $"from EASYPAY_Order a " +
                 $"left join EASYPAY_refund b on a.orderNo = b.orderNo " +
                 $"left join EASYPAY_MEMBER c on a.IDNO = c.identityId " +
-                $"where a.orderCreateDateTime between '" + sdate +"' and '" + edate + "'";
+                $"where a.orderCreateDateTime between Replace ('" + sdate + "', '-', '') and Replace ('" + edate + "', '-', '')";
 
             lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;

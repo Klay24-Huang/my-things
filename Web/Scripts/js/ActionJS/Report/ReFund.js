@@ -125,13 +125,14 @@
             if (SD > ED) {
                 flag = false;
                 errMsg = "起始日期大於結束日期";
-            } else {
-                var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 90) {
-                    flag = false;
-                    errMsg = "時間區間不可大於90天";
-                }
             }
+            //else {
+            //    var GetDateDiff = DateDiff(SD, ED);
+            //    if (GetDateDiff > 90) {
+            //        flag = false;
+            //        errMsg = "時間區間不可大於90天";
+            //    }
+            //}
         } else {
             flag = false;
             errMsg = "未選擇日期";
@@ -145,6 +146,19 @@
             disabledLoadingAndShowAlert(errMsg);
         }
     });
+
+    //放這邊會找不到
+    //function DoLoad(i) {
+    //    console.log("#bt_" + i)
+    //    $("#bt_" + i).on("click", function () {
+    //        //ShowLoading("資料查詢中…");
+    //        $("#orderNo").val($("#oNo_" + i).text())
+    //        $("#NAME").val($("#mNa_" + i).text())
+    //        $("#merchantOrderNo").val($("#mNo_" + i).text())
+    //        $("#GIFTNAME").val($("#pNa_" + i).text())
+    //        $("#refundAmount").val($("#Am_" + i).text())
+    //    });
+    //}
 });
 
 function DoLoad(i) {
