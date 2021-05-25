@@ -5,11 +5,16 @@ using Domain.TB.BackEnd;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Domain.WebAPI.output.Taishin;
+using Newtonsoft.Json;
+using NLog;
 using OtherService;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -19,26 +24,21 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using Newtonsoft.Json;
-using NLog;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 【後台】合約修改(汽機車整合2021新版)
-    /// </summary>
-    public class BE_HandleOrderModifyNewController : ApiController
+    public class BE_HandleOrderModifyWithoutGoldFlowController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         /// <summary>
-        /// 【後台】合約修改(汽機車整合2021新版)
+        /// 【後台】合約修改(無金流)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost]
-        public Dictionary<string, object> DoBE_HandleOrderModifyNew(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_HandleOrderModifyWithoutGoldFlow(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BE_HandleOrderModifyNewController";
+            string funName = "BE_HandleOrderModifyWithoutGoldFlowController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BE_HandleOrderModify apiInput = null;
@@ -177,7 +177,7 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS == "N" && STATUS=="04")
+                            if (INVSTATUS == "N" && STATUS == "04")
                             {
                                 flag = false;
                                 errCode = "ERR760";
@@ -197,12 +197,16 @@ namespace WebAPI.Controllers
 
 
                         /*判斷是否要取款或是刷退*/
-                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
+                        // 20210520 ADJUST BY FRANK REASON.儲存資料不串金流
+                        //if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
+                        if (true)
                         {
                             //直接更新
                             flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
 
-                            if (flag)
+                            // 20210520 ADJUST BY FRANK REASON.資料不回拋短租
+                            //if (flag)
+                            if (false)
                             {
                                 flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                             }

@@ -217,6 +217,7 @@
     <Compile Include="Controllers\BE_HandleOrderModifyByDiscountController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyNewController.cs" />
+    <Compile Include="Controllers\BE_HandleOrderModifyWithoutGoldFlowController.cs" />
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
+    <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -593,6 +595,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberScore.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberScoreItem.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMotorStatus.cs" />
