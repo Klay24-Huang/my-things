@@ -247,6 +247,7 @@ function DoAjaxAfterReload(obj,API,FailMessage) {
     console.log("json:" + json);
     var site = jsHost + API;
     //var site = "http://localhost:2061/api/BE_HandleUserMaintain" //202012唐測試用
+    //var site = "http://localhost:2061/api/" + API
     console.log("site:" + site);
     $.ajax({
         url: site,
@@ -475,6 +476,7 @@ function DoAjaxAfterCallBackWithOutMessage(obj, API, FailMessage, CallBack) {
     var json = JSON.stringify(obj);
     console.log(json);
     var site = jsHost + API;
+    //var site = "http://localhost:2061/api/" + API
     console.log("site:" + site);
     $.ajax({
         url: site,
