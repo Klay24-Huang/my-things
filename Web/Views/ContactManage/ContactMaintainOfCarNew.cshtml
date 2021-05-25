@@ -14,7 +14,7 @@
                             訂單編號
                         </div>
                         <div class="col-md-3">
-                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" pattern="^(H|h)[0-9]{7}$" value="" />
+                            <input class="form-control" type="text" name="OrderNo" id="OrderNo" value="" />
                         </div>
                     </div>
                 </div>
@@ -309,6 +309,21 @@
                         </div>
                         <div class="col-md-4">
                             <input class="form-control" type="text" name="fine_price_input" id="fine_price_input" value="" readonly />
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">    <!-- 20210506;ADD BY YEH REASON.新增停車費用(總) -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            停車費用(總)
+                        </div>
+                        <div class="col-md-2">
+                            <span id="spn_ParkingFeeTotal"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" name="ParkingFeeTotal_input" id="ParkingFeeTotal_input" value="" readonly />
                         </div>
                     </div>
                 </div>

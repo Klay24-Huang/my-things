@@ -21,9 +21,43 @@ namespace SendEventMail
         private static Logger logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
+            InsertAlertEvent();
             GetSendData();
         }
 
+        /// <summary>
+        /// 寫入告警事件
+        /// </summary>
+        private static void InsertAlertEvent()
+        {
+            try
+            {
+                logger.Info(string.Format("{0}:寫入告警事件開始", DateTime.Now));
+
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+                bool flag = true;
+                string SPName = "usp_InsAlertEvent";
+                SPInput_Base spInput = new SPInput_Base()
+                {
+                    LogID = 741852
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_Base, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                logger.Info(string.Format("{0}:寫入告警事件結束", DateTime.Now));
+            }
+        }
+
+        /// <summary>
+        /// 整理要發告警的資料
+        /// </summary>
         private static void GetSendData()
         {
             try
@@ -252,19 +286,29 @@ namespace SendEventMail
 
                                 int SendFlag = SendGridGroupSendMail(GroupHandle.EventType, GroupHandle.Receiver, ToSendList, ref lstError);
 
-                                foreach(var ToSend in ToSendList)
+                                var NowDate = DateTime.Now;
+                                foreach (var ToSend in ToSendList)
                                 {
+                                    string SPName2 = "usp_SYNC_UPDSendAlertMessage";
                                     SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
                                     {
                                         AlertID = ToSend.AlertID,
                                         Sender = "SendGuid",
                                         HasSend = 1,
-                                        SendTime = DateTime.Now,
                                         LogID = 0
                                     };
                                     SPOutput_Base SPOutput = new SPOutput_Base();
 
-                                    flag = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                                    if (SendFlag == 0)
+                                    {
+                                        SPInput.SendTime = NowDate;
+                                    }
+                                    else
+                                    {
+                                        SPInput.HasSend = 2;
+                                    }
+
+                                    flag = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(ConnStr).ExecuteSPNonQuery(SPName2, SPInput, ref SPOutput, ref lstError);
                                     if (flag == false)
                                     {
                                         if (SendFlag == 1)
@@ -308,6 +352,17 @@ namespace SendEventMail
         }
 
         #region GMail寄信
+        /// <summary>
+        /// GMail寄信
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="AlterID"></param>
+        /// <param name="Title"></param>
+        /// <param name="Body"></param>
+        /// <param name="receive"></param>
+        /// <param name="attach"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendMail(int Sender, Int64 AlterID, string Title, string Body, string receive, string attach, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -340,7 +395,7 @@ namespace SendEventMail
                     if (!string.IsNullOrEmpty(Receiver))
                         newMail.To.Add(new MailAddress(Receiver));
                 }
-                
+
                 SmtpClient MySmtp = new SmtpClient("smtp.gmail.com", 587);
                 MySmtp.Credentials = new System.Net.NetworkCredential(SendID, SendPWD);
                 //MySmtp.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -380,6 +435,15 @@ namespace SendEventMail
         #endregion
 
         #region SendGrid-單發
+        /// <summary>
+        /// SendGrid-單發
+        /// </summary>
+        /// <param name="AlterID"></param>
+        /// <param name="Title"></param>
+        /// <param name="Body"></param>
+        /// <param name="receive"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendGridMail(Int64 AlterID, string Title, string Body, string receive, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -426,6 +490,14 @@ namespace SendEventMail
         #endregion
 
         #region SendGrid-依事件類型發送
+        /// <summary>
+        /// SendGrid-依事件類型發送
+        /// </summary>
+        /// <param name="EventType"></param>
+        /// <param name="Receiver"></param>
+        /// <param name="ToSendList"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
         private static int SendGridGroupSendMail(int EventType, string Receiver, List<Sync_SendEventMessage> ToSendList, ref List<ErrorInfo> lstError)
         {
             bool flag = true;
@@ -456,15 +528,41 @@ namespace SendEventMail
                     case 9:
                         Title = string.Format("異常告警：{0} 事件名單", "車輛無租約，引擎被發動");
                         break;
+                    case 10:
+                        Title = string.Format("異常告警：{0} 事件名單", "車機失聯1小時");
+                        break;
+                    case 11:
+                        Title = string.Format("異常告警：{0} 事件名單", "超過15分鐘未完成還車作業");
+                        break;
+                    case 12:
+                        Title = string.Format("異常告警：{0} 事件名單", "超過預約還車時間30分鐘未還車");
+                        break;
                 }
 
-                Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>發生時間</th></tr>";
-
-                foreach (var ToSend in ToSendList)
+                // 依照事件類型調整TABLE內容
+                switch (EventType)
                 {
-                    Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
-                }
+                    case 11:
+                    case 12:
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>訂單編號</th><th>發生時間</th></tr>";
 
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}",ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                        }
+
+                        break;
+                    default:
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>發生時間</th></tr>";
+
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                        }
+
+                        break;
+                }
+                
                 Table += "</table>";
 
                 Body = string.Format("<p>{0}</p>", Table);

@@ -22,6 +22,17 @@ $(function () {
     }
 })
 
+$(function () {
+    SetStation($("#StationID"), $("#StationName"));
+    SetCar($("#CarNo"))
+    $("#isExport").on("click", function () {
+        if ($("#CarNo").val() == "" && $("#StationID").val() == "") {
+            ShowFailMessage("請輸入要查詢的車號或據點");
+            return false;
+        }
+    })
+})
+
 
 function DoReset(Id) {
     if (CarNo != "") {

@@ -61,7 +61,6 @@
             ControllerStrName = "車輛管理";
             ActionStrName = "車輛資料設定";
             break;
-
         case "ImportMotorData":
             ControllerStrName = "車輛管理";
             ActionStrName = "匯入機車車輛檔";
@@ -221,6 +220,14 @@
             ControllerStrName = "會員管理";
             ActionStrName = "會員資料修改";
             break;
+        case "DeleteMember": //20210427 Frank加
+            ControllerStrName = "會員管理";
+            ActionStrName = "會員資料刪除";
+            break;
+        case "ChangeID": //20210429 Frank加
+            ControllerStrName = "會員管理";
+            ActionStrName = "變更身分證字號";
+            break;
         #endregion
         #region 帳號管理
         case "FranchiseesMaintain":
@@ -289,10 +296,19 @@
             ControllerStrName = "報表專區";
             ActionStrName = "會員審核明細";
             break;
+        case "ExportCarSettingData": //20210427 Frank加
+            ControllerStrName = "報表專區";
+            ActionStrName = "營運狀態記錄報表";
+            break;
+        case "CarLocationQuery": //20210503 Frank加
+            ControllerStrName = "報表專區";
+            ActionStrName = "車輛隨租定位";
+            break;
         case "MotorBatteryStatusQuery":
             ControllerStrName = "報表專區";
             ActionStrName = "機車電池狀態歷程查詢";
             break;
+            
             #endregion
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
@@ -452,6 +468,7 @@
                                 <a class="dropdown-item" href="~/CarDataInfo/CarSetting">保有車輛設定</a>
                                 <a class="dropdown-item" href="~/CarDataInfo/CarBind">車輛車機綁定</a>
                                 <a class="dropdown-item" href="~/CarDataInfo/CarDataSetting">車輛資料管理</a>
+                                <a class="dropdown-item" href="~/CarDataInfo/ExportCarSettingData">匯出車輛中控記錄</a>
                                 <a class="dropdown-item" href="~/CarDataInfo/ImportMotorData">匯入機車車輛檔</a>
                                 <a class="dropdown-item" href="~/CarDataInfo/ImportCarData">匯入汽車車輛檔</a>
                                 <a class="dropdown-item" href="~/CarDataInfo/ImportCarMachineData">匯入車機資料(含SIM)</a>

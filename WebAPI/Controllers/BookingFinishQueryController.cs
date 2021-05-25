@@ -141,9 +141,19 @@ namespace WebAPI.Controllers
                     if (DataLen > 0)
                     {
                         outputApi.TotalPage = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(orderFinishDataLists[0].TotalCount / pageSize))) + ((orderFinishDataLists[0].TotalCount % pageSize > 0) ? 1 : 0);
-                        //outputApi.RentYear = string.Format("{0}年", orderFinishDataLists[0].RentYear);
+
                         for (int i = 0; i < DataLen; i++)
                         {
+                            BillCommon billComm = new BillCommon();
+                            int td = 0, th = 0, tm = 0;
+                            var xre = billComm.GetTimePart(orderFinishDataLists[i].final_start_time, orderFinishDataLists[i].final_stop_time, orderFinishDataLists[i].ProjType);
+                            if (xre != null)
+                            {
+                                td = Convert.ToInt32(xre.Item1);
+                                th = Convert.ToInt32(xre.Item2);
+                                tm = Convert.ToInt32(xre.Item3);
+                            }
+
                             OrderFinishObj obj = new OrderFinishObj()
                             {
                                 RentYear = orderFinishDataLists[i].RentYear,        //20201029 ADD BY ADAM 年份移到下面
@@ -155,7 +165,7 @@ namespace WebAPI.Controllers
                                 RentDateTime = orderFinishDataLists[i].final_start_time.ToString("MM月dd日 HH:mm"),
                                 StationName = orderFinishDataLists[i].StationName,
                                 UniCode = orderFinishDataLists[i].UniCode,
-                                TotalRentTime = baseVerify.DateDiff(orderFinishDataLists[i].final_stop_time, orderFinishDataLists[i].final_start_time),
+                                TotalRentTime = string.Format("{0}天{1}時{2}分", td, th, tm),
                                 CarNo = orderFinishDataLists[i].CarNo.Replace(" ", ""),
                                 IsMotor = orderFinishDataLists[i].ProjType == 4 ? 1 : 0     //增加IsMotor
                             };

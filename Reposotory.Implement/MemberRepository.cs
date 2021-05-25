@@ -1,9 +1,19 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using Newtonsoft.Json;
+//using NLog.Internal;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using WebCommon;
+using ConfigurationManager = System.Configuration.ConfigurationManager; 
 
 namespace Reposotory.Implement
 {
@@ -453,6 +463,176 @@ namespace Reposotory.Implement
 
             lstMember = GetS(SQL);
             return lstMember;
+        }
+
+        /// 取得黑名單手機號碼
+        public List<BE_GetEasyWalletList> GetEasyWalletList(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetEasyWalletList> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
+            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount " +
+                $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
+                $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
+
+            lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
+        public bool IsMemberExist(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
+            string term = "";
+            string SQL = $" SELECT * FROM TB_MemberData WHERE MEMIDNO = '{IDNO}'";
+            List<BE_MemberData> result = new List<BE_MemberData>();
+            result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+            if(result.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        {
+            if(IRent_Only == "on")
+            {
+
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
+
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+
+            }
+            else
+            {
+                
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
+
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
+                HttpClient client = new HttpClient()
+                {
+                    BaseAddress = new System.Uri(apiAddress)
+                };
+
+                string EncryptStr = "";
+                string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+                ASCIIEncoding enc = new ASCIIEncoding();
+                SHA1 sha = new SHA1CryptoServiceProvider();
+                byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+                EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+                string param = JsonConvert.SerializeObject(new
+                {
+                    IDNO = IDNO,
+                    Account = Account,
+                    user_id = ConfigurationManager.AppSettings["userid"],
+                    sig = EncryptStr
+                });
+                HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+                HttpResponseMessage apiResponse = new HttpResponseMessage();
+                apiResponse = client.PostAsync(apiAddress, postContent).Result;
+                string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        {
+
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
+            SqlTransaction tran;
+            tran = conn.BeginTransaction();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Transaction = tran;
+            cmd.CommandText = "usp_ChangeID";
+
+            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+            MSG.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("TARGET_IDNO", SqlDbType.VarChar, 11).Value = TARGET_ID;
+            cmd.Parameters.Add("AFTER_IDNO", SqlDbType.VarChar, 11).Value = AFTER_ID;
+            cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+            cmd.ExecuteNonQuery();
+            tran.Commit();
+
+            conn.Close();
+            conn.Dispose();
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/ChangeID";
+            HttpClient client = new HttpClient()
+            {
+                BaseAddress = new System.Uri(apiAddress)
+            };
+
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+            string param = JsonConvert.SerializeObject(new
+            {
+                TARGET_IDNO = TARGET_ID,
+                AFTER_IDNO = AFTER_ID,
+                Account = Account,
+                user_id = ConfigurationManager.AppSettings["userid"],
+                sig = EncryptStr
+            });
+            HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+            HttpResponseMessage apiResponse = new HttpResponseMessage();
+            apiResponse = client.PostAsync(apiAddress, postContent).Result;
+            string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
         }
     }
 }

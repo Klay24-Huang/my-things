@@ -22,7 +22,7 @@ namespace Reposotory.Implement
             get { return _connectionString; }
             set { _connectionString = value; }
         }
-       public void SetConnect(string ConnStr)
+        public void SetConnect(string ConnStr)
         {
             this.ConnectionString = ConnStr;
         }
@@ -95,6 +95,32 @@ namespace Reposotory.Implement
 
         }
 
+        public int Execuate(ref bool flag, string SQL)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(this.ConnectionString))
+                using (SqlCommand command = new SqlCommand(SQL, conn))
+                {
+
+                    command.CommandType = CommandType.Text;
+                    command.CommandTimeout = 180;
+
+                    if (conn.State != ConnectionState.Open) conn.Open();
+
+                    int result = command.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+                return 0;
+            }
+        }
+
 
         public void ExecNonResponse(ref bool flag,string SQL)
         {
@@ -110,6 +136,8 @@ namespace Reposotory.Implement
                     if (conn.State != ConnectionState.Open) conn.Open();
 
                     int result = command.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
             catch(Exception ex)
@@ -140,6 +168,8 @@ namespace Reposotory.Implement
                     if (conn.State != ConnectionState.Open) conn.Open();
 
                     int result = command.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
             catch (Exception ex)

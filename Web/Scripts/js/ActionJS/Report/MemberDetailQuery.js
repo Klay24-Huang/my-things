@@ -27,12 +27,12 @@
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
-                errMsg = "起始日期大於結束日期，這是什麼神邏輯";
+                errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 2) {
+                if (GetDateDiff > 30) {
                     flag = false;
-                    errMsg = "時間區間不可大於2天，撈太多資料很累耶";
+                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
                 }
             }
         } else {

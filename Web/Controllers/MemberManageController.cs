@@ -105,6 +105,7 @@ namespace Web.Controllers
 
             return View(lstData);
         }
+
         [HttpPost]
         public ActionResult AuditDetail(string AuditIDNO, string UserName)
         {
@@ -685,7 +686,7 @@ namespace Web.Controllers
                                     Data.Images.Signture_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                             }
-                        }            
+                        }
 
 
                     }
@@ -695,6 +696,10 @@ namespace Web.Controllers
 
             return View(Data);
         }
+
+
+
+
 
 
         public ActionResult AuditHistory(string IDNO)
@@ -742,6 +747,57 @@ namespace Web.Controllers
             }
 
             return View(lstData);
+        }
+
+        /// <summary>
+        /// 刪除會員
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DeleteMember()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
+        {
+            MemberRepository repository = new MemberRepository(connetStr);
+            if (repository.IsMemberExist(IDNO))
+            {
+                repository.DeleteMember(IDNO, IRent_Only, Account);
+                ViewData["result"] = true;
+            }
+            else
+            {
+                ViewData["result"] = false;
+            }
+
+            return View();
+        }
+
+        /// <summary>
+        /// 修改身份證字號
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ChangeID()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ChangeID(string TARGET_ID, string AFTER_ID, string Account)
+        {
+            MemberRepository repository = new MemberRepository(connetStr);
+            if (repository.IsMemberExist(TARGET_ID))
+            {
+                repository.ChangeID(TARGET_ID, AFTER_ID, Account);
+                ViewData["result"] = true;
+            }
+            else
+            {
+                ViewData["result"] = false;
+            }
+            return View();
         }
     }
 }

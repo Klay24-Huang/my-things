@@ -35,13 +35,32 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult StationInfoSetting(string StationID,int? NotMach)
+        public ActionResult StationInfoSetting(string StationID,int? NotMach, int? NotMach2)
         {
             ViewData["StationID"] = StationID;
             ViewData["NotMuch"] = (NotMach.HasValue)?"1":"0";
+            ViewData["NotMuch2"] = (NotMach2.HasValue) ? "1" : "0";
             List<BE_GetPartOfStationInfo> lstData = null;
             StationAndCarRepository repository = new StationAndCarRepository(connetStr);
-            lstData = repository.GetPartOfStation(StationID, NotMach.HasValue);
+
+            lstData = repository.GetPartOfStation(StationID);
+
+            if (NotMach == 1 && NotMach2 == 1)
+            {
+                lstData = lstData.Where(i => i.AllowParkingNum != i.TotalCar).Where(i => i.TotalCar != (i.TotalCar - i.UnavailbleCar)).ToList();
+            }
+            else
+            {
+                if (NotMach == 1)
+                {
+                    lstData = lstData.Where(i => i.TotalCar != (i.TotalCar - i.UnavailbleCar)).ToList();
+                }
+                if(NotMach2 == 1)
+                {
+                    lstData = lstData.Where(i => i.AllowParkingNum != i.TotalCar).ToList();
+                }
+            }
+
             return View(lstData);
         }
         /// <summary>

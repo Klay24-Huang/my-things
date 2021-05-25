@@ -87,6 +87,7 @@
     $("#btnSearch_X1ZZ").on("click", function () {
         gotoBrnhcd('X1ZZ');
     });
+
     $("#btnSearch").on("click", function () {
         ShowLoading("資料處理中...");
         var flag = true;

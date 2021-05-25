@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -75,7 +76,9 @@ namespace Web.Controllers
             ViewData["StationID"] = StationID;
             List<BE_CarSettingData> lstData = new List<BE_CarSettingData>();
             lstData = carStatusCommon.GetCarSettingData(CarNo, StationID, ShowType);
+           
             return View(lstData);
+            
         }
         /// <summary>
         /// 車輛車機綁定
@@ -255,7 +258,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CarDataSetting(string CarNo, string StationID, int ShowType = 3)
+        public ActionResult CarDataSetting(string isExport,string CarNo, string StationID, int ShowType = 3)
         {
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
@@ -264,7 +267,65 @@ namespace Web.Controllers
             ViewData["ShowType"] = ShowType;
             List<BE_GetPartOfCarDataSettingData> lstData = new List<BE_GetPartOfCarDataSettingData>();
             lstData = carStatusCommon.GetCarDataSettingData(CarNo, StationID, ShowType);
-            return View(lstData);
+
+            if(isExport == "true")
+            {
+
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                sheet.Cells[1, col++].Value = "ID";
+                sheet.Cells[1, col++].Value = "車號";
+                sheet.Cells[1, col++].Value = "車型";
+                sheet.Cells[1, col++].Value = "營運狀態";
+                sheet.Cells[1, col++].Value = "CID";
+                sheet.Cells[1, col++].Value = "目前庫位";
+                sheet.Cells[1, col++].Value = "所屬庫位";
+                sheet.Cells[1, col++].Value = "備註";
+
+                int row = 2;
+                
+                foreach (var i in lstData)
+                {
+                    col = 1;
+                    string NowStr = "";
+                    sheet.Cells[row, col++].Value = row - 1;
+                    sheet.Cells[row, col++].Value = i.CarNo;
+                    sheet.Cells[row, col++].Value = i.CarTypeName;
+
+                    if (i.NowStatus == 1)
+                    {
+                        NowStr = "可出租";
+                    }
+                    else if (i.NowStatus == 2)
+                    {
+                        NowStr = "待上線";
+                    }
+                    else if (i.NowStatus == 0)
+                    {
+                        NowStr = "出租中";
+                    }
+
+                    sheet.Cells[row, col++].Value = NowStr;
+                    sheet.Cells[row, col++].Value = i.CID;
+                    sheet.Cells[row, col++].Value = i.NowStationName;
+                    sheet.Cells[row, col++].Value = i.StationName;
+                    sheet.Cells[row, col++].Value = i.Memo;
+                    row++;
+                }
+
+                MemoryStream fileStream = new MemoryStream();
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "車輛資料管理.xlsx");
+            }
+            else
+            {
+                return View(lstData);
+            }
         }
         [HttpPost]
         public ActionResult ViewCarDetail(string ShowCarNo)
@@ -276,6 +337,7 @@ namespace Web.Controllers
             return View(obj);
            
         }
+
         /// <summary>
         /// 匯入機車車輛檔
         /// </summary>

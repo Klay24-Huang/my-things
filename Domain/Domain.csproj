@@ -99,6 +99,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ReturnControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_SetCarMemo.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_UnBindCard.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UpdCATDeviceToken.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDFuncGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPDOperator.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="SP\Input\Rent\SPInput_BookingControl.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingExtend.cs" />
     <Compile Include="SP\Input\Rent\SPInput_BookingStart.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_CalCityParkingFee.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CalFinalPrice.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Input\Rent\SPInput_CheckCarByReturn.cs" />
@@ -267,6 +269,7 @@
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
+    <Compile Include="SP\Output\Rent\SPOutput_CalCityParkingFee.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCanOpenDoor.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\Output\Register\SPOutput_ForgetPWD.cs" />
@@ -299,12 +302,15 @@
     <Compile Include="TB\BackEnd\BE_CarBindImportDataResult.cs" />
     <Compile Include="TB\BackEnd\BE_CarData.cs" />
     <Compile Include="TB\BackEnd\BE_CarInfoForMachineData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarLocationData.cs" />
+    <Compile Include="TB\BackEnd\BE_CarSettingRecord.cs" />
     <Compile Include="TB\BackEnd\BE_CleanData.cs" />
     <Compile Include="TB\BackEnd\BE_CleanDataWithoutPIC.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMainDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetBannerInfo.cs" />
     <Compile Include="TB\BackEnd\BE_GetCleanFixQueryForWeb.cs" />
+    <Compile Include="TB\BackEnd\BE_GetEasyWalletList.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />
@@ -342,6 +348,7 @@
     <Compile Include="TB\BackEnd\BE_MapList.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCarDataOfPart.cs" />
     <Compile Include="TB\BackEnd\BE_MasterCardData.cs" />
+    <Compile Include="TB\BackEnd\BE_MemberData.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSetting.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />

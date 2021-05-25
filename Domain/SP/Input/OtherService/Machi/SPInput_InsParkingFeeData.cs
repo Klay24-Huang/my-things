@@ -32,7 +32,7 @@ namespace Domain.SP.Input.OtherService.Machi
         /// 出場時間
         /// </summary>
         public DateTime Check_out { set; get; }
-        /// <summary>
+        
         /// 車號 20210421 ADD BY ADAM REASON.
         /// </summary>
         public string CarNo { set; get; }

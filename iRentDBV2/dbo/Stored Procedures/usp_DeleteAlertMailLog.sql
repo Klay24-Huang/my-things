@@ -76,7 +76,11 @@ BEGIN TRY
 		SELECT TOP 1 @SendTime=ISNULL(SendTime,@NowDate) FROM TB_AlertMailLog WITH(NOLOCK) WHERE HasSend=1 ORDER BY SendTime DESC;
 		SET @SendTime = DATEADD(MINUTE,-5,@SendTime);
 
-		DELETE FROM TB_AlertMailLog WHERE HasSend=0 AND MKTime<=@SendTime;
+		--將非(10:車機失聯1小時)的多餘資料刪除
+		DELETE FROM TB_AlertMailLog WHERE HasSend=0 AND EventType<>10 AND MKTime<=@SendTime;
+
+		--將(10:車機失聯1小時)的多餘資料刪除
+		DELETE FROM TB_AlertMailLog WHERE HasSend=0 AND EventType=10 AND UPDTime<=@SendTime;
 	END
 
 	--寫入錯誤訊息
