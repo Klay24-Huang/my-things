@@ -10,7 +10,7 @@ namespace Domain.TB.BackEnd
     {
         public string orderNo { set; get; }
         public string IDNO { set; get; }
-        public string paymentNo { set; get; }
+        public string easyCardNo { set; get; }
         public string orderTime { set; get; }
         public string endTime { set; get; }
         public string ITEM { set; get; }

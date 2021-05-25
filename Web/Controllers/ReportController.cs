@@ -1128,8 +1128,11 @@ namespace Web.Controllers
             return View(lstData);
 
         }
-        public ActionResult ExplodeReFund()
+        public ActionResult ExplodeReFund(string ExplodeSDate, string ExplodeEDate)
         {
+            ViewData["StartDate"] = ExplodeSDate;
+            ViewData["EndDate"] = ExplodeEDate;
+
             List<BE_Refund> lstData = null;
             MemberRepository repository = new MemberRepository(connetStr);
 
@@ -1145,14 +1148,14 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 sheet.AutoSizeColumn(j);
             }
-            lstData = repository.GetEasyWalletOrder();
+            lstData = repository.GetEasyWalletOrder(ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(lstData[k].orderNo);
                 content.CreateCell(1).SetCellValue(lstData[k].IDNO);
-                content.CreateCell(2).SetCellValue(lstData[k].paymentNo);
+                content.CreateCell(2).SetCellValue(lstData[k].easyCardNo);
                 content.CreateCell(3).SetCellValue(lstData[k].orderTime);
                 content.CreateCell(4).SetCellValue(lstData[k].endTime);
                 content.CreateCell(5).SetCellValue(lstData[k].ITEM);

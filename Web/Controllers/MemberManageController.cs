@@ -12,6 +12,14 @@ using System.Web;
 using System.Web.Mvc;
 using Web.Models.Params;
 using Web.Utilities;
+using Domain.SP.BE.Input;
+using Domain.SP.Output;
+using WebCommon;
+using WebAPI.Models.BaseFunc;
+using Web.Models.Enum;
+using System.IO;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Web.Controllers
 {
@@ -139,6 +147,7 @@ namespace Web.Controllers
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
+            List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
 
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
@@ -146,6 +155,8 @@ namespace Web.Controllers
             Data.History = lstHistory;
             Data.MileStone = new List<BE_MileStone>();
             Data.MileStone = lstMileStone;
+            Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            Data.MileStoneDetail = lstMileStoneDetail;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -796,5 +807,158 @@ namespace Web.Controllers
             }
             return View();
         }
+
+
+        public ActionResult MedalMileStone()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport)
+        {
+            ViewData["IDNO"] = IDNO;
+            ViewData["AuditMode"] = AuditMode;
+
+            //string errorLine = "";
+            //string errorMsg = "";
+            //ViewData["errorLine"] = ""; 
+            //ViewData["errorMsg"] = ""; 
+
+            if (AuditMode == "0")
+            {
+                List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
+                return View(lstData);
+            }
+            else if (AuditMode == "1")
+            {
+                ////MemberRepository obj = new MemberRepository(connetStr).InsertMileStone(IDNO,ChoiceSelect); //會錯
+                //MemberRepository obj = new MemberRepository(connetStr);
+                //obj.InsertMileStone(IDNO, ChoiceSelect);
+                //return View();
+
+                bool flag = true;
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
+                {
+                    IDNO = IDNO,
+                    ChoiceSelect = ChoiceSelect,
+                    USERID = Session["Account"].ToString()
+                };
+                SPOutput_Base SPOutput = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                    //return Content("<script>alert('ok');</script>");
+                }
+                else
+                {
+                    ViewData["errorLine"] = "新增失敗";
+                }
+
+                return View();
+            }
+            else
+            {
+                //string errorLine = "";
+                string errorMsg = "";
+                bool flag = true;
+                ViewData["errorLine2"] = null;
+
+                List<SPInput_BE_IneInsMileStone> lstData = new List<SPInput_BE_IneInsMileStone>();
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                if (fileImport != null)
+                {
+                    if (fileImport.ContentLength > 0)
+                    {
+                        string fileName = string.Concat(new string[]{
+                            "MedalMileStoneImport",
+                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                            "_",
+                            DateTime.Now.ToString("yyyyMMddHHmmss"),
+                            ".xlsx"
+                        });
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MedalMileStoneImport"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/MedalMileStoneImport"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "ID", "匯入項目" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
+                        {
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            {
+                                errorMsg = "標題列不相符";
+                                flag = false;
+                                break;
+                            }
+                        }
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
+                                {
+                                    IDNO = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    ChoiceSelect = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                    USERID = UserId
+                                };
+
+                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                if (flag == false)
+                                {
+                                    //errorLine = i.ToString();
+                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = errorMsg;
+                }
+
+                return View();
+            };
+
+            
+        }
+
+        
     }
 }

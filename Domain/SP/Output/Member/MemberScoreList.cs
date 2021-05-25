@@ -33,5 +33,10 @@ namespace Domain.SP.Output.Member
         /// 用戶畫面敘述
         /// </summary>
         public string UIDESC { get; set; }
+
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public string ORDERNO { get; set; }
     }
 }

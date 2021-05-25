@@ -125,19 +125,24 @@ namespace WebAPI.Controllers
 
                 ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
-                if (ds1.Tables.Count == 0)
+                if (ds1.Tables.Count != 3)
                 {
                     flag = false;
                     errCode = "ERR999";
                     errMsg = returnMessage;
                 }
-                else if (ds1.Tables.Count == 3)
+                else
                 {
                     baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
 
                     if (flag)
                     {
-                        outputApi.Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        //20210524 ADD BY ADAM REASON.針對無資料要判斷
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            outputApi.Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            outputApi.Score = 0;
+
                         outputApi.DetailList = new List<MemberScoreList>();
 
                         DataTable dt = ds1.Tables[1];
@@ -155,7 +160,8 @@ namespace WebAPI.Controllers
                                     GetDate = Convert.ToDateTime(dr["GetDate"]),
                                     SEQ = Convert.ToInt32(dr["SEQ"]),
                                     SCORE = Convert.ToInt32(dr["SCORE"]),
-                                    UIDESC = dr["UIDESC"].ToString()
+                                    UIDESC = dr["UIDESC"].ToString(),
+                                    ORDERNO = dr["ORDERNO"].ToString()
                                 };
 
                                 outputApi.DetailList.Add(TmpList);

@@ -421,9 +421,13 @@ namespace WebAPI.Models.Enum
             /// </summary>
             SetMemberScoreDetail,
             /// <summary>
-            /// 取得會員徽章 20210520 ADD BY YEH
+            /// 取得會員徽章 20210521 ADD BY YEH
             /// </summary>
-            //GetMemberMedal,
+            GetMemberMedal,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMapMedal,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -810,7 +814,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery";
+                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
@@ -865,7 +869,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CalFinalPrice";
                     break;
                 case SPType.DonePayRentBill:
-                    SPName = "usp_DonePayRentBillNew";
+                    SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";
@@ -1019,9 +1023,12 @@ namespace WebAPI.Models.Enum
                 case SPType.SetMemberScoreDetail:     //修改會員積分明細 20210519 ADD BY YEH
                     SPName = "usp_SetMemberScoreDetail";
                     break;
-                //case SPType.GetMemberMedal:     //取得會員徽章 20210520 ADD BY YEH
-                //    SPName = "usp_GetMemberMedal";
-                //    break;
+                case SPType.GetMemberMedal:     //取得會員徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMemberMedal";
+                    break;
+                case SPType.GetMapMedal:     //取得地圖徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMapMedal";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";

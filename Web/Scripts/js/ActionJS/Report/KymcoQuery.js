@@ -33,7 +33,7 @@
 
         if (mode == 0) {
             flag = false;
-            errMsg = "處理項目項目是空的，是要我查什麼?";
+            errMsg = "處理項目項目是空的";
         }
 
         if (flag) {

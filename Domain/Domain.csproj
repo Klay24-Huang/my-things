@@ -88,6 +88,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarMachineData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMasterCardData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMotoData.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_IneInsMileStone.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCarReturnError.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCleanOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsertChargeParking.cs" />
@@ -156,7 +157,9 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMemberMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
@@ -260,6 +263,8 @@
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
+    <Compile Include="SP\Output\Member\MapMedalList.cs" />
+    <Compile Include="SP\Output\Member\MemberMedalList.cs" />
     <Compile Include="SP\Output\Member\MemberScoreList.cs" />
     <Compile Include="SP\Output\Mochi\SPOutput_GetMachiToken.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
@@ -358,6 +363,7 @@
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
     <Compile Include="TB\BackEnd\BE_MileStone.cs" />
+    <Compile Include="TB\BackEnd\BE_MileStoneDetail.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyQuery.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyReportData.cs" />
     <Compile Include="TB\BackEnd\BE_MotorBatteryStatus.cs" />
