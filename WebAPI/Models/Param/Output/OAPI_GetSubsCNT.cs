@@ -46,7 +46,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 機車不分平假日分鐘數
         /// </summary>
-        public double MotoTotalMins { get; set; }
+        public int MotoTotalMins { get; set; }  //20210525 ADD BY ADAM REASON.改為INT
         /// <summary>
         /// 汽車平日優惠價
         /// </summary>
@@ -112,7 +112,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 機車不分平假日分鐘數
         /// </summary>
-        public double MotoTotalMins { get; set; }
+        public int MotoTotalMins { get; set; }  //20210525 ADD BY ADAM REASON.改為INT
         /// <summary>
         /// 汽車平日優惠價
         /// </summary>

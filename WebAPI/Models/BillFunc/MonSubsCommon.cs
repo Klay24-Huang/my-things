@@ -1315,7 +1315,7 @@ namespace WebAPI.Models.BillFunc
                     MonProjNM = sour.MonProjNM,
                     CarWDHours = sour.WorkDayHours,
                     CarHDHours = sour.HolidayHours,
-                    MotoTotalMins = sour.MotoTotalHours,
+                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalHours),   //20210525 ADD BY ADAM REASON.改為INT
                     WDRateForCar = sour.WorkDayRateForCar,
                     HDRateForCar = sour.HoildayRateForCar,
                     WDRateForMoto = sour.WorkDayRateForMoto,

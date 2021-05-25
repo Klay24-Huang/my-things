@@ -155,7 +155,7 @@ namespace WebAPI.Controllers
                                                 ShortDays = a.ShortDays,
                                                 CarWDHours = a.WorkDayHours,
                                                 CarHDHours = a.HolidayHours,
-                                                MotoTotalMins = a.MotoTotalHours,
+                                                MotoTotalMins = Convert.ToInt32(a.MotoTotalHours),  //20210525 ADD BY ADAM REASON.改為int
                                                 WDRateForCar = a.WorkDayRateForCar,
                                                 HDRateForCar  = a.HoildayRateForCar,
                                                 WDRateForMoto = a.WorkDayRateForMoto,
