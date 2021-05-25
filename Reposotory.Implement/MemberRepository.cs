@@ -510,12 +510,12 @@ namespace Reposotory.Implement
             List<BE_GetEasyWalletList> lstAudits = null;
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
-            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount, " +
-                $"convert(char(8), DATEADD(day, 29, convert(datetime,convert(char(8), a.orderCreateDateTime,112))),112) as endTime from EASYPAY_Order a " +
-                $"join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo " +
-                $"where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) " +
-                $"and c.orderNo is null AND a.ITEM LIKE '定期票加價購%' and convert(char(8), a.orderCreateDateTime,112)>20210512 AND a.paymentNo<>'' order by a.U_SYSDT desc ";
+            string SQL = $" EXEC SP_GetEasyWalletList '" + IDNO + "'";
+            //string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount, " +
+            //    $"convert(char(8), DATEADD(day, 29, convert(datetime,convert(char(8), a.orderCreateDateTime,112))),112) as endTime from EASYPAY_Order a " +
+            //    $"join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo " +
+            //    $"where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) " +
+            //    $"and c.orderNo is null AND a.ITEM LIKE '定期票加價購%' and convert(char(8), a.orderCreateDateTime,112)>20210512 AND a.paymentNo<>'' order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
@@ -528,14 +528,15 @@ namespace Reposotory.Implement
             List<BE_Refund> lstAudits = null;
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
-            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.IDNO, c.easyCardNo, convert(char(8), a.orderCreateDateTime, 112) as orderTime, " +
-                $"convert(char(8), DATEADD(day, 29, convert(datetime, convert(char(8), a.orderCreateDateTime, 112))), 112) as endTime, " +
-                $"a.ITEM, a.PRICE, a.PRICE * 0.02 as tax, a.PRICE - (a.PRICE * 0.02) as amount, isnull(convert(char(8), b.refundDateTime, 112), '') as refunddate " +
-                $"from EASYPAY_Order a " +
-                $"left join EASYPAY_refund b on a.orderNo = b.orderNo " +
-                $"left join EASYPAY_MEMBER c on a.IDNO = c.identityId " +
-                $"where a.orderCreateDateTime between Replace ('" + sdate + "', '-', '') and Replace ('" + edate + "', '-', '')";
+            string SQL = $" EXEC SP_GetEasyWalletOrder '"+ sdate +"','"+ edate+"'";
+            //select出的名稱要和宣告的一樣
+            //string SQL = $" select a.orderNo, a.IDNO, c.easyCardNo, convert(char(8), a.orderCreateDateTime, 112) as orderTime, " +
+            //    $"convert(char(8), DATEADD(day, 29, convert(datetime, convert(char(8), a.orderCreateDateTime, 112))), 112) as endTime, " +
+            //    $"a.ITEM, a.PRICE, a.PRICE * 0.02 as tax, a.PRICE - (a.PRICE * 0.02) as amount, isnull(convert(char(8), b.refundDateTime, 112), '') as refunddate " +
+            //    $"from EASYPAY_Order a " +
+            //    $"left join EASYPAY_refund b on a.orderNo = b.orderNo " +
+            //    $"left join EASYPAY_MEMBER c on a.IDNO = c.identityId " +
+            //    $"where a.orderCreateDateTime between Replace ('" + sdate + "', '-', '') and Replace ('" + edate + "', '-', '')";
 
             lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
