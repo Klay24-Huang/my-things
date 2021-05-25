@@ -1911,6 +1911,7 @@ iRentApi20 Web API版本
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
 | IsPay	| 是否有繳費0否1是 | int | 1 |
+| IsMix | 是否為城市車手 | int | 0 |
 
 * MyCar, MyMoto 參數說明
 
@@ -1955,7 +1956,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 2.0,
 				"HDRateForMoto": 2.0,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 0
 			},
 			{
 				"MonProjID": "MR02",
@@ -1972,7 +1974,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.8,
 				"HDRateForMoto": 1.8,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 0
 			},
 			{
 				"MonProjID": "MR99",
@@ -1989,7 +1992,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.5,
 				"HDRateForMoto": 1.5,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 0
 			},
 			{
 				"MonProjID": "MR100",
@@ -2006,7 +2010,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.5,
 				"HDRateForMoto": 1.5,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 0
 			},
 			{
 				"MonProjID": "MR101",
@@ -2023,7 +2028,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.5,
 				"HDRateForMoto": 1.5,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 0
 			}
 		],
 		"MixMonCards": [
@@ -2042,7 +2048,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 2.0,
 				"HDRateForMoto": 2.0,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 1
 			},
 			{
 				"MonProjID": "MR66",
@@ -2059,7 +2066,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.0,
 				"HDRateForMoto": 1.2,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 1
 			},
 			{
 				"MonProjID": "MR102",
@@ -2076,7 +2084,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.0,
 				"HDRateForMoto": 1.2,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 1
 			},
 			{
 				"MonProjID": "MR103",
@@ -2093,7 +2102,8 @@ iRentApi20 Web API版本
 				"WDRateForMoto": 1.0,
 				"HDRateForMoto": 1.2,
 				"IsDiscount": 0,
-				"IsPay": 0
+				"IsPay": 0,
+				"IsMix": 1
 			}
 		],
 		"ReMode": 1
@@ -2128,7 +2138,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.5,
                 "HDRateForMoto": 1.5,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR04",
@@ -2145,7 +2156,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.3,
                 "HDRateForMoto": 1.3,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR05",
@@ -2162,7 +2174,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.0,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR98",
@@ -2179,7 +2192,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.2,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR200",
@@ -2196,7 +2210,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR201",
@@ -2213,7 +2228,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             },
             {
                 "MonProjID": "MR202",
@@ -2230,7 +2246,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 0
             }
         ],
         "ReMode": 1
@@ -2264,7 +2281,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-            "IsPay": 1
+            "IsPay": 1,
+			"IsMix": 1
         },
         "MyMoto": {
             "StartDate": "05/18 00:00",
@@ -2283,7 +2301,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-            "IsPay": 1
+            "IsPay": 1,
+			"IsMix": 1
         },
         "ReMode": 2
     }
@@ -2362,6 +2381,7 @@ iRentApi20 Web API版本
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
+| IsMix | 是否為城市車手 | int | 0 |
 
 * Output範例
 ```
@@ -2389,7 +2409,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-                "IsPay": 0
+                "IsPay": 0,
+				"IsMix": 1
             }
         ]
     }
@@ -2703,7 +2724,7 @@ iRentApi20 Web API版本
 | MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
 | CarWDHours	| 汽車平日時數	| double | 3.0             |
 | CarHDHours	| 汽車假日時數	| double | 3.0 |
-| MotoTotalMins | 機車不分平假日分鐘數 | double | 300.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 | int | 300.0 |
 | WDRateForCar | 汽車平日優惠價 | double | 99.0 |
 | HDRateForCar | 汽車假日優惠價 | double | 168.0 |
 | WDRateForMoto | 機車平日優惠價 | double | 1.0 |
@@ -2869,7 +2890,7 @@ iRentApi20 Web API版本
 | MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
 | CarWDHours	| 汽車平日時數	| double | 3.0 |
 | CarHDHours	| 汽車假日時數	| double | 3.0 |
-| MotoTotalMins | 機車不分平假日分鐘數 	| double | 300.0 |
+| MotoTotalMins | 機車不分平假日分鐘數 	| int | 300.0 |
 | WDRateForCar | 汽車平日優惠價 | double | 99.0 |
 | HDRateForCar | 機車平日優惠價 | double | 168.0 |
 | WDRateForMoto | 機車平日優惠價 | double | 1.0 |
@@ -2877,6 +2898,7 @@ iRentApi20 Web API版本
 | StartDate | 起日 			| string | 05/18 |
 | EndDate	| 迄日 			| string | 08/16 |
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
+| IsMix		| 是否為城市車手 | int | 1 | 
 
 
 
@@ -2903,7 +2925,8 @@ iRentApi20 Web API版本
             "HDRateForMoto": 1.2,
             "StartDate": "05/18",
             "EndDate": "08/16",
-            "MonProDisc": "汽包機66-3注意事項"
+            "MonProDisc": "汽包機66-3注意事項",
+			"IsMix": 1
         },
         "NxtCard": {
             "IsChange": 0,
@@ -2920,7 +2943,8 @@ iRentApi20 Web API版本
             "HDRateForMoto": 1.2,
             "StartDate": "2021/08/16",
             "EndDate": "2021/11/14",
-            "MonProDisc": "汽包機66-3注意事項"
+            "MonProDisc": "汽包機66-3注意事項",
+			"IsMix": 1
         }
     }
 }
@@ -2948,7 +2972,7 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
 | ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
+| MonProjID     | 方案代碼(key)              |  Y   | string | MR66                          |
 | MonProPeriod | 總期數(key)               |  Y  | int    | 3                     |
 | ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
 
@@ -2956,7 +2980,7 @@ iRentApi20 Web API版本
 * input範例
 ```
 {
-    "MonProID"::"MR66",
+    "MonProjID"::"MR66",
     "MonProPeriod:3,
     "ShortDays":"0"
 }
@@ -2981,12 +3005,13 @@ iRentApi20 Web API版本
 | PeriodPrice	| 方案價格            | int    | 7000     |
 | CarWDHours	| 汽車平日時數         | double | 3.0    |
 | CarHDHours	| 汽車假日時數         | double | 3.0      |
-| MotoTotalMins	| 機車不分平假日分鐘數   | double | 120      |
+| MotoTotalMins	| 機車不分平假日分鐘數   | int | 120      |
 | WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
 | HDRateForCar	| 假日平日優惠費率 | double | 168.0 |
 | WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是  | int    | 0       |
+| IsMix			| 是否為城市車手  | int | 1 |
 
 
 * Output範例
@@ -3012,7 +3037,8 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "IsDiscount": 0
+            "IsDiscount": 0,
+			"IsMix": 1
         },
         "OtrCards": [
             {
@@ -3028,7 +3054,8 @@ iRentApi20 Web API版本
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
-                "IsDiscount": 0
+                "IsDiscount": 0,
+				"IsMix":1
             },
             {
                 "MonProjID": "MR103",
@@ -3043,7 +3070,8 @@ iRentApi20 Web API版本
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
-                "IsDiscount": 0
+                "IsDiscount": 0,
+				"IsMix":1
             }
         ]
     }
@@ -3072,7 +3100,7 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
 | ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
+| MonProjID     | 方案代碼(key)              |  Y   | string | MR66                          |
 | MonProPeriod | 總期數(key)               |  Y  | int    | 3                      |
 | ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
 
@@ -3080,7 +3108,7 @@ iRentApi20 Web API版本
 * input範例
 ```
 {
-    "MonProID"::"MR66",
+    "MonProjID"::"MR66",
     "MonProPeriod:3,
     "ShortDays":"0",
 }
@@ -3112,7 +3140,7 @@ iRentApi20 Web API版本
 | WDRateForMoto	| 機車平日優惠價格 | double | 1.0 |
 | HDRateForMoto	| 機車假日優惠價格 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
-
+| IsMix			| 是否為城市車手 | int | 1 |
 
 * Output範例
 
@@ -3132,7 +3160,8 @@ iRentApi20 Web API版本
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.5,
                 "HDRateForMoto": 1.5,
-                "IsDiscount": 0
+                "IsDiscount": 0,
+				"IsMix" : 0
             }	
 	],
     "MixCards": [{
@@ -3148,7 +3177,8 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "IsDiscount": 0
+            "IsDiscount": 0,
+			"IsMix" : 1
         }, {
             "MonProjID": "MR103",
             "MonProPeriod": 3,
@@ -3162,7 +3192,8 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "IsDiscount": 0
+            "IsDiscount": 0,
+			"IsMix":1
         }
     ]
 }
