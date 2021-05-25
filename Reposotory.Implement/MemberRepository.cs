@@ -521,7 +521,7 @@ namespace Reposotory.Implement
             return lstAudits;
         }
         //取得悠遊付訂單
-        public List<BE_Refund> GetEasyWalletOrder()
+        public List<BE_Refund> GetEasyWalletOrder(string sdate, string edate)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -529,10 +529,13 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.IDNO, a.paymentNo, convert(char(8), a.orderCreateDateTime, 112) as orderTime, " +
+            string SQL = $" select a.orderNo, a.IDNO, c.easyCardNo, convert(char(8), a.orderCreateDateTime, 112) as orderTime, " +
                 $"convert(char(8), DATEADD(day, 29, convert(datetime, convert(char(8), a.orderCreateDateTime, 112))), 112) as endTime, " +
                 $"a.ITEM, a.PRICE, a.PRICE * 0.02 as tax, a.PRICE - (a.PRICE * 0.02) as amount, isnull(convert(char(8), b.refundDateTime, 112), '') as refunddate " +
-                $"from EASYPAY_Order a left join EASYPAY_refund b on a.orderNo = b.orderNo ";
+                $"from EASYPAY_Order a " +
+                $"left join EASYPAY_refund b on a.orderNo = b.orderNo " +
+                $"left join EASYPAY_MEMBER c on a.IDNO = c.identityId " +
+                $"where a.orderCreateDateTime between '" + sdate +"' and '" + edate + "'";
 
             lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;

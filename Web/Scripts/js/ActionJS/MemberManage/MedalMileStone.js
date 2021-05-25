@@ -1,5 +1,4 @@
 ﻿$(function () {
-
     $("#AuditMode").on("change", function () {
         var Mode = $("#AuditMode").val();
         switch (Mode) {
@@ -40,7 +39,7 @@
 
         if (flag) {
             $("#frmMedalMileStone").submit();
-            disabledLoading();
+            //disabledLoading();
 
             //要花太多時間測試，先跳過
             //var Mode = $("#AuditMode").val();
@@ -110,7 +109,7 @@
     $("#btnSubmit2").on("click", function () {
         ShowLoading("資料匯入中");
         $("#frmMedalMileStone").submit();
-        disabledLoading();
+        //disabledLoading();
     });
     $("#fileImport").on("change", function () {
         var file = this.files[0];
@@ -133,5 +132,13 @@
             });
         }
     })
-    
+    //$("#alert").on("click", function () {
+    //    console.log("ssssss")
+    //    disabledLoadingAndShowAlert("ssssss");
+    //});
 });
+
+//function ShowMessage(message) {
+//    console.log(message)
+//    disabledLoadingAndShowAlert(message);
+//}

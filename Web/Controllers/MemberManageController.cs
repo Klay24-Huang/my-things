@@ -857,7 +857,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    ViewData["errorLine"] = "fall";
+                    ViewData["errorLine"] = "新增失敗";
                 }
 
                 return View();
@@ -946,12 +946,11 @@ namespace Web.Controllers
 
                 if (flag)
                 {
-                    ViewData["errorLine2"] = "ok";
+                    ViewData["errorLine"] = "ok";
                 }
                 else
                 {
-                    //ViewData["errorMsg2"] = errorMsg;
-                    ViewData["errorLine2"] = errorMsg;
+                    ViewData["errorLine"] = errorMsg;
                 }
 
                 return View();
