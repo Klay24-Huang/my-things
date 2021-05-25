@@ -87,4 +87,12 @@ namespace WebAPI.Models.Param.Input
         public int UP_ShortDays { get; set; } = 0;
     }
 
+    public class IAPI_BuyNow_PayArrs: IAPI_BuyNow_Base
+    {
+        /// <summary>
+        /// 非必填
+        /// </summary>
+        public List<Int64> MonthlyRentIds { get; set; }
+    }
+
 }
