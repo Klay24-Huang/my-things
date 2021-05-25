@@ -35,5 +35,9 @@ namespace Domain.SP.Output.Rent
         /// </summary>
         public int IsDiscount { get; set; }
         public int IsOrder { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
+        /// </summary>
+        public int IsMix { get; set; }
     }
 }

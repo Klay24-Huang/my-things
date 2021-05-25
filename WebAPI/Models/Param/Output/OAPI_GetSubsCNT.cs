@@ -75,6 +75,10 @@ namespace WebAPI.Models.Param.Output
         /// 注意事項
         /// </summary>
         public string MonProDisc { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
 
@@ -141,6 +145,10 @@ namespace WebAPI.Models.Param.Output
         /// 注意事項
         /// </summary>
         public string MonProDisc { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
 }

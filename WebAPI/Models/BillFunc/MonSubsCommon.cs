@@ -1267,7 +1267,8 @@ namespace WebAPI.Models.BillFunc
                                  WDRateForMoto = a.WDRateForMoto,
                                  HDRateForMoto = a.HDRateForMoto,
                                  IsDiscount = a.IsDiscount,
-                                 IsPay = a.IsPay
+                                 IsPay = a.IsPay,
+                                 IsMix = a.IsMix    //20210525 ADD BY ADAM REASON.增加城市車手判斷
                              }).ToList();
             }
             return re;
@@ -1322,7 +1323,8 @@ namespace WebAPI.Models.BillFunc
                     HDRateForMoto = sour.HDRateForMoto,
                     StartDate = sour.StartDate.ToString("MM/dd"),
                     EndDate = sour.EndDate.ToString("MM/dd"),
-                    MonProDisc = sour.MonProDisc
+                    MonProDisc = sour.MonProDisc,
+                    IsMix = sour.IsMix      //20210525 ADD BY ADAM REASON.增加城市車手
                 };
             }
             else
@@ -1424,7 +1426,8 @@ namespace WebAPI.Models.BillFunc
                           unified_business_no = a.unified_business_no,
                           invoiceCode = a.invoiceCode,
                           invoice_date = a.invoice_date,
-                          invoice_price = a.invoice_price
+                          invoice_price = a.invoice_price,
+                          IsMix = a.IsMix       //20210525 ADD BY ADAM REASON.增加城市車手
                       }).ToList();
             }
             return re;
@@ -1482,6 +1485,7 @@ namespace WebAPI.Models.BillFunc
                 re.WDRateForMoto = sour.WDRateForMoto;
                 re.HDRateForMoto = sour.HDRateForMoto;
                 re.IsDiscount = sour.IsDiscount;
+                re.IsMix = sour.IsMix;      //20210525 ADD BY ADAM REASON.增加城市車手
                 return re;
             }
             else
@@ -1509,7 +1513,8 @@ namespace WebAPI.Models.BillFunc
                             HDRateForCar = a.HDRateForCar,
                             WDRateForMoto = a.WDRateForMoto,
                             HDRateForMoto = a.HDRateForMoto,
-                            IsDiscount = a.IsDiscount
+                            IsDiscount = a.IsDiscount,
+                            IsMix = a.IsMix     //20210525 ADD BY ADAM REASON.增加城市車手
                       }).ToList();
             }
             return re;
@@ -1535,7 +1540,8 @@ namespace WebAPI.Models.BillFunc
                           HDRateForCar = a.HDRateForCar,
                           WDRateForMoto = a.WDRateForMoto,
                           HDRateForMoto = a.HDRateForMoto,
-                          IsDiscount = a.IsDiscount
+                          IsDiscount = a.IsDiscount,
+                          IsMix = a.IsMix       //20210525 ADD BY ADAM REASON.增加城市車手
                       }).ToList();
             }
             return re;
@@ -1561,7 +1567,8 @@ namespace WebAPI.Models.BillFunc
                     HDRateForMoto = sour.HDRateForMoto,
                     StartDate = sour.SD.ToString("yyyy/MM/dd"),
                     EndDate = sour.ED.ToString("yyyy/MM/dd"),
-                    MonProDisc = sour.MonProDisc
+                    MonProDisc = sour.MonProDisc,
+                    IsMix = sour.IsMix      //20210525 ADD BY ADAM REASON.增加城市車手
                 };
             }
             else

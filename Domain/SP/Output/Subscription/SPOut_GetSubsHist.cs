@@ -32,5 +32,9 @@ namespace Domain.SP.Output.Subscription
         public string invoiceCode { get; set; }
         public string invoice_date { get; set; }
         public int invoice_price { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
+        /// </summary>
+        public int IsMix { get; set; }
     }
 }

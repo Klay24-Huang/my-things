@@ -28,6 +28,10 @@ namespace Domain.SP.Output.Subscription
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string MonProDisc { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
     public class SPOut_GetSubsCNT_NxtCard
@@ -50,6 +54,10 @@ namespace Domain.SP.Output.Subscription
         public DateTime SD { get; set; }
         public DateTime ED { get; set; }
         public string MonProDisc { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
 }

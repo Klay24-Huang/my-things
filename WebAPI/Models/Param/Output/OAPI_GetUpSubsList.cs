@@ -27,6 +27,10 @@ namespace WebAPI.Models.Param.Output
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
         public int IsDiscount { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON0.
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
 

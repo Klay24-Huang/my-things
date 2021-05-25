@@ -109,5 +109,9 @@ namespace WebAPI.Models.Param.Output
         /// 發票價格
         /// </summary>
         public int? invoice_price { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 add by adam
+        /// </summary>
+        public int IsMix { get; set; }
     }
 }

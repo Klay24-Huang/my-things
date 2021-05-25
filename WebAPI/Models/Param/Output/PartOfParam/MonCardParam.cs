@@ -69,6 +69,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 當期是否有繳費
         /// </summary>
         public int IsPay { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
     public class MonCardParam_My: MonCardParam
