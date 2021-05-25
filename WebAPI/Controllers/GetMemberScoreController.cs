@@ -137,7 +137,12 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        outputApi.Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        //20210524 ADD BY ADAM REASON.針對無資料要判斷
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            outputApi.Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            outputApi.Score = 0;
+
                         outputApi.DetailList = new List<MemberScoreList>();
 
                         DataTable dt = ds1.Tables[1];
