@@ -1313,13 +1313,13 @@ namespace WebAPI.Models.BillFunc
                     MonProPeriod = sour.MonProPeriod,
                     ShortDays = sour.ShortDays,
                     MonProjNM = sour.MonProjNM,
-                    CarWDHours = sour.WorkDayHours,
-                    CarHDHours = sour.HolidayHours,
-                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalHours),   //20210525 ADD BY ADAM REASON.改為INT
-                    WDRateForCar = sour.WorkDayRateForCar,
-                    HDRateForCar = sour.HoildayRateForCar,
-                    WDRateForMoto = sour.WorkDayRateForMoto,
-                    HDRateForMoto = sour.HoildayRateForMoto,
+                    CarWDHours = sour.CarWDHours,
+                    CarHDHours = sour.CarHDHours,
+                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins),   //20210525 ADD BY ADAM REASON.改為INT
+                    WDRateForCar = sour.WDRateForCar,
+                    HDRateForCar = sour.HDRateForCar,
+                    WDRateForMoto = sour.WDRateForMoto,
+                    HDRateForMoto = sour.HDRateForMoto,
                     StartDate = sour.StartDate.ToString("MM/dd"),
                     EndDate = sour.EndDate.ToString("MM/dd"),
                     MonProDisc = sour.MonProDisc
@@ -1536,6 +1536,61 @@ namespace WebAPI.Models.BillFunc
                           WDRateForMoto = a.WDRateForMoto,
                           HDRateForMoto = a.HDRateForMoto,
                           IsDiscount = a.IsDiscount
+                      }).ToList();
+            }
+            return re;
+        }
+    
+        public OAPI_GetSubsCNT_NxtCard FromSPOut_GetSubsCNT_NxtCard(SPOut_GetSubsCNT_NxtCard sour)
+        {
+            if (sour != null)
+            {
+                return new OAPI_GetSubsCNT_NxtCard()
+                {
+                    IsChange = sour.IsChange,
+                    MonProjID = sour.MonProjID,
+                    MonProPeriod = sour.MonProPeriod,
+                    ShortDays = sour.ShortDays,
+                    MonProjNM = sour.MonProjNM,
+                    CarWDHours = sour.CarWDHours,
+                    CarHDHours = sour.CarHDHours,
+                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins),
+                    WDRateForCar = sour.WDRateForCar,
+                    HDRateForCar = sour.HDRateForCar,
+                    WDRateForMoto = sour.WDRateForMoto,
+                    HDRateForMoto = sour.HDRateForMoto,
+                    StartDate = sour.SD.ToString("yyyy/MM/dd"),
+                    EndDate = sour.ED.ToString("yyyy/MM/dd"),
+                    MonProDisc = sour.MonProDisc
+                };
+            }
+            else
+                return null;
+        }
+
+        public List<OAPI_GetSubsCNT_NxtCard> FromSPOut_GetSubsCNT_NxtCard(List<SPOut_GetSubsCNT_NxtCard> sour)
+        {
+            var re = new List<OAPI_GetSubsCNT_NxtCard>();
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetSubsCNT_NxtCard
+                      {
+                          IsChange = a.IsChange,
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          StartDate = a.SD.ToString("yyyy/MM/dd"),
+                          EndDate = a.ED.ToString("yyyy/MM/dd"),
+                          MonProDisc = a.MonProDisc
                       }).ToList();
             }
             return re;
