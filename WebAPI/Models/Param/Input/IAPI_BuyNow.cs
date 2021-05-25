@@ -77,4 +77,14 @@ namespace WebAPI.Models.Param.Input
         public int SetSubsNxt { get; set; } = 0;
     }
 
+    public class IAPI_BuyNow_UpMonth: IAPI_BuyNow_Base
+    {
+        public string MonProjID { get; set; } = "";
+        public int MonProPeriod { get; set; } = 0;
+        public int ShortDays { get; set; } = 0;
+        public string UP_MonProjID { get; set; } = "";
+        public int UP_MonProPeriod { get; set; } = 0;
+        public int UP_ShortDays { get; set; } = 0;
+    }
+
 }

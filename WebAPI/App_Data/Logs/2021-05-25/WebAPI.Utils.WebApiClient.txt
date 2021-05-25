@@ -1,0 +1,2 @@
+2021-05-25 11:24:01.7191|DEBUG|WebAPI.Utils.WebApiClient|serverName:["sqyhi03az.database.windows.net","IRENT_V2","irentadmin","hims@QaWsEd","S"];spName:"usp_GetTBCode_Q1";parms:[["InvoiceType"]]
+2021-05-25 11:24:02.7340|DEBUG|WebAPI.Utils.WebApiClient|serverName:["sqyhi03az.database.windows.net","IRENT_V2","irentadmin","hims@QaWsEd","S"];spName:"usp_GetMonSetInfo_Q1";parms:[[106832007,"MR66",3,0]]
