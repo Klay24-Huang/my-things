@@ -515,7 +515,7 @@ namespace Reposotory.Implement
                 $"convert(char(8), DATEADD(day, 29, convert(datetime,convert(char(8), a.orderCreateDateTime,112))),112) as endTime from EASYPAY_Order a " +
                 $"join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo " +
                 $"where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) " +
-                $"and c.orderNo is null AND a.ITEM LIKE '定期票加價購%' and convert(char(8), a.orderCreateDateTime,112)>20210512 order by a.U_SYSDT desc ";
+                $"and c.orderNo is null AND a.ITEM LIKE '定期票加價購%' and convert(char(8), a.orderCreateDateTime,112)>20210512 AND a.paymentNo<>'' order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
