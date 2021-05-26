@@ -89,6 +89,7 @@ BEGIN TRY
 		BEGIN
 			UPDATE TB_MemberScoreDetail
 			SET UIDISABLE=1,
+				UIDISABLE_DT=@NowTime,
 				U_PRGID=@PRGID,
 				U_USERID=@IDNO,
 				U_SYSDT=@NowTime
