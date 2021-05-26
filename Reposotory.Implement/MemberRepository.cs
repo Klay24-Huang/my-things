@@ -452,6 +452,46 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
+        public List<BE_GetMemberScoreFull> GetMemberScoreFull(string IDNO, string NAME, string ORDERNO, string SDATE, string EDATE)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberScoreFull> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            string SQL = $" EXEC SP_GetMemberScoreFull '" + IDNO + "','" + NAME + "','" + ORDERNO + "','" + SDATE + "','" + EDATE + "'";
+
+            lstAudits = GetObjList<BE_GetMemberScoreFull>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
+        public List<BE_GetMemberData> GetMemberData_ForScore(string ORDERNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberData> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetMemberData ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(ORDERNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " order_number=@ORDERNO";
+                para[nowCount] = new SqlParameter("@ORDERNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = ORDERNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_GetMemberData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
         /// <summary>
         /// 取得安心保險清單
         /// </summary>

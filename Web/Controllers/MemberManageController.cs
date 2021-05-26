@@ -142,7 +142,7 @@ namespace Web.Controllers
             }
 
             BE_AuditDetail obj = new MemberRepository(connetStr).GetAuditDetail(AuditIDNO);
-            List<BE_AuditImage> lstAudits=new MemberRepository(connetStr).GetAuditImage(AuditIDNO);//抓出每個人的12張圖片資訊
+            List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(AuditIDNO);//抓出每個人的12張圖片資訊
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
@@ -959,9 +959,97 @@ namespace Web.Controllers
                 return View();
             };
 
-            
+
         }
 
-        
+        public ActionResult MemberScore()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string StartDate, string EndDate)
+        {
+            ViewData["IDNO"] = IDNO;
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["MEMNAME"] = MEMNAME;
+            ViewData["ORDERNO"] = ORDERNO;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+
+            if (AuditMode == "0")
+            {
+                List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+                return View(lstData);
+            }
+            else if (AuditMode == "1")
+            {
+                return View();
+            }
+            else if (AuditMode == "2")
+            {
+                return View();
+            }
+            else
+            {
+                List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO);
+                ViewData["IDNO"] = lstData[0].IDNO;
+                ViewData["MEMNAME"] = lstData[0].NAME;
+                ViewData["AuditMode"] = "1";
+                return View();
+            };
+        }
+
+        public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
+        {
+            ViewData["IDNO"] = ExplodeIDNO;
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["MEMNAME"] = ExplodeNAME;
+            ViewData["ORDERNO"] = ExplodeORDER;
+            ViewData["StartDate"] = ExplodeSDate;
+            ViewData["EndDate"] = ExplodeEDate;
+
+            //List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+            List<BE_GetMemberScoreFull> lstData = null;
+            MemberRepository repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "訂單編號", "APP刪除", "刪除時間", "操作人員" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].MEMCNAME);
+                content.CreateCell(1).SetCellValue(lstData[k].A_SYSDT);
+                content.CreateCell(2).SetCellValue(lstData[k].DAD);
+                content.CreateCell(3).SetCellValue(lstData[k].SON);
+                content.CreateCell(4).SetCellValue(lstData[k].SCORE);
+                content.CreateCell(5).SetCellValue(lstData[k].TIME);
+                content.CreateCell(6).SetCellValue(lstData[k].ORDERNO);
+                content.CreateCell(7).SetCellValue(lstData[k].APP);
+                content.CreateCell(8).SetCellValue(lstData[k].DEL);
+                content.CreateCell(9).SetCellValue(lstData[k].GM);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+
     }
 }
