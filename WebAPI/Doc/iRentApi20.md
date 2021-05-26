@@ -2440,18 +2440,7 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
-| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| ApiID      | 呼叫端apiId                |  Y   |  int   | 179                            |
-| ApiJson    | 呼叫端ApiJson-序列化後字串 |  N   | string | 請參考ApiJson 序列化後字串範例 |
-| ProdNm     | 產品名稱                   |  N   | string | 測試_汽包機66-3                |
-| ProdDisc   | 產品描述                   |  N   | string | 測試                           |
-| ProdPrice  | 產品價格                   |  Y   |  int   | 7000                           |
-| DoPay      | 執行付款(0顯示,1付款)      |  Y   |  int   | 0                              |
-| PayTypeId  | 選定付款方式               |  N   |  int   | 5                              |
-| InvoTypeId | 選定發票設定               |  N   |  int   | 6                              |
-
-* ApiJson(ApiID=179 / 購買月租)參數說明
+* input 購買月租 (api/BuyNow/DoAddMonth)) 參數說明
 
 | 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
 | ------------ | --------------------- | :--: | :----: | ---- |
@@ -2459,8 +2448,10 @@ iRentApi20 Web API版本
 | MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
 | ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
 | SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
+| PayTypeId    | 付款方式              |  Y   |  int   | 0    |
+| InvoTypeId   | 發票方式              |  Y   |  int   | 2    |
 
-* ApiJson(ApiID=188 /月租升轉)參數說明
+* input 月租升轉 (api/BuyNow/DoUpMonth) 參數說明
 
 | 參數名稱        | 參數說明          | 必要 | 型態   | 範例  |
 | --------------- | ----------------- | ---- | ------ | ----- |
@@ -2470,68 +2461,55 @@ iRentApi20 Web API版本
 | UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
 | UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
 | UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
-| PayTypeId       | 付款方式          | Y    | int    | 5     |
-| InvoTypeId      | 發票方式          | Y    | int    | 6     |
+| PayTypeId       | 付款方式          | Y    | int    | 0     |
+| InvoTypeId      | 發票方式          | Y    | int    | 2     |
 
-* ApiJson(ApiID=190 /月租欠費繳交)參數說明
+* input 月租欠費繳交(api/BuyNow/DoPayArrs))參數說明
 
-| 參數名稱       | 參數說明                  | 必要 | 型態   | 範例    |
-| -------------- | ------------------------- | ---- | ------ | ------- |
-| MonthlyRentIds | 月租Id(多筆以逗號","分隔) | Y    | string | 832,833 |
+| 參數名稱   | 參數說明 | 必要 | 型態 | 範例 |
+| ---------- | -------- | ---- | ---- | ---- |
+| PayTypeId  | 付款方式 | Y    | int  | 0    |
+| InvoTypeId | 發票方式 | Y    | int  | 2    |
 
-  
+  input範例 (購買月租)
 
-* ApiJson 序列化後字串範例
-
-| ApiID | Api名稱      | ApiJson                                                      |
-| ----- | ------------ | ------------------------------------------------------------ |
-| 179   | 購買月租     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"SetSubsNxt\\":0} |
-| 188   | 月租升轉     | {\\"MonProjID\\":\\"MR66\\",\\"MonProPeriod\\":3,\\"ShortDays\\":0,\\"UP_MonProjID\\":\\"MR102\\",\\"UP_MonProPeriod\\":3,\\"UP_ShortDays\\":0} |
-| 190   | 月租欠費繳交 | {\\"MonthlyRentIds\\":\\"832,833\\"}                         |
-
-* input範例 (購買月租179)
 ```
 {
-    "ApiID":179,
-    "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0,\"SetSubsNxt\":1}",
-    "ProdNm":"測試_汽包機66-3",
-    "ProdPrice":7000,
-    "DoPay":0,
-    "PayTypeId":5,
-    "InvoTypeId":6
+    "MonProjID":"MR66",
+    "MonProPeriod":3,
+    "ShortDays":0,
+    "SetSubsNxt":1,
+    "PayTypeId":0,
+    "InvoTypeId":2
 }
 ```
 
-* input範例 (月租升轉188)
+* input範例 (月租升轉)
 
   ```
   {
-      "ApiID":188,
-      "ApiJson":"{\"MonProjID\":\"MR66\",\"MonProPeriod\":3,\"ShortDays\":0,\"UP_MonProjID\":\"MR102\",\"UP_MonProPeriod\":3,\"UP_ShortDays\":0}",
-      "ProdNm":"測試_汽包機102-3",
-      "ProdPrice":7300,
-      "DoPay":1,
-      "PayTypeId":5,
-      "InvoTypeId":6
+      "MonProjID":"MR66",
+      "MonProPeriod":3,
+      "ShortDays":0,
+      "UP_MonProjID":"MR102",
+      "UP_MonProPeriod":3,
+      "UP_ShortDays":0,
+      "PayTypeId":0,
+      "InvoTypeId":2
   }
   ```
 
-* input範例 (月租欠費繳交190)
+* input範例 (月租欠費繳交)
 
   ```
-  {
-      "ApiID":190,
-      "ApiJson":"{\"MonthlyRentIds\":\"832,833\"}",
-      "ProdNm":"",
-      "ProdPrice":7000,
-      "DoPay":1,
-      "PayTypeId":5,
-      "InvoTypeId":12
+  { 
+      "PayTypeId":0,
+      "InvoTypeId":2
   }
   ```
-
   
-
+  
+  
 * Output回傳參數說明
 
 | 參數名稱     | 參數說明                |  型態  | 範例          |
@@ -2543,39 +2521,13 @@ iRentApi20 Web API版本
 | ErrorMessage | 錯誤訊息                | string | Success       |
 | Data         | 資料物件                |        |               |
 
-* 資料物件說明(DoPay=0 顯示)
+* 資料物件說明
 
-| 參數名稱    | 參數說明                    | 型態    | 範例                  |
-| --------    | --------                    | :--:    | ----------------------|
-| ProdNm      | 產品名稱                    | string  |  測試_汽包機66-3      |
-| ProdDisc    | 產品描述                    | string  |  空字串               |
-| ProdPrice   | 產品價格                    | int     |  7000                 |
-| PayTypes    | 資料物件:付款方式(list)     |         |                       |
-| InvoTypes   | 資料物件:發票設定(list)     |         |                       |
-| PayResult   | 付費結果(0失敗 1成功)       | int     |    0                  |
+| 參數名稱  | 參數說明              | 型態 | 範例 |
+| --------- | --------------------- | :--: | ---- |
+| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
 
-
-* 資料物件說明(DoPay=1 付款)
-
-| 參數名稱    | 參數說明                    | 型態    | 範例                  |
-| --------    | --------                    | :--:    | ----------------------|
-| ProdNm      | 產品名稱                    | string  |  空字串  |
-| ProdDisc    | 產品描述                    | string  |  空字串  |
-| ProdPrice   | 產品價格                    | int     |  皆為0   |
-| PayTypes    | 資料物件:付款方式(list)     |         |  空陣列  |
-| InvoTypes   | 資料物件:發票設定(list)     |         |  空陣列  |
-| PayResult   | 付費結果(0失敗 1成功)       | int     |    1     |
-
-* PayTypes, InvoTypes 參數說明
-
-| 參數名稱      | 參數說明              |  型態  | 範例               |
-| -----------   | ----------            | :----: | -------------------|
-| CodeId        | 代碼                  | int    | 5                  |
-| CodeNm        | 名稱                  | string | 信用卡,手機條碼    |
-| IsBind        | 是否為預設值(0否 1是) | int    | 0                  |
-| Disc          | 其它描述              | string | (預留)目前為空字串 |
-
-* Output範例,汽車牌卡(DoPay=0 顯示)
+* Output範例
 ```
 {
     "Result": "1",
@@ -2584,80 +2536,10 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "ProdNm": "測試_汽包機66-3",
-        "ProdDisc": "",
-        "ProdPrice": 7000,
-        "PayTypes": [
-            {
-                "CodeId": 5,
-                "CodeNm": "信用卡",
-                "IsBind": 1,
-                "Disc": ""
-            }
-        ],
-        "InvoTypes": [
-            {
-                "CodeId": 9,
-                "CodeNm": "手機條碼",
-                "IsBind": 0,
-                "Disc": ""
-            },
-            {
-                "CodeId": 10,
-                "CodeNm": "自然人憑證",
-                "IsBind": 0,
-                "Disc": ""
-            },
-            {
-                "CodeId": 7,
-                "CodeNm": "二聯",
-                "IsBind": 0,
-                "Disc": ""
-            },
-            {
-                "CodeId": 8,
-                "CodeNm": "三聯",
-                "IsBind": 0,
-                "Disc": ""
-            },
-            {
-                "CodeId": 6,
-                "CodeNm": "捐贈碼",
-                "IsBind": 0,
-                "Disc": ""
-            },
-            {
-                "CodeId": 12,
-                "CodeNm": "email",
-                "IsBind": 1,
-                "Disc": ""
-            }
-        ],
-        "PayResult": 0
-    }
-}
-```
-
-* Output範例,汽車牌卡(DoPay=1 付款)
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "ProdNm": "",
-        "ProdDisc": "",
-        "ProdPrice": 0,
-        "PayTypes": [],
-        "InvoTypes": [],
         "PayResult": 1
     }
 }
 ```
-
 
 
 ## GetMySubs 我的方案牌卡明細
@@ -2898,7 +2780,7 @@ iRentApi20 Web API版本
 | StartDate | 起日 			| string | 05/18 |
 | EndDate	| 迄日 			| string | 08/16 |
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
-| IsMix		| 是否為城市車手 | int | 1 | 
+| IsMix		| 是否為城市車手 | int | 1 |
 
 
 
