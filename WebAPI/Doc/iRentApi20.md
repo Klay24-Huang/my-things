@@ -83,6 +83,8 @@ iRentApi20 Web API版本
 
 20210524 取得會員徽章(GetMemberMedal)增加欄位
 
+20210526 取得會員積分(GetMemberScore)、取得會員徽章(GetMemberMedal)欄位格式調整
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -579,15 +581,15 @@ iRentApi20 Web API版本
 
 * DetailList 參數說明
 
-| 參數名稱   | 參數說明     |   型態   | 範例                    |
-| ---------- | ------------ | :------: | ----------------------- |
-| TotalCount | 總筆數       |   int    | 61                      |
-| RowNo      | 編號         |   int    | 1                       |
-| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03.733 |
-| SEQ        | 序號         |   int    | 103                     |
-| SCORE      | 分數         |   int    | -50                     |
-| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣                |
-| ORDERNO    | 訂單編號     |  string  | H10365010               |
+| 參數名稱   | 參數說明     |   型態   | 範例                |
+| ---------- | ------------ | :------: | ------------------- |
+| TotalCount | 總筆數       |   int    | 61                  |
+| RowNo      | 編號         |   int    | 1                   |
+| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03 |
+| SEQ        | 序號         |   int    | 103                 |
+| SCORE      | 分數         |   int    | -50                 |
+| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣            |
+| ORDERNO    | 訂單編號     |  string  | H10365010           |
 
 * Output 範例
 
@@ -605,7 +607,7 @@ iRentApi20 Web API版本
             {
                 "TotalCount": 58,
                 "RowNo": 1,
-                "GetDate": "2021-05-19T13:37:03.733",
+                "GetDate": "2021-05-19T13:37:03",
                 "SEQ": 103,
                 "SCORE": -50,
                 "UIDESC": "天佑台灣",
@@ -736,15 +738,15 @@ iRentApi20 Web API版本
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明                   |  型態  | 範例                    |
-| ------------- | -------------------------- | :----: | ----------------------- |
-| MileStone     | 徽章代碼                   | string | AuditPass1              |
-| MileStoneName | 徽章名稱                   | string | 新手上路                |
-| Norm          | 門檻指標                   |  int   | 1                       |
-| Progress      | 目前進度                   |  int   | 1                       |
-| Describe      | APP顯示的描述              | string | 通過會員審核            |
-| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                       |
-| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45.437 |
+| 參數名稱      | 參數說明                   |  型態  | 範例                |
+| ------------- | -------------------------- | :----: | ------------------- |
+| MileStone     | 徽章代碼                   | string | AuditPass1          |
+| MileStoneName | 徽章名稱                   | string | 新手上路            |
+| Norm          | 門檻指標                   |  int   | 1                   |
+| Progress      | 目前進度                   |  int   | 1                   |
+| Describe      | APP顯示的描述              | string | 通過會員審核        |
+| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                   |
+| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45 |
 
 * Output 範例
 
@@ -764,7 +766,7 @@ iRentApi20 Web API版本
                 "Progress": 1,
                 "Describe": "通過會員審核",
                 "GetFlag": 1,
-                "GetMedalTime": "2021-05-20T14:27:45.437"
+                "GetMedalTime": "2021-05-20T14:27:45"
             },
             {
                 "MileStone": "School1",
