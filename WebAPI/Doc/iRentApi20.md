@@ -2302,7 +2302,7 @@ iRentApi20 Web API版本
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
             "IsPay": 1,
-			"IsMix": 1
+			"IsMix": 0
         },
         "ReMode": 2
     }
@@ -2381,7 +2381,7 @@ iRentApi20 Web API版本
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
-| IsMix | 是否為城市車手 | int | 0 |
+| IsMix | 是否為城市車手(0否1是) | int | 0 |
 
 * Output範例
 ```
@@ -2593,8 +2593,6 @@ iRentApi20 Web API版本
 | 參數名稱    | 參數說明                    | 型態    | 範例                  |
 | --------    | --------                    | :--:    | ----------------------|
 | Month       | 資料物件 | obj | |
-| PayTypes    | 資料物件 | list | |
-| InvoTypes   | 資料物件 | list | |
 
 * Month 參數說明
 
@@ -2623,15 +2621,6 @@ iRentApi20 Web API版本
 | IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
 
 
-* PayTypes, InvoTypes 參數說明
-
-| 參數名稱      | 參數說明              |  型態  | 範例               |
-| -----------   | ----------            | :----: | -------------------|
-| CodeId        | 代碼                  | int    | 5                  |
-| CodeNm        | 名稱                  | string | 信用卡,手機條碼    |
-| IsDef         | 是否為預設值(0否 1是) | int    | 0                  |
-
-
 * Output範例
 ```
 {
@@ -2648,56 +2637,22 @@ iRentApi20 Web API版本
             "MonProjNM": "測試_汽包機66-3",
             "CarWDHours": 3.0,
             "CarHDHours": 3.0,
-            "MotoTotalMins": 300.0,
+            "MotoTotalMins": 300,
             "WDRateForCar": 99.0,
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "StartDate": "05/18",
-            "EndDate": "06/16 23:59",
-            "MonthStartDate": "2021/05/18",
-            "MonthEndDate": "2021/08/16",
+            "StartDate": "05/26",
+            "EndDate": "06/24 23:59",
+            "MonthStartDate": "2021/05/26",
+            "MonthEndDate": "2021/08/24",
             "NxtMonProPeriod": 3,
             "IsMix": 1,
             "IsUpd": 0,
             "SubsNxt": 1,
             "IsChange": 0,
             "IsPay": 1
-        },
-        "PayTypes": [
-            {
-                "CodeId": 5,
-                "CodeNm": "信用卡",
-                "IsDef": 1
-            }
-        ],
-        "InvoTypes": [
-            {
-                "CodeId": 9,
-                "CodeNm": "手機條碼",
-                "IsDef": 0
-            },
-            {
-                "CodeId": 10,
-                "CodeNm": "自然人憑證",
-                "IsDef": 0
-            },
-            {
-                "CodeId": 8,
-                "CodeNm": "三聯",
-                "IsDef": 0
-            },
-            {
-                "CodeId": 6,
-                "CodeNm": "捐贈碼",
-                "IsDef": 0
-            },
-            {
-                "CodeId": 12,
-                "CodeNm": "會員載具",
-                "IsDef": 1
-            }
-        ]
+        }
     }
 }
 ```
