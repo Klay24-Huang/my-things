@@ -8,9 +8,6 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_GetMySubs
     {
         public OAPI_GetMySubs_Month Month { get; set; }
-        public List<OAPI_GetMySubs_Code> PayTypes { get; set; }
-        public List<OAPI_GetMySubs_Code> InvoTypes { get; set; }
-
     }
 
     public class OAPI_GetMySubs_Month

@@ -190,37 +190,6 @@ namespace WebAPI.Controllers
                             errMsg = "查無指定月租";
                             errCode = "ERR909";//專案不存在
                         }
-
-                        if (flag)
-                        {
-                            if (sp_re.Codes != null && sp_re.Codes.Count() > 0)
-                            {
-                                var payTypes = sp_re.Codes.Where(x => x.CodeGroup == "PayType").ToList();
-                                var invoTypes = sp_re.Codes.Where(x => x.CodeGroup == "InvoiceType").ToList();
-
-                                if (payTypes != null && payTypes.Count() > 0)
-                                {
-                                    outputApi.PayTypes = (from a in payTypes
-                                                          select new OAPI_GetMySubs_Code
-                                                          {
-                                                              CodeId = a.CodeId,
-                                                              CodeNm = a.CodeNm,
-                                                              IsDef = a.IsDef
-                                                          }).ToList();
-                                }
-
-                                if (invoTypes != null && invoTypes.Count() > 0)
-                                {
-                                    outputApi.InvoTypes = (from a in invoTypes
-                                                           select new OAPI_GetMySubs_Code
-                                                           {
-                                                               CodeId = a.CodeId,
-                                                               CodeNm = a.CodeNm,
-                                                               IsDef = a.IsDef
-                                                           }).ToList();
-                                }
-                            }
-                        }
                     }
                     else
                     {

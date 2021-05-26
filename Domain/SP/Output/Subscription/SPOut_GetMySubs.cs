@@ -9,7 +9,6 @@ namespace Domain.SP.Output.Subscription
     public class SPOut_GetMySubs
     {
         public List<SPOut_GetMySubs_Month> Months { get; set; }
-        public List<SPOut_GetMySubs_Code> Codes { get; set; }
     }
 
     public class SPOut_GetMySubs_Month

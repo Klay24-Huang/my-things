@@ -404,7 +404,6 @@ namespace WebAPI.Models.BillFunc
         {
             var re = new SPOut_GetMySubs();
             re.Months = new List<SPOut_GetMySubs_Month>();
-            re.Codes = new List<SPOut_GetMySubs_Code>();
 
             try
             {
@@ -428,15 +427,11 @@ namespace WebAPI.Models.BillFunc
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 3)
+                    if (ds1.Tables.Count >= 2)
                     {
                         var months = objUti.ConvertToList<SPOut_GetMySubs_Month>(ds1.Tables[0]);
                         if (months != null && months.Count() > 0)
                             re.Months = months;
-
-                        var codes = objUti.ConvertToList<SPOut_GetMySubs_Code>(ds1.Tables[1]);
-                        if (codes != null && codes.Count() > 0)
-                            re.Codes = codes;
                     }
                     else 
                     {
