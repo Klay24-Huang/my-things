@@ -3093,6 +3093,7 @@ iRentApi20 Web API版本
 | invoiceCode  | 發票號碼 | string  | AB12345678 |
 | invoice_date | 發票日期 | string  | 2021/05/18 |
 | invoice_price| 發票金額 | int     | 7000 |
+| IsMix | 是否為城市車手0否1是 | int | 0 |
 
 
 
@@ -3130,7 +3131,8 @@ iRentApi20 Web API版本
                 "unified_business_no": "12345678",
                 "invoiceCode": "A12345678",
                 "invoice_date": "2021/05/19",
-                "invoice_price": 7000
+                "invoice_price": 7000,
+                "IsMix":0
             },
             {
                 "MonProjID": "MR66",
@@ -3155,7 +3157,8 @@ iRentApi20 Web API版本
                 "unified_business_no": "12345678",
                 "invoiceCode": "A12345678",
                 "invoice_date": "2021/05/19",
-                "invoice_price": 7000
+                "invoice_price": 7000,
+                "IsMix":0
             }
         ]
     }
@@ -3235,21 +3238,7 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
-| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| MonProID     | 方案代碼(key)              |  Y   | string | MR66                          |
-| MonProPeriod | 總期數(key)               |  Y  | int    | 3                     |
-| ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
-
-* input範例
-
-```
-{
-    "MonProID"::"MR66",
-    "MonProPeriod:3,
-    "ShortDays":"0"
-}
-```
+  不須傳入參數
 
 
 * Output回傳參數說明
