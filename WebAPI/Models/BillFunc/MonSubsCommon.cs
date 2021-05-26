@@ -1319,7 +1319,15 @@ namespace WebAPI.Models.BillFunc
                     StartDate = sour.StartDate.ToString("MM/dd"),
                     EndDate = sour.EndDate.ToString("MM/dd"),
                     MonProDisc = sour.MonProDisc,
-                    IsMix = sour.IsMix      //20210525 ADD BY ADAM REASON.增加城市車手
+                    IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
+                    //20210526 ADD BY ADAM REASON.補欄位
+                    MonthStartDate = sour.MonthStartDate,
+                    MonthEndDate = sour.MonthEndDate,
+                    NxtMonProPeriod = sour.NxtMonProPeriod,
+                    IsChange = sour.IsChange,
+                    IsPay = sour.IsPay,
+                    IsUpd = sour.IsUpd,
+                    SubsNxt = sour.SubsNxt
                 };
             }
             else
@@ -1563,7 +1571,14 @@ namespace WebAPI.Models.BillFunc
                     StartDate = sour.SD.ToString("yyyy/MM/dd"),
                     EndDate = sour.ED.ToString("yyyy/MM/dd"),
                     MonProDisc = sour.MonProDisc,
-                    IsMix = sour.IsMix      //20210525 ADD BY ADAM REASON.增加城市車手
+                    IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
+                    //20210526 ADD BY ADAM REASON.補欄位
+                    MonthStartDate = sour.MonthStartDate,
+                    MonthEndDate = sour.MonthEndDate,
+                    NxtMonProPeriod = sour.NxtMonProPeriod,
+                    IsPay = sour.IsPay,
+                    IsUpd = sour.IsUpd,
+                    SubsNxt = sour.SubsNxt
                 };
             }
             else

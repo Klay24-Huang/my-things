@@ -71,6 +71,12 @@ namespace WebAPI.Models.Param.Output
         /// 迄日
         /// </summary>
         public string EndDate { get; set; }
+        public string MonthStartDate { get; set; }  //20210526 ADD BY ADAM
+        public string MonthEndDate { get; set; }    //20210526 ADD BY ADAM
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }    //20210526 ADD BY ADAM
         /// <summary>
         /// 注意事項
         /// </summary>
@@ -79,6 +85,22 @@ namespace WebAPI.Models.Param.Output
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 是否已升級
+        /// </summary>
+        public int IsUpd { get; set; }  //20210526 ADD BY ADAM
+        /// <summary>
+        /// 是否自動續訂
+        /// </summary>
+        public int SubsNxt { get; set; }    //20210526 ADD BY ADAM
+        /// <summary>
+        /// 是否變更下期合約
+        /// </summary>
+        public int IsChange { get; set; }   //20210526 ADD BY ADAM
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }      //20210526 ADD BY ADAM
     }
 
 
@@ -141,6 +163,12 @@ namespace WebAPI.Models.Param.Output
         /// 迄日
         /// </summary>
         public string EndDate { get; set; }
+        public string MonthStartDate { get; set; }  //20210526 ADD BY ADAM
+        public string MonthEndDate { get; set; }    //20210526 ADD BY ADAM
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }    //20210526 ADD BY ADAM
         /// <summary>
         /// 注意事項
         /// </summary>
@@ -149,6 +177,18 @@ namespace WebAPI.Models.Param.Output
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 是否已升級
+        /// </summary>
+        public int IsUpd { get; set; }  //20210526 ADD BY ADAM
+        /// <summary>
+        /// 是否自動續訂
+        /// </summary>
+        public int SubsNxt { get; set; }    //20210526 ADD BY ADAM
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }      //20210526 ADD BY ADAM
     }
 
 }

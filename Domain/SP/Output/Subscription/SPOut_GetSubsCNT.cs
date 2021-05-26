@@ -32,6 +32,28 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
         /// </summary>
         public int IsMix { get; set; }
+        public string MonthStartDate { get; set; }
+        public string MonthEndDate { get; set; }
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }
+        /// <summary>
+        /// 是否已升級
+        /// </summary>
+        public int IsUpd { get; set; }
+        /// <summary>
+        /// 是否自動續訂
+        /// </summary>
+        public int SubsNxt { get; set; }
+        /// <summary>
+        /// 是否變更下期合約
+        /// </summary>
+        public int IsChange { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 
     public class SPOut_GetSubsCNT_NxtCard
@@ -58,6 +80,24 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
         /// </summary>
         public int IsMix { get; set; }
+        public string MonthStartDate { get; set; }
+        public string MonthEndDate { get; set; }
+        /// <summary>
+        /// 下期續訂總期數
+        /// </summary>
+        public int NxtMonProPeriod { get; set; }
+        /// <summary>
+        /// 是否已升級
+        /// </summary>
+        public int IsUpd { get; set; }
+        /// <summary>
+        /// 是否自動續訂
+        /// </summary>
+        public int SubsNxt { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
     }
 
 }
