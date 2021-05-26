@@ -425,6 +425,33 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
+        public List<BE_MemberScore> GetMemberScore(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MemberScore> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetMemberScore ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_MemberScore>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
         /// <summary>
         /// 取得安心保險清單
         /// </summary>

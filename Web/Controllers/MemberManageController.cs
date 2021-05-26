@@ -148,6 +148,7 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
 
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
@@ -157,6 +158,8 @@ namespace Web.Controllers
             Data.MileStone = lstMileStone;
             Data.MileStoneDetail = new List<BE_MileStoneDetail>();
             Data.MileStoneDetail = lstMileStoneDetail;
+            Data.MemberScore = new List<BE_MemberScore>();
+            Data.MemberScore = lstMemberScore;
 
             Data.InsuranceData = lstInsuranceData;
 
