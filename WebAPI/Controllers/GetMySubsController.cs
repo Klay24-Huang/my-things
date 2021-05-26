@@ -169,7 +169,9 @@ namespace WebAPI.Controllers
                                                 IsUpd = a.IsUpd,
                                                 SubsNxt = a.SubsNxt,
                                                 IsChange = a.IsChange,
-                                                IsPay = a.IsPay
+                                                IsPay = a.IsPay,
+                                                IsMoto = a.IsMoto       //20210527 ADD BY ADAM
+                                                
                                             }).ToList();
 
                             var NowMon = months.Where(x => x.MonProjID == apiInput.MonProjID

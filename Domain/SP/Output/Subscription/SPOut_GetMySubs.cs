@@ -62,6 +62,10 @@ namespace Domain.SP.Output.Subscription
         /// <para>1:是</para>
         /// </summary>
         public int IsPay { get; set; }
+        /// <summary>
+        /// 是否為機車 20210527 ADD BY ADAM REASON.
+        /// </summary>
+        public int IsMoto { get; set; }
     }
 
     public class SPOut_GetMySubs_Code

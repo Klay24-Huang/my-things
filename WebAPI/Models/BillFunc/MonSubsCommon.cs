@@ -1327,7 +1327,9 @@ namespace WebAPI.Models.BillFunc
                     IsChange = sour.IsChange,
                     IsPay = sour.IsPay,
                     IsUpd = sour.IsUpd,
-                    SubsNxt = sour.SubsNxt
+                    SubsNxt = sour.SubsNxt,
+                    IsMoto = sour.IsMoto
+                    
                 };
             }
             else
@@ -1578,7 +1580,8 @@ namespace WebAPI.Models.BillFunc
                     NxtMonProPeriod = sour.NxtMonProPeriod,
                     IsPay = sour.IsPay,
                     IsUpd = sour.IsUpd,
-                    SubsNxt = sour.SubsNxt
+                    SubsNxt = sour.SubsNxt,
+                    IsMoto = sour.IsMoto
                 };
             }
             else

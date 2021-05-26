@@ -101,6 +101,10 @@ namespace WebAPI.Models.Param.Output
         /// 當期是否有繳費
         /// </summary>
         public int IsPay { get; set; }      //20210526 ADD BY ADAM
+        /// <summary>
+        /// 是否為機車
+        /// </summary>
+        public int IsMoto { get; set; }     //20210527 ADD BY ADAM
     }
 
 
@@ -189,6 +193,10 @@ namespace WebAPI.Models.Param.Output
         /// 當期是否有繳費
         /// </summary>
         public int IsPay { get; set; }      //20210526 ADD BY ADAM
+        /// <summary>
+        /// 是否為機車
+        /// </summary>
+        public int IsMoto { get; set; }     //20210527 ADD BY ADAM
     }
 
 }

@@ -92,6 +92,10 @@ namespace WebAPI.Models.Param.Output
         /// 當期是否有繳費
         /// </summary>
         public int IsPay { get; set; }
+        /// <summary>
+        /// 是否為機車 20210527 ADD BY ADAM
+        /// </summary>
+        public int IsMoto { get; set; }
     }
 
     public class OAPI_GetMySubs_Code
