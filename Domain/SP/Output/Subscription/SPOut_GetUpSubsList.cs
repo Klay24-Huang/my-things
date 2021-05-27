@@ -30,6 +30,10 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 升轉加購價
+        /// </summary>
+        public int AddPrice { get; set; }
     }
 
 }
