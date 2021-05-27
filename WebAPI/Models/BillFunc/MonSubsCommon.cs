@@ -1292,6 +1292,7 @@ namespace WebAPI.Models.BillFunc
                           HDRateForMoto = a.HDRateForMoto,
                           IsDiscount = a.IsDiscount,
                           IsPay = a.IsPay,
+                          IsMix = a.IsMix,
                           StartDate =  a.StartDate.ToString("MM/dd HH:mm"),
                           EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
                       }).ToList();
