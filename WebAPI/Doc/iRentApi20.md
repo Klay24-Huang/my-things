@@ -2657,7 +2657,8 @@ iRentApi20 Web API版本
             "IsUpd": 0,
             "SubsNxt": 1,
             "IsChange": 0,
-            "IsPay": 1
+            "IsPay": 1,
+            "IsMoto":0
         }
     }
 }
@@ -2741,7 +2742,7 @@ iRentApi20 Web API版本
 | StartDate | 起日 			| string | 05/18 |
 | EndDate	| 迄日 			| string | 08/16 |
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
-| IsMix		| 是否為城市車手 | int | 1 | 
+| IsMix		| 是否為城市車手 | int | 1 |
 | MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
 | MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
 | NxtMonProPeriod | 下期續訂總期數 | string | 3 |
@@ -3006,6 +3007,7 @@ iRentApi20 Web API版本
 | HDRateForMoto	| 機車假日優惠價格 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
 | IsMix			| 是否為城市車手 | int | 1 |
+| AddPrice	| 升轉加購價 | int | 300 |
 
 * Output範例
 
@@ -3026,7 +3028,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.5,
                 "HDRateForMoto": 1.5,
                 "IsDiscount": 0,
-				"IsMix" : 0
+				"IsMix" : 0,
+				"AddPrice":100
             }	
 	],
     "MixCards": [{
@@ -3043,7 +3046,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-			"IsMix" : 1
+			"IsMix" : 1,
+			"AddPrice":300
         }, {
             "MonProjID": "MR103",
             "MonProPeriod": 3,
@@ -3058,7 +3062,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-			"IsMix":1
+			"IsMix":1,
+			"AddPrice":800
         }
     ]
 }
