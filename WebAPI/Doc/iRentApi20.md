@@ -44,6 +44,7 @@ iRentApi20 Web API版本
 - [GetSubsHist 訂閱制歷史紀錄](#GetSubsHist)
 - [GetSubsHist-del 訂閱制歷史紀錄-刪除](#GetSubsHist-del)
 - [GetArrsSubsList 訂閱制欠費查詢](#GetArrsSubsList)
+- [SetSubsNxt 設定自動續約](#SetSubsNxt)
 
 訂單相關
 - [OrderDetail 歷史訂單明細](#OrderDetail)
@@ -84,6 +85,8 @@ iRentApi20 Web API版本
 20210524 取得會員徽章(GetMemberMedal)增加欄位
 
 20210526 取得會員積分(GetMemberScore)、取得會員徽章(GetMemberMedal)欄位格式調整
+
+20210526 補上設定自動續約
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -581,15 +584,15 @@ iRentApi20 Web API版本
 
 * DetailList 參數說明
 
-| 參數名稱   | 參數說明     |   型態   | 範例                |
-| ---------- | ------------ | :------: | ------------------- |
-| TotalCount | 總筆數       |   int    | 61                  |
-| RowNo      | 編號         |   int    | 1                   |
-| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03 |
-| SEQ        | 序號         |   int    | 103                 |
-| SCORE      | 分數         |   int    | -50                 |
-| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣            |
-| ORDERNO    | 訂單編號     |  string  | H10365010           |
+| 參數名稱   | 參數說明     |   型態   | 範例                    |
+| ---------- | ------------ | :------: | ----------------------- |
+| TotalCount | 總筆數       |   int    | 61                      |
+| RowNo      | 編號         |   int    | 1                       |
+| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03.733 |
+| SEQ        | 序號         |   int    | 103                     |
+| SCORE      | 分數         |   int    | -50                     |
+| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣                |
+| ORDERNO    | 訂單編號     |  string  | H10365010               |
 
 * Output 範例
 
@@ -607,7 +610,7 @@ iRentApi20 Web API版本
             {
                 "TotalCount": 58,
                 "RowNo": 1,
-                "GetDate": "2021-05-19T13:37:03",
+                "GetDate": "2021-05-19T13:37:03.733",
                 "SEQ": 103,
                 "SCORE": -50,
                 "UIDESC": "天佑台灣",
@@ -738,15 +741,15 @@ iRentApi20 Web API版本
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明                   |  型態  | 範例                |
-| ------------- | -------------------------- | :----: | ------------------- |
-| MileStone     | 徽章代碼                   | string | AuditPass1          |
-| MileStoneName | 徽章名稱                   | string | 新手上路            |
-| Norm          | 門檻指標                   |  int   | 1                   |
-| Progress      | 目前進度                   |  int   | 1                   |
-| Describe      | APP顯示的描述              | string | 通過會員審核        |
-| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                   |
-| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45 |
+| 參數名稱      | 參數說明                   |  型態  | 範例                    |
+| ------------- | -------------------------- | :----: | ----------------------- |
+| MileStone     | 徽章代碼                   | string | AuditPass1              |
+| MileStoneName | 徽章名稱                   | string | 新手上路                |
+| Norm          | 門檻指標                   |  int   | 1                       |
+| Progress      | 目前進度                   |  int   | 1                       |
+| Describe      | APP顯示的描述              | string | 通過會員審核            |
+| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                       |
+| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45.437 |
 
 * Output 範例
 
@@ -766,7 +769,7 @@ iRentApi20 Web API版本
                 "Progress": 1,
                 "Describe": "通過會員審核",
                 "GetFlag": 1,
-                "GetMedalTime": "2021-05-20T14:27:45"
+                "GetMedalTime": "2021-05-20T14:27:45.437"
             },
             {
                 "MileStone": "School1",
@@ -2316,6 +2319,7 @@ iRentApi20 Web API版本
 
 
 ## GetMonthGroup 月租專案群組
+
 ### [/api/GetMonthGroup/]
 
 * 20210510發佈
@@ -2621,7 +2625,7 @@ iRentApi20 Web API版本
 | SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
 | IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
 | IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
-
+| IsMoto	    | 是否為機車0否1是     | int    | 0        |
 
 * Output範例
 ```
@@ -2653,7 +2657,8 @@ iRentApi20 Web API版本
             "IsUpd": 0,
             "SubsNxt": 1,
             "IsChange": 0,
-            "IsPay": 1
+            "IsPay": 1,
+            "IsMoto":0
         }
     }
 }
@@ -2738,7 +2743,14 @@ iRentApi20 Web API版本
 | EndDate	| 迄日 			| string | 08/16 |
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
 | IsMix		| 是否為城市車手 | int | 1 |
-
+| MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
+| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
+| NxtMonProPeriod | 下期續訂總期數 | string | 3 |
+| IsUpd | 是否已升級 (0否1是) | int | 0 |
+| SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
+| IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
+| IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
+| IsMoto	    | 是否為機車0否1是     | int    | 0        |
 
 
 * Output範例
@@ -2765,7 +2777,15 @@ iRentApi20 Web API版本
             "StartDate": "05/18",
             "EndDate": "08/16",
             "MonProDisc": "汽包機66-3注意事項",
-			"IsMix": 1
+			"IsMix": 1,
+			"MonthStartDate": "2021/05/26",
+            "MonthEndDate": "2021/08/24",
+            "NxtMonProPeriod": 3,
+            "IsUpd": 0,
+            "SubsNxt": 1,
+            "IsChange": 0,
+            "IsPay": 1,
+			"IsMoto": 0
         },
         "NxtCard": {
             "IsChange": 0,
@@ -2783,7 +2803,14 @@ iRentApi20 Web API版本
             "StartDate": "2021/08/16",
             "EndDate": "2021/11/14",
             "MonProDisc": "汽包機66-3注意事項",
-			"IsMix": 1
+			"IsMix": 1,
+			"MonthStartDate": "2021/05/26",
+            "MonthEndDate": "2021/08/24",
+            "NxtMonProPeriod": 3,
+            "IsUpd": 0,
+            "SubsNxt": 1,
+            "IsPay": 1,
+			"IsMoto": 0
         }
     }
 }
@@ -2980,6 +3007,7 @@ iRentApi20 Web API版本
 | HDRateForMoto	| 機車假日優惠價格 | double | 1.2 |
 | IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
 | IsMix			| 是否為城市車手 | int | 1 |
+| AddPrice	| 升轉加購價 | int | 300 |
 
 * Output範例
 
@@ -3000,7 +3028,8 @@ iRentApi20 Web API版本
                 "WDRateForMoto": 1.5,
                 "HDRateForMoto": 1.5,
                 "IsDiscount": 0,
-				"IsMix" : 0
+				"IsMix" : 0,
+				"AddPrice":100
             }	
 	],
     "MixCards": [{
@@ -3017,7 +3046,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-			"IsMix" : 1
+			"IsMix" : 1,
+			"AddPrice":300
         }, {
             "MonProjID": "MR103",
             "MonProPeriod": 3,
@@ -3032,7 +3062,8 @@ iRentApi20 Web API版本
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-			"IsMix":1
+			"IsMix":1,
+			"AddPrice":800
         }
     ]
 }
@@ -3314,6 +3345,68 @@ iRentApi20 Web API版本
 }
 ```
 
+---
+
+## SetSubsNxt 設定自動續約
+
+### [/api/SetSubsNxt]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱          | 參數說明                   | 必要 |  型態  | 範例                           |
+| ------------------| -------------------------- | :--: | :----: | ------------------------------ |
+| MonProjID    | 專案編號(key)          |  Y   | string | MR66 |
+| MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
+| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
+| AutoSubs	   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
+
+
+* input範例
+```
+{
+     "MonProjID":"MR66",
+	 "MonProPeriod":3,
+	 "ShortDays":0,
+	 "AutoSubs":1
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例          |
+| ------------ | ----------------------- | :----: | ------------- |
+| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼                  | string | 000000        |
+| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息                | string | Success       |
+| Data         | 資料物件                |        |        　       |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
 
 
 # 訂單相關
