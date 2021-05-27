@@ -35,6 +35,10 @@ namespace WebAPI.Models.Param.Output
         /// 升轉加購價
         /// </summary>
         public int AddPrice { get; set; }
+        /// <summary>
+        /// 是否為機車 20210527 ADD BY ADAM
+        /// </summary>
+        public int IsMoto { get; set; }
     }
 
 

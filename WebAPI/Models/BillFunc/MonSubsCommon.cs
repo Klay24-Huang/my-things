@@ -1492,6 +1492,7 @@ namespace WebAPI.Models.BillFunc
                 re.HDRateForMoto = sour.HDRateForMoto;
                 re.IsDiscount = sour.IsDiscount;
                 re.IsMix = sour.IsMix;      //20210525 ADD BY ADAM REASON.增加城市車手
+                re.IsMoto = sour.IsMoto;    //20210527 ADD BY ADAM REASON.補欄位
                 return re;
             }
             else
@@ -1520,7 +1521,8 @@ namespace WebAPI.Models.BillFunc
                             WDRateForMoto = a.WDRateForMoto,
                             HDRateForMoto = a.HDRateForMoto,
                             IsDiscount = a.IsDiscount,
-                            IsMix = a.IsMix     //20210525 ADD BY ADAM REASON.增加城市車手
+                            IsMix = a.IsMix,     //20210525 ADD BY ADAM REASON.增加城市車手
+                            IsMoto = a.IsMoto   //20210527 ADD BY ADAM REASON.補欄位
                       }).ToList();
             }
             return re;
@@ -1548,7 +1550,8 @@ namespace WebAPI.Models.BillFunc
                           HDRateForMoto = a.HDRateForMoto,
                           IsDiscount = a.IsDiscount,
                           IsMix = a.IsMix,       //20210525 ADD BY ADAM REASON.增加城市車手
-                          AddPrice = a.AddPrice
+                          AddPrice = a.AddPrice,
+                          IsMoto = a.IsMoto     //20210527 ADD BY ADAM REASON.補欄位
                       }).ToList();
             }
             return re;

@@ -37,5 +37,9 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 是否為機車 20210527 ADD BY ADAM
+        /// </summary>
+        public int IsMoto { get; set; }
     }
 }
