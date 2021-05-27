@@ -2,11 +2,13 @@
 
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
-    string AuditMode = (ViewData["AuditMode"] == null) ? "" : ViewData["AuditMode"].ToString();
+    string AuditMode = (ViewData["AuditMode"] == null) ? "0" : ViewData["AuditMode"].ToString();
     string MEMNAME = (ViewData["MEMNAME"] == null) ? "" : ViewData["MEMNAME"].ToString();
     string ORDERNO = (ViewData["ORDERNO"] == null) ? "" : ViewData["ORDERNO"].ToString();
+    string ORDERNO_I = (ViewData["ORDERNO_I"] == null) ? "" : ViewData["ORDERNO_I"].ToString();
     string StartDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EndDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
+    string SCITEM = ((ViewData["SCITEM"] == null) ? "0" : ViewData["SCITEM"].ToString());
 
     // 這邊定義的值在js抓不到，這是給view的
     //var errorLine = (ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString();
@@ -46,7 +48,7 @@
                                 處理項目
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
+                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode" >
                                     <option value="0">查詢/匯出</option>
                                     <option value="1">新增</option>
                                     <option value="2">上傳EXCEL</option>
@@ -98,7 +100,7 @@
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO" />
+                                <input class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO_I" />
                             </div>
                         </div>
                     </div>
@@ -181,12 +183,13 @@
                                 評分行為(主項)
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control clear" name="ChoiceSelect" id="ChoiceSelect_0">
+                                @*<select class="form-control clear" name="ChoiceSelect_0" id="ChoiceSelect_0">
                                     <option value="Report">滷肉飯</option>
                                     <option value="Question">輕白色</option>
                                     <option value="debug">關東煮</option>
                                     <option value="Advice">素食</option>
-                                </select>
+                                </select>*@
+                                @Html.Action("GetSCITEM", "CommonObj", new { SEQNO = SCITEM }) @*SEQNO參數為了刷新頁面後能抓到所選的值*@
                             </div>
                         </div>
                     </div>
@@ -198,12 +201,25 @@
                                 評分行為(子項)
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control clear" name="ChoiceSelect" id="ChoiceSelect_1">
-                                    <option value="Report">AAA</option>
-                                    <option value="Question">CCC</option>
-                                    <option value="debug">DDD</option>
-                                    <option value="Advice">RRR建議</option>
-                                </select>
+                                @*<select class="form-control clear" name="ChoiceSelect_0" id="ChoiceSelect_1">
+                                    <option value="Report">滷肉飯</option>
+                                    <option value="Question">輕白色</option>
+                                    <option value="debug">關東煮</option>
+                                    <option value="Advice">素食</option>
+                                </select>*@
+                                @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM }) @*scitem參數為了知道GetSCITEM選了什麼*@
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item" id="memo" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                備註
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control clear" type="text" name="sonmemo" id="sonmemo" />
                             </div>
                         </div>
                     </div>
@@ -227,9 +243,9 @@
                                 APP刪除
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control clear" name="ChoiceSelect" id="ChoiceSelect_2">
-                                    <option value="Report">Y</option>
-                                    <option value="Question">N</option>
+                                <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2">
+                                    <option value="0">Y</option>
+                                    <option value="1">N</option>
                                 </select>
                             </div>
                         </div>
@@ -248,6 +264,7 @@
                                 <button type="button" id="btnSubmit3" class="btn btn-info btn-submit" style="display:none;">存檔</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                <input type="hidden" id="justSearch" name="justSearch" value="" />
                             </div>
                         </div>
                     </div>
@@ -342,3 +359,13 @@
 <!--輸出表格結束-->
 <!--上傳輸出表格-->
 <!--輸出表格結束-->
+
+<script>
+
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    if (errorLine != "") {
+        var message = errorLine
+        window.alert(message)
+    }
+
+</script>

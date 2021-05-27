@@ -20,6 +20,7 @@
                 $("#btnSubmit3").hide();
                 $("#AA").show();
                 $("#BB").show();
+                $("#memo").hide();
                 break;
             case "1":
                 $("#NAME").show();
@@ -38,6 +39,7 @@
                 $("#btnSubmit3").hide();
                 $("#AA").hide();
                 $("#BB").hide();
+                $("#memo").show();
                 break;
             case "2":
                 $("#NAME").hide();
@@ -56,24 +58,40 @@
                 $("#btnSubmit3").show();
                 $("#AA").hide();
                 $("#BB").hide();
+                $("#memo").hide();
                 break;
         }
     });
-    $("#ORDER_I").on("change", function () {
-        ShowLoading("資料查詢中…");
-        var a = $("#AuditMode").val()
-        var b = parseInt(a) + 2
-        var c = b.toString();
-        //$("#AuditMode").val(c);
-        console.log(c)
-        console.log($("#AuditMode").val())
-        console.log(a)
-        console.log(b)
-        $("#AuditMode").val('3');
-        $("#frmMemberScore").submit();
-        disabledLoading();
 
-    });
+    $("#ddlOperator").on("change", function () {
+        //console.log($(this).val())
+        var value = $(this).val();
+        $("#ddlUserGroup").empty();
+        if (value != "") {
+            //var Mode = $("#ddlObj").val();
+            //if (Mode == "Edit") {
+            //    $("#justSearch").val(1)
+            //    $("#UserPWD").prop("disabled", "disabled");
+            //}
+            $("#justSearch").val(1)
+            $("#frmMemberScore").submit();
+        }
+    })
+
+    //$("#ORDER_I").on("change", function () {
+    //    ShowLoading("資料查詢中…");
+    //    var a = $("#AuditMode").val()
+    //    var b = parseInt(a) + 2
+    //    var c = b.toString();
+    //    console.log(c)
+    //    console.log($("#AuditMode").val())
+    //    console.log(a)
+    //    console.log(b)
+    //    $("#AuditMode").val('3'); //我只要設值，controller就只會抓到null
+    //    $("#frmMemberScore").submit();
+    //    disabledLoading();
+    //});
+
     $("#btnSubmit0").on("click", function () {
         ShowLoading("資料查詢中…");
         var SD = $("#StartDate").val();
@@ -151,6 +169,14 @@
             disabledLoadingAndShowAlert(errMsg);
         }
 
+    });
+
+    $("#btnSubmit2").on("click", function () {
+        $("#justSearch").val(0)
+        $("#frmMemberScore").submit();
+    });
+    $("#btnSubmit3").on("click", function () {
+        $("#frmMemberScore").submit();
     });
 
     $("#fileImport").on("change", function () {

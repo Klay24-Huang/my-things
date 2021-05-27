@@ -766,6 +766,8 @@
     <Content Include="Views\MemberManage\MedalMileStone.cshtml" />
     <Content Include="Views\ContactManage\ContactMaintainNew.cshtml" />
     <Content Include="Views\MemberManage\MemberScore.cshtml" />
+    <Content Include="Views\CommonObj\GetSCITEM.cshtml" />
+    <Content Include="Views\CommonObj\GetSCMITEM.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

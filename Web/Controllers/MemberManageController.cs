@@ -967,21 +967,58 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string StartDate, string EndDate)
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE,string sonmemo, FormCollection collection)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
             ViewData["MEMNAME"] = MEMNAME;
             ViewData["ORDERNO"] = ORDERNO;
+            ViewData["ORDERNO_I"] = ORDERNO_I;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
+            ViewData["SCITEM"] = (collection["ddlOperator"] == null) ? "0" : collection["ddlOperator"].ToString() == "" ? "0" : collection["ddlOperator"].ToString(); //讓view知道我所選的評分行為(主項)的值
+            int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
 
             if (AuditMode == "0")
             {
                 List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
                 return View(lstData);
             }
-            else if (AuditMode == "1")
+            else if (AuditMode == "1" && justSearch == 0)
+            {
+                bool flag = true;
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                {
+                    //NAME = MEMNAME,
+                    ID = IDNO,
+                    ORDERNO = ORDERNO_I,
+                    DAD = collection["ddlOperator"].ToString(),
+                    SON = collection["ddlUserGroup"].ToString(),
+                    SCORE = MEMSCORE,
+                    APP = ChoiceSelect_2,
+                    USERID = Session["Account"].ToString(),
+                    MEMO = sonmemo
+                };
+                SPOutput_Base SPOutput = new SPOutput_Base();
+                flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                    //return Content("<script>alert('ok');</script>");
+                }
+                else
+                {
+                    ViewData["errorLine"] = "新增失敗";
+                }
+
+                return View();
+            }
+            else if (AuditMode == "1" && justSearch == 1)
             {
                 return View();
             }
