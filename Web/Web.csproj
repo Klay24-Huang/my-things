@@ -784,6 +784,10 @@
       <Project>{C7B92EF2-F283-4135-8309-FD1A30B4ED38}</Project>
       <Name>OtherService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Repository.Interface\Repository.Interface.csproj">
+      <Project>{478ed3dd-ec37-4ee4-9ef9-6cda7a95caa3}</Project>
+      <Name>Repository.Interface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reposotory.Implement\Reposotory.Implement.csproj">
       <Project>{ec8cf1d8-b569-4b3f-9c8e-4ab95622961c}</Project>
       <Name>Reposotory.Implement</Name>

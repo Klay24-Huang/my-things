@@ -428,6 +428,10 @@ namespace WebAPI.Models.Enum
             /// 取得會員徽章 20210521 ADD BY YEH
             /// </summary>
             GetMapMedal,
+            /// <summary>
+            /// 取得會員積分攻略標題 20210526 ADD BY FRANK
+            /// </summary>
+            GetMemberScoreItem,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -1028,6 +1032,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMapMedal:     //取得地圖徽章 20210521 ADD BY YEH
                     SPName = "usp_GetMapMedal";
+                    break;
+                case SPType.GetMemberScoreItem:  //取得會員積分攻略標題 20210526 ADD BY FRANK
+                    SPName = "usp_GetMemberScoreItem";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
