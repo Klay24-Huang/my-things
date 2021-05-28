@@ -327,6 +327,9 @@
     <Compile Include="TB\BackEnd\BE_GetFuncGroup.cs" />
     <Compile Include="TB\BackEnd\BE_GetFuncPower.cs" />
     <Compile Include="TB\BackEnd\BE_GetKymcoList.cs" />
+    <Compile Include="TB\BackEnd\BE_GetMemberData.cs" />
+    <Compile Include="TB\BackEnd\BE_GetMemberScoreFull.cs" />
+    <Compile Include="TB\BackEnd\BE_GetMemberScoreItem.cs" />
     <Compile Include="TB\BackEnd\BE_GetMemList.cs" />
     <Compile Include="TB\BackEnd\BE_GetOrderModifyDataNew.cs" />
     <Compile Include="TB\BackEnd\BE_GetOrderModifyDataNewV2.cs" />
