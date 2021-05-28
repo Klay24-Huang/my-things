@@ -73,8 +73,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.OrderNo };
-                string[] errList = { "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.OrderNo, apiInput.WithoutGoldFlow };
+                string[] errList = { "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
 
@@ -110,7 +110,8 @@ namespace WebAPI.Controllers
                 {
                     OrderNo = tmpOrder,
                     UserID = apiInput.UserID,
-                    LogID = LogID
+                    LogID = LogID,
+                    WithoutGoldFlow = apiInput.WithoutGoldFlow
                 };
 
                 SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify> sqlHelp = new SQLHelper<SPInput_BE_GetOrderInfoBeforeModify, SPOutput_BE_GetOrderInfoBeforeModify>(connetStr);

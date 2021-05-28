@@ -43,6 +43,7 @@ $(document).ready(function () {
             var obj = new Object();
             obj.UserID = Account;
             obj.OrderNo = OrderNo;
+            obj.WithoutGoldFlow = "true";
             DoAjaxAfterCallBackWithOutMessage(obj, "BE_GetOrderModifyInfoNew", "查詢資料發生錯誤", SetData);
         } else {
             disabledLoadingAndShowAlert(errMsg);

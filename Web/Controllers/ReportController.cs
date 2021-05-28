@@ -762,10 +762,10 @@ namespace Web.Controllers
                 content.CreateCell(12).SetCellValue(lstRawDataOfMachi[k].returnFlg);   //@場內還車,20210510唐加
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
