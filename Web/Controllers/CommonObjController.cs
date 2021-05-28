@@ -128,5 +128,45 @@ namespace Web.Controllers
             return View(lstData);
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [ChildActionOnly]
+        public ActionResult GetSCITEM(string SEQNO)//string SEQNO
+        {
+            List<BE_SCITEM> lstOperators = new OperatorRepository(connetStr).GetSCITEM();
+            bool showAll = false;
+
+            ViewData["_SCITEM"] = SEQNO;
+            return View(lstOperators);
+        }
+        [ChildActionOnly]
+        public ActionResult GetSCMITEM(string scitem)
+        {
+            List<BE_SCMITEM> lstUserGroup = null;
+            lstUserGroup = new AccountManageRepository(connetStr).GetSCMITEM(scitem);
+
+            bool showAll = false;
+
+            //ViewData["UserGroup"] = SEQNO;
+            return View(lstUserGroup);
+        }
     }
 }
