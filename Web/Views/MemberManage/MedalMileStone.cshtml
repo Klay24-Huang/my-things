@@ -188,12 +188,17 @@
 </div>
 <!--輸出表格結束-->
 
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
 
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-    if (errorLine != "") {
-        var message = errorLine
-        window.alert(message)
+    if (errorLine != "" && errorLine != "ok") {
+        //var message = errorLine
+        //window.alert(message)
+        swal("失敗!", errorLine, "error");
+    }
+    if (errorLine == "ok") {
+        swal("成功!", errorLine, "success");
     }
 
     @*var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';

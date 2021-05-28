@@ -49,8 +49,8 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode" >
-                                    <option value="0">查詢/匯出</option>
-                                    <option value="1">新增</option>
+                                    <option value="0">新增</option>
+                                    <option value="1">查詢/匯出</option>
                                     <option value="2">上傳EXCEL</option>
                                 </select>
                             </div>
@@ -81,31 +81,31 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="ORDER">
+                <li class="list-group-item" id="ORDER" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control clear" type="text" name="ORDERNO" id="ORDERNO" value="@ORDERNO" />
+                                <input onkeyup="value=value.replace(/[^\d]/g,'') " class="form-control clear" type="text" name="ORDERNO" id="ORDERNO" value="@ORDERNO" />
                             </div>
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="ORDER_I" style="display:none;">
+                <li class="list-group-item" id="ORDER_I">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO_I" />
+                                <input onkeyup="value=value.replace(/[^\d]/g,'') " class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO_I" />
                             </div>
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="DATE">
+                <li class="list-group-item" id="DATE" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -176,7 +176,7 @@
                     </div>
                 </li>
 
-                <li class="list-group-item" style="display:none;" id="Choice_0">
+                <li class="list-group-item" id="Choice_0">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" style="display:none;" id="Choice_1">
+                <li class="list-group-item" id="Choice_1">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -212,7 +212,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="memo" style="display:none;">
+                <li class="list-group-item" id="memo" >
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -224,7 +224,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="SCORE" style="display:none;">
+                <li class="list-group-item" id="SCORE" >
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -236,7 +236,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" style="display:none;" id="Choice_2">
+                <li class="list-group-item" id="Choice_2">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -258,9 +258,9 @@
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 @*<button type="submit" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>*@ @*會強制查詢，就算id沒填也一樣*@
-                                <button type="button" id="btnSubmit0" class="btn btn-info btn-submit">查詢</button>
-                                <button type="button" id="btnSubmit1" class="btn btn-info btn-submit">匯出</button>
-                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit" style="display:none;">新增</button>
+                                <button type="button" id="btnSubmit0" class="btn btn-info btn-submit" style="display:none;">查詢</button>
+                                <button type="button" id="btnSubmit1" class="btn btn-info btn-submit" style="display:none;">匯出</button>
+                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit" >新增</button>
                                 <button type="button" id="btnSubmit3" class="btn btn-info btn-submit" style="display:none;">存檔</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
@@ -360,12 +360,20 @@
 <!--上傳輸出表格-->
 <!--輸出表格結束-->
 
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
 
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-    if (errorLine != "") {
-        var message = errorLine
-        window.alert(message)
+    if (errorLine != "" && errorLine != "ok") {
+        //var message = errorLine
+        //window.alert(message)
+
+
+        //swal("Good job!", "You clicked the button!", "success");
+        swal("失敗!", errorLine, "error");
+    }
+    if (errorLine == "ok") {
+        swal("成功!", errorLine, "success");
     }
 
 </script>

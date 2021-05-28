@@ -3,7 +3,7 @@
         var Mode = $("#AuditMode").val();
         $(".clear").val('');
         switch (Mode) {
-            case "0":
+            case "1":
                 $("#NAME").show();
                 $("#ID").show();
                 $("#ORDER").show();
@@ -22,7 +22,7 @@
                 $("#BB").show();
                 $("#memo").hide();
                 break;
-            case "1":
+            case "0":
                 $("#NAME").show();
                 $("#ID").show();
                 $("#ORDER").hide();
@@ -63,8 +63,7 @@
         }
     });
 
-    $("#ddlOperator").on("change", function () {
-        //console.log($(this).val())
+    $("#ddlOperatorGG").on("change", function () {
         var value = $(this).val();
         $("#ddlUserGroup").empty();
         if (value != "") {
@@ -74,23 +73,26 @@
             //    $("#UserPWD").prop("disabled", "disabled");
             //}
             $("#justSearch").val(1)
+            //$("#AuditMode").val(1)
             $("#frmMemberScore").submit();
         }
     })
 
-    //$("#ORDER_I").on("change", function () {
-    //    ShowLoading("資料查詢中…");
-    //    var a = $("#AuditMode").val()
-    //    var b = parseInt(a) + 2
-    //    var c = b.toString();
-    //    console.log(c)
-    //    console.log($("#AuditMode").val())
-    //    console.log(a)
-    //    console.log(b)
-    //    $("#AuditMode").val('3'); //我只要設值，controller就只會抓到null
-    //    $("#frmMemberScore").submit();
-    //    disabledLoading();
-    //});
+    $("#ORDER_I").on("change", function () {
+        ShowLoading("資料查詢中…");
+        var a = $("#AuditMode").val()
+        var b = parseInt(a) + 3
+        var c = b.toString();
+        console.log(c)
+        console.log($("#AuditMode").val())
+        console.log(a)
+        console.log(b)
+        $("#AuditMode").val(3); //我只要設值，controller就只會抓到null，但我的邏輯是else就處理，所以null也可以達到我的要求
+        if ($("#ORDERNO_I").val() != "") {
+            $("#frmMemberScore").submit();
+        }
+        disabledLoading();
+    });
 
     $("#btnSubmit0").on("click", function () {
         ShowLoading("資料查詢中…");
@@ -172,8 +174,31 @@
     });
 
     $("#btnSubmit2").on("click", function () {
-        $("#justSearch").val(0)
-        $("#frmMemberScore").submit();
+        ShowLoading("資料查詢中…");
+        var flag = true;
+        var errMsg = "";
+
+        if ($("#ORDERNO_I").val() == "") {
+            flag = false;
+            errMsg = "請輸入合約";
+        }
+        if ($("#IDNO").val() == "") {
+            flag = false;
+            errMsg = "請輸入ID";
+        }
+        if ($("#MEMSCORE").val() == "") {
+            flag = false;
+            errMsg = "請輸入分數";
+        }
+        
+        if (flag) {
+            $("#justSearch").val(0)
+            $("#frmMemberScore").submit();
+            disabledLoading();
+
+        } else {
+            disabledLoadingAndShowAlert(errMsg);
+        }
     });
     $("#btnSubmit3").on("click", function () {
         $("#frmMemberScore").submit();

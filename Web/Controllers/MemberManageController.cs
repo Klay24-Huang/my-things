@@ -870,7 +870,7 @@ namespace Web.Controllers
                 //string errorLine = "";
                 string errorMsg = "";
                 bool flag = true;
-                ViewData["errorLine2"] = null;
+                //ViewData["errorLine2"] = null;
 
                 List<SPInput_BE_IneInsMileStone> lstData = new List<SPInput_BE_IneInsMileStone>();
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -976,49 +976,61 @@ namespace Web.Controllers
             ViewData["ORDERNO_I"] = ORDERNO_I;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
-            ViewData["SCITEM"] = (collection["ddlOperator"] == null) ? "0" : collection["ddlOperator"].ToString() == "" ? "0" : collection["ddlOperator"].ToString(); //讓view知道我所選的評分行為(主項)的值
+            ViewData["SCITEM"] = (collection["ddlOperatorGG"] == null) ? "0" : collection["ddlOperatorGG"].ToString() == "" ? "0" : collection["ddlOperatorGG"].ToString(); //讓view知道我所選的評分行為(主項)的值
             int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
+            //object a = collection["ddlOperatorGG"];
+            //string b = collection["ddlOperatorGG"].ToString();
+            //object aa = collection["ddlUserGroup"];
+            //string bb = collection["ddlUserGroup"].ToString();
 
-            if (AuditMode == "0")
+            if (AuditMode == "1")
             {
                 List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
                 return View(lstData);
             }
-            else if (AuditMode == "1" && justSearch == 0)
+            else if (AuditMode == "0" && justSearch == 0)
             {
                 bool flag = true;
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                string errCode = "";
-                CommonFunc baseVerify = new CommonFunc();
-                SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                if (collection["ddlUserGroup"]=="0")
                 {
-                    //NAME = MEMNAME,
-                    ID = IDNO,
-                    ORDERNO = ORDERNO_I,
-                    DAD = collection["ddlOperator"].ToString(),
-                    SON = collection["ddlUserGroup"].ToString(),
-                    SCORE = MEMSCORE,
-                    APP = ChoiceSelect_2,
-                    USERID = Session["Account"].ToString(),
-                    MEMO = sonmemo
-                };
-                SPOutput_Base SPOutput = new SPOutput_Base();
-                flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
-                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-
+                    flag = false;
+                    ViewData["errorLine"] = "評分行為未選擇";
+                }
                 if (flag)
                 {
-                    ViewData["errorLine"] = "ok";
-                    //return Content("<script>alert('ok');</script>");
-                }
-                else
-                {
-                    ViewData["errorLine"] = "新增失敗";
-                }
+                    List<ErrorInfo> lstError = new List<ErrorInfo>();
+                    string errCode = "";
+                    CommonFunc baseVerify = new CommonFunc();
+                    SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                    {
+                        //NAME = MEMNAME,
+                        ID = IDNO,
+                        ORDERNO = Convert.ToInt32(ORDERNO_I),
+                        DAD = collection["ddlOperatorGG"].ToString(),
+                        SON = collection["ddlUserGroup"].ToString(),
+                        SCORE = int.Parse(MEMSCORE),
+                        APP = ChoiceSelect_2,
+                        USERID = Session["Account"].ToString(),
+                        MEMO = sonmemo
+                    };
+                    SPOutput_Base SPOutput = new SPOutput_Base();
+                    flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
 
+                    if (flag)
+                    {
+                        ViewData["errorLine"] = "ok";
+                        //return Content("<script>alert('ok');</script>");
+                    }
+                    else
+                    {
+                        ViewData["errorLine"] = "新增失敗";
+                    }
+                }
+                
                 return View();
             }
-            else if (AuditMode == "1" && justSearch == 1)
+            else if (AuditMode == "0" && justSearch == 1)
             {
                 return View();
             }
@@ -1028,11 +1040,19 @@ namespace Web.Controllers
             }
             else
             {
-                List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO);
-                ViewData["IDNO"] = lstData[0].IDNO;
-                ViewData["MEMNAME"] = lstData[0].NAME;
-                ViewData["AuditMode"] = "1";
-                return View();
+                List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
+                try
+                {
+                    ViewData["IDNO"] = lstData[0].IDNO;
+                    ViewData["MEMNAME"] = lstData[0].NAME;
+                    //ViewData["AuditMode"] = "1";
+                    return View();
+                }
+                catch
+                {
+                    ViewData["errorLine"] = "無此合約";
+                    return View();
+                }
             };
         }
 

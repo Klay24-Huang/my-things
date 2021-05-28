@@ -10,10 +10,10 @@ namespace Domain.SP.BE.Input
     {
         //public string NAME { get; set; }
         public string ID { get; set; }
-        public string ORDERNO { get; set; }
+        public int ORDERNO { get; set; }
         public string DAD { get; set; }
         public string SON { get; set; }
-        public string SCORE { get; set; }
+        public int SCORE { get; set; }
         public string APP { get; set; }
         public string USERID { get; set; }
         public string MEMO { get; set; }
