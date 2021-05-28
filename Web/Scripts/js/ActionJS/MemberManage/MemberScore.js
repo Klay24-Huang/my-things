@@ -18,8 +18,11 @@
                 $("#btnSubmit1").show();
                 $("#btnSubmit2").hide();
                 $("#btnSubmit3").hide();
+                //$("#btnSubmit4").hide();
                 $("#AA").show();
                 $("#BB").show();
+                $("#CC").hide();
+                $("#DD").hide();
                 $("#memo").hide();
                 break;
             case "0":
@@ -37,8 +40,11 @@
                 $("#btnSubmit1").hide();
                 $("#btnSubmit2").show();
                 $("#btnSubmit3").hide();
+                //$("#btnSubmit4").hide();
                 $("#AA").hide();
                 $("#BB").hide();
+                $("#CC").hide();
+                $("#DD").hide();
                 $("#memo").show();
                 break;
             case "2":
@@ -56,8 +62,11 @@
                 $("#btnSubmit1").hide();
                 $("#btnSubmit2").hide();
                 $("#btnSubmit3").show();
+                //$("#btnSubmit4").show();
                 $("#AA").hide();
                 $("#BB").hide();
+                //$("#CC").show();
+                //$("#DD").show();
                 $("#memo").hide();
                 break;
         }
@@ -200,10 +209,19 @@
             disabledLoadingAndShowAlert(errMsg);
         }
     });
-    $("#btnSubmit3").on("click", function () {
-        $("#frmMemberScore").submit();
+    $("#exampleDownload").on("click", function () {
+        window.location.href = "../Content/example/MemberScoreExample.xlsx";
     });
+    //$("#btnSubmit4").on("click", function () {
+    //    $("#btnSubmit3").show();
 
+
+    //});
+    $("#btnSubmit3").on("click", function () {
+        ShowLoading("資料匯入中");
+        $("#frmMemberScore").submit();
+        disabledLoading();
+    });
     $("#fileImport").on("change", function () {
         var file = this.files[0];
         var fileName = file.name;

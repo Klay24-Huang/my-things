@@ -112,6 +112,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_LandControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
     <Compile Include="SP\BE\Input\SP_BE_InsMemberScore.cs" />
+    <Compile Include="SP\BE\Input\SP_Input_BE_InsMemberScore.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetOrderInfoBeforeModify.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_HandleHiEasyRentRetry.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_BeforeBookingStart.cs" />

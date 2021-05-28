@@ -48,7 +48,7 @@
                                 處理項目
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode" >
+                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
                                     <option value="0">新增</option>
                                     <option value="1">查詢/匯出</option>
                                     <option value="2">上傳EXCEL</option>
@@ -184,11 +184,11 @@
                             </div>
                             <div class="col-md-3">
                                 @*<select class="form-control clear" name="ChoiceSelect_0" id="ChoiceSelect_0">
-                                    <option value="Report">滷肉飯</option>
-                                    <option value="Question">輕白色</option>
-                                    <option value="debug">關東煮</option>
-                                    <option value="Advice">素食</option>
-                                </select>*@
+                                        <option value="Report">滷肉飯</option>
+                                        <option value="Question">輕白色</option>
+                                        <option value="debug">關東煮</option>
+                                        <option value="Advice">素食</option>
+                                    </select>*@
                                 @Html.Action("GetSCITEM", "CommonObj", new { SEQNO = SCITEM }) @*SEQNO參數為了刷新頁面後能抓到所選的值*@
                             </div>
                         </div>
@@ -202,17 +202,17 @@
                             </div>
                             <div class="col-md-3">
                                 @*<select class="form-control clear" name="ChoiceSelect_0" id="ChoiceSelect_1">
-                                    <option value="Report">滷肉飯</option>
-                                    <option value="Question">輕白色</option>
-                                    <option value="debug">關東煮</option>
-                                    <option value="Advice">素食</option>
-                                </select>*@
+                                        <option value="Report">滷肉飯</option>
+                                        <option value="Question">輕白色</option>
+                                        <option value="debug">關東煮</option>
+                                        <option value="Advice">素食</option>
+                                    </select>*@
                                 @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM }) @*scitem參數為了知道GetSCITEM選了什麼*@
                             </div>
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="memo" >
+                <li class="list-group-item" id="memo">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -224,7 +224,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="SCORE" >
+                <li class="list-group-item" id="SCORE">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -260,8 +260,9 @@
                                 @*<button type="submit" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>*@ @*會強制查詢，就算id沒填也一樣*@
                                 <button type="button" id="btnSubmit0" class="btn btn-info btn-submit" style="display:none;">查詢</button>
                                 <button type="button" id="btnSubmit1" class="btn btn-info btn-submit" style="display:none;">匯出</button>
-                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit" >新增</button>
-                                <button type="button" id="btnSubmit3" class="btn btn-info btn-submit" style="display:none;">存檔</button>
+                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit">新增</button>
+                                @*<button type="button" id="btnSubmit4" class="btn btn-info btn-submit" style="display:none;">預覽</button>*@
+                                <button type="button" id="btnSubmit3" class="btn btn-info btn-submit" style="display:none;">批次存檔</button>
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                                 <input type="hidden" id="justSearch" name="justSearch" value="" />
@@ -285,13 +286,9 @@
     <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
 }
 
-@*@using (Html.BeginForm("MemberScore_ORDER_I", "MemberManage", FormMethod.Post, new { id = "frmORDER_I" }))
-{
-    <input type="hidden" id="ExplodeORDER" name="ExplodeORDER" value="">
-    <input type="hidden" id="ExplodeAuditMode" name="ExplodeAuditMode" value="">
-}*@
 
-<div class="container mt-4" id="AA">
+
+<div class="container mt-4" id="AA" style="display:none;">
     <div class="card">
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
             結果
@@ -299,7 +296,7 @@
     </div>
 </div>
 <!--查詢輸出表格-->
-<div class="container mt-4" id="BB">
+<div class="container mt-4" id="BB" style="display:none;">
     <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
@@ -343,9 +340,7 @@
                         <td scope="col">@(lstData[i].GM)</td>
                     </tr>
                 }
-
             }
-
         </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
@@ -357,8 +352,70 @@
     </table>
 </div>
 <!--輸出表格結束-->
-<!--上傳輸出表格-->
+
+
+
+
+<div class="container mt-4" id="CC" style="display:none;">
+    <div class="card">
+        <div class="card-header  text-white" style="background-color: #9fa4ac;">
+            上傳資料預覽
+        </div>
+    </div>
+</div>
+<!--查詢輸出表格-->
+<div class="container mt-4" id="DD" style="display:none;">
+    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort-ignore="true"></th>
+                <th scope="col">ID</th>
+                <th scope="col">評分行為(主項)</th>
+                <th scope="col">評分行為(子項)</th>
+                <th scope="col">加/扣分</th>
+                <th scope="col">訂單編號</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="11" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false"></td>
+                        <td scope="col">@(lstData[i].MEMCNAME)</td>
+                        <td scope="col">@(lstData[i].A_SYSDT)</td>
+                        <td scope="col">@(lstData[i].DAD)</td>
+                        <td scope="col">@(lstData[i].SON)</td>
+                        <td scope="col">@(lstData[i].SCORE)</td>
+                        <td scope="col">@(lstData[i].TIME)</td>
+                        <td scope="col">@(lstData[i].ORDERNO)</td>
+                        <td scope="col">@(lstData[i].APP)</td>
+                        <td scope="col">@(lstData[i].DEL)</td>
+                        <td scope="col">@(lstData[i].GM)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="11" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 <!--輸出表格結束-->
+
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>

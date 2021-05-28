@@ -967,7 +967,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE,string sonmemo, FormCollection collection)
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE,string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -1036,6 +1036,98 @@ namespace Web.Controllers
             }
             else if (AuditMode == "2")
             {
+                string errorMsg = "";
+                bool flag = true;
+
+                List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                if (fileImport != null)
+                {
+                    if (fileImport.ContentLength > 0)
+                    {
+                        string fileName = string.Concat(new string[]{
+                            "MemberScoreImport",
+                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                            "_",
+                            DateTime.Now.ToString("yyyyMMddHHmmss"),
+                            ".xlsx"
+                        });
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "訂單編號" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
+                        {
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            {
+                                errorMsg = "標題列不相符";
+                                flag = false;
+                                break;
+                            }
+                        }
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                {
+                                    ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    ORDERNO = int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "")),
+                                    DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                    SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
+                                    SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                    APP = "",
+                                    USERID = Session["Account"].ToString(),
+                                    MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
+                                };
+
+                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                if (flag == false)
+                                {
+                                    //errorLine = i.ToString();
+                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = errorMsg;
+                }
+
                 return View();
             }
             else
