@@ -304,6 +304,7 @@ function DoSave(Id) {
     UserApp = $("#UserApp_" + Id).val();
     SEQ = $("#UserSeq_" + Id).val();
     var Account = $("#Account").val();
+    var IDNO = $("#UserId_" + Id).val();
 
     var flag = true;
     var errMsg = "";
@@ -323,7 +324,7 @@ function DoSave(Id) {
 
     if (flag) {
         var obj = new Object();
-        obj.IDNO = Id;
+        obj.IDNO = IDNO;
         obj.UserID = Account;
         obj.UserSon = UserSon;
         obj.UserScore = UserScore;
