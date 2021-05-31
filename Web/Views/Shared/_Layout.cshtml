@@ -2,6 +2,7 @@
     string actionName = ViewContext.RouteData.Values["action"].ToString();//.ToUpper();
     string controllName = ViewContext.RouteData.Values["controller"].ToString();//.ToUpper();
     string hostPath = System.Configuration.ConfigurationManager.AppSettings["jsHost"];
+    string hostPath2 = System.Configuration.ConfigurationManager.AppSettings["jsHost2"];
     string ControllerStrName = "";
     string ActionStrName = "";
 
@@ -675,8 +676,9 @@
                 break;
         }
     }
-    <script>
+<script>
         var jsHost = "@hostPath";
+        var jsHost2 = "@hostPath2";
 
         $(".datePicker").flatpickr();
         $('.dateTimePicker').flatpickr(
@@ -685,7 +687,7 @@
                 dateFormat: "Y-m-d H:i",
             }
         );
-    </script>
+</script>
     <script src="@Html.Raw(PageScriptName)"></script>
 </body>
 </html>

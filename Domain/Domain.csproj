@@ -96,6 +96,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_MemberScore.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NewsHandle.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NPR136Success.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_OrderModify.cs" />

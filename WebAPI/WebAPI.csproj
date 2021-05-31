@@ -412,6 +412,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleExtendCar.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleFuncMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMemberScore.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModify.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
