@@ -47,6 +47,7 @@ function DoIn(Id) {
     console.log(json);
     //var site = jsHost + "BE_InsertChargeParking";
     var site = jsHost2 + "BE_InsertChargeParking";
+    //var site = "http://irentv2-as-backend-web-test.azurewebsites.net/api/" + "BE_InsertChargeParking";
     //var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
     console.log("site:" + site);
     $.ajax({
