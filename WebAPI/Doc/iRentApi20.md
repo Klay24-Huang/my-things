@@ -599,15 +599,15 @@ iRentApi20 Web API版本
 
 * DetailList 參數說明
 
-| 參數名稱   | 參數說明     |   型態   | 範例                    |
-| ---------- | ------------ | :------: | ----------------------- |
-| TotalCount | 總筆數       |   int    | 61                      |
-| RowNo      | 編號         |   int    | 1                       |
-| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03.733 |
-| SEQ        | 序號         |   int    | 103                     |
-| SCORE      | 分數         |   int    | -50                     |
-| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣                |
-| ORDERNO    | 訂單編號     |  string  | H10365010               |
+| 參數名稱   | 參數說明     |   型態   | 範例                |
+| ---------- | ------------ | :------: | ------------------- |
+| TotalCount | 總筆數       |   int    | 61                  |
+| RowNo      | 編號         |   int    | 1                   |
+| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03 |
+| SEQ        | 序號         |   int    | 103                 |
+| SCORE      | 分數         |   int    | -50                 |
+| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣            |
+| ORDERNO    | 訂單編號     |  string  | H10365010           |
 
 * Output 範例
 
@@ -625,7 +625,7 @@ iRentApi20 Web API版本
             {
                 "TotalCount": 58,
                 "RowNo": 1,
-                "GetDate": "2021-05-19T13:37:03.733",
+                "GetDate": "2021-05-19T13:37:03",
                 "SEQ": 103,
                 "SCORE": -50,
                 "UIDESC": "天佑台灣",
@@ -643,7 +643,7 @@ iRentApi20 Web API版本
             {
                 "TotalCount": 58,
                 "RowNo": 3,
-                "GetDate": "2021-05-05T17:12:53.697",
+                "GetDate": "2021-05-05T17:12:53",
                 "SEQ": 105,
                 "SCORE": -5,
                 "UIDESC": "預約前三小時取消(預約<10小時)",
@@ -756,15 +756,15 @@ iRentApi20 Web API版本
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明                   |  型態  | 範例                    |
-| ------------- | -------------------------- | :----: | ----------------------- |
-| MileStone     | 徽章代碼                   | string | AuditPass1              |
-| MileStoneName | 徽章名稱                   | string | 新手上路                |
-| Norm          | 門檻指標                   |  int   | 1                       |
-| Progress      | 目前進度                   |  int   | 1                       |
-| Describe      | APP顯示的描述              | string | 通過會員審核            |
-| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                       |
-| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45.437 |
+| 參數名稱      | 參數說明                   |  型態  | 範例                |
+| ------------- | -------------------------- | :----: | ------------------- |
+| MileStone     | 徽章代碼                   | string | AuditPass1          |
+| MileStoneName | 徽章名稱                   | string | 新手上路            |
+| Norm          | 門檻指標                   |  int   | 1                   |
+| Progress      | 目前進度                   |  int   | 1                   |
+| Describe      | APP顯示的描述              | string | 通過會員審核        |
+| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                   |
+| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45 |
 
 * Output 範例
 
@@ -784,7 +784,7 @@ iRentApi20 Web API版本
                 "Progress": 1,
                 "Describe": "通過會員審核",
                 "GetFlag": 1,
-                "GetMedalTime": "2021-05-20T14:27:45.437"
+                "GetMedalTime": "2021-05-20T14:27:45"
             },
             {
                 "MileStone": "School1",
@@ -2148,7 +2148,7 @@ iRentApi20 Web API版本
 | ShowSpecial		| 是否顯示活動文字 | int | 1 |
 | SpecialInfo		| 活動文字			| string | |
 | Power				| 機車電量			| float | 90.5 |
-| RemainingMileage	| 預估里程			| float | 30.5 |	
+| RemainingMileage	| 預估里程			| float | 30.5 |
 | Latitude			| 緯度			| float | 25.0692639 |
 | Longitude			| 經度			| float | 121.5308611 |
 | Operator			| 供應商圖片		| string | supplierIrent |
@@ -2317,7 +2317,7 @@ iRentApi20 Web API版本
 | CarOfArea			| 車輛地區		| string | 北北桃 |
 | Content			| 其他備註		| string |   |
 | Power				| 電量				| int | 50.0	|
-| RemainingMileage	| 預估里程			| float | 30.5 |	
+| RemainingMileage	| 預估里程			| float | 30.5 |
 | MonthlyRentId		| 訂閱制月租ID		| int | 123456 |
 | MotoTotalMins		| 機車不分平假日分鐘數 | int |  |
 | WDRateForMoto		| 機車平日優惠價 | dluble |   |
@@ -3317,7 +3317,7 @@ iRentApi20 Web API版本
 }
 ```
 
-  
+
 * Output回傳參數說明
 
 | 參數名稱     | 參數說明                |  型態  | 範例          |
@@ -3400,7 +3400,7 @@ iRentApi20 Web API版本
 ```
 
  
-  
+
 * Output回傳參數說明
 
 | 參數名稱     | 參數說明                |  型態  | 範例          |
@@ -3469,9 +3469,9 @@ iRentApi20 Web API版本
   "InvoTypeId":2
 }
 ```
+
   
-  
-  
+
 * Output回傳參數說明
 
 | 參數名稱     | 參數說明                |  型態  | 範例          |
@@ -3701,7 +3701,7 @@ iRentApi20 Web API版本
 | StartDate | 起日 			| string | 05/18 |
 | EndDate	| 迄日 			| string | 08/16 |
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
-| IsMix		| 是否為城市車手 | int | 1 | 
+| IsMix		| 是否為城市車手 | int | 1 |
 | MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
 | MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
 | NxtMonProPeriod | 下期續訂總期數 | string | 3 |
