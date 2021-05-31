@@ -45,12 +45,8 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            DateTime StartDate = DateTime.Now, EndDate = DateTime.Now;
-            string IDNO = ""; 
             bool isGuest = true;
-            Int16 APPKind = 2;
             string Contentjson = "";
-            string PowerStr = "";
 
             #endregion
             #region 防呆
