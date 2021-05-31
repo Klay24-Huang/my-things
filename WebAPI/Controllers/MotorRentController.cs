@@ -121,7 +121,7 @@ namespace WebAPI.Controllers
 
             #region TB
 
-            //取得汽車使用中訂閱制月租
+            //取得機車使用中訂閱制月租
             if (flag)
             {
                 if (!string.IsNullOrWhiteSpace(IDNO))
@@ -132,11 +132,11 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 1
+                        IsMoto = -1
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
-                        InUseMonth = sp_list;
+                        InUseMonth = sp_list.Where(x=>x.IsMoto == 1 || x.IsMix == 1).ToList();
                 }
             }
 
@@ -173,19 +173,25 @@ namespace WebAPI.Controllers
                     #region 加入月租資訊
                     if (InUseMonth != null && InUseMonth.Count() > 0)
                     {
-                        var f = InUseMonth.FirstOrDefault();
-                        _MotorRentObj.ForEach(x =>
-                        {
-                            x.MonthlyRentId = f.MonthlyRentId;
-                            x.MonProjNM = f.MonProjNM;
-                            x.CarWDHours = f.WorkDayHours;
-                            x.CarHDHours = f.HolidayHours;
-                            x.MotoTotalMins = Convert.ToInt32(f.MotoTotalMins);
-                            x.WDRateForCar = f.WorkDayRateForCar;
-                            x.HDRateForCar = f.HoildayRateForCar;
-                            x.WDRateForMoto = f.WorkDayRateForMoto;
-                            x.HDRateForMoto = f.HoildayRateForMoto;
+                        var finalOut = new List<OAPI_MotorRent_Param>();
+                        _MotorRentObj.ForEach(x => {
+                            finalOut.Add(x);
+                            InUseMonth.ForEach(y =>
+                            {
+                                var newItem = objUti.Clone(x);
+                                newItem.MonthlyRentId = y.MonthlyRentId;
+                                newItem.MonProjNM = y.MonProjNM;
+                                newItem.CarWDHours = y.WorkDayHours;
+                                newItem.CarHDHours = y.HolidayHours;
+                                newItem.MotoTotalMins = Convert.ToInt32(y.MotoTotalMins);
+                                newItem.WDRateForCar = y.WorkDayRateForCar;
+                                newItem.HDRateForCar = y.HoildayRateForCar;
+                                newItem.WDRateForMoto = y.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = y.HoildayRateForMoto;
+                                finalOut.Add(newItem);
+                            });
                         });
+                        _MotorRentObj = finalOut;
                     }
                     #endregion
                     OAnyRentAPI.MotorRentObj = _MotorRentObj;

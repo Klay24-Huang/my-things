@@ -28,6 +28,8 @@ namespace Domain.SP.Output.Subscription
         public Int64 MonthlyRentId { get; set; }
         public int MonLvl { get; set; }
         public int MonType { get; set; }
+        public int IsMoto { get; set; }
+        public int IsMix { get; set; }
     }
 
 }
