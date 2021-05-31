@@ -214,6 +214,7 @@
     <Compile Include="Controllers\BE_HandleFuncMaintainController.cs" />
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
+    <Compile Include="Controllers\BE_HandleMemberScoreController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyByDiscountController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyNewController.cs" />

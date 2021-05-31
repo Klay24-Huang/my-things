@@ -19,5 +19,7 @@ namespace Domain.TB.BackEnd
         public string APP { get; set; }
         public string DEL { get; set; }
         public string GM { get; set; }
+        public string A_PRGID { get; set; }
+        public string SEQ { get; set; }
     }
 }

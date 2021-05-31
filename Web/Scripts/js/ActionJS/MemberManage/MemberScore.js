@@ -255,3 +255,86 @@ var DateDiff = function (sDate1, sDate2) { // sDate1 和 sDate2 是 2016-06-18 �
     iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) // 把相差的毫秒數轉換為天數
     return iDays;
 };
+
+
+var NowEditID = 0;
+function DoEdit(Id) {
+    if (NowEditID > 0) {
+        $("#UserSon_" + NowEditID).val(UserSon).hide();
+        $("#UserScore_" + NowEditID).val(UserScore).hide();
+        $("#UserApp_" + NowEditID).val(UserApp).hide();
+        $("#btnReset_" + NowEditID).hide();
+        $("#btnSave_" + NowEditID).hide();
+        $("#btnEdit_" + NowEditID).show();
+        $("#btnDel_" + NowEditID).show();
+    }
+
+    NowEditID = Id;
+    UserSon = $("#UserAccount_" + Id).val();
+    UserScore = $("#UserName_" + Id).val();
+    UserApp = $("#UserName_" + Id).val();
+
+    $("#UserSon_" + Id).show();
+    $("#UserScore_" + Id).show();
+    $("#UserApp_" + Id).show();
+
+    $("#btnReset_" + Id).show();
+    $("#btnSave_" + Id).show();
+    $("#btnEdit_" + Id).hide();
+    $("#btnDel_" + Id).hide();
+}
+function DoReset(Id) {
+
+    $("#UserSon_" + NowEditID).val(UserSon).hide();
+    $("#UserScore_" + NowEditID).val(UserScore).hide();
+    $("#UserApp_" + NowEditID).val(UserApp).hide();
+    $("#btnReset_" + NowEditID).hide();
+    $("#btnSave_" + NowEditID).hide();
+    $("#btnEdit_" + NowEditID).show();
+    $("#btnDel_" + NowEditID).show();
+
+    NowEditID = 0;
+    UserSon = "";
+    UserScore = "";
+    UserApp = "";
+}
+function DoSave(Id) {
+    UserSon = $("#UserSon_" + Id).val();
+    UserScore = $("#UserScore_" + Id).val();
+    UserApp = $("#UserApp_" + Id).val();
+    SEQ = $("#UserSeq_" + Id).val();
+    var Account = $("#Account").val();
+
+    var flag = true;
+    var errMsg = "";
+
+    ShowLoading("資料處理中");
+    var checkList = [UserScore, UserApp];
+    var errMsgList = ["分數未填", "APP未填"];
+
+    var len = checkList.length;
+    for (var i = 0; i < len; i++) {
+        if (checkList[i] == "") {
+            flag = false;
+            errMsg = errMsgList[i];
+            break;
+        }
+    }
+
+    if (flag) {
+        var obj = new Object();
+        obj.IDNO = Id;
+        obj.UserID = Account;
+        obj.UserSon = UserSon;
+        obj.UserScore = UserScore;
+        obj.UserApp = UserApp;
+        obj.SEQ = SEQ;
+
+        DoAjaxAfterReload(obj, "BE_HandleMemberScore", "修改花生錯誤");
+    } else {
+        disabledLoading(errMsg)
+    }
+
+}
+function DoDel(Id) {
+}
