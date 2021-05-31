@@ -26,6 +26,11 @@ using WebAPI.Models.Param.Output;
 using Domain.TB;
 using Reposotory.Implement;
 using WebAPI.Models.Param.CusFun.Input;
+using Domain.WebAPI.Input.Taishin.Wallet;
+using Newtonsoft.Json;
+using Domain.WebAPI.output.Taishin.Wallet;
+using Domain.MemberData;
+using Domain.SP.Input.Member;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -35,9 +40,13 @@ namespace WebAPI.Models.BillFunc
     public class MonSubsCommon
     {
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
+
+        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+
         private MonSubsSp msp = new MonSubsSp();
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
@@ -229,6 +238,121 @@ namespace WebAPI.Models.BillFunc
                 else
                     carRepo.AddTraceLog(FunId, FunNm, eumTraceType.followErr, trace);
             }
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 月租履約保證
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>        
+        public bool TSIB_Escrow_Month(ICF_TSIB_Escrow_Type sour, ref string errCode, ref string errMsg)
+        {
+            if(sour != null)
+            {
+                var spin = new ICF_TSIB_Escrow();
+                spin = objUti.TTMap<ICF_TSIB_Escrow_Type, ICF_TSIB_Escrow>(sour);
+                int nowCount = 2;
+                spin.MemberId = string.Format("{0}Month{1}", sour.IDNO, nowCount.ToString().PadLeft(4, '0'));
+                return TSIB_Escrow(spin, ref errCode, ref errMsg);
+            }
+            else
+            {
+                errCode = "ER257";
+                errMsg = "sour必填";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 台新履約保證
+        /// </summary>
+        public bool TSIB_Escrow(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
+        {
+            bool flag = false;
+
+            DateTime NowTime = DateTime.UtcNow;
+            string guid = Guid.NewGuid().ToString().Replace("-", "");
+            WebAPI_CreateAccountAndStoredMoney escrow = new WebAPI_CreateAccountAndStoredMoney()
+            {
+                AccountType = "2",
+                ApiVersion = "0.1.01",
+                CreateType = "1",
+                Email = sour.Email,
+                GUID = guid,
+                ID = sour.IDNO,
+                MemberId = sour.MemberId,
+                MerchantId = MerchantId,
+                Name = sour.Name,
+                PhoneNo = sour.PhoneNo,
+                POSId = "",
+                SourceFrom = "9",
+                Amount = sour.Amount,
+                AmountType = "2",
+                StoreName = "",
+                StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                StoreTransId = string.Format("{0}{1}", sour.IDNO, NowTime.ToString("MMddHHmmss")),
+                StoreId = "",
+                Bonus = 0,
+                BonusExpiredate = ""
+            };
+            var body = JsonConvert.SerializeObject(escrow);
+            TaishinWallet WalletAPI = new TaishinWallet();
+            string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            string SignCode = WalletAPI.GenerateSignCode(escrow.MerchantId, utcTimeStamp, body, APIKey);
+            WebAPIOutput_StoreValueCreateAccount output = null;
+            flag = WalletAPI.DoStoreValueCreateAccount(escrow, escrow.MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+           
+            #region 將執行結果寫入TB
+            if (flag)
+            {
+                string formatString = "yyyyMMddHHmmss";
+                var spin = new SPInput_InsEscrowHist()
+                {
+                    IDNO = sour.IDNO,
+                    MemberID = sour.MemberId,
+                    AccountID = output.Result.AccountId,
+                    EcStatus = Convert.ToInt32(output.Result.Status),
+                    Email = output.Result.Email,
+                    PhoneNo = output.Result.PhoneNo,
+                    Amount = sour.Amount,
+                    TotalAmount = output.Result.Amount,
+                    CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
+                    LastStoreTransId = output.Result.StoreTransId,
+                    LastTransId = output.Result.TransId,
+                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null)
+                };
+                msp.sp_InsEscrowHist(spin, ref errCode);
+            }
+            else
+            {
+                #region 紀錄未回傳失敗
+
+                var spin = new SPInput_InsEscrowHist()
+                {
+                    IDNO = sour.IDNO,
+                    MemberID = sour.MemberId,
+                    AccountID = "x",
+                    EcStatus = -1,
+                    Email = sour.Email,
+                    PhoneNo = sour.PhoneNo,
+                    Amount = sour.Amount,
+                    TotalAmount = 0,
+                    CreateDate = DateTime.Now,
+                    LastStoreTransId = "x",
+                    LastTransId = "x",
+                    LastTransDate = DateTime.Now
+                };
+                msp.sp_InsEscrowHist(spin, ref errCode);
+
+                #endregion
+
+                errCode = "ERR";
+                errMsg = output.Message;
+            }
+            #endregion
 
             return flag;
         }
@@ -853,6 +977,33 @@ namespace WebAPI.Models.BillFunc
             return flag;
         }
 
+        /// <summary>
+        /// 寫入履保紀錄
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_InsEscrowHist(SPInput_InsEscrowHist spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
+            string spName = "usp_InsEscrowHist_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_InsEscrowHist();
+            SQLHelper<SPInput_InsEscrowHist, SPOut_InsEscrowHist> sqlHelp = new SQLHelper<SPInput_InsEscrowHist, SPOut_InsEscrowHist>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
         public List<SPOut_GetSubsHist> sp_GetSubsHist(SPInput_GetSubsHist spInput, ref string errCode)
         {
             var re = new List<SPOut_GetSubsHist>();
@@ -1233,6 +1384,31 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 取得會員資料
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public RegisterData GetMemberData(string ID, Int64 LogID, string Token)
+        {
+            var spin = new SPInput_GetMemberData()
+            {
+                IDNO = ID,
+                LogID = LogID,
+                Token = Token
+            };
+            var lstError = new List<ErrorInfo>();
+            string spName = new WebAPI.Models.Enum.ObjType().GetSPName(WebAPI.Models.Enum.ObjType.SPType.GetMemberData);
+            SPOutput_Base SPOutputBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMemberData, SPOutput_Base>(connetStr);
+            List<RegisterData> lstOut = new List<RegisterData>();
+            DataSet ds = new DataSet();
+            bool flag = sqlHelp.ExeuteSP(spName, spin, ref SPOutputBase, ref lstOut, ref ds, ref lstError);
+            if (lstOut != null && lstOut.Count() > 0)
+                return lstOut.FirstOrDefault();
+            else
+                return null;
+        }
     }
 
     /// <summary>
