@@ -193,6 +193,7 @@
     <Compile Include="Controllers\BE_CheckUserGroupController.cs" />
     <Compile Include="Controllers\BE_ContactSettingCheckController.cs" />
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
+    <Compile Include="Controllers\BE_DeleteMemberScoreController.cs" />
     <Compile Include="Controllers\BE_FeedBackHandleController.cs" />
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />

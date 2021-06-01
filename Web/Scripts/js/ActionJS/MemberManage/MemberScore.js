@@ -92,10 +92,7 @@
         var a = $("#AuditMode").val()
         var b = parseInt(a) + 3
         var c = b.toString();
-        console.log(c)
-        console.log($("#AuditMode").val())
-        console.log(a)
-        console.log(b)
+
         $("#AuditMode").val(3); //我只要設值，controller就只會抓到null，但我的邏輯是else就處理，所以null也可以達到我的要求
         if ($("#ORDERNO_I").val() != "") {
             $("#frmMemberScore").submit();
@@ -260,9 +257,12 @@ var DateDiff = function (sDate1, sDate2) { // sDate1 和 sDate2 是 2016-06-18 �
 var NowEditID = 0;
 function DoEdit(Id) {
     if (NowEditID > 0) {
-        $("#UserSon_" + NowEditID).val(UserSon).hide();
-        $("#UserScore_" + NowEditID).val(UserScore).hide();
-        $("#UserApp_" + NowEditID).val(UserApp).hide();
+        //$("#UserSon_" + NowEditID).val(UserSon).hide();
+        //$("#UserScore_" + NowEditID).val(UserScore).hide();
+        //$("#UserApp_" + NowEditID).val(UserApp).hide();
+        $("#UserSon_" + NowEditID).hide();
+        $("#UserScore_" + NowEditID).hide();
+        $("#UserApp_" + NowEditID).hide();
         $("#btnReset_" + NowEditID).hide();
         $("#btnSave_" + NowEditID).hide();
         $("#btnEdit_" + NowEditID).show();
@@ -270,14 +270,13 @@ function DoEdit(Id) {
     }
 
     NowEditID = Id;
-    UserSon = $("#UserAccount_" + Id).val();
-    UserScore = $("#UserName_" + Id).val();
-    UserApp = $("#UserName_" + Id).val();
+    //UserSon = $("#UserAccount_" + Id).val();
+    //UserScore = $("#UserName_" + Id).val();
+    //UserApp = $("#UserName_" + Id).val();
 
     $("#UserSon_" + Id).show();
     $("#UserScore_" + Id).show();
     $("#UserApp_" + Id).show();
-
     $("#btnReset_" + Id).show();
     $("#btnSave_" + Id).show();
     $("#btnEdit_" + Id).hide();
@@ -285,24 +284,24 @@ function DoEdit(Id) {
 }
 function DoReset(Id) {
 
-    $("#UserSon_" + NowEditID).val(UserSon).hide();
-    $("#UserScore_" + NowEditID).val(UserScore).hide();
-    $("#UserApp_" + NowEditID).val(UserApp).hide();
+    $("#UserSon_" + NowEditID).hide();
+    $("#UserScore_" + NowEditID).hide();
+    $("#UserApp_" + NowEditID).hide();
     $("#btnReset_" + NowEditID).hide();
     $("#btnSave_" + NowEditID).hide();
     $("#btnEdit_" + NowEditID).show();
     $("#btnDel_" + NowEditID).show();
 
     NowEditID = 0;
-    UserSon = "";
-    UserScore = "";
-    UserApp = "";
+    //UserSon = "";
+    //UserScore = "";
+    //UserApp = "";
 }
 function DoSave(Id) {
-    UserSon = $("#UserSon_" + Id).val();
-    UserScore = $("#UserScore_" + Id).val();
-    UserApp = $("#UserApp_" + Id).val();
-    SEQ = $("#UserSeq_" + Id).val();
+    var UserSon = $("#UserSon_" + Id).val();
+    var UserScore = $("#UserScore_" + Id).val();
+    var UserApp = $("#UserApp_" + Id).val();
+    var SEQ = $("#UserSeq_" + Id).val();
     var Account = $("#Account").val();
     var IDNO = $("#UserId_" + Id).val();
 
@@ -325,17 +324,30 @@ function DoSave(Id) {
     if (flag) {
         var obj = new Object();
         obj.IDNO = IDNO;
-        obj.UserSon = UserSon;
-        obj.UserScore = UserScore;
-        obj.UserApp = UserApp;
+        obj.SON = UserSon;
+        obj.SCORE = UserScore;
+        obj.APP = UserApp;
         obj.SEQ = SEQ;
         obj.UserID = Account;
 
         DoAjaxAfterReload(obj, "BE_HandleMemberScore", "修改花生錯誤");
     } else {
-        disabledLoading(errMsg)
+        disabledLoadingAndShowAlert(errMsg)
     }
 
 }
 function DoDel(Id) {
+    var SEQ = $("#UserSeq_" + Id).val();
+    var Account = $("#Account").val();
+    var IDNO = $("#UserId_" + Id).val();
+
+
+    ShowLoading("資料處理中");
+
+    var obj = new Object();
+    obj.IDNO = IDNO;
+    obj.SEQ = SEQ;
+    obj.UserID = Account;
+
+    DoAjaxAfterReload(obj, "BE_HandleMemberScore", "修改花生錯誤");
 }

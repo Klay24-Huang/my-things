@@ -296,7 +296,7 @@
     </div>
 </div>
 <!--查詢輸出表格-->
-<div class="container mt-4" id="BB" >
+<div class="container mt-4" id="BB" style="max-width:1500px;">
     <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
@@ -334,7 +334,7 @@
                         <td scope="col">@(lstData[i].SEQ)
                             <input type="text" name="UserSeq_@(lstData[i].SEQ)" id="UserSeq_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" /></td>
                         <td scope="col">@(lstData[i].MEMIDNO)
-                            <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" /></td>
+                            <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].MEMIDNO)" class="form-control" style="display:none" /></td>
                         <td scope="col">@(lstData[i].MEMCNAME)</td>
                         <td scope="col">@(lstData[i].A_SYSDT)</td>
                         <td scope="col">@(lstData[i].DAD)</td>
