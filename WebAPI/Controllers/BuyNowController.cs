@@ -500,35 +500,35 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("後續api處理");                            
                     }
                     #endregion
-                   
+
                     #region 履保
-                    //if (flag)
-                    //{
-                    //    try
-                    //    {
-                    //        var mem = msp.GetMemberData(IDNO, LogID, Access_Token);
-                    //        if(mem != null)
-                    //        {
-                    //            var spin = new ICF_TSIB_Escrow_Type()
-                    //            {
-                    //                IDNO = IDNO,
-                    //                Name = mem.MEMCNAME,
-                    //                PhoneNo = mem.MEMTEL,
-                    //                Email = mem.MEMEMAIL,
-                    //                Amount = ProdPrice
-                    //            };
-                    //            var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                    //        }
-                    //        else
-                    //        {
-                    //            //無會員資料
-                    //        }
-                    //    }
-                    //    catch(Exception ex)
-                    //    {
-                            
-                    //    }
-                    //}
+                    if (flag)
+                    {
+                        try
+                        {
+                            var mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                            if (mem != null)
+                            {
+                                var spin = new ICF_TSIB_Escrow_Type()
+                                {
+                                    IDNO = IDNO,
+                                    Name = mem.MEMCNAME,
+                                    PhoneNo = mem.MEMTEL,
+                                    Email = mem.MEMEMAIL,
+                                    Amount = ProdPrice
+                                };
+                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                            }
+                            else
+                            {
+                                //無會員資料
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
                     #endregion
 
                     #region 發票

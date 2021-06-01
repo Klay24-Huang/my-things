@@ -505,6 +505,10 @@
     <Compile Include="WebAPI\Input\Taishin\CardData.cs" />
     <Compile Include="WebAPI\Input\Taishin\DeleteCreditCardAuthRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\DirectCardAuthData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Escrow\WSInput_CancelWriteOff.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Escrow\WSInput_EscrowBase.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Escrow\WSInput_GetGuaranteeNo.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Escrow\WSInput_WriteOffGuaranteeNoJunk.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfCreditCardAuth.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfDeleteCreditCardAuth.cs" />
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfECRefund.cs" />
@@ -580,6 +584,11 @@
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthRequestParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DirectCardAuthResultData.cs" />
+    <Compile Include="WebAPI\output\Taishin\Escrow\WSOut_CancelWriteOff.cs" />
+    <Compile Include="WebAPI\output\Taishin\Escrow\WSOut_EscrowBase.cs" />
+    <Compile Include="WebAPI\output\Taishin\Escrow\WSOut_EscrowDetailBase.cs" />
+    <Compile Include="WebAPI\output\Taishin\Escrow\WSOut_GetGuaranteeNo.cs" />
+    <Compile Include="WebAPI\output\Taishin\Escrow\WSOut_WriteOffGuaranteeNoJunk.cs" />
     <Compile Include="WebAPI\output\Taishin\GetCreditCardListResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\DeleteCreditCardAuthResponseParams.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\AuthCarrierN.cs" />
