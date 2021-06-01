@@ -508,7 +508,7 @@ namespace OtherService
         {
             bool flag = true;
             string url = EscrowBaseURL + GetGuaranteeNo;
-            output = DoGetTaishinApi<WSInput_GetGuaranteeNo, WSOut_GetGuaranteeNo>(wsInput, ClientId, utcTimeStamp, SignCode,url).Result;
+            output = DoGetTaishinApi<WSInput_GetGuaranteeNo, WSOut_GetGuaranteeNo>(wsInput, ClientId, utcTimeStamp, SignCode,url, "DoGetGuaranteeNo").Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
                 //if (output.Data == null)
@@ -528,7 +528,7 @@ namespace OtherService
         {
             bool flag = true;
             string url = EscrowBaseURL + WriteOffGuaranteeNoJunk;
-            output = DoGetTaishinApi<WSInput_WriteOffGuaranteeNoJunk, WSOut_WriteOffGuaranteeNoJunk>(wsInput, ClientId, utcTimeStamp, SignCode, url).Result;
+            output = DoGetTaishinApi<WSInput_WriteOffGuaranteeNoJunk, WSOut_WriteOffGuaranteeNoJunk>(wsInput, ClientId, utcTimeStamp, SignCode, url, "DoWriteOffGuaranteeNoJunk").Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
                 //if (output.Data == null)
@@ -548,7 +548,7 @@ namespace OtherService
         {
             bool flag = true;
             string url = EscrowBaseURL + CancelWriteOff;
-            output = DoGetTaishinApi<WSInput_CancelWriteOff, WSOut_CancelWriteOff>(wsInput, ClientId, utcTimeStamp, SignCode, url).Result;
+            output = DoGetTaishinApi<WSInput_CancelWriteOff, WSOut_CancelWriteOff>(wsInput, ClientId, utcTimeStamp, SignCode, url, "DoCancelWriteOff").Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
                 //if (output.Data == null)
@@ -563,7 +563,7 @@ namespace OtherService
             return flag;
         }
 
-        private async Task<T2> DoGetTaishinApi<T1,T2>(T1 input, string ClientId, string utcTimeStamp, string SignCode, string URL) where T2: IWSOut_EscrowBase
+        private async Task<T2> DoGetTaishinApi<T1,T2>(T1 input, string ClientId, string utcTimeStamp, string SignCode, string URL,string FunNm) where T2: IWSOut_EscrowBase
         {
             bool flag = false;
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
@@ -615,7 +615,7 @@ namespace OtherService
                     MKTime = MKTime,
                     UPDTime = RTime,
                     WebAPIInput = JsonConvert.SerializeObject(input),
-                    WebAPIName = "GetGuaranteeNo",
+                    WebAPIName = FunNm,
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = URL
                 };
