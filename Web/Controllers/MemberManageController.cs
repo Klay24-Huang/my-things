@@ -829,8 +829,17 @@ namespace Web.Controllers
 
             if (AuditMode == "0")
             {
-                List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
-                return View(lstData);
+                //List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
+                //return View(lstData);
+
+                BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
+                List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(IDNO);
+                List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(IDNO);
+                Data.MileStone = new List<BE_MileStone>();
+                Data.MileStone = lstMileStone;
+                Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                Data.MileStoneDetail = lstMileStoneDetail;
+                return View(Data);
             }
             else if (AuditMode == "1")
             {

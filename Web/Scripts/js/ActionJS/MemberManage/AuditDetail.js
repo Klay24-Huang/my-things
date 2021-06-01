@@ -414,6 +414,13 @@ $(function () {
     if (BlockMobileLen > 0) {
         $('#btnCheckBlockMobileLen').click();
     }
+    //$("#CloseModel").click(function () {
+    //    $('#mileStone_modal').modal('hide')
+    //    //$('#mileStone_modal').modal('toggle')
+    //});
+    $('#milestonedetail_modal').on('hide.bs.modal', function () {
+        $('#mileStone_modal').modal('hide')
+    })
 
     setPostbackValue();
 })
