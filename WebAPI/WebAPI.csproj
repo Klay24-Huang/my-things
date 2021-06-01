@@ -247,6 +247,7 @@
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
+    <Compile Include="Controllers\GetMotorParkingDataController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
