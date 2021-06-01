@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.WebAPI.Input.Taishin.Escrow
 {
-    class WSInput_GetGuaranteeNo: WSInput_EscrowBase
+    public class WSInput_GetGuaranteeNo: WSInput_EscrowBase
     {
         /// <summary>
         /// 會員虛擬帳號

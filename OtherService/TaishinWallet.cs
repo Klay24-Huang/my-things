@@ -1,6 +1,8 @@
 ﻿using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.Taishin.Escrow;
 using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.WebAPI.output.Taishin.Escrow;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
 using OtherService.Common;
@@ -27,6 +29,7 @@ namespace OtherService
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
+        private string EscrowBaseURL = ConfigurationManager.AppSettings["EscrowBaseURL"].ToString();//履保URL
         private string AccountBaseURL = ConfigurationManager.AppSettings["TaishinWalletAccountBaseURL"].ToString();
         private string StoreValueCreateAccount = ConfigurationManager.AppSettings["StoreValueCreateAccount"].ToString(); //直接儲值+開戶
         private string StoredMoney = ConfigurationManager.AppSettings["StoredMoney"].ToString(); //直接儲值
@@ -34,6 +37,9 @@ namespace OtherService
         private string PayTransaction= ConfigurationManager.AppSettings["PayTransaction"].ToString(); //交易扣款
         private string GetAccountValue = ConfigurationManager.AppSettings["GetAccountValue"].ToString(); //查詢帳號明細
         private string GetAccountStatus= ConfigurationManager.AppSettings["GetAccountStatus"].ToString(); //查詢帳號狀態
+        private string GetGuaranteeNo = ConfigurationManager.AppSettings["GetGuaranteeNo"].ToString(); //履保/信託序號發行
+        private string WriteOffGuaranteeNoJunk = ConfigurationManager.AppSettings["WriteOffGuaranteeNoJunk"].ToString(); //履保/信託序號核銷/報廢
+        private string CancelWriteOff = ConfigurationManager.AppSettings["CancelWriteOff"].ToString(); //履保/信託序號取消核銷
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public string GenerateSignCode(string ClientId,string utcTimeStamp,string body,string apiKey)
         {
@@ -495,6 +501,134 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 履保相關
+
+        //履保/信託序號發行
+        public bool DoGetGuaranteeNo(WSInput_GetGuaranteeNo wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WSOut_GetGuaranteeNo output)
+        {
+            bool flag = true;
+            string url = EscrowBaseURL + GetGuaranteeNo;
+            output = DoGetTaishinApi<WSInput_GetGuaranteeNo, WSOut_GetGuaranteeNo>(wsInput, ClientId, utcTimeStamp, SignCode,url).Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        //履保/信託序號核銷/報廢
+        public bool DoWriteOffGuaranteeNoJunk(WSInput_WriteOffGuaranteeNoJunk wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WSOut_WriteOffGuaranteeNoJunk output)
+        {
+            bool flag = true;
+            string url = EscrowBaseURL + WriteOffGuaranteeNoJunk;
+            output = DoGetTaishinApi<WSInput_WriteOffGuaranteeNoJunk, WSOut_WriteOffGuaranteeNoJunk>(wsInput, ClientId, utcTimeStamp, SignCode, url).Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        //履保/信託序號取消核銷
+        public bool DoCancelWriteOff(WSInput_CancelWriteOff wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WSOut_CancelWriteOff output)
+        {
+            bool flag = true;
+            string url = EscrowBaseURL + CancelWriteOff;
+            output = DoGetTaishinApi<WSInput_CancelWriteOff, WSOut_CancelWriteOff>(wsInput, ClientId, utcTimeStamp, SignCode, url).Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        private async Task<T2> DoGetTaishinApi<T1,T2>(T1 input, string ClientId, string utcTimeStamp, string SignCode, string URL) where T2: IWSOut_EscrowBase
+        {
+            bool flag = false;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+            request.Headers.Add("Authorization", string.Format("Bearer {0}", APIToken));
+            request.Headers.Add("ClientId", ClientId);
+            request.Headers.Add("UtcTimeStamp", utcTimeStamp);
+            request.Headers.Add("SignCode", SignCode);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            var output = Activator.CreateInstance<T2>();
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<T2>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output.ReturnCode = "9999";
+                output.Message = (ex.Message.Length > 200) ? ex.Message.Substring(0, 200) : ex.Message;
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "GetGuaranteeNo",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = URL
+                };
+                flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+        }
+
+        #endregion
+
         private string ByteToString(byte[] source)
         {
             StringBuilder builder = new StringBuilder();
