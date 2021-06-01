@@ -730,7 +730,7 @@ namespace Web.Controllers
 
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂單編號(車麻吉)", "合約編號", "車牌號碼", "停車地點", "入場時間", "出場時間", "停車時數", "iRent取車時間", "iRent還車時間", "停車費用" };
+            string[] headerField = { "訂單編號(車麻吉)", "合約編號", "車牌號碼", "@停車場業者", "停車地點", "@調度停車場", "入場時間", "出場時間", "停車時數", "iRent取車時間", "iRent還車時間", "停車費用", "@場內還車" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -746,23 +746,26 @@ namespace Web.Controllers
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);   //訂單編號(車麻吉)
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);  //訂單編號(車麻吉)
                 content.CreateCell(1).SetCellValue(((lstRawDataOfMachi[k].OrderNo == 0) ? "未掛帳" : "H" + lstRawDataOfMachi[k].OrderNo.ToString().PadLeft(7, '0'))); //合約編號
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);   //車牌號碼
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Name);   //停車場名稱
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Check_in.ToString("yyyy-MM-dd HH:mm:ss"));   //入場時間
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].Check_out.ToString("yyyy-MM-dd HH:mm:ss"));   //出場時間
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);     //車牌號碼
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].OP);        //@停車場業者,20210510唐加
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Name);      //停車場名稱
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].PP);        //@調度停車場,20210510唐加
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].Check_in.ToString("yyyy-MM-dd HH:mm:ss"));   //入場時間
+                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].Check_out.ToString("yyyy-MM-dd HH:mm:ss"));   //出場時間
                 TimeSpan diffSecond = lstRawDataOfMachi[k].Check_out.Subtract(lstRawDataOfMachi[k].Check_in).Duration();
-                content.CreateCell(6).SetCellValue(string.Format("{0}天{1}小時{2}分{3}秒", diffSecond.Days, diffSecond.Hours, diffSecond.Minutes, diffSecond.Seconds)); //停車時間
-                content.CreateCell(7).SetCellValue(((lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent取車時間
-                content.CreateCell(8).SetCellValue(((lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent還車時間
-                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Amount);   //停車費用
+                content.CreateCell(8).SetCellValue(string.Format("{0}天{1}小時{2}分{3}秒", diffSecond.Days, diffSecond.Hours, diffSecond.Minutes, diffSecond.Seconds)); //停車時間
+                content.CreateCell(9).SetCellValue(((lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].SD.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent取車時間
+                content.CreateCell(10).SetCellValue(((lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未掛帳" : lstRawDataOfMachi[k].ED.ToString("yyyy-MM-dd HH:mm:ss"))); //iRent還車時間
+                content.CreateCell(11).SetCellValue(lstRawDataOfMachi[k].Amount);   //停車費用
+                content.CreateCell(12).SetCellValue(lstRawDataOfMachi[k].returnFlg);   //@場內還車,20210510唐加
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -1071,7 +1074,7 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
 
-            string[] headerField = { "身分證字號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
+            string[] headerField = { "身分證字號", "會員編號", "審核人員", "員工編號", "審核人員群組", "進入待審時間", "審核日期", "審核結果", "不通過原因", "處理項目" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -1086,14 +1089,15 @@ namespace Web.Controllers
             {
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].ID);
-                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].NAME);
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].HIID);
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].Group);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].DATE);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].MEMRFNBR);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].NAME);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].HIID);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Group);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].DATE);
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].TYPE);
-                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].REASON);
+                content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].TYPE);
+                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].REASON);
 
             }
             for (int l = 0; l < headerFieldLen; l++)
@@ -1123,6 +1127,52 @@ namespace Web.Controllers
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
 
+        }
+        public ActionResult ExplodeReFund(string ExplodeSDate, string ExplodeEDate)
+        {
+            ViewData["StartDate"] = ExplodeSDate;
+            ViewData["EndDate"] = ExplodeEDate;
+
+            List<BE_Refund> lstData = null;
+            MemberRepository repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "訂單編號", "購買者id", "購買卡號", "購買日", "到期日", "購買方案", "收款總額", "手續費", "實收金額", "退款日期" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetEasyWalletOrder(ExplodeSDate, ExplodeEDate);
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].orderNo);
+                content.CreateCell(1).SetCellValue(lstData[k].IDNO);
+                content.CreateCell(2).SetCellValue(lstData[k].easyCardNo);
+                content.CreateCell(3).SetCellValue(lstData[k].orderTime);
+                content.CreateCell(4).SetCellValue(lstData[k].endTime);
+                content.CreateCell(5).SetCellValue(lstData[k].ITEM);
+                content.CreateCell(6).SetCellValue(lstData[k].PRICE);
+                content.CreateCell(7).SetCellValue(lstData[k].tax);
+                content.CreateCell(8).SetCellValue(lstData[k].amount);
+                content.CreateCell(9).SetCellValue(lstData[k].refunddate);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "悠遊付訂單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #endregion
 

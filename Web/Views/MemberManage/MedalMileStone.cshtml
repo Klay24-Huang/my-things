@@ -1,0 +1,215 @@
+﻿
+@model IEnumerable<Domain.TB.BackEnd.BE_MileStone>
+
+@{
+    string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
+    string AuditMode = (ViewData["AuditMode"] == null) ? "" : ViewData["AuditMode"].ToString();
+    // 這邊定義的值在js抓不到，這是給view的
+    //var errorLine = (ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString();
+
+    int ResultLen = -1;
+    List<Domain.TB.BackEnd.BE_MileStone> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<Domain.TB.BackEnd.BE_MileStone>();
+        lstData = Model.ToList();
+        ResultLen = lstData.Count;
+    }
+}
+
+
+
+<!--查詢介面-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            會員徽章
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <!--card start-->
+
+    <div class="card">
+        <div class="card-header text-white" style="background-color: #9fa4ac;">
+            查詢條件
+        </div>
+        @using (Html.BeginForm("MedalMileStone", "MemberManage", FormMethod.Post, new { id = "frmMedalMileStone", @class = "form-horizontal", enctype = "multipart/form-data" }))
+        {
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                處理項目
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
+                                    <option value="0">查詢</option>
+                                    <option value="1">新增</option>
+                                    <option value="2">批次匯入</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item" id="ID">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                身份證
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item" style="display:none;" id="Choice">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                下拉式選單
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" name="ChoiceSelect" id="ChoiceSelect">
+                                    <option value="Report">回報違規停車照片給客服</option>
+                                    <option value="Question">填寫官方問卷</option>
+                                    <option value="debug">回報系統bug</option>
+                                    <option value="Advice">提供iRent建議</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item" id="Import" style="display:none;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                匯入清單
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
+
+                            </div>
+                            <div class="col-md-2">
+                                限定.XLS/XLSX檔
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="button" id="exampleDownload" name="exampleDownload" class="btn btn-primary">範例檔案下載</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                @*<button type="submit" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>*@ @*會強制查詢，就算id沒填也一樣*@
+                                <button type="button" id="btnSubmit" class="btn btn-info btn-submit">查詢</button>
+                                <button type="button" id="btnSubmit2" class="btn btn-info btn-submit" style="display:none;">批次新增</button>
+                                <input type="hidden" id="len" name="len" value="@ResultLen" />
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                                @*<button type="button" id="alert" style="display:none;" onclick="ShowMessage('ddd')"></button>*@
+                                @*<button type="button" id="alert" style="display:none;" onclick=""></button>*@
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+    <!--end card-->
+</div>
+<!--查詢介面結束-->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header  text-white" style="background-color: #9fa4ac;">
+            查詢結果
+        </div>
+    </div>
+</div>
+<!--輸出表格-->
+<div class="container mt-4">
+    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+        <thead class="text-white bg-primary">
+            <tr>
+                <th data-sort-ignore="true">
+                </th>
+                <th scope="col">會員姓名</th>
+                <th scope="col">徽章名稱</th>
+                <th scope="col">系列名稱</th>
+                <th scope="col">寫入時間</th>
+                <th scope="col">進度</th>
+                @*<th data-sort-ignore="true">審核</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @if (ResultLen == 0)
+            {
+                <tr>
+                    <td colspan="9" class="text-center">
+                        查無結果
+                    </td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < ResultLen; i++)
+                {
+                    <tr>
+                        <td data-sort="false"></td>
+                        <td scope="col">@(lstData[i].MEMCNAME)</td>
+                        <td scope="col">@(lstData[i].MileStoneName)</td>
+                        <td scope="col">@(lstData[i].ActionName)</td>
+                        <td scope="col">@(lstData[i].MKTime)</td>
+                        <td scope="col">@(lstData[i].Detail)</td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+        <tfoot class="hide-if-no-paging">
+            <tr>
+                <td colspan="4" class="text-center">
+                    <ul class="pagination"></ul>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<!--輸出表格結束-->
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+
+    var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    if (errorLine != "" && errorLine != "ok") {
+        //var message = errorLine
+        //window.alert(message)
+        swal("失敗!", errorLine, "error");
+    }
+    if (errorLine == "ok") {
+        swal("成功!", errorLine, "success");
+    }
+
+    @*var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
+    if (errorLine != "") {
+        var e = document.createEvent("MouseEvents");
+        console.log("sddddddddddddd")
+        e.initEvent("click", true, true);
+        document.getElementById("alert").dispatchEvent(e);
+    }*@
+
+
+</script>
+
+

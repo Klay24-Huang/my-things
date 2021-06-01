@@ -214,9 +214,11 @@
     <Compile Include="Controllers\BE_HandleFuncMaintainController.cs" />
     <Compile Include="Controllers\BE_HandleHoildayController.cs" />
     <Compile Include="Controllers\BE_HandleMasterCardController.cs" />
+    <Compile Include="Controllers\BE_HandleMemberScoreController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyByDiscountController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyNewController.cs" />
+    <Compile Include="Controllers\BE_HandleOrderModifyWithoutGoldFlowController.cs" />
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
@@ -224,6 +226,7 @@
     <Compile Include="Controllers\BE_HandleUserMaintainController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
+    <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
     <Compile Include="Controllers\BE_QueryMenuByUserGroupController.cs" />
@@ -239,6 +242,10 @@
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
+    <Compile Include="Controllers\GetMapMedalController.cs" />
+    <Compile Include="Controllers\GetMemberMedalController.cs" />
+    <Compile Include="Controllers\GetMemberScoreController.cs" />
+    <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -356,6 +363,7 @@
     <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetMemberDataController.cs" />
+    <Compile Include="Controllers\SetMemberScoreDetailController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\SetSubsNxtController.cs" />
@@ -418,6 +426,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleExtendCar.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleFuncMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMasterCard.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleMemberScore.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModify.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
@@ -425,6 +434,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleUserMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsertChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_NewsHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFunc.cs" />
@@ -507,6 +517,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetEstimate.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetFeedBackKindDescript.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMachiParkToken.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetMemberScore.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMonthGroup.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMonthList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetMotorProject.cs" />
@@ -553,6 +564,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetDefPayMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetMemberData.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetMemberScoreDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
@@ -618,6 +630,9 @@
     <Compile Include="Models\Param\Output\OAPI_GetFavoriteStation.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetFeedBackKind.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberData.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberMedal.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberScore.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMemberScoreItem.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMemberStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMonthGroup.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMonthList.cs" />
@@ -637,6 +652,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetUpSubsList.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_MonPeriodDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />

@@ -17,6 +17,75 @@ $(document).ready(function () {
   
 })
 
+//20210511唐加
+$("#btnExplode").on("click", function () {
+    ShowLoading("資料查詢中…");
+
+    $("#ExplodeParkingName").val($("#ParkingName").val());
+    disabledLoading();
+    $("#frmChargeParkingSettingExplode").submit();
+});
+
+//20210511唐加
+function DoIn(Id) {
+    var SParkingName = $("#ParkingName_" + Id).val();
+    var SParkingAddress = $("#ParkingAddress_" + Id).val();
+    var SLatitude = $("#Latitude_" + Id).val();
+    var SLongitude = $("#Longitude_" + Id).val();
+    var SOpenTime = $("#OpenTime_" + Id).val();
+    var SCloseTime = $("#CloseTime_" + Id).val();
+    var Id = $("#Id_" + Id).val();
+    var obj = new Object();
+    obj.ParkingName = SParkingName;
+    obj.ParkingAddress = SParkingAddress;
+    obj.Longitude = SLongitude;
+    obj.Latitude = SLatitude;
+    obj.OpenTime = SOpenTime + ":00";
+    obj.CloseTime = SCloseTime + ":00";
+    obj.Id = Id;
+    var json = JSON.stringify(obj);
+    console.log(json);
+    //var site = jsHost + "BE_InsertChargeParking";
+    var site = jsHost2 + "BE_InsertChargeParking";
+    //var site = "http://irentv2-as-backend-web-test.azurewebsites.net/api/" + "BE_InsertChargeParking";
+    //var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
+    console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (data) {
+            $.busyLoadFull("hide");
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    window.location.reload();
+                });
+            } else {
+                swal({
+                    title: 'Fail',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail',
+                text: "加入調度停車場發生錯誤",
+                icon: 'error'
+            });
+        }
+    });
+}
+
 function DoReset(Id) {
     if (NowEditID > 0) {
         NowEditID = 0;

@@ -314,7 +314,6 @@ namespace Web.Controllers
             List<BE_GetUserData> lstData = null;
             if(Mode=="Edit" && justSearch == 0)
             {
-
                 lstData = new AccountManageRepository(connetStr).GetUserData(Account, UserName, UserGroup, OperatorID, StartDate, EndDate);
                 return View(lstData);
             }

@@ -1459,6 +1459,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("建空模");
                 }
 
+                // 20210510 UPD BY YEH REASON.把車麻吉停車費打開
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     //檢查有無車麻吉停車費用
@@ -1480,7 +1481,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("車麻吉");
                 }
 
-                //20210507 ADD BY YEH REASON.串接CityParking停車場
+                //20210510 ADD BY YEH REASON.串接CityParking停車場
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);

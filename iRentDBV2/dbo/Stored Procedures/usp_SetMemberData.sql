@@ -236,6 +236,9 @@ BEGIN TRY
 			-- 20210225;∑sºWLOG¿…
 			INSERT INTO TB_MemberDataOfAutdit_Log
 			SELECT @LogFlag,'131',@NowTime,* FROM TB_MemberDataOfAutdit WHERE MEMIDNO=@IDNO;
+
+			-- 20210520 ADD BY YEH
+			EXEC @Error=usp_InsAuditHistory @IDNO,@LogID,@ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg OUTPUT
 		END
 	END
 

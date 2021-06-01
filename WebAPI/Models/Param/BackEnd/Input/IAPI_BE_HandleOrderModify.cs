@@ -132,6 +132,11 @@ namespace WebAPI.Models.Param.BackEnd.Input
         public int Pure { set; get; }
 
         /// <summary>
+        /// eTag費用
+        /// </summary>
+        public int eTag { set; get; }
+
+        /// <summary>
         /// 停車費用(總)     // 20210506;ADD BY YEH REASON.新增停車費用(總)
         /// </summary>
         public int ParkingFeeTotal { get; set; }

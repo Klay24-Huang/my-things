@@ -218,11 +218,11 @@ namespace Reposotory.Implement
 
             if ("" != term)
             {
-                SQL += " WHERE (NOT VW.Account IS NULL) AND (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
+                SQL += " WHERE (" + term + ")  GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
             }
             else
             {
-                SQL += " WHERE (NOT VW.Account IS NULL)   GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
+                SQL += " GROUP BY VW.Account,Maintain.UserName,Manager.UserName,OrderNum,UserID,outsideClean,insideClean,rescue,dispatch,Anydispatch,Maintenance,OrderStatus,remark,BookingStart,BookingEnd,CarNo,lastCleanTime,lastRentTimes,lend_place";
             }
 
 
