@@ -271,6 +271,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public bool TSIB_Escrow(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
         {
+            return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
+
             bool flag = false;
 
             DateTime NowTime = DateTime.UtcNow;
