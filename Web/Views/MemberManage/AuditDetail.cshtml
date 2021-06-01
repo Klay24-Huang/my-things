@@ -32,6 +32,9 @@
     int MileStoneDetail = 0;
     int MemberScore = 0;
     string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
+    //string[] aa;
+    //List<string> termsList = new List<string>();
+    string aa="";
 
     if (Model != null)
     {
@@ -141,6 +144,7 @@
         MileStoneLen = (obj.MileStone == null) ? 0 : obj.MileStone.Count();
         MileStoneDetail = (obj.MileStoneDetail == null) ? 0 : obj.MileStoneDetail.Count();
         MemberScore = (obj.MemberScore == null) ? 0 : obj.MemberScore.Count();
+        //aa = new string[MileStoneLen];
 
         if (HistoryLen > 0)
         {
@@ -1696,14 +1700,18 @@
                             {
                                 for (int i = 0; i < MileStoneLen; i++)
                                 {
+                                    
                                     <tr>
                                         <td scope="col">@(obj.MileStone[i].MEMCNAME)</td>
                                         <td scope="col">@(obj.MileStone[i].MileStoneName)</td>
-                                        <td scope="col">@(obj.MileStone[i].ActionName)</td>
+                                        <td scope="col">@(obj.MileStone[i].ActionName)
+                                            <input type='text' id='AN_@i' style="display:none" value="@(obj.MileStone[i].ActionName)"></td>
                                         <td scope="col">@(obj.MileStone[i].MKTime)</td>
-                                        @*<td scope="col"><button name="btnMileStoneDetail_@(i)" id="btnMileStoneDetail_@(i)" class="btn btn-info" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>*@
-                                        <td scope="col"><button type="button" class="btn btn-info" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>
+                                        <td scope="col"><button type="button" class="btn btn-info" data-toggle="modal" data-target="#milestonedetail_modal" >@(obj.MileStone[i].Detail)</button></td>
                                     </tr>
+                                    //aa[i] = obj.MileStone[i].ActionName; //抓不到
+                                    //termsList.Add(obj.MileStone[i].ActionName);
+                                    //aa = obj.MileStone[i].ActionName;
                                 }
                             }
                         </tbody>
@@ -1748,6 +1756,14 @@
                             {
                                 for (int i = 0; i < MileStoneDetail; i++)
                                 {
+                                    @*if (obj.MileStoneDetail[i].Action == aa)
+                                    {
+                                        <tr>
+                                            <td scope="col">@(obj.MileStoneDetail[i].Action)</td>
+                                            <td scope="col">@(obj.MileStoneDetail[i].MKTime)</td>
+                                            <td scope="col">@(obj.MileStoneDetail[i].Event)</td>
+                                        </tr>
+                                    }*@
                                     <tr>
                                         <td scope="col">@(obj.MileStoneDetail[i].Action)</td>
                                         <td scope="col">@(obj.MileStoneDetail[i].MKTime)</td>
@@ -1766,6 +1782,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
+                    @*<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="CloseModel">關閉</button>*@
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
                 </div>
             </div>
@@ -2050,4 +2067,6 @@
     var MobileLen = '@(MobileLen)';
     var HistoryLen = '@(HistoryLen)';
     var BlockMobileLen = '@(BlockMobileLen)'; //20210310唐加
+
+    
 </script>
