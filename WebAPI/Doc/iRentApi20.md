@@ -43,7 +43,7 @@ iRentApi20 Web API版本
 - [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
 - [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
 - [BuyNow/AddMonth 月租購買](#BuyNowAddMonth)
-- [BuyNow/UpMonth 月租升轉(#BuyNowUpMonth)
+- [BuyNow/UpMonth 月租升轉](#BuyNowUpMonth)
 - [BuyNow/PayArrs 欠費繳交](#BuyNowPayArrs)
 - [GetMySubs我的方案牌卡明細](#GetMySubs)
 - [GetSubsCNT取得合約明細](#GetSubsCNT)
@@ -102,6 +102,8 @@ iRentApi20 Web API版本
 20210527 補上取得租金明細
 
 20210528 新增車輛調度停車場相關API
+
+20210601 取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)欄位值調整
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -504,7 +506,7 @@ iRentApi20 Web API版本
 | TotalRentCount  | 目前全部出租數                                               |  int   | 0          |
 | Score           | 會員積分                                                     |  int   | 100        |
 | BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
-| BLOCK_EDATE     | 停權截止日                                                   | string |            |
+| BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
 
 * Output範例
 
@@ -758,7 +760,7 @@ iRentApi20 Web API版本
 
 | 參數名稱      | 參數說明                   |  型態  | 範例                |
 | ------------- | -------------------------- | :----: | ------------------- |
-| MileStone     | 徽章代碼                   | string | AuditPass1          |
+| MileStone     | 徽章代碼                   | string | newhand             |
 | MileStoneName | 徽章名稱                   | string | 新手上路            |
 | Norm          | 門檻指標                   |  int   | 1                   |
 | Progress      | 目前進度                   |  int   | 1                   |
@@ -778,7 +780,7 @@ iRentApi20 Web API版本
     "Data": {
         "MedalList": [
             {
-                "MileStone": "AuditPass1",
+                "MileStone": "newhand",
                 "MileStoneName": "新手上路",
                 "Norm": 1,
                 "Progress": 1,
@@ -787,7 +789,7 @@ iRentApi20 Web API版本
                 "GetMedalTime": "2021-05-20T14:27:45"
             },
             {
-                "MileStone": "School1",
+                "MileStone": "guidebook",
                 "MileStoneName": "有所作為",
                 "Norm": 11,
                 "Progress": 0,
@@ -1740,10 +1742,10 @@ iRentApi20 Web API版本
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| MileStone     | 徽章代碼 | string | AuditPass1 |
-| MileStoneName | 徽章名稱 | string | 新手上路   |
+| 參數名稱      | 參數說明 |  型態  | 範例     |
+| ------------- | -------- | :----: | -------- |
+| MileStone     | 徽章代碼 | string | newhand  |
+| MileStoneName | 徽章名稱 | string | 新手上路 |
 
 * Output 範例
 
@@ -1757,11 +1759,11 @@ iRentApi20 Web API版本
     "Data": {
         "MedalList": [
             {
-                "MileStone": "AuditPass1",
+                "MileStone": "newhand",
                 "MileStoneName": "新手上路"
             },
             {
-                "MileStone": "DriveArea1",
+                "MileStone": "car_range_lv1",
                 "MileStoneName": "出遊"
             }
         ]
