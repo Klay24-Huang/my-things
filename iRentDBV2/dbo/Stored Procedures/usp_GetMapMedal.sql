@@ -78,7 +78,7 @@ BEGIN TRY
 		AND GetMedalTime IS NOT NULL
 		AND ShowTime IS NULL;
 
-		SELECT B.MileStone
+		SELECT B.iConName AS MileStone
 			,B.MileStoneName
 		FROM #MileStone A
 		LEFT JOIN TB_MedalConfig B WITH(NOLOCK) ON A.MileStone=B.MileStone;

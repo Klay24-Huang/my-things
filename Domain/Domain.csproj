@@ -66,6 +66,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_CheckOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_CheckUserGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ContactFinish.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_DeleteMemberScore.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_FeedBackHandle.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
