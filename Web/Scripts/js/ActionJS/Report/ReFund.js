@@ -36,14 +36,6 @@
     //    $("#GIFTNAME").val($("#1pNa").text())
     //    $("#refundReason").val($("#1Am").text())
     //});
-    $("#bt_"+).on("click", function () {
-        //ShowLoading("資料查詢中…");
-        $("#orderNo").val($("#0oNo").text())
-        $("#NAME").val($("#0mNa").text())
-        $("#merchantOrderNo").val($("#0mNo").text())
-        $("#GIFTNAME").val($("#0pNa").text())
-        $("#refundReason").val($("#0Am").text())
-    });
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料處理中…");
@@ -207,3 +199,11 @@
     //});
 
 });
+
+function DoLoad(id) {
+    $("#orderNo").val($("#oNo_" + id).text())
+    $("#NAME").val($("#mNa_" + id).text())
+    $("#merchantOrderNo").val($("mNo_" + id).text())
+    $("#GIFTNAME").val($("#pNa_" + id).text())
+    $("#refundReason").val($("#Am_" + id).text())
+}

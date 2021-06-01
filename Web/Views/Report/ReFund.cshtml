@@ -175,14 +175,14 @@
                 {
                     <tr>
                         <td data-sort="false"></td>
-                        <td scope="col" id=@(i.ToString()+"oNo")>@(lstData[i].orderNo)</td>
-                        <td scope="col" id=@(i.ToString()+"pNa")>@(lstData[i].projectName)</td>
-                        <td scope="col" id=@(i.ToString()+"Am")>@(lstData[i].orderAmount)</td>
-                        <td scope="col" id=@(i.ToString()+"No")>@(lstData[i].IDNO)</td>
-                        <td scope="col" id=@(i.ToString()+"Ti")>@(lstData[i].orderTime)</td>
-                        <td scope="col" id=@(i.ToString()+"mNo")>@(lstData[i].merchantOrderNo)</td>
-                        <td scope="col" id=@(i.ToString()+"mNa")>@(lstData[i].MEMCNAME)</td>
-                        <td scope="col"><button type="button" id=@("bt_"+i.ToString()) class="btn btn-info">載入</button></td>
+                        <td scope="col" id=@("oNo_"+i.ToString())>@(lstData[i].orderNo)</td>
+                        <td scope="col" id=@("pNa_"+i.ToString())>@(lstData[i].projectName)</td>
+                        <td scope="col" id=@("Am_"+i.ToString())>@(lstData[i].orderAmount)</td>
+                        <td scope="col" id=@("No_"+i.ToString())>@(lstData[i].IDNO)</td>
+                        <td scope="col" id=@("Ti_"+i.ToString())>@(lstData[i].orderTime)</td>
+                        <td scope="col" id=@("mNo_"+i.ToString())>@(lstData[i].merchantOrderNo)</td>
+                        <td scope="col" id=@("mNa"+i.ToString())>@(lstData[i].MEMCNAME)</td>
+                        <td scope="col"><button type="button" id=@("bt_"+i.ToString()) class="btn btn-info" onclick="DoLoad(@i);">載入</button></td>
                     </tr>
                 }
 
