@@ -401,6 +401,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckUserGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSettingCheck.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_DeleteMemberScore.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_FeedBackHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
