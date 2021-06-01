@@ -65,7 +65,7 @@ BEGIN TRY
 	--取得資料
 	IF @Error=0
 	BEGIN
-		SELECT A.MileStone,
+		SELECT A.iConName AS MileStone,
 			A.MileStoneName,
 			A.Norm,
 			ISNULL(B.Progress,0) AS Progress,
