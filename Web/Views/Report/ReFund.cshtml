@@ -182,7 +182,7 @@
                         <td scope="col" id=@(i.ToString()+"Ti")>@(lstData[i].orderTime)</td>
                         <td scope="col" id=@(i.ToString()+"mNo")>@(lstData[i].merchantOrderNo)</td>
                         <td scope="col" id=@(i.ToString()+"mNa")>@(lstData[i].MEMCNAME)</td>
-                        <td scope="col"><button type="button" id=@(i.ToString()+"bt") class="btn btn-info">載入</button></td>
+                        <td scope="col"><button type="button" id=@("bt_"+i.ToString()) class="btn btn-info">載入</button></td>
                     </tr>
                 }
 

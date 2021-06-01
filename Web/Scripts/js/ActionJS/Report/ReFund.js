@@ -20,23 +20,29 @@
 
     });
 
-    $("#0bt").on("click", function () {
+    //$("#0bt").on("click", function () {
+    //    //ShowLoading("資料查詢中…");
+    //    $("#orderNo").val($("#0oNo").text())
+    //    $("#NAME").val($("#0mNa").text())
+    //    $("#merchantOrderNo").val($("#0mNo").text())
+    //    $("#GIFTNAME").val($("#0pNa").text())
+    //    $("#refundReason").val($("#0Am").text())
+    //});
+    //$("#1bt").on("click", function () {
+    //    //ShowLoading("資料查詢中…");
+    //    $("#orderNo").val($("#1oNo").text())
+    //    $("#NAME").val($("#1mNa").text())
+    //    $("#merchantOrderNo").val($("#1mNo").text())
+    //    $("#GIFTNAME").val($("#1pNa").text())
+    //    $("#refundReason").val($("#1Am").text())
+    //});
+    $("#bt_"+).on("click", function () {
         //ShowLoading("資料查詢中…");
         $("#orderNo").val($("#0oNo").text())
         $("#NAME").val($("#0mNa").text())
         $("#merchantOrderNo").val($("#0mNo").text())
         $("#GIFTNAME").val($("#0pNa").text())
         $("#refundReason").val($("#0Am").text())
-
-    });
-    $("#1bt").on("click", function () {
-        //ShowLoading("資料查詢中…");
-        $("#orderNo").val($("#1oNo").text())
-        $("#NAME").val($("#1mNa").text())
-        $("#merchantOrderNo").val($("#1mNo").text())
-        $("#GIFTNAME").val($("#1pNa").text())
-        $("#refundReason").val($("#1Am").text())
-
     });
 
     $("#btnSend").on("click", function () {
