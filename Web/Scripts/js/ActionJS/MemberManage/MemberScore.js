@@ -325,11 +325,11 @@ function DoSave(Id) {
     if (flag) {
         var obj = new Object();
         obj.IDNO = IDNO;
-        obj.UserID = Account;
         obj.UserSon = UserSon;
         obj.UserScore = UserScore;
         obj.UserApp = UserApp;
         obj.SEQ = SEQ;
+        obj.UserID = Account;
 
         DoAjaxAfterReload(obj, "BE_HandleMemberScore", "修改花生錯誤");
     } else {
