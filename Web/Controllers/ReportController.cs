@@ -737,7 +737,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             lstRawDataOfMachi = _repository.GetMachiReport(tSDate, tEDate, CarNo);
@@ -762,10 +762,10 @@ namespace Web.Controllers
                 content.CreateCell(12).SetCellValue(lstRawDataOfMachi[k].returnFlg);   //@場內還車,20210510唐加
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+                //sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -816,7 +816,7 @@ namespace Web.Controllers
                 for (int j = 0; j < headerFieldLen; j++)
                 {
                     header.CreateCell(j).SetCellValue(headerField[j]);
-                    sheet.AutoSizeColumn(j);
+                    //sheet.AutoSizeColumn(j);
                 }
                 lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
                 int len = lstRawDataOfMachi.Count;
