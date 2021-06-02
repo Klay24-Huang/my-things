@@ -459,6 +459,7 @@
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoMaintain.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting.js" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting_Moto.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\CarTimelineQuery.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\MessageQuery.js" />
     <Content Include="Scripts\js\ActionJS\SystemSetting\FeedBackKindSetting.js" />
@@ -768,6 +769,7 @@
     <Content Include="Views\MemberManage\MemberScore.cshtml" />
     <Content Include="Views\CommonObj\GetSCITEM.cshtml" />
     <Content Include="Views\CommonObj\GetSCMITEM.cshtml" />
+    <Content Include="Views\StationAndParking\TransParkingSetting_Moto.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
