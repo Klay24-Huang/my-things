@@ -26,10 +26,19 @@ namespace OtherService
         string token = "";
         string refreshToken = "";
 
-        public FETDeviceMaintainAPI()
+        public FETDeviceMaintainAPI(HASwitch haType)
         {
             System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls;
+
+            if (haType == HASwitch.FETCloud)
+            {
+                BasePath = ConfigurationManager.AppSettings.Get("CatDeviceMaintainBaseURL2");
+            }
+            else
+            {
+                BasePath = ConfigurationManager.AppSettings.Get("CatDeviceMaintainBaseURL");
+            }
         }
         public enum CATCarType
         {
@@ -40,6 +49,11 @@ namespace OtherService
         {
             Vehicle,
             Motorcycle
+        }
+        public enum HASwitch
+        { 
+            Azure,
+            FETCloud
         }
         public WebAPIOutput_ResultDTO<WebAPIOutput_Login> DoLogin()
         {
@@ -96,7 +110,7 @@ namespace OtherService
             return result;
         }
 
-        public WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> AddDeviceToken(string carNo, CATCarType carType)
+        public WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> AddDeviceToken(string carNo, CATCarType carType, string deviceToken = "")
         {
             WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> result = new WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken>();
 
@@ -105,8 +119,16 @@ namespace OtherService
                 if (!string.IsNullOrEmpty(carNo))
                 {
                     carNo = carNo.Trim();
-                    var guid = Guid.NewGuid().ToString().ToUpper().Substring(0, 20 - carNo.Length - 1);
-                    string accessToken = string.Format("{0}-{1}", carNo, guid);
+                    string accessToken = "";
+                    if (deviceToken != "")
+                    {
+                        accessToken = deviceToken;
+                    }
+                    else
+                    {
+                        var guid = Guid.NewGuid().ToString().ToUpper().Substring(0, 20 - carNo.Length - 1);
+                        accessToken = string.Format("{0}-{1}", carNo, guid);
+                    }
 
                     string url = string.Format("api/device?accessToken={0}", accessToken);
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BasePath + url);
@@ -255,7 +277,7 @@ namespace OtherService
 
             try
             {
-                string url = string.Format("/api/tenant/devices?customerId=&limit=10&type&textSearch={0}", carNo);
+                string url = string.Format("api/tenant/devices?customerId=&limit=10&type&textSearch={0}", carNo);
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BasePath + url);
                 request.Method = "GET";
                 request.Headers.Add("X-Authorization", "Bearer " + token);
