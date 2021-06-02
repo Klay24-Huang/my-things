@@ -88,6 +88,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ImportCarMachineData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMasterCardData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMotoData.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_IneInsMileStone.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCarReturnError.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCleanOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsertChargeParking.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="SP\Input\Booking\SPInput_CarMachineCommon.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ChangeUUCard.cs" />
     <Compile Include="SP\Input\Booking\SPInput_CheckCarStatus.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_InsMotorBattLog.cs" />
     <Compile Include="SP\Input\Booking\SPInput_ReadCard.cs" />
     <Compile Include="SP\Input\Car\SPInput_CarStatus.cs" />
     <Compile Include="SP\Input\Car\SPInput_CheckCariButton.cs" />
@@ -155,12 +157,15 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
+    <Compile Include="SP\Input\Member\SPInput_GetMemberMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_InsUnBindLog.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SetMemberScoreDetail.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetPWD.cs" />
     <Compile Include="SP\Input\Member\SPInput_SettingInvoice.cs" />
     <Compile Include="SP\Input\Mochi\SPInput_DisabledMochiPark.cs" />
@@ -258,6 +263,9 @@
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
+    <Compile Include="SP\Output\Member\MapMedalList.cs" />
+    <Compile Include="SP\Output\Member\MemberMedalList.cs" />
+    <Compile Include="SP\Output\Member\MemberScoreList.cs" />
     <Compile Include="SP\Output\Mochi\SPOutput_GetMachiToken.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderFinishDataList.cs" />
@@ -354,6 +362,8 @@
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />
+    <Compile Include="TB\BackEnd\BE_MileStone.cs" />
+    <Compile Include="TB\BackEnd\BE_MileStoneDetail.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyQuery.cs" />
     <Compile Include="TB\BackEnd\BE_MonthlyReportData.cs" />
     <Compile Include="TB\BackEnd\BE_MotorBatteryStatus.cs" />
@@ -371,6 +381,7 @@
     <Compile Include="TB\BackEnd\BE_QueryOrderMachiParkData.cs" />
     <Compile Include="TB\BackEnd\BE_RawDataOfMachi.cs" />
     <Compile Include="TB\BackEnd\BE_ReadCardLog.cs" />
+    <Compile Include="TB\BackEnd\BE_Refund.cs" />
     <Compile Include="TB\BackEnd\BE_ReturnControl.cs" />
     <Compile Include="TB\BackEnd\BE_InsuranceData.cs" />
     <Compile Include="TB\BackEnd\BE_SameMobileData.cs" />

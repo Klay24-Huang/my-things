@@ -385,7 +385,9 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDashBoard.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDataSetting.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarSetting.js" />
+    <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainNew.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\DeleteMember.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\MedalMileStone.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarLocationQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ExportCarSettingData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarBindData.js" />
@@ -597,6 +599,7 @@
     <Folder Include="Content\upload\ImportCarBindData\" />
     <Folder Include="Content\upload\ImportCarMachineData\" />
     <Folder Include="Content\upload\ImportMasterCardData\" />
+    <Folder Include="Content\upload\MedalMileStoneImport\" />
     <Folder Include="Content\upload\TransParkingImport\" />
   </ItemGroup>
   <ItemGroup>
@@ -753,16 +756,15 @@
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\MemberManage\DeleteMember.cshtml" />
     <Content Include="Views\MemberManage\ChangeID.cshtml" />
-    <Content Include="Views\Report\CarLocationQuery.cshtml" />    
+    <Content Include="Views\Report\CarLocationQuery.cshtml" />
     <Content Include="Views\MemberManage\ModifyMember.cshtml" />
     <Content Include="Views\MemberManage\ModifyMemberDetail.cshtml" />
     <Content Include="Views\News\BannerInfoAdd.cshtml" />
     <Content Include="Views\News\BannerInfoMaintain.cshtml" />
     <Content Include="Views\News\BannerSet.cshtml" />
-    <None Include="Web.iRent-Backend-Web - Web Deploy.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.iRent-Backend-Web-Test - Web Deploy.config">
+    <Content Include="Views\MemberManage\MedalMileStone.cshtml" />
+    <Content Include="Views\ContactManage\ContactMaintainNew.cshtml" />
+    <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
@@ -814,6 +816,9 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'backend-web-test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />

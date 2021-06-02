@@ -746,12 +746,12 @@ namespace Web.Controllers
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);   //訂單編號(車麻吉)
+                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].machi_id);  //訂單編號(車麻吉)
                 content.CreateCell(1).SetCellValue(((lstRawDataOfMachi[k].OrderNo == 0) ? "未掛帳" : "H" + lstRawDataOfMachi[k].OrderNo.ToString().PadLeft(7, '0'))); //合約編號
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);   //車牌號碼
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].OP);   //@停車場業者,20210510唐加
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Name);   //停車場名稱
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].PP);  //@調度停車場,20210510唐加
+                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].CarNo);     //車牌號碼
+                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].OP);        //@停車場業者,20210510唐加
+                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Name);      //停車場名稱
+                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].PP);        //@調度停車場,20210510唐加
                 content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].Check_in.ToString("yyyy-MM-dd HH:mm:ss"));   //入場時間
                 content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].Check_out.ToString("yyyy-MM-dd HH:mm:ss"));   //出場時間
                 TimeSpan diffSecond = lstRawDataOfMachi[k].Check_out.Subtract(lstRawDataOfMachi[k].Check_in).Duration();
@@ -1127,6 +1127,52 @@ namespace Web.Controllers
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
 
+        }
+        public ActionResult ExplodeReFund(string ExplodeSDate, string ExplodeEDate)
+        {
+            ViewData["StartDate"] = ExplodeSDate;
+            ViewData["EndDate"] = ExplodeEDate;
+
+            List<BE_Refund> lstData = null;
+            MemberRepository repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "訂單編號", "購買者id", "購買卡號", "購買日", "到期日", "購買方案", "收款總額", "手續費", "實收金額", "退款日期" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetEasyWalletOrder(ExplodeSDate, ExplodeEDate);
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].orderNo);
+                content.CreateCell(1).SetCellValue(lstData[k].IDNO);
+                content.CreateCell(2).SetCellValue(lstData[k].easyCardNo);
+                content.CreateCell(3).SetCellValue(lstData[k].orderTime);
+                content.CreateCell(4).SetCellValue(lstData[k].endTime);
+                content.CreateCell(5).SetCellValue(lstData[k].ITEM);
+                content.CreateCell(6).SetCellValue(lstData[k].PRICE);
+                content.CreateCell(7).SetCellValue(lstData[k].tax);
+                content.CreateCell(8).SetCellValue(lstData[k].amount);
+                content.CreateCell(9).SetCellValue(lstData[k].refunddate);
+
+            }
+            for (int l = 0; l < headerFieldLen; l++)
+            {
+                sheet.AutoSizeColumn(l);
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "悠遊付訂單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #endregion
 

@@ -169,6 +169,11 @@
             ControllerStrName = "合約管理";
             ActionStrName = "汽車合約修改(新版)";
             break;
+        // 20210519 ADD BY FRANK REASON.合併汽機車合約
+        case "ContactMaintainNew":
+            ControllerStrName = "合約管理";
+            ActionStrName = "合約修改";
+            break;
         case "ContactMaintainByDiscount":
             ControllerStrName = "合約管理";
             ActionStrName = "時數折抵";
@@ -308,7 +313,7 @@
             ControllerStrName = "報表專區";
             ActionStrName = "機車電池狀態歷程查詢";
             break;
-            
+
             #endregion
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);

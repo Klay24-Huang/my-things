@@ -18,6 +18,15 @@ $(document).ready(function () {
 })
 
 //20210511唐加
+$("#btnExplode").on("click", function () {
+    ShowLoading("資料查詢中…");
+
+    $("#ExplodeParkingName").val($("#ParkingName").val());
+    disabledLoading();
+    $("#frmChargeParkingSettingExplode").submit();
+});
+
+//20210511唐加
 function DoIn(Id) {
     var SParkingName = $("#ParkingName_" + Id).val();
     var SParkingAddress = $("#ParkingAddress_" + Id).val();
@@ -36,7 +45,9 @@ function DoIn(Id) {
     obj.Id = Id;
     var json = JSON.stringify(obj);
     console.log(json);
-    var site = jsHost + "BE_InsertChargeParking";
+    //var site = jsHost + "BE_InsertChargeParking";
+    var site = jsHost2 + "BE_InsertChargeParking";
+    //var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
     console.log("site:" + site);
     $.ajax({
         url: site,

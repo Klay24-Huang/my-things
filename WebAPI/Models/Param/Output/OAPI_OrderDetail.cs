@@ -236,5 +236,29 @@
         /// 返還=訂金
         /// </summary>
         public int ReturnOrderPrice { get; set; }
+        /// <summary>
+        /// 換電時數 20210517 ADD BY ADAM
+        /// </summary>
+        public int ChangePoint { get; set; }
+        /// <summary>
+        /// 換電次數 20210517 ADD BY ADAM
+        /// </summary>
+        public int ChangeTimes { get; set; }
+        /// <summary>
+        /// 取車電量 20210517 ADD BY ADAM
+        /// </summary>
+        public float RSOC_S { get; set; }
+        /// <summary>
+        /// 還車電量 20210517 ADD BY ADAM
+        /// </summary>
+        public float RSOC_E { get; set; }
+        /// <summary>
+        /// 獎勵時數 20210517 ADD BY ADAM
+        /// </summary>
+        public int RewardPoint { get; set; }
+        /// <summary>
+        /// 總回饋時數 20210517 ADD BY ADAM
+        /// </summary>
+        public int TotalRewardPoint { get; set; }
     }
 }
