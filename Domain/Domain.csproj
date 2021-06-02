@@ -526,7 +526,9 @@
     <Compile Include="TB\UPDList.cs" />
     <Compile Include="TB\ZipCodeData.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_Base.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_CombineCmdGetCar.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_NFCPower.cs" />
+    <Compile Include="WebAPI\Input\CENS\WSInput_SearchCarForSituation.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SendCardNo.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SendLock.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />

@@ -805,61 +805,72 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (lstError.Count == 0)
+                        if (flag && webAPI.IsSupportCombineCmd(CID))
                         {
-                            //清空顧客卡及寫入萬用卡
-                            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                            {
-                                CID = CID,
-                                mode = 0
-
-                            };
-
-                            int count = 0;
-                            int CardLen = lstCardList.Count;
-                            SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                            for (int i = 0; i < CardLen; i++)
-                            {
-                                CardData[i] = new SendCarNoData();
-                                CardData[i].CardNo = lstCardList[i].CardNO;
-                                CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                                count++;
-                            }
-                            //  Array.Resize(ref CardData, count + 1);
-                            wsInput.data = CardData;
-
-                            flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                        }
-                        if (false == flag)
-                        {
-                            errCode = wsOut.ErrorCode;
-                        }
-                        //解除白名單
-                        if (flag)
-                        {
-                            WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
-                            {
-                                CID = CID,
-                                OrderStatus = 0
-                            };
-                            flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                            flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                             }
                         }
-                        //上防盜
-                        if (flag)
+                        else
                         {
-                            WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                            if (lstError.Count == 0)
                             {
-                                CID = CID,
-                                CMD = 1
-                            };
-                            flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                            if (false == flag || wsOut.Result == 1)
+                                //清空顧客卡及寫入萬用卡
+                                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                {
+                                    CID = CID,
+                                    mode = 0
+
+                                };
+
+                                int count = 0;
+                                int CardLen = lstCardList.Count;
+                                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    count++;
+                                }
+                                //  Array.Resize(ref CardData, count + 1);
+                                wsInput.data = CardData;
+
+                                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                            }
+                            if (false == flag)
                             {
                                 errCode = wsOut.ErrorCode;
+                            }
+                            //解除白名單
+                            if (flag)
+                            {
+                                WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                                {
+                                    CID = CID,
+                                    OrderStatus = 0
+                                };
+                                flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
+                            }
+                            //上防盜
+                            if (flag)
+                            {
+                                WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                                {
+                                    CID = CID,
+                                    CMD = 1
+                                };
+                                flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
                             }
                         }
                         #endregion
@@ -1349,60 +1360,71 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (lstError.Count == 0)
+                        if (flag && webAPI.IsSupportCombineCmd(CID))
                         {
-                            //清空顧客卡及寫入萬用卡
-                            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                            {
-                                CID = CID,
-                                mode = 0
-                            };
-
-                            int count = 0;
-                            int CardLen = lstCardList.Count;
-                            SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                            for (int i = 0; i < CardLen; i++)
-                            {
-                                CardData[i] = new SendCarNoData();
-                                CardData[i].CardNo = lstCardList[i].CardNO;
-                                CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                                count++;
-                            }
-                            //  Array.Resize(ref CardData, count + 1);
-                            wsInput.data = CardData;
-
-                            flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                        }
-                        if (flag == false)
-                        {
-                            errCode = wsOut.ErrorCode;
-                        }
-                        //解除租約
-                        if (flag || ByPass)
-                        {
-                            WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
-                            {
-                                CID = CID,
-                                OrderStatus = 0
-                            };
-                            flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
-                            if (flag == false || wsOut.Result == 1)
+                            flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
+                            if (false == flag || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                             }
                         }
-                        //上防盜
-                        if (flag || ByPass)
+                        else
                         {
-                            WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                            if (lstError.Count == 0)
                             {
-                                CID = CID,
-                                CMD = 1
-                            };
-                            flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                            if (flag == false || wsOut.Result == 1)
+                                //清空顧客卡及寫入萬用卡
+                                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                {
+                                    CID = CID,
+                                    mode = 0
+                                };
+
+                                int count = 0;
+                                int CardLen = lstCardList.Count;
+                                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    count++;
+                                }
+                                //  Array.Resize(ref CardData, count + 1);
+                                wsInput.data = CardData;
+
+                                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                            }
+                            if (flag == false)
                             {
                                 errCode = wsOut.ErrorCode;
+                            }
+                            //解除租約
+                            if (flag || ByPass)
+                            {
+                                WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                                {
+                                    CID = CID,
+                                    OrderStatus = 0
+                                };
+                                flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                                if (flag == false || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
+                            }
+                            //上防盜
+                            if (flag || ByPass)
+                            {
+                                WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                                {
+                                    CID = CID,
+                                    CMD = 1
+                                };
+                                flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                                if (flag == false || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
                             }
                         }
                         #endregion
@@ -2128,61 +2150,72 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (lstError.Count == 0)
+                        if (flag && webAPI.IsSupportCombineCmd(CID))
                         {
-                            //清空顧客卡及寫入萬用卡
-                            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                            {
-                                CID = CID,
-                                mode = 0
-
-                            };
-
-                            int count = 0;
-                            int CardLen = lstCardList.Count;
-                            SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                            for (int i = 0; i < CardLen; i++)
-                            {
-                                CardData[i] = new SendCarNoData();
-                                CardData[i].CardNo = lstCardList[i].CardNO;
-                                CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                                count++;
-                            }
-                            //  Array.Resize(ref CardData, count + 1);
-                            wsInput.data = CardData;
-
-                            flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                        }
-                        if (false == flag)
-                        {
-                            errCode = wsOut.ErrorCode;
-                        }
-                        //解除白名單
-                        if (flag)
-                        {
-                            WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
-                            {
-                                CID = CID,
-                                OrderStatus = 0
-                            };
-                            flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                            flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                             }
                         }
-                        //上防盜
-                        if (flag)
+                        else
                         {
-                            WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                            if (lstError.Count == 0)
                             {
-                                CID = CID,
-                                CMD = 1
-                            };
-                            flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                            if (false == flag || wsOut.Result == 1)
+                                //清空顧客卡及寫入萬用卡
+                                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                {
+                                    CID = CID,
+                                    mode = 0
+
+                                };
+
+                                int count = 0;
+                                int CardLen = lstCardList.Count;
+                                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    count++;
+                                }
+                                //  Array.Resize(ref CardData, count + 1);
+                                wsInput.data = CardData;
+
+                                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                            }
+                            if (false == flag)
                             {
                                 errCode = wsOut.ErrorCode;
+                            }
+                            //解除白名單
+                            if (flag)
+                            {
+                                WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                                {
+                                    CID = CID,
+                                    OrderStatus = 0
+                                };
+                                flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
+                            }
+                            //上防盜
+                            if (flag)
+                            {
+                                WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                                {
+                                    CID = CID,
+                                    CMD = 1
+                                };
+                                flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
                             }
                         }
                         #endregion

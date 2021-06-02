@@ -283,12 +283,18 @@ namespace WebAPI.Controllers
                     ///  <para>28:興聯-開啟NFC電源</para>
                     ///  <para>29:興聯-關閉NFC電源</para>
                     ///  <para>30:興聯-重啟車機</para>
+                    ///  <para>31:興聯-指定喇叭尋車方式</para>
+                    ///  <para>32:興聯-指定閃燈尋車方式</para>
+                    ///  <para>33:興聯-取車巨集指令</para>
+                    ///  <para>34:興聯-還車巨集指令</para>
                     CensWebAPI CensAPI = new CensWebAPI();
                     WSOutput_Base wsOutput = new WSOutput_Base();
                     WSInput_SetOrderStatus wsOrderInput = null;
                     WSInput_SendLock wsLockInput = null;
                     WSInput_SendCardNo SendCardInput = null;
                     WSOutput_GetInfo wsOutputGetInfo = new WSOutput_GetInfo();
+                    WSInput_SearchCarForSituation SearchCarForSituation = null;
+                    WSInput_CombineCmdGetCar CombineCmdGetCar = null;
                     switch (apiInput.CmdType)
                     {
                         case 15:
@@ -500,6 +506,67 @@ namespace WebAPI.Controllers
                             break;
                         case 30: //重啟車機
                             flag = CensAPI.SoftwareReset(CENSCID, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 31:  //指定喇叭尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 1
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 32:  //指定閃燈尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 2
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 33:  //取車巨集指令
+                            CombineCmdGetCar = new WSInput_CombineCmdGetCar()
+                            {
+                                CID = CENSCID,
+                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                            };
+                            //寫入顧客卡
+                            int CombineClientCount = 0;
+                            int CombineClientCardLen = apiInput.ClientCardNo.Length;
+                            if (CombineClientCardLen > 0)
+                            {
+                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CombineClientCardLen];
+                                for (int i = 0; i < CombineClientCardLen; i++)
+                                {
+                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                    CardData[i].CardNo = apiInput.ClientCardNo[i];
+                                    CombineClientCount++;
+                                }
+                                CombineCmdGetCar.data = CardData;
+                            }
+                            flag = CensAPI.CombineCmdGetCar(CombineCmdGetCar, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 34:  //還車巨集指令
+                            flag = CensAPI.CombineCmdReturnCar(CENSCID, ref wsOutput);
                             if (false == flag || wsOutput.Result == 1)
                             {
                                 errCode = wsOutput.ErrorCode;
@@ -909,12 +976,18 @@ namespace WebAPI.Controllers
                     ///  <para>28:興聯-開啟NFC電源</para>
                     ///  <para>29:興聯-關閉NFC電源</para>
                     ///  <para>30:興聯-重啟車機</para>
+                    ///  <para>31:興聯-指定喇叭尋車方式</para>
+                    ///  <para>32:興聯-指定閃燈尋車方式</para>
+                    ///  <para>33:興聯-取車巨集指令</para>
+                    ///  <para>34:興聯-還車巨集指令</para>
                     CensWebAPI CensAPI = new CensWebAPI();
                     WSOutput_Base wsOutput = new WSOutput_Base();
                     WSInput_SetOrderStatus wsOrderInput = null;
                     WSInput_SendLock wsLockInput = null;
                     WSInput_SendCardNo SendCardInput = null;
                     WSOutput_GetInfo wsOutputGetInfo = new WSOutput_GetInfo();
+                    WSInput_SearchCarForSituation SearchCarForSituation = null;
+                    WSInput_CombineCmdGetCar CombineCmdGetCar = null;
                     switch (apiInput.CmdType)
                     {
                         case 15:
@@ -1126,6 +1199,67 @@ namespace WebAPI.Controllers
                             break;
                         case 30: //重啟車機
                             flag = CensAPI.SoftwareReset(CENSCID, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 31:  //指定喇叭尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 1
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 32:  //指定閃燈尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 2
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 33:  //取車巨集指令
+                            CombineCmdGetCar = new WSInput_CombineCmdGetCar()
+                            {
+                                CID = CENSCID,
+                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                            };
+                            //寫入顧客卡
+                            int CombineClientCount = 0;
+                            int CombineClientCardLen = apiInput.ClientCardNo.Length;
+                            if (CombineClientCardLen > 0)
+                            {
+                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CombineClientCardLen];
+                                for (int i = 0; i < CombineClientCardLen; i++)
+                                {
+                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                    CardData[i].CardNo = apiInput.ClientCardNo[i];
+                                    CombineClientCount++;
+                                }
+                                CombineCmdGetCar.data = CardData;
+                            }
+                            flag = CensAPI.CombineCmdGetCar(CombineCmdGetCar, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 34:  //還車巨集指令
+                            flag = CensAPI.CombineCmdReturnCar(CENSCID, ref wsOutput);
                             if (false == flag || wsOutput.Result == 1)
                             {
                                 errCode = wsOutput.ErrorCode;
