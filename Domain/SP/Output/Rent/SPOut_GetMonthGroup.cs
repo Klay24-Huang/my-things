@@ -39,5 +39,9 @@ namespace Domain.SP.Output.Rent
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 可以使用到時麼時候
+        /// </summary>
+        public DateTime UseUntil { get; set; }
     }
 }

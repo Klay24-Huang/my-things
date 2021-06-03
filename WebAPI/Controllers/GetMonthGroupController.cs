@@ -135,7 +135,8 @@ namespace WebAPI.Controllers
                                          WDRateForMoto = a.WDRateForMoto,
                                          HDRateForMoto = a.HDRateForMoto,
                                          IsDiscount = a.IsDiscount,
-                                         IsMix = a.IsMix        //20210525 ADD BY ADAM REASON.增加城市車手
+                                         IsMix = a.IsMix,        //20210525 ADD BY ADAM REASON.增加城市車手
+                                         UseUntil = a.UseUntil.ToString("yyyy/MM/dd")
                                      }).ToList();
 
                         outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
