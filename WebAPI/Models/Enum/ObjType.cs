@@ -432,6 +432,10 @@ namespace WebAPI.Models.Enum
             /// 取得會員積分攻略標題 20210526 ADD BY FRANK
             /// </summary>
             GetMemberScoreItem,
+            /// <summary>
+            /// 處理機車調度停車場 20210602 ADD BY FRANK
+            /// </summary>
+            BE_HandleTransParking_Moto,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -1035,6 +1039,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberScoreItem:  //取得會員積分攻略標題 20210526 ADD BY FRANK
                     SPName = "usp_GetMemberScoreItem";
+                    break;
+                case SPType.BE_HandleTransParking_Moto:  // 處理機車調度停車場 20210602 ADD BY FRANK
+                    SPName = "usp_BE_InsTransParking_Moto";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

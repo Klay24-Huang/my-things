@@ -3234,6 +3234,7 @@ iRentApi20 Web API版本
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
 | IsMix | 是否為城市車手(0否1是) | int | 0 |
+| UseUntil | 可以使用到什麼時候 | string | 2021/09/01 |
 
 * Output範例
 ```
@@ -3247,6 +3248,7 @@ iRentApi20 Web API版本
         "MonProDisc": "汽包機66-6注意事項",
         "MonCards": [
             {
+                "UseUntil": "2021/09/01",
                 "MonProjID": "MR66",
                 "MonProjNM": "測試_汽包機66-6",
                 "MonProPeriod": 6,
