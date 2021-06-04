@@ -218,80 +218,80 @@ namespace Web.Controllers
                                 Data.Images.ID_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.ID_1_IsNew = 1;
                                 Data.Images.ID_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.ID_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.ID_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.ID_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.ID_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.ID_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 2:
                                 Data.Images.ID_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.ID_2_IsNew = 1;
                                 Data.Images.ID_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.ID_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.ID_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.ID_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.ID_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.ID_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 3:
                                 Data.Images.Car_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Car_1_IsNew = 1;
                                 Data.Images.Car_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Car_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Car_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Car_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Car_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Car_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 4:
                                 Data.Images.Car_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Car_2_IsNew = 1;
                                 Data.Images.Car_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Car_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Car_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Car_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Car_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Car_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 5:
                                 Data.Images.Motor_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Motor_1_IsNew = 1;
                                 Data.Images.Motor_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Motor_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Motor_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Motor_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Motor_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Motor_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 6:
                                 Data.Images.Motor_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Motor_2_IsNew = 1;
                                 Data.Images.Motor_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Motor_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Motor_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Motor_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Motor_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Motor_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 7:
                                 Data.Images.Self_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Self_1_IsNew = 1;
                                 Data.Images.Self_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Self_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Self_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Self_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Self_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Self_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 8:
                                 Data.Images.F01 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.F01_IsNew = 1;
                                 Data.Images.F01_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.F01_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.F01_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.F01_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.F01_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.F01_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 9:
                                 Data.Images.Other_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Other_1_IsNew = 1;
                                 Data.Images.Other_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Other_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Other_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Other_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Other_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Other_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 10:
                                 Data.Images.Business_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Business_1_IsNew = 1;
                                 Data.Images.Business_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Business_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Business_1_AuditResult = 0;
+                                //Data.Images.Business_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Business_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Business_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 11:
@@ -300,7 +300,7 @@ namespace Web.Controllers
                                 Data.Images.Signture_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
                                 //20210120唐改，簽名檔沒有UPDTIME會產生BUG，所以拿掉UPDTIME判定
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0;
+                                Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult;
                                 Data.Images.Signture_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
@@ -321,88 +321,88 @@ namespace Web.Controllers
                                     Data.Images.ID_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_1_IsNew = 0;
                                     Data.Images.ID_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.ID_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.ID_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 2:
                                     Data.Images.ID_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_2_IsNew = 0;
                                     Data.Images.ID_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.ID_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.ID_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 3:
                                     Data.Images.Car_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_1_IsNew = 0;
                                     Data.Images.Car_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Car_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Car_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 4:
                                     Data.Images.Car_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_2_IsNew = 0;
                                     Data.Images.Car_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Car_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Car_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 5:
                                     Data.Images.Motor_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_1_IsNew = 0;
                                     Data.Images.Motor_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Motor_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Motor_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 6:
                                     Data.Images.Motor_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_2_IsNew = 0;
                                     Data.Images.Motor_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Motor_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Motor_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 7:
                                     Data.Images.Self_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Self_1_IsNew = 0;
                                     Data.Images.Self_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Self_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Self_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 8:
                                     Data.Images.F01 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.F01_IsNew = 0;
                                     Data.Images.F01_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.F01_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.F01_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.F01_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 9:
                                     Data.Images.Other_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Other_1_IsNew = 0;
                                     Data.Images.Other_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Other_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Other_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 10:
                                     Data.Images.Business_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Business_1_IsNew = 0;
                                     Data.Images.Business_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Business_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Business_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 11:
                                     Data.Images.Signture_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Signture_1_IsNew = 0;
                                     Data.Images.Signture_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Signture_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Signture_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                             }
@@ -593,7 +593,7 @@ namespace Web.Controllers
                                 Data.Images.Signture_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
                                 //20210120唐改，簽名檔沒有UPDTIME會產生BUG，所以拿掉UPDTIME判定
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0;
+                                //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult;
                                 Data.Images.Signture_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
