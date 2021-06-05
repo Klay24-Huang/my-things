@@ -408,6 +408,10 @@ namespace WebAPI.Models.Enum
             /// </summary>
             BindUUCardJob,
             GetCarTypeGroupList,
+            /// <summary>
+            /// 寫入電量LOG 20210516 ADD BY ADAM
+            /// </summary>
+            InsMotorBattLog,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -798,7 +802,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery";
+                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
@@ -807,7 +811,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetFinishOrderList";
                     break;
                 case SPType.OrderDetail:
-                    SPName = "usp_GetOrderDetail";
+                    SPName = "usp_GetOrderDetail_20210517";     //20210517 ADD BY ADAM REASON.新換電獎勵需求
                     break;
                 case SPType.CheckCarStatusByReturn:
                     SPName = "usp_CheckCarStatusByReturn";
@@ -830,7 +834,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.UploadFeedBackImage:
                     //SPName = "usp_INSTmpFeedBackPIC";
-                    SPName = "usp_INSTmpFeedBackPICNew";
+                    SPName = "usp_INSTmpFeedBackPICNew_20210517";   //20210517 ADD BY ADAM 
                     break;
                 case SPType.InsFeedBack:
                     SPName = "usp_InsFeedBack";
@@ -853,7 +857,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CalFinalPrice";
                     break;
                 case SPType.DonePayRentBill:
-                    SPName = "usp_DonePayRentBillNew";
+                    SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
                     SPName = "usp_BE_ContactFinish";
@@ -997,6 +1001,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetOrderAuthRetryList:
                     SPName = "usp_GetOrderAuthRetryList";
+                    break;
+                case SPType.InsMotorBattLog:    //寫入機車電量 20210516 ADD BY ADAM
+                    SPName = "usp_InsMotorBattLog";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

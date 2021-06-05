@@ -319,8 +319,35 @@ namespace WebAPI.Controllers
                                     baseVerify.checkSQLResult(ref flag, spOutBase.Error, spOutBase.ErrorCode, ref lstError, ref errCode);
                                 }
                             }
+
+                            #region 20210514 開啟電源後須紀錄電量
+                            if (flag && (apiInput.CmdType == 2 || apiInput.CmdType == 4))
+                            {
+                                string EventCD = "";
+                                switch(apiInput.CmdType)
+                                {
+                                    case 2:
+                                        EventCD = "2";
+                                        break;
+                                    case 4:
+                                        EventCD = "3";  //電池蓋先押3，前後判斷在SP裡面處理
+                                        break;
+                                }
+                                string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
+                                SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
+                                {
+                                    OrderNo = tmpOrder,
+                                    EventCD = EventCD,  //取車電量
+                                    LogID = LogID
+                                };
+                                SPOutput_Base SPInsMotorBattLogOutput = new SPOutput_Base();
+                                SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base> SQLInsMotorBattLogHelp = new SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base>(connetStr);
+                                flag = SQLInsMotorBattLogHelp.ExecuteSPNonQuery(SPInsMotorBattLogName, SPInsMotorBattLogInput, ref SPInsMotorBattLogOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, ref SPInsMotorBattLogOutput, ref lstError, ref errCode);
+                            }
+                            #endregion
                         }
-                      
+
 
                     }
                     

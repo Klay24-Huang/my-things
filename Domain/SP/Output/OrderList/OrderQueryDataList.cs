@@ -123,6 +123,10 @@ namespace Domain.SP.Output.OrderList
         /// 剩餘里程
         /// </summary>
         public string RemainingMilage { set; get; }
+        /// <summary>
+        /// 儀表板電量 20210523 add by adam
+        /// </summary>
+        public string deviceRSOC { set; get; }
         #endregion
         #region 專案相關
         /// <summary>
