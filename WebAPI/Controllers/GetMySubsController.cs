@@ -170,6 +170,7 @@ namespace WebAPI.Controllers
                                                 SubsNxt = a.SubsNxt,
                                                 IsChange = a.IsChange,
                                                 IsPay = a.IsPay,
+                                                NxtPay = a.NxtPay,
                                                 IsMoto = a.IsMoto       //20210527 ADD BY ADAM
                                                 
                                             }).ToList();

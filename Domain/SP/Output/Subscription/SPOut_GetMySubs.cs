@@ -63,6 +63,10 @@ namespace Domain.SP.Output.Subscription
         /// </summary>
         public int IsPay { get; set; }
         /// <summary>
+        /// 下期是否已付款
+        /// </summary>
+        public int NxtPay { get; set; }
+        /// <summary>
         /// 是否為機車 20210527 ADD BY ADAM REASON.
         /// </summary>
         public int IsMoto { get; set; }
