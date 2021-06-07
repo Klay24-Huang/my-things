@@ -1471,6 +1471,7 @@ namespace WebAPI.Models.BillFunc
                           IsDiscount = a.IsDiscount,
                           IsPay = a.IsPay,
                           IsMix = a.IsMix,
+                          NxtPay = a.NxtPay,
                           StartDate =  a.StartDate.ToString("MM/dd HH:mm"),
                           EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
                       }).ToList();

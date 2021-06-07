@@ -78,6 +78,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class MonCardParam_My: MonCardParam
     {
         /// <summary>
+        /// 下期是否已付款
+        /// </summary>
+        public int NxtPay { get; set; }
+        /// <summary>
         /// 訂閱制月租起日
         /// </summary>
         public string StartDate { get; set; }

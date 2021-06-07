@@ -14,6 +14,10 @@ namespace Domain.SP.Output.Rent
 
     public class SPOutput_GetMonthList_My: SPOutput_GetMonthList_Month
     {
+        /// <summary>
+        /// 下期是否已付款
+        /// </summary>
+        public int NxtPay { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
