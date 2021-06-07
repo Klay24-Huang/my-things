@@ -2766,11 +2766,12 @@ iRentApi20 Web API版本
 
 * MyCar, MyMoto 參數說明
 
-| 參數名稱  | 參數說明       | 型態   | 範例                                   |
-| --------- | -------------- | ------ | -------------------------------------- |
-| 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
-| StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
-| EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
+| 參數名稱  | 參數說明             | 型態   | 範例                                   |
+| --------- | -------------------- | ------ | -------------------------------------- |
+| 其餘參數  | 同NorMonCards        |        | 參考NorMonCards, MixMonCards  參數說明 |
+| NxtPay    | 下期是否已付款0否1是 | int    | 0                                      |
+| StartDate | 訂閱制月租起日       | string | 05/18 00:00                            |
+| EndDate   | 訂閱制月租迄日       | string | 06/16 23:59                            |
 
   
 
@@ -3116,6 +3117,7 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
+            "NxtPay": 0,
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR66",
@@ -3136,6 +3138,7 @@ iRentApi20 Web API版本
 			"IsMix": 1
         },
         "MyMoto": {
+            "NxtPay": 1, 
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR200",
@@ -3588,6 +3591,7 @@ iRentApi20 Web API版本
 | SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
 | IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
 | IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
+| NxtPay | 下期是否已付款 (0否1是) | int | 0 |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
 
 * Output範例
@@ -3621,6 +3625,7 @@ iRentApi20 Web API版本
             "SubsNxt": 1,
             "IsChange": 0,
             "IsPay": 1,
+            "NxtPay": 0,
 			"IsMoto": 0
         }
     }
