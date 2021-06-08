@@ -922,6 +922,23 @@ namespace Web.Controllers
                                 break;
                             }
                         }
+                        //判斷action是不是BackStageInsert=1的那幾個
+                        if (flag)
+                        {
+                            for (int i=1; i<=sheetLen; i++)
+                            {
+                                if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "提供iRent建議" &&
+                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "回報系統bug" &&
+                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "填寫官方問券" &&
+                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "回報違規停車照片給客服")
+                                {
+                                    errorMsg = "Action名稱錯誤";
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+
                         //通過第一關 
                         if (flag)
                         {
