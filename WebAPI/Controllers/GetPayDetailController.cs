@@ -1010,6 +1010,34 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("修正輸出欄位");
                         #endregion
 
+                        #region 儲存使用月租時數
+
+                        if( !string.IsNullOrWhiteSpace(IDNO) && tmpOrder > 0 && LogID >0
+                            && !string.IsNullOrWhiteSpace(MonIds)
+                            && carInfo != null && (carInfo.useMonthDiscW > 0 || carInfo.useMonthDiscH > 0))
+                        {
+                            string sp_errCode = "";
+                            var monthId = MonIds.Split(',').Select(x => Convert.ToInt64(x)).FirstOrDefault();
+                            var spin = new SPInput_SetSubsBookingMonth()
+                            {
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                OrderNo = tmpOrder,
+                                MonthlyRentId = monthId                                
+                            };
+                            if (ProjType == 4)
+                                spin.UseMotoTotalMins = carInfo.useMonthDiscW + carInfo.useMonthDiscH;
+                            else
+                            {
+                                spin.UseCarWDHours = carInfo.useMonthDiscW;
+                                spin.UseCarHDHours = carInfo.useMonthDiscH;
+                            }
+                            monSp.sp_SetSubsBookingMonth(spin, ref sp_errCode);
+                            trace.traceAdd("SetSubsBookingMonth", new { spin, sp_errCode });
+                        }
+
+                        #endregion
+
                         string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
                         SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                         {

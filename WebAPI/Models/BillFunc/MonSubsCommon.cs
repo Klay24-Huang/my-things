@@ -1151,6 +1151,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="spInput"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
+        /// <mark>EscrowStatus為-1時才能新增或更新月租,EscrowStatus為0,1時更新履保狀態</mark>
         public bool sp_SetSubsBookingMonth(SPInput_SetSubsBookingMonth spInput, ref string errCode)
         {
             bool flag = false;
