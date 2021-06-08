@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using WebCommon;
 
@@ -89,8 +90,10 @@ namespace Web.Controllers
                 }
             }
             lstData = new CarClearRepository(connetStr).GetCleanData(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
-            return View(lstData);
+            var topFiveHundred = lstData.Take(500).ToList();
+            return View(topFiveHundred);
         }
+
         public ActionResult MaintainLogReportDownload(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
             List<BE_CleanDataWithoutPIC> data = new List<BE_CleanDataWithoutPIC>();
@@ -202,11 +205,6 @@ namespace Web.Controllers
                 content.CreateCell(14).SetCellValue(totalDayStr);
                 content.CreateCell(15).SetCellValue(data[k].lastRentTimes);
                 content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
-            }
-
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
             }
 
             MemoryStream ms = new MemoryStream();

@@ -1,20 +1,23 @@
-﻿using System;
+﻿using Domain.SP.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebAPI.Models.Param.BackEnd.Input
+namespace Domain.SP.BE.Input
 {
-    public class IAPI_BE_HandleTransParking:IAPI_BE_Base
+    public class SPInput_BE_InsTransParking_Moto : SPInput_Base
     {
-        /// <summary>
-        /// tb pk
-        /// </summary>
-        public int ParkingID { set; get; }
+
         /// <summary>
         /// 停車場名稱
         /// </summary>
         public string ParkingName { set; get; }
+        /// <summary>
+        /// 機車專用格數
+        /// </summary>
+        public string ParkingCNT { set; get; }
         /// <summary>
         /// 停車場地址
         /// </summary>
@@ -22,29 +25,31 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <summary>
         /// 經度
         /// </summary>
-        public decimal Longitude { set; get; }
+        public decimal ParkingLng { set; get; }
         /// <summary>
         /// 緯度
         /// </summary>
-        public decimal Latitude { set; get; }
-     
+        public decimal ParkingLat { set; get; }
+
         /// <summary>
         /// 開始時間
         /// </summary>
-        public string OpenTime { set; get; }
+        public DateTime OpenTime { set; get; }
         /// <summary>
         /// 結束時間
         /// </summary>
-        public string CloseTime { set; get; }
+        public DateTime CloseTime { set; get; }
         /// <summary>
-        /// 機車專用車格
+        /// 操作者帳號
         /// </summary>
-        public string ParkingCNT { set; get; }
+        public string UserID { set; get; }
         /// <summary>
         /// 備註
         /// </summary>
         public string ParkingMark { set; get; }
-
-
+        /// <summary>
+        /// ID
+        /// </summary>
+        public string ParkingID { set; get; }
     }
 }
