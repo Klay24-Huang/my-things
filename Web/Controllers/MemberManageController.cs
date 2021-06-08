@@ -835,10 +835,15 @@ namespace Web.Controllers
                 BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
                 List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(IDNO);
                 List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(IDNO);
+
+                //Newtonsoft.Json序列化
+                string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+
                 Data.MileStone = new List<BE_MileStone>();
                 Data.MileStone = lstMileStone;
-                Data.MileStoneDetail = new List<BE_MileStoneDetail>();
-                Data.MileStoneDetail = lstMileStoneDetail;
+                //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                //Data.MileStoneDetail = lstMileStoneDetail;
+                Data.JsonMileStoneDetail = jsonData;
                 return View(Data);
             }
             else if (AuditMode == "1")
@@ -876,10 +881,8 @@ namespace Web.Controllers
             }
             else
             {
-                //string errorLine = "";
                 string errorMsg = "";
                 bool flag = true;
-                //ViewData["errorLine2"] = null;
 
                 List<SPInput_BE_IneInsMileStone> lstData = new List<SPInput_BE_IneInsMileStone>();
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -955,7 +958,6 @@ namespace Web.Controllers
                     flag = false;
                     errorMsg = "請上傳要匯入的資料";
                 }
-
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
@@ -964,11 +966,8 @@ namespace Web.Controllers
                 {
                     ViewData["errorLine"] = errorMsg;
                 }
-
                 return View();
             };
-
-
         }
 
         public ActionResult MemberScore()
