@@ -1141,7 +1141,8 @@ namespace Web.Controllers
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
             lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
-
+            ViewData["Time_Start"] = Time_Start;
+            ViewData["Time_End"] = Time_End;
 
             if (isExport == "true")
             {

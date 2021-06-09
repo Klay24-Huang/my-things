@@ -3,6 +3,8 @@
 @{
 
     string StationID = "";
+    string SDate = (ViewData["Time_Start"] == null) ? "" : ViewData["Time_Start"].ToString();
+    string EDate = (ViewData["Time_End"] == null) ? "" : ViewData["Time_End"].ToString();
 
     int ResultLen = 0;
 
@@ -39,8 +41,8 @@
                                 報表日期
                             </div>
                             <div class="col-md-3">
-                                起：<input name="Time_Start" id="Time_Start" class="form-control dateTimePicker" />
-                                迄：<input name="Time_End" id="Time_End" class="form-control dateTimePicker" />
+                                起：<input name="Time_Start" id="Time_Start" class="form-control dateTimePicker" value="@SDate"/>
+                                迄：<input name="Time_End" id="Time_End" class="form-control dateTimePicker" value="@EDate"/>
                                 ．日期格不得為空<br />
                                 ．日期間距不得大於31天<br />
                                 ．起日不得晚於迄日<br />
