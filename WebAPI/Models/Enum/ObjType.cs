@@ -436,6 +436,11 @@ namespace WebAPI.Models.Enum
             /// 處理機車調度停車場 20210602 ADD BY FRANK
             /// </summary>
             BE_HandleTransParking_Moto,
+            /// <summary>
+            /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
+            /// </summary>
+            BE_GetCarCurrentStatus,
+
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -1042,6 +1047,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleTransParking_Moto:  // 處理機車調度停車場 20210602 ADD BY FRANK
                     SPName = "usp_BE_InsTransParking_Moto";
+                    break;                      
+                case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
+                    SPName = "usp_BE_GetCarCurrentStatus";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
