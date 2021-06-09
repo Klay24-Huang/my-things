@@ -126,7 +126,9 @@ namespace WebAPI.Controllers
                                 Millage = ListOut[0].Millage,
                                 deviceRDistance = ListOut[0].deviceRDistance == "NA" || ListOut[0].deviceRDistance == "" ? 0 : Convert.ToSingle(ListOut[0].deviceRDistance),
                                 device2TBA = ListOut[0].device2TBA,
-                                device3TBA = ListOut[0].device3TBA,
+                                //device3TBA = ListOut[0].device3TBA,
+                                //20210522 ADD BY ADAM REASON.如果可以讀到儀表板電量就以rsoc為主
+                                device3TBA = ListOut[0].deviceRSOC == "NA" || ListOut[0].deviceRSOC == "" ? ListOut[0].device3TBA : Convert.ToInt32(ListOut[0].deviceRSOC),
                                 deviceMBA = ListOut[0].deviceMBA,
                                 deviceRBA = ListOut[0].deviceRBA,
                                 deviceLBA = ListOut[0].deviceLBA,
