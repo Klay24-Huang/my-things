@@ -310,7 +310,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
             string term2 = "";
-            string SQL = " EXEC usp_BE_GetAuditImage  '" + IDNO + "'";
+            string SQL = " EXEC usp_BE_GetAuditImage_Tang  '" + IDNO + "'";
             int nowCount = 0;
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
     

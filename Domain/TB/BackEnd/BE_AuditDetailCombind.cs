@@ -35,6 +35,7 @@ namespace Domain.TB.BackEnd
         public List<BE_InsuranceData> InsuranceData { set; get; }
         //20210310唐加
         public string mobileBlock { set; get; }
+        public string JsonMileStoneDetail { set; get; }
     }
     
 }

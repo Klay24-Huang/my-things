@@ -27,5 +27,6 @@ namespace WebAPI.Models.Param.Input
         public DateTime GPSTime { set; get; }
         public int iButton { set; get; }
         public string iButtonKey { set; get; }
+        public string fwver { set; get; }
     }
 }
