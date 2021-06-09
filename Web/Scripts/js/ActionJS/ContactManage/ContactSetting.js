@@ -18,7 +18,8 @@ $(function () {
             //console.log($.format.date(new Date(), 'yyyy-MM-dd HH:mm'));
             fp.setDate(new Date());
             $("#StartDate").val($.format.date(new Date(), 'yyyy-MM-dd HH:mm'));
-            if ($("#type").val() == '1' && $("#mode").val() == '0') {
+            // 動作類型 = 強制還車 && 動作用途 = 會員/系統操作異常/逾時未還/營運範圍外無法還車/車輛沒電/其他 顯示 發票寄送方式、停車格
+            if ($("#type").val() == '1' && ($("#mode").val() == '0' || $("#mode").val() == '3' || $("#mode").val() == '4' || $("#mode").val() == '5' || $("#mode").val() == '6' || $("#mode").val() == '7')) {
                 $("#returnInvoiceType").show();
                 $("#parkingSpaceSection").show();
                 getMemberInvoice();
@@ -36,7 +37,8 @@ $(function () {
         }
     });
     $("#mode").on("change", function () {
-        if ($("#type").val() == '1' && $("#mode").val() == '0') {
+        // 動作類型 = 強制還車 && 動作用途 = 會員/系統操作異常/逾時未還/營運範圍外無法還車/車輛沒電/其他 顯示 發票寄送方式、停車格
+        if ($("#type").val() == '1' && ($("#mode").val() == '0' || $("#mode").val() == '3' || $("#mode").val() == '4' || $("#mode").val() == '5' || $("#mode").val() == '6' || $("#mode").val() == '7')) {
             $("#returnInvoiceType").show();
             $("#parkingSpaceSection").show();
             getMemberInvoice();
@@ -116,7 +118,7 @@ $(function () {
                     case '6':   //自然人憑證載具
                         if ($("#CARRIERID").val() == '') {
                             flag = false;
-                            errMsg = bill_option == '4' ? '手機條碼載具未填' :'自然人憑證載具未填';
+                            errMsg = bill_option == '4' ? '手機條碼載具未填' : '自然人憑證載具未填';
                         }
                         break;
                     default:
@@ -134,32 +136,32 @@ $(function () {
                 obj.OrderNo = OrderNo;
                 DoAjaxAfterCallBackWithOutMessage(obj,"BE_ContactSettingCheck","執行強還前確認發生錯誤",ByPass)
             } else { */
-                var Account = $("#Account").val();
-                var obj = new Object();
-                obj.UserID = Account;
-                obj.OrderNo = OrderNo;
-                obj.type = parseInt(type);
-                //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
-                obj.Mode = parseInt(mode);
-                obj.returnDate = ReturnDate;
-                obj.bill_option = bill_option;
-                obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
-                obj.NPOBAN = NPOBAN;
-                obj.unified_business_no = unified_business_no;
-                obj.parkingSpace = parkingSpace;
-                var json = JSON.stringify(obj);
-                console.log(json);
-                DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
+            var Account = $("#Account").val();
+            var obj = new Object();
+            obj.UserID = Account;
+            obj.OrderNo = OrderNo;
+            obj.type = parseInt(type);
+            //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
+            obj.Mode = parseInt(mode);
+            obj.returnDate = ReturnDate;
+            obj.bill_option = bill_option;
+            obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
+            obj.NPOBAN = NPOBAN;
+            obj.unified_business_no = unified_business_no;
+            obj.parkingSpace = parkingSpace;
+            var json = JSON.stringify(obj);
+            console.log(json);
+            DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
             //}
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
- 
+
 
     });
     function ByPass(data) {
         console.log(data);
-       // data.ErrorCode="ERR188"
+        // data.ErrorCode="ERR188"
         if (data.ErrorCode == "ERR188") {
             disabledLoading();
             swal({
@@ -191,7 +193,7 @@ $(function () {
         } else if (data.ErrorCode == "000000") {
             SendData(false);
         } else {
-            disabledLoadingAndShowAlert(data.ErrorMessage);     
+            disabledLoadingAndShowAlert(data.ErrorMessage);
         }
     }
     function SendData(ByPassFlag) {
@@ -267,22 +269,22 @@ $(function () {
             }
         }
         if (flag) {
-                var Account = $("#Account").val();
-                var obj = new Object();
-                obj.UserID = Account;
-                obj.OrderNo = OrderNo;
-                obj.type = parseInt(type);
-                //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
-                obj.Mode = parseInt(mode);
-                obj.returnDate = ReturnDate;
-                obj.bill_option = bill_option;
-                obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
-                obj.NPOBAN = NPOBAN;
-                obj.unified_business_no = unified_business_no;
+            var Account = $("#Account").val();
+            var obj = new Object();
+            obj.UserID = Account;
+            obj.OrderNo = OrderNo;
+            obj.type = parseInt(type);
+            //obj.ParkInfo = parseInt(ParkInfo); //20201209唐加
+            obj.Mode = parseInt(mode);
+            obj.returnDate = ReturnDate;
+            obj.bill_option = bill_option;
+            obj.CARRIERID = bill_option == '4' ? '\\' + CARRIERID : CARRIERID;
+            obj.NPOBAN = NPOBAN;
+            obj.unified_business_no = unified_business_no;
             obj.parkingSpace = parkingSpace;
-            obj.ByPass = (ByPassFlag)?1:0
+            obj.ByPass = (ByPassFlag) ? 1 : 0
             var json = JSON.stringify(obj);
-                console.log(json);
+            console.log(json);
             DoAjaxAfterReload(obj, "BE_ContactSetting", "執行強取強還發生錯誤");
 
         } else {
@@ -310,13 +312,12 @@ $(function () {
 
         if (flag) {
             ShowLoading("開始查詢會員訂單資料");
-            // window.location.href = "../CarDataInfo/CarDashBoard";
-            //載入車輛
+
             var site = jsHost + "GetMemberInvoiceSetting";
             $.ajax({
                 url: site,
                 type: 'POST',
-                data: '{"OrderNo":"'+$("#OrderNo").val()+'"}',
+                data: '{"OrderNo":"' + $("#OrderNo").val() + '"}',
                 cache: false,
                 contentType: 'application/json',
                 dataType: 'json',           //'application/json',
@@ -400,4 +401,9 @@ var setInvoData = function () {
     });
     $('#LoveCodeList').html('<option value="">請選擇</option> \n' + loveListOption.join(' \n'));
     $('#LoveCodeList').val(MemberInvoice.NPOBAN);
+
+    // 20210608 ADD BY YEH REASON:車輛沒有在據點範圍內還車，動作預設為:營運範圍外無法還車
+    if (MemberInvoice.IsArea == "N") {
+        $("#mode").val('5');
+    }
 };
