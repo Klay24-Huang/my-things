@@ -40,6 +40,7 @@ namespace OtherService
         private string GetGuaranteeNo = ConfigurationManager.AppSettings["GetGuaranteeNo"].ToString(); //履保/信託序號發行
         private string WriteOffGuaranteeNoJunk = ConfigurationManager.AppSettings["WriteOffGuaranteeNoJunk"].ToString(); //履保/信託序號核銷/報廢
         private string CancelWriteOff = ConfigurationManager.AppSettings["CancelWriteOff"].ToString(); //履保/信託序號取消核銷
+        private string ReturnStoreValue = ConfigurationManager.AppSettings["ReturnStoreValue"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public string GenerateSignCode(string ClientId,string utcTimeStamp,string body,string apiKey)
         {
@@ -501,7 +502,27 @@ namespace OtherService
             return output;
         }
         #endregion
-        #region 履保相關
+        #region 訂閱制相關
+
+        /// 儲值退款
+        public bool DoReturnStoreValue(WSInput_ReturnStoreValue wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WSOut_ReturnStoreValue output)
+        {
+            bool flag = true;
+            string url = BaseURL + ReturnStoreValue;
+            output = DoGetTaishinApi<WSInput_ReturnStoreValue, WSOut_ReturnStoreValue>(wsInput, ClientId, utcTimeStamp, SignCode, url, "DoReturnStoreValue").Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                //if (output.Data == null)
+                //{
+                //    flag = false;
+                //}
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
 
         //履保/信託序號發行
         public bool DoGetGuaranteeNo(WSInput_GetGuaranteeNo wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WSOut_GetGuaranteeNo output)

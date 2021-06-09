@@ -243,7 +243,7 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 月租履約保證
+        /// 台新儲值+開戶
         /// </summary>
         /// <param name="sour"></param>
         /// <param name="errCode"></param>
@@ -256,7 +256,7 @@ namespace WebAPI.Models.BillFunc
                 spin = objUti.TTMap<ICF_TSIB_Escrow_Type, ICF_TSIB_Escrow>(sour);
                 int nowCount = 2;
                 spin.MemberId = string.Format("{0}Month{1}", sour.IDNO, nowCount.ToString().PadLeft(4, '0'));
-                return TSIB_Escrow(spin, ref errCode, ref errMsg);
+                return TSIB_Escrow_StoreValueCreateAccount(spin, ref errCode, ref errMsg);
             }
             else
             {
@@ -267,9 +267,9 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
-        /// 台新履約保證
+        /// 台新錢包儲值+開戶
         /// </summary>
-        public bool TSIB_Escrow(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
+        public bool TSIB_Escrow_StoreValueCreateAccount(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
         {
             return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
 
@@ -355,6 +355,69 @@ namespace WebAPI.Models.BillFunc
                 errMsg = output.Message;
             }
             #endregion
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 台新錢包付款
+        /// </summary>
+        /// <returns></returns>
+        public bool TSIB_Escrow_PayTransaction(ICF_TSIB_Escrow_PayTransaction sour, ref string errCode)
+        {
+            bool flag = false;
+            SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
+            {
+                IDNO = sour.IDNO,
+                LogID = sour.LogID,
+                OrderNo = sour.OrderNo,
+                Token = sour.Token,
+                transaction_no = ""
+            };
+            if (sour.Amount > 0)
+            {
+                DateTime NowTime = DateTime.Now;
+                string guid = Guid.NewGuid().ToString().Replace("-", "");
+                WebAPI_PayTransaction wallet = new WebAPI_PayTransaction()
+                {
+                    AccountId = sour.AccountId,
+                    ApiVersion = "0.1.01",
+                    GUID = guid,
+                    MerchantId = MerchantId,
+                    POSId = "",
+                    SourceFrom = "9",
+                    StoreId = "",
+                    StoreName = "",
+                    StoreTransId = string.Format("{0}M{1}", sour.OrderNo, NowTime.ToString("yyMMddHHmmss")),
+                    Amount = sour.Amount,
+                    BarCode = "",
+                    StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")                        
+                };
+                var body = JsonConvert.SerializeObject(wallet);
+                TaishinWallet WalletAPI = new TaishinWallet();
+                string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                WebAPIOutput_PayTransaction output = null;
+                flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+
+                var spin = new SPInput_SetSubsBookingMonth()
+                {
+                    IDNO = sour.IDNO,
+                    LogID = sour.LogID,
+                    OrderNo = sour.OrderNo
+                };
+
+                if (flag)
+                {
+                    spin.EscrowStatus = 1;
+                    msp.sp_SetSubsBookingMonth(spin, ref errCode);
+                }
+                else
+                {
+                    spin.EscrowStatus = 0;
+                    msp.sp_SetSubsBookingMonth(spin, ref errCode);
+                }
+            }
 
             return flag;
         }
