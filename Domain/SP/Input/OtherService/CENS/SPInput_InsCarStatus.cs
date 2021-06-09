@@ -29,6 +29,7 @@ namespace Domain.SP.Input.OtherService.CENS
         public int iButton { set; get; }
         public string iButtonKey { set; get; }
         public int OrderStatus { set; get; }
+        public string fwver { set; get; }
         public Int64 LogID { set; get; }
    
     }

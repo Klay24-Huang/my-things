@@ -775,8 +775,8 @@ namespace Web.Controllers
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
-            CarCardCommonRepository carCardCommonRepository = new CarCardCommonRepository(connetStr);
-            FETDeviceMaintainAPI deviceMaintain = new FETDeviceMaintainAPI();
+            //CarCardCommonRepository carCardCommonRepository = new CarCardCommonRepository(connetStr);
+            //FETDeviceMaintainAPI deviceMaintain = new FETDeviceMaintainAPI();
             List<BE_CarBindImportData> lstCarBindImportData = new List<BE_CarBindImportData>();
             List<BE_CarBindImportDataResult> lstCarBindImportDataResult = new List<BE_CarBindImportDataResult>();
 

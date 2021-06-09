@@ -223,6 +223,7 @@
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
+    <Compile Include="Controllers\BE_HandleTransParking_MotoController.cs" />
     <Compile Include="Controllers\BE_HandleUserGroupController.cs" />
     <Compile Include="Controllers\BE_HandleUserMaintainController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
+    <Compile Include="Controllers\GetMotorParkingDataController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -433,6 +435,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking_Moto.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleUserMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />

@@ -60,9 +60,11 @@ namespace WebAPI.Controllers
             string Contentjson = "";
 
             CarCardCommonRepository carCardCommonRepository = new CarCardCommonRepository(connetStr);
-            FETDeviceMaintainAPI deviceMaintain = new FETDeviceMaintainAPI();
+            FETDeviceMaintainAPI deviceMaintainAzure = new FETDeviceMaintainAPI(FETDeviceMaintainAPI.HASwitch.Azure);
             List<BE_CarBindImportData> lstCarBindImportData = new List<BE_CarBindImportData>();
             List<BE_CarBindImportDataResult> lstCarBindImportDataResult = new List<BE_CarBindImportDataResult>();
+            string enableFETCloudDeviceMaintain = ConfigurationManager.AppSettings.Get("EnableFETCloudDeviceMaintain") ?? "0";
+            FETDeviceMaintainAPI deviceMaintainFETCloud = (enableFETCloudDeviceMaintain == "1") ? new FETDeviceMaintainAPI(FETDeviceMaintainAPI.HASwitch.FETCloud) : null;
             #endregion
             #region 防呆
 
@@ -91,11 +93,22 @@ namespace WebAPI.Controllers
                 if (lstCarBindImportData.Count > 0)
                 {
                     //取得CAT平台Token
-                    var loginCAT = deviceMaintain.DoLogin();
-                    if (!loginCAT.Result)
+                    var loginAzureCAT = deviceMaintainAzure.DoLogin();
+                    var loginFETCloudCAT = new WebAPIOutput_ResultDTO<WebAPIOutput_Login>()
+                    {
+                        Result = true
+                    };
+                    if (enableFETCloudDeviceMaintain == "1")
+                    {
+                        loginFETCloudCAT = deviceMaintainFETCloud.DoLogin();
+                    }
+
+                    if (!loginAzureCAT.Result || !loginFETCloudCAT.Result)
                     {
                         flag = false;
-                        errMsg = "取得CAT API Token失敗。" + loginCAT.Message;
+                        errMsg = "取得CAT API Token失敗。";
+                        errMsg += (!loginAzureCAT.Result) ? "Azure Error=" + loginAzureCAT.Message : "";
+                        errMsg += (!loginFETCloudCAT.Result) ? "FET Cloud Error=" + loginFETCloudCAT.Message : "";
                     }
                     else
                     {
@@ -170,12 +183,24 @@ namespace WebAPI.Controllers
                                         {
                                             if (carInfoData.deviceId == "" || carInfoData.deviceToken == "")
                                             {
-                                                WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> addDeviceToken = deviceMaintain.AddDeviceToken(importData.CarNo,
-                                                    carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.CATCarType.Car : FETDeviceMaintainAPI.CATCarType.Motor);
-                                                if (addDeviceToken.Result)
+                                                var accessToken = string.Format("{0}-{1}", importData.CarNo, Guid.NewGuid().ToString().ToUpper().Substring(0, 20 - importData.CarNo.Length - 1));
+                                                WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> addDeviceTokenAzure = deviceMaintainAzure.AddDeviceToken(importData.CarNo,
+                                                    carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.CATCarType.Car : FETDeviceMaintainAPI.CATCarType.Motor, accessToken);
+                                                //需同步更新FET Cloud的資訊
+                                                WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken> addDeviceTokenFETCloud = new WebAPIOutput_ResultDTO<WebAPIOutput_AddDeviceToken>()
+                                                { 
+                                                    Result = true
+                                                };
+                                                if (enableFETCloudDeviceMaintain == "1")
                                                 {
-                                                    carInfoData.deviceId = addDeviceToken.Data.deviceId;
-                                                    carInfoData.deviceToken = addDeviceToken.Data.deviceToken;
+                                                    addDeviceTokenFETCloud = deviceMaintainFETCloud.AddDeviceToken(importData.CarNo,
+                                                    carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.CATCarType.Car : FETDeviceMaintainAPI.CATCarType.Motor, accessToken);
+                                                }
+
+                                                if (addDeviceTokenAzure.Result && addDeviceTokenFETCloud.Result)
+                                                {
+                                                    carInfoData.deviceId = addDeviceTokenAzure.Data.deviceId;
+                                                    carInfoData.deviceToken = addDeviceTokenAzure.Data.deviceToken;
 
                                                     //更新deviceId與deviceToken
                                                     string SPName = new ObjType().GetSPName(ObjType.SPType.BE_UpdCATDeviceToken);
@@ -183,8 +208,8 @@ namespace WebAPI.Controllers
                                                     SPInput_BE_UpdCATDeviceToken data = new SPInput_BE_UpdCATDeviceToken()
                                                     {
                                                         CarNo = carInfoData.CarNo,
-                                                        deviceId = addDeviceToken.Data.deviceId,
-                                                        deviceToken = addDeviceToken.Data.deviceToken,
+                                                        deviceId = addDeviceTokenAzure.Data.deviceId,
+                                                        deviceToken = addDeviceTokenAzure.Data.deviceToken,
                                                         UserID = apiInput.UserID,
                                                         LogID = 0
                                                     };
@@ -200,7 +225,9 @@ namespace WebAPI.Controllers
                                                 else
                                                 {
                                                     importFlag = false;
-                                                    importMessage = string.Format("CAT:{0}", addDeviceToken.Message);
+                                                    importMessage = string.Format("CAT:{0}{1}", 
+                                                        (!addDeviceTokenAzure.Result) ? "Azure:" + addDeviceTokenAzure.Message + ";" : "", 
+                                                        (!addDeviceTokenFETCloud.Result) ? "FETCloud:" + addDeviceTokenFETCloud.Message + ";" : "");
                                                 }
                                             }
                                         }
@@ -215,7 +242,7 @@ namespace WebAPI.Controllers
                                                 deviceToken = carInfoData.deviceToken,
                                                 deviceType = carInfoData.IsMotor == 0 ? FETDeviceMaintainAPI.GCPCarType.Vehicle.ToString() : FETDeviceMaintainAPI.GCPCarType.Motorcycle.ToString()
                                             });
-                                            WebAPIOutput_ResultDTO<List<WebAPIOutput_GCPUpMapping>> GCPUpMapping = deviceMaintain.GCPUpMapping(lstGCPUpMapping);
+                                            WebAPIOutput_ResultDTO<List<WebAPIOutput_GCPUpMapping>> GCPUpMapping = deviceMaintainAzure.GCPUpMapping(lstGCPUpMapping);
                                             if (!GCPUpMapping.Result || GCPUpMapping.Data.Count == 0 || GCPUpMapping.Data[0].upResult == "NotOkay")
                                             {
                                                 importFlag = false;

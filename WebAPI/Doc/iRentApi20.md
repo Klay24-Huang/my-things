@@ -2766,11 +2766,12 @@ iRentApi20 Web API版本
 
 * MyCar, MyMoto 參數說明
 
-| 參數名稱  | 參數說明       | 型態   | 範例                                   |
-| --------- | -------------- | ------ | -------------------------------------- |
-| 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
-| StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
-| EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
+| 參數名稱  | 參數說明             | 型態   | 範例                                   |
+| --------- | -------------------- | ------ | -------------------------------------- |
+| 其餘參數  | 同NorMonCards        |        | 參考NorMonCards, MixMonCards  參數說明 |
+| NxtPay    | 下期是否已付款0否1是 | int    | 0                                      |
+| StartDate | 訂閱制月租起日       | string | 05/18 00:00                            |
+| EndDate   | 訂閱制月租迄日       | string | 06/16 23:59                            |
 
   
 
@@ -3116,6 +3117,7 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
+            "NxtPay": 0,
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR66",
@@ -3136,6 +3138,7 @@ iRentApi20 Web API版本
 			"IsMix": 1
         },
         "MyMoto": {
+            "NxtPay": 1, 
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR200",
@@ -3234,6 +3237,7 @@ iRentApi20 Web API版本
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
 | IsMix | 是否為城市車手(0否1是) | int | 0 |
+| UseUntil | 可以使用到什麼時候 | string | 2021/09/01 |
 
 * Output範例
 ```
@@ -3247,6 +3251,7 @@ iRentApi20 Web API版本
         "MonProDisc": "汽包機66-6注意事項",
         "MonCards": [
             {
+                "UseUntil": "2021/09/01",
                 "MonProjID": "MR66",
                 "MonProjNM": "測試_汽包機66-6",
                 "MonProPeriod": 6,
@@ -3586,6 +3591,7 @@ iRentApi20 Web API版本
 | SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
 | IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
 | IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
+| NxtPay | 下期是否已付款 (0否1是) | int | 0 |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
 
 * Output範例
@@ -3619,6 +3625,7 @@ iRentApi20 Web API版本
             "SubsNxt": 1,
             "IsChange": 0,
             "IsPay": 1,
+            "NxtPay": 0,
 			"IsMoto": 0
         }
     }
@@ -4560,6 +4567,129 @@ iRentApi20 Web API版本
 ### [/api/GetMotorParkingData/]
 
 * 20210528新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| ShowALL   | 顯示全部   |  Y   | int    | 0:不要 1:要 |
+| Latitude  | 緯度       |  Y   | double | 25.068740   |
+| Longitude | 經度       |  Y   | double | 121.531652  |
+| Mode      | 停車場類型 |  Y   | int    | 0:一般(調度) 1:特約(車麻吉及其他) 2:全部顯示 |
+| Radius    | 半徑       |  Y   | double | 3.5  |
+
+* input範例
+
+```
+{
+    "ShowALL": 0,
+    "Latitude": 25.068740,
+    "Longitude": 121.531652,
+    "Mode": 0,
+    "Radius": 5
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| ParkingType  | 停車場類型         | int    | 0:一般 1:特約(車麻吉及其他)     |
+| ParkingName  | 停車場名稱         | string | 信義國小地下停車場     |
+| ParkingAddress  | 停車場地址      | string | 台北市信義區松勤街60號地下     |
+| Latitude     | 緯度               |  decimal | 25.068740   |
+| Longitude    | 經度               |  decimal | 121.531652  |
+| OpenTime     | 開始時間           |  DateTime | 2020-12-16T00:00:00  |
+| Longitude    | 結束時間           |  DateTime | 2099-12-31T00:00:00  |
+
+
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "ParkingObj": [
+            {
+                "ParkingType": 0,
+                "ParkingName": "台北承德一站停車場",
+                "ParkingAddress": "台北市大同區承德路二段206號",
+                "Longitude": 121.518037,
+                "Latitude": 25.061744,
+                "OpenTime": "2020-12-16T00:00:00",
+                "CloseTime": "2099-12-31T00:00:00"
+            },
+            {
+                "ParkingType": 0,
+                "ParkingName": "台北新生停車場",
+                "ParkingAddress": "臺北市中山區民族東路與吉林路口(新生公園溫水游泳池旁)",
+                "Longitude": 121.531652,
+                "Latitude": 25.06874,
+                "OpenTime": "2020-12-16T00:00:00",
+                "CloseTime": "2099-12-31T00:00:00"
+            },
+            {
+                "ParkingType": 0,
+                "ParkingName": "大龍國小地下停車場",
+                "ParkingAddress": "台北市大同區哈密街47號地下",
+                "Longitude": 121.517376,
+                "Latitude": 25.074141,
+                "OpenTime": "2020-12-16T00:00:00",
+                "CloseTime": "2099-12-31T00:00:00"
+            },
+            {
+                "ParkingType": 0,
+                "ParkingName": "成淵高中地下停車場",
+                "ParkingAddress": "台北市大同區承德路二段235號地下[車牌辨識]",
+                "Longitude": 121.520076,
+                "Latitude": 25.060341,
+                "OpenTime": "2020-12-16T00:00:00",
+                "CloseTime": "2099-12-31T00:00:00"
+            }
+        ]
+    }
+}
+```
+
+---
+
+## GetParkingData
+
+### [/api/GetParkingData/]
+
+* 20210602新增文件
 
 * ASP.NET Web API (REST API)
 
