@@ -195,6 +195,7 @@
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
     <Compile Include="Controllers\BE_DeleteMemberScoreController.cs" />
     <Compile Include="Controllers\BE_FeedBackHandleController.cs" />
+    <Compile Include="Controllers\BE_GetCarCurrentStatus.cs" />
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
@@ -458,6 +459,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarCurrentStatus.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetFuncPower.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetHoilday.cs" />
