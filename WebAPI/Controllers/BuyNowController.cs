@@ -519,10 +519,6 @@ namespace WebAPI.Controllers
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
                             }
-                            else
-                            {
-                                //無會員資料
-                            }
                         }
                         catch (Exception ex)
                         {
@@ -764,6 +760,8 @@ namespace WebAPI.Controllers
 
                     #endregion
 
+                    #region 後續api處理
+
                     if (flag)
                     {
                         flag = buyNxtCom.exeNxt();
@@ -771,6 +769,50 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("後續api處理");
                     }
                     outputApi.PayResult = flag ? 1 : 0;
+
+                    #endregion
+
+                    #region 履保
+
+                    if (flag)
+                    {
+                        try
+                        {
+                            var mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                            if (mem != null)
+                            {
+                                var spin = new ICF_TSIB_Escrow_Type()
+                                {
+                                    IDNO = IDNO,
+                                    Name = mem.MEMCNAME,
+                                    PhoneNo = mem.MEMTEL,
+                                    Email = mem.MEMEMAIL,
+                                    Amount = ProdPrice
+                                };
+                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+
+                    #endregion
+
+                    #region 發票
+
+                    try
+                    {
+
+                    }
+                    catch (Exception ex)
+                    {
+                        //紀錄開立失敗
+                    }
+
+                    #endregion
+
                 }
 
                 #endregion
@@ -960,6 +1002,8 @@ namespace WebAPI.Controllers
 
                     #endregion
 
+                    #region 後續api處理
+
                     if (flag)
                     {
                         flag = buyNxtCom.exeNxt();
@@ -967,6 +1011,8 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("後續api處理");
                     }
                     outputApi.PayResult = flag ? 1 : 0;
+
+                    #endregion
                 }
 
                 #endregion

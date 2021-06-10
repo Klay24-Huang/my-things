@@ -25,9 +25,9 @@ namespace Domain.SP.Input.Subscription
         /// </summary>
         public double UseMotoTotalMins { get; set; } = 0;
         /// <summary>
-        /// 履保是否完成(0否1是)
+        /// 履保是否完成(0未執行1是2否)
         /// </summary>
-        public int EscrowStatus { get; set; } = -1;
+        public int EscrowStatus { get; set; } = 0;
         public DateTime? SetNow { get; set; }
     }
 }

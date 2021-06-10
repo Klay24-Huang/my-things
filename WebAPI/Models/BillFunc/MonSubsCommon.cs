@@ -330,28 +330,7 @@ namespace WebAPI.Models.BillFunc
             }
             else
             {
-                #region 紀錄未回傳失敗
-
-                var spin = new SPInput_InsEscrowHist()
-                {
-                    IDNO = sour.IDNO,
-                    MemberID = sour.MemberId,
-                    AccountID = "x",
-                    EcStatus = -1,
-                    Email = sour.Email,
-                    PhoneNo = sour.PhoneNo,
-                    Amount = sour.Amount,
-                    TotalAmount = 0,
-                    CreateDate = DateTime.Now,
-                    LastStoreTransId = "x",
-                    LastTransId = "x",
-                    LastTransDate = DateTime.Now
-                };
-                msp.sp_InsEscrowHist(spin, ref errCode);
-
-                #endregion
-
-                errCode = "ERR";
+                errCode = "ERR918";//Api呼叫失敗
                 errMsg = output.Message;
             }
             #endregion
@@ -366,14 +345,7 @@ namespace WebAPI.Models.BillFunc
         public bool TSIB_Escrow_PayTransaction(ICF_TSIB_Escrow_PayTransaction sour, ref string errCode)
         {
             bool flag = false;
-            SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
-            {
-                IDNO = sour.IDNO,
-                LogID = sour.LogID,
-                OrderNo = sour.OrderNo,
-                Token = sour.Token,
-                transaction_no = ""
-            };
+            Int64 _LogID = 999999;
             if (sour.Amount > 0)
             {
                 DateTime NowTime = DateTime.Now;
@@ -403,7 +375,7 @@ namespace WebAPI.Models.BillFunc
                 var spin = new SPInput_SetSubsBookingMonth()
                 {
                     IDNO = sour.IDNO,
-                    LogID = sour.LogID,
+                    LogID = _LogID,
                     OrderNo = sour.OrderNo
                 };
 
@@ -414,7 +386,7 @@ namespace WebAPI.Models.BillFunc
                 }
                 else
                 {
-                    spin.EscrowStatus = 0;
+                    spin.EscrowStatus = 2;
                     msp.sp_SetSubsBookingMonth(spin, ref errCode);
                 }
             }
@@ -824,6 +796,53 @@ namespace WebAPI.Models.BillFunc
             }
             catch (Exception ex)
             {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 取得待執行履保付款呼叫列表
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetSubsEscrowPay> sp_GetSubsEscrowPay(SPInput_GetSubsEscrowPay spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsEscrowPay>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsEscrowPay);
+                string SPName = "usp_GetSubsEscrowPay_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetSubsEscrowPay>(ds1.Tables[0]);
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
                 throw ex;
             }
         }

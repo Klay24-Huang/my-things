@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebAPI.Models.Param.CusFun.Input
+namespace Domain.SP.Output.Subscription
 {
-    public class ICF_TSIB_Escrow_PayTransaction
+    public class SPOut_GetSubsEscrowPay
     {
         public string IDNO { get; set; }
         public Int64 OrderNo { get; set; }
         public string AccountId { get; set; }
-        public int Amount { get; set; }
+        public double Amount { get; set; }
     }
 }
