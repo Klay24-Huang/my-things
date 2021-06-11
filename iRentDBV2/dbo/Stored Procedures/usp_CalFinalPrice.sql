@@ -32,15 +32,15 @@
 ** EXEC @Error=[dbo].[usp_CalFinalPrice]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
 ** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
 **------------
-** Auth:Eric 
-** Date:2020/10/6 下午 02:39:23 
+** Auth:eason 
+** Date:2021/01/07 下午 03:08:00 
 **
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2020/10/6 下午 02:39:23    |  Eric|          First Release
+** 2021/01/07 下午 03:08:00    |  eason|          First Release
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_CalFinalPrice]
@@ -51,7 +51,10 @@ CREATE PROCEDURE [dbo].[usp_CalFinalPrice]
 	@mileage_price          INT                   , --里程費
 	@Insurance_price        INT                   , --安心服務費
 	@fine_price             INT                   , --罰金
-	@gift_point             INT                   , --使用的時數
+	@gift_point             INT                   , --使用時數(汽車)
+	@gift_motor_point		INT                   , --使用時數(機車)
+	@monthly_workday        FLOAT                 , --使用的月租平日時數
+	@monthly_holiday        FLOAT                 , --使用的月租假日時數
     @Etag                   INT                   , --ETAG費用
 	@parkingFee             INT                   , --特約停車場停車費
 	@TransDiscount          INT                   , --轉乘優惠
@@ -93,77 +96,93 @@ SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @CarNo='';
 SET @ProjType=5;
-SET @IDNO    =ISNULL (@IDNO    ,'');
+SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
-SET @Token    =ISNULL (@Token    ,'');
+SET @Token=ISNULL (@Token,'');
 
-		BEGIN TRY
-	
+BEGIN TRY
+	IF @Token='' OR @IDNO='' OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
-		 IF @Token='' OR @IDNO=''  OR @OrderNo=0
-		 BEGIN
-		   SET @Error=1;
-		   SET @ErrorCode='ERR900'
- 		 END
-		 
-		  --0.再次檢核token
-		 IF @Error=0
-		 BEGIN
-		 	SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+	--0.再次檢核token
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR101';
 			END
-			ELSE
-			BEGIN
-			    SET @hasData=0;
-				SELECT @hasData=COUNT(1) FROM TB_Token WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-				IF @hasData=0
-				BEGIN
-				   SET @Error=1;
-				   SET @ErrorCode='ERR101';
-				END
-			END
-		 END
-		 --1.0更新資料
-		 IF @Error=0
-		 BEGIN
-		   SELECT @booking_status=booking_status,@cancel_status=cancel_status,@car_mgt_status=car_mgt_status,@CarNo=CarNo,@ProjType=ProjType
-					FROM TB_OrderMain
-					WHERE order_number=@OrderNo;
+		END
+	END
 
-			UPDATE TB_OrderDetail
-			SET final_price    =@final_price,pure_price=@pure_price ,mileage_price  =@mileage_price,Insurance_price=@Insurance_price
-				,fine_price=@fine_price,gift_point=@gift_point,Etag =@Etag,parkingFee =@parkingFee,TransDiscount  =@TransDiscount  
-			WHERE Order_number=@OrderNo;
+	--1.0更新資料
+	IF @Error=0
+	BEGIN
 
-			--寫入歷程
-			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-		 END
-		--寫入錯誤訊息
-		    IF @Error=1
-			BEGIN
-			 INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			END
-		END TRY
-		BEGIN CATCH
-			SET @Error=-1;
-			SET @ErrorCode='ERR999';
-			SET @ErrorMsg='我要寫錯誤訊息';
-			SET @SQLExceptionCode=ERROR_NUMBER();
-			SET @SQLExceptionMsg=ERROR_MESSAGE();
-			IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
-			 SET @IsSystem=1;
-			 SET @ErrorType=4;
-			      INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
-				 VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-		END CATCH
+		SELECT @booking_status=booking_status,
+				@cancel_status=cancel_status,
+				@car_mgt_status=car_mgt_status,
+				@CarNo=CarNo,
+				@ProjType=ProjType
+		FROM TB_OrderMain WITH(NOLOCK)
+		WHERE order_number=@OrderNo;
+
+		UPDATE TB_OrderDetail
+		SET final_price=@final_price
+			,pure_price=@pure_price
+			,mileage_price=@mileage_price
+			,Insurance_price=@Insurance_price
+			,fine_price=@fine_price
+			,gift_point=@gift_point
+			,gift_motor_point=@gift_motor_point
+			,monthly_workday = @monthly_workday
+			,monthly_holiday = @monthly_holiday
+			,Etag =@Etag
+			,parkingFee=@parkingFee
+			,TransDiscount=@TransDiscount  
+		WHERE order_number=@OrderNo;
+
+		--寫入歷程
+		INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
+		VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+	END
+
+	--寫入錯誤訊息
+	IF @Error=1
+	BEGIN
+		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+	END
+END TRY
+BEGIN CATCH
+	SET @Error=-1;
+	SET @ErrorCode='ERR999';
+	SET @ErrorMsg='我要寫錯誤訊息';
+	SET @SQLExceptionCode=ERROR_NUMBER();
+	SET @SQLExceptionMsg=ERROR_MESSAGE();
+	IF @@TRANCOUNT > 0
+	BEGIN
+		print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
+	SET @IsSystem=1;
+	SET @ErrorType=4;
+	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
+END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';

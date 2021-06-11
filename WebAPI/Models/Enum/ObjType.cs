@@ -788,7 +788,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    SPName = "usp_Booking_20210325";
+                    SPName = "usp_Booking";     // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";
@@ -875,8 +875,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_GetOrderStatusByOrderNo";
                     break;
                 case SPType.CalFinalPrice:
-                    //SPName = "usp_CalFinalPrice";
-                    SPName = "usp_CalFinalPrice_0107";
+                    SPName = "usp_CalFinalPrice";   // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.BE_CalFinalPrice:
                     SPName = "usp_BE_CalFinalPrice";
@@ -912,11 +911,10 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMemberInfo";
                     break;
                 case SPType.GetStationCarType:
-                    //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210409";
+                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210416";
+                    SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     //SPName = "usp_GetMemberStatus";
