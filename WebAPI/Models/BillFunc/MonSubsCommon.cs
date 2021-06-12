@@ -1579,13 +1579,16 @@ namespace WebAPI.Models.BillFunc
                     HDRateForCar = sour.HDRateForCar,
                     WDRateForMoto = sour.WDRateForMoto,
                     HDRateForMoto = sour.HDRateForMoto,
-                    StartDate = sour.StartDate.ToString("MM/dd"),
-                    EndDate = sour.EndDate.ToString("MM/dd"),
+                    //StartDate = sour.StartDate.ToString("MM/dd"),
+                    //EndDate = sour.EndDate.ToString("MM/dd"),
+                    //20210611 ADD BY ADAM REASON.調整時間格式顯示
+                    StartDate = sour.StartDate.ToString("yyyy/MM/dd HH:mm"),
+                    EndDate = sour.EndDate.ToString("HHmm") == "0000" ? sour.EndDate.AddMinutes(-1).ToString("yyyy /MM/dd HH:mm") : sour.EndDate.ToString("yyyy /MM/dd HH:mm"),
                     MonProDisc = sour.MonProDisc,
                     IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
                     //20210526 ADD BY ADAM REASON.補欄位
-                    MonthStartDate = sour.MonthStartDate,
-                    MonthEndDate = sour.MonthEndDate,
+                    MonthStartDate = sour.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                    MonthEndDate = sour.MonthEndDate.ToString("HHmm") == "0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
                     NxtMonProPeriod = sour.NxtMonProPeriod,
                     IsChange = sour.IsChange,
                     IsPay = sour.IsPay,
@@ -1813,7 +1816,8 @@ namespace WebAPI.Models.BillFunc
                           IsDiscount = a.IsDiscount,
                           IsMix = a.IsMix,       //20210525 ADD BY ADAM REASON.增加城市車手
                           AddPrice = a.AddPrice,
-                          IsMoto = a.IsMoto     //20210527 ADD BY ADAM REASON.補欄位
+                          IsMoto = a.IsMoto,     //20210527 ADD BY ADAM REASON.補欄位
+                          UseUntil = a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.UseUntil.ToString("yyyy/MM/dd HH:mm")   //20210612 ADD BY ADAM REASON
                       }).ToList();
             }
             return re;
@@ -1837,13 +1841,18 @@ namespace WebAPI.Models.BillFunc
                     HDRateForCar = sour.HDRateForCar,
                     WDRateForMoto = sour.WDRateForMoto,
                     HDRateForMoto = sour.HDRateForMoto,
-                    StartDate = sour.SD.ToString("yyyy/MM/dd"),
-                    EndDate = sour.ED.ToString("yyyy/MM/dd"),
+
+                    //StartDate = sour.SD.ToString("yyyy/MM/dd"),
+                    //EndDate = sour.ED.ToString("yyyy/MM/dd"),
+                    //20210611 ADD BY ADAM REASON.調整日期格式
+                    StartDate = sour.SD.ToString("yyyy/MM/dd HH:mm"),
+                    EndDate = sour.ED.ToString("HHmm") == "0000" ? sour.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.ED.ToString("yyyy/MM/dd HH:mm"),
+
                     MonProDisc = sour.MonProDisc,
                     IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
                     //20210526 ADD BY ADAM REASON.補欄位
-                    MonthStartDate = sour.MonthStartDate,
-                    MonthEndDate = sour.MonthEndDate,
+                    MonthStartDate = sour.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                    MonthEndDate = sour.MonthEndDate.ToString("HHmm")=="0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
                     NxtMonProPeriod = sour.NxtMonProPeriod,
                     IsPay = sour.IsPay,
                     IsUpd = sour.IsUpd,

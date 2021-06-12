@@ -153,8 +153,11 @@ namespace WebAPI.Controllers
                             if (sp_re.NxtCard != null)
                             {
                                 outputApi.NxtCard = map.FromSPOut_GetSubsCNT_NxtCard(sp_re.NxtCard);
-                                outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd");
-                                outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
+                                //outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd");
+                                //outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM 
+                                outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd HH:mm");
+                                outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("HHmm")=="0000" ? sp_re.NxtCard.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sp_re.NxtCard.ED.ToString("yyyy/MM/dd HH:mm");
                             }
                         }
                     }

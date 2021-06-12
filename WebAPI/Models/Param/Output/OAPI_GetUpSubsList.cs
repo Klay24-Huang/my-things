@@ -39,6 +39,10 @@ namespace WebAPI.Models.Param.Output
         /// 是否為機車 20210527 ADD BY ADAM
         /// </summary>
         public int IsMoto { get; set; }
+        /// <summary>
+        /// 可以使用到時麼時候
+        /// </summary>
+        public string UseUntil { get; set; }
     }
 
 

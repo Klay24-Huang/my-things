@@ -277,8 +277,14 @@ namespace WebAPI.Controllers
                                 #region 月租卡片欄位給值
                                 newItem.ProjName += "_" + z.MonProjNM;
                                 newItem.MotoTotalMins = z.MotoTotalMins;
-                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
-                                newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                
+                                //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
+                                DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
+                                newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
+
                                 newItem.MonthlyRentId = z.MonthlyRentId;
                                 newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = z.HoildayRateForMoto;

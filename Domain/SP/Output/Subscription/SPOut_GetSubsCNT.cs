@@ -32,8 +32,8 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
         /// </summary>
         public int IsMix { get; set; }
-        public string MonthStartDate { get; set; }
-        public string MonthEndDate { get; set; }
+        public DateTime MonthStartDate { get; set; }
+        public DateTime MonthEndDate { get; set; }
         /// <summary>
         /// 下期續訂總期數
         /// </summary>
@@ -84,8 +84,8 @@ namespace Domain.SP.Output.Subscription
         /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
         /// </summary>
         public int IsMix { get; set; }
-        public string MonthStartDate { get; set; }
-        public string MonthEndDate { get; set; }
+        public DateTime MonthStartDate { get; set; }
+        public DateTime MonthEndDate { get; set; }
         /// <summary>
         /// 下期續訂總期數
         /// </summary>
