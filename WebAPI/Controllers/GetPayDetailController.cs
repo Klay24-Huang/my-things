@@ -465,7 +465,7 @@ namespace WebAPI.Controllers
                             if (sp_list != null && sp_list.Count() > 0)
                             {
                                 List<string> mIds = sp_list.Select(x => x.MonthlyRentId.ToString()).ToList();
-                                MonIds = string.Join(",", mins);
+                                MonIds = string.Join(",", mIds);
                             }
                         }
                     }

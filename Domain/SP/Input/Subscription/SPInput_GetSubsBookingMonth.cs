@@ -9,5 +9,6 @@ namespace Domain.SP.Input.Subscription
     public class SPInput_GetSubsBookingMonth
     {
         public Int64 OrderNo { get; set; }
+        public int EscrowStatus { get; set; }
     }
 }

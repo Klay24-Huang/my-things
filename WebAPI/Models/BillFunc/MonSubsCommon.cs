@@ -1432,7 +1432,8 @@ namespace WebAPI.Models.BillFunc
                 string SPName = "usp_GetSubsBookingMonth_Q1";//hack: fix spNm
                 object[][] parms1 = {
                     new object[] {
-                        spInput.OrderNo
+                        spInput.OrderNo,
+                        0
                     },
                 };
 
