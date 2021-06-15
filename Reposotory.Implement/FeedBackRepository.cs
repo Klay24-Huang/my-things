@@ -95,7 +95,7 @@ namespace Reposotory.Implement
             int nowCount = 0;
             if (false == string.IsNullOrEmpty(SDate))
             {
-                term = " MKTime>=@SD ";
+                term = " CONVERT(CHAR(8),MKTime,112) >= replace(@SD,'-','') ";
                 para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                 para[nowCount].Value = SDate;
                 para[nowCount].Direction = ParameterDirection.Input;
@@ -105,7 +105,7 @@ namespace Reposotory.Implement
             {
 
                 if ("" != term) { term += " AND "; }
-                term += " MKTime<=@ED ";
+                term += " CONVERT(CHAR(8),MKTime,112) <= replace(@ED,'-','') ";
                 para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30);
                 para[nowCount].Value = EDate;
                 para[nowCount].Direction = ParameterDirection.Input;

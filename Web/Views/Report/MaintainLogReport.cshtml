@@ -178,20 +178,36 @@
 <!--輸出表格-->
 <div class="container mt-4" id="ShowSetCardPanel">
 
-    <script src="../../../Scripts/js/jquery-3.5.1.min.js"></script>
-    <script>
-        $(function () {
-            console.log('a')
-            function ShowLoading(message) {
-                console.log('aa')
-                $.busyLoadFull("show", {
-                    text: message,
-                    spinner: "cube-grid"
-                });
-            }
-            ShowLoading("資料查詢中…");
-        })
-    </script>
+    @*先不要加，等有需要再用*@
+    @*<script src="../../../Scripts/js/jquery-3.5.1.min.js"></script>
+    <script src="../../../Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function showBlockUI() {
+            $.blockUI({
+                message: '<table><tr><td valign="middle" style="height:50px" class="main"> 處理中,請稍候...</td></tr></table>',
+                css: {
+                    width: '450px',
+                    height: '150px'
+                }
+            });
+        }
+        showBlockUI()
+    </script>*@
+    @*效果會delay出現，不ok*@
+    @*<script src="../../../Scripts/js/jquery-3.5.1.min.js"></script>
+        <script>
+            $(function () {
+                console.log('a')
+                function ShowLoading(message) {
+                    console.log('aa')
+                    $.busyLoadFull("show", {
+                        text: message,
+                        spinner: "cube-grid"
+                    });
+                }
+                ShowLoading("資料查詢中…");
+            })
+        </script>*@
 
     <table class="table bg-white" data-limit-navigation="5">
         <thead class="text-white bg-primary">
@@ -331,16 +347,23 @@
         </tfoot>
     </table>
 
-    <script>
-        $(function () {
-            console.log('b')
-            function disabledLoading() {
-                console.log('bb')
-                $.busyLoadFull("hide");
-            }
-            disabledLoading();
-        })
-    </script>
+
+    @*<script type="text/javascript">
+        function unBlockUI() {
+            $.unblockUI();
+        }
+        unBlockUI()
+    </script>*@
+    @*<script>
+            $(function () {
+                console.log('b')
+                function disabledLoading() {
+                    console.log('bb')
+                    $.busyLoadFull("hide");
+                }
+                disabledLoading();
+            })
+        </script>*@
 
 </div>
 <div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
