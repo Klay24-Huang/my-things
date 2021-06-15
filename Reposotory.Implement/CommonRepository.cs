@@ -131,7 +131,6 @@ namespace Reposotory.Implement
                 SQL += " WITH(NOLOCK)  WHERE " + term;
             }
 
-
             lstErr = GetObjList<ErrorMessageList>(ref flag, ref lstError, SQL, para, term);
             ErrorMessageList obj = null;
             if (lstErr != null)
@@ -179,7 +178,6 @@ namespace Reposotory.Implement
                 SQL += " WITH(NOLOCK) WHERE " + term;
             }
 
-
             lstErr = GetObjList<ErrorMessageList>(ref flag, ref lstError, SQL, para, term);
             ErrorMessageList obj = null;
             if (lstErr != null)
@@ -208,21 +206,29 @@ namespace Reposotory.Implement
             lstZip = GetObjList<CityData>(ref flag, ref lstError, SQL, para, term);
             return lstZip;
         }
+
+        /// <summary>
+        /// 取得訂單的發票資訊
+        /// </summary>
+        /// <param name="orderNum"></param>
+        /// <returns></returns>
         public List<BE_MemberInvoiceSetting> GetMemberDataFromOrder(Int64 orderNum)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_MemberInvoiceSetting> lstZip = null;
+            List<BE_MemberInvoiceSetting> lstInvoice = null;
             int nowCount = 0;
-            string SQL = "SELECT MEMIDNO," +
-                "CARRIERID = CASE WHEN B.CARRIERID = '' THEN A.CARRIERID ELSE B.CARRIERID END," +
-                "NPOBAN = CASE WHEN B.NPOBAN = '' THEN A.NPOBAN ELSE B.NPOBAN END," +
-                "InvoiceType = CASE WHEN B.bill_option = '' THEN A.MEMSENDCD ELSE B.bill_option END," +
-                "UniCode = CASE WHEN B.unified_business_no = '' THEN A.UNIMNO ELSE B.unified_business_no END,  " +
-                "ParkingSpace = ISNULL(C.ParkingSpace,ISNULL((SELECT TOP 1 ParkingSpace FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=B.order_number),'')) " +
-                "FROM TB_MemberData A WITH(NOLOCK) " +
-                "JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO " +
-                "JOIN TB_OrderDetail C WITH(NOLOCK) ON B.order_number=C.order_number ";
+            string SQL = "SELECT MEMIDNO, " +
+                " CARRIERID = CASE WHEN B.CARRIERID = '' THEN A.CARRIERID ELSE B.CARRIERID END, " +
+                " NPOBAN = CASE WHEN B.NPOBAN = '' THEN A.NPOBAN ELSE B.NPOBAN END, " +
+                " InvoiceType = CASE WHEN B.bill_option = '' THEN A.MEMSENDCD ELSE B.bill_option END, " +
+                " UniCode = CASE WHEN B.unified_business_no = '' THEN A.UNIMNO ELSE B.unified_business_no END, " +
+                " ParkingSpace = ISNULL(C.ParkingSpace,ISNULL((SELECT TOP 1 ParkingSpace FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=B.order_number),'')) " +
+                " ,D.CID,B.lend_place " +
+                " FROM TB_MemberData A WITH(NOLOCK) " +
+                " JOIN TB_OrderMain B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO " +
+                " JOIN TB_OrderDetail C WITH(NOLOCK) ON B.order_number=C.order_number " +
+                " LEFT JOIN TB_CarStatus D WITH(NOLOCK) ON B.CarNo=D.CarNo";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             
@@ -232,14 +238,15 @@ namespace Reposotory.Implement
             para[nowCount].Direction = ParameterDirection.Input;
             nowCount++;
 
-            if ("" != term)
+            if (term != "")
             {
                 SQL += " WHERE " + term;
             }
 
-            lstZip = GetObjList<BE_MemberInvoiceSetting>(ref flag, ref lstError, SQL, para, term);
-            return lstZip;
+            lstInvoice = GetObjList<BE_MemberInvoiceSetting>(ref flag, ref lstError, SQL, para, term);
+            return lstInvoice;
         }
+
         /// <summary>
         ///  取得行政區列表
         /// </summary>

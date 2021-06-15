@@ -436,6 +436,11 @@ namespace WebAPI.Models.Enum
             /// 處理機車調度停車場 20210602 ADD BY FRANK
             /// </summary>
             BE_HandleTransParking_Moto,
+            /// <summary>
+            /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
+            /// </summary>
+            BE_GetCarCurrentStatus,
+
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -783,7 +788,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMilageSetting";
                     break;
                 case SPType.Booking: //預約
-                    SPName = "usp_Booking_20210325";
+                    SPName = "usp_Booking";     // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.BookingCancel: //取消訂單
                     SPName = "usp_BookingCancel";
@@ -870,8 +875,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_GetOrderStatusByOrderNo";
                     break;
                 case SPType.CalFinalPrice:
-                    //SPName = "usp_CalFinalPrice";
-                    SPName = "usp_CalFinalPrice_0107";
+                    SPName = "usp_CalFinalPrice";   // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.BE_CalFinalPrice:
                     SPName = "usp_BE_CalFinalPrice";
@@ -880,7 +884,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish";
+                    SPName = "usp_BE_ContactFinish_ForTest";    // 20210609 UPD BY YEH 強還積分測試，先指向測試SP
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";
@@ -907,11 +911,10 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetMemberInfo";
                     break;
                 case SPType.GetStationCarType:
-                    //SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp
-                    SPName = "usp_GetStationCarType_20210409";
+                    SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_20210416";
+                    SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     //SPName = "usp_GetMemberStatus";
@@ -1042,6 +1045,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_HandleTransParking_Moto:  // 處理機車調度停車場 20210602 ADD BY FRANK
                     SPName = "usp_BE_InsTransParking_Moto";
+                    break;                      
+                case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
+                    SPName = "usp_BE_GetCarCurrentStatus";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.TB.BackEnd
+﻿namespace Domain.TB.BackEnd
 {
     /// <summary>
     /// 縣市資料
     /// </summary>
-   public  class BE_MemberInvoiceSetting
+    public  class BE_MemberInvoiceSetting
     {
         /// <summary>
         /// 會員編號
@@ -35,5 +29,20 @@ namespace Domain.TB.BackEnd
         /// 停車格
         /// </summary>
         public string ParkingSpace { set; get; }
+
+        /// <summary>
+        /// 出車據點
+        /// </summary>
+        public string lend_place { get; set; }
+
+        /// <summary>
+        /// CID
+        /// </summary>
+        public string CID { get; set; }
+
+        /// <summary>
+        /// 車輛是否在據點範圍內還車 (Y:範圍內 N:範圍外)
+        /// </summary>
+        public string IsArea { get; set; } = "Y";
     }
 }

@@ -68,6 +68,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ContactFinish.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_DeleteMemberScore.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_FeedBackHandle.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_GetCarCurrentStatus.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetOrderInfoBeforeModify.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="SP\BE\Input\SPInput_HandleStation.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_LandControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
+    <Compile Include="SP\BE\Output\SPOutput_BE_GetCarCurrentStatus.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetMemberScoreItem.cs" />
     <Compile Include="SP\BE\Input\SP_BE_InsMemberScore.cs" />
     <Compile Include="SP\BE\Input\SP_Input_BE_InsMemberScore.cs" />
@@ -316,6 +318,7 @@
     <Compile Include="TB\BackEnd\BE_BookingControl.cs" />
     <Compile Include="TB\BackEnd\BE_CarBindImportData.cs" />
     <Compile Include="TB\BackEnd\BE_CarBindImportDataResult.cs" />
+    <Compile Include="TB\BackEnd\BE_CarCurrentStatus.cs" />
     <Compile Include="TB\BackEnd\BE_CarData.cs" />
     <Compile Include="TB\BackEnd\BE_CarInfoForMachineData.cs" />
     <Compile Include="TB\BackEnd\BE_CarLocationData.cs" />
