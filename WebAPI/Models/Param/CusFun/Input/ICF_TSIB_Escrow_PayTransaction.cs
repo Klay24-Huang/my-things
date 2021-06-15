@@ -9,7 +9,12 @@ namespace WebAPI.Models.Param.CusFun.Input
     {
         public string IDNO { get; set; }
         public Int64 OrderNo { get; set; }
+        public string MemberID { get; set; }
         public string AccountId { get; set; }
+        public string Email { get; set; }
+        public string PhoneNo { get; set; }
         public int Amount { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string EcStatus { get; set; } 
     }
 }

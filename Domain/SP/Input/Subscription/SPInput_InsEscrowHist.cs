@@ -11,11 +11,6 @@ namespace Domain.SP.Input.Subscription
         public string IDNO { get; set; }
         public string MemberID { get; set; }
         public string AccountID { get; set; }
-        /// <summary>
-        /// 履保台新回傳狀態
-        /// </summary>
-        /// <mark>若為未回傳則設定為-1</mark>
-        public int EcStatus { get; set; }
         public string Email { get; set; }
         /// <summary>
         /// 電話
@@ -42,5 +37,9 @@ namespace Domain.SP.Input.Subscription
         /// 最近一筆交易時間
         /// </summary>
         public DateTime LastTransDate { get; set; }
+        /// <summary>
+        /// 履保台新回傳狀態
+        /// </summary>
+        public string EcStatus { get; set; }
     }
 }

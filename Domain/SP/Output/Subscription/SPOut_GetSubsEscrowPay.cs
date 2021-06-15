@@ -10,7 +10,13 @@ namespace Domain.SP.Output.Subscription
     {
         public string IDNO { get; set; }
         public Int64 OrderNo { get; set; }
+        public string MemberID { get; set; }
         public string AccountId { get; set; }
+        public string Status { get; set; }
+        public string Email { get; set; }
+        public string PhoneNo { get; set; }
+        public DateTime CreateDate { get; set; }
         public double Amount { get; set; }
+
     }
 }

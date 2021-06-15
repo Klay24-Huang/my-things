@@ -139,7 +139,9 @@ namespace WebAPI.Controllers
                     if(splist != null && splist.Count() > 0)
                     {
                         var filter = splist.Where(x => !string.IsNullOrWhiteSpace(x.IDNO)
-                          && x.OrderNo > 0 && !string.IsNullOrWhiteSpace(x.AccountId)
+                          && x.OrderNo > 0
+                          && !string.IsNullOrWhiteSpace(x.MemberID)
+                          && !string.IsNullOrWhiteSpace(x.AccountId)                         
                           && x.Amount > 0).ToList();
 
                         int loop = 0;
@@ -155,8 +157,13 @@ namespace WebAPI.Controllers
                                     {
                                         IDNO = f.IDNO,
                                         OrderNo = f.OrderNo,
+                                        MemberID = f.MemberID,
                                         AccountId = f.AccountId,
-                                        Amount = Convert.ToInt16(Math.Floor(f.Amount))
+                                        Email = f.Email,
+                                        PhoneNo = f.PhoneNo,
+                                        Amount = Convert.ToInt16(Math.Floor(f.Amount)),
+                                        CreateDate = f.CreateDate,
+                                        EcStatus = f.Status
                                     };
                                     mscom.TSIB_Escrow_PayTransaction(outapi_in, ref errCode);
                                 }

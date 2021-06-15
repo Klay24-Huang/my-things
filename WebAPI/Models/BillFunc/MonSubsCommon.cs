@@ -316,7 +316,7 @@ namespace WebAPI.Models.BillFunc
                     IDNO = sour.IDNO,
                     MemberID = sour.MemberId,
                     AccountID = output.Result.AccountId,
-                    EcStatus = Convert.ToInt32(output.Result.Status),
+                    EcStatus = output.Result.Status,
                     Email = output.Result.Email,
                     PhoneNo = output.Result.PhoneNo,
                     Amount = sour.Amount,
@@ -346,6 +346,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             Int64 _LogID = 999999;
+            string formatString = "yyyyMMddHHmmss";
             if (sour.Amount > 0)
             {
                 DateTime NowTime = DateTime.Now;
@@ -383,6 +384,23 @@ namespace WebAPI.Models.BillFunc
                 {
                     spin.EscrowStatus = 1;
                     msp.sp_SetSubsBookingMonth(spin, ref errCode);
+
+                    var spIn2 = new SPInput_InsEscrowHist()
+                    {
+                        IDNO = sour.IDNO,
+                        MemberID = sour.MemberID,
+                        AccountID = sour.AccountId,
+                        Email = sour.Email,
+                        PhoneNo = sour.PhoneNo,
+                        Amount = sour.Amount,
+                        TotalAmount = output.Result.Amount,
+                        CreateDate = sour.CreateDate,                        
+                        LastStoreTransId = output.Result.StoreTransId,
+                        LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                        LastTransId = output.Result.TransId,
+                        EcStatus = sour.EcStatus
+                    };
+                    msp.sp_InsEscrowHist(spIn2, ref errCode);
                 }
                 else
                 {
