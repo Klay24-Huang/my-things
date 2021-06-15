@@ -22,12 +22,13 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 取得專案及資費(未完成)
+    /// 取得專案及資費
     /// </summary>
     public class GetProjectController : ApiController
     {
@@ -66,12 +67,9 @@ namespace WebAPI.Controllers
             string IDNO = "";
             var bill = new BillCommon();
             var SeatGroups = new List<GetProject_SeatGroup>();
-            string StrCarTypes = "";
             var LstCarTypes = new List<string>();
             var LstSeats = new List<string>();
             var LstStationIDs = new List<string>();
-            int ApiMode = 0;    //20210330 ADD BY ADAM REASON.增加特殊身分模式
-            
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -151,22 +149,18 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         #region CarType處理
-
                         if (apiInput.CarType != null && apiInput.CarType != "")
                         {
-                            //StrCarTypes = apiInput.CarType;
                             LstCarTypes.Add(apiInput.CarType.ToUpper());
                         }
 
                         if (apiInput.CarTypes != null && apiInput.CarTypes.Count() > 0)
                         {
-                            //StrCarTypes = String.Join(",", apiInput.CarTypes);
-                            LstCarTypes.AddRange(apiInput.CarTypes.Select(x=>x.ToUpper()).ToList());
+                            LstCarTypes.AddRange(apiInput.CarTypes.Select(x => x.ToUpper()).ToList());
                         }
 
                         if (LstCarTypes != null && LstCarTypes.Count() > 0)
                             LstCarTypes = LstCarTypes.GroupBy(x => x).Select(y => y.FirstOrDefault()).ToList();
-
                         #endregion
 
                         //Seat處理
@@ -174,8 +168,8 @@ namespace WebAPI.Controllers
                             LstSeats = apiInput.Seats.Select(x => x.ToString()).ToList();
 
                         if (!string.IsNullOrWhiteSpace(apiInput.StationID))
-                            LstStationIDs.Add(apiInput.StationID); 
-                    }                     
+                            LstStationIDs.Add(apiInput.StationID);
+                    }
                 }
 
                 if (apiInput.Longitude == null)
@@ -187,7 +181,6 @@ namespace WebAPI.Controllers
                 {
                     apiInput.Latitude = 0;
                 }
-
             }
             #endregion
 
@@ -270,10 +263,10 @@ namespace WebAPI.Controllers
 
                 SPInput_GetStationCarTypeOfMutiStation spInput = new SPInput_GetStationCarTypeOfMutiStation()
                 {
-                    StationIDs = String.Join(",",LstStationIDs),
+                    StationIDs = String.Join(",", LstStationIDs),
                     SD = SDate,
                     ED = EDate,
-                    CarTypes = String.Join(",",LstCarTypes),
+                    CarTypes = String.Join(",", LstCarTypes),
                     IDNO = IDNO,
                     Insurance = apiInput.Insurance,     //20201112 ADD BY ADAM REASON.增加是否使用安心服務
                     Mode = (apiInput.Latitude.Value > 0 && apiInput.Longitude.Value > 0) ? 1 : 0,       //20210416 ADD BY ADAM REASON.增加模式判斷，0沒有送定位點1則有送
@@ -323,23 +316,21 @@ namespace WebAPI.Controllers
                                }).ToList();
 
                     #region 過濾查詢結果
-
                     if (lstData != null && lstData.Count() > 0)
                         lstData.ForEach(x => { if ((string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "n") { x.IsShowCard = 0; } });
 
-                    if (apiInput.Seats != null && apiInput.Seats.Count()>0)
+                    if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
                     {
                         lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
                     }
 
-                    if(LstCarTypes != null && LstCarTypes.Count() > 0)
+                    if (LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
-                        lstData.ForEach(x => { if (!LstCarTypes.Any(y => y == x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0;}});
+                        lstData.ForEach(x => { if (!LstCarTypes.Any(y => y == x.CarType)) { x.IsRent = "N"; x.IsShowCard = 0; } });
                     }
 
                     //if (apiInput.PriceMin > 0 && apiInput.PriceMax > 0)
                     //    lstData.ForEach(x => { if (x.Price < apiInput.PriceMin || x.Price > apiInput.PriceMax) { x.IsRent = "N"; x.IsShowCard = 0; } });
-
                     #endregion
                 }
 
@@ -516,12 +507,12 @@ namespace WebAPI.Controllers
                 }
 
                 #region 車款過濾
-
                 if (flag)
                 {
                     if (lstTmpData != null && lstTmpData.Count() > 0 && LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
-                        lstTmpData.ForEach(x => {
+                        lstTmpData.ForEach(x =>
+                        {
                             var ProjIsRents = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType) && y.IsRent == "Y").ToList();
                             x.ProjectObj = x.ProjectObj.Where(y => LstCarTypes.Any(z => z == y.CarType)).ToList();
                             if (ProjIsRents == null || ProjIsRents.Count() == 0)
@@ -531,9 +522,7 @@ namespace WebAPI.Controllers
                         });
                     }
                 }
-
                 #endregion
-
 
                 outputApi = new OAPI_GetProject()
                 {
@@ -541,16 +530,12 @@ namespace WebAPI.Controllers
                 };
 
                 #region 車款,金額下拉,是否有可租
-
                 bool HaveRentY = false;
-                if(lstData != null && lstData.Count() > 0)
-                   HaveRentY = lstData.Where(y => (string.IsNullOrWhiteSpace(y.IsRent) ? "": y.IsRent.ToLower()) == "y").Count() > 0;
+                if (lstData != null && lstData.Count() > 0)
+                    HaveRentY = lstData.Where(y => (string.IsNullOrWhiteSpace(y.IsRent) ? "" : y.IsRent.ToLower()) == "y").Count() > 0;
 
                 if (lstData != null && lstData.Count() > 0 && HaveRentY)
                 {
-                    //outputApi.PriceMax = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Max();
-                    //outputApi.PriceMin = lstData.Where(y=>y.IsRent.ToLower() == "y").Select(x => x.Price).Min();
-                    
                     List<int> SeatsList = lstData.Where(z => z.IsRent.ToLower() == "y" && z.IsShowCard == 1).GroupBy(x => x.Seat).Select(y => y.FirstOrDefault().Seat).ToList();
                     if (SeatsList != null && SeatsList.Count() > 0)
                     {
@@ -577,20 +562,66 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "": x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
+                    if (lstData.Where(x => (string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "y" && x.IsShowCard == 1).ToList().Count() > 0)
                         outputApi.HasRentCard = true;
                     else
                         outputApi.HasRentCard = false;
                 }
-
                 #endregion
 
-                //outputApi.SeatGroups = SeatGroups;
+                #region 積分低於60分，只能用定價專案
+                if (flag && !string.IsNullOrEmpty(IDNO))
+                {
+                    var tmpOutput = new OAPI_GetProject();  // ★非常重要：跟訂閱制Merge時，請將產生月租牌卡前的output存至此變數
+                    tmpOutput = outputApi;
+
+                    var Score = 0;  // 會員積分
+                    string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberScore);
+
+                    object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            1,
+                            10,
+                            LogID
+                    }};
+
+                    DataSet ds1 = null;
+                    string returnMessage = "";
+                    string messageLevel = "";
+                    string messageType = "";
+
+                    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                    if (ds1.Tables.Count != 3)
+                    {
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                    else
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                        if (flag)
+                        {
+                            if (ds1.Tables[0].Rows.Count > 0)
+                                Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        }
+                    }
+
+                    if (Score < 60)
+                    {
+                        outputApi = new OAPI_GetProject();
+                        outputApi = tmpOutput;
+                    }
+                }
+                #endregion
             }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -601,6 +632,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        #region 取得專案
         /// <summary>
         /// GetStationCarTypeOfMutiStation
         /// </summary>
@@ -612,7 +644,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);           
+            string SPName = new ObjType().GetSPName(ObjType.SPType.GetStationCarTypeOfMutiStation);
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
@@ -620,7 +652,9 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return re;
         }
+        #endregion
 
+        #region 預估金額
         private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, string funNM = "")
         {
             int re = 0;
@@ -661,5 +695,6 @@ namespace WebAPI.Controllers
 
             return re;
         }
+        #endregion
     }
 }
