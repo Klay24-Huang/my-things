@@ -178,10 +178,23 @@
 <!--輸出表格-->
 <div class="container mt-4" id="ShowSetCardPanel">
 
+    @*<script src="../../../Scripts/js/jquery-3.5.1.min.js"></script>
+    <script>
+        $(function () {
+            console.log('a')
+            function ShowLoading(message) {
+                console.log('aa')
+                $.busyLoadFull("show", {
+                    text: message,
+                    spinner: "cube-grid"
+                });
+            }
+            ShowLoading("資料查詢中…");
+        })
+    </script>*@
+
     <table class="table bg-white" data-limit-navigation="5">
         <thead class="text-white bg-primary">
-            @if (CleanDataLen == 0)
-            {
             <tr>
                 <th data-sort-inital="descending" data-class="expand">整備人員</th>
                 <th>訂單編號</th>
@@ -203,38 +216,13 @@
                 <th data-hide="all">出租次數</th>
 
             </tr>
-            }
-            else
-            {
-        <tr>
-            <th data-sort-inital="descending" data-class="expand">整備人員</th>
-            <th>訂單編號</th>
-            <th>車號</th>
-            <th>據點</th>
-            <th>狀態</th>
-            <th>實際取車</th>
-            <th>實際還車</th>
-            <th data-hide="all">車外清潔</th>
-            <th data-hide="all">車內清潔</th>
-            <th data-hide="all">車輛救援</th>
-            <th data-hide="all">車輛調度</th>
-            <th data-hide="all">車輛調度(路邊租還)</th>
-            <th data-hide="all">保養</th>
-            <th data-hide="all">備註</th>
-            <th data-hide="all">車內照</th>
-            <th data-hide="all">車外照</th>
-            <th data-hide="all">清潔時幾天未清</th>
-            <th data-hide="all">出租次數</th>
-        </tr>
-            }
         </thead>
+
         <tbody>
             @if (CleanDataLen == 0)
             {
                 <tr>
                     <td colspan="18" class="text-center">查無結果</td>
-
-
                 </tr>
             }
             else
@@ -246,13 +234,13 @@
                     string status = "已預約";
                     string inPic = "";
                     string outPic = "";
-                    double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss")== "1900-01-01 00:00:00") ? -1: lstCleanData[i].BookingStart.Subtract(lstCleanData[i].lastCleanTime).TotalDays );
+                    double totalDay = ((lstCleanData[i].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00") ? -1 : lstCleanData[i].BookingStart.Subtract(lstCleanData[i].lastCleanTime).TotalDays);
                     string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(lstCleanData[i].BookingStart.Subtract(lstCleanData[i].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
-                    string StartTime =(lstCleanData[i].OrderStatus<1|| lstCleanData[i].OrderStatus==4)?"未取車":lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
-                    string EndTime = (lstCleanData[i].OrderStatus == 1 ) ? "未還車":lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
-                    if (EndTime!="未還車" && StartTime != "未取車")
+                    string StartTime = (lstCleanData[i].OrderStatus < 1 || lstCleanData[i].OrderStatus == 4) ? "未取車" : lstCleanData[i].BookingStart.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未取車");
+                    string EndTime = (lstCleanData[i].OrderStatus == 1) ? "未還車" : lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車");
+                    if (EndTime != "未還車" && StartTime != "未取車")
                     {
-                        if(lstCleanData[i].BookingEnd< lstCleanData[i].BookingStart)
+                        if (lstCleanData[i].BookingEnd < lstCleanData[i].BookingStart)
                         {
                             EndTime = lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss");
                         }
@@ -304,18 +292,18 @@
                         <td>@StartTime</td>
                         <td>
                             @*@((EndTime!= "未還車" && StartTime!= "未取車")?((lstCleanData[i].BookingEnd<lstCleanData[i].BookingStart)? lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss"): lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")))*@
-                                                @if (EndTime != "未還車" && StartTime != "未取車")
-                                                {
-                                                    if (lstCleanData[i].BookingEnd < lstCleanData[i].BookingStart)
-                                                    {
-                                                        @lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")
-                                                    }
-                                                    else
-                                                    {
-                                                        @lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")
-                                                    }
-                                                }
-                                            </td>
+                            @if (EndTime != "未還車" && StartTime != "未取車")
+                            {
+                                if (lstCleanData[i].BookingEnd < lstCleanData[i].BookingStart)
+                                {
+                                    @lstCleanData[i].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss")
+                                }
+                                else
+                                {
+                                    @lstCleanData[i].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")
+                                }
+                            }
+                        </td>
                         <td>@((lstCleanData[i].outsideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].insideClean == 1) ? "✔" : "✖")</td>
                         <td>@((lstCleanData[i].rescue == 1) ? "✔" : "✖")</td>
@@ -342,6 +330,18 @@
             </tr>
         </tfoot>
     </table>
+
+    @*<script>
+        $(function () {
+            console.log('b')
+            function disabledLoading() {
+                console.log('bb')
+                $.busyLoadFull("hide");
+            }
+            disabledLoading();
+        })
+    </script>*@
+
 </div>
 <div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -364,4 +364,5 @@
     var objStation = "@ViewData["objStation"]";
     var status = "@ViewData["status"]";
     var CarNo = "@ViewData["CarNo"]";
-    </script>
+
+</script>

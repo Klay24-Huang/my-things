@@ -204,10 +204,11 @@ namespace Web.Controllers
                 content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            // 自動調整欄位大小，但這很耗資源
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -759,10 +760,10 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Amount);   //停車費用
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
