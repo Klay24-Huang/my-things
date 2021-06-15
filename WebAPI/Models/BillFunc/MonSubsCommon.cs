@@ -360,7 +360,7 @@ namespace WebAPI.Models.BillFunc
                     SourceFrom = "9",
                     StoreId = "",
                     StoreName = "",
-                    StoreTransId = string.Format("{0}M{1}", sour.OrderNo, NowTime.ToString("yyMMddHHmmss")),
+                    StoreTransId = string.Format("{0}M{1}", sour.OrderNo, (NowTime.ToString("yyMMddHHmmss")).Substring(1)),//限制長度為20以下所以減去1碼
                     Amount = sour.Amount,
                     BarCode = "",
                     StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")                        
@@ -1433,7 +1433,7 @@ namespace WebAPI.Models.BillFunc
                 object[][] parms1 = {
                     new object[] {
                         spInput.OrderNo,
-                        0
+                        spInput.EscrowStatus
                     },
                 };
 
