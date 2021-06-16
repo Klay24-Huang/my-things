@@ -1602,7 +1602,7 @@ namespace WebAPI.Models.BillFunc
                     //EndDate = sour.EndDate.ToString("MM/dd"),
                     //20210611 ADD BY ADAM REASON.調整時間格式顯示
                     StartDate = sour.StartDate.ToString("yyyy/MM/dd HH:mm"),
-                    EndDate = sour.EndDate.ToString("HHmm") == "0000" ? sour.EndDate.AddMinutes(-1).ToString("yyyy /MM/dd HH:mm") : sour.EndDate.ToString("yyyy /MM/dd HH:mm"),
+                    EndDate = sour.EndDate.ToString("HHmm") == "0000" ? sour.EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.EndDate.ToString("yyyy /MM/dd HH:mm"),
                     MonProDisc = sour.MonProDisc,
                     IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
                     //20210526 ADD BY ADAM REASON.補欄位
