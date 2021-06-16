@@ -203,6 +203,7 @@
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNotificationList.cs" />
+    <Compile Include="SP\Input\Project\SPInput_GetAnyRentProject.cs" />
     <Compile Include="SP\Input\Project\SPInput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Input\Register\SPInput_ChangePWD.cs" />
     <Compile Include="SP\Input\Register\SPInput_CheckAccount.cs" />

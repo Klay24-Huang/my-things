@@ -433,13 +433,9 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMemberScoreItem,
             /// <summary>
-            /// 處理機車調度停車場 20210602 ADD BY FRANK
+            /// 取得路邊汽車專案 20210616 ADD BY YEH
             /// </summary>
-            BE_HandleTransParking_Moto,
-            /// <summary>
-            /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
-            /// </summary>
-            BE_GetCarCurrentStatus,
+            GetAnyRentProject,
 
             #region 渣渣
             /// <summary>
@@ -686,6 +682,14 @@ namespace WebAPI.Models.Enum
             /// 解除綁定信用卡     // 20210511 ADD BY YEH REASON.後台解綁要將DB壓失效
             /// </summary>
             BE_UnBindCreditCard,
+            /// <summary>
+            /// 處理機車調度停車場 20210602 ADD BY FRANK
+            /// </summary>
+            BE_HandleTransParking_Moto,
+            /// <summary>
+            /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
+            /// </summary>
+            BE_GetCarCurrentStatus,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -1010,7 +1014,7 @@ namespace WebAPI.Models.Enum
                 case SPType.GetBanner:  // 取得廣告資訊 20210316 ADD
                     SPName = "usp_GetBanner";
                     break;
-                case SPType.GetCarTypeGroupList:   
+                case SPType.GetCarTypeGroupList:
                     SPName = "usp_GetCarTypeGroupList_Q1";
                     break;
                 case SPType.CheckAppVersion:    //檢查APP版本
@@ -1043,12 +1047,10 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMemberScoreItem:  //取得會員積分攻略標題 20210526 ADD BY FRANK
                     SPName = "usp_GetMemberScoreItem";
                     break;
-                case SPType.BE_HandleTransParking_Moto:  // 處理機車調度停車場 20210602 ADD BY FRANK
-                    SPName = "usp_BE_InsTransParking_Moto";
-                    break;                      
-                case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
-                    SPName = "usp_BE_GetCarCurrentStatus";
+                case SPType.GetAnyRentProject:  // 取得路邊汽車專案 20210616 ADD BY YEH
+                    SPName = "usp_GetAnyRentProject";
                     break;
+
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
@@ -1237,7 +1239,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_FeedBackHandle:
                     SPName = "usp_BE_FeedBackHandle";
-                        break;
+                    break;
                 case SPType.BE_GetReturnCarControl:     //取得還車合約資訊
                     SPName = "usp_BE_GetReturnCarControl";
                     break;
@@ -1253,15 +1255,18 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_UpdCATDeviceToken:
                     SPName = "usp_BE_UpdCATDeviceToken";
                     break;
-
                 case SPType.BE_InsertChargeParkingData:
                     //SPName = "usp_BE_HandleTransParking";
                     SPName = "usp_BE_InsertChargeParkingData";
                     break;
-
                 case SPType.BE_UnBindCreditCard:      // 20210511 ADD BY YEH REASON.後台解綁要將DB壓失效
                     SPName = "usp_BE_UnBindCreditCard";
-
+                    break;
+                case SPType.BE_HandleTransParking_Moto:  // 處理機車調度停車場 20210602 ADD BY FRANK
+                    SPName = "usp_BE_InsTransParking_Moto";
+                    break;
+                case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
+                    SPName = "usp_BE_GetCarCurrentStatus";
                     break;
                 #endregion
                 #region 整備人員
