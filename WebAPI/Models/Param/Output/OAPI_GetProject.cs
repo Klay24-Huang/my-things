@@ -1,9 +1,5 @@
 ﻿using Domain.WebAPI.output.rootAPI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Models.Param.Output
 {
@@ -17,18 +13,8 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public bool HasRentCard { get; set; } = false;
         /// <summary>
-        /// 查詢最大值
+        /// 專案列表
         /// </summary>
-        //public int PriceMin { get; set; }
-        /// <summary>
-        ///查詢最小值 
-        /// </summary>
-        //public int PriceMax { get; set; }
-        /// <summary>
-        /// 車款下拉
-        /// </summary>
-        //public List<GetProject_SeatGroup> SeatGroups { get; set; }
-
         public List<GetProjectObj> GetProjectObj { set; get; }
     }
 }

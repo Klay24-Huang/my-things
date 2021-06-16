@@ -914,7 +914,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
+                    SPName = "usp_GetStationCarTypeOfMutiStation_ForTest";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本   // 20210615 UPD BY YEH REASON:測試積分<60只剩定價專案
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     //SPName = "usp_GetMemberStatus";
