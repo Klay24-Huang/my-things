@@ -108,7 +108,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             int len = data.Count;
@@ -365,7 +365,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             int len = lstFeedBack.Count;
@@ -385,10 +385,10 @@ namespace Web.Controllers
                 content.CreateCell(10).SetCellValue(lstFeedBack[k].opt);   //處理者
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -512,7 +512,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             int len = lstSubScription.Count;
@@ -530,10 +530,10 @@ namespace Web.Controllers
                 content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -657,10 +657,10 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstSubScription[k].ProjNM);   //汽車－平日
             }
 
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -735,7 +735,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             lstRawDataOfMachi = _repository.GetMachiReport(tSDate, tEDate, CarNo);
@@ -814,7 +814,7 @@ namespace Web.Controllers
                 for (int j = 0; j < headerFieldLen; j++)
                 {
                     header.CreateCell(j).SetCellValue(headerField[j]);
-                    sheet.AutoSizeColumn(j);
+                    //sheet.AutoSizeColumn(j);
                 }
                 lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
                 int len = lstRawDataOfMachi.Count;
@@ -834,10 +834,10 @@ namespace Web.Controllers
                     content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].UpdTime);
 
                 }
-                for (int l = 0; l < headerFieldLen; l++)
-                {
-                    sheet.AutoSizeColumn(l);
-                }
+                //for (int l = 0; l < headerFieldLen; l++)
+                //{
+                //    sheet.AutoSizeColumn(l);
+                //}
                 MemoryStream ms = new MemoryStream();
                 workbook.Write(ms);
                 // workbook.Close();
@@ -852,7 +852,7 @@ namespace Web.Controllers
                 for (int j = 0; j < headerFieldLen; j++)
                 {
                     header.CreateCell(j).SetCellValue(headerField[j]);
-                    sheet.AutoSizeColumn(j);
+                    //sheet.AutoSizeColumn(j);
                 }
                 lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
                 int len = lstRawDataOfMachi.Count;
@@ -869,10 +869,10 @@ namespace Web.Controllers
                     content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].UpdTime);
 
                 }
-                for (int l = 0; l < headerFieldLen; l++)
-                {
-                    sheet.AutoSizeColumn(l);
-                }
+                //for (int l = 0; l < headerFieldLen; l++)
+                //{
+                //    sheet.AutoSizeColumn(l);
+                //}
                 MemoryStream ms = new MemoryStream();
                 workbook.Write(ms);
                 // workbook.Close();
@@ -972,7 +972,7 @@ namespace Web.Controllers
                 var cell = header.CreateCell(j);
                 cell.CellStyle = cs_cell;
                 cell.SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
 
             lstRawData = _repository.GetMotorBatteryStatus(ExplodeCarNo, StartDate, EndDate);
@@ -1020,10 +1020,10 @@ namespace Web.Controllers
                 content.GetCell(17).CellStyle = cs_cell_lba;
                 content.GetCell(18).CellStyle = cs_cell_lba;
             }
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             ms.Close();
@@ -1079,7 +1079,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             lstRawDataOfMachi = _repository.GetMemLists(tAuditMode, tSDate, tEDate, IDNoSuffCombind);
             int len = lstRawDataOfMachi.Count;
@@ -1098,10 +1098,10 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].REASON);
 
             }
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
@@ -1144,7 +1144,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             lstData = repository.GetEasyWalletOrder(ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
@@ -1163,10 +1163,10 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstData[k].refunddate);
 
             }
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
