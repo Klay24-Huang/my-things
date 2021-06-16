@@ -383,7 +383,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_SCMITEM> lstUserGroup = null;
             int nowCount = 0;
-            string SQL = "SELECT SCMITEM=(CASE UI_STATUS WHEN 1 THEN SCMITEM ELSE SCMITEM+SCDITEMNO END) FROM TB_ScoreDef ";
+            string SQL = "SELECT SCMITEM=(CASE UI_STATUS WHEN 1 THEN SCMITEM+'~('+CONVERT(varchar(10),SCORE)+')' ELSE SCMITEM+'~'+SCDITEMNO+'('+CONVERT(varchar(10),SCORE)+')' END) FROM TB_ScoreDef ";
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
             term += (term == "") ? "" : " AND ";

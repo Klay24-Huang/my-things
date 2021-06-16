@@ -736,8 +736,9 @@ namespace Web.Controllers
             return View(lstData);
         }
 
+        # region 改密碼
         /// <summary>
-        /// 會員審核
+        /// 改密碼
         /// </summary>
         /// <returns></returns>
         public ActionResult ChangePassword()
@@ -763,6 +764,7 @@ namespace Web.Controllers
 
             return View(lstData);
         }
+        #endregion
 
         # region 刪除會員
         /// <summary>
@@ -1025,6 +1027,10 @@ namespace Web.Controllers
             }
             else if (AuditMode == "0" && justSearch == 0)
             {
+                if (ORDERNO_I == "")
+                {
+                    ORDERNO_I = "0";
+                }
                 bool flag = true;
                 if (collection["ddlUserGroup"]=="0")
                 {
@@ -1059,7 +1065,7 @@ namespace Web.Controllers
                     }
                     else
                     {
-                        ViewData["errorLine"] = "新增失敗";
+                        ViewData["errorLine"] = SPOutput.ErrorMsg;
                     }
                 }
                 
