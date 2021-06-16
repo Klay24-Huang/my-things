@@ -26,7 +26,7 @@
                 $("#memo").hide();
                 break;
             case "0":
-                $("#NAME").show();
+                $("#NAME").hide();
                 $("#ID").show();
                 $("#ORDER").hide();
                 $("#ORDER_I").show();
@@ -184,7 +184,7 @@
         var flag = true;
         var errMsg = "";
 
-        if ($("#ORDERNO_I").val() == "") {
+        if ($("#ORDERNO_I").val() == "" && $("#ddlOperatorGG").val() != "其他") {
             flag = false;
             errMsg = "請輸入合約";
         }

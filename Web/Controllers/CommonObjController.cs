@@ -129,25 +129,6 @@ namespace Web.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [ChildActionOnly]
         public ActionResult GetSCITEM(string SEQNO)//string SEQNO
         {

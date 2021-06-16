@@ -240,12 +240,12 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                APP刪除
+                                不顯示在APP明細
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2">
+                                <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2" >
                                     <option value="0">Y</option>
-                                    <option value="1">N</option>
+                                    <option value="1" selected>N</option>
                                 </select>
                             </div>
                         </div>
@@ -286,8 +286,6 @@
     <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
 }
 
-
-
 <div class="container mt-4" id="AA" >
     <div class="card">
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
@@ -310,7 +308,7 @@
                 <th scope="col">加/扣分</th>
                 <th scope="col">出車時間</th>
                 <th scope="col">訂單編號</th>
-                <th scope="col">APP刪除</th>
+                <th scope="col">不顯示在APP明細</th>
                 <th scope="col">刪除時間</th>
                 <th scope="col">操作人員</th>
                 <th scope="col">修改</th>
@@ -379,9 +377,6 @@
 </div>
 <!--輸出表格結束-->
 
-
-
-
 <div class="container mt-4" id="CC" style="display:none;">
     <div class="card">
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
@@ -441,7 +436,6 @@
     </table>
 </div>
 <!--輸出表格結束-->
-
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
