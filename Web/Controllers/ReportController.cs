@@ -18,7 +18,7 @@ namespace Web.Controllers
     /// </summary>
     public class ReportController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
         #region 整備人員報表查詢
         /// <summary>
