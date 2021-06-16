@@ -31,6 +31,8 @@ namespace Web.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
+
+        #region 會員審核及明細
         /// <summary>
         /// 會員審核
         /// </summary>
@@ -67,49 +69,6 @@ namespace Web.Controllers
             }
 
             List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-
-            return View(lstData);
-        }
-
-        /// <summary>
-        /// 會員修改
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult ModifyMember()
-        {
-            return View();
-        }
-        [HttpPost]
-        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
-        {
-            ViewData["AuditMode"] = AuditMode;
-            ViewData["AuditType"] = AuditType;
-            ViewData["StartDate"] = StartDate;
-            ViewData["EndDate"] = EndDate;
-            ViewData["AuditReuslt"] = AuditReuslt;
-            ViewData["UserName"] = UserName;
-            ViewData["IDNO"] = IDNO;
-            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
-            ViewData["AuditError"] = AuditError;
-            string IDNoSuffCombind = "";
-            if (IDNOSuff != null)
-            {
-                if (IDNOSuff.Length > 0)
-                {
-                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
-                    int IDLEN = IDNOSuff.Length;
-                    for (int i = 1; i < IDLEN; i++)
-                    {
-                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
-                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
-                    }
-                }
-            }
-            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
-            if (UserName != "" || IDNO != "")
-            {
-                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-            }
 
             return View(lstData);
         }
@@ -416,7 +375,51 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
+        # region 會員修改
+        /// <summary>
+        /// 會員修改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ModifyMember()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
+        {
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["AuditType"] = AuditType;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["AuditReuslt"] = AuditReuslt;
+            ViewData["UserName"] = UserName;
+            ViewData["IDNO"] = IDNO;
+            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
+            ViewData["AuditError"] = AuditError;
+            string IDNoSuffCombind = "";
+            if (IDNOSuff != null)
+            {
+                if (IDNOSuff.Length > 0)
+                {
+                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
+                    int IDLEN = IDNOSuff.Length;
+                    for (int i = 1; i < IDLEN; i++)
+                    {
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
+                    }
+                }
+            }
+            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
+            if (UserName != "" || IDNO != "")
+            {
+                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
+            }
+
+            return View(lstData);
+        }
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
         {
@@ -712,6 +715,7 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
         public ActionResult AuditHistory(string IDNO)
         {
@@ -760,6 +764,7 @@ namespace Web.Controllers
             return View(lstData);
         }
 
+        # region 刪除會員
         /// <summary>
         /// 刪除會員
         /// </summary>
@@ -785,7 +790,9 @@ namespace Web.Controllers
 
             return View();
         }
+        #endregion
 
+        # region 修改身份證字號
         /// <summary>
         /// 修改身份證字號
         /// </summary>
@@ -810,8 +817,9 @@ namespace Web.Controllers
             }
             return View();
         }
+        #endregion
 
-
+        # region 會員勳章
         public ActionResult MedalMileStone()
         {
             return View();
@@ -986,7 +994,9 @@ namespace Web.Controllers
                 return View();
             };
         }
+        #endregion
 
+        # region 會員積分
         public ActionResult MemberScore()
         {
             return View();
@@ -1172,7 +1182,6 @@ namespace Web.Controllers
                 }
             };
         }
-
         public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
         {
             ViewData["IDNO"] = ExplodeIDNO;
@@ -1224,6 +1233,6 @@ namespace Web.Controllers
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-
+        #endregion
     }
 }
