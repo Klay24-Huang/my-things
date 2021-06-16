@@ -136,7 +136,10 @@ namespace WebAPI.Controllers
                                          HDRateForMoto = a.HDRateForMoto,
                                          IsDiscount = a.IsDiscount,
                                          IsMix = a.IsMix,        //20210525 ADD BY ADAM REASON.增加城市車手
-                                         UseUntil = a.UseUntil.ToString("yyyy/MM/dd")
+                                         //20210616 ADD BY ADAM 
+                                         //UseUntil = a.UseUntil.ToString("yyyy/MM/dd")
+                                         UseUntil = apiInput.Mode == "1" ? a.UseUntil.ToString("yyyy/MM/dd HH:mm") :
+                                                a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.UseUntil.ToString("yyyy/MM/dd HH:mm")
                                      }).ToList();
 
                         outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
