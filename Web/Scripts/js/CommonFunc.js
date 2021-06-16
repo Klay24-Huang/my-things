@@ -245,7 +245,7 @@ function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj
 function DoAjaxAfterReload(obj,API,FailMessage) {
     var json = JSON.stringify(obj);
     console.log("json:" + json);
-    var site = jsHost2 + API;
+    var site = jsHost + API;
     //var site = "http://localhost:2061/api/BE_HandleUserMaintain" //202012唐測試用
     //var site = "http://localhost:2061/api/" + API
     console.log("site:" + site);

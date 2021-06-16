@@ -1,4 +1,5 @@
 ﻿$(function () {
+    var Today = new Date();
     $("#AuditMode").on("change", function () {
         var Mode = $("#AuditMode").val();
         $(".clear").val('');
@@ -24,6 +25,8 @@
                 $("#CC").hide();
                 $("#DD").hide();
                 $("#memo").hide();
+                $("#StartDate").val((Today.getFullYear()-1) + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+                $("#EndDate").val(Today.getFullYear() + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
                 break;
             case "0":
                 $("#NAME").hide();
@@ -116,13 +119,13 @@
                 flag = false;
                 errMsg = "起始日期大於結束日期";
             }
-            else {
-                var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 30) {
-                    flag = false;
-                    errMsg = "時間區間不可大於30天";
-                }
-            }
+            //else {
+            //    var GetDateDiff = DateDiff(SD, ED);
+            //    if (GetDateDiff > 30) {
+            //        flag = false;
+            //        errMsg = "時間區間不可大於30天";
+            //    }
+            //}
         } else {
             flag = false;
             errMsg = "未選擇日期";
@@ -340,7 +343,6 @@ function DoDel(Id) {
     var SEQ = $("#UserSeq_" + Id).val();
     var Account = $("#Account").val();
     var IDNO = $("#UserId_" + Id).val();
-
 
     ShowLoading("資料處理中");
 

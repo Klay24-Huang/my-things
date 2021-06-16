@@ -1230,10 +1230,10 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstData[k].GM);
 
             }
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
