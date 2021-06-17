@@ -1749,6 +1749,8 @@ namespace WebAPI.Models.BillFunc
                                          ArresPrice = k.PeriodPayPrice
                                      }).ToList();
                         nObj.Arrs = tmpArrs;
+                        //20210617 ADD BY ADAM REASON.
+                        nObj.CarTypePic = nArrs.FirstOrDefault().CarTypePic;
                     }
                     re.Add(nObj);
                 });

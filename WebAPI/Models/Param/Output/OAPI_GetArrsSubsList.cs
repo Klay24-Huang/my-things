@@ -16,6 +16,10 @@ namespace WebAPI.Models.Param.Output
         public string StartDate { get; set; } = "";
         public string EndDate { get; set; } = "";
         public string ProjNm { get; set; } = "";
+        /// <summary>
+        /// 車型對照圖 20210617 ADD BY ADAM 
+        /// </summary>
+        public string CarTypePic { get; set; }
         public List<OAPI_GetArrsSubsList_arrs> Arrs { get; set; }
     }
 

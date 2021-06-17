@@ -30,6 +30,8 @@ namespace Domain.SP.Output.Subscription
         public int PeriodPayPrice { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        //20210617 ADD BY ADAM REASON.增加車型對照圖
+        public string CarTypePic { get; set; }
     }
 
 }
