@@ -39,6 +39,7 @@ SET @ErrorType=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(hour,8,GETDATE());
 SET @IDNO=ISNULL(@IDNO,'');
+SET @Score=100;	-- 預設積分100
 
 BEGIN TRY
 	DROP TABLE IF EXISTS #TB_Project
