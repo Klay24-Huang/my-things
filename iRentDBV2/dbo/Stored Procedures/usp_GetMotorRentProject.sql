@@ -1,12 +1,12 @@
 /****************************************************************
-** 用途：取得路邊汽車專案
+** 用途：取得路邊機車專案
 *****************************************************************
 ** Change History
 *****************************************************************
-** 2021/06/16 ADD BY YEH REASON:新增SP
+** 2021/06/17 ADD BY YEH REASON:新增SP
 *****************************************************************/
 
-CREATE PROCEDURE [dbo].[usp_GetAnyRentProject]
+CREATE PROCEDURE [dbo].[usp_GetMotorRentProject]
 	@IDNO					VARCHAR(10)				,	-- 帳號
 	@CarNo					VARCHAR(10)				,	-- 車號
 	@SD						DATETIME				,	-- 起日
@@ -22,7 +22,6 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @NowTime DATETIME;
 DECLARE @SpecStatus VARCHAR(2);	-- 特殊身分
 DECLARE @Score INT;	-- 會員積分
 
@@ -33,11 +32,10 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_GetAnyRentProject';
+SET @FunName='usp_GetMotorRentProject';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
-SET @NowTime=DATEADD(hour,8,GETDATE());
 SET @IDNO=ISNULL(@IDNO,'');
 SET @Score=100;	-- 預設積分100
 
@@ -49,10 +47,10 @@ BEGIN TRY
 		-- 取得特殊身分
 		SELECT @SpecStatus=ISNULL(SPECSTATUS,'') FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND CONVERT(VARCHAR,dbo.GET_TWDATE(),112) BETWEEN SPSD AND SPED;
 
-		-- 取得路邊汽車專案
+		-- 取得機車專案
 		SELECT * INTO #TB_Project 
 		FROM TB_Project WITH(NOLOCK) 
-		WHERE PROJTYPE=3
+		WHERE PROJTYPE=4
 		AND ((ShowStart BETWEEN @SD AND @ED) OR (ShowEnd BETWEEN @SD AND @ED) OR (@SD BETWEEN ShowStart AND ShowEnd) OR (@ED BETWEEN ShowStart AND ShowEnd));
 
 		-- 取得會員積分
@@ -68,34 +66,33 @@ BEGIN TRY
 		SELECT P.PROJID,
 			P.PRONAME,
 			P.PRODESC,
-			PD.PRICE,
-			PD.PRICE_H,
 			ISNULL(C.CarBrend,'') AS CarBrend,
 			E.CarTypeGroupCode AS CarType,
 			ISNULL(C.CarTypeName,'') AS CarTypeName,
 			E.CarTypeImg AS CarTypePic,
-			F.OperatorICon AS Operator,
-			F.Score AS OperatorScore,
+			O.OperatorICon AS Operator,
+			O.Score AS OperatorScore,
 			E.Seat,
-			P.PayMode,
+			PM.BaseMinutes,
+			PM.BaseMinutesPrice AS BasePrice,
+			PM.Price AS PerMinutesPrice,
+			PM.MaxPrice,		       
 			S.ContentForAPP AS Content,
-			S.Area As CarOfArea,
-			PS.StationID,
-			Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
-			InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END	--安心服務每小時價
+			CS.device3TBA AS Power,
+			ISNULL(CS.deviceRDistance,'') AS RemainingMileage,
+			S.Area AS CarOfArea
 		FROM #TB_Project AS P WITH(NOLOCK)
 		LEFT JOIN TB_ProjectStation AS PS WITH(NOLOCK) ON PS.PROJID=P.PROJID AND IOType='O'
 		LEFT JOIN TB_ProjectDiscount AS PD WITH(NOLOCK) ON PD.ProjID=PS.PROJID AND PD.ProjID=P.PROJID
 		LEFT JOIN TB_CarType AS C WITH(NOLOCK) ON C.CarType=PD.CARTYPE
 		INNER JOIN TB_CarTypeGroupConsist AS D WITH(NOLOCK) ON C.CarType=D.CarType
 		INNER JOIN TB_CarTypeGroup AS E WITH(NOLOCK) ON E.CarTypeGroupID=D.CarTypeGroupID
-		INNER JOIN TB_Car AS Car ON Car.CarType=C.CarType
-		INNER JOIN TB_OperatorBase AS F WITH(NOLOCK) ON F.OperatorID=C.Operator
-		INNER JOIN TB_iRentStation S ON S.StationID = PS.StationID AND PS.StationID=Car.nowStationID AND S.IsNormalStation=3
-		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
-		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=E.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel
-		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=E.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3
-		WHERE Car.CarNo = @CarNo
+		INNER JOIN TB_OperatorBase AS O WITH(NOLOCK) ON O.OperatorID=C.Operator
+		INNER JOIN TB_Car AS Car ON Car.CarType=C.CarType AND PS.StationID=Car.nowStationID           
+		INNER JOIN TB_CarStatus AS CS ON CS.CarNo=Car.CarNo            
+		INNER JOIN TB_iRentStation S ON S.StationID=PS.StationID AND S.IsNormalStation=4
+		INNER JOIN TB_PriceByMinutes AS PM ON PM.ProjID=P.PROJID AND PM.CarType=Car.CarType AND PM.use_flag=1
+		WHERE Car.CarNo=@CarNo
 		AND ((P.SPCLOCK='Z') OR (@SpecStatus<>'' AND P.SPCLOCK=@SpecStatus))
 		ORDER BY PROJID ASC;
 	END

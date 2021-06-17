@@ -436,6 +436,10 @@ namespace WebAPI.Models.Enum
             /// 取得路邊汽車專案 20210616 ADD BY YEH
             /// </summary>
             GetAnyRentProject,
+            /// <summary>
+            /// 取得路邊機車專案 20210617 ADD BY YEH
+            /// </summary>
+            GetMotorRentProject,
 
             #region 渣渣
             /// <summary>
@@ -1049,6 +1053,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetAnyRentProject:  // 取得路邊汽車專案 20210616 ADD BY YEH
                     SPName = "usp_GetAnyRentProject";
+                    break;
+                case SPType.GetMotorRentProject:  // 取得路邊機車專案 20210617 ADD BY YEH
+                    SPName = "usp_GetMotorRentProject";
                     break;
 
                 #region 渣渣
