@@ -403,6 +403,7 @@
     <Compile Include="TB\BackEnd\BE_SameMobileData.cs" />
     <Compile Include="TB\BackEnd\BE_SCITEM.cs" />
     <Compile Include="TB\BackEnd\BE_SCMITEM.cs.cs" />
+    <Compile Include="TB\BackEnd\BE_ScoreBlock.cs" />
     <Compile Include="TB\BackEnd\BE_StationDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_UserGroup.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSettingData.cs" />

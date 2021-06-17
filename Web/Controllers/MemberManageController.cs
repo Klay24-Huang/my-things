@@ -107,7 +107,10 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
-            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
 
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
@@ -115,10 +118,8 @@ namespace Web.Controllers
             Data.History = lstHistory;
             Data.MileStone = new List<BE_MileStone>();
             Data.MileStone = lstMileStone;
-            Data.MileStoneDetail = new List<BE_MileStoneDetail>();
-            Data.MileStoneDetail = lstMileStoneDetail;
-            Data.MemberScore = new List<BE_MemberScore>();
-            Data.MemberScore = lstMemberScore;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -438,7 +439,6 @@ namespace Web.Controllers
                 int index = wsoutput.Data.ToList().FindIndex(delegate (WebAPIOutput_NPR172QueryData data)
                 {
                     return data.MEMIDNO == AuditIDNO;
-
                 });
                 if (index > -1)
                 {
@@ -452,12 +452,27 @@ namespace Web.Controllers
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
+            List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+            List<BE_ScoreBlock> lstScoreBlock = new MemberRepository(connetStr).GetScoreBlock(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
+
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
-
+            Data.MileStone = new List<BE_MileStone>();
+            Data.MileStone = lstMileStone;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
+            Data.MemberScore = new List<BE_MemberScore>();
+            Data.MemberScore = lstMemberScore;
             Data.InsuranceData = lstInsuranceData;
+            Data.ScoreBlock = lstScoreBlock;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";

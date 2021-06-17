@@ -578,11 +578,6 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             string SQL = $" EXEC SP_GetEasyWalletList '" + IDNO + "'";
-            //string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount, " +
-            //    $"convert(char(8), DATEADD(day, 29, convert(datetime,convert(char(8), a.orderCreateDateTime,112))),112) as endTime from EASYPAY_Order a " +
-            //    $"join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo " +
-            //    $"where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) " +
-            //    $"and c.orderNo is null AND a.ITEM LIKE '定期票加價購%' and convert(char(8), a.orderCreateDateTime,112)>20210512 AND a.paymentNo<>'' order by a.U_SYSDT desc ";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
@@ -596,14 +591,6 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             string SQL = $" EXEC SP_GetEasyWalletOrder '"+ sdate +"','"+ edate+"'";
-            //select出的名稱要和宣告的一樣
-            //string SQL = $" select a.orderNo, a.IDNO, c.easyCardNo, convert(char(8), a.orderCreateDateTime, 112) as orderTime, " +
-            //    $"convert(char(8), DATEADD(day, 29, convert(datetime, convert(char(8), a.orderCreateDateTime, 112))), 112) as endTime, " +
-            //    $"a.ITEM, a.PRICE, a.PRICE * 0.02 as tax, a.PRICE - (a.PRICE * 0.02) as amount, isnull(convert(char(8), b.refundDateTime, 112), '') as refunddate " +
-            //    $"from EASYPAY_Order a " +
-            //    $"left join EASYPAY_refund b on a.orderNo = b.orderNo " +
-            //    $"left join EASYPAY_MEMBER c on a.IDNO = c.identityId " +
-            //    $"where a.orderCreateDateTime between Replace ('" + sdate + "', '-', '') and Replace ('" + edate + "', '-', '')";
 
             lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
@@ -736,6 +723,39 @@ namespace Reposotory.Implement
             string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
         }
 
-
+        public List<BE_ScoreBlock> GetScoreBlock(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ScoreBlock> lstAudits = null;
+            //BE_ScoreBlock obj = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " select TOP 1 A.START_DT AS Sdate,A.END_DT AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " B.ISBLOCK=1 AND B.MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY A.A_SYSDT DESC";// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_ScoreBlock>(ref flag, ref lstError, SQL, para, term);
+            //if (lstAudits != null)
+            //{
+            //    if (lstAudits.Count > 0)
+            //    {
+            //        obj = new BE_ScoreBlock();
+            //        obj = lstAudits[0];
+            //    }
+            //}
+            //return obj;
+            return lstAudits;
+        }
     }
 }

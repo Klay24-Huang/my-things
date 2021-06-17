@@ -243,7 +243,7 @@
                                 不顯示在APP明細
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2" >
+                                <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2">
                                     <option value="0">Y</option>
                                     <option value="1" selected>N</option>
                                 </select>
@@ -286,7 +286,7 @@
     <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
 }
 
-<div class="container mt-4" id="AA" >
+<div class="container mt-4" id="AA">
     <div class="card">
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
             結果
@@ -328,53 +328,59 @@
             {
                 for (int i = 0; i < ResultLen; i++)
                 {
-        <tr>
-            @*<td data-sort="false"></td>*@
-            <td scope="col">
-                @(lstData[i].SEQ)
-                <input type="text" name="UserSeq_@(lstData[i].SEQ)" id="UserSeq_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" />
-            </td>
-            <td scope="col">
-                @(lstData[i].MEMIDNO)
-                <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].MEMIDNO)" class="form-control" style="display:none" />
-            </td>
-            <td scope="col">@(lstData[i].MEMCNAME)</td>
-            <td scope="col">@(lstData[i].A_SYSDT)</td>
-            <td scope="col">@(lstData[i].DAD)</td>
-            <td scope="col">
-                @(lstData[i].SON)
-                @if (lstData[i].DAD == "其他")
-                {
-                    <input type="text" name="UserSon_@(lstData[i].SEQ)" id="UserSon_@(lstData[i].SEQ)" value="@(lstData[i].SON)" class="form-control" style="display:none" />
-                }
-            </td>
-            <td scope="col">
-                @(lstData[i].SCORE)
-                <input type="text" name="UserScore_@(lstData[i].SEQ)" id="UserScore_@(lstData[i].SEQ)" value="@(lstData[i].SCORE)" class="form-control" style="display:none" />
-            </td>
-            <td scope="col">@(lstData[i].TIME)</td>
-            <td scope="col">@(lstData[i].ORDERNO)</td>
-            <td scope="col">
-                @(lstData[i].APP)
-                <input type="text" name="UserApp_@(lstData[i].SEQ)" id="UserApp_@(lstData[i].SEQ)" value="@(lstData[i].APP)" class="form-control" style="display:none" />
-            </td>
-            <td scope="col">@(lstData[i].DEL)</td>
-            <td scope="col">@(lstData[i].GM)</td>
-            <td scope="col">@(lstData[i].SCORETOTAL)</td>
-            @if (lstData[i].A_PRGID == "usp_BE_InsMemberScore")
-            {
-                <td scope="col">
-                    <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
-                    <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
-                    <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
-                    <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
-                </td>
-            }
-            else
-            {
-                <td scope="col"></td>
-            }
-        </tr>
+                    <tr>
+                        @*<td data-sort="false"></td>*@
+                        <td scope="col">
+                            @(lstData[i].SEQ)
+                            <input type="text" name="UserSeq_@(lstData[i].SEQ)" id="UserSeq_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" />
+                        </td>
+                        <td scope="col">
+                            @(lstData[i].MEMIDNO)
+                            <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].MEMIDNO)" class="form-control" style="display:none" />
+                        </td>
+                        <td scope="col">@(lstData[i].MEMCNAME)</td>
+                        <td scope="col">@(lstData[i].A_SYSDT)</td>
+                        <td scope="col">@(lstData[i].DAD)</td>
+                        <td scope="col">
+                            @(lstData[i].SON)
+                            @if (lstData[i].DAD == "其他")
+                            {
+                                <input type="text" name="UserSon_@(lstData[i].SEQ)" id="UserSon_@(lstData[i].SEQ)" value="@(lstData[i].SON)" class="form-control" style="display:none" />
+                            }
+                        </td>
+                        <td scope="col">
+                            @(lstData[i].SCORE)
+                            <input type="text" name="UserScore_@(lstData[i].SEQ)" id="UserScore_@(lstData[i].SEQ)" value="@(lstData[i].SCORE)" class="form-control" style="display:none" />
+                        </td>
+                        <td scope="col">@(lstData[i].TIME)</td>
+                        <td scope="col">@(lstData[i].ORDERNO)</td>
+                        <td scope="col">
+                            @(lstData[i].APP)
+                            <input type="text" name="UserApp_@(lstData[i].SEQ)" id="UserApp_@(lstData[i].SEQ)" value="@(lstData[i].APP)" class="form-control" style="display:none" />
+                        </td>
+                        <td scope="col">@(lstData[i].DEL)</td>
+                        <td scope="col">@(lstData[i].GM)</td>
+                        <td scope="col">@(lstData[i].SCORETOTAL)</td>
+                        @*@if (lstData[i].A_PRGID == "usp_BE_InsMemberScore")
+                            {
+                                <td scope="col">
+                                    <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
+                                    <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
+                                    <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
+                                    <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td scope="col"></td>
+                            }*@
+                        <td scope="col">
+                            <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
+                            <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
+                            <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
+                            <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
+                        </td>
+                    </tr>
                 }
             }
         </tbody>

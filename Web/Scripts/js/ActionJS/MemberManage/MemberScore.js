@@ -324,6 +324,11 @@ function DoSave(Id) {
         }
     }
 
+    if (UserScore==0) {
+        flag = false;
+        errMsg = "分數不能是0";
+    }
+
     if (flag) {
         var obj = new Object();
         obj.IDNO = IDNO;

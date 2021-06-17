@@ -36,6 +36,7 @@ namespace Domain.TB.BackEnd
         //20210310唐加
         public string mobileBlock { set; get; }
         public string JsonMileStoneDetail { set; get; }
+        public List<BE_ScoreBlock> ScoreBlock { set; get; }
     }
     
 }
