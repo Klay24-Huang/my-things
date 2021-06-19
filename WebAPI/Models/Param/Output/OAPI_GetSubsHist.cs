@@ -113,5 +113,13 @@ namespace WebAPI.Models.Param.Output
         /// 是否為城市車手 1:是 0:否 20210525 add by adam
         /// </summary>
         public int IsMix { get; set; }
+        /// <summary>
+        /// 載具條碼 20210619 ADD BY ADAM
+        /// </summary>
+        public string CARRIERID { get; set; }
+        /// <summary>
+        /// 捐贈碼 20210619 ADD BY ADAM
+        /// </summary>
+        public string NPOBAN { get; set; }
     }
 }

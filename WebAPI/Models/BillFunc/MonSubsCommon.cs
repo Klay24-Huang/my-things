@@ -1717,7 +1717,9 @@ namespace WebAPI.Models.BillFunc
                           invoiceCode = a.invoiceCode,
                           invoice_date = a.invoice_date,
                           invoice_price = a.invoice_price,
-                          IsMix = a.IsMix       //20210525 ADD BY ADAM REASON.增加城市車手
+                          IsMix = a.IsMix,       //20210525 ADD BY ADAM REASON.增加城市車手
+                          CARRIERID = a.CARRIERID,  //20210619 ADD BY ADAM REASON.補上載具條碼跟捐贈碼
+                          NPOBAN = a.NPOBAN
                       }).ToList();
             }
             return re;
