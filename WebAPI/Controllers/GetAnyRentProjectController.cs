@@ -284,6 +284,7 @@ namespace WebAPI.Controllers
                     if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
                     {
                         ProObjs.ForEach(x => {
+                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
                             VisProObjs.Add(x);                           
                             InUseMonth.ForEach(z =>
                             {
@@ -320,6 +321,10 @@ namespace WebAPI.Controllers
                                 VisProObjs.Add(newItem);
                             });
                         });
+
+                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                        VisProObjs.OrderBy(p => p.Price).ThenByDescending(p => p.MonthlyRentId).First().IsMinimum = 1;
+
                         outputApi.GetAnyRentProjectObj = VisProObjs;
                     }
                 }

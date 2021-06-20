@@ -269,6 +269,7 @@ namespace WebAPI.Controllers
                     if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
                     {
                         ProObjs.ForEach(x => {
+                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
                             VisProObjs.Add(x);
                             InUseMonth.ForEach(z =>
                             {
@@ -288,12 +289,20 @@ namespace WebAPI.Controllers
                                 newItem.MonthlyRentId = z.MonthlyRentId;
                                 newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = z.HoildayRateForMoto;
+
+                                //同步欄位，為了後續比對大小用
+                                newItem.PerMinutesPrice = (float)z.HoildayRateForMoto;    //20210620 ADD BY ADAM REASON.目前機車不分平假日，先用假日去判斷
                                 #endregion
 
                                 VisProObjs.Add(newItem);
                             });
                         });
+
+                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimum
+                        VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p=>p.MonthlyRentId).First().IsMinimum = 1;
+
                         outputApi.GetMotorProjectObj = VisProObjs;
+
                     }
                 }
 
