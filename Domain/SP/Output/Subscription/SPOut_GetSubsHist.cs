@@ -44,5 +44,19 @@ namespace Domain.SP.Output.Subscription
         /// 捐贈碼 20210619 ADD BY ADAM
         /// </summary>
         public string NPOBAN { get; set; }
+        /// <summary>
+        /// 發票類型
+        /// <para>1:愛心碼</para>
+        /// <para>2:email</para>
+        /// <para>3:二聯</para>
+        /// <para>4:三聯</para>
+        /// <para>5:手機條碼</para>
+        /// <para>6:自然人憑證</para>
+        /// </summary>
+        public int InvoiceType { get; set; }
+        /// <summary>
+        /// 捐贈協會名稱
+        /// </summary>
+        public string NPOBAN_Name { get; set; }
     }
 }
