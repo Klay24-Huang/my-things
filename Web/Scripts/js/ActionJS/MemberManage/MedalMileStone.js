@@ -8,11 +8,13 @@
                 $("#btnSubmit").text("查詢");
                 $("#Import").hide();
                 $("#ID").show();
+                $("#MEMO").hide();
                 $("#btnSubmit2").hide();
                 break;
             case "1":
                 $("#Choice").show();
                 $("#ID").show();
+                $("#MEMO").show();
                 $("#Import").hide();
                 $("#btnSubmit").show();
                 $("#btnSubmit").text("新增");
@@ -24,6 +26,7 @@
                 $("#Import").show();
                 $("#ID").hide();
                 $("#Choice").hide();
+                $("#MEMO").hide();
                 break;
         }
     });

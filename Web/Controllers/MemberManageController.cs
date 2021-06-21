@@ -842,7 +842,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport)
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport,string MEMO_CONTENT)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -886,7 +886,8 @@ namespace Web.Controllers
                 {
                     IDNO = IDNO,
                     ChoiceSelect = ChoiceSelect,
-                    USERID = Session["Account"].ToString()
+                    USERID = Session["Account"].ToString(),
+                    MEMO = MEMO_CONTENT
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
@@ -934,7 +935,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "匯入項目" };
+                        string[] field = { "ID", "匯入項目", "備註" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -952,10 +953,10 @@ namespace Web.Controllers
                         {
                             for (int i=1; i<=sheetLen; i++)
                             {
-                                if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "Report" &&
-                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "Question" &&
-                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "debug" &&
-                                    sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "Advice")
+                                if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "REPORT" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "QUESTION" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "DEBUG" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "ADVICE")
                                 {
                                     errorMsg = "Action名稱錯誤";
                                     flag = false;
@@ -968,14 +969,24 @@ namespace Web.Controllers
                         if (flag)
                         {
                             string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            string memo2 = "";
                             //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
                             for (int i = 1; i <= sheetLen; i++)
                             {
+                                if (sheet.GetRow(i).GetCell(2)==null)
+                                {
+                                    memo2 = "";
+                                }
+                                else
+                                {
+                                    memo2 = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "");
+                                }
                                 SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
                                 {
                                     IDNO = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
                                     ChoiceSelect = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    USERID = UserId
+                                    USERID = UserId,
+                                    MEMO = memo2
                                 };
 
                                 SPOutput_Base SPOutput = new SPOutput_Base();
