@@ -14,7 +14,7 @@ namespace Domain.SP.BE.Input
         public string DAD { get; set; }
         public string SON { get; set; }
         public int SCORE { get; set; }
-        public string APP { get; set; }
+        //public string APP { get; set; }
         public string USERID { get; set; }
         public string MEMO { get; set; }
     }

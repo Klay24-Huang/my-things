@@ -1,7 +1,79 @@
 ﻿$(function () {
     var Today = new Date();
+    var Mode = $("#AuditMode").val();
+    switch (Mode) {
+        case "1":
+            $("#NAME").show();
+            $("#ID").show();
+            $("#ORDER").show();
+            $("#ORDER_I").hide();
+            $("#DATE").show();
+            $("#Import").hide();
+            $("#Choice_0").hide();
+            $("#Choice_1").hide();
+            $("#Choice_2").hide();
+            $("#SCORE").hide();
+            $("#btnSubmit0").show();
+            $("#btnSubmit1").show();
+            $("#btnSubmit2").hide();
+            $("#btnSubmit3").hide();
+            //$("#btnSubmit4").hide();
+            $("#AA").show();
+            $("#BB").show();
+            $("#CC").hide();
+            $("#DD").hide();
+            $("#memo").hide();
+            $("#StartDate").val((Today.getFullYear() - 1) + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+            $("#EndDate").val(Today.getFullYear() + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+            break;
+        case "0":
+            $("#NAME").hide();
+            $("#ID").show();
+            $("#ORDER").hide();
+            $("#ORDER_I").show();
+            $("#DATE").hide();
+            $("#Import").hide();
+            $("#Choice_0").show();
+            $("#Choice_1").show();
+            $("#Choice_2").hide();
+            $("#SCORE").show();
+            $("#btnSubmit0").hide();
+            $("#btnSubmit1").hide();
+            $("#btnSubmit2").show();
+            $("#btnSubmit3").hide();
+            //$("#btnSubmit4").hide();
+            $("#AA").hide();
+            $("#BB").hide();
+            $("#CC").hide();
+            $("#DD").hide();
+            $("#memo").show();
+            break;
+        case "2":
+            $("#NAME").hide();
+            $("#ID").hide();
+            $("#ORDER").hide();
+            $("#ORDER_I").hide();
+            $("#DATE").hide();
+            $("#Import").show();
+            $("#Choice_0").hide();
+            $("#Choice_1").hide();
+            $("#Choice_2").hide();
+            $("#SCORE").hide();
+            $("#btnSubmit0").hide();
+            $("#btnSubmit1").hide();
+            $("#btnSubmit2").hide();
+            $("#btnSubmit3").show();
+            //$("#btnSubmit4").show();
+            $("#AA").hide();
+            $("#BB").hide();
+            //$("#CC").show();
+            //$("#DD").show();
+            $("#memo").hide();
+            break;
+    }
+
     $("#AuditMode").on("change", function () {
-        var Mode = $("#AuditMode").val();
+        Mode = $("#AuditMode").val();
         $(".clear").val('');
         switch (Mode) {
             case "1":
@@ -37,7 +109,7 @@
                 $("#Import").hide();
                 $("#Choice_0").show();
                 $("#Choice_1").show();
-                $("#Choice_2").show();
+                $("#Choice_2").hide();
                 $("#SCORE").show();
                 $("#btnSubmit0").hide();
                 $("#btnSubmit1").hide();
@@ -110,10 +182,16 @@
         var flag = true;
         var errMsg = "";
 
-        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" && $("#ORDERNO").val() == "") {
+        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "") {
             flag = false;
-            errMsg = "請輸入ID或姓名或合約";
+            errMsg = "請輸入ID或姓名";
         }    
+
+        if ($("#ORDERNO").val() != "" && false == RegexOrderNo($("#ORDERNO").val())) {
+            flag = false;
+            errMsg = "合約編號格式不符（格式：H+數字)";
+        }
+
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
@@ -147,10 +225,16 @@
         var flag = true;
         var errMsg = "";
 
-        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" && $("#ORDERNO").val() == "") {
+        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" ) {
             flag = false;
-            errMsg = "請輸入ID或姓名或合約";
+            errMsg = "請輸入ID或姓名";
         }
+
+        if ($("#ORDERNO").val() != "" && false == RegexOrderNo($("#ORDERNO").val())) {
+            flag = false;
+            errMsg = "合約編號格式不符（格式：H+數字)";
+        }
+
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
@@ -191,6 +275,13 @@
             flag = false;
             errMsg = "請輸入合約";
         }
+        else {
+            if (false == RegexOrderNo($("#ORDERNO_I").val())) {
+                flag = false;
+                errMsg = "訂單編號格式不符（格式：H+數字)";
+            }
+        }
+
         if ($("#IDNO").val() == "") {
             flag = false;
             errMsg = "請輸入ID";

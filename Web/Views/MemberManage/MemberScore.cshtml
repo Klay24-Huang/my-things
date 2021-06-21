@@ -47,13 +47,36 @@
                             <div class="col-md-2">
                                 處理項目
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
-                                    <option value="0">新增</option>
-                                    <option value="1">查詢/匯出</option>
-                                    <option value="2">上傳EXCEL</option>
-                                </select>
-                            </div>
+                            @if (AuditMode == "0")
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0" selected>新增</option>
+                                        <option value="1">查詢/匯出</option>
+                                        <option value="2">上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
+                            else if (AuditMode == "1")
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0">新增</option>
+                                        <option value="1" selected>查詢/匯出</option>
+                                        <option value="2">上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0">新增</option>
+                                        <option value="1">查詢/匯出</option>
+                                        <option value="2" selected>上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
                         </div>
                     </div>
                 </li>
@@ -236,7 +259,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="Choice_2">
+                <li class="list-group-item" id="Choice_2" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">

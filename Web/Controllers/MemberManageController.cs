@@ -1065,7 +1065,7 @@ namespace Web.Controllers
                         DAD = collection["ddlOperatorGG"].ToString(),
                         SON = collection["ddlUserGroup"].ToString(),
                         SCORE = int.Parse(MEMSCORE),
-                        APP = ChoiceSelect_2,
+                        //APP = ChoiceSelect_2,
                         USERID = Session["Account"].ToString(),
                         MEMO = sonmemo
                     };
@@ -1120,7 +1120,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "訂單編號" };
+                        string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "合約編號" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -1219,7 +1219,7 @@ namespace Web.Controllers
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
-            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "訂單編號", "APP刪除", "刪除時間", "操作人員" };
+            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "合約編號", "APP刪除", "刪除時間", "操作人員" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
