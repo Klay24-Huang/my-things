@@ -1041,137 +1041,177 @@ namespace Web.Controllers
             ViewData["EndDate"] = EndDate;
             ViewData["SCITEM"] = (collection["ddlOperatorGG"] == null) ? "0" : collection["ddlOperatorGG"].ToString() == "" ? "0" : collection["ddlOperatorGG"].ToString(); //讓view知道我所選的評分行為(主項)的值
             int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
-            //object a = collection["ddlOperatorGG"];
-            //string b = collection["ddlOperatorGG"].ToString();
-            //object aa = collection["ddlUserGroup"];
-            //string bb = collection["ddlUserGroup"].ToString();
 
-            if (AuditMode == "1")
+            bool flag_H = true;
+            if (ORDERNO != "")
             {
-                List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
-                return View(lstData);
+                if (ORDERNO.IndexOf("H") < 0)
+                {
+                    flag_H = false;
+                }
+                else
+                {
+                    ORDERNO = ORDERNO.ToUpper();
+                    ORDERNO = ORDERNO.Replace("H", "");
+                }
             }
-            else if (AuditMode == "0" && justSearch == 0)
+            if (ORDERNO_I != "")
             {
-                if (ORDERNO_I == "")
+                if (ORDERNO_I.IndexOf("H") < 0)
                 {
-                    ORDERNO_I = "0";
+                    flag_H = false;
                 }
-                bool flag = true;
-                if (collection["ddlUserGroup"]=="0")
+                else
                 {
-                    flag = false;
-                    ViewData["errorLine"] = "評分行為未選擇";
+                    ORDERNO_I = ORDERNO_I.ToUpper();
+                    ORDERNO_I = ORDERNO_I.Replace("H", "");
                 }
-                if (flag)
+            }
+
+            if (flag_H)
+            {
+                if (AuditMode == "1")
                 {
+                    List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+                    return View(lstData);
+                }
+                else if (AuditMode == "0" && justSearch == 0)
+                {
+                    if (ORDERNO_I == "")
+                    {
+                        ORDERNO_I = "0";
+                    }
+                    bool flag = true;
+                    if (collection["ddlUserGroup"] == "0")
+                    {
+                        flag = false;
+                        ViewData["errorLine"] = "評分行為未選擇";
+                    }
+                    if (flag)
+                    {
+                        List<ErrorInfo> lstError = new List<ErrorInfo>();
+                        string errCode = "";
+                        CommonFunc baseVerify = new CommonFunc();
+                        SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                        {
+                            //NAME = MEMNAME,
+                            ID = IDNO,
+                            ORDERNO = Convert.ToInt32(ORDERNO_I),
+                            DAD = collection["ddlOperatorGG"].ToString(),
+                            SON = collection["ddlUserGroup"].ToString(),
+                            SCORE = int.Parse(MEMSCORE),
+                            //APP = ChoiceSelect_2,
+                            USERID = Session["Account"].ToString(),
+                            MEMO = sonmemo
+                        };
+                        SPOutput_Base SPOutput = new SPOutput_Base();
+                        flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                        if (flag)
+                        {
+                            ViewData["errorLine"] = "ok";
+                            //return Content("<script>alert('ok');</script>");
+                        }
+                        else
+                        {
+                            ViewData["errorLine"] = SPOutput.ErrorMsg;
+                        }
+                    }
+
+                    return View();
+                }
+                else if (AuditMode == "0" && justSearch == 1)
+                {
+                    return View();
+                }
+                else if (AuditMode == "2")
+                {
+                    string errorMsg = "";
+                    bool flag = true;
+
+                    List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
                     List<ErrorInfo> lstError = new List<ErrorInfo>();
                     string errCode = "";
                     CommonFunc baseVerify = new CommonFunc();
-                    SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                    if (fileImport != null)
                     {
-                        //NAME = MEMNAME,
-                        ID = IDNO,
-                        ORDERNO = Convert.ToInt32(ORDERNO_I),
-                        DAD = collection["ddlOperatorGG"].ToString(),
-                        SON = collection["ddlUserGroup"].ToString(),
-                        SCORE = int.Parse(MEMSCORE),
-                        //APP = ChoiceSelect_2,
-                        USERID = Session["Account"].ToString(),
-                        MEMO = sonmemo
-                    };
-                    SPOutput_Base SPOutput = new SPOutput_Base();
-                    flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-
-                    if (flag)
-                    {
-                        ViewData["errorLine"] = "ok";
-                        //return Content("<script>alert('ok');</script>");
-                    }
-                    else
-                    {
-                        ViewData["errorLine"] = SPOutput.ErrorMsg;
-                    }
-                }
-                
-                return View();
-            }
-            else if (AuditMode == "0" && justSearch == 1)
-            {
-                return View();
-            }
-            else if (AuditMode == "2")
-            {
-                string errorMsg = "";
-                bool flag = true;
-
-                List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                string errCode = "";
-                CommonFunc baseVerify = new CommonFunc();
-                if (fileImport != null)
-                {
-                    if (fileImport.ContentLength > 0)
-                    {
-                        string fileName = string.Concat(new string[]{
+                        if (fileImport.ContentLength > 0)
+                        {
+                            string fileName = string.Concat(new string[]{
                             "MemberScoreImport",
                             ((Session["Account"]==null)?"":Session["Account"].ToString()),
                             "_",
                             DateTime.Now.ToString("yyyyMMddHHmmss"),
                             ".xlsx"
                         });
-                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
-                        if (!di.Exists)
-                        {
-                            di.Create();
-                        }
-                        string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
-                        fileImport.SaveAs(path);
-                        IWorkbook workBook = new XSSFWorkbook(path);
-                        ISheet sheet = workBook.GetSheetAt(0);
-                        int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "合約編號" };
-                        int fieldLen = field.Length;
-                        //第一關，判斷位置是否相等
-                        for (int i = 0; i < fieldLen; i++)
-                        {
-                            ICell headCell = sheet.GetRow(0).GetCell(i);
-                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
+                            if (!di.Exists)
                             {
-                                errorMsg = "標題列不相符";
-                                flag = false;
-                                break;
+                                di.Create();
                             }
-                        }
-                        //通過第一關 
-                        if (flag)
-                        {
-                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
-                            //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
-                            for (int i = 1; i <= sheetLen; i++)
+                            string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
+                            fileImport.SaveAs(path);
+                            IWorkbook workBook = new XSSFWorkbook(path);
+                            ISheet sheet = workBook.GetSheetAt(0);
+                            int sheetLen = sheet.LastRowNum;
+                            string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "合約編號" };
+                            int fieldLen = field.Length;
+                            //第一關，判斷位置是否相等
+                            for (int i = 0; i < fieldLen; i++)
                             {
-                                SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                ICell headCell = sheet.GetRow(0).GetCell(i);
+                                if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
                                 {
-                                    ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                    ORDERNO = int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "")),
-                                    DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
-                                    SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
-                                    APP = "",
-                                    USERID = Session["Account"].ToString(),
-                                    MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
-                                };
-
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
-                                {
-                                    //errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    errorMsg = "標題列不相符";
+                                    flag = false;
+                                    break;
                                 }
                             }
+                            //判斷合約編號是否有H
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                if (sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
+                                {
+                                    errorMsg = "合約編號格式錯誤";
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            //通過第一關 
+                            if (flag)
+                            {
+                                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                                //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                                for (int i = 1; i <= sheetLen; i++)
+                                {
+                                    SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                    {
+                                        ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                        ORDERNO = int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
+                                        DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                        SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
+                                        SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                        APP = "",
+                                        USERID = Session["Account"].ToString(),
+                                        MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") == "其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
+                                    };
+
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        //errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            flag = false;
+                            errorMsg = "請上傳要匯入的資料";
                         }
                     }
                     else
@@ -1179,40 +1219,40 @@ namespace Web.Controllers
                         flag = false;
                         errorMsg = "請上傳要匯入的資料";
                     }
+
+                    if (flag)
+                    {
+                        ViewData["errorLine"] = "ok";
+                    }
+                    else
+                    {
+                        ViewData["errorLine"] = errorMsg;
+                    }
+
+                    return View();
                 }
                 else
                 {
-                    flag = false;
-                    errorMsg = "請上傳要匯入的資料";
-                }
-
-                if (flag)
-                {
-                    ViewData["errorLine"] = "ok";
-                }
-                else
-                {
-                    ViewData["errorLine"] = errorMsg;
-                }
-
-                return View();
+                    List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
+                    try
+                    {
+                        ViewData["IDNO"] = lstData[0].IDNO;
+                        ViewData["MEMNAME"] = lstData[0].NAME;
+                        //ViewData["AuditMode"] = "1";
+                        return View();
+                    }
+                    catch
+                    {
+                        ViewData["errorLine"] = "無此合約";
+                        return View();
+                    }
+                };
             }
             else
             {
-                List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
-                try
-                {
-                    ViewData["IDNO"] = lstData[0].IDNO;
-                    ViewData["MEMNAME"] = lstData[0].NAME;
-                    //ViewData["AuditMode"] = "1";
-                    return View();
-                }
-                catch
-                {
-                    ViewData["errorLine"] = "無此合約";
-                    return View();
-                }
-            };
+                ViewData["errorLine"] = "合約編號格式錯誤";
+                return View();
+            }
         }
         public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
         {
@@ -1237,7 +1277,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
