@@ -197,16 +197,12 @@ namespace WebAPI.Controllers
 
 
                         /*判斷是否要取款或是刷退*/
-                        // 20210520 ADJUST BY FRANK REASON.儲存資料不串金流
-                        //if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
-                        if(true)
+                        if (apiInput.DiffPrice == 0 || (obj.Paid == 0 && obj.ArrearAMT == 0) || apiInput.DiffPrice < 0)
                         {
                             //直接更新
                             flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
 
-                            // 20210520 ADJUST BY FRANK REASON.資料不回拋短租
-                            //if (flag)
-                            if(false)
+                            if (flag)
                             {
                                 flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
                             }

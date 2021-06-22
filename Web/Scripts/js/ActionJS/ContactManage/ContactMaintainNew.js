@@ -250,7 +250,7 @@ $(document).ready(function () {
                     obj.Remark = Remark
                 }
 
-                DoAjaxAfterReload(obj, "BE_HandleOrderModifyNew", "修改資料發生錯誤");
+                DoAjaxAfterReload(obj, "BE_HandleOrderModifyWithoutGoldFlow", "修改資料發生錯誤");
             } else {
                 disabledLoadingAndShowAlert(errMsg);
             }
