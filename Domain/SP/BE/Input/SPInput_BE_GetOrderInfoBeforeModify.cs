@@ -11,5 +11,7 @@ namespace Domain.SP.BE.Input
     {
         public Int64 OrderNo {set;get;}
         public string UserID { set; get; }
+
+        public string WithoutGoldFlow { get; set; }
     }
 }
