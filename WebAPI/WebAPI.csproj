@@ -217,6 +217,7 @@
     <Compile Include="Controllers\BE_HandleOrderModifyByDiscountController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyController.cs" />
     <Compile Include="Controllers\BE_HandleOrderModifyNewController.cs" />
+    <Compile Include="Controllers\BE_HandleOrderModifyWithoutGoldFlowController.cs" />
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
