@@ -11,5 +11,6 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 訂單編號
         /// </summary>
         public string OrderNo { set; get; }
+        public string WithoutGoldFlow { get; set; }
     }
 }
