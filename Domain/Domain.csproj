@@ -46,6 +46,7 @@
     <Compile Include="Common\BackEnd\OperatorItem.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
+    <Compile Include="MemberData\InvoiceData.cs" />
     <Compile Include="MemberData\UnBindLog.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
     <Compile Include="MemberData\StatusData.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_DelSubsHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetArrsSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetChgSubsList.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_GetInvData.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetMonSetInfo.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetMySubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetNowSubs.cs" />
@@ -329,6 +331,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_DelSubsHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetArrsSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetChgSubsList.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_GetInvData.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetMonSetInfo.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetMySubs.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetNowSubs.cs" />

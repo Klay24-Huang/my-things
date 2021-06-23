@@ -48,11 +48,11 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 選定付款方式
         /// </summary>
-        public Int64 PayTypeId { get; set; } = 0;
+        public Int64? PayTypeId { get; set; } = 0;
         /// <summary>
         /// 選定發票設定
         /// </summary>
-        public Int64 InvoTypeId { get; set; } = 0;
+        public Int64? InvoTypeId { get; set; } = 0;
     }
 
     public class IAPI_BuyNow_AddMonth: IAPI_BuyNow_Base

@@ -382,6 +382,8 @@ namespace WebAPI.Controllers
                         }
                     }
 
+                    //20210617 ADD BY ADAM REASON.發票設定改為從內部取
+                    /*
                     if (flag)
                     {
                         if (!payList.Any(x => x == apiInput.PayTypeId) || !invoList.Any(y => y == apiInput.InvoTypeId))
@@ -389,7 +391,7 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR268";
                         }
-                    }
+                    }*/
 
                     trace.FlowList.Add("防呆");
                 }
@@ -427,7 +429,10 @@ namespace WebAPI.Controllers
                 {
                     #region 載入後續Api所需資料
 
-                    Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    Int64 InvoTypeId = InvData.InvocieTypeId;
+
                     buyNxtCom.LogID = LogID;
                     var objJson = new
                     {
@@ -630,7 +635,8 @@ namespace WebAPI.Controllers
                             errCode = "ERR101";
                         }
                     }
-
+                    //20210617 ADD BY ADAM REASON.發票設定改為從內部取
+                    /*
                     if (flag)
                     {
                         if (!payList.Any(x => x == apiInput.PayTypeId) || !invoList.Any(y => y == apiInput.InvoTypeId))
@@ -638,7 +644,7 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR268";
                         }
-                    }
+                    }*/
 
                     trace.FlowList.Add("防呆");
                 }
@@ -676,7 +682,10 @@ namespace WebAPI.Controllers
                 {
                     #region 載入後續Api所需資料
 
-                    Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    Int64 InvoTypeId = InvData.InvocieTypeId;
+
                     buyNxtCom.LogID = LogID;
                     var objJson = new
                     {
@@ -804,6 +813,7 @@ namespace WebAPI.Controllers
 
                     try
                     {
+                        //呼叫短租SERVICE開立發票，並接收回傳發票號碼
 
                     }
                     catch (Exception ex)
@@ -869,6 +879,9 @@ namespace WebAPI.Controllers
 
             trace.traceAdd("apiIn", value);
 
+            if (value == null)
+                value = new Dictionary<string, object>();
+
             try
             {
                 #region 防呆
@@ -891,14 +904,17 @@ namespace WebAPI.Controllers
                         }
                     }
 
+                    //20210617 ADD BY ADAM REASON.發票設定改為從內部取
+                    /*
                     if (flag)
                     {
+                        
                         if (!payList.Any(x => x == apiInput.PayTypeId) || !invoList.Any(y => y == apiInput.InvoTypeId))
                         {
                             flag = false;
                             errCode = "ERR268";
                         }
-                    }
+                    }*/
 
                     trace.FlowList.Add("防呆");
                 }
@@ -942,7 +958,10 @@ namespace WebAPI.Controllers
                         MonthlyRentIds = String.Join(",", apiInput.MonthlyRentIds);
                     }
 
-                    Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    //從資料庫找發票設定 InvoTypeId
+                    //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
+                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    Int64 InvoTypeId = InvData.InvocieTypeId;
                     buyNxtCom.LogID = LogID;
                     var objJson = new
                     {

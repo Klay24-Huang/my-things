@@ -517,6 +517,35 @@ namespace WebAPI.Models.BillFunc
             return re;
         } 
 
+        public InvoiceData GetINVDataFromMember(string IDNO)
+        {
+            var re = new InvoiceData();
+            try
+            {
+                string errCode = "";
+                var spInput = new SPInput_GetInvData()
+                {
+                    IDNO = IDNO
+                };
+                var splist = msp.sp_GetInvData(spInput, ref errCode);
+                if (splist != null && splist.Count() > 0)
+                {
+                    re.MEMIDNO = IDNO;
+                    re.InvocieType = splist.FirstOrDefault().InvoiceType;
+                    re.UNIMNO = splist.FirstOrDefault().UNIMNO;
+                    re.CARRIERID = splist.FirstOrDefault().CARRIERID;
+                    re.NPOBAN = splist.FirstOrDefault().NPOBAN;
+                    re.InvocieTypeId = int.Parse(splist.FirstOrDefault().InvoiceId);
+                    
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return re;
+        }
+
     }
 
     /// <summary>
@@ -1512,6 +1541,49 @@ namespace WebAPI.Models.BillFunc
                 return lstOut.FirstOrDefault();
             else
                 return null;
+        }
+
+        public List<SPOut_GetInvData> sp_GetInvData(SPInput_GetInvData spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetInvData>();
+
+            try
+            {
+                string SPName = "usp_GetINVData_Q1";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                    {
+                        re = objUti.ConvertToList<SPOut_GetInvData>(ds1.Tables[0]);
+                    }
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
     }
 
