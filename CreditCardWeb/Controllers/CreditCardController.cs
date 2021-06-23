@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,11 @@ namespace CreditCardWeb.Controllers
     public class CreditCardController : Controller
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Counter BindCardSuccessCount = Metrics.CreateCounter("irent_taishin_bindcard_success", "iRent Taishin BindCard Success");
+        private static readonly Counter BindCardFailCount = Metrics.CreateCounter("irent_taishin_bindcard_fail", "iRent Taishin BindCard Fail", new CounterConfiguration
+        {
+            LabelNames = new[] { "BindRetCode" }
+        });
         // GET: CreditCard
         public ActionResult Index()
         {
@@ -29,6 +35,7 @@ namespace CreditCardWeb.Controllers
         public ActionResult BindSuccess(Dictionary<string, object> value)
         {
             logger.Trace("BindSuccess:" + JsonConvert.SerializeObject(value));
+            BindCardSuccessCount.Inc();
             //string LogPath = "~/Content/CreditCardBindLog";
             //string Log = collection.ToString();
             //DirectoryInfo di = new DirectoryInfo(Server.MapPath(LogPath));
@@ -48,6 +55,7 @@ namespace CreditCardWeb.Controllers
         public ActionResult BindFail(string id,string BindRetCode)
         {
             logger.Trace("BindFail: id=" + id+ ", BindRetCode=" + BindRetCode);
+            BindCardFailCount.WithLabels(BindRetCode).Inc();
             string errorMsg = "";
             switch (BindRetCode)
             {
