@@ -34,5 +34,9 @@ namespace WebAPI.Models.Param.Input
         /// 方法
         /// </summary>
         public string method { get; set; }
+        /// <summary>
+        /// NotOkay出錯步驟
+        /// </summary>
+        public string CmdStep { get; set; }
     }
 }

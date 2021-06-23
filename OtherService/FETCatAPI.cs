@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using WebCommon;
@@ -30,6 +31,8 @@ namespace OtherService
         private string SyncPath = ConfigurationManager.AppSettings.Get("CatSyncURL");
         private string[] SyncCommand = ConfigurationManager.AppSettings.Get("CatSyncCommand").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string catCombineCmdAllSupport = ConfigurationManager.AppSettings["CatCombineCmdAllSupport"] ?? "";
+        private string catCombineCmdSupportFwVer = ConfigurationManager.AppSettings["CatCombineCmdSupportFwVer"] ?? "0";
         public bool DoSendCmd(string deviceToken,string CID,OtherService.Enum.MachineCommandType.CommandType commandType,WSInput_Base<Params> Input, Int64 LogID)
         {
             bool flag = false;
@@ -241,6 +244,63 @@ namespace OtherService
                 url = string.Format(BasePath, deviceToken);
             }
             return url;
+        }
+        /// <summary>
+        /// 判斷能否使用巨集功能
+        /// </summary>
+        /// <param name="cid">CID</param>
+        /// <returns></returns>
+        public bool IsSupportCombineCmd(string cid)
+        {
+            bool support = false;
+            bool flag = false;
+            try
+            {
+                if (catCombineCmdAllSupport == "1")
+                {
+                    support = true;
+                }
+                else
+                {
+                    CarCMDRepository CarCMDRepository = new CarCMDRepository(connetStr);
+                    CarCmdData carCmdData = CarCMDRepository.GetCarCMDDataByCID(cid, ref flag);
+                    if (!string.IsNullOrEmpty(carCmdData.CensFWVer))
+                    {
+                        support = chkCatFwVer(carCmdData.CensFWVer);
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return support;
+        }
+        /// <summary>
+        /// 檢查遠傳車機韌體版本是否支援新功能
+        /// </summary>
+        /// <param name="fwver"></param>
+        /// <returns></returns>
+        public bool chkCatFwVer(string fwver)
+        {
+            bool support = false;
+            try
+            {
+                string version = "0";
+                Regex regex = new Regex(@".+-(\d{8})");
+                Match match = regex.Match(fwver);
+                if (match.Success)
+                {
+                    version = match.Groups[1].Value;
+                }
+                if (Convert.ToInt32(version) >= Convert.ToInt32(catCombineCmdSupportFwVer))
+                {
+                    support = true;
+                }
+            }
+            catch
+            {
+            }
+            return support;
         }
     }
 }

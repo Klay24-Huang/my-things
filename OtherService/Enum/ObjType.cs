@@ -102,10 +102,10 @@ namespace OtherService.Enum
                     SPName = "usp_InsReadCardData";
                     break;
                 case SPType.HandleCarStatus:
-                    SPName = "usp_HandleCarStatusByCar";
+                    SPName = "usp_HandleCarStatusByCar_20210621";
                     break;
                 case SPType.HandleCarStatusByMotor:
-                    SPName = "usp_HandleCarStatusByMotor";
+                    SPName = "usp_HandleCarStatusByMotor_20210621";
                     break;
                 case SPType.InsTrade:
                     SPName = "usp_InsTrade";
