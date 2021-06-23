@@ -699,44 +699,8 @@ namespace WebAPI.Controllers
                             mil = info.Millage;
                         }
                     }
-                    //寫入顧客卡
                     if (flag)
                     {
-                        if (lstCardList != null)
-                        {
-                            int CardLen = lstCardList.Count;
-                            if (CardLen > 0)
-                            {
-                                string[] CardStr = new string[CardLen];
-                                for (int i = 0; i < CardLen; i++)
-                                {
-                                    CardStr[i] = lstCardList[i].CardNO;
-                                }
-                                if (CardStr.Length > 0)
-                                {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
-                                    WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new ClientCardNoObj()
-                                        {
-                                            ClientCardNo = CardStr
-                                        }
-                                    };
-                                    requestId = SetCardInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
-                                }
-                            }
-                        }
-
                         //執行sp合約
                         if (flag)
                         {
@@ -755,51 +719,128 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
-                        //設定租約狀態
-                        if (flag)
+                        if (flag && FetAPI.IsSupportCombineCmd(CID))
                         {
-                            if (info.extDeviceStatus1 == 0) //無租約才要送設約租
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
-                                WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
+                                command = true,
+                                method = CommandType,
+                                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                _params = new ClientCardNoObj()
                                 {
-                                    command = true,
-                                    method = CommandType,
-                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    _params = new Params()
-                                };
-
-                                requestId = SetRentInput.requestId;
-                                method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
-                                if (flag)
+                                    ClientCardNo = new string[] { }
+                                }
+                            };
+                            //寫入顧客卡
+                            if (lstCardList != null)
+                            {
+                                int CardLen = lstCardList.Count;
+                                if (CardLen > 0)
                                 {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    string[] CardStr = new string[CardLen];
+                                    for (int i = 0; i < CardLen; i++)
+                                    {
+                                        CardStr[i] = lstCardList[i].CardNO;
+                                    }
+                                    if (CardStr.Length > 0)
+                                    {
+                                        SetCardInput._params.ClientCardNo = CardStr;
+                                    }
                                 }
                             }
-                        }
-                        //解防盜
-                        if (flag)
-                        {
-                            if (info.SecurityStatus == 1) //有開防盜才要解
+                            requestId = SetCardInput.requestId;
+                            method = CommandType;
+                            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                            if (flag)
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
-                                WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
+                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            }
+                        }
+                        else
+                        {
+                            //寫入顧客卡
+                            if (lstCardList != null)
+                            {
+                                int CardLen = lstCardList.Count;
+                                if (CardLen > 0)
                                 {
-                                    command = true,
-                                    method = CommandType,
-                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    _params = new Params()
-                                };
+                                    string[] CardStr = new string[CardLen];
+                                    for (int i = 0; i < CardLen; i++)
+                                    {
+                                        CardStr[i] = lstCardList[i].CardNO;
+                                    }
+                                    if (CardStr.Length > 0)
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
+                                        WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                                        {
+                                            command = true,
+                                            method = CommandType,
+                                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                            _params = new ClientCardNoObj()
+                                            {
+                                                ClientCardNo = CardStr
+                                            }
+                                        };
+                                        requestId = SetCardInput.requestId;
+                                        method = CommandType;
+                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                                        if (flag)
+                                        {
+                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        }
+                                    }
+                                }
+                            }
+                            //設定租約狀態
+                            if (flag)
+                            {
+                                if (info.extDeviceStatus1 == 0) //無租約才要送設約租
+                                {
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
+                                    WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
+                                    {
+                                        command = true,
+                                        method = CommandType,
+                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                        _params = new Params()
+                                    };
 
-                                requestId = SetAlertOffInput.requestId;
-                                method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
-                                if (flag)
+                                    requestId = SetRentInput.requestId;
+                                    method = CommandType;
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
+                                    if (flag)
+                                    {
+                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    }
+                                }
+                            }
+                            //解防盜
+                            if (flag)
+                            {
+                                if (info.SecurityStatus == 1) //有開防盜才要解
                                 {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
+                                    WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
+                                    {
+                                        command = true,
+                                        method = CommandType,
+                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                        _params = new Params()
+                                    };
+
+                                    requestId = SetAlertOffInput.requestId;
+                                    method = CommandType;
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
+                                    if (flag)
+                                    {
+                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    }
                                 }
                             }
                         }

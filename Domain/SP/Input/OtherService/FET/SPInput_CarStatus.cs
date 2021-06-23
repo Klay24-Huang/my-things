@@ -44,6 +44,7 @@ namespace Domain.SP.Input.OtherService.FET
         /// </summary>
         public string extDeviceData7 { get; set; }
         public string deviceName { get; set; }
+        public string deviceFW { get; set; }
         public Int64 LogID { set; get; }
     }
 }
