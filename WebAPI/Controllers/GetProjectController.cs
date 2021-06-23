@@ -612,6 +612,7 @@ namespace WebAPI.Controllers
                                 newGetProjObj.ProjectObj = new List<ProjectObj>();
                                 x.ProjectObj.ForEach(y =>
                                 {
+                                    y.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
                                     newGetProjObj.ProjectObj.Add(y);
                                     InUseMonth.ForEach(z =>
                                     {
@@ -647,11 +648,15 @@ namespace WebAPI.Controllers
                                 });
                                 if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
                                 {
-                                    newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                    //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                                    //newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                    newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.Price).ThenByDescending(c => c.MonthlyRentId).ToList();
+                                    newGetProjObj.ProjectObj.First().IsMinimum = 1;
                                     VisProObjs.Add(newGetProjObj);
                                 }
                             }
                         });
+
                         outputApi.GetProjectObj = VisProObjs;
                     }                  
                 }

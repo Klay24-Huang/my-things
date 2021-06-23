@@ -300,7 +300,7 @@ namespace WebAPI.Controllers
 
                         //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimum
                         VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p=>p.MonthlyRentId).First().IsMinimum = 1;
-
+                        VisProObjs = VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p => p.MonthlyRentId).ToList();
                         outputApi.GetMotorProjectObj = VisProObjs;
 
                     }
