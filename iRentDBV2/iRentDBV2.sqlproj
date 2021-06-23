@@ -516,6 +516,7 @@
     <Build Include="dbo\Stored Procedures\usp_GetAnyRentProject.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetCityParkingFee.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMotorRentProject.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMotorRent.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

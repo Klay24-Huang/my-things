@@ -440,6 +440,10 @@ namespace WebAPI.Models.Enum
             /// 取得路邊機車專案 20210617 ADD BY YEH
             /// </summary>
             GetMotorRentProject,
+            /// <summary>
+            /// 取得路邊機車 20210622 ADD BY YEH
+            /// </summary>
+            GetMotorRent,
 
             #region 渣渣
             /// <summary>
@@ -974,7 +978,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckCarIButton";
                     break;
                 case SPType.GetAnyRentCar:      //取得路邊租還車輛
-                    SPName = "usp_GetAnyRentCar";
+                    SPName = "usp_GetAnyRentCar_ForTest";   // 20210622 UPD BY YEH REASON:測試積分<60只能用定價專案
                     break;
                 case SPType.ArrearsQueryByNPR330ID: //20201213 ADD BY ADAM
                     SPName = "usp_ArrearsQuery_Q1";
@@ -1056,6 +1060,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMotorRentProject:  // 取得路邊機車專案 20210617 ADD BY YEH
                     SPName = "usp_GetMotorRentProject";
+                    break;
+                case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
+                    SPName = "usp_GetMotorRent";
                     break;
 
                 #region 渣渣
