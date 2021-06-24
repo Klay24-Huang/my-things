@@ -690,7 +690,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Power" id="block2" value="-1" @((obj.ScoreBlock != null) ? " checked" : "") disabled>
+                                        <input class="form-check-input" type="radio" name="Power" id="block2" value="-1" @((obj.ScoreBlock.Count != 0) ? " checked" : "") disabled>
                                         <label class="form-check-label" for="block2">
                                             會員積分停權
                                         </label>
@@ -706,7 +706,7 @@
                                 <div class="col-md-3">
                                     <!-- datepicker -->
                                     <div class="custom-datepicker">
-                                        <input class="datePicker form-control" type="text" id="BlockStartDate2" name="BlockStartDate2" value="@((obj.ScoreBlock!=null)? obj.ScoreBlock[0].Sdate:"")" disabled>
+                                        <input class="datePicker form-control" type="text" id="BlockStartDate2" name="BlockStartDate2" value="@((obj.ScoreBlock.Count != 0)? obj.ScoreBlock[0].Sdate:"")" disabled>
                                         <svg width="22" height="22" viewBox="0 0 22 22">
                                             <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                                 <rect width="22" height="19" rx="3" stroke="none" />
@@ -727,7 +727,7 @@
                                 <div class="col-md-3">
                                     <!-- datepicker with time -->
                                     <div class="custom-datepicker">
-                                        <input class="datePicker form-control" type="text" id="BlockEndDate2" name="BlockEndDate2" value="@((obj.ScoreBlock!=null)? obj.ScoreBlock[0].Edate:"")" disabled>
+                                        <input class="datePicker form-control" type="text" id="BlockEndDate2" name="BlockEndDate2" value="@((obj.ScoreBlock.Count != 0)? obj.ScoreBlock[0].Edate:"")" disabled>
                                         <svg width="22" height="22" viewBox="0 0 22 22">
                                             <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                                 <rect width="22" height="19" rx="3" stroke="none" />
