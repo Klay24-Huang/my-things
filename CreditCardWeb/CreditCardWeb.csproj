@@ -158,10 +158,9 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="NLog.config" />
+    <None Include="Properties\PublishProfiles\iRentV2-AS-pay-api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-pay-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-pay-api - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-testpay-api - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-testpay-api - Web Deploy.pubxml" />
     <Content Include="Scripts\ActionJS\CommonFunc.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
