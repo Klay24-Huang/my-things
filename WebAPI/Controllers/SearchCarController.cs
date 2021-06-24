@@ -195,8 +195,25 @@ namespace WebAPI.Controllers
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
                             if (spOut.IsMotor == 0)
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                if (FetAPI.IsSupportCombineCmd(spOut.CID))
+                                {
+                                    if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                                    }
+                                    else
+                                    {
+                                        //晚上不要吵人
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                                    }
+                                }
+                                else
+                                {
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                }
                             }
                             else
                             {
