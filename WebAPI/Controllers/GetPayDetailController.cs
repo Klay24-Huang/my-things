@@ -224,6 +224,7 @@ namespace WebAPI.Controllers
                         {
                             var item = OrderDataLists[0];
                             trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
+                            ProjType = item.ProjType;
 
                             if (ProjType == 4)
                             {
@@ -249,8 +250,7 @@ namespace WebAPI.Controllers
                             {
                                 trace.OrderNo = item.OrderNo;
                                 motoBaseMins = item.BaseMinutes;
-                                //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
-                                ProjType = item.ProjType;
+                                //motoMaxMins = item.  --目前資料未包含機車上限分鐘數                               
                                 UseOrderPrice = item.UseOrderPrice;
                                 OrderPrice = item.OrderPrice;
                             }
