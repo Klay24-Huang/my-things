@@ -356,6 +356,7 @@
     <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
     <Compile Include="Controllers\SetMemberDataController.cs" />
+    <Compile Include="Controllers\SetMonthlyRentDataController.cs" />
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\SetSubsNxtController.cs" />
@@ -524,6 +525,7 @@
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonPeriodDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlyRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRentExchange.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
