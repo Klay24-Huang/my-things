@@ -128,36 +128,17 @@ namespace WebAPI.Models.BillFunc
                             spIn.IDNO = IDNO;
                             spIn.LogID = LogID;
                         }
-                        if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0 ||
-                           string.IsNullOrWhiteSpace(spIn.MonthlyRentIds))
+                        if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0)
                         {
                             errCode = "ERR257";//參數遺漏
                             flag = false;
                         }
                         else
                         {
-                            bool ck = true;
-                            Int64 ckInt = 0;
-                            var MonIds = spIn.MonthlyRentIds.Split(',').ToList();
-                            if(MonIds != null && MonIds.Count() > 0)
-                            {
-                                if (MonIds.Any(x => !Int64.TryParse(x, out ckInt)))
-                                    ck = false;
-                            }
-
-                            if (ck)
-                            {
-                                spIn.PayTypeId = PayTypeId;
-                                spIn.InvoTypeId = InvoTypeId;
-                                flag = msp.sp_ArrearsPaySubs(spIn, ref errCode);
-                                trace.traceAdd("ArrearsPaySubs", new { flag, errCode });
-                            }
-                            else
-                            {
-                                errCode = "ERR267";
-                                errMsg = "MonthlyRentIds錯誤";
-                                flag = false;
-                            }
+                            spIn.PayTypeId = PayTypeId;
+                            spIn.InvoTypeId = InvoTypeId;
+                            flag = msp.sp_ArrearsPaySubs(spIn, ref errCode);
+                            trace.traceAdd("ArrearsPaySubs", new { flag, errCode }); 
                         }
                     }
                     else

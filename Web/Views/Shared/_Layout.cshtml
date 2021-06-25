@@ -2,6 +2,7 @@
     string actionName = ViewContext.RouteData.Values["action"].ToString();//.ToUpper();
     string controllName = ViewContext.RouteData.Values["controller"].ToString();//.ToUpper();
     string hostPath = System.Configuration.ConfigurationManager.AppSettings["jsHost"];
+    string hostPath2 = System.Configuration.ConfigurationManager.AppSettings["jsHost2"];
     string ControllerStrName = "";
     string ActionStrName = "";
 
@@ -169,6 +170,11 @@
             ControllerStrName = "合約管理";
             ActionStrName = "汽車合約修改(新版)";
             break;
+        // 20210519 ADD BY FRANK REASON.合併汽機車合約
+        case "ContactMaintainNew":
+            ControllerStrName = "合約管理";
+            ActionStrName = "合約修改";
+            break;
         case "ContactMaintainByDiscount":
             ControllerStrName = "合約管理";
             ActionStrName = "時數折抵";
@@ -308,7 +314,11 @@
             ControllerStrName = "報表專區";
             ActionStrName = "機車電池狀態歷程查詢";
             break;
-            
+        case "TransParkingSetting_Moto": //20210602 Frank加
+            ControllerStrName = "據點管理";
+            ActionStrName = "機車調度停車場資訊設定";
+            break;
+
             #endregion
     }
     string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
@@ -670,8 +680,9 @@
                 break;
         }
     }
-    <script>
+<script>
         var jsHost = "@hostPath";
+        var jsHost2 = "@hostPath2";
 
         $(".datePicker").flatpickr();
         $('.dateTimePicker').flatpickr(
@@ -680,7 +691,7 @@
                 dateFormat: "Y-m-d H:i",
             }
         );
-    </script>
+</script>
     <script src="@Html.Raw(PageScriptName)"></script>
 </body>
 </html>

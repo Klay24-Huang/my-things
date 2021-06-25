@@ -8,8 +8,18 @@ namespace Domain.SP.Output.Rent
 {
     public class SPOutput_GetMonthList
     {
-        public List<SPOutput_GetMonthList_Month> MyMonths { get; set; }
+        public List<SPOutput_GetMonthList_My> MyMonths { get; set; }
         public List<SPOutput_GetMonthList_Month> AllMonths { get; set; }
+    }
+
+    public class SPOutput_GetMonthList_My: SPOutput_GetMonthList_Month
+    {
+        /// <summary>
+        /// 下期是否已付款
+        /// </summary>
+        public int NxtPay { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class SPOutput_GetMonthList_Month
@@ -106,6 +116,14 @@ namespace Domain.SP.Output.Rent
         /// 是否為優惠方案
         /// </summary>
         public int IsDiscount { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525
+        /// </summary>
+        public int IsMix { get; set; }
     }
 
 }

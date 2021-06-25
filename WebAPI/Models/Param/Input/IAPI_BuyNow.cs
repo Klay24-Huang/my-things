@@ -42,4 +42,57 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public Int64 InvoTypeId { get; set; } = 0;
     }
+
+    public class IAPI_BuyNow_Base
+    {
+        /// <summary>
+        /// 選定付款方式
+        /// </summary>
+        public Int64? PayTypeId { get; set; } = 0;
+        /// <summary>
+        /// 選定發票設定
+        /// </summary>
+        public Int64? InvoTypeId { get; set; } = 0;
+    }
+
+    public class IAPI_BuyNow_AddMonth: IAPI_BuyNow_Base
+    {
+        /// <summary>
+        /// 月租專案代號
+        /// </summary>
+        public string MonProjID { get; set; } = "";
+        /// <summary>
+        /// 月租總期數
+        /// </summary>
+        public int MonProPeriod { get; set; } = 0;
+        /// <summary>
+        /// 短天期
+        /// </summary>
+        public int ShortDays { get; set; } = 0;
+        /// <summary>
+        /// 設定自動續約-非必填
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int SetSubsNxt { get; set; } = 0;
+    }
+
+    public class IAPI_BuyNow_UpMonth: IAPI_BuyNow_Base
+    {
+        public string MonProjID { get; set; } = "";
+        public int MonProPeriod { get; set; } = 0;
+        public int ShortDays { get; set; } = 0;
+        public string UP_MonProjID { get; set; } = "";
+        public int UP_MonProPeriod { get; set; } = 0;
+        public int UP_ShortDays { get; set; } = 0;
+    }
+
+    public class IAPI_BuyNow_PayArrs: IAPI_BuyNow_Base
+    {
+        /// <summary>
+        /// 非必填
+        /// </summary>
+        public List<Int64> MonthlyRentIds { get; set; }
+    }
+
 }

@@ -84,5 +84,20 @@ namespace Domain.MemberData
         /// 目前全部出租數
         /// </summary>
         public int TotalRentCount { set; get; }
+
+        /// <summary>
+        /// 會員積分
+        /// </summary>
+        public int Score { get; set; }
+
+        /// <summary>
+        /// 停權等級 (0:無 1:暫時停權 2:永久停權)
+        /// </summary>
+        public int BlockFlag { get; set; }
+
+        /// <summary>
+        /// 停權截止日
+        /// </summary>
+        public string BLOCK_EDATE { get; set; }
     }
 }

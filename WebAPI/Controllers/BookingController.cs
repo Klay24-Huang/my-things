@@ -347,10 +347,14 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (spOut != null && spOut.haveCar == 1 && spOut.OrderNum > 0 && apiInput.MonId >0)
+                    if (spOut != null && spOut.haveCar == 1 
+                        && spOut.OrderNum > 0 && apiInput.MonId >0 
+                        && !string.IsNullOrWhiteSpace(IDNO) && LogID > 0)
                     {
                         var sp_in = new SPInput_SetSubsBookingMonth()
                         {
+                            IDNO = IDNO,
+                            LogID = LogID,
                             OrderNo = spOut.OrderNum,
                             MonthlyRentId = apiInput.MonId
                         };

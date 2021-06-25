@@ -40,34 +40,55 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public double CarHDHours { get; set; }
         /// <summary>
-        /// 汽車不分平假日時數
-        /// </summary>
-        //public int CarTotalHours { get; set; }
-        /// <summary>
-        /// 機車平日時數
-        /// </summary>
-        //public int MotoWDMins { get; set; }
-        /// <summary>
-        /// 機車假日時數
-        /// </summary>
-        //public int MotoHDMins { get; set; }
-        /// <summary>
         /// 機車不分平假日時數
         /// </summary>
         public int MotoTotalMins { get; set; }
         /// <summary>
-        /// 方案起日-8碼
+        /// 汽車平日優惠費率
         /// </summary>
-        //public string SDATE { get; set; }
+        public double WDRateForCar { get; set; }
         /// <summary>
-        /// 方案迄日-8碼
+        /// 汽車假日優惠費率
         /// </summary>
-        //public string EDATE { get; set; }
+        public double HDRateForCar { get; set; }
+        /// <summary>
+        /// 機車平日優惠費率
+        /// </summary>
+        public double WDRateForMoto { get; set; }
+        /// <summary>
+        /// 機車假日優惠費率
+        /// </summary>
+        public double HDRateForMoto { get; set; }
         /// <summary>
         /// 是否為優惠方案
         /// <para>1是</para>
         /// <para>0否</para>
         /// </summary>
         public int IsDiscount { get; set; }
+        /// <summary>
+        /// 當期是否有繳費
+        /// </summary>
+        public int IsPay { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM
+        /// </summary>
+        public int IsMix { get; set; }
     }
+
+    public class MonCardParam_My: MonCardParam
+    {
+        /// <summary>
+        /// 下期是否已付款
+        /// </summary>
+        public int NxtPay { get; set; }
+        /// <summary>
+        /// 訂閱制月租起日
+        /// </summary>
+        public string StartDate { get; set; }
+        /// <summary>
+        /// 訂閱制月租迄日
+        /// </summary>
+        public string EndDate { get; set; }
+    }
+
 }

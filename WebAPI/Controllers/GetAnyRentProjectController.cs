@@ -2,6 +2,7 @@
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output.Common;
+using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -18,6 +19,7 @@ using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -58,7 +60,7 @@ namespace WebAPI.Controllers
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
             string IDNO = "";
-            var OAPI_NowSubsCards = new List<OAPI_NowSubsCard>();
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -155,7 +157,7 @@ namespace WebAPI.Controllers
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
-                        OAPI_NowSubsCards = new MonSunsVMMap().NowSubsCard_FromGetNowSubs(sp_list);
+                        InUseMonth = sp_list;
                 }
             }
 
@@ -176,7 +178,7 @@ namespace WebAPI.Controllers
                             //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
                             int isMin = 1;
 
-                            int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, apiInput.MonId) +
+                            int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
                                      bill.CarMilageCompute(SDate, EDate, lstData[0].MilageBase, Mildef, 20, new List<Holiday>());
 
                      lstTmpData.Add(new ProjectObj()
@@ -209,7 +211,7 @@ namespace WebAPI.Controllers
                                 {
                                     //tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
 
-                                    tmpBill = GetPriceBill(lstData[i], IDNO, LogID, lstHoliday, SDate, EDate, apiInput.MonId) +
+                                    tmpBill = GetPriceBill(lstData[i], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
                                              bill.CarMilageCompute(SDate, EDate, lstData[i].MilageBase, Mildef, 20, new List<Holiday>());
 
                                     isMin = 0;
@@ -273,9 +275,61 @@ namespace WebAPI.Controllers
                     GetAnyRentProjectObj = lstTmpData
                 };
 
+                #region 產出月租&Project虛擬卡片 
 
-                if (OAPI_NowSubsCards != null && OAPI_NowSubsCards.Count() > 0)
-                    outputApi.NowSubsCards = OAPI_NowSubsCards;
+                if (outputApi.GetAnyRentProjectObj != null && outputApi.GetAnyRentProjectObj.Count() > 0)
+                {
+                    var VisProObjs = new List<ProjectObj>();
+                    var ProObjs = outputApi.GetAnyRentProjectObj;
+                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                    {
+                        ProObjs.ForEach(x => {
+                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
+                            VisProObjs.Add(x);                           
+                            InUseMonth.ForEach(z =>
+                            {
+                                ProjectObj newItem = objUti.Clone(x);
+
+                                #region 月租卡片欄位給值
+                                newItem.ProjName += "_" + z.MonProjNM;
+                                newItem.CarWDHours = z.WorkDayHours;
+                                newItem.CarHDHours = z.HolidayHours;
+                                newItem.MotoTotalMins = z.MotoTotalMins;
+                                newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                
+                                //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
+                                DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
+                                newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
+
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.WDRateForCar = z.WorkDayRateForCar;
+                                newItem.HDRateForCar = z.HoildayRateForCar;
+                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                var fn_in = new ProjectAndCarTypeData()
+                                {
+                                    Price = x.WorkdayPerHour * 10,
+                                    PRICE_H = x.HolidayPerHour * 10
+                                };
+                                newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                #endregion
+
+                                VisProObjs.Add(newItem);
+                            });
+                        });
+
+                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                        VisProObjs.OrderBy(p => p.Price).ThenByDescending(p => p.MonthlyRentId).First().IsMinimum = 1;
+                        VisProObjs = VisProObjs.OrderBy(p => p.Price).ThenByDescending(p => p.MonthlyRentId).ToList();
+                        outputApi.GetAnyRentProjectObj = VisProObjs;
+                    }
+                }
+
+                #endregion
             }
             #endregion
 

@@ -23,6 +23,13 @@ namespace Domain.SP.Input.Subscription
         public Int64 InvoTypeId { get; set; }
         public DateTime? SetNow { get; set; } = null;//不用填
         public Int64 SetSubGrop { get; set; } = 0;//不用填
+        /// <summary>
+        /// 首期付款寫入-非必填
+        /// </summary>
         public int SetPayOne { get; set; } = 0;
+        /// <summary>
+        /// 設定自動續約-非必填
+        /// </summary>
+        public int SetSubsNxt { get; set; } = 0;
     }
 }

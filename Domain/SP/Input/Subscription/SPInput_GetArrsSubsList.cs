@@ -10,9 +10,6 @@ namespace Domain.SP.Input.Subscription
     {
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
-        public string MonProjID { get; set; }
-        public int MonProPeriod { get; set; }
-        public int ShortDays { get; set; }
         public DateTime? SetNow { get; set; }
     }
 }

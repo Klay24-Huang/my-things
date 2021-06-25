@@ -30,6 +30,18 @@ namespace Domain.SP.Output.Rent
         public double HDRateForCar { get; set; }
         public double WDRateForMoto { get; set; }
         public double HDRateForMoto { get; set; }
+        /// <summary>
+        /// 是否為優惠方案0(否),1(是)
+        /// </summary>
+        public int IsDiscount { get; set; }
         public int IsOrder { get; set; }
+        /// <summary>
+        /// 是否為城市車手 1:是 0:否 20210525 ADD BY ADAM REASON.
+        /// </summary>
+        public int IsMix { get; set; }
+        /// <summary>
+        /// 可以使用到時麼時候
+        /// </summary>
+        public DateTime UseUntil { get; set; }
     }
 }

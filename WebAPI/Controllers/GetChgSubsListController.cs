@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var msp = new MonSubsSp();
+            var map = new MonSunsVMMap();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -39,6 +40,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_GetChgSubsList();
             var outputApi = new OAPI_GetChgSubsList();
+            outputApi.OtrCards = new List<OPAI_GetChgSubsList_Card>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -128,10 +130,10 @@ namespace WebAPI.Controllers
                     if (sp_re != null)
                     {
                         if (sp_re.NowCard != null)
-                            outputApi.MyCard = objUti.TTMap<SPOut_GetChgSubsList_Card, OPAI_GetChgSubsList_Card>(sp_re.NowCard);
+                            outputApi.MyCard = map.FromSPOut_GetChgSubsList_Card(sp_re.NowCard);
 
                         if(sp_re.OtrCards != null && sp_re.OtrCards.Count()>0)
-                            outputApi.OtrCards = objUti.TTMap<List<SPOut_GetChgSubsList_Card>, List<OPAI_GetChgSubsList_Card>>(sp_re.OtrCards);
+                            outputApi.OtrCards = map.FromSPOut_GetChgSubsList_Card(sp_re.OtrCards);
                     }
                     else
                     {

@@ -16,6 +16,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -55,6 +57,71 @@ namespace Web.Controllers
                     lstData = carStatusCommon.GetDashBoard(QueryData.CarNo, QueryData.StationID, QueryData.ShowType, QueryData.Terms);
                 }
 
+            }
+
+            if(collection["btnExport"] == "true")
+            {
+                HttpResponseMessage resp;
+                var value = new
+                {
+                    UserID = collection["Account"]
+                };
+                string jsonData = JsonConvert.SerializeObject(value);
+                string apiAddress = ConfigurationManager.AppSettings["jsHost"] + "BE_GetCarCurrentStatus";
+                //string apiAddress = "http://localhost:2061/api/" + "BE_GetCarCurrentStatus";
+                HttpContent postContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                HttpClient client = new HttpClient()
+                {
+                    BaseAddress = new Uri(apiAddress)
+                };
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                resp = client.PostAsync(apiAddress, postContent).GetAwaiter().GetResult();
+                var result = JsonConvert.DeserializeObject<Input_CarCurrentStatus>(resp.Content.ReadAsStringAsync().Result);
+
+                //匯出Excel
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                int row = 2;
+                MemoryStream fileStream = new MemoryStream();
+
+                sheet.Cells[1, col++].Value = "車號";
+                sheet.Cells[1, col++].Value = "CID";
+                sheet.Cells[1, col++].Value = "據點";
+                sheet.Cells[1, col++].Value = "1小時無回應";
+                sheet.Cells[1, col++].Value = "無回應";
+                sheet.Cells[1, col++].Value = "車輛狀態";
+                sheet.Cells[1, col++].Value = "GPSTime";
+                sheet.Cells[1, col++].Value = "緯度";
+                sheet.Cells[1, col++].Value = "經度";
+                sheet.Cells[1, col++].Value = "區域";
+                sheet.Cells[1, col++].Value = "備註";
+
+                foreach (var i in result.Data.lstData)
+                {
+                    col = 1;
+                    sheet.Cells[row, col++].Value = i.CarNo;
+                    sheet.Cells[row, col++].Value = i.CID;
+                    sheet.Cells[row, col++].Value = i.nowStationID;
+                    sheet.Cells[row, col++].Value = i.NonResponseOneHour;
+                    sheet.Cells[row, col++].Value = i.NonResponse;
+                    sheet.Cells[row, col++].Value = i.Available;
+                    sheet.Cells[row, col++].Value = i.GPSTime;
+                    sheet.Cells[row, col++].Value = i.Latitude;
+                    sheet.Cells[row, col++].Value = i.Longitude;
+                    sheet.Cells[row, col++].Value = i.CarOfArea;
+                    sheet.Cells[row, col++].Value = i.Memo;
+
+                    row++;
+                }
+
+                DateTime dt = DateTime.Now;
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/xlsx", $"車輛狀態_{dt.ToString()}.xlsx");
             }
             return View(lstData);
         }
@@ -775,8 +842,8 @@ namespace Web.Controllers
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
-            CarCardCommonRepository carCardCommonRepository = new CarCardCommonRepository(connetStr);
-            FETDeviceMaintainAPI deviceMaintain = new FETDeviceMaintainAPI();
+            //CarCardCommonRepository carCardCommonRepository = new CarCardCommonRepository(connetStr);
+            //FETDeviceMaintainAPI deviceMaintain = new FETDeviceMaintainAPI();
             List<BE_CarBindImportData> lstCarBindImportData = new List<BE_CarBindImportData>();
             List<BE_CarBindImportDataResult> lstCarBindImportDataResult = new List<BE_CarBindImportDataResult>();
 

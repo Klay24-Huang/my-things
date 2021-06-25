@@ -240,8 +240,6 @@ namespace WebAPI.Controllers
                     if (sp_list != null && sp_list.Count() > 0)
                         InUseMonth = sp_list;
                 }
-                else
-                    apiInput.MonId = 0;
             }
 
             if (flag)
@@ -322,7 +320,7 @@ namespace WebAPI.Controllers
                                    // 預估金額 = 租金 + 里程費 + 安心服務費
                                    //Price = a.PriceBill, //租金改抓sp
                                    //20210115;因應春節專案，預估金額改用特殊算法
-                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate, funName, apiInput.MonId) +
+                                   Price = GetPriceBill(a, IDNO, LogID, lstHoliday, SDate, EDate, funName, 0) +
                                             bill.CarMilageCompute(SDate, EDate, a.MilageBase, Mildef, 20, new List<Holiday>()) +
                                             ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, a.InsurancePerHours * 10, a.InsurancePerHours * 10, 10, lstHoliday) : 0),
                                    Price_W = a.Price,   //20201111 ADD BY ADAM REASON.原本Price改為預估金額，多增加Price_W當作平日價
@@ -614,12 +612,26 @@ namespace WebAPI.Controllers
                                 newGetProjObj.ProjectObj = new List<ProjectObj>();
                                 x.ProjectObj.ForEach(y =>
                                 {
+                                    y.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
                                     newGetProjObj.ProjectObj.Add(y);
                                     InUseMonth.ForEach(z =>
                                     {
                                         ProjectObj newItem = objUti.Clone(y);
-                                        newItem.MonthlyRentId = z.MonthlyRentId;
+
+                                        #region 月租卡片欄位給值
                                         newItem.ProjName += "_" + z.MonProjNM;
+                                        newItem.CarWDHours = z.WorkDayHours;
+                                        newItem.CarHDHours = z.HolidayHours;
+                                        newItem.MotoTotalMins = z.MotoTotalMins;
+                                        newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                        newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                        newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                        newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                        newItem.MonthlyRentId = z.MonthlyRentId;
+                                        newItem.WDRateForCar = z.WorkDayRateForCar;
+                                        newItem.HDRateForCar = z.HoildayRateForCar;
+                                        newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                        newItem.HDRateForMoto = z.HoildayRateForMoto;
                                         var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
                                         {
                                             PriceBill = y.Price, //給預設
@@ -628,17 +640,23 @@ namespace WebAPI.Controllers
                                             Price = y.WorkdayPerHour * 10,
                                             PRICE_H = y.HolidayPerHour * 10,
                                         };
-                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId:z.MonthlyRentId);
+                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                        #endregion
+
                                         newGetProjObj.ProjectObj.Add(newItem);
                                     });
                                 });
                                 if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
                                 {
-                                    newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                    //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                                    //newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                    newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.Price).ThenByDescending(c => c.MonthlyRentId).ToList();
+                                    newGetProjObj.ProjectObj.First().IsMinimum = 1;
                                     VisProObjs.Add(newGetProjObj);
                                 }
                             }
                         });
+
                         outputApi.GetProjectObj = VisProObjs;
                     }                  
                 }

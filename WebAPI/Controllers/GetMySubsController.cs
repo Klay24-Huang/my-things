@@ -153,13 +153,32 @@ namespace WebAPI.Controllers
                                                 MonProjNM = a.MonProjNM,
                                                 MonProPeriod = a.MonProPeriod,
                                                 ShortDays = a.ShortDays,
-                                                WorkDayHours = a.WorkDayHours,
-                                                HolidayHours = a.HolidayHours,
-                                                MotoTotalHours = a.MotoTotalHours,
-                                                StartDate = a.StartDate.ToString("MM/dd"),
-                                                EndDate = a.EndDate.ToString("MM/dd"),
+                                                CarWDHours = a.WorkDayHours,
+                                                CarHDHours = a.HolidayHours,
+                                                MotoTotalMins = Convert.ToInt32(a.MotoTotalHours),  //20210525 ADD BY ADAM REASON.改為int
+                                                WDRateForCar = a.WorkDayRateForCar,
+                                                HDRateForCar  = a.HoildayRateForCar,
+                                                WDRateForMoto = a.WorkDayRateForMoto,
+                                                HDRateForMoto = a.HoildayRateForMoto,
+
+                                                //StartDate = a.StartDate.ToString("MM/dd"),
+                                                //EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
+                                                //MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd"),
+                                                //MonthEndDate = a.MonthEndDate.ToString("yyyy/MM/dd"),
+                                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                                StartDate = a.StartDate.ToString("yyyy/MM/dd HH:mm"),
+                                                EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.EndDate.ToString("yyyy/MM/dd HH:mm"),
+                                                MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                                                MonthEndDate = a.MonthEndDate.ToString("HHmm") == "0000"? a.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
+                                                NxtMonProPeriod = a.NxtMonProPeriod,
+                                                IsMix = a.IsMix,                                                
+                                                IsUpd = a.IsUpd,
                                                 SubsNxt = a.SubsNxt,
-                                                IsChange = a.IsChange
+                                                IsChange = a.IsChange,
+                                                IsPay = a.IsPay,
+                                                NxtPay = a.NxtPay,
+                                                IsMoto = a.IsMoto       //20210527 ADD BY ADAM
+                                                
                                             }).ToList();
 
                             var NowMon = months.Where(x => x.MonProjID == apiInput.MonProjID
@@ -179,37 +198,6 @@ namespace WebAPI.Controllers
                             flag = false;
                             errMsg = "查無指定月租";
                             errCode = "ERR909";//專案不存在
-                        }
-
-                        if (flag)
-                        {
-                            if (sp_re.Codes != null && sp_re.Codes.Count() > 0)
-                            {
-                                var payTypes = sp_re.Codes.Where(x => x.CodeGroup == "PayType").ToList();
-                                var invoTypes = sp_re.Codes.Where(x => x.CodeGroup == "InvoiceType").ToList();
-
-                                if (payTypes != null && payTypes.Count() > 0)
-                                {
-                                    outputApi.PayTypes = (from a in payTypes
-                                                          select new OAPI_GetMySubs_Code
-                                                          {
-                                                              CodeId = a.CodeId,
-                                                              CodeNm = a.CodeNm,
-                                                              IsDef = a.IsDef
-                                                          }).ToList();
-                                }
-
-                                if (invoTypes != null && invoTypes.Count() > 0)
-                                {
-                                    outputApi.InvoTypes = (from a in invoTypes
-                                                           select new OAPI_GetMySubs_Code
-                                                           {
-                                                               CodeId = a.CodeId,
-                                                               CodeNm = a.CodeNm,
-                                                               IsDef = a.IsDef
-                                                           }).ToList();
-                                }
-                            }
                         }
                     }
                     else

@@ -21,7 +21,10 @@ namespace WebAPI.Models.Param.Output
 
     public class GetMonthGroup_MonCardParam: MonCardParam
     {
-        //public int IsOrder { get; set; }
+        /// <summary>
+        /// 可以使用到時麼時候
+        /// </summary>
+        public string UseUntil { get; set; }
     }
 
 }

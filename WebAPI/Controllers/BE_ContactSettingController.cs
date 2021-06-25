@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (apiInput.Mode < 0 || apiInput.Mode > 2)
+                    if (apiInput.Mode < 0 || apiInput.Mode > 7)
                     {
                         flag = false;
                         errCode = "ERR900";
@@ -152,7 +152,7 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                if (apiInput.Mode == 0)
+                if (apiInput.Mode == 0 || apiInput.Mode == 3 || apiInput.Mode == 4 || apiInput.Mode == 5 || apiInput.Mode == 6 || apiInput.Mode == 7)
                 {
                     #region 取出目前訂單狀態
                     StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
@@ -337,13 +337,12 @@ namespace WebAPI.Controllers
                                 //        flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
                                 //    }
                                 //    // 20201223;不管檢核結果，強還照做
-
                                 //    flag = true;
                                 //    errCode = "000000";
                                 //}
                                 if (flag)
                                 {
-                                    if (lstOrder[0].car_mgt_status == 15)
+                                    if (lstOrder[0].car_mgt_status == 15)   //基本上不會跑進這個判斷中，訂單是從11跳16
                                     {
                                         if (clearFlag)
                                         {
@@ -394,16 +393,17 @@ namespace WebAPI.Controllers
                                             SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
                                             {
                                                 IDNO = IDNO,
-                                                LogID = LogID,
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
                                                 ReturnDate = ReturnDate,
                                                 bill_option = apiInput.bill_option,
-                                                NPOBAN = apiInput.NPOBAN,
                                                 CARRIERID = apiInput.CARRIERID,
+                                                NPOBAN = apiInput.NPOBAN,
                                                 unified_business_no = apiInput.unified_business_no,
-                                                ParkingSpace = apiInput.parkingSpace
+                                                ParkingSpace = apiInput.parkingSpace,
+                                                Mode = apiInput.Mode,
+                                                LogID = LogID
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();
@@ -436,7 +436,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -446,6 +446,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        #region 取車-汽車
         /// <summary>
         /// 取汽車
         /// </summary>
@@ -525,40 +527,6 @@ namespace WebAPI.Controllers
                             errCode = "ERR468";
                         }
                     }
-                    //寫入顧客卡
-                    if (flag)
-                    {
-                        //要將卡號寫入車機
-                        int count = 0;
-                        int CardLen = lstCardList.Count;
-                        if (CardLen > 0)
-                        {
-                            SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                            //寫入顧客卡
-                            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                            {
-                                CID = CID,
-                                mode = 1
-                            };
-                            for (int i = 0; i < CardLen; i++)
-                            {
-                                CardData[i] = new SendCarNoData();
-                                CardData[i].CardNo = lstCardList[i].CardNO;
-                                CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                                count++;
-                            }
-                            //  Array.Resize(ref CardData, count + 1);
-                            wsInput.data = new SendCarNoData[CardLen];
-                            wsInput.data = CardData;
-                            WSOutput_Base wsOut = new WSOutput_Base();
-                            Thread.Sleep(500);
-                            flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                            if (false == flag)
-                            {
-                                errCode = wsOut.ErrorCode;
-                            }
-                        }
-                    }
                     //執行sp合約
                     if (flag)
                     {
@@ -577,51 +545,125 @@ namespace WebAPI.Controllers
                         flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                     }
-                    //設定租約狀態
-                    if (flag)
+                    if (flag && webAPI.IsSupportCombineCmd(CID))
                     {
-                        WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                        WSInput_CombineCmdGetCar wsInput = new WSInput_CombineCmdGetCar()
                         {
                             CID = CID,
-                            OrderStatus = 1
+                            data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
                         };
+                        //要將卡號寫入車機
+                        int count = 0;
+                        int CardLen = lstCardList.Count;
+                        if (CardLen > 0)
+                        {
+                            WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CardLen];
+                            //寫入顧客卡
+                            var CardNo = string.Empty;
+                            for (int i = 0; i < CardLen; i++)
+                            {
+                                CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                CardData[i].CardNo = lstCardList[i].CardNO;
+                                CardNo += lstCardList[i].CardNO;
+                                count++;
+                            }
+
+                            if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
+                            {
+                                wsInput.data = CardData;
+                            }
+                        }
                         WSOutput_Base wsOut = new WSOutput_Base();
                         Thread.Sleep(1000);
-                        flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                        flag = webAPI.CombineCmdGetCar(wsInput, ref wsOut);
                         if (false == flag || wsOut.Result == 1)
                         {
                             errCode = wsOut.ErrorCode;
                             errMsg = wsOut.ErrMsg;
                         }
                     }
-                    //解防盜
-                    if (flag)
+                    else
                     {
-                        WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                        //設定租約狀態
+                        if (flag)
                         {
-                            CID = CID,
-                            CMD = 4
-                        };
-                        WSOutput_Base wsOut = new WSOutput_Base();
-                        Thread.Sleep(1500);
-                        flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                        if (false == flag || wsOut.Result == 1)
-                        {
-                            errCode = wsOut.ErrorCode;
-                            errMsg = wsOut.ErrMsg;
+                            WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                            {
+                                CID = CID,
+                                OrderStatus = 1
+                            };
+                            WSOutput_Base wsOut = new WSOutput_Base();
+                            Thread.Sleep(1000);
+                            flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                            if (false == flag || wsOut.Result == 1)
+                            {
+                                errCode = wsOut.ErrorCode;
+                                errMsg = wsOut.ErrMsg;
+                            }
                         }
-                    }
-                    //開啟NFC電源
-                    if (flag)
-                    {
-                        Thread.Sleep(1000);
-                        WSOutput_Base wsOut = new WSOutput_Base();
-                        flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
-                        if (false == flag || wsOut.Result == 1)
+                        //解防盜
+                        if (flag)
                         {
-                            errCode = wsOut.ErrorCode;
-                            errMsg = wsOut.ErrMsg;
+                            WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                            {
+                                CID = CID,
+                                CMD = 4
+                            };
+                            WSOutput_Base wsOut = new WSOutput_Base();
+                            Thread.Sleep(1500);
+                            flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                            if (false == flag || wsOut.Result == 1)
+                            {
+                                errCode = wsOut.ErrorCode;
+                                errMsg = wsOut.ErrMsg;
+                            }
                         }
+                        //寫入顧客卡 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡
+                        if (flag)
+                        {
+                            //要將卡號寫入車機
+                            int count = 0;
+                            int CardLen = lstCardList.Count;
+                            if (CardLen > 0)
+                            {
+                                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                //寫入顧客卡
+                                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                {
+                                    CID = CID,
+                                    mode = 1
+                                };
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    count++;
+                                }
+                                //  Array.Resize(ref CardData, count + 1);
+                                wsInput.data = new SendCarNoData[CardLen];
+                                wsInput.data = CardData;
+                                WSOutput_Base wsOut = new WSOutput_Base();
+                                Thread.Sleep(500);
+                                flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                                if (false == flag)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                }
+                            }
+                        }
+                        //開啟NFC電源 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡就不用開啟電源了
+                        //if (flag)
+                        //{
+                        //    Thread.Sleep(1000);
+                        //    WSOutput_Base wsOut = new WSOutput_Base();
+                        //    flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
+                        //    if (false == flag || wsOut.Result == 1)
+                        //    {
+                        //        errCode = wsOut.ErrorCode;
+                        //        errMsg = wsOut.ErrMsg;
+                        //    }
+                        //}
                     }
                     #endregion
                 }
@@ -767,6 +809,9 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
+        #endregion
+
+        #region 取車-機車
         private bool DoPickMotor(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref string errMsg, CommonFunc baseVerify)
         {
             bool flag = true;
@@ -877,7 +922,9 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
+        #endregion
 
+        #region 重新計價
         private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode)
         {
             #region 初始宣告
@@ -1067,7 +1114,7 @@ namespace WebAPI.Controllers
                 {
                     //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
                     // 20210219;修改還車里程取得規則
-                    if (OrderDataLists[0].car_mgt_status >= 11) 
+                    if (OrderDataLists[0].car_mgt_status >= 11)
                     {
                         //已還車
                         //保險起見，再判斷一次是否有還車里程，以防程式崩潰
@@ -1459,6 +1506,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("建空模");
                 }
 
+                // 20210510 UPD BY YEH REASON.把車麻吉停車費打開
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     //檢查有無車麻吉停車費用
@@ -1480,7 +1528,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("車麻吉");
                 }
 
-                //20210507 ADD BY YEH REASON.串接CityParking停車場
+                //20210510 ADD BY YEH REASON.串接CityParking停車場
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
@@ -1683,7 +1731,17 @@ namespace WebAPI.Controllers
                     //20201202 ADD BY ADAM REASON.ETAG費用
                     outputApi.Rent.ETAGRental = etagPrice;
 
-                    var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
+                    #region 轉乘優惠只能抵租金
+
+                    int xCarRental = outputApi.Rent.CarRental;
+                    int xTransferPrice = outputApi.Rent.TransferPrice;
+                    int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
+                    outputApi.Rent.TransferPrice = FinalTransferPrice;
+                    xCarRental = (xCarRental - FinalTransferPrice);
+
+                    #endregion
+
+                    var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
                     xTotalRental -= UseOrderPrice;//使用訂金
                     outputApi.UseOrderPrice = UseOrderPrice;
                     outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
@@ -1841,5 +1899,6 @@ namespace WebAPI.Controllers
 
             return flag;
         }
+        #endregion
     }
 }

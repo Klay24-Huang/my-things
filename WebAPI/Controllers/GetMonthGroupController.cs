@@ -130,7 +130,16 @@ namespace WebAPI.Controllers
                                          CarWDHours = a.CarWDHours,
                                          CarHDHours = a.CarHDHours,
                                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
-                                         //IsOrder = a.IsOrder
+                                         WDRateForCar = a.WDRateForCar,
+                                         HDRateForCar = a.HDRateForCar,
+                                         WDRateForMoto = a.WDRateForMoto,
+                                         HDRateForMoto = a.HDRateForMoto,
+                                         IsDiscount = a.IsDiscount,
+                                         IsMix = a.IsMix,        //20210525 ADD BY ADAM REASON.增加城市車手
+                                         //20210616 ADD BY ADAM 
+                                         //UseUntil = a.UseUntil.ToString("yyyy/MM/dd")
+                                         UseUntil = apiInput.Mode == "1" ? a.UseUntil.ToString("yyyy/MM/dd HH:mm") :
+                                                a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.UseUntil.ToString("yyyy/MM/dd HH:mm")
                                      }).ToList();
 
                         outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;

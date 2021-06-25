@@ -20,6 +20,11 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <para>0:會員</para>
         /// <para>1:清潔取還車</para>
         /// <para>2:保修取還車</para>
+        /// <para>3:系統操作異常</para>
+        /// <para>4:逾時未還</para>
+        /// <para>5:營運範圍外無法還車</para>
+        /// <para>6:車輛沒電</para>
+        /// <para>7:其他</para>
         /// </summary>
         public Int16 Mode { set; get; }
         /// <summary>

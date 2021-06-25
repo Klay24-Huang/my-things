@@ -147,27 +147,19 @@ namespace WebAPI.Controllers
                     {
                         if (sp_re.NowCard != null)
                             outputApi.NowCard = map.FromSPOut_GetSubsCNT_NowCard(sp_re.NowCard);
-                        else
-                        {
-                            flag = false;
-                            errMsg = "目前月租為空";
-                            errCode = "ERR908";
-                        }
 
                         if (flag)
                         {
                             if (sp_re.NxtCard != null)
                             {
-                                outputApi.NxtCard = objUti.TTMap<SPOut_GetSubsCNT_NxtCard, OAPI_GetSubsCNT_Card>(sp_re.NxtCard);
-                                outputApi.NxtCard.SD = sp_re.NxtCard.SD.ToString("yyyy/MM/dd");
-                                outputApi.NxtCard.ED = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
+                                outputApi.NxtCard = map.FromSPOut_GetSubsCNT_NxtCard(sp_re.NxtCard);
+                                //outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd");
+                                //outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM 
+                                outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd HH:mm");
+                                outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("HHmm")=="0000" ? sp_re.NxtCard.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sp_re.NxtCard.ED.ToString("yyyy/MM/dd HH:mm");
                             }
                         }
-                    }
-                    else
-                    {
-                        flag = false;
-                        errCode = "ERR908";//sp錯誤
                     }
 
                     trace.traceAdd("outputApi", outputApi);

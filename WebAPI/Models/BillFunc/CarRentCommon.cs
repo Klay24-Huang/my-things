@@ -318,7 +318,7 @@ namespace WebAPI.Models.BillFunc
                         //春後
                         else
                         {
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901,10,sour.FirstFreeMins);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901,sour.MotoBasePrice,sour.FirstFreeMins);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -1887,6 +1887,10 @@ namespace WebAPI.Models.BillFunc
         public Int64 LogID { get; set; }
         public Int64 intOrderNO { get; set; }
         public int ProjType { get; set; }
+        /// <summary>
+        /// 機車基消
+        /// </summary>
+        public double MotoBasePrice { get; set; }
         /// <summary>
         /// 單日計費最大分鐘數
         /// </summary>

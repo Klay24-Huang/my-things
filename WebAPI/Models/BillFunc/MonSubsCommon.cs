@@ -26,6 +26,11 @@ using WebAPI.Models.Param.Output;
 using Domain.TB;
 using Reposotory.Implement;
 using WebAPI.Models.Param.CusFun.Input;
+using Domain.WebAPI.Input.Taishin.Wallet;
+using Newtonsoft.Json;
+using Domain.WebAPI.output.Taishin.Wallet;
+using Domain.MemberData;
+using Domain.SP.Input.Member;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -35,9 +40,14 @@ namespace WebAPI.Models.BillFunc
     public class MonSubsCommon
     {
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
+
+        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+
+        private MonSubsSp msp = new MonSubsSp();
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -233,6 +243,176 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 台新儲值+開戶
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>        
+        public bool TSIB_Escrow_Month(ICF_TSIB_Escrow_Type sour, ref string errCode, ref string errMsg)
+        {
+            if(sour != null)
+            {
+                var spin = new ICF_TSIB_Escrow();
+                spin = objUti.TTMap<ICF_TSIB_Escrow_Type, ICF_TSIB_Escrow>(sour);
+                int nowCount = 2;
+                spin.MemberId = string.Format("{0}Month{1}", sour.IDNO, nowCount.ToString().PadLeft(4, '0'));
+                return TSIB_Escrow_StoreValueCreateAccount(spin, ref errCode, ref errMsg);
+            }
+            else
+            {
+                errCode = "ER257";
+                errMsg = "sour必填";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 台新錢包儲值+開戶
+        /// </summary>
+        public bool TSIB_Escrow_StoreValueCreateAccount(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
+        {
+            return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
+
+            bool flag = false;
+
+            DateTime NowTime = DateTime.UtcNow;
+            string guid = Guid.NewGuid().ToString().Replace("-", "");
+            WebAPI_CreateAccountAndStoredMoney escrow = new WebAPI_CreateAccountAndStoredMoney()
+            {
+                AccountType = "2",
+                ApiVersion = "0.1.01",
+                CreateType = "1",
+                Email = sour.Email,
+                GUID = guid,
+                ID = sour.IDNO,
+                MemberId = sour.MemberId,
+                MerchantId = MerchantId,
+                Name = sour.Name,
+                PhoneNo = sour.PhoneNo,
+                POSId = "",
+                SourceFrom = "9",
+                Amount = sour.Amount,
+                AmountType = "2",
+                StoreName = "",
+                StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                StoreTransId = string.Format("{0}{1}", sour.IDNO, NowTime.ToString("MMddHHmmss")),
+                StoreId = "",
+                Bonus = 0,
+                BonusExpiredate = ""
+            };
+            var body = JsonConvert.SerializeObject(escrow);
+            TaishinWallet WalletAPI = new TaishinWallet();
+            string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            string SignCode = WalletAPI.GenerateSignCode(escrow.MerchantId, utcTimeStamp, body, APIKey);
+            WebAPIOutput_StoreValueCreateAccount output = null;
+            flag = WalletAPI.DoStoreValueCreateAccount(escrow, escrow.MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+           
+            #region 將執行結果寫入TB
+            if (flag)
+            {
+                string formatString = "yyyyMMddHHmmss";
+                var spin = new SPInput_InsEscrowHist()
+                {
+                    IDNO = sour.IDNO,
+                    MemberID = sour.MemberId,
+                    AccountID = output.Result.AccountId,
+                    EcStatus = output.Result.Status,
+                    Email = output.Result.Email,
+                    PhoneNo = output.Result.PhoneNo,
+                    Amount = sour.Amount,
+                    TotalAmount = output.Result.Amount,
+                    CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
+                    LastStoreTransId = output.Result.StoreTransId,
+                    LastTransId = output.Result.TransId,
+                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null)
+                };
+                msp.sp_InsEscrowHist(spin, ref errCode);
+            }
+            else
+            {
+                errCode = "ERR918";//Api呼叫失敗
+                errMsg = output.Message;
+            }
+            #endregion
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 台新錢包付款
+        /// </summary>
+        /// <returns></returns>
+        public bool TSIB_Escrow_PayTransaction(ICF_TSIB_Escrow_PayTransaction sour, ref string errCode)
+        {
+            bool flag = false;
+            Int64 _LogID = 999999;
+            string formatString = "yyyyMMddHHmmss";
+            if (sour.Amount > 0)
+            {
+                DateTime NowTime = DateTime.Now;
+                string guid = Guid.NewGuid().ToString().Replace("-", "");
+                WebAPI_PayTransaction wallet = new WebAPI_PayTransaction()
+                {
+                    AccountId = sour.AccountId,
+                    ApiVersion = "0.1.01",
+                    GUID = guid,
+                    MerchantId = MerchantId,
+                    POSId = "",
+                    SourceFrom = "9",
+                    StoreId = "",
+                    StoreName = "",
+                    StoreTransId = string.Format("{0}M{1}", sour.OrderNo, (NowTime.ToString("yyMMddHHmmss")).Substring(1)),//限制長度為20以下所以減去1碼
+                    Amount = sour.Amount,
+                    BarCode = "",
+                    StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")                        
+                };
+                var body = JsonConvert.SerializeObject(wallet);
+                TaishinWallet WalletAPI = new TaishinWallet();
+                string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                WebAPIOutput_PayTransaction output = null;
+                flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+
+                var spin = new SPInput_SetSubsBookingMonth()
+                {
+                    IDNO = sour.IDNO,
+                    LogID = _LogID,
+                    OrderNo = sour.OrderNo
+                };
+
+                if (flag)
+                {
+                    spin.EscrowStatus = 1;
+                    msp.sp_SetSubsBookingMonth(spin, ref errCode);
+
+                    var spIn2 = new SPInput_InsEscrowHist()
+                    {
+                        IDNO = sour.IDNO,
+                        MemberID = sour.MemberID,
+                        AccountID = sour.AccountId,
+                        Email = sour.Email,
+                        PhoneNo = sour.PhoneNo,
+                        Amount = sour.Amount,
+                        TotalAmount = output.Result.Amount,
+                        CreateDate = sour.CreateDate,                        
+                        LastStoreTransId = output.Result.StoreTransId,
+                        LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                        LastTransId = output.Result.TransId,
+                        EcStatus = sour.EcStatus
+                    };
+                    msp.sp_InsEscrowHist(spIn2, ref errCode);
+                }
+                else
+                {
+                    spin.EscrowStatus = 2;
+                    msp.sp_SetSubsBookingMonth(spin, ref errCode);
+                }
+            }
+
+            return flag;
+        }
+
+        /// <summary>
         /// 取得指定月租後汽車租金
         /// </summary>
         /// <param name="sour"></param>
@@ -300,6 +480,72 @@ namespace WebAPI.Models.BillFunc
             return "";
         }
 
+        /// <summary>
+        /// 取得發票方式的CodeId
+        /// </summary>
+        /// <param name="InvoId">發票代碼</param>
+        /// <mark>InvoId對應TB_MemberData的MEMSENDCD</mark>
+        /// <returns></returns>
+        public Int64 GetInvoCodeId(int InvoId)
+        {
+            Int64 re = 0;
+
+            try
+            {
+                if (InvoId > 0)
+                {
+                    string errCode = "";
+                    var spin = new SPInput_GetTBCode()
+                    {
+                        CodeGroup = "InvoiceType",
+                    };
+                    var splist = msp.sp_GetTBCode(spin, ref errCode);
+                    if (splist != null && splist.Count() > 0)
+                    {
+                        int tryInt = 0;
+                        var splist2 = splist.Where(x => !string.IsNullOrWhiteSpace(x.MapCode) && Int32.TryParse(x.MapCode, out tryInt) && Convert.ToInt32(x.MapCode) == InvoId).ToList();
+                        if (splist2 != null && splist2.Count() > 0)
+                            re = splist2.FirstOrDefault().CodeId;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                re = 0;
+            }
+
+            return re;
+        } 
+
+        public InvoiceData GetINVDataFromMember(string IDNO)
+        {
+            var re = new InvoiceData();
+            try
+            {
+                string errCode = "";
+                var spInput = new SPInput_GetInvData()
+                {
+                    IDNO = IDNO
+                };
+                var splist = msp.sp_GetInvData(spInput, ref errCode);
+                if (splist != null && splist.Count() > 0)
+                {
+                    re.MEMIDNO = IDNO;
+                    re.InvocieType = splist.FirstOrDefault().InvoiceType;
+                    re.UNIMNO = splist.FirstOrDefault().UNIMNO;
+                    re.CARRIERID = splist.FirstOrDefault().CARRIERID;
+                    re.NPOBAN = splist.FirstOrDefault().NPOBAN;
+                    re.InvocieTypeId = int.Parse(splist.FirstOrDefault().InvoiceId);
+                    
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return re;
+        }
+
     }
 
     /// <summary>
@@ -317,7 +563,7 @@ namespace WebAPI.Models.BillFunc
         public SPOutput_GetMonthList sp_GetMonthList(SPInput_GetMonthList spInput, ref string errCode)
         {
             var re = new SPOutput_GetMonthList();
-            re.MyMonths = new List<SPOutput_GetMonthList_Month>();
+            re.MyMonths = new List<SPOutput_GetMonthList_My>();
             re.AllMonths = new List<SPOutput_GetMonthList_Month>();
 
             try
@@ -343,7 +589,7 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (ds1.Tables.Count >= 3)
                     {
-                        re.MyMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[0]);
+                        re.MyMonths = objUti.ConvertToList<SPOutput_GetMonthList_My>(ds1.Tables[0]);
                         re.AllMonths = objUti.ConvertToList<SPOutput_GetMonthList_Month>(ds1.Tables[1]);
                     }
                     else if (ds1.Tables.Count == 1)
@@ -366,7 +612,6 @@ namespace WebAPI.Models.BillFunc
         {
             var re = new SPOut_GetMySubs();
             re.Months = new List<SPOut_GetMySubs_Month>();
-            re.Codes = new List<SPOut_GetMySubs_Code>();
 
             try
             {
@@ -390,15 +635,11 @@ namespace WebAPI.Models.BillFunc
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 3)
+                    if (ds1.Tables.Count >= 2)
                     {
                         var months = objUti.ConvertToList<SPOut_GetMySubs_Month>(ds1.Tables[0]);
                         if (months != null && months.Count() > 0)
                             re.Months = months;
-
-                        var codes = objUti.ConvertToList<SPOut_GetMySubs_Code>(ds1.Tables[1]);
-                        if (codes != null && codes.Count() > 0)
-                            re.Codes = codes;
                     }
                     else 
                     {
@@ -607,6 +848,53 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 取得待執行履保付款呼叫列表
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetSubsEscrowPay> sp_GetSubsEscrowPay(SPInput_GetSubsEscrowPay spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsEscrowPay>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsEscrowPay);
+                string SPName = "usp_GetSubsEscrowPay_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetSubsEscrowPay>(ds1.Tables[0]);
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 取得月租Group
         /// </summary>
         /// <param name="spInput"></param>
@@ -766,6 +1054,33 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 設定會員預設付款方式,發票方式
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SubsPayInvoDef(SPInput_SetSubsPayInvoDef spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
+            string spName = "usp_SetSubsPayInvoDef_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetSubsPayInvoDef();
+            SQLHelper<SPInput_SetSubsPayInvoDef, SPOut_SetSubsPayInvoDef> sqlHelp = new SQLHelper<SPInput_SetSubsPayInvoDef, SPOut_SetSubsPayInvoDef>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
         /// 訂閱制月租繳款
         /// </summary>
         /// <param name="spInput"></param>
@@ -781,6 +1096,33 @@ namespace WebAPI.Models.BillFunc
             var spOutBase = new SPOutput_Base();
             var spOut = new SPOut_ArrearsPaySubs();
             SQLHelper<SPInput_ArrearsPaySubs, SPOut_ArrearsPaySubs> sqlHelp = new SQLHelper<SPInput_ArrearsPaySubs, SPOut_ArrearsPaySubs>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 寫入履保紀錄
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_InsEscrowHist(SPInput_InsEscrowHist spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
+            string spName = "usp_InsEscrowHist_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_InsEscrowHist();
+            SQLHelper<SPInput_InsEscrowHist, SPOut_InsEscrowHist> sqlHelp = new SQLHelper<SPInput_InsEscrowHist, SPOut_InsEscrowHist>(connetStr);
             bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
 
             if (spFlag && spOut != null)
@@ -846,10 +1188,16 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 訂閱牌卡制欠費查詢
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
         public SPOut_GetArrsSubsList sp_GetArrsSubsList(SPInput_GetArrsSubsList spInput, ref string errCode)
         {
             var re = new SPOut_GetArrsSubsList();
-            re.DateRange = new SPOut_GetArrsSubsList_Date();
+            re.DateRange = new List<SPOut_GetArrsSubsList_Date>();
             re.Arrs = new List<SPOut_GetArrsSubsList_Card>();
 
             try
@@ -860,9 +1208,6 @@ namespace WebAPI.Models.BillFunc
                     new object[] {
                         spInput.IDNO,
                         spInput.LogID,
-                        spInput.MonProjID,
-                        spInput.MonProPeriod,
-                        spInput.ShortDays,
                         spInput.SetNow
                     },
                 };
@@ -880,7 +1225,7 @@ namespace WebAPI.Models.BillFunc
                     {
                         var subDayRanges = objUti.ConvertToList<SPOut_GetArrsSubsList_Date>(ds1.Tables[0]);
                         if (subDayRanges != null && subDayRanges.Count() > 0)
-                            re.DateRange = subDayRanges.FirstOrDefault();
+                            re.DateRange = subDayRanges;
 
                         var arrs = objUti.ConvertToList<SPOut_GetArrsSubsList_Card>(ds1.Tables[1]);
                         if (arrs != null && arrs.Count() > 0)
@@ -935,6 +1280,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="spInput"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
+        /// <mark>EscrowStatus為-1時才能新增或更新月租,EscrowStatus為0,1時更新履保狀態</mark>
         public bool sp_SetSubsBookingMonth(SPInput_SetSubsBookingMonth spInput, ref string errCode)
         {
             bool flag = false;
@@ -1013,6 +1359,103 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public List<SPOut_GetTBCode> sp_GetTBCode(SPInput_GetTBCode spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetTBCode>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetTBCode);
+                string SPName = "usp_GetTBCode_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.CodeGroup
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetTBCode>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SPOut_GetMonSetInfo> sp_GetMonSetInfo(SPInput_GetMonSetInfo spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetMonSetInfo>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonSetInfo);
+                string SPName = "usp_GetMonSetInfo_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.LogID,
+                        spInput.MonProjID,
+                        spInput.MonProPeriod,
+                        spInput.ShortDays
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetMonSetInfo>(ds1.Tables[0]);
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// 取得使用中訂閱制月租
         /// </summary>
@@ -1036,7 +1479,8 @@ namespace WebAPI.Models.BillFunc
                 string SPName = "usp_GetSubsBookingMonth_Q1";//hack: fix spNm
                 object[][] parms1 = {
                     new object[] {
-                        spInput.OrderNo
+                        spInput.OrderNo,
+                        spInput.EscrowStatus
                     },
                 };
 
@@ -1073,6 +1517,74 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 取得會員資料
+        /// </summary>
+        /// <param name="sour"></param>
+        /// <returns></returns>
+        public RegisterData GetMemberData(string ID, Int64 LogID, string Token)
+        {
+            var spin = new SPInput_GetMemberData()
+            {
+                IDNO = ID,
+                LogID = LogID,
+                Token = Token
+            };
+            var lstError = new List<ErrorInfo>();
+            string spName = new WebAPI.Models.Enum.ObjType().GetSPName(WebAPI.Models.Enum.ObjType.SPType.GetMemberData);
+            SPOutput_Base SPOutputBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMemberData, SPOutput_Base>(connetStr);
+            List<RegisterData> lstOut = new List<RegisterData>();
+            DataSet ds = new DataSet();
+            bool flag = sqlHelp.ExeuteSP(spName, spin, ref SPOutputBase, ref lstOut, ref ds, ref lstError);
+            if (lstOut != null && lstOut.Count() > 0)
+                return lstOut.FirstOrDefault();
+            else
+                return null;
+        }
+
+        public List<SPOut_GetInvData> sp_GetInvData(SPInput_GetInvData spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetInvData>();
+
+            try
+            {
+                string SPName = "usp_GetINVData_Q1";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                    {
+                        re = objUti.ConvertToList<SPOut_GetInvData>(ds1.Tables[0]);
+                    }
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
     }
 
     /// <summary>
@@ -1097,28 +1609,84 @@ namespace WebAPI.Models.BillFunc
                                  CarWDHours = a.CarWDHours,
                                  CarHDHours = a.CarHDHours,
                                  MotoTotalMins = a.MotoTotalMins,
-                                 IsDiscount = a.IsDiscount
+                                 WDRateForCar = a.WDRateForCar,
+                                 HDRateForCar = a.HDRateForCar,
+                                 WDRateForMoto = a.WDRateForMoto,
+                                 HDRateForMoto = a.HDRateForMoto,
+                                 IsDiscount = a.IsDiscount,
+                                 IsPay = a.IsPay,
+                                 IsMix = a.IsMix    //20210525 ADD BY ADAM REASON.增加城市車手判斷
                              }).ToList();
             }
             return re;
         }
-    
-        public OAPI_GetSubsCNT_Card FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
+
+        public List<MonCardParam_My> FromSPOutput_GetMonthList_My(List<SPOutput_GetMonthList_My> sour)
+        {
+            var re = new List<MonCardParam_My>();
+            if (sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new MonCardParam_My
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProjNM = a.MonProjNM,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          PeriodPrice = a.PeriodPrice,
+                          IsMoto = a.IsMoto,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = a.MotoTotalMins,
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount,
+                          IsPay = a.IsPay,
+                          IsMix = a.IsMix,
+                          NxtPay = a.NxtPay,
+                          StartDate =  a.StartDate.ToString("MM/dd HH:mm"),
+                          EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
+                      }).ToList();
+            }
+            return re;
+        }
+
+        public OAPI_GetSubsCNT_NowCard FromSPOut_GetSubsCNT_NowCard(SPOut_GetSubsCNT_NowCard sour)
         {
             if (sour != null)
             {
-                return new OAPI_GetSubsCNT_Card()
+                return new OAPI_GetSubsCNT_NowCard()
                 {
                     MonProjID = sour.MonProjID,
                     MonProPeriod = sour.MonProPeriod,
                     ShortDays = sour.ShortDays,
                     MonProjNM = sour.MonProjNM,
-                    CarWDHours = sour.WorkDayHours,
-                    CarHDHours = sour.HolidayHours,
-                    MotoTotalMins = sour.MotoTotalHours,
-                    SD = sour.StartDate.ToString("MM/dd"),
-                    ED = sour.EndDate.ToString("MM/dd"),
-                    MonProDisc = sour.MonProDisc
+                    CarWDHours = sour.CarWDHours,
+                    CarHDHours = sour.CarHDHours,
+                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins),   //20210525 ADD BY ADAM REASON.改為INT
+                    WDRateForCar = sour.WDRateForCar,
+                    HDRateForCar = sour.HDRateForCar,
+                    WDRateForMoto = sour.WDRateForMoto,
+                    HDRateForMoto = sour.HDRateForMoto,
+                    //StartDate = sour.StartDate.ToString("MM/dd"),
+                    //EndDate = sour.EndDate.ToString("MM/dd"),
+                    //20210611 ADD BY ADAM REASON.調整時間格式顯示
+                    StartDate = sour.StartDate.ToString("yyyy/MM/dd HH:mm"),
+                    EndDate = sour.EndDate.ToString("HHmm") == "0000" ? sour.EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.EndDate.ToString("yyyy /MM/dd HH:mm"),
+                    MonProDisc = sour.MonProDisc,
+                    IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
+                    //20210526 ADD BY ADAM REASON.補欄位
+                    MonthStartDate = sour.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                    MonthEndDate = sour.MonthEndDate.ToString("HHmm") == "0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
+                    NxtMonProPeriod = sour.NxtMonProPeriod,
+                    IsChange = sour.IsChange,
+                    IsPay = sour.IsPay,
+                    IsUpd = sour.IsUpd,
+                    SubsNxt = sour.SubsNxt,
+                    IsMoto = sour.IsMoto
+                    
                 };
             }
             else
@@ -1134,7 +1702,7 @@ namespace WebAPI.Models.BillFunc
                 re = (from a in sour
                       select new OAPI_GetArrsSubsList_arrs
                       {
-                          Period = a.MonProPeriod,
+                          Period = a.rw,
                           ArresPrice = a.PeriodPayPrice
                       }).ToList();
             }
@@ -1190,6 +1758,236 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     
+        public List<OAPI_GetSubsHist_Param> FromSPOut_GetSubsHist(List<SPOut_GetSubsHist> sour)
+        {
+            var re = new List<OAPI_GetSubsHist_Param>();
+            if (sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetSubsHist_Param
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          PeriodPrice = a.PeriodPrice,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          PayDate = a.PayDate.ToString("yyyyMMdd") == "00010101"?"":a.PayDate.ToString("yyyy/MM/dd HH:mm"),
+                          IsMoto = a.IsMoto,
+                          StartDate = a.StartDate.ToString("yyyy/MM/dd HH:mm"),
+                          EndDate =  (a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1) : a.EndDate).ToString("yyyy/MM/dd HH:mm"),
+                          PerNo = a.PerNo,
+                          MonthlyRentId = a.MonthlyRentId,
+                          InvType = a.InvType,
+                          unified_business_no = a.unified_business_no,
+                          invoiceCode = a.invoiceCode,
+                          invoice_date = a.invoice_date,
+                          invoice_price = a.invoice_price,
+                          IsMix = a.IsMix,       //20210525 ADD BY ADAM REASON.增加城市車手
+                          CARRIERID = a.CARRIERID,  //20210619 ADD BY ADAM REASON.補上載具條碼跟捐贈碼
+                          NPOBAN = a.NPOBAN,
+                          NPOBAN_Name = a.NPOBAN_Name,
+                          InvoiceType = a.InvoiceType
+                      }).ToList();
+            }
+            return re;
+        }
+    
+        public List<OAPI_GetArrsSubsList_card> FromSPOut_GetArrsSubsList(SPOut_GetArrsSubsList sour)
+        {
+            var re = new List<OAPI_GetArrsSubsList_card>();
+
+            if(sour != null 
+                && sour.DateRange != null && sour.DateRange.Count()>0
+                && sour.Arrs != null && sour.Arrs.Count() > 0)
+            {
+                var arrs = sour.Arrs;
+                sour.DateRange.ForEach(a =>
+                {
+                    var nObj = new OAPI_GetArrsSubsList_card();
+                    nObj.Arrs = new List<OAPI_GetArrsSubsList_arrs>();
+                    nObj.StartDate = a.StartDate.ToString("yyyy/MM/dd");
+                    nObj.EndDate = a.EndDate.ToString("yyyy/MM/dd");
+                    var nArrs = arrs.Where(y => y.SubsId == a.SubsId).ToList();
+                    if(nArrs != null && nArrs.Count() > 0)
+                    {
+                        nObj.ProjNm = nArrs.FirstOrDefault().MonProjNM;
+                        var tmpArrs = (from k in nArrs
+                                     select new OAPI_GetArrsSubsList_arrs
+                                     {
+                                         Period = k.rw,
+                                         ArresPrice = k.PeriodPayPrice
+                                     }).ToList();
+                        nObj.Arrs = tmpArrs;
+                        //20210617 ADD BY ADAM REASON.
+                        nObj.CarTypePic = nArrs.FirstOrDefault().CarTypePic;
+                    }
+                    re.Add(nObj);
+                });
+            }
+
+            return re;
+        }
+    
+        public OPAI_GetChgSubsList_Card FromSPOut_GetChgSubsList_Card(SPOut_GetChgSubsList_Card sour)
+        {
+            var re = new OPAI_GetChgSubsList_Card();
+            if (sour != null)
+            {
+                re.MonProjID = sour.MonProjID;
+                re.MonProPeriod = sour.MonProPeriod;
+                re.ShortDays = sour.ShortDays;
+                re.MonProjNM = sour.MonProjNM;
+                re.PeriodPrice = sour.PeriodPrice;
+                re.CarWDHours = sour.CarWDHours;
+                re.CarHDHours = sour.CarHDHours;
+                re.MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins);
+                re.WDRateForCar = sour.WDRateForCar;
+                re.HDRateForCar = sour.HDRateForCar;
+                re.WDRateForMoto = sour.WDRateForMoto;
+                re.HDRateForMoto = sour.HDRateForMoto;
+                re.IsDiscount = sour.IsDiscount;
+                re.IsMix = sour.IsMix;      //20210525 ADD BY ADAM REASON.增加城市車手
+                re.IsMoto = sour.IsMoto;    //20210527 ADD BY ADAM REASON.補欄位
+                return re;
+            }
+            else
+                return null;
+        }
+
+        public List<OPAI_GetChgSubsList_Card> FromSPOut_GetChgSubsList_Card(List<SPOut_GetChgSubsList_Card> sour)
+        {
+            var re = new List<OPAI_GetChgSubsList_Card>();
+
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OPAI_GetChgSubsList_Card
+                      {
+                            MonProjID = a.MonProjID,
+                            MonProPeriod = a.MonProPeriod,
+                            ShortDays = a.ShortDays,
+                            MonProjNM = a.MonProjNM,
+                            PeriodPrice = a.PeriodPrice,
+                            CarWDHours = a.CarWDHours,
+                            CarHDHours = a.CarHDHours,
+                            MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                            WDRateForCar = a.WDRateForCar,
+                            HDRateForCar = a.HDRateForCar,
+                            WDRateForMoto = a.WDRateForMoto,
+                            HDRateForMoto = a.HDRateForMoto,
+                            IsDiscount = a.IsDiscount,
+                            IsMix = a.IsMix,     //20210525 ADD BY ADAM REASON.增加城市車手
+                            IsMoto = a.IsMoto   //20210527 ADD BY ADAM REASON.補欄位
+                      }).ToList();
+            }
+            return re;
+        }
+
+        public List<OAPI_GetUpSubsList_Card> FromSPOut_GetUpSubsList_Card(List<SPOut_GetUpSubsList_Card> sour)
+        {
+            var re = new List<OAPI_GetUpSubsList_Card>();
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetUpSubsList_Card
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          PeriodPrice = a.PeriodPrice,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount,
+                          IsMix = a.IsMix,       //20210525 ADD BY ADAM REASON.增加城市車手
+                          AddPrice = a.AddPrice,
+                          IsMoto = a.IsMoto,     //20210527 ADD BY ADAM REASON.補欄位
+                          UseUntil = a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.UseUntil.ToString("yyyy/MM/dd HH:mm")   //20210612 ADD BY ADAM REASON
+                      }).ToList();
+            }
+            return re;
+        }
+    
+        public OAPI_GetSubsCNT_NxtCard FromSPOut_GetSubsCNT_NxtCard(SPOut_GetSubsCNT_NxtCard sour)
+        {
+            if (sour != null)
+            {
+                return new OAPI_GetSubsCNT_NxtCard()
+                {
+                    IsChange = sour.IsChange,
+                    MonProjID = sour.MonProjID,
+                    MonProPeriod = sour.MonProPeriod,
+                    ShortDays = sour.ShortDays,
+                    MonProjNM = sour.MonProjNM,
+                    CarWDHours = sour.CarWDHours,
+                    CarHDHours = sour.CarHDHours,
+                    MotoTotalMins = Convert.ToInt32(sour.MotoTotalMins),
+                    WDRateForCar = sour.WDRateForCar,
+                    HDRateForCar = sour.HDRateForCar,
+                    WDRateForMoto = sour.WDRateForMoto,
+                    HDRateForMoto = sour.HDRateForMoto,
+
+                    //StartDate = sour.SD.ToString("yyyy/MM/dd"),
+                    //EndDate = sour.ED.ToString("yyyy/MM/dd"),
+                    //20210611 ADD BY ADAM REASON.調整日期格式
+                    StartDate = sour.SD.ToString("yyyy/MM/dd HH:mm"),
+                    EndDate = sour.ED.ToString("HHmm") == "0000" ? sour.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.ED.ToString("yyyy/MM/dd HH:mm"),
+
+                    MonProDisc = sour.MonProDisc,
+                    IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
+                    //20210526 ADD BY ADAM REASON.補欄位
+                    MonthStartDate = sour.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                    MonthEndDate = sour.MonthEndDate.ToString("HHmm")=="0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
+                    NxtMonProPeriod = sour.NxtMonProPeriod,
+                    IsPay = sour.IsPay,
+                    IsUpd = sour.IsUpd,
+                    SubsNxt = sour.SubsNxt,
+                    IsMoto = sour.IsMoto
+                };
+            }
+            else
+                return null;
+        }
+
+        public List<OAPI_GetSubsCNT_NxtCard> FromSPOut_GetSubsCNT_NxtCard(List<SPOut_GetSubsCNT_NxtCard> sour)
+        {
+            var re = new List<OAPI_GetSubsCNT_NxtCard>();
+            if(sour != null && sour.Count() > 0)
+            {
+                re = (from a in sour
+                      select new OAPI_GetSubsCNT_NxtCard
+                      {
+                          IsChange = a.IsChange,
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          StartDate = a.SD.ToString("yyyy/MM/dd"),
+                          EndDate = a.ED.ToString("yyyy/MM/dd"),
+                          MonProDisc = a.MonProDisc
+                      }).ToList();
+            }
+            return re;
+        }
     }
 
 }
