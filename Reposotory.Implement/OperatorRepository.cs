@@ -96,18 +96,5 @@ namespace Reposotory.Implement
             return lstOperators;
         }
 
-
-        public List<BE_SCITEM> GetSCITEM()
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_SCITEM> lstOperators = null;
-            string SQL = "SELECT DISTINCT SCITEM FROM TB_ScoreDef where UI_STATUS<>0";
-            SqlParameter[] para = new SqlParameter[10];
-            string term = "";
-            int nowCount = 0;
-            lstOperators = GetObjList<BE_SCITEM>(ref flag, ref lstError, SQL, para, term);
-            return lstOperators;
-        }
     }
 }

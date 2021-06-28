@@ -771,6 +771,7 @@
     <Content Include="Views\CommonObj\GetSCITEM.cshtml" />
     <Content Include="Views\CommonObj\GetSCMITEM.cshtml" />
     <Content Include="Views\StationAndParking\TransParkingSetting_Moto.cshtml" />
+    <Content Include="Views\CommonObj\GetScore.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

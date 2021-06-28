@@ -290,6 +290,10 @@
             flag = false;
             errMsg = "請輸入分數";
         }
+        if ($("#sonmemo").val() == "") {
+            flag = false;
+            errMsg = "請填備註";
+        }
         
         if (flag) {
             $("#justSearch").val(0)

@@ -62,6 +62,7 @@
     <Compile Include="HiEasyRentRepository.cs" />
     <Compile Include="ManagerRepository.cs" />
     <Compile Include="MemberRepository.cs" />
+    <Compile Include="MemberScore.cs" />
     <Compile Include="MonthlyRentRepository.cs" />
     <Compile Include="NewsRepository.cs" />
     <Compile Include="OperatorRepository.cs" />

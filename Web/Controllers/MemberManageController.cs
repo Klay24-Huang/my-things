@@ -1040,6 +1040,7 @@ namespace Web.Controllers
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
             ViewData["SCITEM"] = (collection["ddlOperatorGG"] == null) ? "0" : collection["ddlOperatorGG"].ToString() == "" ? "0" : collection["ddlOperatorGG"].ToString(); //讓view知道我所選的評分行為(主項)的值
+            //ViewData["SCMITEM"] = (collection["ddlUserGroup"] == null) ? "0" : collection["ddlUserGroup"].ToString() == "" ? "0" : collection["ddlUserGroup"].ToString(); 
             int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
 
             bool flag_H = true;

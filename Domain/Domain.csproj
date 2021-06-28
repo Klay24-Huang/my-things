@@ -376,6 +376,7 @@
     <Compile Include="TB\BackEnd\BE_MemberData.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSetting.cs" />
     <Compile Include="TB\BackEnd\BE_MemberScore.cs" />
+    <Compile Include="TB\BackEnd\BE_MemScore.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombind.cs" />
     <Compile Include="TB\BackEnd\BE_MenuCombindConsistPower.cs" />
     <Compile Include="TB\BackEnd\BE_MenuList.cs" />

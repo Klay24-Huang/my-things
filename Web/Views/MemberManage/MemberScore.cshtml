@@ -9,6 +9,8 @@
     string StartDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EndDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string SCITEM = ((ViewData["SCITEM"] == null) ? "0" : ViewData["SCITEM"].ToString());
+    //string SCMITEM = ((ViewData["SCMITEM"] == null) ? "0" : ViewData["SCMITEM"].ToString());
+    //string score = ((ViewData["score"] == null) ? "0" : ViewData["score"].ToString());
 
     // 這邊定義的值在js抓不到，這是給view的
     //var errorLine = (ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString();
@@ -239,7 +241,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                備註
+                                備註(必填)
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control clear" type="text" name="sonmemo" id="sonmemo" />
@@ -255,6 +257,7 @@
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control clear" type="text" name="MEMSCORE" id="MEMSCORE" />
+                                @*@Html.Action("GetScore", "CommonObj", new { scmitem = SCMITEM })*@
                             </div>
                         </div>
                     </div>
