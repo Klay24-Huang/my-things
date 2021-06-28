@@ -568,55 +568,6 @@ namespace WebAPI.Controllers
                         outputApi.HasRentCard = false;
                 }
                 #endregion
-
-                #region 積分低於60分，只能用定價專案
-                if (flag && !string.IsNullOrEmpty(IDNO))
-                {
-                    var tmpOutput = new OAPI_GetProject();  // ★非常重要：跟訂閱制Merge時，請將產生月租牌卡前的output存至此變數
-                    tmpOutput = outputApi;
-
-                    var Score = 0;  // 會員積分
-                    string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberScore);
-
-                    object[][] parms1 = {
-                        new object[] {
-                            IDNO,
-                            1,
-                            10,
-                            LogID
-                    }};
-
-                    DataSet ds1 = null;
-                    string returnMessage = "";
-                    string messageLevel = "";
-                    string messageType = "";
-
-                    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
-
-                    if (ds1.Tables.Count != 3)
-                    {
-                        flag = false;
-                        errCode = "ERR999";
-                        errMsg = returnMessage;
-                    }
-                    else
-                    {
-                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-
-                        if (flag)
-                        {
-                            if (ds1.Tables[0].Rows.Count > 0)
-                                Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
-                        }
-                    }
-
-                    if (Score < 60)
-                    {
-                        outputApi = new OAPI_GetProject();
-                        outputApi = tmpOutput;
-                    }
-                }
-                #endregion
             }
             #endregion
 
