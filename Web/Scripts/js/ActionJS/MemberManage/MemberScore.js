@@ -304,19 +304,17 @@
             disabledLoadingAndShowAlert(errMsg);
         }
     });
+
     $("#exampleDownload").on("click", function () {
         window.location.href = "../Content/example/MemberScoreExample.xlsx";
     });
-    //$("#btnSubmit4").on("click", function () {
-    //    $("#btnSubmit3").show();
 
-
-    //});
     $("#btnSubmit3").on("click", function () {
         ShowLoading("資料匯入中");
         $("#frmMemberScore").submit();
         disabledLoading();
     });
+
     $("#fileImport").on("change", function () {
         var file = this.files[0];
         var fileName = file.name;
@@ -338,6 +336,8 @@
             });
         }
     })
+
+
 });
 
 

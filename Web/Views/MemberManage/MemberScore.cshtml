@@ -321,6 +321,13 @@
 </div>
 <!--查詢輸出表格-->
 <div class="container mt-4" id="BB" style="max-width:1500px;">
+    @if (ResultLen > 0)
+    {
+        <div class="container mt-4" style="background-color:yellow;">
+            總積分 : @lstData[0].SCORETOTAL
+        </div>
+    }
+
     <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
@@ -337,7 +344,7 @@
                 <th scope="col">不顯示在APP明細</th>
                 <th scope="col">刪除時間</th>
                 <th scope="col">操作人員</th>
-                <th scope="col">總積分</th>
+                @*<th scope="col">總積分</th>*@
                 <th scope="col">修改</th>
             </tr>
         </thead>
@@ -345,7 +352,7 @@
             @if (ResultLen == 0)
             {
                 <tr>
-                    <td colspan="11" class="text-center">
+                    <td colspan="13" class="text-center">
                         查無結果
                     </td>
                 </tr>
@@ -386,7 +393,7 @@
                         </td>
                         <td scope="col">@(lstData[i].DEL)</td>
                         <td scope="col">@(lstData[i].GM)</td>
-                        <td scope="col">@(lstData[i].SCORETOTAL)</td>
+                        @*<td scope="col">@(lstData[i].SCORETOTAL)</td>*@
                         @*@if (lstData[i].A_PRGID == "usp_BE_InsMemberScore")
                             {
                                 <td scope="col">

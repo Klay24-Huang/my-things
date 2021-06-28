@@ -1174,7 +1174,7 @@ namespace Web.Controllers
                             {
                                 if (sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
                                 {
-                                    errorMsg = "合約編號格式錯誤";
+                                    errorMsg = "第"+(i+1)+"筆合約編號格式錯誤";
                                     flag = false;
                                     break;
                                 }
