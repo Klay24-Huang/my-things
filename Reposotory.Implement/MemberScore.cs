@@ -23,7 +23,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_SCITEM> lstOperators = null;
             string SQL = "SELECT DISTINCT SCITEM FROM TB_ScoreDef where UI_STATUS<>0";
-            SqlParameter[] para = new SqlParameter[10];
+            SqlParameter[] para = new SqlParameter[1];
             string term = "";
             lstOperators = GetObjList<BE_SCITEM>(ref flag, ref lstError, SQL, para, term);
             return lstOperators;
@@ -36,7 +36,7 @@ namespace Reposotory.Implement
             List<BE_SCMITEM> lstUserGroup = null;
             int nowCount = 0;
             string SQL = "SELECT SCMITEM=(CASE UI_STATUS WHEN 1 THEN SCMITEM+'~('+CONVERT(varchar(10),SCORE)+')' ELSE SCMITEM+'~'+SCDITEMNO+'('+CONVERT(varchar(10),SCORE)+')' END) FROM TB_ScoreDef ";
-            SqlParameter[] para = new SqlParameter[10];
+            SqlParameter[] para = new SqlParameter[1];
             string term = "";
             term += (term == "") ? "" : " AND ";
             term += " SCITEM=@scitem and UI_STATUS<>0 ";
@@ -50,26 +50,26 @@ namespace Reposotory.Implement
             lstUserGroup = GetObjList<BE_SCMITEM>(ref flag, ref lstError, SQL, para, term);
             return lstUserGroup;
         }
-        //public List<BE_MemScore> GetScore(string scmitem)
-        //{
-        //    bool flag = false;
-        //    List<ErrorInfo> lstError = new List<ErrorInfo>();
-        //    List<BE_MemScore> lstUserGroup = null;
-        //    int nowCount = 0;
-        //    string SQL = "select top 1 ISNULL(SCORE,0) from TB_ScoreDef ";
-        //    SqlParameter[] para = new SqlParameter[10];
-        //    string term = "";
-        //    term += (term == "") ? "" : " AND ";
-        //    term += " SCMITEM=ISNULL(@scmitem,'') ";
-        //    para[nowCount] = new SqlParameter("@scmitem", SqlDbType.VarChar, 60);
-        //    para[nowCount].Value = scmitem;
-        //    para[nowCount].Direction = ParameterDirection.Input;
-        //    if ("" != term)
-        //    {
-        //        SQL += " WHERE " + term;
-        //    }
-        //    lstUserGroup = GetObjList<BE_MemScore>(ref flag, ref lstError, SQL, para, term);
-        //    return lstUserGroup;
-        //}
+        public List<BE_MemScore> GetScore(string scmitem)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MemScore> lstUserGroup = null;
+            int nowCount = 0;
+            string SQL = "select top 1 ISNULL(SCORE,0) as SCORE from TB_ScoreDef ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term += (term == "") ? "" : " AND ";
+            term += " SCMITEM=ISNULL(SUBSTRING(@scmitem,0,CHARINDEX('~',@scmitem)),'') ";
+            para[nowCount] = new SqlParameter("@scmitem", SqlDbType.VarChar, 60);
+            para[nowCount].Value = scmitem;
+            para[nowCount].Direction = ParameterDirection.Input;
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+            }
+            lstUserGroup = GetObjList<BE_MemScore>(ref flag, ref lstError, SQL, para, term);
+            return lstUserGroup;
+        }
     }
 }

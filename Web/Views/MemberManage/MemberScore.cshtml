@@ -9,7 +9,7 @@
     string StartDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EndDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string SCITEM = ((ViewData["SCITEM"] == null) ? "0" : ViewData["SCITEM"].ToString());
-    //string SCMITEM = ((ViewData["SCMITEM"] == null) ? "0" : ViewData["SCMITEM"].ToString());
+    string SCMITEM = ((ViewData["SCMITEM"] == null) ? "0" : ViewData["SCMITEM"].ToString());
     //string score = ((ViewData["score"] == null) ? "0" : ViewData["score"].ToString());
 
     // 這邊定義的值在js抓不到，這是給view的
@@ -232,7 +232,7 @@
                                         <option value="debug">關東煮</option>
                                         <option value="Advice">素食</option>
                                     </select>*@
-                                @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM }) @*scitem參數為了知道GetSCITEM選了什麼*@
+                                @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM , SCMITEM}) @*scitem參數為了知道GetSCITEM選了什麼*@
                             </div>
                         </div>
                     </div>
@@ -249,6 +249,20 @@
                         </div>
                     </div>
                 </li>
+
+                <li class="list-group-item" style="display:none">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                帶入分數
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Action("GetScore", "CommonObj", new { scmitem = SCMITEM })
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="list-group-item" id="SCORE">
                     <div class="container-fluid">
                         <div class="row">
@@ -256,8 +270,7 @@
                                 加減分數
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control clear" type="text" name="MEMSCORE" id="MEMSCORE" />
-                                @*@Html.Action("GetScore", "CommonObj", new { scmitem = SCMITEM })*@
+                                <input class="form-control clear" type="text" name="MEMSCORE" id="MEMSCORE"/>
                             </div>
                         </div>
                     </div>
@@ -277,7 +290,6 @@
                         </div>
                     </div>
                 </li>
-
 
                 <li class="list-group-item">
                     <div class="container-fluid">

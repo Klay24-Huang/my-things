@@ -162,6 +162,15 @@
         }
     })
 
+    $("#ddlUserGroup").on("change", function () {
+        var value = $(this).val();
+        $("#scoreman").empty();
+        if (value != "") {
+            $("#justSearch").val(1)
+            $("#frmMemberScore").submit();
+        }
+    })
+
     $("#ORDER_I").on("change", function () {
         ShowLoading("資料查詢中…");
         var a = $("#AuditMode").val()
@@ -337,7 +346,7 @@
         }
     })
 
-
+    $("#MEMSCORE").val($("#scoreman").val());
 });
 
 

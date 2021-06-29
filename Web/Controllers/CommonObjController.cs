@@ -130,7 +130,7 @@ namespace Web.Controllers
 
 
         [ChildActionOnly]
-        public ActionResult GetSCITEM(string SEQNO)//string SEQNO
+        public ActionResult GetSCITEM(string SEQNO)
         {
             List<BE_SCITEM> lstOperators = new MemberScore(connetStr).GetSCITEM();
             //bool showAll = false;
@@ -138,19 +138,19 @@ namespace Web.Controllers
             return View(lstOperators);
         }
         [ChildActionOnly]
-        public ActionResult GetSCMITEM(string scitem)
+        public ActionResult GetSCMITEM(string scitem, string scmitem)
         {
             List<BE_SCMITEM> lstUserGroup = null;
             lstUserGroup = new MemberScore(connetStr).GetSCMITEM(scitem);
             //bool showAll = false;
-            //ViewData["UserGroup"] = SEQNO;
+            ViewData["_UserGroup"] = scmitem;
             return View(lstUserGroup);
         }
-        //[ChildActionOnly]
-        //public ActionResult GetScore(string scmitem)
-        //{
-        //    List<BE_MemScore> lstScore = new MemberScore(connetStr).GetScore(scmitem);
-        //    return View(lstScore);
-        //}
+        [ChildActionOnly]
+        public ActionResult GetScore(string scmitem)
+        {
+            List<BE_MemScore> lstScore = new MemberScore(connetStr).GetScore(scmitem);
+            return View(lstScore);
+        }
     }
 }
