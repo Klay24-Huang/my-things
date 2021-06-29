@@ -1272,7 +1272,7 @@ namespace Web.Controllers
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
-            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "合約編號", "APP刪除", "刪除時間", "操作人員" };
+            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "合約編號", "APP刪除", "隱藏時間", "操作人員" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);

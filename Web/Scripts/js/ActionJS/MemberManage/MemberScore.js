@@ -284,12 +284,13 @@
             flag = false;
             errMsg = "請輸入合約";
         }
-        else {
+        if ($("#ORDERNO_I").val() != "" && $("#ddlOperatorGG").val() != "其他") {
             if (false == RegexOrderNo($("#ORDERNO_I").val())) {
                 flag = false;
-                errMsg = "訂單編號格式不符（格式：H+數字)";
+                errMsg = "合約編號格式不符（格式：H+數字)";
             }
         }
+
 
         if ($("#IDNO").val() == "") {
             flag = false;
