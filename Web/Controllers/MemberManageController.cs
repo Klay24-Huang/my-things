@@ -1173,7 +1173,13 @@ namespace Web.Controllers
                             //判斷合約編號是否有H
                             for (int i = 1; i <= sheetLen; i++)
                             {
-                                if (sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
+                                if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
+                                {
+                                    errorMsg = "第" + (i + 1) + "筆合約編號未上傳";
+                                    flag = false;
+                                    break;
+                                }
+                                else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
                                 {
                                     errorMsg = "第"+(i+1)+"筆合約編號格式錯誤";
                                     flag = false;
@@ -1190,7 +1196,7 @@ namespace Web.Controllers
                                     SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
                                     {
                                         ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                        ORDERNO = int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
+                                        ORDERNO = sheet.GetRow(i).GetCell(4) == null ? 0:int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
                                         DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
                                         SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
                                         SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
