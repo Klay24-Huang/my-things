@@ -180,6 +180,35 @@ namespace OtherService
             output = DoPayTransactionSend(wsInput, ClientId, utcTimeStamp, SignCode).Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
+                //20210630 ADD BY Umeko REASON.扣款成功後寫入LOG紀錄
+                SPInput_InsPayTransactionLog spInput = new SPInput_InsPayTransactionLog()
+                {
+                    GUID = wsInput.GUID,
+                    MerchantId = wsInput.MerchantId,
+                    AccountId = "",
+                    BarCode = wsInput.BarCode,
+                    POSId = wsInput.POSId,
+                    StoreId = wsInput.StoreId,
+                    StoreTransDate = wsInput.StoreTransDate,
+                    StoreTransId = wsInput.StoreTransId,
+                    TransmittalDate = "",
+                    TransDate = output.Result.TransDate,
+                    TransId = output.Result.TransId,
+                    SourceTransId = wsInput.StoreTransId,
+                    TransType = "T001",
+                    BonusFlag = wsInput.BonusFlag,
+                    PriceCustody = wsInput.Custody,
+                    SmokeLiqueurFlag = wsInput.SmokeLiqueurFlag,
+                    Amount = wsInput.Amount,
+                    ActualAmount = output.Result.ActualAmount,
+                    Bonus = output.Result.Bonus,
+                    SourceFrom = wsInput.SourceFrom,
+                    AccountingStatus = "0",
+                    SmokeAmount= 0,
+                    ActualGiftCardAmount =0,
+                };
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsPayTransactionLog(spInput, ref flag, ref errCode, ref lstError);
                 //if (output.Data == null)
                 //{
                 //    flag = false;

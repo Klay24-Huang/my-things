@@ -763,4 +763,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="SEQNO" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d638072b-60fd-4270-94a9-12125942bb7d" ChangeDateTime="06/29/2021 08:21:50">
+    <Property Name="ElementName" Value="[dbo].[Table1].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Table1]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SEQNO" />
+  </Operation>
 </Operations>

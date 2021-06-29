@@ -517,6 +517,8 @@
     <Build Include="dbo\Stored Procedures\usp_InsTaishinWalletStoreValueLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsStoreValueCreateAccountLog.sql" />
     <Build Include="dbo\Tables\TB_TaishinWalletStoreValueLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletPayTransactionLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsPayTransactionLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
