@@ -38,10 +38,12 @@
 *****************************************************************
 ** Change History
 *****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/11/6 |    Eric    |          First Release
-**			 |			  |
+** Date:      |   Author:  |          Description:
+** -----------|------------| ------------------------------------
+** 2020/11/06 |    Eric    | First Release
+** 2020/11/17 |    Jerry   | 增加圖片數量至5張
+** 2021/04/12 |    YEH     | INSERT時，針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
+** 2021/06/29 |    YEH     | UPDATE時，針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_HandleStationNew]
     @StationType 			INT,					--據點類別
@@ -154,6 +156,13 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
+		-- 20210419;同站的use_flag是3，路邊/機車是1。(不知道當初文彬哥為何要做這樣的區分)
+		DECLARE @UseFlag int=1;
+		IF @StationType = 0
+		BEGIN
+			SET @UseFlag=3;
+		END
+
 		IF @Mode=0
 		BEGIN
 			INSERT INTO TB_iRentStation([StationID],[ManageStationID] ,[Location],[Tel],[ADDR]
@@ -165,7 +174,7 @@ BEGIN TRY
 										,@Latitude,@Longitude,@in_description,@show_description,@UniCode
 										,@CityID,@AreaID,@IsRequired,@StationPick,@FCode
 										,@SDate,@EDate,@StationType,@ParkingNum,@OnlineNum
-										,1,@Area,@UserID);
+										,@UseFlag,@Area,@UserID);
 			IF @fileName1<>''
 			BEGIN
 				INSERT INTO TB_iRentStationInfo(StationID,StationPic,PicDescription,Sort,use_flag)VALUES(@StationID,@fileName1,@fileDescript1,1,1);
@@ -225,6 +234,7 @@ BEGIN TRY
 				[AllowParkingNum]=@ParkingNum,
 				[NowOnlineNum]=@OnlineNum,
 				[Area]=@Area,
+				use_flag=@UseFlag,
 				[U_USER_ID]=@UserID,
 				[UPDTime]=@NowTime
 			WHERE StationID=@StationID
@@ -236,7 +246,7 @@ BEGIN TRY
 			--2020/11/17 Jerry 增加圖片數量至5張
 			SELECT @tmpFileName5=ISNULL(StationPic,'') FROM TB_iRentStationInfo WITH(NOLOCK) WHERE StationID=@StationID AND Sort=5;
 
-			IF @fileName1!=''
+			IF @fileName1 <> ''
 			BEGIN
 				IF @tmpFileName1=''
 				BEGIN
@@ -244,33 +254,30 @@ BEGIN TRY
 				END
 				ELSE
 				BEGIN
-					IF @fileName1<>@tmpFileName1
+					IF @fileName1 <> @tmpFileName1
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET StationPic=@fileName1,
 							PicDescription=@fileDescript1,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=1
+						WHERE StationID=@StationID AND Sort=1;
 					END
 					ELSE
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET PicDescription=@fileDescript1,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=1
+						WHERE StationID=@StationID AND Sort=1;
 					END
 				END
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_iRentStationInfo 
-				SET StationPic=@fileName1,
-					PicDescription=@fileDescript1,
-					UPDTime=@NowTime 
-				WHERE StationID=@StationID AND Sort=1
+				-- 沒檔案就把資料列刪除
+				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=1;
 			END
 
-			IF @fileName2!=''
+			IF @fileName2 <> ''
 			BEGIN
 				IF @tmpFileName2=''
 				BEGIN
@@ -278,33 +285,30 @@ BEGIN TRY
 				END
 				ELSE
 				BEGIN
-					IF @fileName2<>@tmpFileName2
+					IF @fileName2 <> @tmpFileName2
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET StationPic=@fileName2,
 							PicDescription=@fileDescript2,
 							UPDTime=@NowTime 
-						WHERE StationID=@StationID AND Sort=2
+						WHERE StationID=@StationID AND Sort=2;
 					END
 					ELSE
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET PicDescription=@fileDescript2,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=2
+						WHERE StationID=@StationID AND Sort=2;
 					END
 				END
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_iRentStationInfo 
-				SET StationPic=@fileName1,
-					PicDescription=@fileDescript1,
-					UPDTime=@NowTime
-				WHERE StationID=@StationID AND Sort=1
+				-- 沒檔案就把資料列刪除
+				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=2;
 			END
 
-			IF @fileName3!=''
+			IF @fileName3 <> ''
 			BEGIN
 				IF @tmpFileName3=''
 				BEGIN
@@ -318,94 +322,101 @@ BEGIN TRY
 						SET StationPic=@fileName3,
 							PicDescription=@fileDescript3,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=3
+						WHERE StationID=@StationID AND Sort=3;
 					END
 					ELSE
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET PicDescription=@fileDescript3,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=3
+						WHERE StationID=@StationID AND Sort=3;
 					END
 				END
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_iRentStationInfo 
-				SET StationPic=@fileName1,
-					PicDescription=@fileDescript3,
-					UPDTime=@NowTime
-				WHERE StationID=@StationID AND Sort=3
+				-- 沒檔案就把資料列刪除
+				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=3;
 			END
 
-			IF @fileName4!=''
+			IF @fileName4 <> ''
 			BEGIN
-				IF @tmpFileName4=''
+				IF @tmpFileName4 = ''
 				BEGIN
 					INSERT INTO TB_iRentStationInfo(StationID,StationPic,PicDescription,Sort,use_flag)VALUES(@StationID,@fileName4,@fileDescript4,4,1);
 				END
 				ELSE
 				BEGIN
-					IF @fileName1<>@tmpFileName1
+					IF @fileName4 <> @tmpFileName4
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET StationPic=@fileName4,
 							PicDescription=@fileDescript4,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=4
+						WHERE StationID=@StationID AND Sort=4;
 					END
 					ELSE
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET PicDescription=@fileDescript4,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=4
+						WHERE StationID=@StationID AND Sort=4;
 					END
 				END
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_iRentStationInfo 
-				SET StationPic=@fileName4,
-					PicDescription=@fileDescript4,
-					UPDTime=@NowTime
-				WHERE StationID=@StationID AND Sort=4
+				-- 沒檔案就把資料列刪除
+				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=4;
 			END			
 				
 			--2020/11/17 Jerry 增加圖片數量至5張
-			IF @fileName5!=''
+			IF @fileName5 <> ''
 			BEGIN
-				IF @tmpFileName5=''
+				IF @tmpFileName5 = ''
 				BEGIN
 					INSERT INTO TB_iRentStationInfo(StationID,StationPic,PicDescription,Sort,use_flag)VALUES(@StationID,@fileName5,@fileDescript5,5,1);
 				END
 				ELSE
 				BEGIN
-					IF @fileName1<>@tmpFileName1
+					IF @fileName5 <> @tmpFileName5
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET StationPic=@fileName5,
 							PicDescription=@fileDescript5,
 							UPDTime=@NowTime
-						WHERE StationID=@StationID AND Sort=5
+						WHERE StationID=@StationID AND Sort=5;
 					END
 					ELSE
 					BEGIN
 						UPDATE TB_iRentStationInfo 
 						SET PicDescription=@fileDescript5,
 							UPDTime=@NowTime 
-						WHERE StationID=@StationID AND Sort=5
+						WHERE StationID=@StationID AND Sort=5;
 					END
 				END
 			END
 			ELSE
 			BEGIN
-				UPDATE TB_iRentStationInfo 
-				SET StationPic=@fileName5,
-					PicDescription=@fileDescript5,
-					UPDTime=@NowTime 
-				WHERE StationID=@StationID AND Sort=5
-			END				
+				-- 沒檔案就把資料列刪除
+				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=5;
+			END
+
+			--20210629;UPD BY YEH REASON:針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
+			IF @StationType=0
+			BEGIN
+				DELETE FROM TB_ProjectStation WHERE StationID=@StationID;
+
+				INSERT INTO TB_ProjectStation(PROJID,IOType,StationID,MKTime)
+				SELECT PROJID,'I',@StationID,@NowTime
+				FROM TB_Project
+				WHERE PROJTYPE=0 AND ShowEnd>@SDate AND IsRegional=0;
+
+				INSERT INTO TB_ProjectStation(PROJID,IOType,StationID,MKTime)
+				SELECT PROJID,'O',@StationID,@NowTime
+				FROM TB_Project
+				WHERE PROJTYPE=0 AND ShowEnd>@SDate AND IsRegional=0;
+			END
 		END
 	END
 	--寫入錯誤訊息
