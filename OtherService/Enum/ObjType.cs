@@ -58,7 +58,11 @@ namespace OtherService.Enum
             /// <summary>
             /// 寫入呼叫興聯車機資料
             /// </summary>
-            InsCensCMDLog
+            InsCensCMDLog,
+            /// <summary>
+            /// 台新錢包直接儲值+開戶 LOG寫入
+            /// </summary>
+            InsStoreValueCreateAccountLog,
         }
         /// <summary>
         /// 取出SPName
@@ -110,7 +114,9 @@ namespace OtherService.Enum
                 case SPType.InsCensCMDLog:
                     SPName = "usp_InsCensCMDLog";
                     break;
-
+                case SPType.InsStoreValueCreateAccountLog:
+                    SPName = "usp_InsStoreValueCreateAccountLog";
+                    break;
             }
             return SPName;
         }

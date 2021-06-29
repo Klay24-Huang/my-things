@@ -1,4 +1,5 @@
 ﻿using Domain.SP.Input.OtherService.Common;
+using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Output;
 using Domain.WebAPI.Input.Taishin.Escrow;
 using Domain.WebAPI.Input.Taishin.Wallet;
@@ -63,6 +64,36 @@ namespace OtherService
                 //{
                 //    flag = false;
                 //}
+
+                //20210625 ADD BY ADAM REASON.成功後寫入LOG紀錄
+                SPInput_InsStoreValueCreateAccountLog spInput = new SPInput_InsStoreValueCreateAccountLog()
+                {
+                    GUID = wsInput.GUID,
+                    MerchantId = wsInput.MerchantId,
+                    AccountId = "",
+                    POSId = wsInput.POSId,
+                    StoreId = wsInput.StoreId,
+                    StoreTransDate = wsInput.StoreTransDate,
+                    StoreTransId = wsInput.StoreTransId,
+                    TransmittalDate = "",
+                    TransDate = output.Result.TransDate,
+                    TransId = output.Result.TransId,
+                    SourceTransId = wsInput.StoreTransId,
+                    TransType = "",
+                    AmountType = wsInput.AmountType,
+                    Amount = wsInput.Amount,
+                    Bonus = wsInput.Bonus,
+                    BonusExpiredate = wsInput.BonusExpiredate,
+                    BarCode = "",
+                    StoreValueReleaseDate = wsInput.StoreValueReleaseDate,
+                    StoreValueExpireDate = wsInput.StoreValueExpireDate,
+                    SourceFrom = wsInput.SourceFrom,
+                    AccountingStatus = "",
+                    GiftCardBarCode = wsInput.GiftCardBarCode
+                };
+
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsStoreValueCreateAccountLog(spInput, ref flag, ref errCode, ref lstError);
             }
             else
             {
