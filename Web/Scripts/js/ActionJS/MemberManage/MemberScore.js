@@ -300,7 +300,7 @@
             flag = false;
             errMsg = "請輸入分數";
         }
-        if ($("#sonmemo").val() == "") {
+        if ($("#sonmemo").val() == "" && $("#ddlOperatorGG").val() == "其他") {
             flag = false;
             errMsg = "請填備註";
         }
