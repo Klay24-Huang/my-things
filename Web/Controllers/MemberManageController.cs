@@ -1185,6 +1185,13 @@ namespace Web.Controllers
                                     flag = false;
                                     break;
                                 }
+
+                                if(sheet.GetRow(i).GetCell(2) == null)
+                                {
+                                    errorMsg = "第" + (i + 1) + "筆子項沒填";
+                                    flag = false;
+                                    break;
+                                }
                             }
                             //通過第一關 
                             if (flag)
