@@ -197,6 +197,7 @@
     <Compile Include="SP\Input\OtherService\FET\SPInput_CarStatusByMotor.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsReceiveCMD.cs" />
     <Compile Include="SP\Input\OtherService\FET\SPInput_InsSendCMD.cs" />
+    <Compile Include="SP\Input\OtherService\FET\SPInput_UpdCarMachineVerInfo.cs" />
     <Compile Include="SP\Input\OtherService\Machi\SPInput_InsParkingFeeData.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />

@@ -43,6 +43,7 @@ namespace WebAPI.Controllers
             IAPI_CarData VehicleInput = null;
             IAPI_MotorData MotorDataInput = null;
             IAPI_ReceiveCMDBase CMDBase = null;
+            IAPI_CarMachineVerInfo CarMachineVerInfoInput = null;
 
 
             Int16 DataType = 0; //0:汽車;1:機車;2:下指令回傳
@@ -90,6 +91,10 @@ namespace WebAPI.Controllers
                     //    DataType = 3;
                     //}
 
+                }
+                else if (Contentjson.IndexOf("deviceBrandName") > -1 && Contentjson.IndexOf("deviceFW") > -1)
+                {
+                    DataType = 3; //韌體版本
                 }
                 else
                 {
@@ -271,6 +276,21 @@ namespace WebAPI.Controllers
                             baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
                             break;
 
+                        case 3:
+                            SPName = new OtherService.Enum.ObjType().GetSPName(OtherService.Enum.ObjType.SPType.UpdCarMachineVerInfo);
+                            CarMachineVerInfoInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CarMachineVerInfo>(Contentjson);
+                            SPInput_UpdCarMachineVerInfo spCMVerInfoInput = new SPInput_UpdCarMachineVerInfo()
+                            {
+                                deviceName = CarMachineVerInfoInput.deviceName,
+                                deviceCID = CarMachineVerInfoInput.deviceCID.ToUpper(),
+                                deviceFW = CarMachineVerInfoInput.deviceFW,
+                                LogID = LogID
+                            };
+
+                            SQLHelper<SPInput_UpdCarMachineVerInfo, SPOutput_Base> SQLCMVerInfoHelper = new SQLHelper<SPInput_UpdCarMachineVerInfo, SPOutput_Base>(connetStr);
+                            flag = SQLCMVerInfoHelper.ExecuteSPNonQuery(SPName, spCMVerInfoInput, ref spout, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spout.Error, spout.ErrorCode, ref lstError, ref errCode);
+                            break;
                     }
                 }
                 catch (Exception ex)
