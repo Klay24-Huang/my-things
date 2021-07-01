@@ -514,7 +514,6 @@
     <Build Include="dbo\Tables\TB_MedalHistory.sql" />
     <Build Include="dbo\Tables\TB_MedalMileStone.sql" />
     <Build Include="dbo\Tables\TB_MedalProgressStatus.sql" />
-    <Build Include="dbo\Stored Procedures\usp_InsTaishinWalletStoreValueLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsStoreValueCreateAccountLog.sql" />
     <Build Include="dbo\Tables\TB_TaishinWalletStoreValueLog.sql" />
     <Build Include="dbo\Tables\TB_TaishinWalletPayTransactionLog.sql" />
