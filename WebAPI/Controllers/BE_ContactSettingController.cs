@@ -751,6 +751,11 @@ namespace WebAPI.Controllers
                                     }
                                 }
                             }
+                            //組合指令顧客卡必輸入，若沒有則帶隨機值
+                            if (SetCardInput._params.ClientCardNo.Length == 0)
+                            {
+                                SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                            }
                             requestId = SetCardInput.requestId;
                             method = CommandType;
                             flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);

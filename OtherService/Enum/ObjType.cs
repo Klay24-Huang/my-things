@@ -129,6 +129,9 @@ namespace OtherService.Enum
                 case SPType.UpdCarMachineVerInfo:
                     SPName = "usp_UpdCarMachineVerInfo";
                     break;
+                case SPType.UpdCarMachineVerInfo:
+                    SPName = "usp_UpdCarMachineVerInfo";
+                    break;
                 case SPType.InsStoreValueCreateAccountLog:
                     SPName = "usp_InsStoreValueCreateAccountLog";
                     break;
