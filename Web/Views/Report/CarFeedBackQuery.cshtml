@@ -7,7 +7,7 @@
     string ImgURL = StorageBaseURL + "feedbackpic/";
     List<Domain.TB.BackEnd.BE_FeedBackMainDetail> feedBackData = new List<Domain.TB.BackEnd.BE_FeedBackMainDetail>();
     string Account = "";
-  //  string UserName = "";
+    //  string UserName = "";
     if (Session["Account"] == null || string.IsNullOrWhiteSpace(Session["Account"].ToString()))
     {
         Response.Redirect("~/Home/Login");
@@ -15,7 +15,7 @@
     else
     {
         Account = Session["Account"].ToString();
-       // UserName = Session["UserName"].ToString();
+        // UserName = Session["UserName"].ToString();
     }
     //var ticket = (FormsIdentity)User.Identity;
     if (null == Model)
@@ -37,7 +37,7 @@
         <div class="card-header bg-secondary text-white">
             查詢車況回饋
         </div>
-     
+
         <ul class="list-group list-group-flush">
             <!--每一個li是一項查詢條件-->
             @using (Html.BeginForm("CarFeedBackQuery", "Report", FormMethod.Post, new { id = "formFeedBackQuery", @class = "form-horizontal", enctype = "multipart/form-data" }))
@@ -63,7 +63,7 @@
                                 車牌號碼
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="carid" id="carid" value="@((ViewData["carid"]==null ||ViewData["carid"].ToString()=="-1" )?"":ViewData["carid"].ToString())">
+                                <input class="form-control" type="text" name="carid" id="carid" value="@((ViewData["carid"] == null || ViewData["carid"].ToString() == "-1") ? "" : ViewData["carid"].ToString())">
 
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                                 會員帳號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="userID" id="userID" value="@((ViewData["userID"]==null)?"":ViewData["userID"].ToString())">
+                                <input class="form-control" type="text" name="userID" id="userID" value="@((ViewData["userID"] == null) ? "" : ViewData["userID"].ToString())">
 
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                             <div class="col-md-3">
                                 <!-- datepicker -->
                                 <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@((ViewData["SDate"]==null)?"":ViewData["SDate"].ToString())" readonly="false">
+                                    <input class="datePicker form-control" type="text" id="SDate" name="SDate" value="@((ViewData["SDate"] == null) ? "" : ViewData["SDate"].ToString())" readonly="false">
                                     <svg width="22" height="22" viewBox="0 0 22 22">
                                         <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                             <rect width="22" height="19" rx="3" stroke="none" />
@@ -113,7 +113,7 @@
                             <div class="col-md-3">
                                 <!-- datepicker with time -->
                                 <div class="custom-datepicker">
-                                    <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@((ViewData["EDate"]==null)?"":ViewData["EDate"].ToString())" readonly="false">
+                                    <input class="datePicker form-control" type="text" id="EDate" name="EDate" value="@((ViewData["EDate"] == null) ? "" : ViewData["EDate"].ToString())" readonly="false">
                                     <svg width="22" height="22" viewBox="0 0 22 22">
                                         <g transform="translate(0 3)" fill="#fff" stroke="#9fa4ac" stroke-width="1">
                                             <rect width="22" height="19" rx="3" stroke="none" />
@@ -129,6 +129,9 @@
                                         </g>
                                     </svg>
                                 </div>
+                            </div>
+                            <div class="col-md-3">
+                                查單日資料則迄日請空白
                             </div>
                         </div>
                     </div>
@@ -187,12 +190,7 @@
                 }
 
             }
-                </ul>
-        
-   
-              
-             
-    
+        </ul>
     </div>
     <!--end card-->
 </div>
@@ -250,8 +248,6 @@
             {
                 <tr>
                     <td colspan="13" class="text-center">查無結果</td>
-
-
                 </tr>
             }
             else
@@ -270,12 +266,8 @@
                         if (PIC1 != "無")
                         {
                             string uri = ImgURL + feedBackData[i].PIC1;
-
                             PIC1 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片一\" onclick=showPic(\"" + uri + "\",\"img1_" + feedBackData[i].FeedBackID + "\"); /> ";
-
                         }
-
-
                     }
                     catch (Exception ex)
                     {
@@ -286,11 +278,8 @@
                         if (PIC2 != "無")
                         {
                             string uri = ImgURL + feedBackData[i].PIC2;
-
                             PIC2 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片二\" onclick=showPic(\"" + uri + "\",\"img2_" + feedBackData[i].IDNO + "\"); /> ";
-
                         }
-
 
                     }
                     catch (Exception ex)
@@ -302,11 +291,8 @@
                         if (PIC3 != "無")
                         {
                             string uri = ImgURL + feedBackData[i].PIC3;
-
                             PIC3 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片三\" onclick=showPic(\"" + uri + "\",\"img3_" + feedBackData[i].IDNO + "\"); />";
-
                         }
-
 
                     }
                     catch (Exception ex)
@@ -319,20 +305,16 @@
                         {
                             string uri = ImgURL + feedBackData[i].PIC4;
                             PIC4 = "<input type=\"button\" class='btn btn-outline-info' value=\"顯示圖片四\" onclick=showPic(\"" + uri + "\",\"img4_" + feedBackData[i].IDNO + "\"); />";
-
                         }
-
-
                     }
                     catch (Exception ex)
                     {
                         PIC4 = "已刪除照片";
                     }
                     <tr>
-
                         <td>@feedBackData[i].MKTime.ToString("yyyy/MM/dd HH:mm")</td>
                         <td>@orderStatus</td>
-                        <td>@((feedBackData[i].OrderNo == null)?feedBackData[i].IDNO:("H" + feedBackData[i].OrderNo.ToString().PadLeft(7, '0')))</td>
+                        <td>@((feedBackData[i].OrderNo == null) ? feedBackData[i].IDNO : ("H" + feedBackData[i].OrderNo.ToString().PadLeft(7, '0')))</td>
                         <td>@feedBackData[i].CarNo</td>
                         <td> @feedBackData[i].IDNO</td>
                         <td> @feedBackData[i].MEMCNAME</td>
@@ -341,13 +323,10 @@
                         @if (feedBackData[i].isHandle == 0)
                         {
                             <td>
-
                                 <select class="form-control" name="status" id="status">
                                     <option value="0">未處理</option>
                                     <option value="1">已處理</option>
-
                                 </select>
-
                             </td>
                             <td>@Html.Raw(PIC1) <br> @Html.Raw(PIC2)<br> @Html.Raw(PIC3) <br> @Html.Raw(PIC4) <br></td>
                             <td>
@@ -367,7 +346,6 @@
                         }
                     </tr>
                 }
-
             }
 
         </tbody>
@@ -387,8 +365,6 @@
                 <img src="" name="ReviewImg" id="ReviewImg" class="thumbnails" />
             </div>
             <div class="modal-footer">
-
-
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
             </div>
         </div>
@@ -396,10 +372,9 @@
 </div>
 <script language="javascript">
     var carid = '@ViewData["carid"]';
-var objStation = '@ViewData["objStation"]';
-var SD = '@ViewData["SDate"]';
-var ED = '@ViewData["EDate"]';
-var UserID = '@ViewData["userID"]';
-var isHandle = '@ViewData["isHandle"]';
-
+    var objStation = '@ViewData["objStation"]';
+    var SD = '@ViewData["SDate"]';
+    var ED = '@ViewData["EDate"]';
+    var UserID = '@ViewData["userID"]';
+    var isHandle = '@ViewData["isHandle"]';
 </script>
