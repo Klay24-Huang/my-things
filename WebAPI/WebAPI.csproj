@@ -375,7 +375,7 @@
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
     <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
-    <Compile Include="GetMachiParkTokenController.cs" />
+    <Compile Include="Controllers\GetMachiParkTokenController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
