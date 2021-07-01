@@ -13,6 +13,8 @@
     string AuditError = (ViewData["AuditError"] == null) ? "Y" : ViewData["AuditError"].ToString();
     string[] AuditReusltCheck = { "", "", "" };
     string[] AuditTypeCheck = { "", "", "" };
+    string MEMRFNBR = (ViewData["MEMRFNBR"] == null) ? "" : ViewData["MEMRFNBR"].ToString();
+
     if (AuditReuslt != "" && AuditReuslt != "-1")
     {
         AuditReusltCheck[Convert.ToInt32(AuditReuslt)] = " checked";
@@ -187,6 +189,20 @@
                         </div>
                     </div>
                 </li>
+
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員編號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="MEMRFNBR" id="MEMRFNBR" value="@MEMRFNBR" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row" id="idEndNo">
