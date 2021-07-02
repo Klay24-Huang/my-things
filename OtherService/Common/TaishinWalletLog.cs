@@ -46,5 +46,21 @@ namespace OtherService.Common
             }
 
         }
+
+        public void InsTransferStoreValueCreateAccountLog(SPInput_InsTransferStoreValueLog input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsTransferStoreValueLog, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTransferStoreValueLog, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = new ObjType().GetSPName(ObjType.SPType.InsPayTransactionLog);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+
+        }
     }
 }

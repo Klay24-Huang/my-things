@@ -299,10 +299,27 @@ namespace OtherService
             output = DoTransferStoreValueCreateAccountSend(wsInput, ClientId, utcTimeStamp, SignCode).Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
-                //if (output.Data == null)
-                //{
-                //    flag = false;
-                //}
+                SPInput_InsTransferStoreValueLog spInput = new SPInput_InsTransferStoreValueLog()
+                {
+                    GUID = wsInput.GUID,
+                    MerchantId = wsInput.MerchantId,
+                    AccountId = "",
+                    BarCode = wsInput.BarCode,
+                    POSId = wsInput.POSId,
+                    StoreId = wsInput.StoreId,
+                    StoreTransDate = wsInput.StoreTransDate,
+                    StoreTransId = wsInput.StoreTransId,
+                    TransmittalDate = "",
+                    TransDate = output.Result.TransDate,
+                    TransId = output.Result.TransId,
+                    Amount = wsInput.Amount,
+                    ActualAmount = output.Result.ActualAmount,
+                    TransAccountId = string.Join("|",wsInput.AccountData.Select(t=>t.TransferAccountId).ToList()),
+                    SourceFrom = wsInput.SourceFrom,
+                    AmountType = "2",
+                };
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsTransferStoreValueCreateAccountLog(spInput, ref flag, ref errCode, ref lstError);
             }
             else
             {

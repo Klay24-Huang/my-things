@@ -67,6 +67,10 @@ namespace OtherService.Enum
             /// 台新錢包扣款 LOG寫入
             /// </summary>
             InsPayTransactionLog,
+            /// <summary>
+            /// 台新錢包轉贈 LOG寫入
+            /// </summary>
+            InsTransferStoreValueLog,
         }
         /// <summary>
         /// 取出SPName
@@ -123,6 +127,9 @@ namespace OtherService.Enum
                     break;
                 case SPType.InsPayTransactionLog:
                     SPName = "usp_InsPayTransactionLog";
+                    break;
+                case SPType.InsTransferStoreValueLog:
+                    SPName = "usp_InsTransferStoreValueCreateAccountLog";
                     break;
             }
             return SPName;
