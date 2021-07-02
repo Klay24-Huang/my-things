@@ -792,17 +792,47 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
+        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account, string DeleteMember_check)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if (repository.IsMemberExist(IDNO))
+            if(DeleteMember_check == "true")
             {
                 repository.DeleteMember(IDNO, IRent_Only, Account);
-                ViewData["result"] = true;
+                ViewData["resultMessage"] = "刪除成功";
+                return View();
+            }
+            //0:無預約無合約 1:有合約 2:有預約無合約
+            string flag = repository.checkContract(IDNO);
+            if (flag == "1")
+            {
+                ViewData["result"] = "1";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "有IRent租車資料，不可刪除會員";
+                ViewData["IRent_Only"] = IRent_Only;
+            }
+            else if(flag == "0")
+            {
+                var response = repository.DeleteMember(IDNO, IRent_Only, Account);
+
+                //認證錯誤或有合約資料無法刪除
+                if(response != "處理成功")
+                {
+                    ViewData["IDNO"] = IDNO;
+                    ViewData["resultMessage"] = response;
+                    ViewData["IRent_Only"] = IRent_Only;
+                }
+
+                ViewData["result"] = "0";
+                ViewData["IDNO"] = "";
+                ViewData["resultMessage"] = "刪除成功";
+                ViewData["IRent_Only"] = "";
             }
             else
             {
-                ViewData["result"] = false;
+                ViewData["result"] = "2";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "";
+                ViewData["IRent_Only"] = IRent_Only;
             }
 
             return View();
