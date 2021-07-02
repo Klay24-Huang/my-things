@@ -190,17 +190,18 @@
         var ED = $("#EndDate").val();
         var flag = true;
         var errMsg = "";
-
-        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "") {
+        if ($("#MEMNAME").val() == "" && ($("#IDNO").val() == "" && $("#ORDERNO").val() == "")) {
             flag = false;
-            errMsg = "請輸入ID或姓名";
-        }    
-
+            errMsg = "請輸入姓名";
+        }
+        if ($("#IDNO").val() == "" && $("#ORDERNO").val() != "") {
+            flag = false;
+            errMsg = "請輸入ID";
+        }
         if ($("#ORDERNO").val() != "" && false == RegexOrderNo($("#ORDERNO").val())) {
             flag = false;
             errMsg = "合約編號格式不符（格式：H+數字)";
         }
-
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;

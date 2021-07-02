@@ -15,18 +15,21 @@
         var StartTime = $("#Time_Start").val();
         var EndTime = $("#Time_End").val();
         if (Date.parse(StartTime).valueOf() > Date.parse(EndTime).valueOf()) {
-            disabledLoadingAndShowAlert("起始時間不得大於結束時間");
-            return false;
+            //disabledLoadingAndShowAlert("起始時間不得大於結束時間");
+            //return false;
+            return "起始時間不得大於結束時間";
         }
         if (StartTime == "" || EndTime == "") {
-            disabledLoadingAndShowAlert("日期格不得為空");
-            return false;
+            //disabledLoadingAndShowAlert("日期格不得為空");
+            //return false;
+            return "日期格不得為空"
         }
         if ((Date.parse(EndTime) - Date.parse(StartTime)) / 86400000 > 31) {
-            disabledLoadingAndShowAlert("間隔不得大於31天");
-            return false;
+            //disabledLoadingAndShowAlert("間隔不得大於31天");
+            //return false;
+            return "間隔不得大於31天"
         }
-        return true;
+        return "true";
     }
 
     //countLoadingTime = function () {
@@ -65,13 +68,13 @@
 
     $("#ExportCar").on("click", function () {
         ShowLoading("資料處理中...");
-        var flag = checkDate();
-        var message = "";
+        var message = checkDate();
+        //var message = "";
         var StartTime = $("#Time_Start").val();
         var EndTime = $("#Time_End").val();
         $('#IsCar').val("true");
 
-        if (flag) {
+        if (message == "true") {
             var obj = new Object();
             obj.StartTime = StartTime;
             obj.EndTime = EndTime;
@@ -85,18 +88,19 @@
         } else {
             disabledLoadingAndShowAlert(message);
         }
+        $.busyLoadFull("hide");
         return false;
     });
 
     $("#ExportMoto").on("click", function () {
         ShowLoading("資料處理中...");
-        var flag = checkDate();
-        var message = "";
+        var message = checkDate();
+        //var message = "";
         var StartTime = $("#Time_Start").val();
         var EndTime = $("#Time_End").val();
 
 
-        if (flag) {
+        if (message == "true") {
             var obj = new Object();
 
             obj.StartTime = StartTime;
@@ -111,6 +115,7 @@
         } else {
             disabledLoadingAndShowAlert(message);
         }
+        $.busyLoadFull("hide");
         return false;
     });
 

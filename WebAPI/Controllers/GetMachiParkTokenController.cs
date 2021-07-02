@@ -21,7 +21,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
-namespace WebAPI
+namespace WebAPI.Controllers
 {
     /// <summary>
     /// 取得車麻吉Token

@@ -42,7 +42,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
+        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
@@ -53,6 +53,7 @@ namespace Web.Controllers
             ViewData["IDNO"] = IDNO;
             ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
             ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
             string IDNoSuffCombind = "";
             if (IDNOSuff != null)
             {
@@ -68,7 +69,7 @@ namespace Web.Controllers
                 }
             }
 
-            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
+            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
 
             return View(lstData);
         }
@@ -388,7 +389,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
+        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
@@ -399,6 +400,7 @@ namespace Web.Controllers
             ViewData["IDNO"] = IDNO;
             ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
             ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
             string IDNoSuffCombind = "";
             if (IDNOSuff != null)
             {
@@ -416,7 +418,7 @@ namespace Web.Controllers
             List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
             if (UserName != "" || IDNO != "")
             {
-                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
+                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
             }
 
             return View(lstData);
@@ -740,6 +742,8 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        #region 手機重複清單
         /// <summary>
         /// 手機重複清單
         /// </summary>
@@ -750,8 +754,9 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
         }
+        #endregion
 
-        # region 改密碼
+        #region 改密碼
         /// <summary>
         /// 改密碼
         /// </summary>
@@ -1205,20 +1210,20 @@ namespace Web.Controllers
                             {
                                 if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
                                 {
-                                    errorMsg = "第" + (i + 1) + "筆合約編號未上傳";
+                                    errorMsg = "第" + (i) + "筆合約編號未上傳";
                                     flag = false;
                                     break;
                                 }
                                 else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
                                 {
-                                    errorMsg = "第"+(i+1)+"筆合約編號格式錯誤";
+                                    errorMsg = "第"+(i)+"筆合約編號格式錯誤";
                                     flag = false;
                                     break;
                                 }
 
                                 if(sheet.GetRow(i).GetCell(2) == null)
                                 {
-                                    errorMsg = "第" + (i + 1) + "筆子項沒填";
+                                    errorMsg = "第" + (i) + "筆子項沒填";
                                     flag = false;
                                     break;
                                 }

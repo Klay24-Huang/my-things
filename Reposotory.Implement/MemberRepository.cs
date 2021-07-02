@@ -76,7 +76,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_SameMobileData> lstMember = null;
-            SqlParameter[] para = new SqlParameter[2];
+            SqlParameter[] para = new SqlParameter[1];
             string term = "";
             string SQL = " SELECT * FROM VW_BE_GetSameMobile ORDER BY MEMTEL ASC";
 
@@ -131,16 +131,16 @@ namespace Reposotory.Implement
         /// <param name="IDNO"></param>
         /// <param name="IDNOSuff"></param>
         /// <returns></returns>
-        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff, string AuditError)
+        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff, string AuditError, string MEMRFNBR)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetAuditList> lstAudits = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
+            //string term2 = "";
             //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
-            string SQL = " EXEC usp_BE_GetAuditList  '" + AuditMode.ToString() + 
+            string SQL = " EXEC usp_BE_GetAuditList_Tang  '" + AuditMode.ToString() + 
                 "','" + AuditType.ToString() +
                 "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
                 "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
@@ -148,8 +148,9 @@ namespace Reposotory.Implement
                 "','" + UserName + 
                 "','" + IDNO +
                 "','" + IDNOSuff +
+                "','" + MEMRFNBR +
                 "','" + AuditError + "'";
-            int nowCount = 0;
+            //int nowCount = 0;
             //if (false == string.IsNullOrWhiteSpace(IDNO))
             //{
             //    if (term != "") { term += " AND "; }
@@ -275,7 +276,6 @@ namespace Reposotory.Implement
             BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_GetAuditDetail ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -307,12 +307,9 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_AuditImage> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
-            string term2 = "";
             string SQL = " EXEC usp_BE_GetAuditImage_Tang  '" + IDNO + "'";
-            int nowCount = 0;
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
     
             return lstAudits;
@@ -365,10 +362,8 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_AuditHistory> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_GetAuditHistory ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -399,7 +394,6 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_MileStone> lstAudits = null;
-            //BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
 
@@ -415,7 +409,6 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_MileStoneDetail> lstAudits = null;
-            //BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
 
@@ -503,10 +496,8 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_InsuranceData> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_BE_GetInsuranceData ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -559,9 +550,9 @@ namespace Reposotory.Implement
         public string GetMobileBlock(string TEL)
         {
             //bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            //List<ErrorInfo> lstError = new List<ErrorInfo>();
             string lstMember = null;
-            SqlParameter[] para = new SqlParameter[1];
+            //SqlParameter[] para = new SqlParameter[1];
             //int nowCount = 0;
             //string term = "";
             string SQL = $" SELECT * FROM VW_BE_GetBlockMobile where Mobile={TEL} ";
