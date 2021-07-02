@@ -800,7 +800,7 @@ namespace Web.Controllers
         public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account, string DeleteMember_check)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if(DeleteMember_check == "true")
+            if (DeleteMember_check == "true")
             {
                 repository.DeleteMember(IDNO, IRent_Only, Account);
                 ViewData["resultMessage"] = "刪除成功";
@@ -815,12 +815,12 @@ namespace Web.Controllers
                 ViewData["resultMessage"] = "有IRent租車資料，不可刪除會員";
                 ViewData["IRent_Only"] = IRent_Only;
             }
-            else if(flag == "0")
+            else if (flag == "0")
             {
                 var response = repository.DeleteMember(IDNO, IRent_Only, Account);
 
                 //認證錯誤或有合約資料無法刪除
-                if(response != "處理成功")
+                if (response != "處理成功")
                 {
                     ViewData["IDNO"] = IDNO;
                     ViewData["resultMessage"] = response;
@@ -877,7 +877,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport,string MEMO_CONTENT)
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport, string MEMO_CONTENT)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -986,7 +986,7 @@ namespace Web.Controllers
                         //判斷action是不是BackStageInsert=1的那幾個
                         if (flag)
                         {
-                            for (int i=1; i<=sheetLen; i++)
+                            for (int i = 1; i <= sheetLen; i++)
                             {
                                 if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "REPORT" &&
                                     (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "QUESTION" &&
@@ -1008,7 +1008,7 @@ namespace Web.Controllers
                             //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
                             for (int i = 1; i <= sheetLen; i++)
                             {
-                                if (sheet.GetRow(i).GetCell(2)==null)
+                                if (sheet.GetRow(i).GetCell(2) == null)
                                 {
                                     memo2 = "";
                                 }
@@ -1065,7 +1065,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE,string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE, string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -1176,12 +1176,12 @@ namespace Web.Controllers
                         if (fileImport.ContentLength > 0)
                         {
                             string fileName = string.Concat(new string[]{
-                            "MemberScoreImport",
-                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
-                            "_",
-                            DateTime.Now.ToString("yyyyMMddHHmmss"),
-                            ".xlsx"
-                        });
+                                "MemberScoreImport",
+                                ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                                "_",
+                                DateTime.Now.ToString("yyyyMMddHHmmss"),
+                                ".xlsx"
+                            });
                             DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
                             if (!di.Exists)
                             {
@@ -1206,28 +1206,31 @@ namespace Web.Controllers
                                 }
                             }
                             //判斷合約編號是否有H
-                            for (int i = 1; i <= sheetLen; i++)
+                            if (flag)
                             {
-                                if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
+                                for (int i = 1; i <= sheetLen; i++)
                                 {
-                                    errorMsg = "第" + (i) + "筆合約編號未上傳";
-                                    flag = false;
-                                    break;
-                                }
-                                else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
-                                {
-                                    errorMsg = "第"+(i)+"筆合約編號格式錯誤";
-                                    flag = false;
-                                    break;
-                                }
+                                    if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號未上傳";
+                                        flag = false;
+                                        break;
+                                    }
+                                    else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號格式錯誤";
+                                        flag = false;
+                                        break;
+                                    }
 
-                                if(sheet.GetRow(i).GetCell(2) == null)
-                                {
-                                    errorMsg = "第" + (i) + "筆子項沒填";
-                                    flag = false;
-                                    break;
+                                    if (sheet.GetRow(i).GetCell(2) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆子項沒填";
+                                        flag = false;
+                                        break;
+                                    }
                                 }
-                            }
+                            }                     
                             //通過第一關 
                             if (flag)
                             {
@@ -1238,7 +1241,7 @@ namespace Web.Controllers
                                     SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
                                     {
                                         ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                        ORDERNO = sheet.GetRow(i).GetCell(4) == null ? 0:int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
+                                        ORDERNO = sheet.GetRow(i).GetCell(4) == null ? 0 : int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
                                         DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
                                         SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
                                         SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
@@ -1254,6 +1257,7 @@ namespace Web.Controllers
                                     {
                                         //errorLine = i.ToString();
                                         errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                        break;
                                     }
                                 }
                             }
