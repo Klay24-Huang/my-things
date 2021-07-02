@@ -1,5 +1,6 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 //using NLog.Internal;
 using System;
@@ -593,7 +594,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
             string term = "";
-            string SQL = $" SELECT * FROM TB_MemberData WHERE MEMIDNO = '{IDNO}'";
+            string SQL = $" SELECT * FROM TB_MemberData WITH(NOLOCK) WHERE IDNO = '{IDNO}'";
             List<BE_MemberData> result = new List<BE_MemberData>();
             result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
             if(result.Count == 0)
@@ -606,30 +607,46 @@ namespace Reposotory.Implement
             }
         }
 
-        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        public string checkContract(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
+            string term = "";
+            string SQL = $" SELECT * FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO = '{IDNO}'";
+            List<BE_MemberData> result = new List<BE_MemberData>();
+            result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+            if(result.Count > 0)
+            {
+                return "1";
+            }
+            else
+            {
+                flag = false;
+                lstError = new List<ErrorInfo>();
+                para = new SqlParameter[1]; // term是空就用不到
+                term = "";
+                SQL = " SELECT * FROM TB_OrderMain A WITH(NOLOCK)";
+                SQL += " LEFT JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number";
+                SQL += $" WHERE IDNO = '{IDNO}' AND B.order_number IS NOT NULL ";
+                SQL += " order by stop_time desc";
+                result = new List<BE_MemberData>();
+                result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+                if (result.Count == 0)
+                {
+                    return "0";
+                }
+                else
+                {
+                    return "2";
+                }
+            }
+        }
+
+        public string DeleteMember(string IDNO, string IRent_Only, string Account)
         {                
-            SqlConnection conn = new SqlConnection(ConnectionString);
-            conn.Open();
-            SqlTransaction tran;
-            tran = conn.BeginTransaction();
-            SqlCommand cmd = new SqlCommand();
-            cmd.Connection = conn;
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Transaction = tran;
-            cmd.CommandText = "usp_DeleteMember";
-
-            SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
-            MSG.Direction = ParameterDirection.Output;
-            cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
-            cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
-
-            cmd.ExecuteNonQuery();
-            tran.Commit();
-
-            conn.Close();
-            conn.Dispose();
-
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //string apiAddress = "http://localhost:4149/api/" + "NPR010/Delete";
             string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
             HttpClient client = new HttpClient()
             {
@@ -657,7 +674,33 @@ namespace Reposotory.Implement
             HttpResponseMessage apiResponse = new HttpResponseMessage();
             apiResponse = client.PostAsync(apiAddress, postContent).Result;
             string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
-            
+            WebAPIOutput_NPR013Reg result = JsonConvert.DeserializeObject<WebAPIOutput_NPR013Reg>(rspStr);
+
+            if(result.Message == "處理成功")
+            {
+                SqlConnection conn = new SqlConnection(ConnectionString);
+                conn.Open();
+                SqlTransaction tran;
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Transaction = tran;
+                cmd.CommandText = "usp_DeleteMember";
+
+                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
+                MSG.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
+                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
+
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+
+                conn.Close();
+                conn.Dispose();
+            }
+
+            return result.Message;
         }
 
         public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)
