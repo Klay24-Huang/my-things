@@ -742,6 +742,8 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        #region 手機重複清單
         /// <summary>
         /// 手機重複清單
         /// </summary>
@@ -752,8 +754,9 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
         }
+        #endregion
 
-        # region 改密碼
+        #region 改密碼
         /// <summary>
         /// 改密碼
         /// </summary>
@@ -1177,20 +1180,20 @@ namespace Web.Controllers
                             {
                                 if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
                                 {
-                                    errorMsg = "第" + (i + 1) + "筆合約編號未上傳";
+                                    errorMsg = "第" + (i) + "筆合約編號未上傳";
                                     flag = false;
                                     break;
                                 }
                                 else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
                                 {
-                                    errorMsg = "第"+(i+1)+"筆合約編號格式錯誤";
+                                    errorMsg = "第"+(i)+"筆合約編號格式錯誤";
                                     flag = false;
                                     break;
                                 }
 
                                 if(sheet.GetRow(i).GetCell(2) == null)
                                 {
-                                    errorMsg = "第" + (i + 1) + "筆子項沒填";
+                                    errorMsg = "第" + (i) + "筆子項沒填";
                                     flag = false;
                                     break;
                                 }
