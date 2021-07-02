@@ -299,6 +299,7 @@ namespace OtherService
             output = DoTransferStoreValueCreateAccountSend(wsInput, ClientId, utcTimeStamp, SignCode).Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
+                //20210702 ADD BY Umeko REASON.扣款成功後寫入LOG紀錄
                 SPInput_InsTransferStoreValueLog spInput = new SPInput_InsTransferStoreValueLog()
                 {
                     GUID = wsInput.GUID,
