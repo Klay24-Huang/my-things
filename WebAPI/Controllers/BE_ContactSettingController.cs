@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (apiInput.Mode < 0 || apiInput.Mode > 2)
+                    if (apiInput.Mode < 0 || apiInput.Mode > 7)
                     {
                         flag = false;
                         errCode = "ERR900";
@@ -152,7 +152,7 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                if (apiInput.Mode == 0)
+                if (apiInput.Mode == 0 || apiInput.Mode == 3 || apiInput.Mode == 4 || apiInput.Mode == 5 || apiInput.Mode == 6 || apiInput.Mode == 7)
                 {
                     #region 取出目前訂單狀態
                     StationAndCarRepository _repository = new StationAndCarRepository(connetStr);
@@ -337,13 +337,12 @@ namespace WebAPI.Controllers
                                 //        flag = new CarCommonFunc().BE_CheckReturnCar(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode);
                                 //    }
                                 //    // 20201223;不管檢核結果，強還照做
-
                                 //    flag = true;
                                 //    errCode = "000000";
                                 //}
                                 if (flag)
                                 {
-                                    if (lstOrder[0].car_mgt_status == 15)
+                                    if (lstOrder[0].car_mgt_status == 15)   //基本上不會跑進這個判斷中，訂單是從11跳16
                                     {
                                         if (clearFlag)
                                         {
@@ -394,16 +393,17 @@ namespace WebAPI.Controllers
                                             SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
                                             {
                                                 IDNO = IDNO,
-                                                LogID = LogID,
                                                 OrderNo = tmpOrder,
                                                 UserID = apiInput.UserID,
                                                 transaction_no = "",
                                                 ReturnDate = ReturnDate,
                                                 bill_option = apiInput.bill_option,
-                                                NPOBAN = apiInput.NPOBAN,
                                                 CARRIERID = apiInput.CARRIERID,
+                                                NPOBAN = apiInput.NPOBAN,
                                                 unified_business_no = apiInput.unified_business_no,
-                                                ParkingSpace = apiInput.parkingSpace
+                                                ParkingSpace = apiInput.parkingSpace,
+                                                Mode = apiInput.Mode,
+                                                LogID = LogID
                                             };
                                             string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
                                             SPOutput_Base PayOutput = new SPOutput_Base();
@@ -436,7 +436,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -446,6 +446,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        #region 取車-汽車
         /// <summary>
         /// 取汽車
         /// </summary>
@@ -657,44 +659,8 @@ namespace WebAPI.Controllers
                             mil = info.Millage;
                         }
                     }
-                    //寫入顧客卡
                     if (flag)
                     {
-                        if (lstCardList != null)
-                        {
-                            int CardLen = lstCardList.Count;
-                            if (CardLen > 0)
-                            {
-                                string[] CardStr = new string[CardLen];
-                                for (int i = 0; i < CardLen; i++)
-                                {
-                                    CardStr[i] = lstCardList[i].CardNO;
-                                }
-                                if (CardStr.Length > 0)
-                                {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
-                                    WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new ClientCardNoObj()
-                                        {
-                                            ClientCardNo = CardStr
-                                        }
-                                    };
-                                    requestId = SetCardInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
-                                }
-                            }
-                        }
-
                         //執行sp合約
                         if (flag)
                         {
@@ -713,20 +679,101 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
-                        //設定租約狀態
-                        if (flag)
+                        if (flag && FetAPI.IsSupportCombineCmd(CID))
                         {
-                            if (info.extDeviceStatus1 == 0) //無租約才要送設約租
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
-                                WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
+                                command = true,
+                                method = CommandType,
+                                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                _params = new ClientCardNoObj()
                                 {
-                                    command = true,
-                                    method = CommandType,
-                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                    _params = new Params()
-                                };
+                                    ClientCardNo = new string[] { }
+                                }
+                            };
+                            //寫入顧客卡
+                            if (lstCardList != null)
+                            {
+                                int CardLen = lstCardList.Count;
+                                if (CardLen > 0)
+                                {
+                                    string[] CardStr = new string[CardLen];
+                                    for (int i = 0; i < CardLen; i++)
+                                    {
+                                        CardStr[i] = lstCardList[i].CardNO;
+                                    }
+                                    if (CardStr.Length > 0)
+                                    {
+                                        SetCardInput._params.ClientCardNo = CardStr;
+                                    }
+                                }
+                            }
+                            //組合指令顧客卡必輸入，若沒有則帶隨機值
+                            if (SetCardInput._params.ClientCardNo.Length == 0)
+                            {
+                                SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                            }
+                            requestId = SetCardInput.requestId;
+                            method = CommandType;
+                            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                            if (flag)
+                            {
+                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            }
+                        }
+                        else
+                        {
+                            //寫入顧客卡
+                            if (lstCardList != null)
+                            {
+                                int CardLen = lstCardList.Count;
+                                if (CardLen > 0)
+                                {
+                                    string[] CardStr = new string[CardLen];
+                                    for (int i = 0; i < CardLen; i++)
+                                    {
+                                        CardStr[i] = lstCardList[i].CardNO;
+                                    }
+                                    if (CardStr.Length > 0)
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
+                                        WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                                        {
+                                            command = true,
+                                            method = CommandType,
+                                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                            _params = new ClientCardNoObj()
+                                            {
+                                                ClientCardNo = CardStr
+                                            }
+                                        };
+                                        requestId = SetCardInput.requestId;
+                                        method = CommandType;
+                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                                        if (flag)
+                                        {
+                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        }
+                                    }
+                                }
+                            }
+                            //設定租約狀態
+                            if (flag)
+                            {
+                                if (info.extDeviceStatus1 == 0) //無租約才要送設約租
+                                {
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
+                                    WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
+                                    {
+                                        command = true,
+                                        method = CommandType,
+                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                        _params = new Params()
+                                    };
 
                                 requestId = SetRentInput.requestId;
                                 method = CommandType;
@@ -767,6 +814,9 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
+        #endregion
+
+        #region 取車-機車
         private bool DoPickMotor(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, ref string errCode, ref string errMsg, CommonFunc baseVerify)
         {
             bool flag = true;
@@ -877,7 +927,9 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
+        #endregion
 
+        #region 重新計價
         private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode)
         {
             #region 初始宣告
@@ -1070,7 +1122,7 @@ namespace WebAPI.Controllers
                 {
                     //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
                     // 20210219;修改還車里程取得規則
-                    if (OrderDataLists[0].car_mgt_status >= 11) 
+                    if (OrderDataLists[0].car_mgt_status >= 11)
                     {
                         //已還車
                         //保險起見，再判斷一次是否有還車里程，以防程式崩潰
@@ -1462,6 +1514,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("建空模");
                 }
 
+                // 20210510 UPD BY YEH REASON.把車麻吉停車費打開
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     //檢查有無車麻吉停車費用
@@ -1483,7 +1536,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("車麻吉");
                 }
 
-                //20210507 ADD BY YEH REASON.串接CityParking停車場
+                //20210510 ADD BY YEH REASON.串接CityParking停車場
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
@@ -1853,5 +1906,6 @@ namespace WebAPI.Controllers
 
             return flag;
         }
+        #endregion
     }
 }

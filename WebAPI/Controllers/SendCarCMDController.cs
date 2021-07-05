@@ -240,6 +240,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
@@ -825,6 +830,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }

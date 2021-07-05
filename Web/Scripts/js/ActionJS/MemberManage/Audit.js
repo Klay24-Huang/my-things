@@ -37,7 +37,7 @@
         }
     });
 
-    if ($("#IDNO").val() == "") {
+    if ($("#IDNO").val() == "" && $("#MEMRFNBR").val() == "") {
         if ($('#StartDate').val() == '') {
             $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
         }
@@ -51,6 +51,23 @@
 
     $('#IDNO').change(function () {
         if ($("#IDNO").val()!="") {
+            $("#StartDate").val('');
+            $("#EndDate").val('');
+            $('#AuditType').val('-1');
+            $('#AuditError').val('');
+        } else {
+            if ($('#StartDate').val() == '') {
+                $("#StartDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
+            }
+            if ($('#EndDate').val() == '') {
+                $("#EndDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
+            }
+
+        }
+    });
+
+    $('#MEMRFNBR').change(function () {
+        if ($("#MEMRFNBR").val() != "") {
             $("#StartDate").val('');
             $("#EndDate").val('');
             $('#AuditType').val('-1');

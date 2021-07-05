@@ -267,7 +267,7 @@ namespace Reposotory.Implement
                 para[nowCount] = new SqlParameter("@spec_status", SqlDbType.VarChar, 20);
                 para[nowCount].Value = Mode;
                 para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
+                nowCount++; 
             }
             if (string.IsNullOrEmpty(SD) == false && SD != "")
             {

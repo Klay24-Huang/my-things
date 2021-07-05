@@ -451,7 +451,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             if (flag)
             {
@@ -558,6 +558,14 @@ namespace Web.Controllers
         /// </summary>
         /// <returns></returns>
         public ActionResult ContactMaintainOfCarNew()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 合約修改(汽機車整併)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ContactMaintainNew()
         {
             return View();
         }

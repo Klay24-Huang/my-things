@@ -1,5 +1,6 @@
 ﻿using Domain.MemberData;
 using Domain.TB.BackEnd;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 //using NLog.Internal;
 using System;
@@ -75,7 +76,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_SameMobileData> lstMember = null;
-            SqlParameter[] para = new SqlParameter[2];
+            SqlParameter[] para = new SqlParameter[1];
             string term = "";
             string SQL = " SELECT * FROM VW_BE_GetSameMobile ORDER BY MEMTEL ASC";
 
@@ -130,16 +131,16 @@ namespace Reposotory.Implement
         /// <param name="IDNO"></param>
         /// <param name="IDNOSuff"></param>
         /// <returns></returns>
-        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff, string AuditError)
+        public List<BE_GetAuditList> GetAuditLists(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string IDNOSuff, string AuditError, string MEMRFNBR)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetAuditList> lstAudits = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
+            //string term2 = "";
             //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
-            string SQL = " EXEC usp_BE_GetAuditList  '" + AuditMode.ToString() + 
+            string SQL = " EXEC usp_BE_GetAuditList_Tang  '" + AuditMode.ToString() + 
                 "','" + AuditType.ToString() +
                 "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
                 "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
@@ -147,8 +148,9 @@ namespace Reposotory.Implement
                 "','" + UserName + 
                 "','" + IDNO +
                 "','" + IDNOSuff +
+                "','" + MEMRFNBR +
                 "','" + AuditError + "'";
-            int nowCount = 0;
+            //int nowCount = 0;
             //if (false == string.IsNullOrWhiteSpace(IDNO))
             //{
             //    if (term != "") { term += " AND "; }
@@ -274,7 +276,6 @@ namespace Reposotory.Implement
             BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_GetAuditDetail ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -306,12 +307,9 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_AuditImage> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
-            string term2 = "";
-            string SQL = " EXEC usp_BE_GetAuditImage  '" + IDNO + "'";
-            int nowCount = 0;
+            string SQL = " EXEC usp_BE_GetAuditImage_Tang  '" + IDNO + "'";
             lstAudits = GetObjList<BE_AuditImage>(ref flag, ref lstError, SQL, para, term);
     
             return lstAudits;
@@ -340,7 +338,7 @@ namespace Reposotory.Implement
             BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[0];
             string term = "";
-            string term2 = "";
+            //string term2 = "";
             string SQL = " EXEC usp_BE_UpdateMemberData  '" + IDNO + "'," +
                 "N'" + MEMNAME + "'," +
                 "'" + Mobile + "'," +
@@ -364,10 +362,8 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_AuditHistory> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_GetAuditHistory ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -389,6 +385,108 @@ namespace Reposotory.Implement
         }
 
         /// <summary>
+        /// 取得徽章
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <returns></returns>
+        public List<BE_MileStone> GetMileStone(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MileStone> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+
+            string SQL = " EXEC SP_GetMileStone  '" + IDNO + "'" ; 
+
+            lstAudits = GetObjList<BE_MileStone>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        public List<BE_MileStoneDetail> GetMileStoneDetail(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MileStoneDetail> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+
+            string SQL = " SELECT * FROM VW_GetMileStoneDetail where IDNO='" + IDNO + "' order by Action,MKTime desc";
+
+            lstAudits = GetObjList<BE_MileStoneDetail>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        public List<BE_MemberScore> GetMemberScore(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_MemberScore> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetMemberScore ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_MemberScore>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        public List<BE_GetMemberScoreFull> GetMemberScoreFull(string IDNO, string NAME, string ORDERNO, string SDATE, string EDATE)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberScoreFull> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            string SQL = $" EXEC SP_GetMemberScoreFull '" + IDNO + "','" + NAME + "','" + ORDERNO + "','" + SDATE + "','" + EDATE + "'";
+
+            lstAudits = GetObjList<BE_GetMemberScoreFull>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
+        public List<BE_GetMemberData> GetMemberData_ForScore(string ORDERNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberData> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " SELECT * FROM VW_BE_GetMemberData ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(ORDERNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " order_number=@ORDERNO";
+                para[nowCount] = new SqlParameter("@ORDERNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = ORDERNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_GetMemberData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        /// <summary>
         /// 取得安心保險清單
         /// </summary>
         /// <param name="IDNO"></param>
@@ -398,10 +496,8 @@ namespace Reposotory.Implement
             bool flag = true;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_InsuranceData> lstAudits = null;
-            BE_AuditDetail obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string term2 = "";
             string SQL = " SELECT * FROM VW_BE_GetInsuranceData ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
@@ -454,9 +550,9 @@ namespace Reposotory.Implement
         public string GetMobileBlock(string TEL)
         {
             //bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            //List<ErrorInfo> lstError = new List<ErrorInfo>();
             string lstMember = null;
-            SqlParameter[] para = new SqlParameter[1];
+            //SqlParameter[] para = new SqlParameter[1];
             //int nowCount = 0;
             //string term = "";
             string SQL = $" SELECT * FROM VW_BE_GetBlockMobile where Mobile={TEL} ";
@@ -465,7 +561,7 @@ namespace Reposotory.Implement
             return lstMember;
         }
 
-        /// 取得黑名單手機號碼
+        /// 取得悠遊付專案
         public List<BE_GetEasyWalletList> GetEasyWalletList(string IDNO)
         {
             bool flag = false;
@@ -473,12 +569,22 @@ namespace Reposotory.Implement
             List<BE_GetEasyWalletList> lstAudits = null;
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
-            //string SQL = $" select orderNo,ITEM,IDNO,convert(char(8),A_SYSDT,112) from EASYPAY_Order where IDNO='{IDNO}' order by U_SYSDT desc ";  //會異常，select出的名稱要和宣告的一樣
-            string SQL = $" select a.orderNo, a.ITEM as projectName, a.IDNO,convert(char(8), a.orderCreateDateTime,112) as orderTime, a.merchantOrderNo,b.MEMCNAME,a.orderAmount " +
-                $"from EASYPAY_Order a join TB_MemberData b on a.IDNO = b.MEMIDNO left join EASYPAY_REFUND c on a.orderNo = c.orderNo where a.IDNO = '{IDNO}' and a.redirectPaymentUrl <> '' " +
-                $"and convert(char(8), a.orderCreateDateTime,112) > convert(char(8), DATEADD(day, -30, getdate()), 112) and c.orderNo is null order by a.U_SYSDT desc ";
+            string SQL = $" EXEC SP_GetEasyWalletList '" + IDNO + "'";
 
             lstAudits = GetObjList<BE_GetEasyWalletList>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+        //取得悠遊付訂單
+        public List<BE_Refund> GetEasyWalletOrder(string sdate, string edate)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_Refund> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            string SQL = $" EXEC SP_GetEasyWalletOrder '"+ sdate +"','"+ edate+"'";
+
+            lstAudits = GetObjList<BE_Refund>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
 
@@ -488,7 +594,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
             string term = "";
-            string SQL = $" SELECT * FROM TB_MemberData WHERE MEMIDNO = '{IDNO}'";
+            string SQL = $" SELECT * FROM TB_MemberData WITH(NOLOCK) WHERE IDNO = '{IDNO}'";
             List<BE_MemberData> result = new List<BE_MemberData>();
             result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
             if(result.Count == 0)
@@ -501,36 +607,77 @@ namespace Reposotory.Implement
             }
         }
 
-        public void DeleteMember(string IDNO, string IRent_Only, string Account)
+        public string checkContract(string IDNO)
         {
-            if(IRent_Only == "on")
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
+            string term = "";
+            string SQL = $" SELECT * FROM TB_OrderMain WITH(NOLOCK) WHERE IDNO = '{IDNO}'";
+            List<BE_MemberData> result = new List<BE_MemberData>();
+            result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+            if(result.Count > 0)
             {
-
-                SqlConnection conn = new SqlConnection(ConnectionString);
-                conn.Open();
-                SqlTransaction tran;
-                tran = conn.BeginTransaction();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = conn;
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Transaction = tran;
-                cmd.CommandText = "usp_DeleteMember";
-
-                SqlParameter MSG = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 100);
-                MSG.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add("IDNO", SqlDbType.VarChar, 11).Value = IDNO;
-                cmd.Parameters.Add("Account", SqlDbType.VarChar, 5).Value = Account;
-
-                cmd.ExecuteNonQuery();
-                tran.Commit();
-
-                conn.Close();
-                conn.Dispose();
-
+                return "1";
             }
             else
             {
-                
+                flag = false;
+                lstError = new List<ErrorInfo>();
+                para = new SqlParameter[1]; // term是空就用不到
+                term = "";
+                SQL = " SELECT * FROM TB_OrderMain A WITH(NOLOCK)";
+                SQL += " LEFT JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number";
+                SQL += $" WHERE IDNO = '{IDNO}' AND B.order_number IS NOT NULL ";
+                SQL += " order by stop_time desc";
+                result = new List<BE_MemberData>();
+                result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
+                if (result.Count == 0)
+                {
+                    return "0";
+                }
+                else
+                {
+                    return "2";
+                }
+            }
+        }
+
+        public string DeleteMember(string IDNO, string IRent_Only, string Account)
+        {                
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //string apiAddress = "http://localhost:4149/api/" + "NPR010/Delete";
+            string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
+            HttpClient client = new HttpClient()
+            {
+                BaseAddress = new System.Uri(apiAddress)
+            };
+
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
+
+            string param = JsonConvert.SerializeObject(new
+            {
+                IDNO = IDNO,
+                Account = Account,
+                user_id = ConfigurationManager.AppSettings["userid"],
+                sig = EncryptStr,
+                IRentOnly = IRent_Only
+            });
+
+            HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
+            HttpResponseMessage apiResponse = new HttpResponseMessage();
+            apiResponse = client.PostAsync(apiAddress, postContent).Result;
+            string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
+            WebAPIOutput_NPR013Reg result = JsonConvert.DeserializeObject<WebAPIOutput_NPR013Reg>(rspStr);
+
+            if(result.Message == "處理成功")
+            {
                 SqlConnection conn = new SqlConnection(ConnectionString);
                 conn.Open();
                 SqlTransaction tran;
@@ -551,34 +698,9 @@ namespace Reposotory.Implement
 
                 conn.Close();
                 conn.Dispose();
-
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                string apiAddress = ConfigurationManager.AppSettings["BaseURL"] + "NPR010/Delete";
-                HttpClient client = new HttpClient()
-                {
-                    BaseAddress = new System.Uri(apiAddress)
-                };
-
-                string EncryptStr = "";
-                string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
-                ASCIIEncoding enc = new ASCIIEncoding();
-                SHA1 sha = new SHA1CryptoServiceProvider();
-                byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
-                EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
-
-
-                string param = JsonConvert.SerializeObject(new
-                {
-                    IDNO = IDNO,
-                    Account = Account,
-                    user_id = ConfigurationManager.AppSettings["userid"],
-                    sig = EncryptStr
-                });
-                HttpContent postContent = new StringContent(param, Encoding.UTF8, "application/json");
-                HttpResponseMessage apiResponse = new HttpResponseMessage();
-                apiResponse = client.PostAsync(apiAddress, postContent).Result;
-                string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
             }
+
+            return result.Message;
         }
 
         public void ChangeID(string TARGET_ID, string AFTER_ID, string Account)
@@ -633,6 +755,41 @@ namespace Reposotory.Implement
             HttpResponseMessage apiResponse = new HttpResponseMessage();
             apiResponse = client.PostAsync(apiAddress, postContent).Result;
             string rspStr = apiResponse.Content.ReadAsStringAsync().Result;
+        }
+
+        public List<BE_ScoreBlock> GetScoreBlock(string IDNO)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ScoreBlock> lstAudits = null;
+            //BE_ScoreBlock obj = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " select TOP 1 A.START_DT AS Sdate,A.END_DT AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            int nowCount = 0;
+            if (false == string.IsNullOrWhiteSpace(IDNO))
+            {
+                if (term != "") { term += " AND "; }
+                term += " B.ISBLOCK=1 AND B.MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+            }
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " ORDER BY A.A_SYSDT DESC";// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+            }
+            lstAudits = GetObjList<BE_ScoreBlock>(ref flag, ref lstError, SQL, para, term);
+            //if (lstAudits != null)
+            //{
+            //    if (lstAudits.Count > 0)
+            //    {
+            //        obj = new BE_ScoreBlock();
+            //        obj = lstAudits[0];
+            //    }
+            //}
+            //return obj;
+            return lstAudits;
         }
     }
 }

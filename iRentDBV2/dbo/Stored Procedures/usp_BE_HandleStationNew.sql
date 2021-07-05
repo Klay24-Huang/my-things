@@ -38,10 +38,12 @@
 *****************************************************************
 ** Change History
 *****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/11/6 |    Eric    |          First Release
-**			 |			  |
+** Date:      |   Author:  |          Description:
+** -----------|------------| ------------------------------------
+** 2020/11/06 |    Eric    | First Release
+** 2020/11/17 |    Jerry   | 增加圖片數量至5張
+** 2021/04/12 |    YEH     | INSERT時，針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
+** 2021/06/29 |    YEH     | UPDATE時，針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_BE_HandleStationNew]
     @StationType 			INT,					--據點類別
@@ -398,7 +400,23 @@ BEGIN TRY
 			BEGIN
 				-- 沒檔案就把資料列刪除
 				DELETE FROM TB_iRentStationInfo WHERE StationID=@StationID AND Sort=5;
-			END				
+			END
+
+			--20210629;UPD BY YEH REASON:針對據點類別=0(同站)，將同站的非區域性專案新增至ProjectStation
+			IF @StationType=0
+			BEGIN
+				DELETE FROM TB_ProjectStation WHERE StationID=@StationID;
+
+				INSERT INTO TB_ProjectStation(PROJID,IOType,StationID,MKTime)
+				SELECT PROJID,'I',@StationID,@NowTime
+				FROM TB_Project
+				WHERE PROJTYPE=0 AND ShowEnd>@SDate AND IsRegional=0;
+
+				INSERT INTO TB_ProjectStation(PROJID,IOType,StationID,MKTime)
+				SELECT PROJID,'O',@StationID,@NowTime
+				FROM TB_Project
+				WHERE PROJTYPE=0 AND ShowEnd>@SDate AND IsRegional=0;
+			END
 		END
 	END
 	--寫入錯誤訊息

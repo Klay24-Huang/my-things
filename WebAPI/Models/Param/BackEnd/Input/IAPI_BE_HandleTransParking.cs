@@ -36,7 +36,15 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 結束時間
         /// </summary>
         public string CloseTime { set; get; }
-       
+        /// <summary>
+        /// 機車專用車格
+        /// </summary>
+        public string ParkingCNT { set; get; }
+        /// <summary>
+        /// 備註
+        /// </summary>
+        public string ParkingMark { set; get; }
+
 
     }
 }

@@ -28,7 +28,13 @@
     int MobileLen = 0;
     int BlockMobileLen = 0; //20210310唐加
     int HistoryLen = 0;
+    int MileStoneLen = 0;
+    //int MileStoneDetail = 0;
+    string MileStoneDetail = "";
     string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
+    //string[] aa;
+    //List<string> termsList = new List<string>();
+    //string aa="";
 
     if (Model != null)
     {
@@ -135,6 +141,10 @@
         MobileLen = (obj.SameMobile == null) ? 0 : obj.SameMobile.Count();
         BlockMobileLen = (obj.mobileBlock == null) ? 0 : obj.mobileBlock.Count();//20210310唐加
         HistoryLen = (obj.History == null) ? 0 : obj.History.Count();
+        MileStoneLen = (obj.MileStone == null) ? 0 : obj.MileStone.Count();
+        //MileStoneDetail = (obj.MileStoneDetail == null) ? 0 : obj.MileStoneDetail.Count();
+        MileStoneDetail = obj.JsonMileStoneDetail;
+        //aa = new string[MileStoneLen];
 
         if (HistoryLen > 0)
         {
@@ -796,6 +806,20 @@
                             </div>
                         </div>
                     </li>
+
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    會員勳章
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#mileStone_modal">顯示會員勳章</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
                     <li class="list-group-item">
                         <div class="container-fluid">
                             <div class="row">
@@ -1635,6 +1659,101 @@
             </div>
         </div>
     </div>
+
+    <div id="mileStone_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">姓名</th>
+                                <th scope="col">徽章名稱</th>
+                                <th scope="col">行為</th>
+                                <th scope="col">獲得徽章時間</th>
+                                <th scope="col">完成度明細</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (MileStoneLen == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < MileStoneLen; i++)
+                                {
+
+                        <tr>
+                            <td scope="col">@(obj.MileStone[i].MEMCNAME)</td>
+                            <td scope="col">@(obj.MileStone[i].MileStoneName)</td>
+                            <td scope="col">
+                                @(obj.MileStone[i].ActionName)
+                                <input type='text' id='AN_@i' style="display:none" value="@(obj.MileStone[i].ActionName)">
+                            </td>
+                            <td scope="col">@(obj.MileStone[i].MKTime)</td>
+                            @*<td scope="col"><button type="button" class="btn btn-info" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>*@
+                            <td scope="col"><button type="button" class="btn btn-info" onclick="aa(@MileStoneDetail,'@(obj.MileStone[i].ActionName)')" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>
+                        </tr>
+                                    //aa[i] = obj.MileStone[i].ActionName; //抓不到
+                                    //termsList.Add(obj.MileStone[i].ActionName);
+                                    //aa = obj.MileStone[i].ActionName;
+                                }
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="milestonedetail_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5" id="myTable">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">徽章名稱</th>
+                                <th scope="col">獲得徽章時間</th>
+                                <th scope="col">備註</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            </tr>
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="CloseModel">關閉</button>*@
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="sameMobile_modal" class="modal fade">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -1690,7 +1809,6 @@
             </div>
         </div>
     </div>
-
     <div id="blockMobile_modal" class="modal fade">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -1851,4 +1969,6 @@
     var MobileLen = '@(MobileLen)';
     var HistoryLen = '@(HistoryLen)';
     var BlockMobileLen = '@(BlockMobileLen)'; //20210310唐加
+
+
 </script>

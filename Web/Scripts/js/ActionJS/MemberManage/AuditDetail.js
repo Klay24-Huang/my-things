@@ -414,9 +414,18 @@ $(function () {
     if (BlockMobileLen > 0) {
         $('#btnCheckBlockMobileLen').click();
     }
+    //$("#CloseModel").click(function () {
+    //    $('#mileStone_modal').modal('hide')
+    //    //$('#mileStone_modal').modal('toggle')
+    //});
+    $('#milestonedetail_modal').on('hide.bs.modal', function () {
+        $('#mileStone_modal').modal('hide')
+    })
 
     setPostbackValue();
 })
+
+
 function ShowPIC(site) {
     if (site != "") {
         window.open(site);
@@ -553,4 +562,30 @@ function change(NewKind) {
             break;
     }
     return type;
+}
+
+function aa(detail, actionname) {
+
+    //for (var i = 0; i< 100; i++) {
+    //    document.getElementById("myTable").deleteRow(0);
+    //}
+    $('#myTable tbody td').remove()
+
+    const obj = $.grep(detail, function (n, i) { return n.Action === actionname; });
+    console.log(obj)
+
+    //data:
+    var pp = $.grep(detail, function (n, i) { return n.Action === actionname; }).length
+    //console.log(pp)
+
+    //get table body:
+    var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+
+    for (let index = 0; index < pp; index++) {
+        //insert Row
+        tableRef.insertRow().innerHTML =
+            "<td>" + obj[index].Action + "</td>" +
+            "<td>" + obj[index].MKTime + "</td>" +
+            "<td>" + obj[index].Event + "</td>";
+    }
 }
