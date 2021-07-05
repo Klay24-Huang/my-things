@@ -18,6 +18,7 @@
         });
     }
     $("#btnSend").on("click", function () {
+        //這邊加ShowLoading沒有用，資料還在畫面整理時就不顯示了...，我在HTML多加東西
         ShowLoading("資料查詢中…");
         var flag = true;
         var errMsg = "";

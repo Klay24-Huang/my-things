@@ -237,12 +237,11 @@
                         <td scope="col" id=@("oNo_"+i.ToString())>@(lstData[i].orderNo)</td>
                         <td scope="col" id=@("pNa_"+i.ToString())>@(lstData[i].projectName)</td>
                         <td scope="col" id=@("Am_"+i.ToString())>@(lstData[i].orderAmount)</td>
-                        <td scope="col">@(lstData[i].IDNO)</td>
-                        <td scope="col">@(lstData[i].orderTime)</td>
-                        <td scope="col">@(lstData[i].endTime)</td>
+                        <td scope="col" id=@("No_"+i.ToString())>@(lstData[i].IDNO)</td>
+                        <td scope="col" id=@("Ti_"+i.ToString())>@(lstData[i].orderTime)</td>
                         <td scope="col" id=@("mNo_"+i.ToString())>@(lstData[i].merchantOrderNo)</td>
-                        <td scope="col" id=@("mNa_"+i.ToString())>@(lstData[i].MEMCNAME)</td>
-                        <td scope="col"><button type="button" id=@("bt_"+i.ToString()) class="btn btn-info" onclick=DoLoad('@(i.ToString())');>載入</button></td>
+                        <td scope="col" id=@("mNa"+i.ToString())>@(lstData[i].MEMCNAME)</td>
+                        <td scope="col"><button type="button" id=@("bt_"+i.ToString()) class="btn btn-info" onclick="DoLoad(@i);">載入</button></td>
                     </tr>
                 }
 

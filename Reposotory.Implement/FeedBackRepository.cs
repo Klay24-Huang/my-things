@@ -116,22 +116,22 @@ namespace Reposotory.Implement
             {
                 if (false == string.IsNullOrEmpty(SDate))
                 {
-                    SDate = EDate;
-                }
-                if (false == string.IsNullOrEmpty(EDate))
-                {
-                    EDate = SDate;
-                }
-                if ("" != term) { term += " AND "; }
-                term += " (convert(char(8),MKTime,112) BETWEEN replace(@SD,'-','') AND replace(@ED,'-',''))";
+                term = " CONVERT(CHAR(8),MKTime,112) >= replace(@SD,'-','') ";
                 para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                 para[nowCount].Value = SDate;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
+            }
+            if (false == string.IsNullOrEmpty(EDate))
+            {
+
+                if ("" != term) { term += " AND "; }
+                term += " CONVERT(CHAR(8),MKTime,112) <= replace(@ED,'-','') ";
                 para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30);
                 para[nowCount].Value = EDate;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
+
             }
             if (false == string.IsNullOrEmpty(IDNO))
             {
