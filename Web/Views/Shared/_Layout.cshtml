@@ -321,7 +321,13 @@
 
             #endregion
     }
-    string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    //20210705唐改，判斷匯出報表的action不需要，因為沒有js檔
+    //string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    string PageScriptName = "";
+    if (actionName.Contains("Explode") == false) {
+        PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    }
+
     if (controllName != "Contact")
     {
         if (Session["User"] == null)
