@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
             #region 第二段防呆
             if (flag)
             {
-                if((CarMachineType==0 && apiInput.CmdType > 14 && apiInput.CmdType != 99) || (CarMachineType==1 && apiInput.CmdType<15))
+                if((CarMachineType==0 && apiInput.CmdType > 14 && (apiInput.CmdType < 51 || apiInput.CmdType > 60) && apiInput.CmdType != 99) || (CarMachineType==1 && (apiInput.CmdType<15 || (apiInput.CmdType > 50 && apiInput.CmdType < 61))))
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -145,6 +145,10 @@ namespace WebAPI.Controllers
                     /// <para>12:設定顧客卡號</para>
                     /// <para>13:清除全部顧客卡號</para>
                     /// <para>14:清除全部萬用卡號</para>
+                    /// <para>51:啟動喇叭搜尋汽車</para>
+                    /// <para>52:啟動閃燈搜尋汽車</para>
+                    /// <para>53:汽車租車組合指令</para>
+                    /// <para>54:汽車還車組合指令</para>
                     switch (apiInput.CmdType)
                     {
                         case 0:
@@ -210,6 +214,22 @@ namespace WebAPI.Controllers
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
                             break;
+                        case 51:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                            break;
+                        case 52:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                            break;
+                        case 53:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            break;
+                        case 54:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
+                            break;
                         case 99: //99:ReportNow
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
@@ -229,7 +249,7 @@ namespace WebAPI.Controllers
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
-                     else if (apiInput.CmdType == 12)
+                     else if (apiInput.CmdType == 12 || apiInput.CmdType == 53)
                     {
                         WSInput_Base<ClientCardNoObj> input = new WSInput_Base<ClientCardNoObj>()
                         {
@@ -240,6 +260,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
@@ -701,7 +726,7 @@ namespace WebAPI.Controllers
             #region 第二段防呆
             if (flag)
             {
-                if ((CarMachineType == 0 && apiInput.CmdType > 14 && apiInput.CmdType != 99) || (CarMachineType == 1 && apiInput.CmdType < 15))
+                if ((CarMachineType == 0 && apiInput.CmdType > 14 && (apiInput.CmdType < 51 || apiInput.CmdType > 60) && apiInput.CmdType != 99) || (CarMachineType == 1 && (apiInput.CmdType < 15 || (apiInput.CmdType > 50 && apiInput.CmdType < 61))))
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -730,6 +755,10 @@ namespace WebAPI.Controllers
                     /// <para>12:設定顧客卡號</para>
                     /// <para>13:清除全部顧客卡號</para>
                     /// <para>14:清除全部萬用卡號</para>
+                    /// <para>51:啟動喇叭搜尋汽車</para>
+                    /// <para>52:啟動閃燈搜尋汽車</para>
+                    /// <para>53:汽車租車組合指令</para>
+                    /// <para>54:汽車還車組合指令</para>
                     switch (apiInput.CmdType)
                     {
                         case 0:
@@ -795,6 +824,22 @@ namespace WebAPI.Controllers
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
                             break;
+                        case 51:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                            break;
+                        case 52:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                            break;
+                        case 53:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            break;
+                        case 54:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
+                            break;
                         case 99: //99:ReportNow
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
@@ -814,7 +859,7 @@ namespace WebAPI.Controllers
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
-                    else if (apiInput.CmdType == 12)
+                    else if (apiInput.CmdType == 12 || apiInput.CmdType == 53)
                     {
                         WSInput_Base<ClientCardNoObj> input = new WSInput_Base<ClientCardNoObj>()
                         {
@@ -825,6 +870,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }

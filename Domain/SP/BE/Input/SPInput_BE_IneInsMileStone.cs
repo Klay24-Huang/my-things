@@ -11,5 +11,6 @@ namespace Domain.SP.BE.Input
         public string IDNO { set; get; }
         public string ChoiceSelect { set; get; }
         public string USERID { set; get; }
+        public string MEMO { set; get; }
     }
 }

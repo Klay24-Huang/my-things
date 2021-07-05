@@ -8,11 +8,13 @@
                 $("#btnSubmit").text("查詢");
                 $("#Import").hide();
                 $("#ID").show();
+                $("#MEMO").hide();
                 $("#btnSubmit2").hide();
                 break;
             case "1":
                 $("#Choice").show();
                 $("#ID").show();
+                $("#MEMO").show();
                 $("#Import").hide();
                 $("#btnSubmit").show();
                 $("#btnSubmit").text("新增");
@@ -24,6 +26,7 @@
                 $("#Import").show();
                 $("#ID").hide();
                 $("#Choice").hide();
+                $("#MEMO").hide();
                 break;
         }
     });
@@ -142,3 +145,29 @@
 //    console.log(message)
 //    disabledLoadingAndShowAlert(message);
 //}
+
+function aa(detail,actionname) {
+
+    //for (var i = 0; i< 100; i++) {
+    //    document.getElementById("myTable").deleteRow(0);
+    //}
+    $('#myTable tbody td').remove()
+
+    const obj = $.grep(detail, function (n, i) { return n.Action === actionname; });
+    console.log(obj)
+
+    //data:
+    var pp = $.grep(detail, function (n, i) { return n.Action === actionname; }).length
+    //console.log(pp)
+
+    //get table body:
+    var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+
+    for (let index = 0; index < pp; index++) {
+        //insert Row
+        tableRef.insertRow().innerHTML =
+            "<td>" + obj[index].Action + "</td>" +
+            "<td>" + obj[index].MKTime + "</td>" +
+            "<td>" + obj[index].Event + "</td>";
+    }
+}

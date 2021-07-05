@@ -314,10 +314,20 @@
             ControllerStrName = "報表專區";
             ActionStrName = "機車電池狀態歷程查詢";
             break;
+        case "TransParkingSetting_Moto": //20210602 Frank加
+            ControllerStrName = "據點管理";
+            ActionStrName = "機車調度停車場資訊設定";
+            break;
 
             #endregion
     }
-    string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    //20210705唐改，判斷匯出報表的action不需要，因為沒有js檔
+    //string PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    string PageScriptName = "";
+    if (actionName.Contains("Explode") == false) {
+        PageScriptName = string.Format("../Scripts/js/ActionJS/{0}/{1}.js", controllName, actionName);
+    }
+
     if (controllName != "Contact")
     {
         if (Session["User"] == null)

@@ -287,6 +287,39 @@ namespace Reposotory.Implement
             lstParking = GetObjList<BE_ParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
         }
+
+        /// <summary>
+        /// 取得機車調度停車場
+        /// </summary>
+        /// <param name="ParkingName"></param>
+        /// <returns></returns>
+        public List<BE_ParkingData_Moto> GetTransParking_Moto(string ParkingName)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_ParkingData_Moto> lstParking = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [ParkingID],[ParkingName],[ParkingCNT],[ParkingAddress],[ParkingLng] ,[ParkingLat],[OpenTime],[CloseTime],[ParkingMark] FROM [dbo].[TB_ParkingData_Motor] ";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            if (string.IsNullOrEmpty(ParkingName) == false && string.IsNullOrWhiteSpace(ParkingName) == false)
+            {
+                //  SQL += string.Format(" WITH(NOLOCK) WHERE ParkingName like '%{0}%' ", ParkingName);
+                term = " ParkingName like @ParkingName";
+                para[nowCount] = new SqlParameter("@ParkingName", SqlDbType.NVarChar, 100);
+                para[nowCount].Value = "%" + ParkingName + "%";
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+            if (term != "")
+            {
+                SQL += " WITH(NOLOCK) WHERE " + term;
+            }
+            SQL += " ORDER BY ParkingID ASC ";
+            lstParking = GetObjList<BE_ParkingData_Moto>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
+        }
+
         /// <summary>
         /// 取得停車便利付停車場設定
         /// </summary>

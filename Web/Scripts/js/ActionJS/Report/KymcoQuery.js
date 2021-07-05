@@ -1,4 +1,11 @@
 ﻿$(function () {
+    var date = new Date()
+    var days = new Date(date.getFullYear(), date.getMonth(), 0).getDate()
+    var s = date.getFullYear().toString() + '-' + (date.getMonth() < 10 ? '0' : '') + date.getMonth().toString() + '-' + '01'
+    var e = date.getFullYear().toString() + '-' + (date.getMonth() < 10 ? '0' : '') + date.getMonth().toString() + '-' + days.toString()
+    $("#StartDate").val(s);
+    $("#EndDate").val(e);
+
     //html type="reset"還是不會清除，所以多加這個
     $('.btn-clear').click(function () {
         setTimeout(function () {
@@ -21,9 +28,9 @@
                 errMsg = "起始日期大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 3) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於3天";
+                    errMsg = "時間區間不可大於31天";
                 }
             }
         } else {

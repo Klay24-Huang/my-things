@@ -9,6 +9,8 @@
     string StartDate = (ViewData["StartDate"] == null) ? "" : ViewData["StartDate"].ToString();
     string EndDate = (ViewData["EndDate"] == null) ? "" : ViewData["EndDate"].ToString();
     string SCITEM = ((ViewData["SCITEM"] == null) ? "0" : ViewData["SCITEM"].ToString());
+    string SCMITEM = ((ViewData["SCMITEM"] == null) ? "0" : ViewData["SCMITEM"].ToString());
+    //string score = ((ViewData["score"] == null) ? "0" : ViewData["score"].ToString());
 
     // 這邊定義的值在js抓不到，這是給view的
     //var errorLine = (ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString();
@@ -47,17 +49,40 @@
                             <div class="col-md-2">
                                 處理項目
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="AuditMode" id="AuditMode" value="@AuditMode">
-                                    <option value="0">新增</option>
-                                    <option value="1">查詢/匯出</option>
-                                    <option value="2">上傳EXCEL</option>
-                                </select>
-                            </div>
+                            @if (AuditMode == "0")
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0" selected>新增</option>
+                                        <option value="1">查詢/匯出</option>
+                                        <option value="2">上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
+                            else if (AuditMode == "1")
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0">新增</option>
+                                        <option value="1" selected>查詢/匯出</option>
+                                        <option value="2">上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AuditMode" id="AuditMode">
+                                        <option value="0">新增</option>
+                                        <option value="1">查詢/匯出</option>
+                                        <option value="2" selected>上傳EXCEL</option>
+                                    </select>
+                                </div>
+                            }
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="NAME">
+                <li class="list-group-item" id="NAME" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
@@ -88,7 +113,7 @@
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                <input onkeyup="value=value.replace(/[^\d]/g,'') " class="form-control clear" type="text" name="ORDERNO" id="ORDERNO" value="@ORDERNO" />
+                                <input class="form-control clear" type="text" name="ORDERNO" id="ORDERNO" value="@ORDERNO" /> @*onkeyup="value=value.replace(/[^\d]/g,'') "*@
                             </div>
                         </div>
                     </div>
@@ -100,7 +125,7 @@
                                 合約編號
                             </div>
                             <div class="col-md-3">
-                                <input onkeyup="value=value.replace(/[^\d]/g,'') " class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO_I" />
+                                <input class="form-control clear" type="text" name="ORDERNO_I" id="ORDERNO_I" value="@ORDERNO_I" /> @*onkeyup="value=value.replace(/[^\d]/g,'') "*@
                             </div>
                         </div>
                     </div>
@@ -207,7 +232,7 @@
                                         <option value="debug">關東煮</option>
                                         <option value="Advice">素食</option>
                                     </select>*@
-                                @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM }) @*scitem參數為了知道GetSCITEM選了什麼*@
+                                @Html.Action("GetSCMITEM", "CommonObj", new { scitem = SCITEM , SCMITEM}) @*scitem參數為了知道GetSCITEM選了什麼*@
                             </div>
                         </div>
                     </div>
@@ -216,7 +241,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                備註
+                                備註(必填)
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control clear" type="text" name="sonmemo" id="sonmemo" />
@@ -224,6 +249,20 @@
                         </div>
                     </div>
                 </li>
+
+                <li class="list-group-item" style="display:none">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                帶入分數
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Action("GetScore", "CommonObj", new { scmitem = SCMITEM })
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="list-group-item" id="SCORE">
                     <div class="container-fluid">
                         <div class="row">
@@ -231,27 +270,26 @@
                                 加減分數
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control clear" type="text" name="MEMSCORE" id="MEMSCORE" />
+                                <input class="form-control clear" type="text" name="MEMSCORE" id="MEMSCORE"/>
                             </div>
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item" id="Choice_2">
+                <li class="list-group-item" id="Choice_2" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                APP刪除
+                                不顯示在APP明細
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control clear" name="ChoiceSelect_2" id="ChoiceSelect_2">
                                     <option value="0">Y</option>
-                                    <option value="1">N</option>
+                                    <option value="1" selected>N</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </li>
-
 
                 <li class="list-group-item">
                     <div class="container-fluid">
@@ -286,9 +324,7 @@
     <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
 }
 
-
-
-<div class="container mt-4" id="AA" >
+<div class="container mt-4" id="AA">
     <div class="card">
         <div class="card-header  text-white" style="background-color: #9fa4ac;">
             結果
@@ -297,6 +333,13 @@
 </div>
 <!--查詢輸出表格-->
 <div class="container mt-4" id="BB" style="max-width:1500px;">
+    @if (ResultLen > 0)
+    {
+        <div class="container mt-4" style="background-color:yellow;">
+            總積分 : @lstData[0].SCORETOTAL
+        </div>
+    }
+
     <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
@@ -309,10 +352,11 @@
                 <th scope="col">評分行為(子項)</th>
                 <th scope="col">加/扣分</th>
                 <th scope="col">出車時間</th>
-                <th scope="col">訂單編號</th>
-                <th scope="col">APP刪除</th>
-                <th scope="col">刪除時間</th>
+                <th scope="col">合約編號</th>
+                <th scope="col">不顯示在APP明細</th>
+                <th scope="col">隱藏時間</th>
                 <th scope="col">操作人員</th>
+                @*<th scope="col">總積分</th>*@
                 <th scope="col">修改</th>
             </tr>
         </thead>
@@ -320,7 +364,7 @@
             @if (ResultLen == 0)
             {
                 <tr>
-                    <td colspan="11" class="text-center">
+                    <td colspan="13" class="text-center">
                         查無結果
                     </td>
                 </tr>
@@ -331,39 +375,56 @@
                 {
                     <tr>
                         @*<td data-sort="false"></td>*@
-                        <td scope="col">@(lstData[i].SEQ)
-                            <input type="text" name="UserSeq_@(lstData[i].SEQ)" id="UserSeq_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" /></td>
-                        <td scope="col">@(lstData[i].MEMIDNO)
-                            <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].MEMIDNO)" class="form-control" style="display:none" /></td>
+                        <td scope="col">
+                            @(lstData[i].SEQ)
+                            <input type="text" name="UserSeq_@(lstData[i].SEQ)" id="UserSeq_@(lstData[i].SEQ)" value="@(lstData[i].SEQ)" class="form-control" style="display:none" />
+                        </td>
+                        <td scope="col">
+                            @(lstData[i].MEMIDNO)
+                            <input type="text" name="UserId_@(lstData[i].SEQ)" id="UserId_@(lstData[i].SEQ)" value="@(lstData[i].MEMIDNO)" class="form-control" style="display:none" />
+                        </td>
                         <td scope="col">@(lstData[i].MEMCNAME)</td>
                         <td scope="col">@(lstData[i].A_SYSDT)</td>
                         <td scope="col">@(lstData[i].DAD)</td>
-                        <td scope="col">@(lstData[i].SON)
+                        <td scope="col">
+                            @(lstData[i].SON)
                             @if (lstData[i].DAD == "其他")
                             {
                                 <input type="text" name="UserSon_@(lstData[i].SEQ)" id="UserSon_@(lstData[i].SEQ)" value="@(lstData[i].SON)" class="form-control" style="display:none" />
-                            }</td>
-                        <td scope="col">@(lstData[i].SCORE)
-                            <input type="text" name="UserScore_@(lstData[i].SEQ)" id="UserScore_@(lstData[i].SEQ)" value="@(lstData[i].SCORE)" class="form-control" style="display:none" /></td>
+                            }
+                        </td>
+                        <td scope="col">
+                            @(lstData[i].SCORE)
+                            <input type="text" name="UserScore_@(lstData[i].SEQ)" id="UserScore_@(lstData[i].SEQ)" value="@(lstData[i].SCORE)" class="form-control" style="display:none" />
+                        </td>
                         <td scope="col">@(lstData[i].TIME)</td>
                         <td scope="col">@(lstData[i].ORDERNO)</td>
-                        <td scope="col">@(lstData[i].APP)
-                            <input type="text" name="UserApp_@(lstData[i].SEQ)" id="UserApp_@(lstData[i].SEQ)" value="@(lstData[i].APP)" class="form-control" style="display:none" /></td>
+                        <td scope="col">
+                            @(lstData[i].APP)
+                            <input type="text" name="UserApp_@(lstData[i].SEQ)" id="UserApp_@(lstData[i].SEQ)" value="@(lstData[i].APP)" class="form-control" style="display:none" />
+                        </td>
                         <td scope="col">@(lstData[i].DEL)</td>
                         <td scope="col">@(lstData[i].GM)</td>
-                        @if (lstData[i].A_PRGID == "usp_BE_InsMemberScore")
-                        {
-                            <td scope="col">
-                                <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
-                                <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
-                                <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
-                                <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
-                            </td>
-                        }
-                        else
-                        {
-                            <td scope="col"></td>
-                        }
+                        @*<td scope="col">@(lstData[i].SCORETOTAL)</td>*@
+                        @*@if (lstData[i].A_PRGID == "usp_BE_InsMemberScore")
+                            {
+                                <td scope="col">
+                                    <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
+                                    <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
+                                    <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
+                                    <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td scope="col"></td>
+                            }*@
+                        <td scope="col">
+                            <Button type="button" id="btnEdit_@(lstData[i].SEQ)" name="btnEdit_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQ)');">修改</Button>
+                            <Button type="button" id="btnDel_@(lstData[i].SEQ)" name="btnDel_@(lstData[i].SEQ)" class="btn btn-outline-secondary" onclick="DoDel('@(lstData[i].SEQ)');">刪除</Button>
+                            <Button type="button" id="btnSave_@(lstData[i].SEQ)" name="btnSave_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQ)');">儲存</Button>
+                            <Button type="button" id="btnReset_@(lstData[i].SEQ)" name="btnReset_@(lstData[i].SEQ)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQ)');">取消</Button>
+                        </td>
                     </tr>
                 }
             }
@@ -378,9 +439,6 @@
     </table>
 </div>
 <!--輸出表格結束-->
-
-
-
 
 <div class="container mt-4" id="CC" style="display:none;">
     <div class="card">
@@ -399,7 +457,7 @@
                 <th scope="col">評分行為(主項)</th>
                 <th scope="col">評分行為(子項)</th>
                 <th scope="col">加/扣分</th>
-                <th scope="col">訂單編號</th>
+                <th scope="col">合約編號</th>
             </tr>
         </thead>
         <tbody>
@@ -441,7 +499,6 @@
     </table>
 </div>
 <!--輸出表格結束-->
-
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>

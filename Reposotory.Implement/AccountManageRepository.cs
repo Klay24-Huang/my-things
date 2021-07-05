@@ -377,48 +377,5 @@ namespace Reposotory.Implement
         }
 
 
-
-
-
-
-
-
-
-
-
-
-        public List<BE_SCMITEM> GetSCMITEM(string scitem)
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_SCMITEM> lstUserGroup = null;
-
-
-            int nowCount = 0;
-            string SQL = "SELECT SCMITEM FROM TB_ScoreDef ";
-
-
-            SqlParameter[] para = new SqlParameter[10];
-            string term = "";
-
-            term += (term == "") ? "" : " AND ";
-            term += " SCITEM=@UserGroupID ";
-            para[nowCount] = new SqlParameter("@UserGroupID", SqlDbType.VarChar, 60);
-            para[nowCount].Value = scitem ;
-            para[nowCount].Direction = ParameterDirection.Input;
-            nowCount++;
-
-
-            if ("" != term)
-            {
-                SQL += " WHERE " + term ;
-
-            }
-
-            lstUserGroup = GetObjList<BE_SCMITEM>(ref flag, ref lstError, SQL, para, term);
-
-
-            return lstUserGroup;
-        }
     }
 }

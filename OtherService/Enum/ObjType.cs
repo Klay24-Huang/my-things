@@ -58,7 +58,11 @@ namespace OtherService.Enum
             /// <summary>
             /// 寫入呼叫興聯車機資料
             /// </summary>
-            InsCensCMDLog
+            InsCensCMDLog,
+            /// <summary>
+            /// 遠傳車機韌體資訊
+            /// </summary>
+            UpdCarMachineVerInfo
         }
         /// <summary>
         /// 取出SPName
@@ -86,10 +90,10 @@ namespace OtherService.Enum
                     SPName = "usp_InsReadCardData";
                     break;
                 case SPType.HandleCarStatus:
-                    SPName = "usp_HandleCarStatusByCar";
+                    SPName = "usp_HandleCarStatusByCar_20210621";
                     break;
                 case SPType.HandleCarStatusByMotor:
-                    SPName = "usp_HandleCarStatusByMotor";
+                    SPName = "usp_HandleCarStatusByMotor_20210621";
                     break;
                 case SPType.InsTrade:
                     SPName = "usp_InsTrade";
@@ -109,6 +113,9 @@ namespace OtherService.Enum
                     break;
                 case SPType.InsCensCMDLog:
                     SPName = "usp_InsCensCMDLog";
+                    break;
+                case SPType.UpdCarMachineVerInfo:
+                    SPName = "usp_UpdCarMachineVerInfo";
                     break;
 
             }

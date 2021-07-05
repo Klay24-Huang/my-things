@@ -31,6 +31,8 @@ namespace Web.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
+
+        #region 會員審核及明細
         /// <summary>
         /// 會員審核
         /// </summary>
@@ -40,7 +42,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
+        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
@@ -51,6 +53,7 @@ namespace Web.Controllers
             ViewData["IDNO"] = IDNO;
             ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
             ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
             string IDNoSuffCombind = "";
             if (IDNOSuff != null)
             {
@@ -66,50 +69,7 @@ namespace Web.Controllers
                 }
             }
 
-            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-
-            return View(lstData);
-        }
-
-        /// <summary>
-        /// 會員修改
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult ModifyMember()
-        {
-            return View();
-        }
-        [HttpPost]
-        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
-        {
-            ViewData["AuditMode"] = AuditMode;
-            ViewData["AuditType"] = AuditType;
-            ViewData["StartDate"] = StartDate;
-            ViewData["EndDate"] = EndDate;
-            ViewData["AuditReuslt"] = AuditReuslt;
-            ViewData["UserName"] = UserName;
-            ViewData["IDNO"] = IDNO;
-            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
-            ViewData["AuditError"] = AuditError;
-            string IDNoSuffCombind = "";
-            if (IDNOSuff != null)
-            {
-                if (IDNOSuff.Length > 0)
-                {
-                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
-                    int IDLEN = IDNOSuff.Length;
-                    for (int i = 1; i < IDLEN; i++)
-                    {
-                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
-                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
-                    }
-                }
-            }
-            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
-            if (UserName != "" || IDNO != "")
-            {
-                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-            }
+            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
 
             return View(lstData);
         }
@@ -148,7 +108,10 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
-            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
 
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
@@ -156,10 +119,8 @@ namespace Web.Controllers
             Data.History = lstHistory;
             Data.MileStone = new List<BE_MileStone>();
             Data.MileStone = lstMileStone;
-            Data.MileStoneDetail = new List<BE_MileStoneDetail>();
-            Data.MileStoneDetail = lstMileStoneDetail;
-            Data.MemberScore = new List<BE_MemberScore>();
-            Data.MemberScore = lstMemberScore;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -221,80 +182,80 @@ namespace Web.Controllers
                                 Data.Images.ID_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.ID_1_IsNew = 1;
                                 Data.Images.ID_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.ID_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.ID_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.ID_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.ID_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.ID_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 2:
                                 Data.Images.ID_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.ID_2_IsNew = 1;
                                 Data.Images.ID_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.ID_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.ID_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.ID_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.ID_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.ID_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 3:
                                 Data.Images.Car_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Car_1_IsNew = 1;
                                 Data.Images.Car_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Car_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Car_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Car_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Car_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Car_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 4:
                                 Data.Images.Car_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Car_2_IsNew = 1;
                                 Data.Images.Car_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Car_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Car_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Car_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Car_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Car_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 5:
                                 Data.Images.Motor_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Motor_1_IsNew = 1;
                                 Data.Images.Motor_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Motor_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Motor_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Motor_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Motor_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Motor_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 6:
                                 Data.Images.Motor_2 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Motor_2_IsNew = 1;
                                 Data.Images.Motor_2_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Motor_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Motor_2_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Motor_2_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Motor_2_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Motor_2_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 7:
                                 Data.Images.Self_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Self_1_IsNew = 1;
                                 Data.Images.Self_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Self_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Self_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Self_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Self_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Self_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 8:
                                 Data.Images.F01 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.F01_IsNew = 1;
                                 Data.Images.F01_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.F01_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.F01_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.F01_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.F01_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.F01_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 9:
                                 Data.Images.Other_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Other_1_IsNew = 1;
                                 Data.Images.Other_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Other_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Other_1_AuditResult = lstAudits[index].AuditResult;
+                                //Data.Images.Other_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Other_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Other_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 10:
                                 Data.Images.Business_1 = (lstAudits[index].CrentialsFile == "") ? "" : (lstAudits[index].CrentialsFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[index].CrentialsFile;
                                 Data.Images.Business_1_IsNew = 1;
                                 Data.Images.Business_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                Data.Images.Business_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Business_1_AuditResult = 0;
+                                //Data.Images.Business_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
+                                Data.Images.Business_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Business_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
                             case 11:
@@ -303,7 +264,7 @@ namespace Web.Controllers
                                 Data.Images.Signture_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
                                 //20210120唐改，簽名檔沒有UPDTIME會產生BUG，所以拿掉UPDTIME判定
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0;
+                                Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult;
                                 Data.Images.Signture_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
@@ -324,88 +285,88 @@ namespace Web.Controllers
                                     Data.Images.ID_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_1_IsNew = 0;
                                     Data.Images.ID_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.ID_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.ID_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.ID_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 2:
                                     Data.Images.ID_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.ID_2_IsNew = 0;
                                     Data.Images.ID_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.ID_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.ID_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.ID_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.ID_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 3:
                                     Data.Images.Car_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_1_IsNew = 0;
                                     Data.Images.Car_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Car_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Car_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Car_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 4:
                                     Data.Images.Car_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Car_2_IsNew = 0;
                                     Data.Images.Car_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Car_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Car_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Car_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Car_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 5:
                                     Data.Images.Motor_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_1_IsNew = 0;
                                     Data.Images.Motor_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Motor_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Motor_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Motor_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 6:
                                     Data.Images.Motor_2 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Motor_2_IsNew = 0;
                                     Data.Images.Motor_2_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Motor_2_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Motor_2_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Motor_2_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Motor_2_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 7:
                                     Data.Images.Self_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Self_1_IsNew = 0;
                                     Data.Images.Self_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Self_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Self_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Self_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Self_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 8:
                                     Data.Images.F01 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.F01_IsNew = 0;
                                     Data.Images.F01_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.F01_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.F01_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.F01_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.F01_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 9:
                                     Data.Images.Other_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Other_1_IsNew = 0;
                                     Data.Images.Other_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Other_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Other_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Other_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Other_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 10:
                                     Data.Images.Business_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Business_1_IsNew = 0;
                                     Data.Images.Business_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Business_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Business_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Business_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Business_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                                 case 11:
                                     Data.Images.Signture_1 = (lstAudits[Oindex].AlreadyFile == "") ? "" : (lstAudits[Oindex].AlreadyFile.ToUpper().IndexOf("FTP") > -1 ? lsURL : ImgURL) + lstAudits[Oindex].AlreadyFile;
                                     Data.Images.Signture_1_IsNew = 0;
                                     Data.Images.Signture_1_UPDTime = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[Oindex].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
-                                    //Data.Images.Signture_1_AuditResult = lstAudits[Oindex].AuditResult;
+                                    //Data.Images.Signture_1_AuditResult = lstAudits[Oindex].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : 0) : lstAudits[Oindex].AuditResult;
+                                    Data.Images.Signture_1_AuditResult = lstAudits[Oindex].AuditResult != 1 && lstAudits[Oindex].RejectReason != "" ? -1 : lstAudits[Oindex].AuditResult == 2 ? 1 : 0;
                                     Data.Images.Signture_1_RejectReason = lstAudits[Oindex].AuditResult == 1 ? "" : lstAudits[Oindex].RejectReason;
                                     break;
                             }
@@ -416,7 +377,52 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
+        # region 會員修改
+        /// <summary>
+        /// 會員修改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ModifyMember()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
+        {
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["AuditType"] = AuditType;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["AuditReuslt"] = AuditReuslt;
+            ViewData["UserName"] = UserName;
+            ViewData["IDNO"] = IDNO;
+            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
+            ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
+            string IDNoSuffCombind = "";
+            if (IDNOSuff != null)
+            {
+                if (IDNOSuff.Length > 0)
+                {
+                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
+                    int IDLEN = IDNOSuff.Length;
+                    for (int i = 1; i < IDLEN; i++)
+                    {
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
+                    }
+                }
+            }
+            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
+            if (UserName != "" || IDNO != "")
+            {
+                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
+            }
+
+            return View(lstData);
+        }
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
         {
@@ -435,7 +441,6 @@ namespace Web.Controllers
                 int index = wsoutput.Data.ToList().FindIndex(delegate (WebAPIOutput_NPR172QueryData data)
                 {
                     return data.MEMIDNO == AuditIDNO;
-
                 });
                 if (index > -1)
                 {
@@ -449,12 +454,27 @@ namespace Web.Controllers
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
+            List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+            List<BE_ScoreBlock> lstScoreBlock = new MemberRepository(connetStr).GetScoreBlock(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
+
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
-
+            Data.MileStone = new List<BE_MileStone>();
+            Data.MileStone = lstMileStone;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
+            Data.MemberScore = new List<BE_MemberScore>();
+            Data.MemberScore = lstMemberScore;
             Data.InsuranceData = lstInsuranceData;
+            Data.ScoreBlock = lstScoreBlock;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";
@@ -596,7 +616,7 @@ namespace Web.Controllers
                                 Data.Images.Signture_1_UPDTime = lstAudits[index].UPDTime.ToString("yyyyMMdd") == "00010101" ? "" : "上傳時間：" + lstAudits[index].UPDTime.ToString("yyyy/MM/dd HH:mm:ss");
                                 //20210120唐改，簽名檔沒有UPDTIME會產生BUG，所以拿掉UPDTIME判定
                                 //Data.Images.Signture_1_AuditResult = lstAudits[index].UPDTime.ToString("yyyyMMdd") != "00010101" ? (lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0) : lstAudits[index].AuditResult;
-                                //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : 0;
+                                //Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult != 1 && lstAudits[index].RejectReason != "" ? -1 : lstAudits[index].AuditResult == 2 ? 1 : 0;
                                 Data.Images.Signture_1_AuditResult = lstAudits[index].AuditResult;
                                 Data.Images.Signture_1_RejectReason = lstAudits[index].AuditResult == 1 ? "" : lstAudits[index].RejectReason;
                                 break;
@@ -712,6 +732,7 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
         public ActionResult AuditHistory(string IDNO)
         {
@@ -721,6 +742,8 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        #region 手機重複清單
         /// <summary>
         /// 手機重複清單
         /// </summary>
@@ -731,9 +754,11 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
         }
+        #endregion
 
+        #region 改密碼
         /// <summary>
-        /// 會員審核
+        /// 改密碼
         /// </summary>
         /// <returns></returns>
         public ActionResult ChangePassword()
@@ -759,7 +784,9 @@ namespace Web.Controllers
 
             return View(lstData);
         }
+        #endregion
 
+        # region 刪除會員
         /// <summary>
         /// 刪除會員
         /// </summary>
@@ -770,22 +797,54 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
+        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account, string DeleteMember_check)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if (repository.IsMemberExist(IDNO))
+            if (DeleteMember_check == "true")
             {
                 repository.DeleteMember(IDNO, IRent_Only, Account);
-                ViewData["result"] = true;
+                ViewData["resultMessage"] = "刪除成功";
+                return View();
+            }
+            //0:無預約無合約 1:有合約 2:有預約無合約
+            string flag = repository.checkContract(IDNO);
+            if (flag == "1")
+            {
+                ViewData["result"] = "1";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "有IRent租車資料，不可刪除會員";
+                ViewData["IRent_Only"] = IRent_Only;
+            }
+            else if (flag == "0")
+            {
+                var response = repository.DeleteMember(IDNO, IRent_Only, Account);
+
+                //認證錯誤或有合約資料無法刪除
+                if (response != "處理成功")
+                {
+                    ViewData["IDNO"] = IDNO;
+                    ViewData["resultMessage"] = response;
+                    ViewData["IRent_Only"] = IRent_Only;
+                }
+
+                ViewData["result"] = "0";
+                ViewData["IDNO"] = "";
+                ViewData["resultMessage"] = "刪除成功";
+                ViewData["IRent_Only"] = "";
             }
             else
             {
-                ViewData["result"] = false;
+                ViewData["result"] = "2";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "";
+                ViewData["IRent_Only"] = IRent_Only;
             }
 
             return View();
         }
+        #endregion
 
+        # region 修改身份證字號
         /// <summary>
         /// 修改身份證字號
         /// </summary>
@@ -810,14 +869,15 @@ namespace Web.Controllers
             }
             return View();
         }
+        #endregion
 
-
+        # region 會員勳章
         public ActionResult MedalMileStone()
         {
             return View();
         }
         [HttpPost]
-        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport)
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport, string MEMO_CONTENT)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -835,10 +895,15 @@ namespace Web.Controllers
                 BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
                 List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(IDNO);
                 List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(IDNO);
+
+                //Newtonsoft.Json序列化
+                string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+
                 Data.MileStone = new List<BE_MileStone>();
                 Data.MileStone = lstMileStone;
-                Data.MileStoneDetail = new List<BE_MileStoneDetail>();
-                Data.MileStoneDetail = lstMileStoneDetail;
+                //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                //Data.MileStoneDetail = lstMileStoneDetail;
+                Data.JsonMileStoneDetail = jsonData;
                 return View(Data);
             }
             else if (AuditMode == "1")
@@ -856,7 +921,8 @@ namespace Web.Controllers
                 {
                     IDNO = IDNO,
                     ChoiceSelect = ChoiceSelect,
-                    USERID = Session["Account"].ToString()
+                    USERID = Session["Account"].ToString(),
+                    MEMO = MEMO_CONTENT
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
@@ -876,10 +942,8 @@ namespace Web.Controllers
             }
             else
             {
-                //string errorLine = "";
                 string errorMsg = "";
                 bool flag = true;
-                //ViewData["errorLine2"] = null;
 
                 List<SPInput_BE_IneInsMileStone> lstData = new List<SPInput_BE_IneInsMileStone>();
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -906,7 +970,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "匯入項目" };
+                        string[] field = { "ID", "匯入項目", "備註" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -919,18 +983,45 @@ namespace Web.Controllers
                                 break;
                             }
                         }
+                        //判斷action是不是BackStageInsert=1的那幾個
+                        if (flag)
+                        {
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "REPORT" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "QUESTION" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "DEBUG" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "ADVICE")
+                                {
+                                    errorMsg = "Action名稱錯誤";
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+
                         //通過第一關 
                         if (flag)
                         {
                             string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            string memo2 = "";
                             //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
                             for (int i = 1; i <= sheetLen; i++)
                             {
+                                if (sheet.GetRow(i).GetCell(2) == null)
+                                {
+                                    memo2 = "";
+                                }
+                                else
+                                {
+                                    memo2 = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "");
+                                }
                                 SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
                                 {
                                     IDNO = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
                                     ChoiceSelect = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    USERID = UserId
+                                    USERID = UserId,
+                                    MEMO = memo2
                                 };
 
                                 SPOutput_Base SPOutput = new SPOutput_Base();
@@ -955,7 +1046,6 @@ namespace Web.Controllers
                     flag = false;
                     errorMsg = "請上傳要匯入的資料";
                 }
-
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
@@ -964,19 +1054,18 @@ namespace Web.Controllers
                 {
                     ViewData["errorLine"] = errorMsg;
                 }
-
                 return View();
             };
-
-
         }
+        #endregion
 
+        # region 會員積分
         public ActionResult MemberScore()
         {
             return View();
         }
         [HttpPost]
-        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE,string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE, string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -986,134 +1075,197 @@ namespace Web.Controllers
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
             ViewData["SCITEM"] = (collection["ddlOperatorGG"] == null) ? "0" : collection["ddlOperatorGG"].ToString() == "" ? "0" : collection["ddlOperatorGG"].ToString(); //讓view知道我所選的評分行為(主項)的值
+            ViewData["SCMITEM"] = (collection["ddlUserGroup"] == null) ? "0" : collection["ddlUserGroup"].ToString() == "" ? "0" : collection["ddlUserGroup"].ToString();
+            //ViewData["score"] = (collection["scoreman"] == null) ? "0" : collection["scoreman"].ToString() == "" ? "0" : collection["scoreman"].ToString();
             int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
-            //object a = collection["ddlOperatorGG"];
-            //string b = collection["ddlOperatorGG"].ToString();
-            //object aa = collection["ddlUserGroup"];
-            //string bb = collection["ddlUserGroup"].ToString();
 
-            if (AuditMode == "1")
+            bool flag_H = true;
+            if (ORDERNO != "")
             {
-                List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
-                return View(lstData);
-            }
-            else if (AuditMode == "0" && justSearch == 0)
-            {
-                bool flag = true;
-                if (collection["ddlUserGroup"]=="0")
+                if (ORDERNO.IndexOf("H") < 0)
                 {
-                    flag = false;
-                    ViewData["errorLine"] = "評分行為未選擇";
+                    flag_H = false;
                 }
-                if (flag)
+                else
                 {
+                    ORDERNO = ORDERNO.ToUpper();
+                    ORDERNO = ORDERNO.Replace("H", "");
+                }
+            }
+            if (ORDERNO_I != "")
+            {
+                if (ORDERNO_I.IndexOf("H") < 0)
+                {
+                    flag_H = false;
+                }
+                else
+                {
+                    ORDERNO_I = ORDERNO_I.ToUpper();
+                    ORDERNO_I = ORDERNO_I.Replace("H", "");
+                }
+            }
+
+            if (flag_H)
+            {
+                if (AuditMode == "1")
+                {
+                    List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+                    return View(lstData);
+                }
+                else if (AuditMode == "0" && justSearch == 0)
+                {
+                    if (ORDERNO_I == "")
+                    {
+                        ORDERNO_I = "0";
+                    }
+                    bool flag = true;
+                    if (collection["ddlUserGroup"] == "0")
+                    {
+                        flag = false;
+                        ViewData["errorLine"] = "評分行為未選擇";
+                    }
+                    if (flag)
+                    {
+                        List<ErrorInfo> lstError = new List<ErrorInfo>();
+                        string errCode = "";
+                        CommonFunc baseVerify = new CommonFunc();
+                        SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                        {
+                            //NAME = MEMNAME,
+                            ID = IDNO,
+                            ORDERNO = Convert.ToInt32(ORDERNO_I),
+                            DAD = collection["ddlOperatorGG"].ToString(),
+                            SON = collection["ddlUserGroup"].ToString(),
+                            SCORE = int.Parse(MEMSCORE),
+                            //APP = ChoiceSelect_2,
+                            USERID = Session["Account"].ToString(),
+                            MEMO = sonmemo
+                        };
+                        SPOutput_Base SPOutput = new SPOutput_Base();
+                        flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                        if (flag)
+                        {
+                            ViewData["errorLine"] = "ok";
+                            //return Content("<script>alert('ok');</script>");
+                        }
+                        else
+                        {
+                            ViewData["errorLine"] = SPOutput.ErrorMsg;
+                        }
+                    }
+
+                    return View();
+                }
+                else if (AuditMode == "0" && justSearch == 1)
+                {
+                    return View();
+                }
+                else if (AuditMode == "2")
+                {
+                    string errorMsg = "";
+                    bool flag = true;
+
+                    List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
                     List<ErrorInfo> lstError = new List<ErrorInfo>();
                     string errCode = "";
                     CommonFunc baseVerify = new CommonFunc();
-                    SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                    if (fileImport != null)
                     {
-                        //NAME = MEMNAME,
-                        ID = IDNO,
-                        ORDERNO = Convert.ToInt32(ORDERNO_I),
-                        DAD = collection["ddlOperatorGG"].ToString(),
-                        SON = collection["ddlUserGroup"].ToString(),
-                        SCORE = int.Parse(MEMSCORE),
-                        APP = ChoiceSelect_2,
-                        USERID = Session["Account"].ToString(),
-                        MEMO = sonmemo
-                    };
-                    SPOutput_Base SPOutput = new SPOutput_Base();
-                    flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-
-                    if (flag)
-                    {
-                        ViewData["errorLine"] = "ok";
-                        //return Content("<script>alert('ok');</script>");
-                    }
-                    else
-                    {
-                        ViewData["errorLine"] = "新增失敗";
-                    }
-                }
-                
-                return View();
-            }
-            else if (AuditMode == "0" && justSearch == 1)
-            {
-                return View();
-            }
-            else if (AuditMode == "2")
-            {
-                string errorMsg = "";
-                bool flag = true;
-
-                List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                string errCode = "";
-                CommonFunc baseVerify = new CommonFunc();
-                if (fileImport != null)
-                {
-                    if (fileImport.ContentLength > 0)
-                    {
-                        string fileName = string.Concat(new string[]{
-                            "MemberScoreImport",
-                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
-                            "_",
-                            DateTime.Now.ToString("yyyyMMddHHmmss"),
-                            ".xlsx"
-                        });
-                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
-                        if (!di.Exists)
+                        if (fileImport.ContentLength > 0)
                         {
-                            di.Create();
-                        }
-                        string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
-                        fileImport.SaveAs(path);
-                        IWorkbook workBook = new XSSFWorkbook(path);
-                        ISheet sheet = workBook.GetSheetAt(0);
-                        int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "訂單編號" };
-                        int fieldLen = field.Length;
-                        //第一關，判斷位置是否相等
-                        for (int i = 0; i < fieldLen; i++)
-                        {
-                            ICell headCell = sheet.GetRow(0).GetCell(i);
-                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            string fileName = string.Concat(new string[]{
+                                "MemberScoreImport",
+                                ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                                "_",
+                                DateTime.Now.ToString("yyyyMMddHHmmss"),
+                                ".xlsx"
+                            });
+                            DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
+                            if (!di.Exists)
                             {
-                                errorMsg = "標題列不相符";
-                                flag = false;
-                                break;
+                                di.Create();
                             }
-                        }
-                        //通過第一關 
-                        if (flag)
-                        {
-                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
-                            //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
-                            for (int i = 1; i <= sheetLen; i++)
+                            string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
+                            fileImport.SaveAs(path);
+                            IWorkbook workBook = new XSSFWorkbook(path);
+                            ISheet sheet = workBook.GetSheetAt(0);
+                            int sheetLen = sheet.LastRowNum;
+                            string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "合約編號" };
+                            int fieldLen = field.Length;
+                            //第一關，判斷位置是否相等
+                            for (int i = 0; i < fieldLen; i++)
                             {
-                                SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                ICell headCell = sheet.GetRow(0).GetCell(i);
+                                if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
                                 {
-                                    ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
-                                    ORDERNO = int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "")),
-                                    DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
-                                    SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
-                                    APP = "",
-                                    USERID = Session["Account"].ToString(),
-                                    MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
-                                };
-
-                                SPOutput_Base SPOutput = new SPOutput_Base();
-                                flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                                if (flag == false)
-                                {
-                                    //errorLine = i.ToString();
-                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                    errorMsg = "標題列不相符";
+                                    flag = false;
+                                    break;
                                 }
                             }
+                            //判斷合約編號是否有H
+                            if (flag)
+                            {
+                                for (int i = 1; i <= sheetLen; i++)
+                                {
+                                    if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號未上傳";
+                                        flag = false;
+                                        break;
+                                    }
+                                    else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號格式錯誤";
+                                        flag = false;
+                                        break;
+                                    }
+
+                                    if (sheet.GetRow(i).GetCell(2) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆子項沒填";
+                                        flag = false;
+                                        break;
+                                    }
+                                }
+                            }                     
+                            //通過第一關 
+                            if (flag)
+                            {
+                                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                                //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                                for (int i = 1; i <= sheetLen; i++)
+                                {
+                                    SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                    {
+                                        ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                        ORDERNO = sheet.GetRow(i).GetCell(4) == null ? 0 : int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
+                                        DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                        SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
+                                        SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                        APP = "",
+                                        USERID = Session["Account"].ToString(),
+                                        MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") == "其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
+                                    };
+
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        //errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            flag = false;
+                            errorMsg = "請上傳要匯入的資料";
                         }
                     }
                     else
@@ -1121,42 +1273,41 @@ namespace Web.Controllers
                         flag = false;
                         errorMsg = "請上傳要匯入的資料";
                     }
+
+                    if (flag)
+                    {
+                        ViewData["errorLine"] = "ok";
+                    }
+                    else
+                    {
+                        ViewData["errorLine"] = errorMsg;
+                    }
+
+                    return View();
                 }
                 else
                 {
-                    flag = false;
-                    errorMsg = "請上傳要匯入的資料";
-                }
-
-                if (flag)
-                {
-                    ViewData["errorLine"] = "ok";
-                }
-                else
-                {
-                    ViewData["errorLine"] = errorMsg;
-                }
-
-                return View();
+                    List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
+                    try
+                    {
+                        ViewData["IDNO"] = lstData[0].IDNO;
+                        ViewData["MEMNAME"] = lstData[0].NAME;
+                        //ViewData["AuditMode"] = "1";
+                        return View();
+                    }
+                    catch
+                    {
+                        ViewData["errorLine"] = "無此合約";
+                        return View();
+                    }
+                };
             }
             else
             {
-                List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
-                try
-                {
-                    ViewData["IDNO"] = lstData[0].IDNO;
-                    ViewData["MEMNAME"] = lstData[0].NAME;
-                    //ViewData["AuditMode"] = "1";
-                    return View();
-                }
-                catch
-                {
-                    ViewData["errorLine"] = "無此合約";
-                    return View();
-                }
-            };
+                ViewData["errorLine"] = "合約編號格式錯誤";
+                return View();
+            }
         }
-
         public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
         {
             ViewData["IDNO"] = ExplodeIDNO;
@@ -1173,14 +1324,14 @@ namespace Web.Controllers
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
 
-            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "訂單編號", "APP刪除", "刪除時間", "操作人員" };
+            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "合約編號", "APP刪除", "隱藏時間", "操作人員" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
@@ -1199,15 +1350,15 @@ namespace Web.Controllers
                 content.CreateCell(9).SetCellValue(lstData[k].GM);
 
             }
-            for (int l = 0; l < headerFieldLen; l++)
-            {
-                sheet.AutoSizeColumn(l);
-            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
-
+        #endregion
     }
 }

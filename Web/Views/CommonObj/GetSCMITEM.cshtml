@@ -4,23 +4,31 @@
     Layout = null;
     List<SelectListItem> list = new List<SelectListItem>();
     //int USEQNO = ((ViewData["UserGroup"] == null) ? 0 : Convert.ToInt32(ViewData["UserGroup"].ToString()));
+    string SCITEM_ = ((ViewData["_UserGroup"] == null) ? "0" : ViewData["_UserGroup"].ToString());
 }
 @if (Model != null)
 {
-    list.Add(new SelectListItem() { Text = "請選擇", Value = "0" });
-
+    //list.Add(new SelectListItem() { Text = "請選擇", Value = "0" });
+    if (SCITEM_ == "0")
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "", Selected = true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = "請選擇", Value = "0" });
+    }
 }
 @foreach (var UserGroup in Model)
 {
-    //if (USEQNO == UserGroup.USEQNO)
-    //{
-    //    list.Add(new SelectListItem() { Text = UserGroup.UserGroupName, Value = UserGroup.USEQNO.ToString(), Selected = true });
-    //}
-    //else
-    //{
-    //    list.Add(new SelectListItem() { Text = UserGroup.UserGroupName, Value = UserGroup.USEQNO.ToString() });
-    //}
-    list.Add(new SelectListItem() { Text = UserGroup.SCMITEM, Value = UserGroup.SCMITEM.ToString() });
+    if (SCITEM_ == UserGroup.SCMITEM)
+    {
+        list.Add(new SelectListItem() { Text = UserGroup.SCMITEM, Value = UserGroup.SCMITEM.ToString(), Selected = true });
+    }
+    else
+    {
+        list.Add(new SelectListItem() { Text = UserGroup.SCMITEM, Value = UserGroup.SCMITEM.ToString() });
+    }
+    //list.Add(new SelectListItem() { Text = UserGroup.SCMITEM, Value = UserGroup.SCMITEM.ToString(), Selected = true });
 }
 
 @Html.DropDownList("ddlUserGroup", list, new { Class = "form-control" })

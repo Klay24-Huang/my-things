@@ -74,7 +74,6 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-
             if (EndDate != "")
             {
                 if (term != "")
@@ -87,46 +86,15 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-
-
             if ("" != term)
             {
                 SQL += " WITH(NOLOCK) WHERE (" + term + ")";
             }
             SQL += " ORDER BY EndDate ASC";
 
-
             lstOperators = GetObjList<BE_Operator>(ref flag, ref lstError, SQL, para, term);
             return lstOperators;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public List<BE_SCITEM> GetSCITEM()
-        {
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_SCITEM> lstOperators = null;
-            string SQL = "SELECT DISTINCT SCITEM FROM TB_ScoreDef";
-            SqlParameter[] para = new SqlParameter[10];
-            string term = "";
-            int nowCount = 0;
-            lstOperators = GetObjList<BE_SCITEM>(ref flag, ref lstError, SQL, para, term);
-            return lstOperators;
-        }
     }
 }

@@ -173,6 +173,7 @@
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Params\BaseParams.cs" />
+    <Compile Include="Models\Params\Search\Input\Input_CarCurrentStatus.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
     <Compile Include="Models\WebCommonFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -459,6 +460,7 @@
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoMaintain.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting.js" />
+    <Content Include="Scripts\js\ActionJS\StationAndParking\TransParkingSetting_Moto.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\CarTimelineQuery.js" />
     <Content Include="Scripts\js\ActionJS\SystemManage\MessageQuery.js" />
     <Content Include="Scripts\js\ActionJS\SystemSetting\FeedBackKindSetting.js" />
@@ -608,14 +610,24 @@
     <Content Include="Content\css\footable\fonts\footable.ttf" />
     <Content Include="Content\css\footable\fonts\footable.woff" />
     <Content Include="Content\css\footable\fonts\footabled41d.eot" />
-    <Content Include="Content\example\ParkingExample.xlsx" />
+    <Content Include="Content\example\ParkingExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\fonts\icomoon.eot" />
     <Content Include="Content\fonts\icomoon.ttf" />
     <Content Include="Content\fonts\icomoon.woff" />
-    <Content Include="Content\example\CarBindExample.xlsx" />
-    <Content Include="Content\example\CarMachineAndCardBindExample.xlsx" />
-    <Content Include="Content\example\ImportCarExample.xlsx" />
-    <Content Include="Content\example\ImportMotorExample.xlsx" />
+    <Content Include="Content\example\CarBindExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\CarMachineAndCardBindExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\ImportCarExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\ImportMotorExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\plugins\footable-components.latest\css\fonts\fontawesome-webfont.woff2" />
@@ -640,11 +652,25 @@
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.ttf" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footable.woff" />
     <Content Include="Content\plugins\footable-bootstrap.latest\css\fonts\footabled41d.eot" />
-    <Content Include="Content\example\MasterCardExample.xlsx" />
+    <Content Include="Content\example\MasterCardExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Contact\scss\layout.scss" />
     <Content Include="Content\Contact\scss\setting\_mixins.scss" />
     <Content Include="Content\Contact\scss\setting\_reset.scss" />
     <Content Include="Content\Contact\scss\setting\_variables.scss" />
+    <Content Include="Content\example\MemberScoreExample.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\ParkingExample_Moto.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\MileStoneExample .xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\example\ParkingExample_Moto.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -768,6 +794,8 @@
     <Content Include="Views\MemberManage\MemberScore.cshtml" />
     <Content Include="Views\CommonObj\GetSCITEM.cshtml" />
     <Content Include="Views\CommonObj\GetSCMITEM.cshtml" />
+    <Content Include="Views\StationAndParking\TransParkingSetting_Moto.cshtml" />
+    <Content Include="Views\CommonObj\GetScore.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

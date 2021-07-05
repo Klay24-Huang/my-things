@@ -883,6 +883,7 @@ namespace WebCommon
             System.Reflection.PropertyInfo[] wMembers = typeof(T).GetProperties();
             int wMembersLen = wMembers.Length;
             int rowCount = ds.Tables[0].Rows.Count;
+            
             bool flag = true;
             for (int RowIndx = 0; RowIndx < rowCount; RowIndx++)
             {

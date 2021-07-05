@@ -21,5 +21,6 @@ namespace Domain.TB.BackEnd
         public string GM { get; set; }
         public string A_PRGID { get; set; }
         public string SEQ { get; set; }
+        public string SCORETOTAL { get; set; }
     }
 }

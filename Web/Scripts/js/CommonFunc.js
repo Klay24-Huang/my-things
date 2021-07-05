@@ -245,8 +245,7 @@ function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj
 function DoAjaxAfterReload(obj,API,FailMessage) {
     var json = JSON.stringify(obj);
     console.log("json:" + json);
-    var site = jsHost2 + API;
-    //var site = "http://localhost:2061/api/BE_HandleUserMaintain" //202012唐測試用
+    var site = jsHost + API;
     //var site = "http://localhost:2061/api/" + API
     console.log("site:" + site);
     $.ajax({
@@ -336,8 +335,8 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
 //20210421唐加，悠遊付退款專用
 function DoAjaxAfterGoBack_EW(obj, FailMessage) {
     var json = JSON.stringify(obj);
-    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
-    var site = "http://localhost:60985/api/Exec/refundECOrder"
+    var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder"
+    //var site = "http://localhost:60985/api/Exec/refundECOrder"
     $.ajax({
         url: site,
         type: 'POST',
@@ -380,8 +379,8 @@ function DoAjaxAfterGoBack_EW(obj, FailMessage) {
 //20210427唐加，悠遊付退款專用
 function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
     var json = JSON.stringify(obj);
-    //var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder2"
-    var site = "http://localhost:60985/api/Exec/refundECOrder2"
+    var site = "https://easywallet.ai-irent.net/api/Exec/refundECOrder2"
+    //var site = "http://localhost:60985/api/Exec/refundECOrder2"
     $.ajax({
         url: site,
         type: 'POST',

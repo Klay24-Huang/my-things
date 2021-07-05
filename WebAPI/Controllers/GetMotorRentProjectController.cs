@@ -1,14 +1,20 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Common;
+using Domain.SP.Input.Project;
+using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -42,11 +48,11 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            StationAndCarRepository _repository;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -101,26 +107,53 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
+            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            {
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    Token = Access_Token_string.Split(' ')[1].ToString()
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //訪客機制BYPASS
+                if (spOut.ErrorCode == "ERR101")
+                {
+                    flag = true;
+                    spOut.ErrorCode = "";
+                    spOut.Error = 0;
+                    errCode = "000000";
+                }
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
-                _repository = new StationAndCarRepository(connetStr);
-                List<ProjectAndCarTypeDataForMotor> lstData = new List<ProjectAndCarTypeDataForMotor>();
-                lstData = _repository.GetProjectOfMotorRent(apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+
+                // 20210617 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetMotorRentProject);
+                SPInput_GetMotorRentProject SPInput = new SPInput_GetMotorRentProject
+                {
+                    IDNO = IDNO,
+                    CarNo = apiInput.CarNo,
+                    SD = SDate,
+                    ED = EDate,
+                    LogID = LogID
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_GetMotorRentProject, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMotorRentProject, SPOutput_Base>(connetStr);
+                List<ProjectAndCarTypeDataForMotor> lstData = new List<ProjectAndCarTypeDataForMotor>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, SPInput, ref spOut, ref lstData, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
                 if (flag)
                 {
                     if (lstData != null)
@@ -218,7 +251,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

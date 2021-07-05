@@ -24,6 +24,10 @@ namespace Domain.SP.Input.OtherService.FET
         /// </summary>
         public string CmdReply { set; get; }
         /// <summary>
+        /// NotOkay出錯步驟
+        /// </summary>
+        public string CmdStep { get; set; }
+        /// <summary>
         /// raw data
         /// </summary>
         public string receiveRawData { set; get; }

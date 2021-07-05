@@ -19,5 +19,6 @@ namespace Domain.TB.BackEnd
         public string APP { set; get; }
         public string DEL { set; get; }
         public string GM { set; get; }
+        public string SCORETOTAL { set; get; }
     }
 }

@@ -2,7 +2,8 @@
 @{
     string IDNO = (ViewData["IDNO"] == null) ? "" : ViewData["IDNO"].ToString();
     string result = (ViewData["result"] == null) ? "" : ViewData["result"].ToString();
-
+    string resultMessage = (ViewData["resultMessage"] == null) ? "" : ViewData["resultMessage"].ToString();
+    string IRent_Only = (ViewData["IRent_Only"] == null) ? "" : ViewData["IRent_Only"].ToString();
 }
 <!--查詢介面-->
 <div class="container mt-4">
@@ -21,46 +22,53 @@
         </div>
         @using (Html.BeginForm("DeleteMember", "MemberManage", FormMethod.Post, new { id = "frmDelete", @class = "form-horizontal", enctype = "multipart/form-data" }))
         {
-    <ul class="list-group list-group-flush">
-        <!--每一個li是一項查詢條件-->
-        <li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        身分證字號
-                    </div>
-                    <div class="col-md-3">
-                        <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
-                    </div>
-                </div>
-            </div>
-        </li>
-        <li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        僅刪除IRent會員
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input " type="checkbox" name="IRent_Only" id="IRent_Only" />
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                身分證字號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@IDNO" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </li>
-        <li class="list-group-item">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-3 offset-md-2">
-                        <button type="button" id="delete" class="btn btn-info btn-submit">確認刪除</button>
-                        <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
-                        <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                僅刪除IRent會員
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input " type="checkbox" name="IRent_Only" id="IRent_Only" @(IRent_Only == "true" ? "checked" : "") />
+
+                                  </div>
+
+                            </div>
+
+                         </div>
+
+                     </div>
+
+                 </li>
+
+<li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3 offset-md-2">
+                                <button type="button" id="delete" class="btn btn-info btn-submit">確認刪除</button>
+                                <button type="reset" class="btn btn-outline-secondary btn-clear">清除</button>
+                                <input type="hidden" id="DeleteMember_check" name="DeleteMember_check"/>
+                                <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </li>
-    </ul>
+                </li>
+            </ul>
         }
     </div>
     <!--end card-->
@@ -69,10 +77,28 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-header text-white bg-primary">
-            執行結果：@(result == "True" ? "會員刪除成功" : result == "False" ? "查無此身分證字號" : "")
+            執行結果：@resultMessage
         </div>
     </div>
 </div>
+@if(result == "2")
+{
+    <div class="container">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div>
+                            <span>此會員有預約記錄，是否確認刪除？</span>
+                            <btn id="btn_deleteMember_check" class="ml-2 btn btn-primary">確認</btn>
+                            <a id="btn_deleteMember_cancel" class="ml-2 btn btn-danger" href=@Url.Content("~/MemberManage/DeleteMember")>取消</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+}
 
 <script>
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';

@@ -74,5 +74,6 @@ namespace WebAPI.Models.Param.Input
         public string extDeviceData5 { set; get; }
         public string extDeviceData6 { set; get; }
         public string deviceName { get; set; }
+        public string deviceFW { get; set; }
     }
 }

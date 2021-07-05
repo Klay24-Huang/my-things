@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Project;
+using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
@@ -7,6 +9,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -46,7 +49,6 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            StationAndCarRepository _repository;
             string Contentjson = "";
             bool isGuest = true;
             DateTime SDate = DateTime.Now;
@@ -135,10 +137,24 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                _repository = new StationAndCarRepository(connetStr);
-                List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
-                lstData = _repository.GetProjectOfAnyRent(IDNO,apiInput.CarNo, SDate, EDate);
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+
+                // 20210616 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetAnyRentProject);
+                SPInput_GetAnyRentProject SPInput = new SPInput_GetAnyRentProject
+                {
+                    IDNO = IDNO,
+                    CarNo = apiInput.CarNo,
+                    SD = SDate,
+                    ED = EDate,
+                    LogID = LogID
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                List<ProjectAndCarTypeData> lstData = new List<ProjectAndCarTypeData>();
+                SQLHelper<SPInput_GetAnyRentProject, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetAnyRentProject, SPOutput_Base>(connetStr);
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, SPInput, ref spOut, ref lstData, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
                 if (flag)
                 {
@@ -166,7 +182,6 @@ namespace WebAPI.Controllers
                                 ProjName = lstData[0].PRONAME,
                                 ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
-                                //Bill = tmpBill,
                                 Price = tmpBill,
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
@@ -182,7 +197,6 @@ namespace WebAPI.Controllers
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (ProjectObj proj)
                                     {
-                                        //return proj.Bill > tmpBill && proj.IsMinimum == 1;
                                         return proj.Price > tmpBill && proj.IsMinimum == 1;
                                     });
                                     if (index > -1)
@@ -206,7 +220,6 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
-                                        //Bill = tmpBill,
                                         Price = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
@@ -243,7 +256,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

@@ -195,6 +195,7 @@
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
     <Compile Include="Controllers\BE_DeleteMemberScoreController.cs" />
     <Compile Include="Controllers\BE_FeedBackHandleController.cs" />
+    <Compile Include="Controllers\BE_GetCarCurrentStatus.cs" />
     <Compile Include="Controllers\BE_GetCarListController.cs" />
     <Compile Include="Controllers\BE_GetHoildayController.cs" />
     <Compile Include="Controllers\BE_GetManagerListController.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Controllers\BE_HandlePolygonController.cs" />
     <Compile Include="Controllers\BE_HandleStationController.cs" />
     <Compile Include="Controllers\BE_HandleTransParkingController.cs" />
+    <Compile Include="Controllers\BE_HandleTransParking_MotoController.cs" />
     <Compile Include="Controllers\BE_HandleUserGroupController.cs" />
     <Compile Include="Controllers\BE_HandleUserMaintainController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
@@ -373,7 +375,7 @@
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
     <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
-    <Compile Include="GetMachiParkTokenController.cs" />
+    <Compile Include="Controllers\GetMachiParkTokenController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -420,6 +422,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleOrderModifyByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleStation.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking_Moto.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleUserMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />
@@ -441,6 +444,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ChangeCar.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarCurrentStatus.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetCarList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetFuncPower.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetHoilday.cs" />
@@ -461,6 +465,7 @@
     <Compile Include="Models\Param\Input\IAPI_BookingFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingFisishQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BookingQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CarMachineVerInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_ChangeCreditCardBind.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckAppVersion.cs" />
     <Compile Include="Models\Param\Input\IAPI_CheckCarStatus.cs" />

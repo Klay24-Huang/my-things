@@ -1,6 +1,79 @@
 ﻿$(function () {
+    var Today = new Date();
+    var Mode = $("#AuditMode").val();
+    switch (Mode) {
+        case "1":
+            $("#NAME").show();
+            $("#ID").show();
+            $("#ORDER").show();
+            $("#ORDER_I").hide();
+            $("#DATE").show();
+            $("#Import").hide();
+            $("#Choice_0").hide();
+            $("#Choice_1").hide();
+            $("#Choice_2").hide();
+            $("#SCORE").hide();
+            $("#btnSubmit0").show();
+            $("#btnSubmit1").show();
+            $("#btnSubmit2").hide();
+            $("#btnSubmit3").hide();
+            //$("#btnSubmit4").hide();
+            $("#AA").show();
+            $("#BB").show();
+            $("#CC").hide();
+            $("#DD").hide();
+            $("#memo").hide();
+            $("#StartDate").val((Today.getFullYear() - 1) + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+            $("#EndDate").val(Today.getFullYear() + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+            break;
+        case "0":
+            $("#NAME").hide();
+            $("#ID").show();
+            $("#ORDER").hide();
+            $("#ORDER_I").show();
+            $("#DATE").hide();
+            $("#Import").hide();
+            $("#Choice_0").show();
+            $("#Choice_1").show();
+            $("#Choice_2").hide();
+            $("#SCORE").show();
+            $("#btnSubmit0").hide();
+            $("#btnSubmit1").hide();
+            $("#btnSubmit2").show();
+            $("#btnSubmit3").hide();
+            //$("#btnSubmit4").hide();
+            $("#AA").hide();
+            $("#BB").hide();
+            $("#CC").hide();
+            $("#DD").hide();
+            $("#memo").show();
+            break;
+        case "2":
+            $("#NAME").hide();
+            $("#ID").hide();
+            $("#ORDER").hide();
+            $("#ORDER_I").hide();
+            $("#DATE").hide();
+            $("#Import").show();
+            $("#Choice_0").hide();
+            $("#Choice_1").hide();
+            $("#Choice_2").hide();
+            $("#SCORE").hide();
+            $("#btnSubmit0").hide();
+            $("#btnSubmit1").hide();
+            $("#btnSubmit2").hide();
+            $("#btnSubmit3").show();
+            //$("#btnSubmit4").show();
+            $("#AA").hide();
+            $("#BB").hide();
+            //$("#CC").show();
+            //$("#DD").show();
+            $("#memo").hide();
+            break;
+    }
+
     $("#AuditMode").on("change", function () {
-        var Mode = $("#AuditMode").val();
+        Mode = $("#AuditMode").val();
         $(".clear").val('');
         switch (Mode) {
             case "1":
@@ -24,9 +97,11 @@
                 $("#CC").hide();
                 $("#DD").hide();
                 $("#memo").hide();
+                $("#StartDate").val((Today.getFullYear()-1) + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
+                $("#EndDate").val(Today.getFullYear() + "-" + (Today.getMonth() + 1) + "-" + Today.getDate());
                 break;
             case "0":
-                $("#NAME").show();
+                $("#NAME").hide();
                 $("#ID").show();
                 $("#ORDER").hide();
                 $("#ORDER_I").show();
@@ -34,7 +109,7 @@
                 $("#Import").hide();
                 $("#Choice_0").show();
                 $("#Choice_1").show();
-                $("#Choice_2").show();
+                $("#Choice_2").hide();
                 $("#SCORE").show();
                 $("#btnSubmit0").hide();
                 $("#btnSubmit1").hide();
@@ -87,6 +162,15 @@
         }
     })
 
+    $("#ddlUserGroup").on("change", function () {
+        var value = $(this).val();
+        $("#scoreman").empty();
+        if (value != "") {
+            $("#justSearch").val(1)
+            $("#frmMemberScore").submit();
+        }
+    })
+
     $("#ORDER_I").on("change", function () {
         ShowLoading("資料查詢中…");
         var a = $("#AuditMode").val()
@@ -106,23 +190,30 @@
         var ED = $("#EndDate").val();
         var flag = true;
         var errMsg = "";
-
-        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" && $("#ORDERNO").val() == "") {
+        if ($("#MEMNAME").val() == "" && ($("#IDNO").val() == "" && $("#ORDERNO").val() == "")) {
             flag = false;
-            errMsg = "請輸入ID或姓名或合約";
-        }    
+            errMsg = "請輸入姓名";
+        }
+        if ($("#IDNO").val() == "" && $("#ORDERNO").val() != "") {
+            flag = false;
+            errMsg = "請輸入ID";
+        }
+        if ($("#ORDERNO").val() != "" && false == RegexOrderNo($("#ORDERNO").val())) {
+            flag = false;
+            errMsg = "合約編號格式不符（格式：H+數字)";
+        }
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
                 errMsg = "起始日期大於結束日期";
             }
-            else {
-                var GetDateDiff = DateDiff(SD, ED);
-                if (GetDateDiff > 30) {
-                    flag = false;
-                    errMsg = "時間區間不可大於30天";
-                }
-            }
+            //else {
+            //    var GetDateDiff = DateDiff(SD, ED);
+            //    if (GetDateDiff > 30) {
+            //        flag = false;
+            //        errMsg = "時間區間不可大於30天";
+            //    }
+            //}
         } else {
             flag = false;
             errMsg = "未選擇日期";
@@ -144,10 +235,16 @@
         var flag = true;
         var errMsg = "";
 
-        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" && $("#ORDERNO").val() == "") {
+        if ($("#IDNO").val() == "" && $("#MEMNAME").val() == "" ) {
             flag = false;
-            errMsg = "請輸入ID或姓名或合約";
+            errMsg = "請輸入ID或姓名";
         }
+
+        if ($("#ORDERNO").val() != "" && false == RegexOrderNo($("#ORDERNO").val())) {
+            flag = false;
+            errMsg = "合約編號格式不符（格式：H+數字)";
+        }
+
         if (SD !== "" && ED !== "") {
             if (SD > ED) {
                 flag = false;
@@ -184,10 +281,18 @@
         var flag = true;
         var errMsg = "";
 
-        if ($("#ORDERNO_I").val() == "") {
+        if ($("#ORDERNO_I").val() == "" && $("#ddlOperatorGG").val() != "其他") {
             flag = false;
             errMsg = "請輸入合約";
         }
+        if ($("#ORDERNO_I").val() != "" && $("#ddlOperatorGG").val() != "其他") {
+            if (false == RegexOrderNo($("#ORDERNO_I").val())) {
+                flag = false;
+                errMsg = "合約編號格式不符（格式：H+數字)";
+            }
+        }
+
+
         if ($("#IDNO").val() == "") {
             flag = false;
             errMsg = "請輸入ID";
@@ -195,6 +300,10 @@
         if ($("#MEMSCORE").val() == "") {
             flag = false;
             errMsg = "請輸入分數";
+        }
+        if ($("#sonmemo").val() == "" && $("#ddlOperatorGG").val() == "其他") {
+            flag = false;
+            errMsg = "請填備註";
         }
         
         if (flag) {
@@ -206,19 +315,17 @@
             disabledLoadingAndShowAlert(errMsg);
         }
     });
+
     $("#exampleDownload").on("click", function () {
         window.location.href = "../Content/example/MemberScoreExample.xlsx";
     });
-    //$("#btnSubmit4").on("click", function () {
-    //    $("#btnSubmit3").show();
 
-
-    //});
     $("#btnSubmit3").on("click", function () {
         ShowLoading("資料匯入中");
         $("#frmMemberScore").submit();
         disabledLoading();
     });
+
     $("#fileImport").on("change", function () {
         var file = this.files[0];
         var fileName = file.name;
@@ -240,6 +347,8 @@
             });
         }
     })
+
+    $("#MEMSCORE").val($("#scoreman").val());
 });
 
 
@@ -321,6 +430,11 @@ function DoSave(Id) {
         }
     }
 
+    if (UserScore==0) {
+        flag = false;
+        errMsg = "分數不能是0";
+    }
+
     if (flag) {
         var obj = new Object();
         obj.IDNO = IDNO;
@@ -340,7 +454,6 @@ function DoDel(Id) {
     var SEQ = $("#UserSeq_" + Id).val();
     var Account = $("#Account").val();
     var IDNO = $("#UserId_" + Id).val();
-
 
     ShowLoading("資料處理中");
 

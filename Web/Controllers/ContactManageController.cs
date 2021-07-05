@@ -451,7 +451,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             if (flag)
             {
