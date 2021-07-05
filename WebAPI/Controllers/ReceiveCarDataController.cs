@@ -144,7 +144,6 @@ namespace WebAPI.Controllers
                                 extDeviceStatus1 = VehicleInput.extDeviceStatus1,
                                 extDeviceStatus2 = VehicleInput.extDeviceStatus2,
                                 deviceName = VehicleInput.deviceName,
-                                deviceFW = VehicleInput.deviceFW ?? "",
                                 LogID = LogID
                             };
                             SQLHelper<SPInput_CarStatus, SPOutput_Base> SQLRepsonseHelp = new SQLHelper<SPInput_CarStatus, SPOutput_Base>(connetStr);
@@ -231,7 +230,6 @@ namespace WebAPI.Controllers
                                 extDeviceData2 = MotorDataInput.extDeviceData2,
                                 extDeviceStatus1 = MotorDataInput.extDeviceStatus1,
                                 deviceName = MotorDataInput.deviceName,
-                                deviceFW = VehicleInput.deviceFW ?? "",
 
                                 LogID = LogID
                             };
@@ -249,8 +247,7 @@ namespace WebAPI.Controllers
                                 method = CMDBase.method,
                                 requestId = CMDBase.requestId,
                                 receiveRawData = Contentjson,
-                                LogID = LogID,
-                                CmdStep = CMDBase.CmdStep ?? ""
+                                LogID = LogID
                             };
 
                             SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsReceiveCMD, SPOutput_Base>(connetStr);

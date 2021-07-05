@@ -775,37 +775,36 @@ namespace WebAPI.Controllers
                                         _params = new Params()
                                     };
 
-                                    requestId = SetRentInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
+                                requestId = SetRentInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                 }
                             }
-                            //解防盜
-                            if (flag)
+                        }
+                        //解防盜
+                        if (flag)
+                        {
+                            if (info.SecurityStatus == 1) //有開防盜才要解
                             {
-                                if (info.SecurityStatus == 1) //有開防盜才要解
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
+                                WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
                                 {
-                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
-                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
-                                    WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
-                                    {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
-                                    };
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new Params()
+                                };
 
-                                    requestId = SetAlertOffInput.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                                    }
+                                requestId = SetAlertOffInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                                 }
                             }
                         }

@@ -46,6 +46,5 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public string extDeviceData7 { get; set; }
         public string deviceName { get; set; }
-        public string deviceFW { get; set; }
     }
 }
