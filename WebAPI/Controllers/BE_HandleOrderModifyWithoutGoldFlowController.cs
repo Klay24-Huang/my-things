@@ -170,6 +170,26 @@ namespace WebAPI.Controllers
                         }
                     }
 
+                    /*查詢短租訂單狀態*/
+                    if (flag)
+                    {
+                        string STATUS = "", CNTRNO = "", INVSTATUS = "";
+                        flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
+                        if (flag)
+                        {
+                            if (INVSTATUS == "N" && STATUS == "04")
+                            {
+                                flag = false;
+                                errCode = "ERR760";
+                            }
+                            //else if (Convert.ToInt32(STATUS) >3)
+                            //{
+                            //    //20210113先by pass
+                            //    flag = false;
+                            //    errCode = "ERR760"; //"ERR761";
+                            //}
+                        }
+                    }
                     if (flag)
                     {
                         // 20210427;增加LOG方便查問題

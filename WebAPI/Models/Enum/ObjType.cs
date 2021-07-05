@@ -412,6 +412,26 @@ namespace WebAPI.Models.Enum
             /// 寫入電量LOG 20210516 ADD BY ADAM
             /// </summary>
             InsMotorBattLog,
+            /// <summary>
+            /// 取得會員積分 20210519 ADD BY YEH
+            /// </summary>
+            GetMemberScore,
+            /// <summary>
+            /// 修改會員積分明細 20210519 ADD BY YEH
+            /// </summary>
+            SetMemberScoreDetail,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMemberMedal,
+            /// <summary>
+            /// 取得會員徽章 20210521 ADD BY YEH
+            /// </summary>
+            GetMapMedal,
+            /// <summary>
+            /// 取得會員積分攻略標題 20210526 ADD BY FRANK
+            /// </summary>
+            GetMemberScoreItem,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -669,8 +689,8 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthList,
             GetOrderAuthReturnList,
             UpdateOrderAuthReturnList,
-            BE_Banner//20210316唐加
-
+            BE_Banner,//20210316唐加
+            BE_InsertChargeParkingData,//20210511唐加
         }
         /// <summary>
         /// 取出SPName
@@ -714,13 +734,11 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_ChangePWD";
                     break;
                 case SPType.RegisterMemberData: //註冊會員基本資料
-                    //SPName = "usp_RegisterMemberData";
-                    SPName = "usp_RegisterMemberData_ForTest";  // 20210504;FOR測試會員定義需求
+                    SPName = "usp_RegisterMemberData";
                     break;
                 case SPType.UploadCredentials: //上傳證件照
                     //SPName = "usp_UploadCredentials";
-                    //SPName = "usp_UploadCredentialsNew";
-                    SPName = "usp_UploadCredentialsNew_ForTest";    // 20210504;FOR測試會員定義需求
+                    SPName = "usp_UploadCredentialsNew";
                     //SPName = "usp_UploadCredentialsNew_20210220_Tang";  //20210220唐暫時改，用於將1.0照片拋去azure
                     break;
                 case SPType.ReSendEmail: //重發EMail
@@ -736,8 +754,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_SetDefPayMode";
                     break;
                 case SPType.SetMemberData:  //修改會員資料
-                    //SPName = "usp_SetMemberData";
-                    SPName = "usp_SetMemberData_ForTest";   // 20210504;FOR測試會員定義需求
+                    SPName = "usp_SetMemberData";
                     break;
                 case SPType.CheckMobile:    //檢查手機號碼
                     SPName = "usp_CheckMobile";
@@ -748,7 +765,6 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.RefrashToken: //Refrash Token
                     SPName = "usp_RefrashToken";
-                    //SPName = "usp_RefrashToken_ForTest";
                     break;
                 case SPType.CheckTokenOnlyToken:
                     SPName = "usp_CheckTokenOnlyToken";
@@ -895,7 +911,7 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
                     //SPName = "usp_GetMemberStatus";
-                    SPName = "usp_GetMemberStatus_ForTest";     // 20210504;FOR測試會員定義需求
+                    SPName = "usp_GetMemberStatus_ForTest";     // 20210521 ADD BY YEH FOR TEST
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";
@@ -1004,6 +1020,21 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.InsMotorBattLog:    //寫入機車電量 20210516 ADD BY ADAM
                     SPName = "usp_InsMotorBattLog";
+                    break;
+                case SPType.GetMemberScore:     //取得會員積分 20210519 ADD BY YEH
+                    SPName = "usp_GetMemberScore_Q1";
+                    break;
+                case SPType.SetMemberScoreDetail:     //修改會員積分明細 20210519 ADD BY YEH
+                    SPName = "usp_SetMemberScoreDetail";
+                    break;
+                case SPType.GetMemberMedal:     //取得會員徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMemberMedal";
+                    break;
+                case SPType.GetMapMedal:     //取得地圖徽章 20210521 ADD BY YEH
+                    SPName = "usp_GetMapMedal";
+                    break;
+                case SPType.GetMemberScoreItem:  //取得會員積分攻略標題 20210526 ADD BY FRANK
+                    SPName = "usp_GetMemberScoreItem";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
@@ -1209,8 +1240,15 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_UpdCATDeviceToken:
                     SPName = "usp_BE_UpdCATDeviceToken";
                     break;
+
+                case SPType.BE_InsertChargeParkingData:
+                    //SPName = "usp_BE_HandleTransParking";
+                    SPName = "usp_BE_InsertChargeParkingData";
+                    break;
+
                 case SPType.BE_UnBindCreditCard:      // 20210511 ADD BY YEH REASON.後台解綁要將DB壓失效
                     SPName = "usp_BE_UnBindCreditCard";
+
                     break;
                 #endregion
                 #region 整備人員

@@ -1,65 +1,114 @@
 ﻿$(function () {
-    var IDNO = $("#IDNO").val();
-    var checkTwID = function (input) {
+    //身分證字號或外籍人士居留証驗證
+    /*
+     * 第一個字元代表地區，轉換方式為：A轉換成1,0兩個字元，B轉換成1,1……但是Z、I、O分別轉換為33、34、35
+     * 第二個字元代表性別，1代表男性，2代表女性
+     * 第三個字元到第九個字元為流水號碼。
+     * 第十個字元為檢查號碼。
+     * 每個相對應的數字相乘，如A123456789代表1、0、1、2、3、4、5、6、7、8，相對應乘上1987654321，再相加。
+     * 相加後的值除以模數，也就是10，取餘數再以模數10減去餘數，若等於檢查碼，則驗證通過
+     */
+    function checkId(idNumber) {
 
-        // 依照字母的編號排列，存入陣列備用。
-        var letters = new Array('A', 'B', 'C', 'D',
-            'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
-            'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-            'X', 'Y', 'W', 'Z', 'I', 'O');
-        // 儲存各個乘數
-        var multiply = new Array(1, 9, 8, 7, 6, 5,
-            4, 3, 2, 1);
-        var nums = new Array(2);
-        var firstChar;
-        var firstNum;
-        var lastNum;
-        var total = 0;
-        // 撰寫「正規表達式」。第一個字為英文字母，
-        // 第二個字為1或2，後面跟著8個數字，不分大小寫。
-        var regExpID = /^[a-z](1|2)\d{8}$/i;
-        // 使用「正規表達式」檢驗格式
-        if (input.search(regExpID) == -1) {
-            // 基本格式錯誤
-            return false;
+        var nationality = 0;
+        idNumber = idNumber.toUpperCase();
+        if (/^[A-Z]$/.test(idNumber.substr(1, 1))) {
+            nationality = 1
         } else {
-            // 取出第一個字元和最後一個數字。
-            firstChar = input.charAt(0).toUpperCase();
-            lastNum = input.charAt(9);
+            nationality = 0
         }
-        // 找出第一個字母對應的數字，並轉換成兩位數數字。
-        for (var i = 0; i < 26; i++) {
-            if (firstChar == letters[i]) {
-                firstNum = i + 10;
-                nums[0] = Math.floor(firstNum / 10);
-                nums[1] = firstNum - (nums[0] * 10);
-                break;
+
+        //本國人
+        if (nationality == 0) {
+
+            //驗證填入身分證字號長度及格式
+            if (idNumber.length != 10) {
+                return false;
+            }
+            //格式，用正則表示式比對第一個字母是否為英文字母
+            if (isNaN(idNumber.substr(1, 9)) ||
+                (!/^[A-Z]$/.test(idNumber.substr(0, 1)))) {
+                return false;
+            }
+
+            var idHeader = "ABCDEFGHJKLMNPQRSTUVXYWZIO"; //按照轉換後權數的大小進行排序
+            //這邊把身分證字號轉換成準備要對應的
+            idNumber = (idHeader.indexOf(idNumber.substring(0, 1)) + 10) + '' + idNumber.substr(1, 9);
+            //開始進行身分證數字的相乘與累加，依照順序乘上1987654321
+            s = parseInt(idNumber.substr(0, 1)) +
+                parseInt(idNumber.substr(1, 1)) * 9 +
+                parseInt(idNumber.substr(2, 1)) * 8 +
+                parseInt(idNumber.substr(3, 1)) * 7 +
+                parseInt(idNumber.substr(4, 1)) * 6 +
+                parseInt(idNumber.substr(5, 1)) * 5 +
+                parseInt(idNumber.substr(6, 1)) * 4 +
+                parseInt(idNumber.substr(7, 1)) * 3 +
+                parseInt(idNumber.substr(8, 1)) * 2 +
+                parseInt(idNumber.substr(9, 1));
+
+            checkNum = parseInt(idNumber.substr(10, 1));
+            //模數 - 總和/模數(10)之餘數若等於第九碼的檢查碼，則驗證成功
+            //若餘數為0，檢查碼就是0
+            if ((s % 10) == 0 || (10 - s % 10) == checkNum) {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+        //外籍生，居留證號規則跟身分證號差不多，只是第二碼也是英文字母代表性別，跟第一碼轉換二位數字規則相同，但只取餘數
+        else {
+
+            //驗證填入身分證字號長度及格式
+            if (idNumber.length != 10) {
+                return false;
+            }
+            //格式，用正則表示式比對第一個字母是否為英文字母
+            if (isNaN(idNumber.substr(2, 8)) ||
+                (!/^[A-Z]$/.test(idNumber.substr(0, 1))) ||
+                (!/^[A-Z]$/.test(idNumber.substr(1, 1)))) {
+                return false;
+            }
+
+            var idHeader = "ABCDEFGHJKLMNPQRSTUVXYWZIO"; //按照轉換後權數的大小進行排序
+            //這邊把身分證字號轉換成準備要對應的
+            idNumber = (idHeader.indexOf(idNumber.substring(0, 1)) + 10) +
+                '' + ((idHeader.indexOf(idNumber.substr(1, 1)) + 10) % 10) + '' + idNumber.substr(2, 8);
+            //開始進行身分證數字的相乘與累加，依照順序乘上1987654321
+
+            s = parseInt(idNumber.substr(0, 1)) +
+                parseInt(idNumber.substr(1, 1)) * 9 +
+                parseInt(idNumber.substr(2, 1)) * 8 +
+                parseInt(idNumber.substr(3, 1)) * 7 +
+                parseInt(idNumber.substr(4, 1)) * 6 +
+                parseInt(idNumber.substr(5, 1)) * 5 +
+                parseInt(idNumber.substr(6, 1)) * 4 +
+                parseInt(idNumber.substr(7, 1)) * 3 +
+                parseInt(idNumber.substr(8, 1)) * 2 +
+                parseInt(idNumber.substr(9, 1));
+
+            //檢查號碼 = 10 - 相乘後個位數相加總和之尾數。
+            checkNum = parseInt(idNumber.substr(10, 1));
+            //模數 - 總和/模數(10)之餘數若等於第九碼的檢查碼，則驗證成功
+            ///若餘數為0，檢查碼就是0
+            if ((s % 10) == 0 || (10 - s % 10) == checkNum) {
+                return true;
+            }
+            else {
+                return false;
             }
         }
-        // 執行加總計算
-        for (var i = 0; i < multiply.length; i++) {
-            if (i < 2) {
-                total += nums[i] * multiply[i];
-            } else {
-                total += parseInt(input.charAt(i - 1)) *
-                    multiply[i];
-            }
-        }
-        // 和最後一個數字比對
-        if ((10 - (total % 10)) != lastNum) {
-            return false;
-        }
-        return true;
     }
 
     $("#change").on('click', function () {
         var targetId = $("#TARGET_ID").val();
         var afterId = $("#AFTER_ID").val();
-        var flag = (checkTwID(targetId) && checkTwID(afterId));
+        var flag = (checkId(afterId));
         if (flag) {
             $("#frmChangeID").submit();
         } else {
-            var message = "身分證格式錯誤";
+            var message = "新身分證號格式錯誤";
             disabledLoadingAndShowAlert(message);
         }
     })

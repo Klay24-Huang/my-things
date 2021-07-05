@@ -45,9 +45,7 @@ $(document).ready(function () {
         ShowLoading("資料匯入中"); 
         $("#frmTransParkingSetting").submit();
     });
-    $("#btnReset").on("click", function () {
-        init();
-    })
+
     Mode = $('#modeData').val();
     if (Mode != '') {
         setTimeout(function () {

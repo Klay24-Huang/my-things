@@ -9,6 +9,7 @@ namespace Domain.TB.BackEnd
     public class BE_GetMemList
     {
         public string ID { set; get; }
+        public string MEMRFNBR { set; get; }
         public string NAME { set; get; }
         public string HIID { set; get; }
         public string Group { set; get; }

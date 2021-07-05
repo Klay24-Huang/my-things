@@ -19,7 +19,7 @@ namespace Reposotory.Implement
             this.ConnectionString = ConnStr;
         }
         /// <summary>
-        /// 取得所有有效的停車場
+        /// 取得所有有效的汽車停車場
         /// </summary>
         /// <returns></returns>
         public List<ParkingData> GetAllParking()
@@ -29,6 +29,22 @@ namespace Reposotory.Implement
             List<ParkingData> lstParking = null;
             int nowCount = 0;
             string SQL = "SELECT  [ParkingType],[ParkingName],[ParkingAddress],[Longitude],[Latitude],[OpenTime] ,[CloseTime] FROM [VW_GetParking] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE())) ;";
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+            lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
+        }
+        /// <summary>
+        /// 取得所有有效的機車停車場
+        /// </summary>
+        /// <returns></returns>
+        public List<ParkingData> GetAllMotorParking()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ParkingData> lstParking = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [ParkingType],[ParkingName],[ParkingAddress],[ParkingLng] AS Longitude,[ParkingLat] AS Latitude,[OpenTime] ,[CloseTime] FROM [TB_ParkingData_Motor] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE())) ;";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
@@ -50,6 +66,20 @@ namespace Reposotory.Implement
             List<ParkingData> lstParking = null;
             int nowCount = 0;
             string SQL = string.Format("SELECT  [ParkingType],[ParkingName],[ParkingAddress],[Longitude],[Latitude],[OpenTime] ,[CloseTime] FROM [VW_GetParking] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE())) AND ParkingType={0}", ParkType);
+            SqlParameter[] para = new SqlParameter[2];
+            string term = "";
+
+            lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
+        }
+
+        public List<ParkingData> GetAllMotorParkingByType(int ParkType)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ParkingData> lstParking = null;
+            int nowCount = 0;
+            string SQL = string.Format("SELECT  [ParkingType],[ParkingName],[ParkingAddress],[ParkingLng] AS Longitude,[ParkingLat] AS Latitude,[OpenTime] ,[CloseTime] FROM [TB_ParkingData_Motor] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE())) AND ParkingType={0}", ParkType);
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
 
@@ -100,6 +130,46 @@ namespace Reposotory.Implement
             lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
             return lstParking;
         }
+
+        public List<ParkingData> GetAllMotorParking(double lat, double lng, double radius)
+        {
+
+            bool flag = false, hasRange = true;
+            double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
+            if (lng > 0 && lat > 0 && radius > 0)
+            {
+                latlngLimit = GetAround(lat, lng, radius);
+            }
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ParkingData> lstParking = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [ParkingType],[ParkingName],[ParkingAddress],[ParkingLng] AS Longitude,[ParkingLat] AS Latitude,[OpenTime] ,[CloseTime] FROM [TB_ParkingData_Motor] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE())) ";
+
+            SqlParameter[] para = new SqlParameter[2];
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (latlngLimit[j] == 0)
+                {
+                    hasRange = false;
+                    break;
+                }
+            }
+            string term = "";
+
+
+
+            if (hasRange)
+            {
+                //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
+                SQL += string.Format(" AND (ParkingLat>={0} AND ParkingLat<={1}) AND (ParkingLng>={2} AND ParkingLng<={3})", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3]);
+            }
+
+            lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
+        }
+
+
         public List<ParkingData> GetAllParkingByType(int ParkType, double lat, double lng, double radius)
         {
             bool flag = false, hasRange = true;
@@ -148,6 +218,44 @@ namespace Reposotory.Implement
 
             return lstStation;
         }
+
+        public List<ParkingData> GetAllMotorParkingByType(int ParkType, double lat, double lng, double radius)
+        {
+            bool flag = false, hasRange = true;
+            double[] latlngLimit = { 0.0, 0.0, 0.0, 0.0 };
+            if (lng > 0 && lat > 0 && radius > 0)
+            {
+                latlngLimit = GetAround(lat, lng, radius);
+            }
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<ParkingData> lstParking = null;
+            int nowCount = 0;
+            string SQL = "SELECT  [ParkingType],[ParkingName],[ParkingAddress],[ParkingLng] AS Longitude,[ParkingLat] AS Latitude,[OpenTime] ,[CloseTime] FROM [TB_ParkingData_Motor] WITH(NOLOCK) WHERE use_flag=1 AND (OpenTime<=DATEADD(HOUR,8,GETDATE()) AND CloseTime>=DATEADD(HOUR,8,GETDATE()))  ";
+
+            SqlParameter[] para = new SqlParameter[2];
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (latlngLimit[j] == 0)
+                {
+                    hasRange = false;
+                    break;
+                }
+            }
+            string term = "";
+
+
+
+            if (hasRange)
+            {
+                //最小緯度lat、最小經度lng、最大緯度lat、最大經度lng
+                SQL += string.Format(" AND (ParkingLat>={0} AND ParkingLat<={1}) AND (ParkingLng>={2} AND ParkingLng<={3}) AND ParkingType={4}", latlngLimit[0], latlngLimit[2], latlngLimit[1], latlngLimit[3], ParkType);
+            }
+            //SQL += "ORDER BY StationID ASC;";
+            lstParking = GetObjList<ParkingData>(ref flag, ref lstError, SQL, para, term);
+            return lstParking;
+        }
+
         /// <summary>
         /// 取得調度停車場
         /// </summary>
@@ -190,7 +298,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_ChargeParkingData> lstParking = null;
             int nowCount = 0;
-            string SQL = "SELECT  * FROM [dbo].[VW_BE_GetChargeParking] ";
+            string SQL = "SELECT * FROM [dbo].[VW_BE_GetChargeParking] ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             if (string.IsNullOrEmpty(ParkingName) == false && string.IsNullOrWhiteSpace(ParkingName) == false)
