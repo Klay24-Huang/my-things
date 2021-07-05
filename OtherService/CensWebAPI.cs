@@ -14,8 +14,6 @@ using System.IO;
 using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.OtherService.CENS;
 using OtherService.Common;
-using Reposotory.Implement;
-using Domain.TB;
 
 namespace OtherService
 {
@@ -26,8 +24,6 @@ namespace OtherService
     {
         private string BasePath = ConfigurationManager.AppSettings.Get("CENSBaseURL");
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string censCombineCmdAllSupport = ConfigurationManager.AppSettings["CENSCombineCmdAllSupport"] ?? "";
-        private string censCombineCmdSupportFwVer = ConfigurationManager.AppSettings["CENSCombineCmdSupportFwVer"] ?? "0";
 
         /// <summary>
         /// 2.1取得即時狀態
@@ -218,72 +214,6 @@ namespace OtherService
             return flag;
         }
         /// <summary>
-        /// 指定尋車方式
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public bool SearchCarForSituation(WSInput_SearchCarForSituation input, ref WSOutput_Base output)
-        {
-            bool flag = true;
-            string Name = "SearchCarForSituation";
-            string URL = BasePath + Name;
-
-            Dictionary<string, object> inputObj = new Dictionary<string, object>();
-            inputObj.Add("para", input);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, input.CID).Result;
-            if (output.Result == 1)
-            {
-                flag = false;
-            }
-            return flag;
-        }
-        /// <summary>
-        /// 取車巨集指令
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public bool CombineCmdGetCar(WSInput_CombineCmdGetCar input, ref WSOutput_Base output)
-        {
-            bool flag = true;
-            string Name = "CombineCmdGetCar";
-            string URL = BasePath + Name;
-
-            Dictionary<string, object> inputObj = new Dictionary<string, object>();
-            inputObj.Add("para", input);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, input.CID).Result;
-            if (output.Result == 1)
-            {
-                flag = false;
-            }
-            return flag;
-        }
-        /// <summary>
-        /// 還車巨集指令
-        /// </summary>
-        /// <param name="CID"></param>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public bool CombineCmdReturnCar(string CID, ref WSOutput_Base output)
-        {
-            bool flag = true;
-            string Name = "CombineCmdReturnCar";
-            string URL = BasePath + Name;
-            WSInput_Base wsInput = new WSInput_Base()
-            {
-                CID = CID
-            };
-            Dictionary<string, object> inputObj = new Dictionary<string, object>();
-            inputObj.Add("para", wsInput);
-            output = doSendCMD(JsonConvert.SerializeObject(inputObj), URL, Name, CID).Result;
-            if (output.Result == 1)
-            {
-                flag = false;
-            }
-            return flag;
-        }
-        /// <summary>
         /// 2.2~2.5共用
         /// </summary>
         /// <param name="input"></param>
@@ -452,59 +382,6 @@ namespace OtherService
             }
             catch
             { }
-        }
-        /// <summary>
-        /// 判斷能否使用巨集功能
-        /// </summary>
-        /// <param name="cid">CID</param>
-        /// <returns></returns>
-        public bool IsSupportCombineCmd(string cid)
-        {
-            bool support = false;
-            bool flag = false;
-            try
-            {
-                if (censCombineCmdAllSupport == "1")
-                {
-                    support = true;
-                }
-                else
-                {
-                    CarCMDRepository CarCMDRepository = new CarCMDRepository(connetStr);
-                    CarCmdData carCmdData = CarCMDRepository.GetCarCMDDataByCID(cid, ref flag);
-                    if (!string.IsNullOrEmpty(carCmdData.CensFWVer))
-                    {
-                        support = chkCensFwVer(carCmdData.CensFWVer);
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return support;
-        }
-        /// <summary>
-        /// 檢查興聯車機韌體版本是否支援新功能
-        /// </summary>
-        /// <param name="fwver"></param>
-        /// <returns></returns>
-        public bool chkCensFwVer(string fwver)
-        {
-            bool support = false;
-            try
-            {
-                if (fwver?.Length == 10)
-                {
-                    if (Convert.ToInt32(fwver.Substring(1, 9)) > Convert.ToInt32(censCombineCmdSupportFwVer))
-                    {
-                        support = true;
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return support;
         }
     }
 }

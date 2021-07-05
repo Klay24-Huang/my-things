@@ -35,9 +35,5 @@ namespace Domain.TB
         /// 是否為機車（0:否;1:是)
         /// </summary>
         public int IsMotor { set; get; }
-        /// <summary>
-        /// 興聯車機韌體版本
-        /// </summary>
-        public string CensFWVer { set; get; }
     }
 }

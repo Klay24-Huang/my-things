@@ -262,131 +262,91 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
-                        if (flag && webAPI.IsSupportCombineCmd(CID))
+                        //設定租約狀態
+                        if (flag)
                         {
-                            WSInput_CombineCmdGetCar wsInput = new WSInput_CombineCmdGetCar()
+                            WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
                             {
                                 CID = CID,
-                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                                OrderStatus = 1
                             };
-                            //要將卡號寫入車機
-                            int count = 0;
-                            int CardLen = lstCardList.Count;
-                            if (CardLen > 0)
-                            {
-                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CardLen];
-                                //寫入顧客卡
-                                var CardNo = string.Empty;
-                                for (int i = 0; i < CardLen; i++)
-                                {
-                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
-                                    CardData[i].CardNo = lstCardList[i].CardNO;
-                                    CardNo += lstCardList[i].CardNO;
-                                    count++;
-                                }
-
-                                if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
-                                {
-                                    wsInput.data = CardData;
-                                }
-                            }
                             WSOutput_Base wsOut = new WSOutput_Base();
                             Thread.Sleep(1000);
-                            flag = webAPI.CombineCmdGetCar(wsInput, ref wsOut);
+                            flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
                             {
                                 errCode = wsOut.ErrorCode;
                                 errMsg = wsOut.ErrMsg;
                             }
                         }
-                        else
+                        //解防盜
+                        if (flag)
                         {
-                            //設定租約狀態
-                            if (flag)
+                            WSInput_SendLock wsLockInput = new WSInput_SendLock()
                             {
-                                WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
-                                {
-                                    CID = CID,
-                                    OrderStatus = 1
-                                };
-                                WSOutput_Base wsOut = new WSOutput_Base();
-                                Thread.Sleep(1000);
-                                flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
-                                if (false == flag || wsOut.Result == 1)
-                                {
-                                    errCode = wsOut.ErrorCode;
-                                    errMsg = wsOut.ErrMsg;
-                                }
-                            }
-                            //解防盜
-                            if (flag)
+                                CID = CID,
+                                CMD = 4
+                            };
+                            WSOutput_Base wsOut = new WSOutput_Base();
+                            Thread.Sleep(1500);
+                            flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                            if (false == flag || wsOut.Result == 1)
                             {
-                                WSInput_SendLock wsLockInput = new WSInput_SendLock()
-                                {
-                                    CID = CID,
-                                    CMD = 4
-                                };
-                                WSOutput_Base wsOut = new WSOutput_Base();
-                                Thread.Sleep(1500);
-                                flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                                if (false == flag || wsOut.Result == 1)
-                                {
-                                    errCode = wsOut.ErrorCode;
-                                    errMsg = wsOut.ErrMsg;
-                                }
+                                errCode = wsOut.ErrorCode;
+                                errMsg = wsOut.ErrMsg;
                             }
-                            //寫入顧客卡 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡
-                            if (flag)
-                            {
-                                //要將卡號寫入車機
-                                int count = 0;
-                                int CardLen = lstCardList.Count;
-                                if (CardLen > 0)
-                                {
-                                    SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                                    //寫入顧客卡
-                                    WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                                    {
-                                        CID = CID,
-                                        mode = 1
-                                    };
-                                    var CardNo = string.Empty;
-                                    for (int i = 0; i < CardLen; i++)
-                                    {
-                                        CardData[i] = new SendCarNoData();
-                                        CardData[i].CardNo = lstCardList[i].CardNO;
-                                        CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                                        CardNo += lstCardList[i].CardNO;
-                                        count++;
-                                    }
-
-                                    if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
-                                    {
-                                        wsInput.data = new SendCarNoData[CardLen];
-                                        wsInput.data = CardData;
-                                        WSOutput_Base wsOut = new WSOutput_Base();
-                                        Thread.Sleep(500);
-                                        flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                                        if (false == flag)
-                                        {
-                                            errCode = wsOut.ErrorCode;
-                                        }
-                                    }
-                                }
-                            }
-                            //開啟NFC電源 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡就不用開啟電源了
-                            //if (flag)
-                            //{
-                            //    Thread.Sleep(1000);
-                            //    WSOutput_Base wsOut = new WSOutput_Base();
-                            //    flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
-                            //    if (false == flag || wsOut.Result == 1)
-                            //    {
-                            //        errCode = wsOut.ErrorCode;
-                            //        errMsg = wsOut.ErrMsg;
-                            //    }
-                            //}
                         }
+                        //寫入顧客卡 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡
+                        if (flag)
+                        {
+                            //要將卡號寫入車機
+                            int count = 0;
+                            int CardLen = lstCardList.Count;
+                            if (CardLen > 0)
+                            {
+                                SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                //寫入顧客卡
+                                WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                {
+                                    CID = CID,
+                                    mode = 1
+                                };
+                                var CardNo = string.Empty;
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                    CardNo += lstCardList[i].CardNO;
+                                    count++;
+                                }
+
+                                if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
+                                {
+                                    wsInput.data = new SendCarNoData[CardLen];
+                                    wsInput.data = CardData;
+                                    WSOutput_Base wsOut = new WSOutput_Base();
+                                    Thread.Sleep(500);
+                                    flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                                    if (false == flag)
+                                    {
+                                        errCode = wsOut.ErrorCode;
+                                    }
+                                }
+                            }
+                        }
+                        //開啟NFC電源 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡就不用開啟電源了
+                        //if (flag)
+                        //{
+                        //    Thread.Sleep(1000);
+                        //    WSOutput_Base wsOut = new WSOutput_Base();
+                        //    flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
+                        //    if (false == flag || wsOut.Result == 1)
+                        //    {
+                        //        errCode = wsOut.ErrorCode;
+                        //        errMsg = wsOut.ErrMsg;
+                        //    }
+                        //}
                         #endregion
                     }
                     else

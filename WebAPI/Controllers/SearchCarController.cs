@@ -4,7 +4,6 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
 using Domain.TB;
-using Domain.WebAPI.Input.CENS;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Domain.WebAPI.Output.CENS;
@@ -158,28 +157,7 @@ namespace WebAPI.Controllers
                             #region 興聯車機
                             CensWebAPI censWebAPI = new CensWebAPI();
                             WSOutput_Base WsOutput = new WSOutput_Base();
-                            if (censWebAPI.IsSupportCombineCmd(spOut.CID))
-                            {
-                                WSInput_SearchCarForSituation wsInput = new WSInput_SearchCarForSituation()
-                                { 
-                                    CID = spOut.CID,
-                                    CMD = 0
-                                };
-                                if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
-                                {
-                                    wsInput.CMD = 1;
-                                }
-                                else
-                                {
-                                    //晚上不要吵人
-                                    wsInput.CMD = 2;
-                                }
-                                flag = censWebAPI.SearchCarForSituation(wsInput, ref WsOutput);
-                            }
-                            else
-                            {
-                                flag = censWebAPI.SearchCar(spOut.CID, ref WsOutput);
-                            }
+                            flag = censWebAPI.SearchCar(spOut.CID, ref WsOutput);
                             if (flag == false)
                             {
                                 errCode = WsOutput.ErrorCode;

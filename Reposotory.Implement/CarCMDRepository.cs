@@ -168,38 +168,5 @@ namespace Reposotory.Implement
             }
             return obj;
         }
-
-        public CarCmdData GetCarCMDDataByCID(string CID, ref bool flag)
-        {
-            //bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<CarCmdData> lstCarCMDResponse = null;
-            CarCmdData obj = null;
-            int nowCount = 0;
-            string SQL = "SELECT [CarNo],[TSEQNO],[CID],[deviceToken],[IsCens],[IsMotor],[CensFWVer] FROM [dbo].[TB_CarInfo] ";
-            SqlParameter[] para = new SqlParameter[1];
-            string term = "";
-            if (false == string.IsNullOrWhiteSpace(CID))
-            {
-                term += " CID=@CID";
-                para[nowCount] = new SqlParameter("@CID", SqlDbType.VarChar, 20);
-                para[nowCount].Value = CID.Trim();
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-            if ("" != term)
-            {
-                SQL += " WITH(NOLOCK) WHERE " + term;
-            }
-            lstCarCMDResponse = GetObjList<CarCmdData>(ref flag, ref lstError, SQL, para, term);
-            if (lstCarCMDResponse != null)
-            {
-                if (lstCarCMDResponse.Count > 0)
-                {
-                    obj = lstCarCMDResponse[0];
-                }
-            }
-            return obj;
-        }
     }
 }
