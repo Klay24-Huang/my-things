@@ -116,11 +116,12 @@ namespace Reposotory.Implement
             {
                 if (false == string.IsNullOrEmpty(SDate))
                 {
-                term = " CONVERT(CHAR(8),MKTime,112) >= replace(@SD,'-','') ";
-                para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
-                para[nowCount].Value = SDate;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
+                    term = " CONVERT(CHAR(8),MKTime,112) >= replace(@SD,'-','') ";
+                    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
+                    para[nowCount].Value = SDate;
+                    para[nowCount].Direction = ParameterDirection.Input;
+                    nowCount++;
+                }
             }
             if (false == string.IsNullOrEmpty(EDate))
             {

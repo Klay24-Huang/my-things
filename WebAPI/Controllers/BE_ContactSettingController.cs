@@ -679,51 +679,7 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
-                        if (flag && FetAPI.IsSupportCombineCmd(CID))
-                        {
-                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
-                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
-                            WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                            {
-                                command = true,
-                                method = CommandType,
-                                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                _params = new ClientCardNoObj()
-                                {
-                                    ClientCardNo = new string[] { }
-                                }
-                            };
-                            //寫入顧客卡
-                            if (lstCardList != null)
-                            {
-                                int CardLen = lstCardList.Count;
-                                if (CardLen > 0)
-                                {
-                                    string[] CardStr = new string[CardLen];
-                                    for (int i = 0; i < CardLen; i++)
-                                    {
-                                        CardStr[i] = lstCardList[i].CardNO;
-                                    }
-                                    if (CardStr.Length > 0)
-                                    {
-                                        SetCardInput._params.ClientCardNo = CardStr;
-                                    }
-                                }
-                            }
-                            //組合指令顧客卡必輸入，若沒有則帶隨機值
-                            if (SetCardInput._params.ClientCardNo.Length == 0)
-                            {
-                                SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
-                            }
-                            requestId = SetCardInput.requestId;
-                            method = CommandType;
-                            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                            if (flag)
-                            {
-                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                            }
-                        }
-                        else
+                        if (flag)
                         {
                             //寫入顧客卡
                             if (lstCardList != null)
@@ -775,12 +731,13 @@ namespace WebAPI.Controllers
                                         _params = new Params()
                                     };
 
-                                requestId = SetRentInput.requestId;
-                                method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
-                                if (flag)
-                                {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    requestId = SetRentInput.requestId;
+                                    method = CommandType;
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
+                                    if (flag)
+                                    {
+                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    }
                                 }
                             }
                         }
