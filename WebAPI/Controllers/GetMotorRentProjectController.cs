@@ -276,7 +276,9 @@ namespace WebAPI.Controllers
                                 MotorProjectObj newItem = objUti.Clone(x);
 
                                 #region 月租卡片欄位給值
-                                newItem.ProjName += "_" + z.MonProjNM;
+                                //newItem.ProjName += "_" + z.MonProjNM;
+                                //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                newItem.ProjName = z.MonProjNM;
                                 newItem.MotoTotalMins = z.MotoTotalMins;
                                 
                                 //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");

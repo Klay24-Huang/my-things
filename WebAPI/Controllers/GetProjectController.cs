@@ -619,7 +619,9 @@ namespace WebAPI.Controllers
                                         ProjectObj newItem = objUti.Clone(y);
 
                                         #region 月租卡片欄位給值
-                                        newItem.ProjName += "_" + z.MonProjNM;
+                                        //newItem.ProjName += "_" + z.MonProjNM;
+                                        //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                        newItem.ProjName = z.MonProjNM;
                                         newItem.CarWDHours = z.WorkDayHours;
                                         newItem.CarHDHours = z.HolidayHours;
                                         newItem.MotoTotalMins = z.MotoTotalMins;
