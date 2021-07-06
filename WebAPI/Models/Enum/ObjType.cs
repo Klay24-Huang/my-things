@@ -926,11 +926,10 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarType"; //20201023 Eason 轉sp  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetStationCarTypeOfMutiStation:
-                    SPName = "usp_GetStationCarTypeOfMutiStation_ForTest";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本   // 20210615 UPD BY YEH REASON:測試積分<60只剩定價專案
+                    SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
-                    //SPName = "usp_GetMemberStatus";
-                    SPName = "usp_GetMemberStatus_ForTest";     // 20210521 ADD BY YEH FOR TEST
+                    SPName = "usp_GetMemberStatus";
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";
@@ -978,7 +977,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_CheckCarIButton";
                     break;
                 case SPType.GetAnyRentCar:      //取得路邊租還車輛
-                    SPName = "usp_GetAnyRentCar_ForTest";   // 20210622 UPD BY YEH REASON:測試積分<60只能用定價專案
+                    SPName = "usp_GetAnyRentCar";
                     break;
                 case SPType.ArrearsQueryByNPR330ID: //20201213 ADD BY ADAM
                     SPName = "usp_ArrearsQuery_Q1";

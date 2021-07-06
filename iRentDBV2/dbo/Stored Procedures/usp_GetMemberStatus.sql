@@ -1,47 +1,21 @@
 ﻿/****************************************************************
-** Name: [dbo].[usp_GetMemberStatus]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
-
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_GetMemberInfo]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Jet 
-** Date:2020/10/13 下午 03:24:00 
-**
+** 用　　途：取得會員狀態
 *****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
 ** 2020/10/16 下午 03:24:00    |  ADAM   |          First Release
-**			 |			  |
+** 2020/12/04 ADD BY ADAM REASON.改為線上統計
+** 2021/01/04 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
+** 2021/01/05 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
+** 2021/01/06 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+** 2021/05/04 ADD BY JET 姓名/生日/地址未填，顯示1:未完成註冊
+** 2021/05/04 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
+** 2021/05/07 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+** 2021/05/17 ADD BY YEH 增加積分相關欄位
+** 2021/05/19 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+** 2021/07/02 UPD BY YEH REASON:積分<0顯示0
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetMemberStatus]
 	@IDNO		            VARCHAR(10)           ,
@@ -70,7 +44,6 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_GetMemberStatus';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
@@ -173,6 +146,7 @@ BEGIN TRY
 											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
 														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
 														AND C.Law_Agent=-1 THEN 6
+											
 											ELSE 0 END
 				--會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)
 				,MenuStatusText		= CASE WHEN A.Audit=1 AND C.ID_1=1 THEN '身分變更審核中'
@@ -220,9 +194,15 @@ BEGIN TRY
 				,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
 				,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
 				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
+				,Score				= ISNULL(IIF(D.SCORE < 0, 0, D.Score),100)	-- 20210702 UPD BY YEH REASON:積分<0顯示0
+				,BlockFlag			= CASE WHEN ISNULL(D.ISBLOCK,0) = 0 THEN 0
+										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) < 3 THEN 1
+										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
+				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO
 		END
 		ELSE
@@ -328,9 +308,15 @@ BEGIN TRY
 				,AnyRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=3),0)
 				,MotorRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount WHERE ProjType=4),0)
 				,TotalRentCount		= ISNULL((SELECT SUM(Total) FROM #OrderProjCount),0)
+				,Score				= ISNULL(IIF(D.SCORE < 0, 0, D.Score),100)	-- 20210702 UPD BY YEH REASON:積分<0顯示0
+				,BlockFlag			= CASE WHEN ISNULL(D.ISBLOCK,0) = 0 THEN 0
+										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) < 3 THEN 1
+										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
+				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
+			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberDataOfAutdit E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO
 		END

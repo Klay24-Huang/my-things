@@ -1,8 +1,10 @@
 /****************************************************************
+** 用　　途：取得地圖徽章
+*****************************************************************
 ** Change History
 *****************************************************************
 ** 2021/05/21 ADD BY YEH
-** 
+** 2021/07/02 UPD BY YEH REASON:彥奇說隱藏部分徽章
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetMapMedal]
 	@IDNO				VARCHAR(10)				, --帳號
@@ -76,7 +78,9 @@ BEGIN TRY
 		FROM TB_MedalMileStone WITH(NOLOCK)
 		WHERE IDNO=@IDNO
 		AND GetMedalTime IS NOT NULL
-		AND ShowTime IS NULL;
+		AND ShowTime IS NULL
+		-- 20210702 UPD BY YEH REASON:彥奇說隱藏部分徽章
+		AND MileStone NOT IN ('Wallet1','Advice1','Debug1','Question1','Question2','Question3','Report1','Report2','Report3');
 
 		SELECT B.iConName AS MileStone
 			,B.MileStoneName
