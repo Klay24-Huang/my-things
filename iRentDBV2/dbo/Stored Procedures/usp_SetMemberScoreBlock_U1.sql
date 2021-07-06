@@ -1,66 +1,63 @@
 /****************************************************************
-** 用　　途：會員積分記錄刪除
+** 用　　途：停權會員恢復
 *****************************************************************
 ** Change History
 *****************************************************************
-** 20210519 ADD BY YEH
+** 20210603 ADD BY YEH
 *****************************************************************/
-CREATE PROCEDURE [dbo].[usp_SetMemberScoreDetail]
-	@IDNO				VARCHAR(10)				,	--帳號
-	@SEQ                INT						,	--序號
-	@PRGID				INT						,	--程式代號
-	@LogID				BIGINT					,
-	@ErrorCode			VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
-	@ErrorMsg			NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
-	@SQLExceptionCode	VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
-	@SQLExceptionMsg	NVARCHAR(1000)	OUTPUT		--回傳sqlException訊息
+CREATE PROCEDURE [dbo].[usp_SetMemberScoreBlock_U1]
+	@MSG		VARCHAR(100)	OUTPUT
 AS
 DECLARE @Error		INT;
-DECLARE @IsSystem	TINYINT;
-DECLARE @FunName	VARCHAR(50);
+DECLARE @ErrorCode	VARCHAR(6);
+DECLARE @ErrorMsg	NVARCHAR(100);
 DECLARE @ErrorType	TINYINT;
+DECLARE @SQLExceptionCode VARCHAR(10);
+DECLARE @SQLExceptionMsg NVARCHAR(1000);
+DECLARE @IsSystem	TINYINT;
+DECLARE @LogID		BIGINT;
+DECLARE @FunName	VARCHAR(50);
 DECLARE @hasData	TINYINT;
-DECLARE @NowTime	DATETIME;
+DECLARE @NowDate	DATETIME;
 
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
+SET @ErrorType=0;
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-
-SET @FunName='usp_SetMemberScoreDetail';
 SET @IsSystem=0;
-SET @ErrorType=0;
+SET @LogID=774411;
+SET @FunName='usp_SetMemberScoreBlock_U1';
 SET @hasData=0;
-SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @IDNO=ISNULL(@IDNO,'');
-SET @SEQ=ISNULL(@SEQ,0);
+SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
-	IF @IDNO='' OR @SEQ=0
-	BEGIN
-		SET @Error=1;
-		SET @ErrorCode='ERR900'
-	END
-
 	IF @Error=0
 	BEGIN
-		IF EXISTS(SELECT * FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE SEQ=@SEQ AND MEMIDNO=@IDNO)
-		BEGIN
-			UPDATE TB_MemberScoreDetail
-			SET UIDISABLE=1,
-				UIDISABLE_DT=@NowTime,
-				U_PRGID=@PRGID,
-				U_USERID=@IDNO,
-				U_SYSDT=@NowTime
-			WHERE SEQ=@SEQ AND MEMIDNO=@IDNO;
-		END
-		ELSE
-		BEGIN
-			SET @Error=1;
-			SET @ErrorCode='ERR915';
-		END
+		DROP TABLE IF EXISTS #ScoreMain;
+
+		-- 取出黑名單次數 < 3 & 停權日期 <= 系統日 的資料
+		SELECT * 
+		INTO #ScoreMain
+		FROM TB_MemberScoreMain WITH(NOLOCK) 
+		WHERE BLOCK_CNT < 3 
+		AND ISBLOCK > 0 
+		AND BLOCK_EDATE IS NOT NULL 
+		AND BLOCK_EDATE <= @NowDate;
+
+		-- 將停權會員恢復
+		UPDATE TB_MemberScoreMain
+		SET ISBLOCK = 0,
+			BLOCK_EDATE = NULL,
+			U_PRGID=@FunName,
+			U_USERID='SYSTEM',
+			U_SYSDT=@NowDate
+		FROM TB_MemberScoreMain A
+		INNER JOIN #ScoreMain B ON A.MEMIDNO=B.MEMIDNO;
+
+		DROP TABLE IF EXISTS #ScoreMain;
 	END
 
 	--寫入錯誤訊息
@@ -88,5 +85,6 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetMemberScoreDetail';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetMemberScoreBlock_U1';
 GO
+
