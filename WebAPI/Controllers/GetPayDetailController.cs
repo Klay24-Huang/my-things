@@ -106,8 +106,8 @@ namespace WebAPI.Controllers
 
             int gift_point = 0;//使用時數(汽車)
             int gift_motor_point = 0;//使用時數(機車)
-            int motoBaseMins = 6;//機車基本分鐘數
-            int motoMaxMins = 200;//機車單日最大分鐘數
+            int motoBaseMins = 0;//機車基本分鐘數
+            int motoMaxMins = 0;//機車單日最大分鐘數
             //int carBaseMins = 60;//汽車基本分鐘數
 
             var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
@@ -138,7 +138,7 @@ namespace WebAPI.Controllers
                         OrderNo = apiInput.OrderNo,
                         Discount = apiInput.Discount,
                         MotorDiscount = apiInput.MotorDiscount,
-                        isGuest = isGuest,
+                        isGuest = isGuest
                     };
                     var inck_re = cr_com.InCheck(input);
                     if (inck_re != null)
@@ -215,20 +215,48 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                    if (flag)
                     {
-                        var item = OrderDataLists[0];
-                        trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
-                        trace.OrderNo = item.OrderNo;
-                        motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
-                        ProjType = item.ProjType;
-                        UseOrderPrice = item.UseOrderPrice;
-                        OrderPrice = item.OrderPrice;
-                        ProjID = item.ProjID;
-                    }
+                        if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                        {
+                            var item = OrderDataLists[0];
+                            trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
 
-                    if (ProjType != 4)
-                        Discount = apiInput.Discount;
+                            if (ProjType == 4)
+                            {
+                                if (item.BaseMinutes == 0)
+                                {
+                                    flag = false;
+                                    errMsg = "訂單資訊中BaseMinutes(機車基本分鐘數)不可為0";
+                                    errCode = "ERR914";//資料邏輯錯誤                                   
+                                }
+
+                                if (flag)
+                                {
+                                    if (item.BaseMinutesPrice == 0)
+                                    {
+                                        flag = false;
+                                        errMsg = "訂單資訊中BaseMinutesPrice(機車基消)不可為0";
+                                        errCode = "ERR914";//資料邏輯錯誤
+                                    }
+                                }
+                            }
+
+                            if (flag)
+                            {
+                                trace.OrderNo = item.OrderNo;
+                                motoBaseMins = item.BaseMinutes;
+                                //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
+                                ProjType = item.ProjType;
+                                UseOrderPrice = item.UseOrderPrice;
+                                OrderPrice = item.OrderPrice;
+                                ProjID = item.ProjID;
+                            }
+
+                            if (ProjType != 4)
+                                Discount = apiInput.Discount;
+                        }
+                    }
                 }
                 #endregion
 
@@ -713,6 +741,7 @@ namespace WebAPI.Controllers
                     }
 
                     #endregion
+
                     #region 月租
                     //note: 月租GetPayDetail
                     if (flag)
@@ -726,8 +755,10 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             intOrderNO = tmpOrder,
                             ProjType = item.ProjType,
-                            MotoDayMaxMins = motoDayMaxMinns,
+                            MotoBasePrice = item.BaseMinutesPrice,
+                            MotoDayMaxMins = motoDayMaxMinns,//資料庫缺欄位先給預設值
                             MinuteOfPrice = item.MinuteOfPrice,
+                            MinuteOfPriceH = item.MinuteOfPrice,    //平假日先一樣，後續訂閱制MERGE後再更新
                             hasFine = hasFine,
                             SD = SD,
                             ED = ED,
@@ -798,7 +829,7 @@ namespace WebAPI.Controllers
                                 //春後
                                 else 
                                 {
-                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, OrderDataLists[0].BaseMinutes, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901, OrderDataLists[0].BaseMinutesPrice);
                                     if (xre != null)
                                     {
                                         carInfo = xre;
@@ -893,7 +924,7 @@ namespace WebAPI.Controllers
                         int xTransferPrice = outputApi.Rent.TransferPrice;
                         int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
                         outputApi.Rent.TransferPrice = FinalTransferPrice;
-                        xCarRental = (xCarRental - FinalTransferPrice); 
+                        xCarRental = (xCarRental - FinalTransferPrice);
 
                         #endregion
 
