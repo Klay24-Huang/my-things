@@ -262,6 +262,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsCNT.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsEscrowPay.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsHist.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_GetSubsMonthByOrderNo.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetTBCode.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetUpSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_InsEscrowHist.cs" />
@@ -342,6 +343,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsCNT.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsEscrowPay.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsHist.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_GetSubsMonthByOrderNo.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetTBCode.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetUpSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_InsEscrowHist.cs" />

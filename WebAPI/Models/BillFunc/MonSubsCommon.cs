@@ -1253,6 +1253,63 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        /// <summary>
+        /// 取得訂單訂閱制方案資訊
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetSubsMonthByOrderNo> sp_GetSubsMonthByOrderNo(SPInput_GetSubsMonthByOrderNo spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsMonthByOrderNo>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsMonthByOrderNo);
+                string SPName = "usp_GetSubsMonthByOrderNo_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.OrderNo                    
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                    {
+                        re = objUti.ConvertToList<SPOut_GetSubsMonthByOrderNo>(ds1.Tables[0]);                       
+                    }
+                    else
+                    {
+                        int lstIndex = ds1.Tables.Count - 1;
+                        if (lstIndex > 0)
+                        {
+                            var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[lstIndex]);
+                            if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                                errCode = re_db.ErrorCode;
+                        }
+                        else
+                            errCode = "ERR908";
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool sp_DelSubsHist(SPInput_DelSubsHist spInput, ref string errCode)
         {
             bool flag = false;

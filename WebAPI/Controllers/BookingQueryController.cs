@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.OrderList;
+using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
@@ -36,6 +37,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBookingQuery(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var monSp = new MonSubsSp();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -147,6 +149,7 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref OrderDataLists, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
                 if (flag)
                 {
                     BillCommon billCommon = new BillCommon();
@@ -267,7 +270,44 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+
+                //置換訂閱制相關欄位
+                if (flag)
+                {
+                    string sp_errCode = "";
+                    var spIn = new SPInput_GetSubsMonthByOrderNo()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        OrderNo = tmpOrder
+                    };
+                    var subsMons = monSp.sp_GetSubsMonthByOrderNo(spIn, ref sp_errCode);
+                    if (outputApi != null && outputApi.OrderObj != null && outputApi.OrderObj.Count() > 0)
+                    {
+                        if (subsMons != null && subsMons.Count() > 0)
+                        {
+                            outputApi.OrderObj.ForEach(x =>
+                            {
+                                Int64 xOrderNo = Convert.ToInt64(x.OrderNo.Replace("H", string.Empty));
+                                var mlist = subsMons.Where(y => y.OrderNo == xOrderNo).ToList();
+                                if (mlist != null && mlist.Count() > 0) {
+                                    var f = mlist.FirstOrDefault();
+                                    x.ProjName = f.MonProjNM;
+                                    if (x.ProjType == 4){
+                                        if (x.MotorBasePriceObj != null)
+                                            x.MotorBasePriceObj.PerMinutesPrice = Convert.ToSingle(f.WDRateForMoto);//置換訂閱制價格
+                                    }
+                                    else {
+                                        x.WorkdayPerHour = Convert.ToInt32(f.WDRateForCar);//置換訂閱制價格
+                                        x.HolidayPerHour = Convert.ToInt32(f.HDRateForCar);//置換訂閱制價格
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
             }
+
             #endregion
 
             #region 寫入錯誤Log
