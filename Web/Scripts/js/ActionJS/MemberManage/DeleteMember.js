@@ -115,4 +115,9 @@
         }
     })
 
+    $("#btn_deleteMember_check").on('click', function () {
+        $("#DeleteMember_check").val("true");
+        $("#frmDelete").submit();
+    })
+
 });

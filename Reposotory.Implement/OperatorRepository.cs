@@ -74,7 +74,6 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-
             if (EndDate != "")
             {
                 if (term != "")
@@ -87,17 +86,15 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-
-
             if ("" != term)
             {
                 SQL += " WITH(NOLOCK) WHERE (" + term + ")";
             }
             SQL += " ORDER BY EndDate ASC";
 
-
             lstOperators = GetObjList<BE_Operator>(ref flag, ref lstError, SQL, para, term);
             return lstOperators;
         }
+
     }
 }

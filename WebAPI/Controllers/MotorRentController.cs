@@ -1,12 +1,13 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Car;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.TB;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -21,7 +22,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> doGetNormalRent(Dictionary<string, object> value)
+        public Dictionary<string, object> DoMotorRent(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -41,10 +42,9 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            StationAndCarRepository _repository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            string IDNO = "";
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -58,7 +58,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     flag = apiInput.ShowALL.HasValue;
-                    if (false == flag)
+                    if (flag == false)
                     {
                         errCode = "ERR900";
                     }
@@ -79,49 +79,62 @@ namespace WebAPI.Controllers
 
             #region TB
             //Token判斷
-            //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
+            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            {
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
+                    LogID = LogID,
+                    Token = Access_Token_string.Split(' ')[1].ToString()
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //訪客機制BYPASS
+                if (spOut.ErrorCode == "ERR101")
+                {
+                    flag = true;
+                    spOut.ErrorCode = "";
+                    spOut.Error = 0;
+                    errCode = "000000";
+                }
+                if (flag)
+                {
+                    IDNO = spOut.IDNO;
+                }
+            }
 
             if (flag)
             {
-                _repository = new StationAndCarRepository(connetStr);
-                List<MotorRentObj> AllCars = new List<MotorRentObj>();
-                if (apiInput.ShowALL == 1)
+                // 20210622 UPD BY YEH REASON:因應積分<60分只能用定價專案，取資料改去SP處理
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetMotorRent);
+                SPInput_GetMotorRent spInput = new SPInput_GetMotorRent
                 {
-                    AllCars = _repository.GetAllMotorRent();
-                }
-                else
-                {
-                    AllCars = _repository.GetAllMotorRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                }
-
-                if (AllCars != null && AllCars.Count > 0)
-                {
-                    AllCars.ForEach(x =>
-                    {
-                        x.Power = Convert.ToInt32(x.Power);
-                        x.RemainingMileage = Convert.ToInt32(x.RemainingMileage);
-                    });
-                }
-
-                //春節限定，將R140專案移除
-                var tempList = AllCars.Where(x => x.ProjID != "R140").ToList();
-
-                OAnyRentAPI = new OAPI_MotorRent()
-                {
-                    MotorRentObj = tempList
+                    IDNO = IDNO,
+                    ShowALL = apiInput.ShowALL.Value,
+                    Latitude = apiInput.Latitude ?? 0,
+                    Longitude = apiInput.Longitude ?? 0,
+                    Radius = apiInput.Radius ?? 0,
+                    LogID = LogID
                 };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_GetMotorRent, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMotorRent, SPOutput_Base>(connetStr);
+                List<MotorRentObj> MotorList = new List<MotorRentObj>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref MotorList, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    //春節限定，將R140專案移除
+                    //var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
+
+                    OAnyRentAPI = new OAPI_MotorRent()
+                    {
+                        MotorRentObj = MotorList
+                    };
+                }
             }
             #endregion
 

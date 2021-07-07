@@ -30,10 +30,13 @@ namespace Domain.TB.BackEnd
         public List<BE_MileStone> MileStone { set; get; }
         public List<BE_MileStoneDetail> MileStoneDetail { set; get; }
 
+        public List<BE_MemberScore> MemberScore { set; get; }
         public List<BE_AuditRecommendHistory> RecommendHistory { set; get; }
         public List<BE_InsuranceData> InsuranceData { set; get; }
         //20210310唐加
         public string mobileBlock { set; get; }
+        public string JsonMileStoneDetail { set; get; }
+        public List<BE_ScoreBlock> ScoreBlock { set; get; }
     }
     
 }

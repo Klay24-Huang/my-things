@@ -165,11 +165,9 @@ namespace Reposotory.Implement
             List<BE_MonthlyReportData> lstQuery = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string SQL = "SELECT * FROM VW_BE_GetMonthlyReportData ";
-
             SqlParameter[] para = new SqlParameter[5];
             string term = "";
             int nowCount = 0;
-
             if (flag)
             {
                 if (false == string.IsNullOrEmpty(IDNO))
@@ -193,7 +191,8 @@ namespace Reposotory.Implement
                 if (false == string.IsNullOrEmpty(SD) && false == string.IsNullOrEmpty(ED))
                 {
                     if ("" != term) { term += " AND "; }
-                    term += " (MKTime BETWEEN @SD AND @ED)";
+                    //term += " (MKTime BETWEEN @SD AND @ED)";
+                    term += " (convert(char(8),MKTime,112) BETWEEN replace(@SD,'-','') AND replace(@ED,'-',''))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                     para[nowCount].Value = SD;
                     para[nowCount].Direction = ParameterDirection.Input;

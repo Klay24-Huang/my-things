@@ -200,13 +200,13 @@ namespace WebAPI.Controllers
                spInput.GPSTime = objResInfo.GPSTime;// (objResInfo.objInfo[i].GpsTime == null) ? DateTime.Now : objResInfo.objInfo[i].GpsTime;
                spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
                spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
-             
+               spInput.fwver = objResInfo.fwver ?? "";
 
 
 
             string errCode = "";
             SPOutput_Base spOut = new SPOutput_Base();
-            string spName = "usp_InsCarStatus";
+            string spName = "usp_InsCarStatus_20210608";
 
             SQLHelper<SPInput_InsCarStatus, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsCarStatus, SPOutput_Base>(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();

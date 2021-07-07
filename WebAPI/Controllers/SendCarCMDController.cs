@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
             #region 第二段防呆
             if (flag)
             {
-                if((CarMachineType==0 && apiInput.CmdType > 14 && apiInput.CmdType != 99) || (CarMachineType==1 && apiInput.CmdType<15))
+                if((CarMachineType==0 && apiInput.CmdType > 14 && (apiInput.CmdType < 51 || apiInput.CmdType > 60) && apiInput.CmdType != 99) || (CarMachineType==1 && (apiInput.CmdType<15 || (apiInput.CmdType > 50 && apiInput.CmdType < 61))))
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -145,6 +145,10 @@ namespace WebAPI.Controllers
                     /// <para>12:設定顧客卡號</para>
                     /// <para>13:清除全部顧客卡號</para>
                     /// <para>14:清除全部萬用卡號</para>
+                    /// <para>51:啟動喇叭搜尋汽車</para>
+                    /// <para>52:啟動閃燈搜尋汽車</para>
+                    /// <para>53:汽車租車組合指令</para>
+                    /// <para>54:汽車還車組合指令</para>
                     switch (apiInput.CmdType)
                     {
                         case 0:
@@ -210,6 +214,22 @@ namespace WebAPI.Controllers
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
                             break;
+                        case 51:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                            break;
+                        case 52:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                            break;
+                        case 53:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            break;
+                        case 54:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
+                            break;
                         case 99: //99:ReportNow
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
@@ -229,7 +249,7 @@ namespace WebAPI.Controllers
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
-                     else if (apiInput.CmdType == 12)
+                     else if (apiInput.CmdType == 12 || apiInput.CmdType == 53)
                     {
                         WSInput_Base<ClientCardNoObj> input = new WSInput_Base<ClientCardNoObj>()
                         {
@@ -240,6 +260,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
@@ -278,12 +303,18 @@ namespace WebAPI.Controllers
                     ///  <para>28:興聯-開啟NFC電源</para>
                     ///  <para>29:興聯-關閉NFC電源</para>
                     ///  <para>30:興聯-重啟車機</para>
+                    ///  <para>31:興聯-指定喇叭尋車方式</para>
+                    ///  <para>32:興聯-指定閃燈尋車方式</para>
+                    ///  <para>33:興聯-取車巨集指令</para>
+                    ///  <para>34:興聯-還車巨集指令</para>
                     CensWebAPI CensAPI = new CensWebAPI();
                     WSOutput_Base wsOutput = new WSOutput_Base();
                     WSInput_SetOrderStatus wsOrderInput = null;
                     WSInput_SendLock wsLockInput = null;
                     WSInput_SendCardNo SendCardInput = null;
                     WSOutput_GetInfo wsOutputGetInfo = new WSOutput_GetInfo();
+                    WSInput_SearchCarForSituation SearchCarForSituation = null;
+                    WSInput_CombineCmdGetCar CombineCmdGetCar = null;
                     switch (apiInput.CmdType)
                     {
                         case 15:
@@ -501,6 +532,67 @@ namespace WebAPI.Controllers
                                 errMsg = wsOutput.ErrMsg;
                             }
                             break;
+                        case 31:  //指定喇叭尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 1
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 32:  //指定閃燈尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 2
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 33:  //取車巨集指令
+                            CombineCmdGetCar = new WSInput_CombineCmdGetCar()
+                            {
+                                CID = CENSCID,
+                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                            };
+                            //寫入顧客卡
+                            int CombineClientCount = 0;
+                            int CombineClientCardLen = apiInput.ClientCardNo.Length;
+                            if (CombineClientCardLen > 0)
+                            {
+                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CombineClientCardLen];
+                                for (int i = 0; i < CombineClientCardLen; i++)
+                                {
+                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                    CardData[i].CardNo = apiInput.ClientCardNo[i];
+                                    CombineClientCount++;
+                                }
+                                CombineCmdGetCar.data = CardData;
+                            }
+                            flag = CensAPI.CombineCmdGetCar(CombineCmdGetCar, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 34:  //還車巨集指令
+                            flag = CensAPI.CombineCmdReturnCar(CENSCID, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
                         case 100: //GetInfo
                             flag = CensAPI.GetInfo(CENSCID, ref wsOutputGetInfo);
                             if (false == flag || wsOutput.Result == 1)
@@ -701,7 +793,7 @@ namespace WebAPI.Controllers
             #region 第二段防呆
             if (flag)
             {
-                if ((CarMachineType == 0 && apiInput.CmdType > 14 && apiInput.CmdType != 99) || (CarMachineType == 1 && apiInput.CmdType < 15))
+                if ((CarMachineType == 0 && apiInput.CmdType > 14 && (apiInput.CmdType < 51 || apiInput.CmdType > 60) && apiInput.CmdType != 99) || (CarMachineType == 1 && (apiInput.CmdType < 15 || (apiInput.CmdType > 50 && apiInput.CmdType < 61))))
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -730,6 +822,10 @@ namespace WebAPI.Controllers
                     /// <para>12:設定顧客卡號</para>
                     /// <para>13:清除全部顧客卡號</para>
                     /// <para>14:清除全部萬用卡號</para>
+                    /// <para>51:啟動喇叭搜尋汽車</para>
+                    /// <para>52:啟動閃燈搜尋汽車</para>
+                    /// <para>53:汽車租車組合指令</para>
+                    /// <para>54:汽車還車組合指令</para>
                     switch (apiInput.CmdType)
                     {
                         case 0:
@@ -795,6 +891,22 @@ namespace WebAPI.Controllers
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ClearAllUnivCard;
                             break;
+                        case 51:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                            break;
+                        case 52:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                            break;
+                        case 53:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                            break;
+                        case 54:
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
+                            break;
                         case 99: //99:ReportNow
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
@@ -814,7 +926,7 @@ namespace WebAPI.Controllers
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
-                    else if (apiInput.CmdType == 12)
+                    else if (apiInput.CmdType == 12 || apiInput.CmdType == 53)
                     {
                         WSInput_Base<ClientCardNoObj> input = new WSInput_Base<ClientCardNoObj>()
                         {
@@ -825,6 +937,11 @@ namespace WebAPI.Controllers
 
                         };
                         input._params.ClientCardNo = apiInput.ClientCardNo;
+                        //組合指令顧客卡必輸入，若沒有則帶隨機值
+                        if (apiInput.CmdType == 53 && input._params.ClientCardNo.Length == 0)
+                        {
+                            input._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                        }
                         requestId = input.requestId;
                         flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
                     }
@@ -899,12 +1016,18 @@ namespace WebAPI.Controllers
                     ///  <para>28:興聯-開啟NFC電源</para>
                     ///  <para>29:興聯-關閉NFC電源</para>
                     ///  <para>30:興聯-重啟車機</para>
+                    ///  <para>31:興聯-指定喇叭尋車方式</para>
+                    ///  <para>32:興聯-指定閃燈尋車方式</para>
+                    ///  <para>33:興聯-取車巨集指令</para>
+                    ///  <para>34:興聯-還車巨集指令</para>
                     CensWebAPI CensAPI = new CensWebAPI();
                     WSOutput_Base wsOutput = new WSOutput_Base();
                     WSInput_SetOrderStatus wsOrderInput = null;
                     WSInput_SendLock wsLockInput = null;
                     WSInput_SendCardNo SendCardInput = null;
                     WSOutput_GetInfo wsOutputGetInfo = new WSOutput_GetInfo();
+                    WSInput_SearchCarForSituation SearchCarForSituation = null;
+                    WSInput_CombineCmdGetCar CombineCmdGetCar = null;
                     switch (apiInput.CmdType)
                     {
                         case 15:
@@ -1116,6 +1239,67 @@ namespace WebAPI.Controllers
                             break;
                         case 30: //重啟車機
                             flag = CensAPI.SoftwareReset(CENSCID, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 31:  //指定喇叭尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 1
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 32:  //指定閃燈尋車方式
+                            SearchCarForSituation = new WSInput_SearchCarForSituation()
+                            {
+                                CID = CENSCID,
+                                CMD = 2
+                            };
+                            flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 33:  //取車巨集指令
+                            CombineCmdGetCar = new WSInput_CombineCmdGetCar()
+                            {
+                                CID = CENSCID,
+                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                            };
+                            //寫入顧客卡
+                            int CombineClientCount = 0;
+                            int CombineClientCardLen = apiInput.ClientCardNo.Length;
+                            if (CombineClientCardLen > 0)
+                            {
+                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CombineClientCardLen];
+                                for (int i = 0; i < CombineClientCardLen; i++)
+                                {
+                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                    CardData[i].CardNo = apiInput.ClientCardNo[i];
+                                    CombineClientCount++;
+                                }
+                                CombineCmdGetCar.data = CardData;
+                            }
+                            flag = CensAPI.CombineCmdGetCar(CombineCmdGetCar, ref wsOutput);
+                            if (false == flag || wsOutput.Result == 1)
+                            {
+                                errCode = wsOutput.ErrorCode;
+                                errMsg = wsOutput.ErrMsg;
+                            }
+                            break;
+                        case 34:  //還車巨集指令
+                            flag = CensAPI.CombineCmdReturnCar(CENSCID, ref wsOutput);
                             if (false == flag || wsOutput.Result == 1)
                             {
                                 errCode = wsOutput.ErrorCode;

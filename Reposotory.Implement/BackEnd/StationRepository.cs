@@ -1,12 +1,7 @@
 ﻿using Domain.TB;
 using Domain.TB.BackEnd;
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement.BackEnd
@@ -31,18 +26,23 @@ namespace Reposotory.Implement.BackEnd
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentStationBaseInfo> lstStation = null;
             bool flag = false;
-            string SQL = "SELECT   [StationID],ISNULL([Location],'') AS StationName FROM [TB_iRentStation] "; //已修改TB指向
+            string SQL = "SELECT StationID,ISNULL(TRANSLATE(Location,'()','[]'),'') AS StationName FROM TB_iRentStation ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentStationBaseInfo>(ref flag, ref lstError, SQL, para, term);
             return lstStation;
         }
+        /// <summary>
+        /// 取得車輛列表
+        /// </summary>
+        /// <param name="showAll"></param>
+        /// <returns></returns>
         public IEnumerable<iRentCarBase> GetPartOfCar(bool showAll)
         {
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<iRentCarBase> lstStation = null;
             bool flag = false;
-            string SQL = "SELECT   [CarNo]  FROM [TB_Car] "; //已修改TB指向
+            string SQL = "SELECT CarNo FROM TB_Car ";
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             lstStation = GetObjList<iRentCarBase>(ref flag, ref lstError, SQL, para, term);

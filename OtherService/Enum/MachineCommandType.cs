@@ -77,6 +77,22 @@ namespace OtherService.Enum
             /// 清空萬用卡
             /// </summary>
             ClearAllUnivCard,
+            /// <summary>
+            /// 啟動喇叭搜尋汽車
+            /// </summary>
+            SearchVehicleHornOn,
+            /// <summary>
+            /// 啟動閃燈搜尋汽車
+            /// </summary>
+            SearchVehicleLightFlash,
+            /// <summary>
+            /// 汽車租車組合指令
+            /// </summary>
+            VehicleRentCombo,
+            /// <summary>
+            /// 汽車還車組合指令
+            /// </summary>
+            VehicleNoRentCombo,
             #endregion
             #region 機車開始
             /// <summary>

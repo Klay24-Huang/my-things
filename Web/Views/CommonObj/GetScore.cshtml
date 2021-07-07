@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Domain.TB.BackEnd.BE_MemScore>
+
+@{
+    Layout = null;
+    string aa = "";
+    //List<SelectListItem> list = new List<SelectListItem>();
+}
+@if (Model != null)
+{
+    foreach (var UserGroup in Model)
+    {
+        //list.Add(new SelectListItem() { Text = UserGroup.SCORE.ToString(), Value = UserGroup.SCORE.ToString() });
+        aa = UserGroup.SCORE.ToString();
+    }
+}
+
+@Html.TextBox("scoreman",aa, new { Class = "form-control" })

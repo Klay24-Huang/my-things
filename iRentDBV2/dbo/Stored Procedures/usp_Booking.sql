@@ -44,28 +44,30 @@
 **			 |			  |
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_Booking]
-	@IDNO					VARCHAR(10),            --身份證
-    @ProjID					VARCHAR(10),            --專案代碼
-	@ProjType               TINYINT,                --專案類型(0:同站;3:路邊;4:機車)
-    @StationID				VARCHAR(6),			    --取車據點
-	@CarType                VARCHAR(10),            --車款
-    @RStationID				VARCHAR(6),			    --還車據點
-    @SD						DATETIME,			    --預計取車時間
-    @ED						DATETIME,			    --預計還車時間
-	@StopPickTime           DATETIME,               --最後取車時間
-    @Price					INT,					--預估租金
-	@CarNo					VARCHAR(10),            --隨租隨還車號
-	@Token                  VARCHAR(1024),          --ACCESS TOKEN
-	@Insurance              TINYINT      ,          --是否使用安心服務(0:否;1:是)
-	@InsurancePurePrice     INT          ,          --安心服務預估金額
-	@PayMode                TINYINT      ,          --計費模式：0:以時計費;1:以分計費
-	@LogID                  BIGINT                ,
-	@haveCar                TINYINT         OUTPUT, --是否有車(0:否;1:是)
-	@OrderNum               BIGINT     OUTPUT,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@IDNO					VARCHAR(10)				,	--身份證
+    @ProjID					VARCHAR(10)				,	--專案代碼
+	@ProjType               TINYINT					,	--專案類型(0:同站;3:路邊;4:機車)
+    @StationID				VARCHAR(6)				,	--取車據點
+	@CarType                VARCHAR(20)				,	--車款		--20210505 ADD BY ADAM REASON. CC車型加大
+    @RStationID				VARCHAR(6)				,	--還車據點
+    @SD						DATETIME				,	--預計取車時間
+    @ED						DATETIME				,	--預計還車時間
+	@StopPickTime           DATETIME				,	--最後取車時間
+    @Price					INT						,	--預估租金
+	@CarNo					VARCHAR(10)				,	--隨租隨還車號
+	@Token                  VARCHAR(1024)			,	--ACCESS TOKEN
+	@Insurance              TINYINT					,	--是否使用安心服務(0:否;1:是)
+	@InsurancePurePrice     INT						,	--安心服務預估金額
+	@PayMode                TINYINT					,	--計費模式：0:以時計費;1:以分計費
+	@LogID                  BIGINT					,
+	@haveCar                TINYINT         OUTPUT	,	--是否有車(0:否;1:是)
+	@OrderNum               BIGINT			OUTPUT	,
+	@CID					VARCHAR(10)		OUTPUT	,	--車機編號
+	@deviceToken			VARCHAR(256)	OUTPUT	,	--遠傳車機token
+	@ErrorCode 				VARCHAR(6)		OUTPUT	,	--回傳錯誤代碼
+	@ErrorMsg  				NVARCHAR(100)	OUTPUT	,	--回傳錯誤訊息
+	@SQLExceptionCode		VARCHAR(10)		OUTPUT	,	--回傳sqlException代碼
+	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT		--回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
@@ -108,7 +110,6 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_Booking';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @tmpCarNo='';
 SET @hasData=0;
 SET @IDNO=ISNULL (@IDNO,'');
@@ -314,12 +315,15 @@ BEGIN TRY
 	END
 	
 	--維修卡預約
-	--IF	(@SD>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @SD<=CAST('2021-03-03 05:00:00' AS DATETIME)) OR
+	--IF	(@SD>=CAST('2021-06-09 01:00:00' AS DATETIME) AND @SD<=CAST('2021-06-09 05:00:00' AS DATETIME)) OR
 	--	--(@ED>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-03 05:00:00' AS DATETIME))
-	--	(@ED>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-03 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
+	--	(@ED>=CAST('2021-06-09 01:00:00' AS DATETIME) AND @ED<=CAST('2021-06-09 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
 	--BEGIN
-	--	SET @Error=1
-	--	SET @ErrorCode='ERR905'
+	--	IF @IDNO <> 'A122364317'
+	--	BEGIN
+	--		SET @Error=1
+	--		SET @ErrorCode='ERR905'
+	--	END
 	--END
 	--IF
 	--	(@SD>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @SD<=CAST('2021-03-11 05:00:00' AS DATETIME)) OR
@@ -401,6 +405,15 @@ BEGIN TRY
 				SET @ErrorCode='ERR248';
 			END
 		END
+		--20210321 MARK BY JERRY 須加判斷汽車的審核狀況
+		--ELSE
+		--BEGIN
+		--	IF @MotorDriver <> 2
+		--	BEGIN
+		--		SET @Error=1;
+		--		SET @ErrorCode='ERR249';
+		--	END
+		--END
 	END
 	--3.判斷有沒有車可預約
 	IF @Error=0
@@ -524,6 +537,9 @@ BEGIN TRY
 					END
 
 					COMMIT TRAN;
+
+					--20210325  ADD BY ADAM REASON.車機指令改善
+					SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo; 
 				END
 				ELSE
 				BEGIN
@@ -645,6 +661,9 @@ BEGIN TRY
 					INSERT INTO TB_OrderHistory(OrderNum,Descript)VALUES(@OrderNum,@Descript);
 
 					COMMIT TRAN;
+
+					--20210325  ADD BY ADAM REASON.車機指令改善
+					SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo; 
 				END
 				ELSE
 				BEGIN

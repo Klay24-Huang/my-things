@@ -23,6 +23,10 @@ namespace Web.Models.Enum
             /// </summary>
             InsTransParking,
             /// <summary>
+            /// 匯入機車調度停車場
+            /// </summary>
+            InsTransParking_Moto,
+            /// <summary>
             /// 匯入車機車輛綁定資料
             /// </summary>
             ImportCarBindData,
@@ -69,6 +73,9 @@ namespace Web.Models.Enum
                     break;
                 case SPType.InsTransParking:  
                     SPName = "usp_BE_InsTransParking";
+                    break;
+                case SPType.InsTransParking_Moto:
+                    SPName = "usp_BE_InsTransParking_Moto";
                     break;
                 case SPType.ImportCarBindData:
                     SPName = "usp_BE_ImportCarBindData";

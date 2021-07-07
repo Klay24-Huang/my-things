@@ -93,24 +93,45 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[6];
             string term = "";
             int nowCount = 0;
-            if (false == string.IsNullOrEmpty(SDate))
+            //if (false == string.IsNullOrEmpty(SDate))
+            //{
+            //    term = " MKTime>=@SD ";
+            //    para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
+            //    para[nowCount].Value = SDate;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+            //}
+            //if (false == string.IsNullOrEmpty(EDate))
+            //{
+
+            //    if ("" != term) { term += " AND "; }
+            //    term += " MKTime<=@ED ";
+            //    para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30);
+            //    para[nowCount].Value = EDate;
+            //    para[nowCount].Direction = ParameterDirection.Input;
+            //    nowCount++;
+
+            //}
+            if (false == string.IsNullOrEmpty(SDate) || false == string.IsNullOrEmpty(EDate))
             {
-                term = " MKTime>=@SD ";
+                if (false == string.IsNullOrEmpty(SDate))
+                {
+                    SDate = EDate;
+                }
+                if (false == string.IsNullOrEmpty(EDate))
+                {
+                    EDate = SDate;
+                }
+                if ("" != term) { term += " AND "; }
+                term += " (convert(char(8),MKTime,112) BETWEEN replace(@SD,'-','') AND replace(@ED,'-',''))";
                 para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                 para[nowCount].Value = SDate;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-            }
-            if (false == string.IsNullOrEmpty(EDate))
-            {
-
-                if ("" != term) { term += " AND "; }
-                term += " MKTime<=@ED ";
                 para[nowCount] = new SqlParameter("@ED", SqlDbType.VarChar, 30);
                 para[nowCount].Value = EDate;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
-
             }
             if (false == string.IsNullOrEmpty(IDNO))
             {

@@ -267,7 +267,7 @@ namespace Reposotory.Implement
                 para[nowCount] = new SqlParameter("@spec_status", SqlDbType.VarChar, 20);
                 para[nowCount].Value = Mode;
                 para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
+                nowCount++; 
             }
             if (string.IsNullOrEmpty(SD) == false && SD != "")
             {
@@ -941,7 +941,9 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string SQL = "SELECT List.*,ISNULL(Station.StationID,'') AS Site_ID,ISNULL(Station.Location,'') AS Location FROM VW_MA_GetCleanOrderList AS List ";
             SQL += " LEFT JOIN TB_Car AS Car ON Car.CarNo = List.assigned_car_id ";
-            SQL += " LEFT JOIN TB_iRentStation AS Station ON Station.StationID = Car.nowStationID";
+            SQL += " LEFT JOIN TB_iRentStation AS Station ON Station.StationID = Car.nowStationID ";
+            //20210702 ADD BY ADAM REASON.調整整備查詢訂單列表部分
+            SQL += " LEFT JOIN TB_Manager AS M WITH(NOLOCK) ON M.UserName= List.UserID ";
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
             if (null != UserID)
@@ -950,7 +952,8 @@ namespace Reposotory.Implement
                 if (UserID != "")
                 {
                     if ("" != term) { term += " AND "; }
-                    term += " UserID=@UserID ";
+                    //20210702 ADD BY ADAM REASON.調整整備查詢訂單列表部分
+                    term += " (UserID=@UserID OR M.Account=@UserID )";
                     para[0] = new SqlParameter("@UserID", SqlDbType.VarChar, 50);
                     para[0].Value = UserID;
                     para[0].Direction = ParameterDirection.Input;

@@ -4,6 +4,7 @@ using Domain.SP.Input.Common;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Common;
 using Domain.TB;
+using Domain.WebAPI.Input.CENS;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using Domain.WebAPI.Output.CENS;
@@ -157,7 +158,28 @@ namespace WebAPI.Controllers
                             #region 興聯車機
                             CensWebAPI censWebAPI = new CensWebAPI();
                             WSOutput_Base WsOutput = new WSOutput_Base();
-                            flag = censWebAPI.SearchCar(spOut.CID, ref WsOutput);
+                            if (censWebAPI.IsSupportCombineCmd(spOut.CID))
+                            {
+                                WSInput_SearchCarForSituation wsInput = new WSInput_SearchCarForSituation()
+                                { 
+                                    CID = spOut.CID,
+                                    CMD = 0
+                                };
+                                if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                {
+                                    wsInput.CMD = 1;
+                                }
+                                else
+                                {
+                                    //晚上不要吵人
+                                    wsInput.CMD = 2;
+                                }
+                                flag = censWebAPI.SearchCarForSituation(wsInput, ref WsOutput);
+                            }
+                            else
+                            {
+                                flag = censWebAPI.SearchCar(spOut.CID, ref WsOutput);
+                            }
                             if (flag == false)
                             {
                                 errCode = WsOutput.ErrorCode;
@@ -173,8 +195,25 @@ namespace WebAPI.Controllers
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
                             if (spOut.IsMotor == 0)
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                if (FetAPI.IsSupportCombineCmd(spOut.CID))
+                                {
+                                    if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                                    }
+                                    else
+                                    {
+                                        //晚上不要吵人
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                                    }
+                                }
+                                else
+                                {
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                }
                             }
                             else
                             {

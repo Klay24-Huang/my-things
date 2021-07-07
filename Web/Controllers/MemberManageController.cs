@@ -31,6 +31,8 @@ namespace Web.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
+
+        #region 會員審核及明細
         /// <summary>
         /// 會員審核
         /// </summary>
@@ -40,7 +42,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
+        public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
@@ -51,6 +53,7 @@ namespace Web.Controllers
             ViewData["IDNO"] = IDNO;
             ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
             ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
             string IDNoSuffCombind = "";
             if (IDNOSuff != null)
             {
@@ -66,50 +69,7 @@ namespace Web.Controllers
                 }
             }
 
-            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-
-            return View(lstData);
-        }
-
-        /// <summary>
-        /// 會員修改
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult ModifyMember()
-        {
-            return View();
-        }
-        [HttpPost]
-        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError)
-        {
-            ViewData["AuditMode"] = AuditMode;
-            ViewData["AuditType"] = AuditType;
-            ViewData["StartDate"] = StartDate;
-            ViewData["EndDate"] = EndDate;
-            ViewData["AuditReuslt"] = AuditReuslt;
-            ViewData["UserName"] = UserName;
-            ViewData["IDNO"] = IDNO;
-            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
-            ViewData["AuditError"] = AuditError;
-            string IDNoSuffCombind = "";
-            if (IDNOSuff != null)
-            {
-                if (IDNOSuff.Length > 0)
-                {
-                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
-                    int IDLEN = IDNOSuff.Length;
-                    for (int i = 1; i < IDLEN; i++)
-                    {
-                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
-                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
-                    }
-                }
-            }
-            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
-            if (UserName != "" || IDNO != "")
-            {
-                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError);
-            }
+            List<BE_GetAuditList> lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
 
             return View(lstData);
         }
@@ -142,12 +102,16 @@ namespace Web.Controllers
             }
 
             BE_AuditDetail obj = new MemberRepository(connetStr).GetAuditDetail(AuditIDNO);
-            List<BE_AuditImage> lstAudits=new MemberRepository(connetStr).GetAuditImage(AuditIDNO);//抓出每個人的12張圖片資訊
+            List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(AuditIDNO);//抓出每個人的12張圖片資訊
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
 
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
@@ -155,8 +119,8 @@ namespace Web.Controllers
             Data.History = lstHistory;
             Data.MileStone = new List<BE_MileStone>();
             Data.MileStone = lstMileStone;
-            Data.MileStoneDetail = new List<BE_MileStoneDetail>();
-            Data.MileStoneDetail = lstMileStoneDetail;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -413,7 +377,52 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
+        # region 會員修改
+        /// <summary>
+        /// 會員修改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ModifyMember()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
+        {
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["AuditType"] = AuditType;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["AuditReuslt"] = AuditReuslt;
+            ViewData["UserName"] = UserName;
+            ViewData["IDNO"] = IDNO;
+            ViewData["IDNOSuff"] = (IDNOSuff == null) ? "" : string.Join(",", IDNOSuff);
+            ViewData["AuditError"] = AuditError;
+            ViewData["MEMRFNBR"] = MEMRFNBR;
+            string IDNoSuffCombind = "";
+            if (IDNOSuff != null)
+            {
+                if (IDNOSuff.Length > 0)
+                {
+                    IDNoSuffCombind += string.Format("{0},", IDNOSuff[0]);
+                    int IDLEN = IDNOSuff.Length;
+                    for (int i = 1; i < IDLEN; i++)
+                    {
+                        //IDNoSuffCombind += string.Format(",'{0}'", IDNOSuff[i]);
+                        IDNoSuffCombind += string.Format("{0},", IDNOSuff[i]);
+                    }
+                }
+            }
+            List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
+            if (UserName != "" || IDNO != "")
+            {
+                lstData = new MemberRepository(connetStr).GetAuditLists(AuditMode, AuditType, StartDate, EndDate, AuditReuslt, UserName, IDNO, IDNoSuffCombind, AuditError, MEMRFNBR);
+            }
+
+            return View(lstData);
+        }
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
         {
@@ -432,7 +441,6 @@ namespace Web.Controllers
                 int index = wsoutput.Data.ToList().FindIndex(delegate (WebAPIOutput_NPR172QueryData data)
                 {
                     return data.MEMIDNO == AuditIDNO;
-
                 });
                 if (index > -1)
                 {
@@ -446,12 +454,27 @@ namespace Web.Controllers
             List<BE_AuditHistory> lstHistory = new MemberRepository(connetStr).GetAuditHistory(AuditIDNO);
             List<BE_InsuranceData> lstInsuranceData = new MemberRepository(connetStr).GetGetInsuranceData(AuditIDNO);
             List<BE_SameMobileData> lstMobile = null;
+            List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
+            List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+            List<BE_ScoreBlock> lstScoreBlock = new MemberRepository(connetStr).GetScoreBlock(AuditIDNO);
+
+            //Newtonsoft.Json序列化
+            string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+            Data.JsonMileStoneDetail = jsonData;
+
             string mobileBlock = ""; //20210310唐加
             Data.RecommendHistory = new List<BE_AuditRecommendHistory>();
             Data.History = new List<BE_AuditHistory>();
             Data.History = lstHistory;
-
+            Data.MileStone = new List<BE_MileStone>();
+            Data.MileStone = lstMileStone;
+            //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+            //Data.MileStoneDetail = lstMileStoneDetail;
+            Data.MemberScore = new List<BE_MemberScore>();
+            Data.MemberScore = lstMemberScore;
             Data.InsuranceData = lstInsuranceData;
+            Data.ScoreBlock = lstScoreBlock;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";
@@ -709,6 +732,7 @@ namespace Web.Controllers
 
             return View(Data);
         }
+        #endregion
 
         public ActionResult AuditHistory(string IDNO)
         {
@@ -718,6 +742,8 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        #region 手機重複清單
         /// <summary>
         /// 手機重複清單
         /// </summary>
@@ -728,9 +754,11 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
         }
+        #endregion
 
+        #region 改密碼
         /// <summary>
-        /// 會員審核
+        /// 改密碼
         /// </summary>
         /// <returns></returns>
         public ActionResult ChangePassword()
@@ -756,7 +784,9 @@ namespace Web.Controllers
 
             return View(lstData);
         }
+        #endregion
 
+        # region 刪除會員
         /// <summary>
         /// 刪除會員
         /// </summary>
@@ -767,22 +797,54 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account)
+        public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account, string DeleteMember_check)
         {
             MemberRepository repository = new MemberRepository(connetStr);
-            if (repository.IsMemberExist(IDNO))
+            if (DeleteMember_check == "true")
             {
                 repository.DeleteMember(IDNO, IRent_Only, Account);
-                ViewData["result"] = true;
+                ViewData["resultMessage"] = "刪除成功";
+                return View();
+            }
+            //0:無預約無合約 1:有合約 2:有預約無合約
+            string flag = repository.checkContract(IDNO);
+            if (flag == "1")
+            {
+                ViewData["result"] = "1";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "有IRent租車資料，不可刪除會員";
+                ViewData["IRent_Only"] = IRent_Only;
+            }
+            else if (flag == "0")
+            {
+                var response = repository.DeleteMember(IDNO, IRent_Only, Account);
+
+                //認證錯誤或有合約資料無法刪除
+                if (response != "處理成功")
+                {
+                    ViewData["IDNO"] = IDNO;
+                    ViewData["resultMessage"] = response;
+                    ViewData["IRent_Only"] = IRent_Only;
+                }
+
+                ViewData["result"] = "0";
+                ViewData["IDNO"] = "";
+                ViewData["resultMessage"] = "刪除成功";
+                ViewData["IRent_Only"] = "";
             }
             else
             {
-                ViewData["result"] = false;
+                ViewData["result"] = "2";
+                ViewData["IDNO"] = IDNO;
+                ViewData["resultMessage"] = "";
+                ViewData["IRent_Only"] = IRent_Only;
             }
 
             return View();
         }
+        #endregion
 
+        # region 修改身份證字號
         /// <summary>
         /// 修改身份證字號
         /// </summary>
@@ -807,14 +869,15 @@ namespace Web.Controllers
             }
             return View();
         }
+        #endregion
 
-
+        # region 會員勳章
         public ActionResult MedalMileStone()
         {
             return View();
         }
         [HttpPost]
-        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport)
+        public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport, string MEMO_CONTENT)
         {
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
@@ -826,8 +889,22 @@ namespace Web.Controllers
 
             if (AuditMode == "0")
             {
-                List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
-                return View(lstData);
+                //List<BE_MileStone> lstData = new MemberRepository(connetStr).GetMileStone(IDNO);
+                //return View(lstData);
+
+                BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
+                List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(IDNO);
+                List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(IDNO);
+
+                //Newtonsoft.Json序列化
+                string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
+
+                Data.MileStone = new List<BE_MileStone>();
+                Data.MileStone = lstMileStone;
+                //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                //Data.MileStoneDetail = lstMileStoneDetail;
+                Data.JsonMileStoneDetail = jsonData;
+                return View(Data);
             }
             else if (AuditMode == "1")
             {
@@ -844,7 +921,8 @@ namespace Web.Controllers
                 {
                     IDNO = IDNO,
                     ChoiceSelect = ChoiceSelect,
-                    USERID = Session["Account"].ToString()
+                    USERID = Session["Account"].ToString(),
+                    MEMO = MEMO_CONTENT
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_BE_IneInsMileStone, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMileStone", data, ref SPOutput, ref lstError);
@@ -864,10 +942,8 @@ namespace Web.Controllers
             }
             else
             {
-                //string errorLine = "";
                 string errorMsg = "";
                 bool flag = true;
-                ViewData["errorLine2"] = null;
 
                 List<SPInput_BE_IneInsMileStone> lstData = new List<SPInput_BE_IneInsMileStone>();
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -894,7 +970,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "ID", "匯入項目" };
+                        string[] field = { "ID", "匯入項目", "備註" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -907,18 +983,45 @@ namespace Web.Controllers
                                 break;
                             }
                         }
+                        //判斷action是不是BackStageInsert=1的那幾個
+                        if (flag)
+                        {
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "REPORT" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "QUESTION" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "DEBUG" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")).ToUpper() != "ADVICE")
+                                {
+                                    errorMsg = "Action名稱錯誤";
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+
                         //通過第一關 
                         if (flag)
                         {
                             string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            string memo2 = "";
                             //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
                             for (int i = 1; i <= sheetLen; i++)
                             {
+                                if (sheet.GetRow(i).GetCell(2) == null)
+                                {
+                                    memo2 = "";
+                                }
+                                else
+                                {
+                                    memo2 = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "");
+                                }
                                 SPInput_BE_IneInsMileStone data = new SPInput_BE_IneInsMileStone()
                                 {
                                     IDNO = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
                                     ChoiceSelect = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
-                                    USERID = UserId
+                                    USERID = UserId,
+                                    MEMO = memo2
                                 };
 
                                 SPOutput_Base SPOutput = new SPOutput_Base();
@@ -943,7 +1046,6 @@ namespace Web.Controllers
                     flag = false;
                     errorMsg = "請上傳要匯入的資料";
                 }
-
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
@@ -952,13 +1054,311 @@ namespace Web.Controllers
                 {
                     ViewData["errorLine"] = errorMsg;
                 }
-
                 return View();
             };
-
-            
         }
+        #endregion
 
-        
+        # region 會員積分
+        public ActionResult MemberScore()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE, string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
+        {
+            ViewData["IDNO"] = IDNO;
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["MEMNAME"] = MEMNAME;
+            ViewData["ORDERNO"] = ORDERNO;
+            ViewData["ORDERNO_I"] = ORDERNO_I;
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["SCITEM"] = (collection["ddlOperatorGG"] == null) ? "0" : collection["ddlOperatorGG"].ToString() == "" ? "0" : collection["ddlOperatorGG"].ToString(); //讓view知道我所選的評分行為(主項)的值
+            ViewData["SCMITEM"] = (collection["ddlUserGroup"] == null) ? "0" : collection["ddlUserGroup"].ToString() == "" ? "0" : collection["ddlUserGroup"].ToString();
+            //ViewData["score"] = (collection["scoreman"] == null) ? "0" : collection["scoreman"].ToString() == "" ? "0" : collection["scoreman"].ToString();
+            int justSearch = Convert.ToInt32(collection["justSearch"] == null || collection["justSearch"].ToString() == "" ? "0" : collection["justSearch"]);
+
+            bool flag_H = true;
+            if (ORDERNO != "")
+            {
+                if (ORDERNO.IndexOf("H") < 0)
+                {
+                    flag_H = false;
+                }
+                else
+                {
+                    ORDERNO = ORDERNO.ToUpper();
+                    ORDERNO = ORDERNO.Replace("H", "");
+                }
+            }
+            if (ORDERNO_I != "")
+            {
+                if (ORDERNO_I.IndexOf("H") < 0)
+                {
+                    flag_H = false;
+                }
+                else
+                {
+                    ORDERNO_I = ORDERNO_I.ToUpper();
+                    ORDERNO_I = ORDERNO_I.Replace("H", "");
+                }
+            }
+
+            if (flag_H)
+            {
+                if (AuditMode == "1")
+                {
+                    List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+                    return View(lstData);
+                }
+                else if (AuditMode == "0" && justSearch == 0)
+                {
+                    if (ORDERNO_I == "")
+                    {
+                        ORDERNO_I = "0";
+                    }
+                    bool flag = true;
+                    if (collection["ddlUserGroup"] == "0")
+                    {
+                        flag = false;
+                        ViewData["errorLine"] = "評分行為未選擇";
+                    }
+                    if (flag)
+                    {
+                        List<ErrorInfo> lstError = new List<ErrorInfo>();
+                        string errCode = "";
+                        CommonFunc baseVerify = new CommonFunc();
+                        SP_BE_InsMemberScore data = new SP_BE_InsMemberScore()
+                        {
+                            //NAME = MEMNAME,
+                            ID = IDNO,
+                            ORDERNO = Convert.ToInt32(ORDERNO_I),
+                            DAD = collection["ddlOperatorGG"].ToString(),
+                            SON = collection["ddlUserGroup"].ToString(),
+                            SCORE = int.Parse(MEMSCORE),
+                            //APP = ChoiceSelect_2,
+                            USERID = Session["Account"].ToString(),
+                            MEMO = sonmemo
+                        };
+                        SPOutput_Base SPOutput = new SPOutput_Base();
+                        flag = new SQLHelper<SP_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                        if (flag)
+                        {
+                            ViewData["errorLine"] = "ok";
+                            //return Content("<script>alert('ok');</script>");
+                        }
+                        else
+                        {
+                            ViewData["errorLine"] = SPOutput.ErrorMsg;
+                        }
+                    }
+
+                    return View();
+                }
+                else if (AuditMode == "0" && justSearch == 1)
+                {
+                    return View();
+                }
+                else if (AuditMode == "2")
+                {
+                    string errorMsg = "";
+                    bool flag = true;
+
+                    List<SP_Input_BE_InsMemberScore> lstData = new List<SP_Input_BE_InsMemberScore>();
+                    List<ErrorInfo> lstError = new List<ErrorInfo>();
+                    string errCode = "";
+                    CommonFunc baseVerify = new CommonFunc();
+                    if (fileImport != null)
+                    {
+                        if (fileImport.ContentLength > 0)
+                        {
+                            string fileName = string.Concat(new string[]{
+                                "MemberScoreImport",
+                                ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                                "_",
+                                DateTime.Now.ToString("yyyyMMddHHmmss"),
+                                ".xlsx"
+                            });
+                            DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/MemberScoreImport"));
+                            if (!di.Exists)
+                            {
+                                di.Create();
+                            }
+                            string path = Path.Combine(Server.MapPath("~/Content/upload/MemberScoreImport"), fileName);
+                            fileImport.SaveAs(path);
+                            IWorkbook workBook = new XSSFWorkbook(path);
+                            ISheet sheet = workBook.GetSheetAt(0);
+                            int sheetLen = sheet.LastRowNum;
+                            string[] field = { "ID", "評分行為(主項)", "評分行為(子項)", "加/扣分", "合約編號" };
+                            int fieldLen = field.Length;
+                            //第一關，判斷位置是否相等
+                            for (int i = 0; i < fieldLen; i++)
+                            {
+                                ICell headCell = sheet.GetRow(0).GetCell(i);
+                                if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                                {
+                                    errorMsg = "標題列不相符";
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            //判斷合約編號是否有H
+                            if (flag)
+                            {
+                                for (int i = 1; i <= sheetLen; i++)
+                                {
+                                    if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號未上傳";
+                                        flag = false;
+                                        break;
+                                    }
+                                    else if (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") != "其他" && sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").IndexOf("H") < 0)
+                                    {
+                                        errorMsg = "第" + (i) + "筆合約編號格式錯誤";
+                                        flag = false;
+                                        break;
+                                    }
+
+                                    if (sheet.GetRow(i).GetCell(2) == null)
+                                    {
+                                        errorMsg = "第" + (i) + "筆子項沒填";
+                                        flag = false;
+                                        break;
+                                    }
+                                }
+                            }                     
+                            //通過第一關 
+                            if (flag)
+                            {
+                                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                                //string SPName = new ObjType().GetSPName(ObjType.SPType.InsTransParking);
+                                for (int i = 1; i <= sheetLen; i++)
+                                {
+                                    SP_Input_BE_InsMemberScore data = new SP_Input_BE_InsMemberScore()
+                                    {
+                                        ID = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                        ORDERNO = sheet.GetRow(i).GetCell(4) == null ? 0 : int.Parse(sheet.GetRow(i).GetCell(4).ToString().Replace(" ", "").ToUpper().Replace("H", "")),
+                                        DAD = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", ""),
+                                        SON = sheet.GetRow(i).GetCell(2).ToString().Replace(" ", ""),
+                                        SCORE = int.Parse(sheet.GetRow(i).GetCell(3).ToString().Replace(" ", "")),
+                                        APP = "",
+                                        USERID = Session["Account"].ToString(),
+                                        MEMO = (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "") == "其他") ? sheet.GetRow(i).GetCell(2).ToString().Replace(" ", "") : ""
+                                    };
+
+                                    SPOutput_Base SPOutput = new SPOutput_Base();
+                                    flag = new SQLHelper<SP_Input_BE_InsMemberScore, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsMemberScore", data, ref SPOutput, ref lstError);
+                                    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                    if (flag == false)
+                                    {
+                                        //errorLine = i.ToString();
+                                        errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), baseVerify.GetErrorMsg(errCode));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            flag = false;
+                            errorMsg = "請上傳要匯入的資料";
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+
+                    if (flag)
+                    {
+                        ViewData["errorLine"] = "ok";
+                    }
+                    else
+                    {
+                        ViewData["errorLine"] = errorMsg;
+                    }
+
+                    return View();
+                }
+                else
+                {
+                    List<BE_GetMemberData> lstData = new MemberRepository(connetStr).GetMemberData_ForScore(ORDERNO_I);
+                    try
+                    {
+                        ViewData["IDNO"] = lstData[0].IDNO;
+                        ViewData["MEMNAME"] = lstData[0].NAME;
+                        //ViewData["AuditMode"] = "1";
+                        return View();
+                    }
+                    catch
+                    {
+                        ViewData["errorLine"] = "無此合約";
+                        return View();
+                    }
+                };
+            }
+            else
+            {
+                ViewData["errorLine"] = "合約編號格式錯誤";
+                return View();
+            }
+        }
+        public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
+        {
+            ViewData["IDNO"] = ExplodeIDNO;
+            ViewData["AuditMode"] = AuditMode;
+            ViewData["MEMNAME"] = ExplodeNAME;
+            ViewData["ORDERNO"] = ExplodeORDER;
+            ViewData["StartDate"] = ExplodeSDate;
+            ViewData["EndDate"] = ExplodeEDate;
+
+            //List<BE_GetMemberScoreFull> lstData = new MemberRepository(connetStr).GetMemberScoreFull(IDNO, MEMNAME, ORDERNO, StartDate, EndDate);
+            List<BE_GetMemberScoreFull> lstData = null;
+            MemberRepository repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "姓名", "加/扣分時間", "評分行為(主項)", "評分行為(子項)", "加/扣分", "出車時間", "合約編號", "APP刪除", "隱藏時間", "操作人員" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                //sheet.AutoSizeColumn(j);
+            }
+            lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
+            int len = lstData.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstData[k].MEMCNAME);
+                content.CreateCell(1).SetCellValue(lstData[k].A_SYSDT);
+                content.CreateCell(2).SetCellValue(lstData[k].DAD);
+                content.CreateCell(3).SetCellValue(lstData[k].SON);
+                content.CreateCell(4).SetCellValue(lstData[k].SCORE);
+                content.CreateCell(5).SetCellValue(lstData[k].TIME);
+                content.CreateCell(6).SetCellValue(lstData[k].ORDERNO);
+                content.CreateCell(7).SetCellValue(lstData[k].APP);
+                content.CreateCell(8).SetCellValue(lstData[k].DEL);
+                content.CreateCell(9).SetCellValue(lstData[k].GM);
+
+            }
+            //for (int l = 0; l < headerFieldLen; l++)
+            //{
+            //    sheet.AutoSizeColumn(l);
+            //}
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        #endregion
     }
 }
