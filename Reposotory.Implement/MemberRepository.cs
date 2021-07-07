@@ -140,7 +140,7 @@ namespace Reposotory.Implement
             string term = "";
             //string term2 = "";
             //string SQL = " SELECT TOP 300 * FROM VW_GetAuditList WITH(NOLOCK) ";
-            string SQL = " EXEC usp_BE_GetAuditList_Tang  '" + AuditMode.ToString() + 
+            string SQL = " EXEC usp_BE_GetAuditList '" + AuditMode.ToString() + 
                 "','" + AuditType.ToString() +
                 "','" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
                 "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
