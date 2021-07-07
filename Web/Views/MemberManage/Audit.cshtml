@@ -184,7 +184,7 @@
                                 會員編號
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" type="text" name="MEMRFNBR" id="MEMRFNBR" value="@MEMRFNBR" />
+                                <input class="form-control" type="text" name="MEMRFNBR" id="MEMRFNBR" value="@MEMRFNBR" oninput = "value=value.replace(/[^\d]/g,'')"/>
                             </div>
                         </div>
                     </div>
