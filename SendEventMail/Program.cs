@@ -12,6 +12,20 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using WebCommon;
 
+/*
+ * 用途：告警MAIL發送
+ * 
+ * 異動紀錄：
+ * 2021/04/07 1.EMAIL內容增加發生時間 2.改用SendGuid發送
+ * 2021/04/08 修正時速、引擎、電門事件會重複發送問題
+ * 2021/04/19 1.車輛排除未上線 2.摩托車只發時速 3.用事件&收件人歸戶，一次將此次發生的告警送出去
+ * 2021/04/20 發完MAIL要更新DB
+ * 2021/04/21 增加車機失聯1小時事件
+ * 2021/04/22 增加 11:超過15分鐘未完成還車作業、12:超過預約還車時間30分鐘未還車
+ * 2021/04/26 11:超過15分鐘未完成還車作業、12:超過預約還車時間30分鐘未還車 增加訂單編號
+ * 2021/07/08 增加 13:取車1小時前沒有車
+ */
+
 namespace SendEventMail
 {
     class Program
@@ -537,18 +551,30 @@ namespace SendEventMail
                     case 12:
                         Title = string.Format("異常告警：{0} 事件名單", "超過預約還車時間30分鐘未還車");
                         break;
+                    case 13:
+                        Title = string.Format("異常告警：{0} 事件名單", "取車1小時前沒有車");
+                        break;
                 }
 
                 // 依照事件類型調整TABLE內容
                 switch (EventType)
                 {
-                    case 11:
-                    case 12:
+                    case 11:    // 超過15分鐘未完成還車作業
+                    case 12:    // 超過預約還車時間30分鐘未還車
                         Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>訂單編號</th><th>發生時間</th></tr>";
 
                         foreach (var ToSend in ToSendList)
                         {
                             Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}",ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                        }
+
+                        break;
+                    case 13:    // 取車1小時前沒有車
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>被影響合約編號</th><th>發生時間</th></tr>";
+
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}", ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
                         }
 
                         break;
