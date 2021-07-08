@@ -42,9 +42,10 @@
 ** ----------|------------| ------------------------------------
 ** 2020/10/14 下午 04:00:00    |  eason|          First Release
 ** 2021/03/30 ADD BY ADAM REASON.測試多身分
+** 2021/06/14 UPD BY YEH REASON:增加積分<60分只能用定價專案
 *****************************************************************/
 /*
-EXEC usp_GetStationCarTypeOfMutiStation 'X0II','2021-4-25 23:30:0','2021-4-25 23:50:0','YARIS','A122364317',0,0,9999,'','','',''
+EXEC usp_GetStationCarTypeOfMutiStation_ForTest 'X1UU','2021-7-1 08:00:00','2021-7-1 09:00:00','YARIS','A124215371',0,0,9999,'','','',''
 */
 CREATE PROCEDURE [dbo].[usp_GetStationCarTypeOfMutiStation]
 	@StationIDs             VARCHAR(MAX)          , --據點代碼（1~多個）
@@ -68,6 +69,7 @@ DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 DECLARE @TotalHours FLOAT;
 DECLARE @SpecStatus VARCHAR(2);
+DECLARE @Score INT;	-- 會員積分
 
 /*初始設定*/
 SET @Error=0;
@@ -80,7 +82,8 @@ SET @FunName='usp_GetStationCarTypeOfMutiStation';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
-SET @NowTime = DATEADD(hour,8,GETDATE())
+SET @NowTime = DATEADD(hour,8,GETDATE());
+SET @Score=100;	-- 預設積分
 
 BEGIN TRY
 
@@ -234,23 +237,36 @@ BEGIN TRY
 		--	DELETE FROM #TB_Project WHERE PROJID='R129'
 		--END
 
-		--20210331 ADD 澎湖花火節專案限制
-		DECLARE @Penghu	VARCHAR(10);
-		SELECT @Penghu=ISNULL('Y','N') FROM @tb_StationID WHERE StationID='X1UU';
-		IF @Penghu='Y'
+		-- 取得會員積分
+		SELECT @Score=SCORE FROM TB_MemberScoreMain WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+		IF @Score < 60	-- 積分<60分只能用定價專案
 		BEGIN
-			CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
-			INSERT INTO #SPDATE VALUES('2021-04-01','2021-08-31')
+			SET @SpecStatus = '90';	-- 定價專用特殊身分
+			-- 將#TB_Project的非定價專案都移除
+			DELETE FROM #TB_Project WHERE SPCLOCK<>@SpecStatus;
+		END
+
+		IF @Score >= 60	-- 積分>60才處理澎湖花火節專案
+		BEGIN
+			--20210331 ADD 澎湖花火節專案限制
+			DECLARE @Penghu	VARCHAR(10);
+			SELECT @Penghu=ISNULL('Y','N') FROM @tb_StationID WHERE StationID='X1UU';
+			IF @Penghu='Y'
+			BEGIN
+				CREATE TABLE #SPDATE (STADATE DATETIME,ENDDATE DATETIME)
+				INSERT INTO #SPDATE VALUES('2021-04-01','2021-08-31')
 					
-			--IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE)))
-			IF EXISTS(SELECT * FROM #SPDATE WHERE ((@SD BETWEEN STADATE AND ENDDATE)))
-			BEGIN
-				--在此時間的專案會只剩特殊專案
-				DELETE FROM #TB_Project WHERE PROJID<>'R024' 
-			END
-			ELSE
-			BEGIN
-				DELETE FROM #TB_Project WHERE PROJID='R024'
+				--IF EXISTS(SELECT * FROM #SPDATE WHERE ((STADATE BETWEEN @SD AND @ED) OR (ENDDATE BETWEEN @SD AND @ED) OR (@SD BETWEEN STADATE AND ENDDATE) OR (@ED BETWEEN STADATE AND ENDDATE)))
+				IF EXISTS(SELECT * FROM #SPDATE WHERE ((@SD BETWEEN STADATE AND ENDDATE)))
+				BEGIN
+					--在此時間的專案會只剩特殊專案
+					DELETE FROM #TB_Project WHERE PROJID<>'R024' 
+				END
+				ELSE
+				BEGIN
+					DELETE FROM #TB_Project WHERE PROJID='R024'
+				END
 			END
 		END
 
@@ -362,59 +378,4 @@ BEGIN CATCH
 	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
 RETURN @Error
-
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';
-
-/*
-TB_OrderMain	訂單基本資料檔	booking_status	預約單狀態
-0 = 會員預約、
-1 = 管理員清潔預約、
-2 = 管理員保修預約、
-3 = 延長用車狀態、
-4 = 強迫延長用車狀態、
-5 = 合約完成(已完成解除卡號動作)
-
-
-TB_OrderMain	訂單基本資料檔	car_mgt_status	取還車狀態：
-0 = 尚未取車、
-1 = 已經上傳出車照片、
-2 = 已經簽名出車單、
-3 = 已經信用卡認證、
-4 = 已經取車(記錄起始時間)、
-11 = 已經紀錄還車時間、
-12 = 已經上傳還車角度照片、
-13 = 已經上傳還車車損照片、
-14 = 已經簽名還車單、
-15 = 已經信用卡付款、
-16 = 已經檢查車輛完成並已經解除卡號
-
-TB_OrderMain	訂單基本資料檔	cancel_status	訂單修改狀態：
-0 = 無(訂單未刪除，正常預約狀態)、
-1 = 修改指派車輛(此訂單因其他預約單強迫延長而更改過訂單 or 後台重新配車過 or 取車時無車，重新配車)、
-2 = 此訂單被人工介入過(後台協助取還車 or 後台修改訂單資料)、
-3 = 訂單已取消(會員主動取消 or 逾時15分鐘未取車)、
-4 = 訂單已取消(因車輛仍在使用中又無法預約到其他車輛而取消)
-
-
-TB_Car	車輛總表	available	目前狀態：
-0:出租中;
-1:可出租;
-2:未上線
-*/
 GO
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eason', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'取得同站的專案資料', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetStationCarTypeOfMutiStation';

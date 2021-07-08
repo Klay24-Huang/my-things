@@ -928,7 +928,7 @@ namespace Web.Controllers
             XSSFCellStyle cs_cell_rba = (XSSFCellStyle)workbook.CreateCellStyle();
             XSSFCellStyle cs_cell_lba = (XSSFCellStyle)workbook.CreateCellStyle();
             XSSFFont font_cell = (XSSFFont)workbook.CreateFont();
-            font_cell.FontName = "微軟正黑體";
+            //font_cell.FontName = "微軟正黑體"; //20210705唐MARK，AZURE會有部分機率報錯
             font_cell.FontHeightInPoints = 12;
             cs_cell.SetFont(font_cell);
             cs_cell_date.SetFont(font_cell);

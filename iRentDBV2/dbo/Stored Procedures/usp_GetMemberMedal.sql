@@ -1,7 +1,10 @@
 /****************************************************************
+** 用　　途：取得會員徽章
+*****************************************************************
 ** Change History
 *****************************************************************
 ** 2021/05/20 ADD BY YEH
+** 2021/06/01 UPD BY YEH 徽章代碼改顯示對應圖檔名稱
 *****************************************************************/
 
 CREATE PROCEDURE [dbo].[usp_GetMemberMedal]
@@ -71,7 +74,7 @@ BEGIN TRY
 			ISNULL(B.Progress,0) AS Progress,
 			A.Describe,
 			CASE WHEN ISNULL(B.Progress,0) >= A.Norm THEN 1 ELSE 0 END AS GetFlag,
-			ISNULL(CONVERT(VARCHAR, B.GetMedalTime, 120),'') AS GetMedalTime
+			ISNULL(CONVERT(VARCHAR(19), B.GetMedalTime, 126),'') AS GetMedalTime
 		FROM [dbo].[TB_MedalConfig] A
 		LEFT JOIN [TB_MedalMileStone] B ON A.Class=B.Class AND A.Series=B.Series AND A.Action=B.Action AND A.MileStone=B.MileStone AND B.IDNO=@IDNO;
 	END

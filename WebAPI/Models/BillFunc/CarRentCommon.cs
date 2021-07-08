@@ -312,7 +312,7 @@ namespace WebAPI.Models.BillFunc
                         //春後
                         else 
                         {
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, 901,sour.MotoBasePrice,sour.FirstFreeMins);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -329,7 +329,7 @@ namespace WebAPI.Models.BillFunc
                             sour.VisMons != null && sour.VisMons.Count() > 0) 
                             motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
-                        motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0).ToList();
+                        //motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins >0 || x.MotoHolidayMins > 0).ToList();
                         if (motoMonth.Count > 0)
                         {
                             int UseLen = motoMonth.Count;
@@ -349,7 +349,7 @@ namespace WebAPI.Models.BillFunc
                         int xDiscount = sour.Discount;//帶入月租運算的折扣
                         if (sour.hasFine)
                         {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount);
+                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
                             if (re.carInfo != null)
                             {
                                 re.CarRental += re.carInfo.RentInPay;
@@ -358,11 +358,11 @@ namespace WebAPI.Models.BillFunc
                                 else
                                     UseMonthlyRent = new List<MonthlyRentData>();
                                 re.useDisc = re.carInfo.useDisc;
-                            }                         
+                            }
                         }
                         else
                         {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount);
+                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount,sour.FirstFreeMins);
                             if (re.carInfo != null)
                             {
                                 re.CarRental += re.carInfo.RentInPay;
@@ -379,7 +379,7 @@ namespace WebAPI.Models.BillFunc
                             UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
                         if (UseMonthlyRent.Count > 0)
-                        {                          
+                        {
                             int UseLen = UseMonthlyRent.Count;
                             for (int i = 0; i < UseLen; i++)
                             {
@@ -1244,6 +1244,18 @@ namespace WebAPI.Models.BillFunc
               ")";
             ExecNonResponse(ref flag, SQL);
             return flag;
+        }    
+        public bool AddTraceLog(int apiId, string funName, TraceCom trace, bool flag)
+        {
+            if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
+               return AddTraceLog(apiId, funName, eumTraceType.exception, trace);
+            else
+            {
+                if (flag)
+                    return AddTraceLog(apiId, funName, eumTraceType.mark, trace);
+                else
+                    return AddTraceLog(apiId, funName, eumTraceType.followErr, trace);
+            }
         }
         public bool AddTraceLog(int apiId ,string funName, eumTraceType traceType, TraceCom sour)
         {
@@ -1832,13 +1844,21 @@ namespace WebAPI.Models.BillFunc
         public Int64 intOrderNO { get; set; }
         public int ProjType { get; set; }
         /// <summary>
+        /// 機車基消
+        /// </summary>
+        public double MotoBasePrice { get; set; }
+        /// <summary>
         /// 單日計費最大分鐘數
         /// </summary>
         public double MotoDayMaxMins { get; set; }
         /// <summary>
-        /// 每分鐘多少-機車
+        /// 每分鐘多少-機車平日
         /// </summary>
         public double MinuteOfPrice { set; get; }
+        /// <summary>
+        /// 每分鐘多少-機車假日
+        /// </summary>
+        public float MinuteOfPriceH { get; set; }
         /// <summary>
         /// 是否逾時
         /// </summary>
@@ -1870,6 +1890,14 @@ namespace WebAPI.Models.BillFunc
         /// 汽車基本分鐘數
         /// </summary>
         public int carBaseMins { get; set; }
+        /// <summary>
+        /// 前n分鐘0元
+        /// </summary>
+        public double FirstFreeMins { get; set; }
+        /// <summary>
+        /// 月租Id(可多筆)
+        /// </summary>
+        public string MonIds { get; set; }
         public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
     }
     public class OBIZ_MonthRent: BIZ_CRBase

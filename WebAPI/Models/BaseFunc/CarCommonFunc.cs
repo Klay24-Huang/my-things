@@ -1120,15 +1120,15 @@ namespace WebAPI.Models.BaseFunc
                         if (info != null)
                         {
                             #region 判斷是否熄火
-                            if (flag)
-                            {
-
-                                if (info.ACCStatus == 1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR186";
-                                }
-                            }
+                            // 20210706 UPD BY YEH REASON:將此判斷移除，當車輛未熄火強還，後續的解除租約/熄火指令才有辦法送出
+                            //if (flag)
+                            //{
+                            //    if (info.ACCStatus == 1)
+                            //    {
+                            //        flag = false;
+                            //        errCode = "ERR186";
+                            //    }
+                            //}
                             #endregion
                             #region 判斷是否關閉電池架
                             if (flag)
@@ -1161,14 +1161,12 @@ namespace WebAPI.Models.BaseFunc
                                     {
                                         tmpErrCode = "ERR188";
                                         flag = true;
-
                                     }
                                     else
                                     {
                                         errCode = "ERR188";
                                     }
                                 }
-
                             }
                             #endregion
                         }
@@ -1183,7 +1181,6 @@ namespace WebAPI.Models.BaseFunc
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                 _params = new Params()
-
                             };
                             requestId = SetNoRentInput.requestId;
                             method = CommandType;
@@ -1204,7 +1201,6 @@ namespace WebAPI.Models.BaseFunc
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                 _params = new Params()
-
                             };
                             requestId = SetNoRentInput.requestId;
                             method = CommandType;
