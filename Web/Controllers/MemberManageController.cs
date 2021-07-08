@@ -825,6 +825,8 @@ namespace Web.Controllers
                     ViewData["IDNO"] = IDNO;
                     ViewData["resultMessage"] = response;
                     ViewData["IRent_Only"] = IRent_Only;
+
+                    return View();
                 }
 
                 ViewData["result"] = "0";
