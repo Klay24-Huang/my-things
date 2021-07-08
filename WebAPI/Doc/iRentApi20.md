@@ -1,3 +1,4 @@
+
 版本: 1.0
 
 # iRentApi2 WebAPI
@@ -34,6 +35,7 @@ iRentApi20 Web API版本
 - [MotorRent 取得路邊租還機車](#MotorRent)
 - [GetMotorRentProject 取得專案與資費(機車)](#GetMotorRentProject)
 - [GetProject 取得專案與資費](#GetProject)
+- [GetPolygon 取得電子柵欄](#GetPolygon)
 
 取還車跟車機操控相關
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
@@ -59,6 +61,7 @@ iRentApi20 Web API版本
 
 車輛調度停車場
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
+- [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
 ----------
 # 修改歷程
@@ -104,6 +107,8 @@ iRentApi20 Web API版本
 20210528 新增車輛調度停車場相關API
 
 20210601 取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)欄位值調整
+
+20210708 新增電子柵欄API
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -1319,6 +1324,72 @@ iRentApi20 Web API版本
 
 -------------
 
+## GetPolygon取得電子柵欄
+### [/api/GetPolygon/]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+  
+* input傳入參數說明
+
+| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
+| --------- | -------- | :--: | :----: | ----------- |
+| StationID | 據點代碼 | Y | string | X0II |
+| ☆IsMotor| 機車汽車| Y | INT | 0:機車,1:汽車 |
+
+
+
+
+* input範例
+```input範例
+{
+    "StationID": "X0G1",
+    "IsMotor": 0
+}
+```
+
+* output回傳參數說明
+
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
+| Result | 是否成功 | int | 0:失敗 1:成功  |
+| ErrorCode | 錯誤碼 | string | |
+| ErrorMessage | 錯誤訊息 | string | |
+| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
+| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
+| Data | 資料物件 | | |
+| PolygonType| 電子柵欄模式 | int | 0:優惠的取車;1:優惠的還車 |
+| PolygonObj| 電子柵欄經緯度清單 | List |  |
+
+* output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "PolygonType": 0,
+        "PolygonObj": [
+            "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
+        ]
+    }
+}
+```
+
+-------------
 
 
 ## GetBanner 取得廣告資訊
