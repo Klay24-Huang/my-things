@@ -70,7 +70,7 @@ namespace OtherService
                 {
                     GUID = wsInput.GUID,
                     MerchantId = wsInput.MerchantId,
-                    AccountId = "",
+                    AccountId = wsInput.MemberId,
                     POSId = wsInput.POSId,
                     StoreId = wsInput.StoreId,
                     StoreTransDate = wsInput.StoreTransDate,
@@ -79,7 +79,7 @@ namespace OtherService
                     TransDate = output.Result.TransDate,
                     TransId = output.Result.TransId,
                     SourceTransId = wsInput.StoreTransId,
-                    TransType = "",
+                    TransType = "T004",
                     AmountType = wsInput.AmountType,
                     Amount = wsInput.Amount,
                     Bonus = wsInput.Bonus,
@@ -88,7 +88,7 @@ namespace OtherService
                     StoreValueReleaseDate = wsInput.StoreValueReleaseDate,
                     StoreValueExpireDate = wsInput.StoreValueExpireDate,
                     SourceFrom = wsInput.SourceFrom,
-                    AccountingStatus = "",
+                    AccountingStatus = "0",
                     GiftCardBarCode = wsInput.GiftCardBarCode
                 };
 
@@ -185,7 +185,7 @@ namespace OtherService
                 {
                     GUID = wsInput.GUID,
                     MerchantId = wsInput.MerchantId,
-                    AccountId = "",
+                    AccountId = wsInput.AccountId,
                     BarCode = wsInput.BarCode,
                     POSId = wsInput.POSId,
                     StoreId = wsInput.StoreId,
@@ -304,7 +304,7 @@ namespace OtherService
                 {
                     GUID = wsInput.GUID,
                     MerchantId = wsInput.MerchantId,
-                    AccountId = "",
+                    AccountId = wsInput.AccountId,
                     BarCode = wsInput.BarCode,
                     POSId = wsInput.POSId,
                     StoreId = wsInput.StoreId,
