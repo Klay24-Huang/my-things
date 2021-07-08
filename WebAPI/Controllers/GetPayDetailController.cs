@@ -707,7 +707,8 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("車麻吉");
                     }
                     //20210428 ADD BY ADAM REASON.串接停車場
-                    if (flag && OrderDataLists[0].ProjType != 4)
+                    //20210708 ADD BY ADAM REASON.等7/15解封
+                    if (false && flag && OrderDataLists[0].ProjType != 4)
                     {
                         //
                         string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
