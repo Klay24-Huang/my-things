@@ -33,7 +33,8 @@ namespace Reposotory.Implement.Enum
                     SPName = "usp_InsMonthlyHistory_0301";
                     break;
                 case SPType.ClearMonthTmpHistory:
-                    SPName = "usp_ClearMonthlyTmpHistory";
+                    //SPName = "usp_ClearMonthlyTmpHistory";
+                    SPName = "usp_ClearMonthlyTmpHistory_test";
                     break;
             }
             return SPName;
