@@ -602,7 +602,8 @@ namespace WebAPI.Controllers
                 if(outputApi.GetProjectObj != null && outputApi.GetProjectObj.Count() > 0)
                 {
                     var VisProObjs = new List<GetProjectObj>();
-                    var ProObjs = outputApi.GetProjectObj;                    
+                    var ProObjs = outputApi.GetProjectObj;
+                    int copyCount = 0;
                     if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count()>0)
                     {
                         ProObjs.ForEach(x => {
@@ -614,8 +615,11 @@ namespace WebAPI.Controllers
                                 {
                                     y.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
                                     newGetProjObj.ProjectObj.Add(y);
+
                                     InUseMonth.ForEach(z =>
                                     {
+                                        //只複製一次
+                                        if (copyCount > 0) return;
                                         ProjectObj newItem = objUti.Clone(y);
 
                                         #region 月租卡片欄位給值
@@ -646,6 +650,8 @@ namespace WebAPI.Controllers
                                         #endregion
 
                                         newGetProjObj.ProjectObj.Add(newItem);
+
+                                        copyCount++;
                                     });
                                 });
                                 if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)

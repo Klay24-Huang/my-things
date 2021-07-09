@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using Domain.WebAPI.output.Taishin;
 using Domain.SP.Input.Subscription;
 using WebAPI.Models.Param.CusFun.Input;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using NLog;
 
 namespace WebAPI.Controllers
 {
@@ -28,6 +30,7 @@ namespace WebAPI.Controllers
     {
         private List<Int64> payList = new List<Int64>() { 0 };
         private List<Int64> invoList = new List<Int64>() { 1, 2, 3, 4, 5, 6 };
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         #region ori
 
@@ -344,7 +347,14 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             int ProdPrice = 0;
+            int IsMoto = 0;
+            string TransactionNo = "";
+            string CreditCardNo = "";
+            string AuthCode = "";
+            string MerchantTradeNo = "";
 
+            var mem = new Domain.MemberData.RegisterData();
+            var InvData = new Domain.MemberData.InvoiceData();
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -430,7 +440,7 @@ namespace WebAPI.Controllers
                     #region 載入後續Api所需資料
 
                     //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
-                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    InvData = mscom.GetINVDataFromMember(IDNO);
                     Int64 InvoTypeId = InvData.InvocieTypeId;
 
                     buyNxtCom.LogID = LogID;
@@ -467,6 +477,8 @@ namespace WebAPI.Controllers
                             var fItem = monObjs.FirstOrDefault();
                             if (fItem.PeriodPrice > 0)
                                 ProdPrice = fItem.PeriodPrice;
+
+                            IsMoto = fItem.IsMoto;
                         }
                     }
 
@@ -478,11 +490,21 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
+                        
                         try
                         {                                
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
+                            logger.Info(WsOut.ToString());
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
+
+                            if (flag && WsOut.ResponseParams != null)
+                            {
+                                TransactionNo = WsOut.ResponseParams.ResultData.ServiceTradeNo;
+                                AuthCode = WsOut.ResponseParams.ResultData.AuthIdResp;
+                                CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
+                                MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -490,6 +512,7 @@ namespace WebAPI.Controllers
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
                             throw new Exception("TSIBTrade Fail");
+                            
                         }
 
                         trace.FlowList.Add("信用卡交易");
@@ -500,7 +523,7 @@ namespace WebAPI.Controllers
                     #region 後續api處理
                     if (flag)
                     {
-                        flag = buyNxtCom.exeNxt();
+                        flag = buyNxtCom.exeNxt(MerchantTradeNo,TransactionNo);
                         errCode = buyNxtCom.errCode;
                         trace.FlowList.Add("後續api處理");                            
                     }
@@ -511,7 +534,8 @@ namespace WebAPI.Controllers
                     {
                         try
                         {
-                            var mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                            logger.Info("履保開始!");
+                            mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
                                 var spin = new ICF_TSIB_Escrow_Type()
@@ -773,7 +797,7 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        flag = buyNxtCom.exeNxt();
+                        flag = buyNxtCom.exeNxt("","");
                         errCode = buyNxtCom.errCode;
                         trace.FlowList.Add("後續api處理");
                     }
@@ -1025,7 +1049,7 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        flag = buyNxtCom.exeNxt();
+                        flag = buyNxtCom.exeNxt("","");
                         errCode = buyNxtCom.errCode;
                         trace.FlowList.Add("後續api處理");
                     }

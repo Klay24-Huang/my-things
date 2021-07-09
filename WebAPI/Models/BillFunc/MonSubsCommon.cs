@@ -31,6 +31,9 @@ using Newtonsoft.Json;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Domain.MemberData;
 using Domain.SP.Input.Member;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using NLog;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -48,6 +51,8 @@ namespace WebAPI.Models.BillFunc
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
 
         private MonSubsSp msp = new MonSubsSp();
+
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -79,8 +84,16 @@ namespace WebAPI.Models.BillFunc
 
         private bool TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
-            return true;//hack: fix 信用卡交易暫時關閉,上線再打開
-            //return ori_TSIBCardTrade(sour,ref WSAuthOutput, ref Amount, ref errCode);
+            //return true;//hack: fix 信用卡交易暫時關閉,上線再打開
+            //hack 重要 這個是因為APP要測試才開放的，預計
+            if (sour.IDNO != "S124413890" && sour.IDNO != "K122319624" && sour.IDNO != "H123315066" && sour.IDNO != "C121275662")
+            {
+                return ori_TSIBCardTrade(sour, ref WSAuthOutput, ref Amount, ref errCode);
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -271,7 +284,7 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public bool TSIB_Escrow_StoreValueCreateAccount(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
         {
-            return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
+            //return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
 
             bool flag = false;
 
@@ -546,6 +559,16 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
+        public void InvoiceProc()
+        {
+            WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
+            {
+
+            };
+            WebAPIOutput_MonthlyRentSave wsOuptput = new WebAPIOutput_MonthlyRentSave();
+            HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+            //wsAPI.MonthlyRentSave();
+        }
     }
 
     /// <summary>
