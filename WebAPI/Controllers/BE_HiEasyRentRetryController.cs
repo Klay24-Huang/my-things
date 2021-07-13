@@ -325,7 +325,7 @@ namespace WebAPI.Controllers
                                 RINSU = "0",
                                 RNTAMT = obj.RPRICE.ToString(),
                                 RNTDATE = obj.RNTDATE,
-                                RNTKM = obj.GIVEKM.ToString(),
+                                RNTKM = obj.RNTKM.ToString(),       //20210713 ADD BY ADAM REASON.
                                 RNTTIME = obj.RNTTIME,
                                 RPRICE = obj.RPRICE.ToString(),
                                 TSEQNO = obj.TSEQNO,
