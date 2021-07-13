@@ -14,5 +14,7 @@ namespace Domain.SP.Input.Subscription
         public Int64 PayTypeId { get; set; }
         public Int64 InvoTypeId { get; set; }
         public DateTime? SetNow { get; set; }
+        public string MerchantTradeNo { get; set; }
+        public string TaishinTradeNo { get; set; }
     }
 }
