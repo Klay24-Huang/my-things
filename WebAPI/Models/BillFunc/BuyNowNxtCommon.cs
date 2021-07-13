@@ -104,6 +104,8 @@ namespace WebAPI.Models.BillFunc
                         {
                             spIn.IDNO = IDNO;
                             spIn.LogID = LogID;
+                            spIn.MerchantTradeNo = MerchantTradeNo;
+                            spIn.TaishinTradeNo = TransactionNo;
                         }
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && spIn.LogID > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&

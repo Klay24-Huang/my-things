@@ -623,6 +623,12 @@ namespace WebAPI.Controllers
             int ProdPrice_ori = 0;
             int ProdPrice_nxt = 0;
             int ProdPrice = 0;
+
+            string TransactionNo = "";
+            string CreditCardNo = "";
+            string AuthCode = "";
+            string MerchantTradeNo = "";
+
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -779,6 +785,15 @@ namespace WebAPI.Controllers
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
+
+                            if (flag && WsOut.ResponseParams != null)
+                            {
+                                TransactionNo = WsOut.ResponseParams.ResultData.ServiceTradeNo;
+                                AuthCode = WsOut.ResponseParams.ResultData.AuthIdResp;
+                                CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
+                                MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
+                            }
+
                         }
                         catch (Exception ex)
                         {
@@ -796,8 +811,8 @@ namespace WebAPI.Controllers
                     #region 後續api處理
 
                     if (flag)
-                    {
-                        flag = buyNxtCom.exeNxt("","");
+                    {                       
+                        flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
                         trace.FlowList.Add("後續api處理");
                     }
