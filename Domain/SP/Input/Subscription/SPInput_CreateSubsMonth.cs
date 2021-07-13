@@ -31,5 +31,13 @@ namespace Domain.SP.Input.Subscription
         /// 設定自動續約-非必填
         /// </summary>
         public int SetSubsNxt { get; set; } = 0;
+        /// <summary>
+        /// 台新送出的訂單編號
+        /// </summary>
+        public string MerchantTradeNo { get; set; }
+        /// <summary>
+        /// 台新的交易序號
+        /// </summary>
+        public string TaishinTradeNo { get; set; }
     }
 }

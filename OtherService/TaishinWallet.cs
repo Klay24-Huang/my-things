@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using WebCommon;
+using NLog;
 
 namespace OtherService
 {
@@ -43,6 +44,9 @@ namespace OtherService
         private string CancelWriteOff = ConfigurationManager.AppSettings["CancelWriteOff"].ToString(); //履保/信託序號取消核銷
         private string ReturnStoreValue = ConfigurationManager.AppSettings["ReturnStoreValue"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         public string GenerateSignCode(string ClientId,string utcTimeStamp,string body,string apiKey)
         {
             string SignCode = "";
@@ -58,6 +62,7 @@ namespace OtherService
             bool flag = true;
 
             output = DoStoreValueCreateAccountSend(wsInput, ClientId,utcTimeStamp,SignCode).Result;
+            logger.Trace(output);
             if (output.ReturnCode == "0000" || output.ReturnCode=="M000" )
             {
                 //if (output.Data == null)
@@ -79,7 +84,7 @@ namespace OtherService
                     TransDate = output.Result.TransDate,
                     TransId = output.Result.TransId,
                     SourceTransId = wsInput.StoreTransId,
-                    TransType = "T004",
+                    TransType = "T006",
                     AmountType = wsInput.AmountType,
                     Amount = wsInput.Amount,
                     Bonus = wsInput.Bonus,
@@ -91,6 +96,8 @@ namespace OtherService
                     AccountingStatus = "0",
                     GiftCardBarCode = wsInput.GiftCardBarCode
                 };
+
+                logger.Trace(spInput);
 
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new TaishinWalletLog().InsStoreValueCreateAccountLog(spInput, ref flag, ref errCode, ref lstError);

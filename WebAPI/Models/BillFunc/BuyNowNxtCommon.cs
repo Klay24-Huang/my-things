@@ -45,7 +45,7 @@ namespace WebAPI.Models.BillFunc
         /// 執行付款完成後動作
         /// </summary>
         /// <returns></returns>
-        public bool exeNxt()
+        public bool exeNxt(string MerchantTradeNo,string TransactionNo)
         {
             bool flag = false;
             var carRepo = new CarRentRepo();
@@ -75,6 +75,10 @@ namespace WebAPI.Models.BillFunc
                             spIn.PayTypeId = PayTypeId;
                             spIn.InvoTypeId = InvoTypeId;
                             spIn.SetPayOne = 1;//首期金額已付
+                            //20210709 ADD BY ADAM REASON.補上台新訂單編號
+                            spIn.MerchantTradeNo = MerchantTradeNo;
+                            spIn.TaishinTradeNo = TransactionNo;
+                            
                             flag = msp.sp_CreateSubsMonth(spIn, ref errCode);
                             trace.traceAdd("CreateSubsMonth", new { flag, errCode });
                         }
@@ -100,6 +104,8 @@ namespace WebAPI.Models.BillFunc
                         {
                             spIn.IDNO = IDNO;
                             spIn.LogID = LogID;
+                            spIn.MerchantTradeNo = MerchantTradeNo;
+                            spIn.TaishinTradeNo = TransactionNo;
                         }
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && spIn.LogID > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&
@@ -127,6 +133,8 @@ namespace WebAPI.Models.BillFunc
                         {
                             spIn.IDNO = IDNO;
                             spIn.LogID = LogID;
+                            spIn.MerchantTradeNo = MerchantTradeNo;
+                            spIn.TaishinTradeNo = TransactionNo;
                         }
                         if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0)
                         {
