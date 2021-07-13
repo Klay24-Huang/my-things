@@ -1,12 +1,10 @@
 ﻿using Domain.SP.Input.Bill;
 using Domain.SP.Output.Bill;
 using Domain.TB;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Utils;
@@ -625,7 +623,8 @@ namespace WebAPI.Models.BillFunc
                 mFinal = objUti.Clone(mOri);
 
                 //小時轉分
-                mFinal.ForEach(x => {
+                mFinal.ForEach(x =>
+                {
                     x.CarTotalHours = x.CarTotalHours * 60;
                     x.WorkDayHours = x.WorkDayHours * 60;
                     x.HolidayHours = x.HolidayHours * 60;
@@ -856,18 +855,19 @@ namespace WebAPI.Models.BillFunc
         /// <param name="lstHoliday">假日列表</param>
         /// <param name="mOri">月租</param>
         /// <param name="Discount">折扣</param>
-        /// <param name="fDayMaxMins">首日最大計費分鐘199</param>
+        /// <param name="fDayMaxMins">首日最大計費分鐘</param>
         /// <param name="fDayMaxPrice">首日價格上限</param>
         /// <param name="dayBasePrice">基消</param>
+        /// <param name="FreeMins"></param>
         /// <returns></returns>
         /// <mark>2020-12-21 eason</mark>
         public CarRentInfo MotoRentMonthComp(DateTime SD, DateTime ED, double priceNmin, double priceHmin, int dayBaseMins, double dayMaxMins
-             , List<Holiday> lstHoliday = null
-             , List<MonthlyRentData> mOri = null
-             , int Discount = 0
-             , int fDayMaxMins = 0
-             , double fDayMaxPrice = 0
-             , double dayBasePrice = 10
+            , List<Holiday> lstHoliday = null
+            , List<MonthlyRentData> mOri = null
+            , int Discount = 0
+            , int fDayMaxMins = 0
+            , double fDayMaxPrice = 0
+            , double dayBasePrice = 10
             , double FreeMins = 0
             )
         {//note: MotoRentMonthComp
@@ -3900,7 +3900,8 @@ namespace WebAPI.Models.BillFunc
                 var fDaysTwoTppe = sour.Where(x => x.isF24H && !x.isFull24H).ToList();
                 if (fDaysTwoTppe != null && fDaysTwoTppe.Count() > 0)
                 {
-                    fDaysTwoTppe.ForEach(x => {
+                    fDaysTwoTppe.ForEach(x =>
+                    {
                         var fds = sour.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime)
                         .OrderByDescending(a => a.haveNext).ToList();
                         var fe = fds.LastOrDefault();
@@ -3917,7 +3918,8 @@ namespace WebAPI.Models.BillFunc
 
             if (re != null && re.Count() > 0)
             {
-                sour.ForEach(x => {
+                sour.ForEach(x =>
+                {
                     var d = re.Where(y =>
                     y.xSTime == x.xSTime && y.xETime == x.xETime &&
                     y.isStart == x.isStart && y.isEnd == x.isEnd &&

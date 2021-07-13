@@ -928,8 +928,6 @@ namespace WebAPI.Controllers
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH 
 
-            double nor_car_wDisc = 0;//只有一般時段時平日折扣
-            double nor_car_hDisc = 0;//只有一般時段時價日折扣
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
             int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
 
@@ -1539,8 +1537,10 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         intOrderNO = tmpOrder,
                         ProjType = item.ProjType,
+                        MotoBasePrice = item.BaseMinutesPrice,
                         MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
+                        MinuteOfPriceH = item.MinuteOfPrice,    //平假日先一樣，後續訂閱制MERGE後再更新
                         hasFine = hasFine,
                         SD = SD,
                         ED = ED,
@@ -1551,7 +1551,8 @@ namespace WebAPI.Controllers
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
                         carBaseMins = 60,
-                        CancelMonthRent = (ProjID == "R024")
+                        CancelMonthRent = (ProjID == "R024"),
+                        MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                     };
 
                     if (visMons != null && visMons.Count() > 0)
@@ -1598,7 +1599,8 @@ namespace WebAPI.Controllers
                             //春前
                             if (ED <= sprSD)
                             {
-                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, 300);
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, item.MaxPrice, item.BaseMinutesPrice);
                                 if (xre != null)
                                 {
                                     carInfo = xre;
@@ -1609,7 +1611,8 @@ namespace WebAPI.Controllers
                             //春後
                             else
                             {
-                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, item.MaxPrice, item.BaseMinutesPrice);
                                 if (xre != null)
                                 {
                                     carInfo = xre;
