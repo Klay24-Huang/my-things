@@ -72,7 +72,6 @@ namespace Web.Controllers
             }
             if (!string.IsNullOrEmpty(carid))
             {
-
                 ViewData["CarNo"] = carid;
             }
             if (!string.IsNullOrEmpty(objStation))
@@ -460,11 +459,28 @@ namespace Web.Controllers
                 ViewData["userID"] = tUserID;
             }
 
-            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                    ViewData["outerOfDateRangeMsg"] = "";
+                }
+                else
+                {
+                    ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
+                }
+            }
+            
+            //if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            if(isInDateRange && (tmpIsHandle < 2 || tUserID != ""))
             {
                 //lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
+
 
 
             return View(lstSubScription);
@@ -504,7 +520,18 @@ namespace Web.Controllers
                 tUserID = userID;
                 ViewData["userID"] = tUserID;
             }
-            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                }
+            }
+
+            //if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            if (isInDateRange && (tmpIsHandle < 2 || tUserID != ""))
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }

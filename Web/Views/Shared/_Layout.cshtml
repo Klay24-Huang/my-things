@@ -678,9 +678,14 @@
                 <script src="~/Scripts/js/tinycolor-0.9.15.min.js"></script>
                 <script src="~/Scripts/js/pick-a-color.js"></script>
                 break;
+            case "MonthlyMainQuery":
+                <script src="~/Scripts/js/jquery-dateFormat.js"></script>
+                break;
+
+
         }
     }
-<script>
+    <script>
         var jsHost = "@hostPath";
         var jsHost2 = "@hostPath2";
 
@@ -691,7 +696,7 @@
                 dateFormat: "Y-m-d H:i",
             }
         );
-</script>
+    </script>
     <script src="@Html.Raw(PageScriptName)"></script>
 </body>
 </html>
