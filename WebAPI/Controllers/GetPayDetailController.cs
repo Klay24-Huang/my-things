@@ -82,9 +82,6 @@ namespace WebAPI.Controllers
             int TotalRentMinutes = 0; //總租車時數
             int TotalFineRentMinutes = 0; //總逾時時數
             int TotalFineInsuranceMinutes = 0;  //安心服務逾時計算(一天上限超過6小時以10小時計)
-            int days = 0; int hours = 0; int mins = 0; //以分計費總時數
-            int FineDays = 0; int FineHours = 0; int FineMins = 0; //以分計費總時數
-            int PDays = 0; int PHours = 0; int PMins = 0; //將點數換算成天、時、分
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
             int CarRentPrice = 0; //車輛租金
             int MonthlyPoint = 0;   //月租折抵點數        20201128 ADD BY ADAM 
@@ -99,15 +96,13 @@ namespace WebAPI.Controllers
             CarRentInfo carInfo = new CarRentInfo();//車資料
             int ParkingPrice = 0;       //車麻吉停車費    20201209 ADD BY ADAM
             int CityParkingPrice = 0;   //城市車旅停車費 20210429 ADD BY ADAM 
-            //double nor_car_wDisc = 0;//只有一般時段時平日折扣
-            //double nor_car_hDisc = 0;//只有一般時段時價日折扣
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
             //int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
 
             int gift_point = 0;//使用時數(汽車)
             int gift_motor_point = 0;//使用時數(機車)
-            int motoBaseMins = 6;//機車基本分鐘數
-            int motoMaxMins = 200;//機車單日最大分鐘數
+            int motoBaseMins = 0;//機車基本分鐘數
+            int motoMaxMins = 0;//機車單日最大分鐘數
             //int carBaseMins = 60;//汽車基本分鐘數
 
             var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
@@ -138,7 +133,7 @@ namespace WebAPI.Controllers
                         OrderNo = apiInput.OrderNo,
                         Discount = apiInput.Discount,
                         MotorDiscount = apiInput.MotorDiscount,
-                        isGuest = isGuest,
+                        isGuest = isGuest
                     };
                     var inck_re = cr_com.InCheck(input);
                     if (inck_re != null)
@@ -215,20 +210,48 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                    if (flag)
                     {
-                        var item = OrderDataLists[0];
-                        trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
-                        trace.OrderNo = item.OrderNo;
-                        motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
-                        ProjType = item.ProjType;
-                        UseOrderPrice = item.UseOrderPrice;
-                        OrderPrice = item.OrderPrice;
-                        ProjID = item.ProjID;
-                    }
+                        if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                        {
+                            var item = OrderDataLists[0];
+                            trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
 
-                    if (ProjType != 4)
-                        Discount = apiInput.Discount;
+                            if (ProjType == 4)
+                            {
+                                if (item.BaseMinutes == 0)
+                                {
+                                    flag = false;
+                                    errMsg = "訂單資訊中BaseMinutes(機車基本分鐘數)不可為0";
+                                    errCode = "ERR914";//資料邏輯錯誤                                   
+                                }
+
+                                if (flag)
+                                {
+                                    if (item.BaseMinutesPrice == 0)
+                                    {
+                                        flag = false;
+                                        errMsg = "訂單資訊中BaseMinutesPrice(機車基消)不可為0";
+                                        errCode = "ERR914";//資料邏輯錯誤
+                                    }
+                                }
+                            }
+
+                            if (flag)
+                            {
+                                trace.OrderNo = item.OrderNo;
+                                motoBaseMins = item.BaseMinutes;
+                                //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
+                                ProjType = item.ProjType;
+                                UseOrderPrice = item.UseOrderPrice;
+                                OrderPrice = item.OrderPrice;
+                                ProjID = item.ProjID;
+                            }
+
+                            if (ProjType != 4)
+                                Discount = apiInput.Discount;
+                        }
+                    }
                 }
                 #endregion
 
@@ -713,6 +736,7 @@ namespace WebAPI.Controllers
                     }
 
                     #endregion
+
                     #region 月租
                     //note: 月租GetPayDetail
                     if (flag)
@@ -726,8 +750,10 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             intOrderNO = tmpOrder,
                             ProjType = item.ProjType,
-                            MotoDayMaxMins = motoDayMaxMinns,
+                            MotoBasePrice = item.BaseMinutesPrice,
+                            MotoDayMaxMins = motoDayMaxMinns,//資料庫缺欄位先給預設值
                             MinuteOfPrice = item.MinuteOfPrice,
+                            MinuteOfPriceH = item.MinuteOfPrice,    //平假日先一樣，後續訂閱制MERGE後再更新
                             hasFine = hasFine,
                             SD = SD,
                             ED = ED,
@@ -738,14 +764,14 @@ namespace WebAPI.Controllers
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
                             carBaseMins = 60,
-                            CancelMonthRent = (ProjID == "R024")
+                            CancelMonthRent = (ProjID == "R024"),
+                            MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                         };
 
                         if (visMons != null && visMons.Count() > 0)
                             input.VisMons = visMons;
 
                         var mon_re = cr_com.MonthRentSave(input);
-                        //var mon_re = cr_com.MonthRentNoSave(input);//test: getPayDetail
                         if (mon_re != null)
                         {
                             trace.traceAdd(nameof(mon_re), mon_re);
@@ -787,7 +813,8 @@ namespace WebAPI.Controllers
                                 //春前
                                 if (ED <= sprSD)
                                 {
-                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, 300);
+                                    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, item.MaxPrice, item.BaseMinutesPrice);
                                     if (xre != null)
                                     {
                                         carInfo = xre;
@@ -798,7 +825,8 @@ namespace WebAPI.Controllers
                                 //春後
                                 else 
                                 {
-                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, item.MaxPrice, item.BaseMinutesPrice);
                                     if (xre != null)
                                     {
                                         carInfo = xre;
@@ -887,7 +915,17 @@ namespace WebAPI.Controllers
                         //20201202 ADD BY ADAM REASON.ETAG費用
                         outputApi.Rent.ETAGRental = etagPrice;
 
-                        var xTotalRental = outputApi.Rent.CarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice - outputApi.Rent.TransferPrice + outputApi.Rent.ETAGRental;
+                        #region 轉乘優惠只能抵租金
+
+                        int xCarRental = outputApi.Rent.CarRental;
+                        int xTransferPrice = outputApi.Rent.TransferPrice;
+                        int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
+                        outputApi.Rent.TransferPrice = FinalTransferPrice;
+                        xCarRental = (xCarRental - FinalTransferPrice);
+
+                        #endregion
+
+                        var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
                         xTotalRental -= UseOrderPrice;//預繳定金扣抵
 
                         outputApi.UseOrderPrice = UseOrderPrice;

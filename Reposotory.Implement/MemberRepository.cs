@@ -594,7 +594,7 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SqlParameter[] para = new SqlParameter[1]; // term是空就用不到
             string term = "";
-            string SQL = $" SELECT * FROM TB_MemberData WITH(NOLOCK) WHERE IDNO = '{IDNO}'";
+            string SQL = $" SELECT * FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO = '{IDNO}'";
             List<BE_MemberData> result = new List<BE_MemberData>();
             result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
             if(result.Count == 0)
@@ -617,11 +617,7 @@ namespace Reposotory.Implement
             List<BE_MemberData> result = new List<BE_MemberData>();
             result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
             if(result.Count > 0)
-            {
-                return "1";
-            }
-            else
-            {
+            {               
                 flag = false;
                 lstError = new List<ErrorInfo>();
                 para = new SqlParameter[1]; // term是空就用不到
@@ -634,12 +630,16 @@ namespace Reposotory.Implement
                 result = GetObjList<BE_MemberData>(ref flag, ref lstError, SQL, para, term);
                 if (result.Count == 0)
                 {
-                    return "0";
+                    return "2";
                 }
                 else
                 {
-                    return "2";
+                    return "1";
                 }
+            }
+            else
+            {
+                return "0";
             }
         }
 

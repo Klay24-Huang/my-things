@@ -127,7 +127,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int BaseMinutes { set; get; }
         /// <summary>
-        /// 低消
+        /// 基本消費
         /// </summary>
         public int BaseMinutesPrice { set; get; }
         /// <summary>
@@ -135,7 +135,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public float MinuteOfPrice { set; get; }
         /// <summary>
-        /// 每日上限
+        /// 每日上限金額
         /// </summary>
         public int MaxPrice { set; get; }
         #endregion
@@ -294,7 +294,7 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 退款金額
         /// </summary>
-        public int  returnAmt { set; get; }
+        public int returnAmt { set; get; }
         /// <summary>
         /// 台新訂單編號
         /// </summary>

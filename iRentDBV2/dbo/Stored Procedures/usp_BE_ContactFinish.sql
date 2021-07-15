@@ -55,6 +55,7 @@ CREATE PROCEDURE [dbo].[usp_BE_ContactFinish]
 	@CARRIERID              VARCHAR(20)           ,	--手機條碼載具,自然人憑證載具
 	@NPOBAN                 VARCHAR(20)           ,	--愛心碼
 	@ParkingSpace           NVARCHAR(256)         ,	--停車格
+	@Mode					INT					  ,	-- 強還動作(3:系統操作異常/4:逾時未還/5:營運範圍外無法還車/6:車輛沒電/7:其他)
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -73,7 +74,7 @@ DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
---DECLARE @ParkingSpace NVARCHAR(256);
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
@@ -115,14 +116,12 @@ BEGIN TRY
 		SELECT @hasData=COUNT(1) FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 		IF @hasData>0
 		BEGIN
-			INSERT INTO [dbo].[TB_ParkingSpace]([OrderNo],[ParkingImage],[ParkingSpace])
-			SELECT [OrderNo],[ParkingImage],
 			--20201214 改由前端客服維護
-				[ParkingSpace]=CASE WHEN @ParkingSpace='' THEN [ParkingSpace] ELSE @ParkingSpace END
+			INSERT INTO [TB_ParkingSpace]([OrderNo],[ParkingImage],[ParkingSpace])
+			SELECT [OrderNo],[ParkingImage],[ParkingSpace]=CASE WHEN @ParkingSpace='' THEN [ParkingSpace] ELSE @ParkingSpace END
 			FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 
 			DELETE FROM TB_ParkingSpaceTmp WHERE OrderNo=@OrderNo;
-			--SELECT @ParkingSpace=ISNULL([ParkingSpace],'') FROM [TB_ParkingSpace] WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 		END
 
 		--寫入歷程
@@ -165,7 +164,7 @@ BEGIN TRY
 			CARRIERID=@CARRIERID,
 			NPOBAN=@NPOBAN
 		WHERE order_number=@OrderNo;
-					
+
 		--更新訂單明細
 		IF @transaction_no='Free'
 		BEGIN
@@ -176,30 +175,26 @@ BEGIN TRY
 				[already_payment]=1,
 				final_stop_time=@ReturnDate,
 				parkingSpace=@ParkingSpace
-				--end_mile=C.Millage	--20210224 ADD BY ADAM REASON.強還先不壓里程
 			FROM TB_OrderDetail A
 			LEFT JOIN TB_OrderMain B ON A.order_number=B.order_number
-			--LEFT JOIN TB_CarStatus C ON B.CarNo=C.CarNo
 			WHERE A.order_number=@OrderNo;
 		END
 		ELSE
 		BEGIN
-			UPDATE A
-			--SET [already_return_car]=1,[already_payment]=1
 			--20201110 UPD BY JERRY 不管何種狀態都要更新final_stop_time
+			UPDATE A
 			SET [already_return_car]=1,
 				[already_payment]=1,
 				final_stop_time=@ReturnDate,
 				parkingSpace=@ParkingSpace
-				--end_mile=C.Millage	--20210224 ADD BY ADAM REASON.強還先不壓里程
 			FROM TB_OrderDetail A
 			LEFT JOIN TB_OrderMain B ON A.order_number=B.order_number
-			--LEFT JOIN TB_CarStatus C ON B.CarNo=C.CarNo
 			WHERE A.order_number=@OrderNo;
 		END
+
 		--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
 		--更新個人訂單控制
-		IF @ProjType=4
+		IF @ProjType=4	-- 路邊機車
 		BEGIN
 			UPDATE [TB_BookingStatusOfUser]
 			SET [MotorRentBookingNowCount]=CASE WHEN [MotorRentBookingNowCount]-1<0 THEN 0 ELSE [MotorRentBookingNowCount]-1 END,
@@ -231,7 +226,7 @@ BEGIN TRY
 				WHERE OrderNo=@OrderNo;
 			END		
 		END
-		ELSE IF @ProjType=0
+		ELSE IF @ProjType=0	-- 同站
 		BEGIN
 			UPDATE [TB_BookingStatusOfUser]
 			SET [NormalRentBookingNowCount]=CASE WHEN [NormalRentBookingNowCount]-1<0 THEN 0 ELSE [NormalRentBookingNowCount]-1 END,
@@ -240,7 +235,7 @@ BEGIN TRY
 				UPDTime=@NowTime
 			WHERE IDNO=@IDNO;
 		END
-		ELSE
+		ELSE	-- 路邊汽車
 		BEGIN
 			UPDATE [TB_BookingStatusOfUser]
 			SET [AnyRentBookingNowCount]=CASE WHEN [AnyRentBookingNowCount]-1<0 THEN 0 ELSE [AnyRentBookingNowCount]-1 END,
@@ -309,8 +304,23 @@ BEGIN TRY
 			JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 			JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
 			LEFT JOIN TB_Trade AS Trade WITH(NOLOCK) ON Trade.MerchantTradeNo =B.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=B.order_number
-			WHERE A.order_number=@OrderNo
+			WHERE A.order_number=@OrderNo;
+
+			-- 20210707;ADD BY YEH REASON:計算徽章成就(走補繳壓N)
+			EXEC usp_CalOrderMedal @OrderNo,'N',@FunName,@LogID,'','','','';
+
+			-- 20210707;UPD BY YEH REASON:final_price=0時，就直接計算積分
+			IF EXISTS(SELECT * FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo AND final_price=0)
+			BEGIN
+				EXEC usp_CalOrderScore @OrderNo,'C',0,@Mode,@FunName,@LogID,'','','','';
+			END
+			ELSE
+			BEGIN
+				-- 20210707;ADD BY YEH 計算積分(走補繳壓-1)
+				EXEC usp_CalOrderScore @OrderNo,'C',-1,@Mode,@FunName,@LogID,'','','','';
+			END
 		END
+
 		COMMIT TRAN;
 	END
 

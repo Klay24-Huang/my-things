@@ -43,7 +43,13 @@ AS
 		JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 		JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
 		LEFT JOIN TB_Trade AS Trade WITH(NOLOCK) ON Trade.MerchantTradeNo =B.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=B.order_number
-		WHERE A.order_number=@OrderNo
+		WHERE A.order_number=@OrderNo;
+
+		-- 20210707;ADD BY YEH REASON:計算徽章成就(走補繳壓N)
+		EXEC usp_CalOrderMedal @OrderNo,'N','usp_InsReturnControl',147258,'','','','';
+
+		-- 20210707 ADD BY YEH REASON:計算積分(走補繳壓-1)
+		EXEC usp_CalOrderScore @OrderNo,'B',-1,0,'usp_InsReturnControl',147258,'','','','';
 	END
 GO
 

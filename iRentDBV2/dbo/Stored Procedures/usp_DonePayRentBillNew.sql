@@ -1,5 +1,3 @@
-/****** Object:  StoredProcedure [dbo].[usp_DonePayRentBillNew]    Script Date: 2021/2/18 下午 04:10:52 ******/
-
 /****************************************************************
 ** Name: [dbo].[usp_DonePayRentBill]
 ** Desc: 
@@ -43,8 +41,15 @@
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
 ** 2020/10/6 下午 05:07:23    |  Eric|          First Release
-**			 |			  |
+** 20210523 ADD BY ADAM (5.9.1)
 *****************************************************************/
+/*
+--BEGIN TRAN
+DECLARE @REWARD INT
+exec usp_DonePayRentBillNew 'A122364317',10629448,'','51EE5EEDAD31104EEFC5377E47B9A77F13F405BDFD5B67B277CB110828B3AC1E',95390479,@REWARD OUTPUT,'','','',''
+SELECT @REWARD
+--ROLLBACK TRAN
+*/
 CREATE PROCEDURE [dbo].[usp_DonePayRentBillNew]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
@@ -71,6 +76,18 @@ DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
 DECLARE @ParkingSpace NVARCHAR(128);
 DECLARE @ProjID VARCHAR(10)	--20210420 ADD BY ADAM REASON.增加長租客服還車判斷
+DECLARE @RSOC_S FLOAT
+		,@RSOC_E FLOAT
+		,@RSOC1 FLOAT
+		,@CHANGETIME INT
+		,@RewardGift INT=0
+		,@ChgGift INT
+		,@CHKSEQNO INT
+		,@CHKCarNo VARCHAR(10)
+		,@CHKDT DATETIME
+		,@LBA FLOAT
+		,@RBA FLOAT
+
 
 /*初始設定*/
 SET @Error=0;
@@ -194,6 +211,102 @@ BEGIN TRY
 				
 				--取出換電獎勵
 				SELECT @Reward=Reward FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo;
+
+				
+				--有可能寫入失敗
+				IF NOT EXISTS(SELECT SEQNO FROM TB_MotorChangeBattLOG WITH(NOLOCK) WHERE order_number=@OrderNo AND EventCD='1')
+				BEGIN
+					INSERT INTO TB_MotorChangeBattLOG
+					(
+						order_number,CarNo,EventCD,RSOC,LBA,RBA,MKTime,CHKCD,REFNO
+					)
+					SELECT @OrderNo,@CarNo,'1',P_TBA,P_LBA,P_RBA,MKTime,0,0 FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo
+				END
+
+				IF object_id('tempdb..#TB_MotorChangeBattLog') IS NOT NULL DROP TABLE #TB_MotorChangeBattLog
+				SELECT * INTO #TB_MotorChangeBattLog
+				FROM TB_MotorChangeBattLOG WITH(NOLOCK) WHERE order_number=@OrderNo
+
+
+
+				--整理換電LOG，補上沒查過儀表板電量的資料
+				DECLARE ChangeBattCur CURSOR FOR
+				SELECT SEQNO,CarNo,MKTime
+				FROM #TB_MotorChangeBattLog WHERE CHKCD=0 and EventCD IN (1,2,3,4)
+
+				OPEN ChangeBattCur
+
+				FETCH NEXT FROM ChangeBattCur INTO @CHKSEQNO,@CHKCarNo,@CHKDT
+				WHILE @@FETCH_STATUS <> -1
+				BEGIN
+					SELECT TOP 1 @RSOC1= deviceRSOC,@RBA=deviceRBA,@LBA=deviceLBA FROM TB_CarRawData WITH(NOLOCK) WHERE CarNo=@CHKCarNo AND GPSTime > @CHKDT AND deviceRSOC is not null and deviceRSOC<>'' AND deviceRSOC<>'NA' --ORDER BY RawDataID 
+
+					--20210616 ADD BY ADAM REASON.取不到值就以3TBA為主
+					IF @RSOC1 IS NULL
+					BEGIN
+						SELECT TOP 1 @RSOC1=device3TBA FROM TB_CarRawData WITH(NOLOCK) WHERE CarNo=@CHKCarNo AND GPSTime > @CHKDT AND device3TBA>0
+					END
+
+
+					UPDATE TB_MotorChangeBattLOG SET RSOC=@RSOC1,LBA=@LBA,RBA=@RBA,CHKCD=1 WHERE SEQNO=@CHKSEQNO
+					UPDATE #TB_MotorChangeBattLOG SET RSOC=@RSOC1,LBA=@LBA,RBA=@RBA,CHKCD=1 WHERE SEQNO=@CHKSEQNO
+
+					FETCH NEXT FROM ChangeBattCur INTO @CHKSEQNO,@CHKCarNo,@CHKDT
+				END
+
+				CLOSE ChangeBattCur
+				DEALLOCATE ChangeBattCur
+				PRINT 'ChangeBattCur END'
+
+				
+				--取車電量
+				SELECT TOP 1 @RSOC_S=RSOC FROM #TB_MotorChangeBattLOG WITH(NOLOCK) WHERE order_number=@OrderNo AND EventCD=1 ORDER BY MKTime
+				--還車電量
+				SELECT TOP 1 @RSOC_E=RSOC FROM #TB_MotorChangeBattLOG WITH(NOLOCK) WHERE order_number=@OrderNo AND EventCD=2 ORDER BY MKTime DESC
+
+				--換電次數，每邊換電>80%就+5
+				SELECT @CHANGETIME=SUM(CASE WHEN B.LBA-A.LBA > 80 AND B.RBA-A.RBA > 80 THEN 2
+					WHEN B.LBA-A.LBA > 80 OR B.RBA-A.RBA > 80 THEN 1
+					ELSE 0 END)
+				FROM #TB_MotorChangeBattLOG A with(nolock)
+				JOIN #TB_MotorChangeBattLOG B with(nolock) ON A.SEQNO=B.REFNO AND A.EventCD in (3,4)
+		
+				SET @RewardGift = 0
+
+				--統計結果
+				--取還車電量差40% +10
+				IF (@RSOC_E-@RSOC_S) >= 40
+				BEGIN
+					SET @RewardGift = @RewardGift + 10
+				END
+
+				--還車電量>85% +5
+				IF @RSOC_E >= 85 AND ISNULL(@CHANGETIME,0) > 0
+				BEGIN
+					SET @RewardGift = @RewardGift + 5
+				END
+
+				--換電次數*5
+				SET @ChgGift  = ISNULL(@CHANGETIME,0) * 5
+				PRINT ISNULL(@CHANGETIME,0)
+				PRINT @ChgGift
+				PRINT @RewardGift
+
+				SET @Reward = @ChgGift+@RewardGift
+
+				
+				INSERT INTO TB_MotorChangeBattHis
+				(
+					[order_number], [ChgTimes], [RSOC_S], [RSOC_E], [ChgGift], [RewardGift], [TotalGift], [MKTime]
+				)
+				values
+				(
+					@OrderNo, ISNULL(@CHANGETIME,0), ISNULL(@RSOC_S,0), ISNULL(@RSOC_E,0), ISNULL(@ChgGift,0) , ISNULL(@RewardGift,0) , ISNULL(@Reward,0) , dbo.GET_TWDATE()
+				)
+
+				
+				--SET @Reward = @ChgGift+@RewardGift
+				DROP TABLE #TB_MotorChangeBattLOG
 			END
 		END
 		ELSE IF @ProjType=0
@@ -276,7 +389,13 @@ BEGIN TRY
 				JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 				JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
 				LEFT JOIN TB_Trade AS Trade WITH(NOLOCK) ON Trade.MerchantTradeNo =B.transaction_no AND Trade.CreditType=0 AND IsSuccess=1 AND Trade.OrderNo=B.order_number
-				WHERE A.order_number=@OrderNo
+				WHERE A.order_number=@OrderNo;
+
+				-- 20210707;ADD BY YEH REASON:計算徽章成就
+				EXEC [usp_CalOrderMedal] @OrderNo,'A',@FunName,@LogID,'','','','';
+
+				-- 20210707 ADD BY YEH REASON:計算會員積分
+				EXEC [usp_CalOrderScore] @OrderNo,'B',0,0,@FunName,@LogID,'','','','';
 			END
 			ELSE
 			BEGIN
