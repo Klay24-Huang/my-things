@@ -1492,8 +1492,7 @@ namespace WebAPI.Controllers
                 }
 
                 //20210510 ADD BY YEH REASON.串接CityParking停車場
-                //20210708 ADD BY ADAM REASON.等7/15解封
-                if (false && flag && OrderDataLists[0].ProjType != 4)
+                if (flag && OrderDataLists[0].ProjType != 4)
                 {
                     string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
                     SPInput_CalCityParkingFee SPInput = new SPInput_CalCityParkingFee()
