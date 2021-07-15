@@ -114,21 +114,24 @@ namespace Reposotory.Implement
             List<MonthlyRentData> lstMonthlyRent = null;
             string SQL = @"
             SELECT 
-            Mode,MonType,MonthlyRentId,MonLvl,IDNO,
-            CarFreeType,MotoFreeType,
-            CarTotalHours,WorkDayHours,HolidayHours,
-            MotoTotalHours,MotoWorkDayMins,MotoHolidayMins,
-            WorkDayRateForCar,HoildayRateForCar,
-            WorkDayRateForMoto,HoildayRateForMoto,
-            StartDate,EndDate
-            FROM TB_MonthlyRent_test ";//hack: fix TB_MonthlyRent_test(名稱修正)
+            m.Mode,m.MonType,m.MonthlyRentId,m.MonLvl,m.IDNO,
+            m.CarFreeType,m.MotoFreeType,
+            m.CarTotalHours,m.WorkDayHours,m.HolidayHours,
+            m.MotoTotalHours,m.MotoWorkDayMins,m.MotoHolidayMins,
+            m.WorkDayRateForCar,m.HoildayRateForCar,
+            m.WorkDayRateForMoto,m.HoildayRateForMoto,
+            m.StartDate,m.EndDate,
+            IsMix=case when ((s.CarWDHours > 0 or s.CarHDHours > 0) and (s.MotoTotalMins > 0 or s.HDRateForMoto < 2)) then 1 else 0 end
+            FROM SYN_MonthlyRent m JOIN TB_MonthlyRentSet s  
+            on s.MonProjID = m.ProjID and s.MonProPeriod = m.MonProPeriod and s.ShortDays = m.ShortDays
+            ";//hack: fix TB_MonthlyRent_test(名稱修正)
 
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
             int nowCount = 0;
             if (false == string.IsNullOrEmpty(IDNO))
             {
-                term = " IDNO=@IDNO";
+                term = " m.IDNO=@IDNO";
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 30);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
@@ -137,13 +140,13 @@ namespace Reposotory.Implement
 
             string shortTermSql = "";
             if (!string.IsNullOrEmpty(MonthlyRentIds) && !string.IsNullOrWhiteSpace(MonthlyRentIds))
-                shortTermSql = " AND MonthlyRentId in (" + MonthlyRentIds + ")";
+                shortTermSql = " AND m.MonthlyRentId in (" + MonthlyRentIds + ")";
 
             if ("" != term)
             {
                 SQL += " WHERE " + term + shortTermSql;
             }
-            SQL += "  ORDER BY StartDate ASC";
+            SQL += "  ORDER BY m.StartDate ASC";
 
             lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
             return lstMonthlyRent;

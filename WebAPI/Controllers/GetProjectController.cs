@@ -626,8 +626,8 @@ namespace WebAPI.Controllers
                                         //newItem.ProjName += "_" + z.MonProjNM;
                                         //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
                                         newItem.ProjName = z.MonProjNM;
-                                        newItem.CarWDHours = z.WorkDayHours;
-                                        newItem.CarHDHours = z.HolidayHours;
+                                        newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
+                                        newItem.CarHDHours = z.HolidayHours == 0 ? -999 : z.HolidayHours;
                                         newItem.MotoTotalMins = z.MotoTotalMins;
                                         newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
                                         newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);

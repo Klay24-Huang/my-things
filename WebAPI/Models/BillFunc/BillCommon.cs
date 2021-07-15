@@ -673,9 +673,10 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
+                //20210715 ADD BY ADAM REASON.針對城市車手比對的邏輯再調整
+                if (mOri.Any(x => (x.IsMix == 0 && x.MotoTotalHours < 0) || x.WorkDayRateForMoto < 0 ||
                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 1
+                   || (x.Mode != 1 && x.IsMix == 0)
                 ))
                     throw new Exception("mOri資料內容錯誤");
 
