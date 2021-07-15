@@ -312,6 +312,8 @@ namespace WebAPI.Controllers
                                 newItem.HDRateForCar = z.HoildayRateForCar;
                                 newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                //20210715 ADD BY ADAM REASON.補上月租說明
+                                newItem.ProDesc = z.MonProDisc;
                                 var fn_in = new ProjectAndCarTypeData()
                                 {
                                     Price = x.WorkdayPerHour * 10,

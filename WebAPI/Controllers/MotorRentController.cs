@@ -174,7 +174,21 @@ namespace WebAPI.Controllers
                     if (InUseMonth != null && InUseMonth.Count() > 0)
                     {
                         var finalOut = new List<OAPI_MotorRent_Param>();
+                        var f = InUseMonth.FirstOrDefault();
+
                         _MotorRentObj.ForEach(x => {
+                            
+                            x.MonthlyRentId = f.MonthlyRentId;
+                            x.MonProjNM = f.MonProjNM;
+                            x.CarWDHours = f.WorkDayHours;
+                            x.CarHDHours = f.HolidayHours;
+                            x.MotoTotalMins = Convert.ToInt32(f.MotoTotalMins);
+                            x.WDRateForCar = f.WorkDayRateForCar;
+                            x.HDRateForCar = f.HoildayRateForCar;
+                            x.WDRateForMoto = f.WorkDayRateForMoto;
+                            x.HDRateForMoto = f.HoildayRateForMoto;
+
+                            /* 20210709 ADD BY ADAM REASON.因有兩個點的問題故先隱藏
                             finalOut.Add(x);
                             InUseMonth.ForEach(y =>
                             {
@@ -189,9 +203,9 @@ namespace WebAPI.Controllers
                                 newItem.WDRateForMoto = y.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = y.HoildayRateForMoto;
                                 finalOut.Add(newItem);
-                            });
+                            });*/
                         });
-                        _MotorRentObj = finalOut;
+                        //_MotorRentObj = finalOut;
                     }
                     #endregion
                     OAnyRentAPI.MotorRentObj = _MotorRentObj;

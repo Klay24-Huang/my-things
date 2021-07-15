@@ -638,6 +638,7 @@ namespace WebAPI.Controllers
                                         newItem.HDRateForCar = z.HoildayRateForCar;
                                         newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                         newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                        newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
                                         var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
                                         {
                                             PriceBill = y.Price, //給預設

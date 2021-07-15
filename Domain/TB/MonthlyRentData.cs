@@ -89,5 +89,9 @@ namespace Domain.TB
         /// 結束時間
         /// </summary>
         public DateTime EndDate { set; get; }
+        /// <summary>
+        /// 是否為城市車手
+        /// </summary>
+        public int IsMix { set; get; }
     }
 }
