@@ -480,6 +480,9 @@ namespace WebAPI.Controllers
 
                             IsMoto = fItem.IsMoto;
                         }
+
+                        trace.traceAdd("monthInfo", new { monObjs, spin, sp_errCode });
+                        trace.FlowList.Add("月租資訊");
                     }
 
                     #endregion
@@ -534,6 +537,9 @@ namespace WebAPI.Controllers
                     {
                         try
                         {
+                            string xerrCode = "";
+                            string xerrMsg = "";
+
                             logger.Info("履保開始!");
                             mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
@@ -546,8 +552,10 @@ namespace WebAPI.Controllers
                                     Email = mem.MEMEMAIL,
                                     Amount = ProdPrice
                                 };
-                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                            }
+                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
+                                trace.traceAdd("Contract", new { spin, xFlag, xerrCode,xerrMsg });
+                                trace.FlowList.Add("履保處理");
+                            }                           
                         }
                         catch (Exception ex)
                         {
