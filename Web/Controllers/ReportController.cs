@@ -614,7 +614,22 @@ namespace Web.Controllers
                 ViewData["OrderNum"] = tOrderNum;
                 tOrderNum = tOrderNum.Replace("H", "");
             }
-            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                    ViewData["outerOfDateRangeMsg"] = "";
+                }
+                else
+                {
+                    ViewData["outerOfDateRangeMsg"] = "查詢時數使用起迄日超過範圍";
+                }
+            }
+            //if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            if (isInDateRange && (tOrderNum != "" || tUserID != ""))
             {
                 //lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
@@ -658,10 +673,21 @@ namespace Web.Controllers
                 ViewData["OrderNum"] = tOrderNum;
                 tOrderNum = tOrderNum.Replace("H", "");
             }
-            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                }
+            }
+            //if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            if (isInDateRange && (tOrderNum != "" || tUserID != ""))
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
+            
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)", "使用機車(分)", "使用時間", "扣抵訂閱方案編號", "扣抵方案代碼", "扣抵方案名稱" };
