@@ -385,15 +385,15 @@ function getNowLocation() {
             if (JsonData.Result === "1") {
 
                 console.log("true");
-                console.log(JsonData.data);
-                if (JsonData.data != null) {
+                console.log(JsonData.Data);
+                if (JsonData.Data != null) {
                     var nowLocation = new Object;
-                    nowLocation.lng = JsonData.data.Lng;
-                    nowLocation.lat = JsonData.data.Lat;
+                    nowLocation.lng = JsonData.Data.Lng;
+                    nowLocation.lat = JsonData.Data.Lat;
 
                     var lastLocation = new Object;
-                    lastLocation.lat = JsonData.data.Lat;
-                    lastLocation.lng = JsonData.data.Lng;
+                    lastLocation.lat = JsonData.Data.Lat;
+                    lastLocation.lng = JsonData.Data.Lng;
                     localStorage.setItem('lastLocation', JSON.stringify(lastLocation));
                     let lastLocation2 = localStorage.getItem('lastLocation');
                     if (lastLocation2 != null) {
@@ -405,7 +405,7 @@ function getNowLocation() {
                         nowLocation.lng = latlng.lng;
                     }
                     markers.length = 0;
-                    getCarData(JsonData.data.Lat, JsonData.data.Lng);
+                    getCarData(JsonData.Data.Lat, JsonData.Data.Lng);
                 } else {
                     var lastLocation = new Object;
                     lastLocation.lat = latlng.lat;
