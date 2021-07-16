@@ -7,24 +7,29 @@ var OpenTime = "";
 var CloseTime = "";
 var SettingPrice = 0;
 var Operator = "";
+
 $(document).ready(function () {
-
     var hasData = parseInt($("#len").val());
-    console.log(hasData);
+    //console.log(hasData);
     if (hasData > 0) {
-        $('.table').footable();
+        $('.table').footable({
+            "paging": {
+                "enabled": true,
+                "limit": 3,
+                "size": 20
+            }
+        });
     }
-  
+
+    //20210511唐加
+    $("#btnExplode").on("click", function () {
+        ShowLoading("資料查詢中…");
+
+        $("#ExplodeParkingName").val($("#ParkingName").val());
+        disabledLoading();
+        $("#frmChargeParkingSettingExplode").submit();
+    });
 })
-
-//20210511唐加
-$("#btnExplode").on("click", function () {
-    ShowLoading("資料查詢中…");
-
-    $("#ExplodeParkingName").val($("#ParkingName").val());
-    disabledLoading();
-    $("#frmChargeParkingSettingExplode").submit();
-});
 
 //20210511唐加
 function DoIn(Id) {
@@ -44,12 +49,9 @@ function DoIn(Id) {
     obj.CloseTime = SCloseTime + ":00";
     obj.Id = Id;
     var json = JSON.stringify(obj);
-    console.log(json);
-    //var site = jsHost + "BE_InsertChargeParking";
+    //console.log(json);
     var site = jsHost2 + "BE_InsertChargeParking";
-    //var site = "http://irentv2-as-backend-web-test.azurewebsites.net/api/" + "BE_InsertChargeParking";
-    //var site = "http://localhost:2061/api/" + "BE_InsertChargeParking";
-    console.log("site:" + site);
+    //console.log("site:" + site);
     $.ajax({
         url: site,
         type: 'POST',
@@ -111,8 +113,8 @@ function DoReset(Id) {
     $("#btnReset_" + Id).hide();
     $("#btnSave_" + Id).hide();
     $("#btnEdit_" + Id).show();
-
 }
+
 function DoEdit(Id) {
     if (NowEditID > 0) {
         //先還原前一個
@@ -128,15 +130,6 @@ function DoEdit(Id) {
         $("#btnSave_" + NowEditID).hide();
         $("#btnEdit_" + NowEditID).show();
     }
-    //再開啟下一個
-    /*    NowEditID = Id;
-        ParkingName = $("#ParkingName_" + Id).val();
-        ParkingAddress = $("#ParkingAddress_" + Id).val();
-        Latitude = $("#Latitude_" + Id).val();
-        Longitude = $("#Longitude_" + Id).val();
-        OpenTime = $("#OpenTime_" + Id).val();
-        CloseTime = $("#CloseTime_" + Id).val();
-    } else {*/
     NowEditID = Id;
     ParkingName = $("#ParkingName_" + Id).val();
     ParkingAddress = $("#ParkingAddress_" + Id).val();
@@ -146,7 +139,7 @@ function DoEdit(Id) {
     CloseTime = $("#CloseTime_" + Id).val();
     Operator=$("#Operator_" + Id).val();
     SettingPrice=$("#SettingPrice_" + Id).val();
-    //  }
+
     $("#ParkingName_" + Id).show();
     $("#ParkingAddress_" + Id).show();
     $("#Latitude_" + Id).show();
@@ -158,8 +151,8 @@ function DoEdit(Id) {
     $("#btnReset_" + Id).show();
     $("#btnSave_" + Id).show();
     $("#btnEdit_" + Id).hide();
-
 }
+
 function DoSave(Id) {
     ShowLoading("資料處理中");
     var Account = $("#Account").val();
@@ -195,9 +188,9 @@ function DoSave(Id) {
         obj.Price = SSettingPrice;
         obj.Operator = SOperator;
         var json = JSON.stringify(obj);
-        console.log(json);
+        //console.log(json);
         var site = jsHost + "BE_HandleChargeParking";
-        console.log("site:" + site);
+        //console.log("site:" + site);
         $.ajax({
             url: site,
             type: 'POST',
@@ -207,7 +200,6 @@ function DoSave(Id) {
             dataType: 'json',           //'application/json',
             success: function (data) {
                 $.busyLoadFull("hide");
-
                 if (data.Result == "1") {
                     swal({
                         title: 'SUCCESS',
@@ -217,7 +209,6 @@ function DoSave(Id) {
                         window.location.reload();
                     });
                 } else {
-
                     swal({
                         title: 'Fail',
                         text: data.ErrorMessage,
@@ -233,7 +224,6 @@ function DoSave(Id) {
                     icon: 'error'
                 });
             }
-
         });
     } else {
         disabledLoadingAndShowAlert(errMsg);

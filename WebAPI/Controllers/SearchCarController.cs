@@ -167,7 +167,7 @@ namespace WebAPI.Controllers
                                 };
                                 if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
                                 {
-                                    wsInput.CMD = 1;
+                                    wsInput.CMD = 0;
                                 }
                                 else
                                 {
@@ -199,8 +199,8 @@ namespace WebAPI.Controllers
                                 {
                                     if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
                                     {
-                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn);
-                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleHornOn;
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
                                     }
                                     else
                                     {
