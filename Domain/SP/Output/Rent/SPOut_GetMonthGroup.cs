@@ -43,5 +43,9 @@ namespace Domain.SP.Output.Rent
         /// 可以使用到時麼時候
         /// </summary>
         public DateTime UseUntil { get; set; }
+        /// <summary>
+        /// 信用卡授權金額 20210716 
+        /// </summary>
+        public int PayPrice { get; set; }
     }
 }
