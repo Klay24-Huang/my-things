@@ -352,41 +352,7 @@ namespace WebAPI.Models.BillFunc
                     , int Discount
                     , double FreeMins = 0
                     )
-        {
-
-            if (SD == null || ED == null || SD > ED)
-                throw new Exception("SD,ED錯誤");
-
-            DateTime xSD = SD.AddSeconds(SD.Second * -1);
-            DateTime xED = ED.AddSeconds(ED.Second * -1);
-            var mins = xED.Subtract(xSD).TotalMinutes;
-            if (mins >= daybaseMins)
-                daybaseMins = 0;
-            return CarRentInCompute_ori(SD, ED, priceN, priceH, daybaseMins, dayMaxHour, lstHoliday,
-                  mOri, Discount //, FreeMins
-                );
-        }
-
-        /// <summary>
-        /// 區間租金計算,可包含多月租,一般平假日,前n免費
-        /// </summary>
-        /// <param name="SD">起</param>
-        /// <param name="ED">迄</param>
-        /// <param name="priceN">專案平日99</param>
-        /// <param name="priceH">專案假日168</param>
-        /// <param name="daybaseMins">基本分鐘60/param>
-        /// <param name="dayMaxHour">計費單日最大小時數10</param>
-        /// <param name="lstHoliday">假日列表</param>
-        /// <param name="mOri">月租列表</param>
-        /// <param name="Discount">折扣</param>
-        /// <param name="FreeMins">前n免費</param>
-        /// <returns></returns>
-        public CarRentInfo CarRentInCompute_ori(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
-            , List<MonthlyRentData> mOri
-            , int Discount
-            , double FreeMins = 0
-                    )
-        {
+        { 
 
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED錯誤");
@@ -641,7 +607,7 @@ namespace WebAPI.Models.BillFunc
                 mFinal.ForEach(x =>
                 {
                     x.CarTotalHours = (x.CarTotalHours / 60);
-                    if (ori != null)
+                    x.HolidayHours = (x.HolidayHours / 60);//分轉回小時
                     x.WorkDayHours = (x.WorkDayHours / 60);//分轉回小時                    
                 });
                 re.mFinal = mFinal;
