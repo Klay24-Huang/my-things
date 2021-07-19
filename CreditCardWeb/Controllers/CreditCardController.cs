@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,14 @@ namespace CreditCardWeb.Controllers
     public class CreditCardController : Controller
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Gauge BindCardSuccessCount = Metrics.CreateGauge("irent_taishin_bindcard_success", "iRent Taishin BindCard Success", new GaugeConfiguration
+        {
+            LabelNames = new[] { "ts" }
+        });
+        private static readonly Gauge BindCardFailCount = Metrics.CreateGauge("irent_taishin_bindcard_fail", "iRent Taishin BindCard Fail", new GaugeConfiguration
+        {
+            LabelNames = new[] { "ts", "BindRetCode" }
+        });
         // GET: CreditCard
         public ActionResult Index()
         {
@@ -29,6 +38,7 @@ namespace CreditCardWeb.Controllers
         public ActionResult BindSuccess(Dictionary<string, object> value)
         {
             logger.Trace("BindSuccess:" + JsonConvert.SerializeObject(value));
+            BindCardSuccessCount.WithLabels(DateTime.Now.Ticks.ToString()).Set(1);
             //string LogPath = "~/Content/CreditCardBindLog";
             //string Log = collection.ToString();
             //DirectoryInfo di = new DirectoryInfo(Server.MapPath(LogPath));
@@ -48,6 +58,7 @@ namespace CreditCardWeb.Controllers
         public ActionResult BindFail(string id,string BindRetCode)
         {
             logger.Trace("BindFail: id=" + id+ ", BindRetCode=" + BindRetCode);
+            BindCardFailCount.WithLabels(DateTime.Now.Ticks.ToString(), BindRetCode).Set(1);
             string errorMsg = "";
             switch (BindRetCode)
             {

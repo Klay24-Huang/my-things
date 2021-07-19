@@ -679,51 +679,7 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
-                        if (flag && FetAPI.IsSupportCombineCmd(CID))
-                        {
-                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
-                            CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
-                            WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                            {
-                                command = true,
-                                method = CommandType,
-                                requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                _params = new ClientCardNoObj()
-                                {
-                                    ClientCardNo = new string[] { }
-                                }
-                            };
-                            //寫入顧客卡
-                            if (lstCardList != null)
-                            {
-                                int CardLen = lstCardList.Count;
-                                if (CardLen > 0)
-                                {
-                                    string[] CardStr = new string[CardLen];
-                                    for (int i = 0; i < CardLen; i++)
-                                    {
-                                        CardStr[i] = lstCardList[i].CardNO;
-                                    }
-                                    if (CardStr.Length > 0)
-                                    {
-                                        SetCardInput._params.ClientCardNo = CardStr;
-                                    }
-                                }
-                            }
-                            //組合指令顧客卡必輸入，若沒有則帶隨機值
-                            if (SetCardInput._params.ClientCardNo.Length == 0)
-                            {
-                                SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
-                            }
-                            requestId = SetCardInput.requestId;
-                            method = CommandType;
-                            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                            if (flag)
-                            {
-                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                            }
-                        }
-                        else
+                        if (flag)
                         {
                             //寫入顧客卡
                             if (lstCardList != null)
@@ -775,12 +731,13 @@ namespace WebAPI.Controllers
                                         _params = new Params()
                                     };
 
-                                requestId = SetRentInput.requestId;
-                                method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
-                                if (flag)
-                                {
-                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    requestId = SetRentInput.requestId;
+                                    method = CommandType;
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
+                                    if (flag)
+                                    {
+                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                    }
                                 }
                             }
                         }
@@ -971,8 +928,6 @@ namespace WebAPI.Controllers
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH 
 
-            double nor_car_wDisc = 0;//只有一般時段時平日折扣
-            double nor_car_hDisc = 0;//只有一般時段時價日折扣
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
             int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
 
@@ -1578,6 +1533,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         intOrderNO = tmpOrder,
                         ProjType = item.ProjType,
+                        MotoBasePrice = item.BaseMinutesPrice,
                         MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
                         MinuteOfPriceH = item.MinuteOfPriceH,
@@ -1592,6 +1548,8 @@ namespace WebAPI.Controllers
                         PRICE_H = item.PRICE_H,
                         carBaseMins = 60,
                         FirstFreeMins = item.FirstFreeMins
+                        CancelMonthRent = (ProjID == "R024"),
+                        MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                     };
 
                     if (visMons != null && visMons.Count() > 0)
@@ -1638,7 +1596,8 @@ namespace WebAPI.Controllers
                             //春前
                             if (ED <= sprSD)
                             {
-                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, 300);
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, item.MaxPrice, item.BaseMinutesPrice);
                                 if (xre != null)
                                 {
                                     carInfo = xre;
@@ -1649,7 +1608,8 @@ namespace WebAPI.Controllers
                             //春後
                             else
                             {
-                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, 6, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, 901);
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, item.MaxPrice, item.BaseMinutesPrice);
                                 if (xre != null)
                                 {
                                     carInfo = xre;

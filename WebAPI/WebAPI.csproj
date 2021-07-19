@@ -730,7 +730,6 @@
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-App-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
