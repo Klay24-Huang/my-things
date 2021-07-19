@@ -115,31 +115,31 @@ namespace WebAPI.Controllers
             #region Token
 
             //Token判斷
-            if (flag && Access_Token_string.Split(' ').Length >= 2)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
-                {
-                    flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
-                    errCode = "000000";
-                }
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
-            }
+            //if (flag && Access_Token_string.Split(' ').Length >= 2)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
+            //        LogID = LogID,
+            //        Token = Access_Token_string.Split(' ')[1].ToString()
+            //    };
+            //    SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            //    //訪客機制BYPASS
+            //    if (spOut.ErrorCode == "ERR101")
+            //    {
+            //        flag = true;
+            //        spOut.ErrorCode = "";
+            //        spOut.Error = 0;
+            //        errCode = "000000";
+            //    }
+            //    if (flag)
+            //    {
+            //        IDNO = spOut.IDNO;
+            //    }
+            //}
 
             if (flag && isGuest == false)
             {
