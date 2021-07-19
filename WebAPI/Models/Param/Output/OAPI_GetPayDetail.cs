@@ -64,6 +64,10 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public MonthRentBase MonthRent { set; get; }
         /// <summary>
+        /// 月租下拉
+        /// </summary>
+        public List<MonBase> MonBase { get; set; }
+        /// <summary>
         /// 專案類型
         /// <para>0:同站</para>
         /// <para>3:路邊</para>
@@ -82,6 +86,9 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public string DiscountAlertMsg { set; get; }
  
-
+        /// <summary>
+        /// 目前可使用訂閱制月租
+        /// </summary>
+        public List<OAPI_NowSubsCard> NowSubsCards { get; set; }
     }
 }

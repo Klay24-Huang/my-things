@@ -42,6 +42,10 @@ namespace WebAPI.Models.Param.Input
         /// 是否輸出json
         /// </summary>
         public int jsonOut { get; set; } = 0;//0不輸出,1輸出jsonDts,2輸出traceDts
+        /// <summary>
+        /// 月租Id,可多筆
+        /// </summary>
+        public string MonIds { get; set; }
 
     }
 }

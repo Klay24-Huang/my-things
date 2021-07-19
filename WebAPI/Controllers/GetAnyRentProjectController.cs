@@ -1,8 +1,10 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Project;
+using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
+using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -16,8 +18,11 @@ using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
+using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -28,10 +33,13 @@ namespace WebAPI.Controllers
     public class GetAnyRentProjectController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+
         [HttpPost]
         public Dictionary<string, object> DoGetAnyRentProject(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var bill = new BillCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -54,6 +62,7 @@ namespace WebAPI.Controllers
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
             string IDNO = "";
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -135,6 +144,25 @@ namespace WebAPI.Controllers
                 }
             }
 
+            //取得汽車使用中訂閱制月租
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(IDNO))
+                {
+                    var sp_in = new SPInput_GetNowSubs()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        SD = SDate,
+                        ED = EDate,
+                        IsMoto = 0
+                    };
+                    var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                        InUseMonth = sp_list;
+                }
+            }
+
             if (flag)
             {
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
@@ -163,10 +191,13 @@ namespace WebAPI.Controllers
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
                         {
-                            int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
+                            //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
                             int isMin = 1;
 
-                            lstTmpData.Add(new ProjectObj()
+                            int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
+                                     bill.CarMilageCompute(SDate, EDate, lstData[0].MilageBase, Mildef, 20, new List<Holiday>());
+
+                     lstTmpData.Add(new ProjectObj()
                             {
                                 StationID = lstData[0].StationID,
                                 CarBrend = lstData[0].CarBrend,
@@ -182,6 +213,7 @@ namespace WebAPI.Controllers
                                 ProjName = lstData[0].PRONAME,
                                 ProDesc = lstData[0].PRODESC,
                                 Seat = lstData[0].Seat,
+                                //Bill = tmpBill,
                                 Price = tmpBill,
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
@@ -193,10 +225,15 @@ namespace WebAPI.Controllers
                             {
                                 for (int i = 1; i < DataLen; i++)
                                 {
-                                    tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+                                    //tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[i].Price, lstData[i].PRICE_H, lstHoliday));
+
+                                    tmpBill = GetPriceBill(lstData[i], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
+                                             bill.CarMilageCompute(SDate, EDate, lstData[i].MilageBase, Mildef, 20, new List<Holiday>());
+
                                     isMin = 0;
                                     int index = lstTmpData.FindIndex(delegate (ProjectObj proj)
                                     {
+                                        //return proj.Bill > tmpBill && proj.IsMinimum == 1;
                                         return proj.Price > tmpBill && proj.IsMinimum == 1;
                                     });
                                     if (index > -1)
@@ -220,6 +257,7 @@ namespace WebAPI.Controllers
                                         ProjName = lstData[i].PRONAME,
                                         ProDesc = lstData[i].PRODESC,
                                         Seat = lstData[i].Seat,
+                                        //Bill = tmpBill,
                                         Price = tmpBill,
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
@@ -252,6 +290,66 @@ namespace WebAPI.Controllers
                 {
                     GetAnyRentProjectObj = lstTmpData
                 };
+
+                #region 產出月租&Project虛擬卡片 
+
+                if (outputApi.GetAnyRentProjectObj != null && outputApi.GetAnyRentProjectObj.Count() > 0)
+                {
+                    var VisProObjs = new List<ProjectObj>();
+                    var ProObjs = outputApi.GetAnyRentProjectObj;
+                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                    {
+                        ProObjs.ForEach(x => {
+                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
+                            VisProObjs.Add(x);                           
+                            InUseMonth.ForEach(z =>
+                            {
+                                ProjectObj newItem = objUti.Clone(x);
+
+                                #region 月租卡片欄位給值
+                                //newItem.ProjName += "_" + z.MonProjNM;
+                                //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                newItem.ProjName = z.MonProjNM;
+                                newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
+                                newItem.CarHDHours = z.HolidayHours == 0 ? -999 : z.HolidayHours;
+                                newItem.MotoTotalMins = z.MotoTotalMins;
+                                newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                
+                                //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
+                                DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
+                                newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
+
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.WDRateForCar = z.WorkDayRateForCar;
+                                newItem.HDRateForCar = z.HoildayRateForCar;
+                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                //20210715 ADD BY ADAM REASON.補上月租說明
+                                newItem.ProDesc = z.MonProDisc;
+                                var fn_in = new ProjectAndCarTypeData()
+                                {
+                                    Price = x.WorkdayPerHour * 10,
+                                    PRICE_H = x.HolidayPerHour * 10
+                                };
+                                newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                #endregion
+
+                                VisProObjs.Add(newItem);
+                            });
+                        });
+
+                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                        VisProObjs.OrderBy(p => p.Price).ThenByDescending(p => p.MonthlyRentId).First().IsMinimum = 1;
+                        VisProObjs = VisProObjs.OrderBy(p => p.Price).ThenByDescending(p => p.MonthlyRentId).ToList();
+                        outputApi.GetAnyRentProjectObj = VisProObjs;
+                    }
+                }
+
+                #endregion
             }
             #endregion
 
@@ -266,5 +364,29 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        private int GetPriceBill(ProjectAndCarTypeData spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, Int64 MonId = 0)
+        {
+            int re = 0;
+
+            var input = new ICF_GetCarRentPrice()
+            {
+                MonId = MonId,
+                IDNO = IDNO,
+                SD = SD,
+                ED = ED,
+                priceN = spItem.Price / 10,
+                priceH = spItem.PRICE_H / 10,
+                daybaseMins = 60,
+                dayMaxHour = 10,
+                lstHoliday = lstHoliday,
+                Discount = 0,
+                FreeMins = 0
+            };
+            re = Convert.ToInt32(new MonSubsCommon().GetCarRentPrice(input));            
+
+            return re;
+        }
+
     }
 }

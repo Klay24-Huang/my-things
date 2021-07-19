@@ -1,4 +1,5 @@
 ﻿using Domain.TB.BackEnd;
+
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OfficeOpenXml;
@@ -458,10 +459,14 @@ namespace Web.Controllers
                 tUserID = userID;
                 ViewData["userID"] = tUserID;
             }
+
             if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
             {
-                lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+                //lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+                lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
+
+
             return View(lstSubScription);
         }
         /// <summary>
@@ -501,7 +506,7 @@ namespace Web.Controllers
             }
             if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
             {
-                lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+                lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
@@ -584,7 +589,8 @@ namespace Web.Controllers
             }
             if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
             {
-                lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
+                //lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
+                lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
             return View(lstSubScription);
         }
@@ -627,7 +633,7 @@ namespace Web.Controllers
             }
             if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
             {
-                lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
+                lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");

@@ -84,5 +84,6 @@ namespace Domain.TB
         /// 安心服務每小時費用
         /// </summary>
         public int InsurancePerHours { set; get; }
+        public float MilageBase { get; set; }
     }
 }

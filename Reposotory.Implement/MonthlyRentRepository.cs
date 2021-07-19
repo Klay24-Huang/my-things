@@ -33,13 +33,23 @@ namespace Reposotory.Implement
         /// <para>0:汽車</para>
         /// <para>1:機車</para>
         /// </param>
+        /// <param name="shortTermIds">短期MonthlyRentIds(可多筆),以逗號分隔</param>
         /// <returns></returns>
-        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType)
+        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType, string shortTermIds="")
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<MonthlyRentData> lstMonthlyRent = null;
-            string SQL = "SELECT Mode,MonthlyRentId,IDNO,WorkDayHours,HolidayHours,MotoTotalHours,[WorkDayRateForCar],[HoildayRateForCar],[WorkDayRateForMoto],[HoildayRateForMoto],[StartDate],[EndDate]  FROM [TB_MonthlyRent] ";
+            string SQL = @"
+            SELECT 
+            Mode,MonType,MonthlyRentId,MonLvl,IDNO,
+            CarFreeType,MotoFreeType,
+            CarTotalHours,WorkDayHours,HolidayHours,
+            MotoTotalHours,MotoWorkDayMins,MotoHolidayMins,
+            WorkDayRateForCar,HoildayRateForCar,
+            WorkDayRateForMoto,HoildayRateForMoto,
+            StartDate,EndDate
+            FROM TB_MonthlyRent ";
             SqlParameter[] para = new SqlParameter[4];
             string term = "";
             int nowCount = 0;
@@ -58,7 +68,7 @@ namespace Reposotory.Implement
                 {
                     term += " AND ";
                 }
-                term += " ((@SD BETWEEN  StartDate AND EndDate) OR (@ED BETWEEN  StartDate AND EndDate))";
+                term += " ((EndDate > @SD AND EndDate <= @ED) OR (StartDate >= @SD AND StartDate < @ED) OR (StartDate <= @SD AND EndDate >= @ED))";
                 para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 30);
                 para[nowCount].Value = SD;
                 para[nowCount].Direction = ParameterDirection.Input;
@@ -70,23 +80,79 @@ namespace Reposotory.Implement
             }
             if (term != "")
             {
-                term += " AND  Mode=@RateType";
+                term += " AND  Mode=@RateType AND MonType = 0";
                 para[nowCount] = new SqlParameter("@RateType", SqlDbType.TinyInt, 1);
                 para[nowCount].Value = RateType;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
 
+            string shortTermSql = "";
+            if(!string.IsNullOrEmpty(shortTermIds) && !string.IsNullOrWhiteSpace(shortTermIds))
+                shortTermSql = " OR MonthlyRentId in ("+ shortTermIds +")"; 
 
             if ("" != term)
             {
-                SQL += " WHERE " + term;
+                SQL += " WHERE " + term + shortTermSql;
             }
             SQL += "  ORDER BY StartDate ASC";
 
             lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
             return lstMonthlyRent;
         }
+
+        /// <summary>
+        /// 取出指定月租
+        /// </summary>
+        /// <param name="IDNO">身份證</param>
+        /// <param name="MonthlyRentIds">MonthlyRentIds(可多筆),以逗號分隔</param>
+        /// <returns></returns>
+        public List<MonthlyRentData> GetSubscriptionRatesByMonthlyRentId(string IDNO, string MonthlyRentIds = "")
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<MonthlyRentData> lstMonthlyRent = null;
+            string SQL = @"
+            SELECT 
+            m.Mode,m.MonType,m.MonthlyRentId,m.MonLvl,m.IDNO,
+            m.CarFreeType,m.MotoFreeType,
+            m.CarTotalHours,m.WorkDayHours,m.HolidayHours,
+            m.MotoTotalHours,m.MotoWorkDayMins,m.MotoHolidayMins,
+            m.WorkDayRateForCar,m.HoildayRateForCar,
+            m.WorkDayRateForMoto,m.HoildayRateForMoto,
+            m.StartDate,m.EndDate,
+            IsMix=case when ((s.CarWDHours > 0 or s.CarHDHours > 0) and (s.MotoTotalMins > 0 or s.HDRateForMoto < 2)) then 1 else 0 end
+            FROM SYN_MonthlyRent m JOIN TB_MonthlyRentSet s  
+            on s.MonProjID = m.ProjID and s.MonProPeriod = m.MonProPeriod and s.ShortDays = m.ShortDays
+            ";//hack: fix TB_MonthlyRent_test(名稱修正)
+
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            int nowCount = 0;
+            if (false == string.IsNullOrEmpty(IDNO))
+            {
+                term = " m.IDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 30);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            string shortTermSql = "";
+            if (!string.IsNullOrEmpty(MonthlyRentIds) && !string.IsNullOrWhiteSpace(MonthlyRentIds))
+                shortTermSql = " AND m.MonthlyRentId in (" + MonthlyRentIds + ")";
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + shortTermSql;
+            }
+            SQL += "  ORDER BY m.StartDate ASC";
+
+            lstMonthlyRent = GetObjList<MonthlyRentData>(ref flag, ref lstError, SQL, para, term);
+            return lstMonthlyRent;
+        }
+
+
         /// <summary>
         /// 還原月租記錄
         /// </summary>
@@ -115,7 +181,11 @@ namespace Reposotory.Implement
             checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo,Int64 MonthlyRentId, int UseWorkDayMins, int UseHolidayMins, int UseMotoTotalMinutes, Int64 LogID, ref string errCode)
+        public bool InsMonthlyHistory(
+            string IDNO, Int64 OrderNo,Int64 MonthlyRentId,
+            int UseCarTotalHours, int UseWorkDayMins, int UseHolidayMins,
+            int UseMotoTotalMinutes, int UseMotoWorkDayMins, int UseMotoHolidayMins,
+            Int64 LogID, ref string errCode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -123,12 +193,15 @@ namespace Reposotory.Implement
             SPInput_InsMonthlyHistory SPInput = new SPInput_InsMonthlyHistory()
             {
                 IDNO = IDNO,
-                LogID = LogID,
                 OrderNo = OrderNo,
                 MonthlyRentId = MonthlyRentId,
+                UseCarTotalHours = UseCarTotalHours,
+                UseWorkDayHours = UseWorkDayMins,
                 UseHolidayHours = UseHolidayMins,
                 UseMotoTotalHours = UseMotoTotalMinutes,        //2021128 ADD BY ADAM 
-                UseWorkDayHours = UseWorkDayMins
+                UseMotoWorkDayMins = UseMotoWorkDayMins,
+                UseMotoHolidayMins = UseMotoHolidayMins,
+                LogID = LogID,
             };
             SPOutput_Base SPOutput = new SPOutput_Base();
             SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsMonthlyHistory, SPOutput_Base>(ConnectionString);
