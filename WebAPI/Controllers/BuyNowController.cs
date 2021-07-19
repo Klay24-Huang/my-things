@@ -17,8 +17,11 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Domain.WebAPI.output.Taishin;
 using Domain.SP.Input.Subscription;
+using Domain.SP.Output.Subscription;
 using WebAPI.Models.Param.CusFun.Input;
 using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
 using NLog;
 
 namespace WebAPI.Controllers
@@ -352,9 +355,13 @@ namespace WebAPI.Controllers
             string CreditCardNo = "";
             string AuthCode = "";
             string MerchantTradeNo = "";
+            string INVNO = "";
+            int MonthlyRentId = 0;
 
             var mem = new Domain.MemberData.RegisterData();
             var InvData = new Domain.MemberData.InvoiceData();
+
+            HiEasyRentAPI EasyRentApi = new HiEasyRentAPI();
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -497,7 +504,7 @@ namespace WebAPI.Controllers
                         try
                         {                                
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
-                            logger.Info(WsOut.ToString());
+                            
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
 
@@ -520,6 +527,8 @@ namespace WebAPI.Controllers
 
                         trace.FlowList.Add("信用卡交易");
                     }
+
+                    
 
                     #endregion
 
@@ -559,20 +568,98 @@ namespace WebAPI.Controllers
                         }
                         catch (Exception ex)
                         {
-
+                            
                         }
                     }
                     #endregion
 
                     #region 發票
-
-                    try
+                    if (flag)
                     {
+                        try
+                        {
+                            WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
+                            {
+                                CUSTID = IDNO,
+                                CUSTNM = mem.MEMCNAME,
+                                EMAIL = mem.MEMEMAIL,
+                                MonRentID = buyNxtCom.MonthlyRentId,
+                                MonProjID = apiInput.MonProjID,
+                                MonProPeriod = apiInput.MonProPeriod,
+                                ShortDays = apiInput.ShortDays,
+                                NowPeriod = 1, //第一期固定寫1
+                                SDATE = DateTime.Now.ToString("yyyyMMdd"),
+                                EDATE = DateTime.Now.AddDays(apiInput.MonProPeriod * 30).ToString("yyyyMMdd"),
+                                IsMoto = IsMoto,
+                                RCVAMT = ProdPrice,
+                                UNIMNO = InvData.UNIMNO,
+                                CARDNO = CreditCardNo,
+                                AUTHCODE = AuthCode,
+                                NORDNO = TransactionNo,
+                                INVKIND = InvData.InvocieType,
+                                CARRIERID = InvData.CARRIERID,
+                                NPOBAN = InvData.NPOBAN,
+                                INVTITLE = "",
+                                INVADDR = ""
+                            };
 
-                    }
-                    catch(Exception ex)
-                    {
-                        //紀錄開立失敗
+                            wsInput.tbPaymentDetail = new List<NPR130SavePaymentList>();
+                            wsInput.tbPaymentDetail.Add(new NPR130SavePaymentList()
+                            {
+                                PAYMENTTYPE = "1",
+                                PAYTYPE = "4",
+                                PAYAMT = ProdPrice,
+                                PORDNO = TransactionNo,
+                                PAYMEMO = "月租訂閱制"
+                            });
+                            WebAPIOutput_MonthlyRentSave wsOutput = new WebAPIOutput_MonthlyRentSave();
+                            var xflag = EasyRentApi.MonthlyRentSave(wsInput, ref wsOutput);
+                            if (wsOutput.Result == false)
+                            {
+                                xflag = false;
+                            }
+                            else
+                            {
+                                INVNO = wsOutput.Data[0].INVNO;
+                                logger.Trace("INVNO=" + INVNO);
+                            }
+                            trace.FlowList.Add("發票開立");
+                            if (INVNO != "")
+                            {
+                                //寫入發票資訊
+                                string sp_errCode = "";
+                                var spin = new SPInput_SaveInvno()
+                                {
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    MonProjID = apiInput.MonProjID,
+                                    MonProPeriod = apiInput.MonProPeriod,
+                                    ShortDays = apiInput.ShortDays,
+                                    NowPeriod = 1,  //寫死第一期
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    Invno = INVNO,
+                                    InvoicePrice = ProdPrice,
+                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                };
+                                
+                                xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.FlowList.Add("發票存檔");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //紀錄開立失敗
+                            logger.Trace(ex.Message);
+                        }
                     }
 
                     #endregion
@@ -631,12 +718,18 @@ namespace WebAPI.Controllers
             int ProdPrice_ori = 0;
             int ProdPrice_nxt = 0;
             int ProdPrice = 0;
-
+            int IsMoto = 0;
+            
             string TransactionNo = "";
             string CreditCardNo = "";
             string AuthCode = "";
             string MerchantTradeNo = "";
+            string INVNO = "";
 
+            var mem = new Domain.MemberData.RegisterData();
+            var InvData = new Domain.MemberData.InvoiceData();
+
+            HiEasyRentAPI EasyRentApi = new HiEasyRentAPI();
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -721,7 +814,7 @@ namespace WebAPI.Controllers
                     #region 載入後續Api所需資料
 
                     //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
-                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    InvData = mscom.GetINVDataFromMember(IDNO);
                     Int64 InvoTypeId = InvData.InvocieTypeId;
 
                     buyNxtCom.LogID = LogID;
@@ -775,6 +868,8 @@ namespace WebAPI.Controllers
                             var fItem = monObjs_nxt.FirstOrDefault();
                             if (fItem.PeriodPrice > 0)
                                 ProdPrice_nxt = fItem.PeriodPrice;
+
+                            IsMoto = fItem.IsMoto;
                         }
                         ProdPrice = ProdPrice_nxt - ProdPrice_ori;
                         ProdPrice = ProdPrice > 0 ? ProdPrice : 0;
@@ -834,7 +929,7 @@ namespace WebAPI.Controllers
                     {
                         try
                         {
-                            var mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                            mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
                                 var spin = new ICF_TSIB_Escrow_Type()
@@ -858,15 +953,93 @@ namespace WebAPI.Controllers
 
                     #region 發票
 
+                    
                     try
                     {
-                        //呼叫短租SERVICE開立發票，並接收回傳發票號碼
+                        WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
+                        {
+                            CUSTID = IDNO,
+                            CUSTNM = mem.MEMCNAME,
+                            EMAIL = mem.MEMEMAIL,
+                            MonRentID = buyNxtCom.MonthlyRentId,
+                            MonProjID = apiInput.UP_MonProjID,
+                            MonProPeriod = apiInput.UP_MonProPeriod,
+                            ShortDays = apiInput.UP_ShortDays,
+                            NowPeriod = buyNxtCom.NowPeriod, //第一期固定寫1
+                            SDATE = buyNxtCom.OriSDATE.ToString("yyyyMMdd"),
+                            EDATE = buyNxtCom.OriSDATE.AddDays(apiInput.UP_MonProPeriod * 30).ToString("yyyyMMdd"),
+                            IsMoto = IsMoto,
+                            RCVAMT = ProdPrice,
+                            UNIMNO = InvData.UNIMNO,
+                            CARDNO = CreditCardNo,
+                            AUTHCODE = AuthCode,
+                            NORDNO = TransactionNo,
+                            INVKIND = InvData.InvocieType,
+                            CARRIERID = InvData.CARRIERID,
+                            NPOBAN = InvData.NPOBAN,
+                            INVTITLE = "",
+                            INVADDR = ""
+                        };
 
+                        wsInput.tbPaymentDetail = new List<NPR130SavePaymentList>();
+                        wsInput.tbPaymentDetail.Add(new NPR130SavePaymentList()
+                        {
+                            PAYMENTTYPE = "1",
+                            PAYTYPE = "4",
+                            PAYAMT = ProdPrice,
+                            PORDNO = TransactionNo,
+                            PAYMEMO = "月租訂閱制"
+                        });
+                        WebAPIOutput_MonthlyRentSave wsOutput = new WebAPIOutput_MonthlyRentSave();
+                        var xflag = EasyRentApi.MonthlyRentSave(wsInput, ref wsOutput);
+                        if (wsOutput.Result == false)
+                        {
+                            xflag = false;
+                        }
+                        else
+                        {
+                            INVNO = wsOutput.Data[0].INVNO;
+                            logger.Trace("INVNO=" + INVNO);
+                        }
+                        trace.FlowList.Add("發票開立");
+                        if (INVNO != "")
+                        {
+                            //寫入發票資訊
+                            string sp_errCode = "";
+                            var spin = new SPInput_SaveInvno()
+                            {
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                MonProjID = apiInput.UP_MonProjID,
+                                MonProPeriod = apiInput.UP_MonProPeriod,
+                                ShortDays = apiInput.UP_ShortDays,
+                                NowPeriod = buyNxtCom.NowPeriod,
+                                PayTypeId = (Int64)apiInput.PayTypeId,
+                                InvoTypeId = InvoTypeId,
+                                InvoiceType = InvData.InvocieType,
+                                CARRIERID = InvData.CARRIERID,
+                                UNIMNO = InvData.UNIMNO,
+                                NPOBAN = InvData.NPOBAN,
+                                Invno = INVNO,
+                                InvoicePrice = ProdPrice,
+                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                            };
+
+                            xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
+                            if (!xflag)
+                            {
+                                logger.Trace("spError=" + sp_errCode);
+                            }
+                            trace.FlowList.Add("發票存檔");
+                        }
                     }
                     catch (Exception ex)
                     {
                         //紀錄開立失敗
+                        logger.Trace(ex.Message);
                     }
+
+                    
 
                     #endregion
 
@@ -926,7 +1099,12 @@ namespace WebAPI.Controllers
             string CreditCardNo = "";
             string AuthCode = "";
             string MerchantTradeNo = "";
+            string INVNO = "";
 
+            var mem = new Domain.MemberData.RegisterData();
+            var InvData = new Domain.MemberData.InvoiceData();
+
+            HiEasyRentAPI EasyRentApi = new HiEasyRentAPI();
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -1012,7 +1190,7 @@ namespace WebAPI.Controllers
 
                     //從資料庫找發票設定 InvoTypeId
                     //Int64 InvoTypeId = mscom.GetInvoCodeId(Convert.ToInt32(apiInput.InvoTypeId));
-                    var InvData = mscom.GetINVDataFromMember(IDNO);
+                    InvData = mscom.GetINVDataFromMember(IDNO);
                     Int64 InvoTypeId = InvData.InvocieTypeId;
                     buyNxtCom.LogID = LogID;
                     var objJson = new
@@ -1028,7 +1206,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 取得欠費總額
-
+                    var sp_re = new SPOut_GetArrsSubsList();
                     if (flag)
                     {
                         string sp_errCode = "";
@@ -1038,11 +1216,14 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             //SetNow = apiInput.SetNow
                         };
-                        var sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
+                        sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
                         if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count()>0)
                         {
                             var allArrs = sp_re.Arrs.Where(x => x.PeriodPayPrice > 0).Select(y => y.PeriodPayPrice).Sum();
                             ProdPrice = allArrs;
+                            //20210717 ADD BY ADAM REASON.
+                            MonthlyRentIds = String.Join(",", sp_re.Arrs.Select(x => x.MonthlyRentId));
+                            buyNxtCom.MonthlyRentIds = MonthlyRentIds;
                         }
                     }
 
@@ -1092,6 +1273,133 @@ namespace WebAPI.Controllers
                     outputApi.PayResult = flag ? 1 : 0;
 
                     #endregion
+
+                    #region 履保
+
+                    if (flag)
+                    {
+                        try
+                        {
+                            mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                            if (mem != null)
+                            {
+                                var spin = new ICF_TSIB_Escrow_Type()
+                                {
+                                    IDNO = IDNO,
+                                    Name = mem.MEMCNAME,
+                                    PhoneNo = mem.MEMTEL,
+                                    Email = mem.MEMEMAIL,
+                                    Amount = ProdPrice
+                                };
+                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+
+                    #endregion
+
+                    if (flag)
+                    {
+                        try
+                        {
+                            WebAPIInput_MonthlyRebtSaveV2 wsInput = new WebAPIInput_MonthlyRebtSaveV2()
+                            {
+                                CUSTID = IDNO,
+                                CUSTNM = mem.MEMCNAME,
+                                EMAIL = mem.MEMEMAIL,
+                                RCVAMT = ProdPrice,
+                                UNIMNO = InvData.UNIMNO,
+                                CARDNO = CreditCardNo,
+                                AUTHCODE = AuthCode,
+                                NORDNO = TransactionNo,
+                                INVKIND = InvData.InvocieType,
+                                CARRIERID = InvData.CARRIERID,
+                                NPOBAN = InvData.NPOBAN,
+                                INVTITLE = "",
+                                INVADDR = ""
+                            };
+
+                            wsInput.tbPaymentDetail = new List<NPR130SavePaymentList>();
+                            wsInput.tbPaymentDetail.Add(new NPR130SavePaymentList()
+                            {
+                                PAYMENTTYPE = "1",
+                                PAYTYPE = "4",
+                                PAYAMT = ProdPrice,
+                                PORDNO = TransactionNo,
+                                PAYMEMO = "月租訂閱制"
+                            });
+                            wsInput.tbMonthlyRentProjData = new List<WebAPIInput_MonthlyRentProjData>();
+                            for (int i=0;i<sp_re.Arrs.Count;i++)
+                            {
+                                wsInput.tbMonthlyRentProjData.Add(new WebAPIInput_MonthlyRentProjData()
+                                {
+                                    MonRentID = sp_re.Arrs[i].MonthlyRentId,
+                                    MonProjID = sp_re.Arrs[i].ProjID,
+                                    MonProPeriod = sp_re.Arrs[i].MonProPeriod,
+                                    ShortDays = sp_re.Arrs[i].ShortDays,
+                                    NowPeriod = sp_re.Arrs[i].rw,
+                                    SDATE = sp_re.Arrs[i].StartDate.ToString("yyyyMMdd"),
+                                    EDATE = sp_re.Arrs[i].EndDate.ToString("yyyyMMdd"),
+                                    IsMoto = sp_re.Arrs[i].IsMoto
+                                });
+                            }
+
+                            WebAPIOutput_MonthlyRentSave wsOutput = new WebAPIOutput_MonthlyRentSave();
+                            var xflag = EasyRentApi.MonthlyRentSaveV2(wsInput, ref wsOutput);
+                            if (wsOutput.Result == false)
+                            {
+                                xflag = false;
+                            }
+                            else
+                            {
+                                INVNO = wsOutput.Data[0].INVNO;
+                                logger.Trace("INVNO=" + INVNO);
+                            }
+                            trace.FlowList.Add("發票開立");
+                            if (INVNO != "")
+                            {
+                                //寫入發票資訊
+                                for (int i = 0; i < sp_re.Arrs.Count; i++)
+                                {
+                                    string sp_errCode = "";
+                                    var spin = new SPInput_SaveInvno()
+                                    {
+                                        IDNO = IDNO,
+                                        LogID = LogID,
+                                        MonProjID = sp_re.Arrs[i].ProjID,
+                                        MonProPeriod = sp_re.Arrs[i].MonProPeriod,
+                                        ShortDays = sp_re.Arrs[i].ShortDays,
+                                        NowPeriod = sp_re.Arrs[i].rw,
+                                        PayTypeId = (Int64)apiInput.PayTypeId,
+                                        InvoTypeId = InvoTypeId,
+                                        InvoiceType = InvData.InvocieType,
+                                        CARRIERID = InvData.CARRIERID,
+                                        UNIMNO = InvData.UNIMNO,
+                                        NPOBAN = InvData.NPOBAN,
+                                        Invno = INVNO,
+                                        InvoicePrice = ProdPrice,
+                                        InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                    };
+
+                                    xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
+                                    if (!xflag)
+                                    {
+                                        logger.Trace("spError=" + sp_errCode);
+                                    }
+                                }
+                                trace.FlowList.Add("發票存檔");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //紀錄開立失敗
+                            logger.Trace(ex.Message);
+                        }
+                    }
                 }
 
                 #endregion

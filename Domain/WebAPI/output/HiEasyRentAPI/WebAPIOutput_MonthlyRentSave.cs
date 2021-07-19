@@ -19,5 +19,15 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 回覆訊息
         /// </summary>
         public string Message { set; get; }
+        /// <summary>
+        /// 回傳結果 20210712 ADD BY ADAM REASON
+        /// </summary>
+        public List<WebAPIOutput_MonthlyRentSaveData> Data { get; set; }
+    }
+
+    public class WebAPIOutput_MonthlyRentSaveData
+    {
+        public string INVNO { get; set; }
+        public string RCVNO { get; set; }
     }
 }
