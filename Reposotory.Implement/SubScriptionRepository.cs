@@ -75,7 +75,7 @@ namespace Reposotory.Implement
         }
 
 
-        public List<BE_MonthlyQuery> BE_GetMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
+        public List<BE_MonthlyMain> BE_GetMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
         {
             bool flag = true;
             //List<BE_MonthlyQuery> lstQuery = null;
@@ -99,7 +99,7 @@ namespace Reposotory.Implement
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base>(this.ConnectionString);
-            List<BE_MonthlyQuery> lstOut = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstOut = new List<BE_MonthlyMain>();
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
           

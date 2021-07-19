@@ -432,7 +432,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
         {
-            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             int tmpIsHandle = 2;
@@ -463,7 +463,7 @@ namespace Web.Controllers
 
             if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
             {
-                if (DE <= DS.AddMonths(1))
+                if (DE >= DS && DE <= DS.AddMonths(1))
                 {
                     isInDateRange = true;
                     ViewData["outerOfDateRangeMsg"] = "";
@@ -475,7 +475,7 @@ namespace Web.Controllers
             }
             
             //if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
-            if(isInDateRange && (tmpIsHandle < 2 || tUserID != ""))
+            if(isInDateRange && (tmpIsHandle <= 2 || tUserID != ""))
             {
                 //lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
@@ -495,7 +495,7 @@ namespace Web.Controllers
         /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
-            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             int tmpIsHandle = 2;
@@ -524,20 +524,21 @@ namespace Web.Controllers
 
             if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
             {
-                if (DE <= DS.AddMonths(1))
+                if (DE >= DS && DE <= DS.AddMonths(1))
                 {
                     isInDateRange = true;
                 }
             }
 
             //if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
-            if (isInDateRange && (tmpIsHandle < 2 || tUserID != ""))
+            if (isInDateRange && (tmpIsHandle <= 2 || tUserID != ""))
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間", "IDNO", "汽車－平日", "汽車－假日", "機車" };
+            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間", 
+                "IDNO", "汽車－平日", "汽車－假日", "機車","是否開啟自動續約" ,"方案是否綁約","綁約期數" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -560,6 +561,9 @@ namespace Web.Controllers
                 content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
                 content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
                 content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
+                content.CreateCell(9).SetCellValue(lstSubScription[k].AutomaticRenewal);
+                content.CreateCell(10).SetCellValue(lstSubScription[k].IsTiedUp);
+                content.CreateCell(11).SetCellValue(lstSubScription[k].MonProPeriod);
             }
 
             for (int l = 0; l < headerFieldLen; l++)
@@ -618,7 +622,7 @@ namespace Web.Controllers
 
             if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
             {
-                if (DE <= DS.AddMonths(1))
+                if (DE >= DS && DE <= DS.AddMonths(1))
                 {
                     isInDateRange = true;
                     ViewData["outerOfDateRangeMsg"] = "";
@@ -677,7 +681,7 @@ namespace Web.Controllers
 
             if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
             {
-                if (DE <= DS.AddMonths(1))
+                if (DE >= DS && DE <= DS.AddMonths(1))
                 {
                     isInDateRange = true;
                 }

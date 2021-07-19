@@ -1,7 +1,7 @@
-﻿@model  IEnumerable<Domain.TB.BackEnd.BE_MonthlyQuery>
+﻿@model  IEnumerable<Domain.TB.BackEnd.BE_MonthlyMain>
 @{
     int subscriptDataLen = 0;
-    List<Domain.TB.BackEnd.BE_MonthlyQuery> subscriptData = new List<Domain.TB.BackEnd.BE_MonthlyQuery>();
+    List<Domain.TB.BackEnd.BE_MonthlyMain> subscriptData = new List<Domain.TB.BackEnd.BE_MonthlyMain>();
     //var ticket = (FormsIdentity)User.Identity;
     if (null == Model)
     {
@@ -9,7 +9,7 @@
     }
     else
     {
-        subscriptData = Model.ToList<Domain.TB.BackEnd.BE_MonthlyQuery>();
+        subscriptData = Model.ToList<Domain.TB.BackEnd.BE_MonthlyMain>();
         subscriptDataLen = subscriptData.Count();
 
     }
@@ -166,6 +166,9 @@
                 <th>汽車－平日</th>
                 <th>汽車－假日</th>
                 <th>機車</th>
+                <th>是否開啟自動續約</th>
+                <th>方案是否綁約</th>
+                <th>綁約期數</th>
             </tr>
             }
             else
@@ -180,6 +183,9 @@
                     <th>汽車－平日</th>
                     <th>汽車－假日</th>
                     <th>機車</th>
+                    <th>是否開啟自動續約</th>
+                    <th>方案是否綁約</th>
+                    <th>綁約期數</th>
                 </tr>
             }
         </thead>
@@ -196,20 +202,20 @@
             {
                 for (int i = 0; i < subscriptDataLen; i++)
                 {
-                  
-
-                        <tr>
-                            <td>@subscriptData[i].IDNO</td>
-                            <td>@subscriptData[i].SEQNO</td>
-                            <td>@subscriptData[i].ProjID</td>
-                            <td>@subscriptData[i].ProjNM</td>
-                            <td>@subscriptData[i].StartDate.ToString("yyyy/MM/dd HH:mm")</td>
-                            <td>@subscriptData[i].EndDate.ToString("yyyy/MM/dd HH:mm")</td>
-                            <td>@subscriptData[i].WorkDayHours</td>
-                            <td>@subscriptData[i].HolidayHours</td>
-                            <td> @((subscriptData[i].MotoTotalHours ).ToString("f1"))</td>
-
-                        </tr>
+        <tr>
+            <td>@subscriptData[i].IDNO</td>
+            <td>@subscriptData[i].SEQNO</td>
+            <td>@subscriptData[i].ProjID</td>
+            <td>@subscriptData[i].ProjNM</td>
+            <td>@subscriptData[i].StartDate.ToString("yyyy/MM/dd HH:mm")</td>
+            <td>@subscriptData[i].EndDate.ToString("yyyy/MM/dd HH:mm")</td>
+            <td>@subscriptData[i].WorkDayHours</td>
+            <td>@subscriptData[i].HolidayHours</td>
+            <td> @((subscriptData[i].MotoTotalHours ).ToString("f1"))</td>
+            <td>@subscriptData[i].AutomaticRenewal</td>
+            <td>@subscriptData[i].IsTiedUp</td>
+            <td>@subscriptData[i].MonProPeriod.ToString()</td>
+        </tr>
                     
                 }
 
