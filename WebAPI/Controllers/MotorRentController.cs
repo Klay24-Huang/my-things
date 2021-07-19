@@ -53,9 +53,9 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
             var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
-            string IDNO = "";
             var _MotorRentObj = new List<OAPI_MotorRent_Param>();
             #endregion
             #region 防呆
@@ -143,32 +143,6 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
-                {
-                    flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
-                    errCode = "000000";
-                }
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
-            }
-
-            if (flag)
-            {
                 // 20210622 UPD BY YEH REASON:因應積分<60分只能用定價專案，取資料改去SP處理
                 string SPName = new ObjType().GetSPName(ObjType.SPType.GetMotorRent);
                 SPInput_GetMotorRent spInput = new SPInput_GetMotorRent
@@ -187,10 +161,9 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref MotorList, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                if (flag)
-                {
-                    //春節限定，將R140專案移除
-                    //var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
+ 
+                //春節限定，將R140專案移除
+                var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
 
                 if(tempList != null && tempList.Count()>0)
                     _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(tempList);               
