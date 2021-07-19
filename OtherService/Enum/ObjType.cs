@@ -71,6 +71,10 @@ namespace OtherService.Enum
             /// 台新錢包轉贈 LOG寫入
             /// </summary>
             InsTransferStoreValueLog,
+            /// <summary>
+            /// 遠傳車機韌體資訊
+            /// </summary>
+            UpdCarMachineVerInfo
         }
         /// <summary>
         /// 取出SPName
