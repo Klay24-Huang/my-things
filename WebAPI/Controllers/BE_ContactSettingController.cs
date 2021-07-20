@@ -1573,7 +1573,7 @@ namespace WebAPI.Controllers
                         PRICE_H = item.PRICE_H,
                         carBaseMins = 60,
                         FirstFreeMins = item.FirstFreeMins,
-                        MonIds = MonIds
+                        MonIds = MonIds,
                         //CancelMonthRent = (ProjID == "R024"),
                         MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                     };
