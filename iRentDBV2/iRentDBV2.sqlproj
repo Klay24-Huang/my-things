@@ -517,6 +517,21 @@
     <Build Include="dbo\Stored Procedures\usp_GetCityParkingFee.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMotorRentProject.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMotorRent.sql" />
+    <Build Include="dbo\Tables\TB_MemberScoreBlock.sql" />
+    <Build Include="dbo\Tables\TB_MemberScoreDetail.sql" />
+    <Build Include="dbo\Tables\TB_MemberScoreMain.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberScoreBlock_U1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetAuditList.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetKymcoList.sql" />
+    <Build Include="dbo\Tables\TB_ScoreDef.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalMedalMileStone.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalMemberMedal.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalMemberScore.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalMemberScore_U1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalOrderMedal.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CalOrderScore.sql" />
+    <Build Include="dbo\Stored Procedures\usp_DonePayBack_V2.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsMedalHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
