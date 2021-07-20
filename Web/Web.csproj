@@ -442,6 +442,7 @@
     <Content Include="Scripts\js\ActionJS\News\NewsManage.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarFeedBackQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\ChargeParkingDetailQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\IrentPaymentDetail.js" />
     <Content Include="Scripts\js\ActionJS\Report\KymcoQuery.js" />
     <Content Include="Scripts\js\ActionJS\Report\MaintainLogReport.js" />
     <Content Include="Scripts\js\ActionJS\Report\MemberDetailQuery.js" />
@@ -796,6 +797,8 @@
     <Content Include="Views\CommonObj\GetSCMITEM.cshtml" />
     <Content Include="Views\StationAndParking\TransParkingSetting_Moto.cshtml" />
     <Content Include="Views\CommonObj\GetScore.cshtml" />
+    <Content Include="Views\Report\IrentPaymentDetail.cshtml" />
+    <Content Include="Views\Report\IrentPaymentHistory.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

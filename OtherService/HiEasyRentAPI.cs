@@ -26,30 +26,28 @@ namespace OtherService
         protected string userid;
         protected string apikey;
         protected string BaseURL;
-        protected string NPR013RegURL;     //新增短租會員 20201126 ADD BY ADAM
-        protected string NPR010SaveURL;     //新增短租會員 20201126 ADD BY ADAM
-        protected string NPR060SaveURL; //060
-        protected string NPR125SaveURL; //
-        protected string NPR130SaveURL; //
-        protected string NPR136SaveURL; //
+        protected string NPR013RegURL;   //新增短租會員 20201126 ADD BY ADAM
+        protected string NPR010SaveURL;  //新增短租會員 20201126 ADD BY ADAM
+        protected string NPR060SaveURL;  //060
+        protected string NPR125SaveURL;  //
+        protected string NPR130SaveURL;  //
+        protected string NPR136SaveURL;  //
         protected string NPR172QueryURL; //查詢黑名單
-        protected string NPR260SendURL; //簡訊發送
+        protected string NPR260SendURL;  //簡訊發送
         protected string NPR270QueryURL; //點數查詢
         protected string NPR271QueryURL; //點數歷程查詢
         protected string NPR320QueryURL; //點數兌換
         protected string NPR330QueryURL; //欠費查詢
-        protected string NPR340SaveURL; //欠費沖銷
+        protected string NPR340SaveURL;  //欠費沖銷
         protected string NPR350CheckURL; //合約查詢
         protected string NPR370CheckURL; //點數轉贈前檢查
         protected string NPR370SaveURL;  //進行轉贈
         protected string NPR380SaveURL;  //換電獎勵 20201201 ADD BY ADAM 
+        protected string NPR390QueryURL; //主動取款查詢 20210714 ADD BY 唐瑋祁
 
         protected string EinvBizURL;     //手機條碼檢核
-
-
         protected string MonthlyRentURL; //月租訂閱
-
-        protected string ETAG010QueryURL; //ETAG查詢(合約編號)
+        protected string ETAG010QueryURL;//ETAG查詢(合約編號)
         protected string ETAG020QueryURL;//ETAG查詢(身份證)
         protected string ETAG031SaveURL; //ETAG沖銷
         protected string connetStr;
@@ -89,6 +87,8 @@ namespace OtherService
             NPR380SaveURL = (ConfigurationManager.AppSettings.Get("NPR380SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR380SaveURL").ToString();
             //20201126 ADD BY Jerry REASON.同步會員資料
             NPR010SaveURL = (ConfigurationManager.AppSettings.Get("NPR010SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR010SaveURL").ToString();
+            //主動取款查詢 20210714 ADD BY 唐瑋祁
+            NPR390QueryURL = (ConfigurationManager.AppSettings.Get("NPR390QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR390QueryURL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -130,8 +130,6 @@ namespace OtherService
             }
             return flag;
         }
-
-
         /// <summary>
         /// 發送簡訊執行端
         /// </summary>
@@ -1615,8 +1613,6 @@ namespace OtherService
             return flag;
         }
 
-
-
         public bool NPR010Save(WebAPIInput_NPR010Save input, ref WebAPIOutput_NPR013Reg output)
         {
             bool flag = false;
@@ -1760,7 +1756,6 @@ namespace OtherService
             return output;
         }
         #endregion
-
         #region 換電獎勵兌換 20201201 ADD BY ADAM
         public bool NPR380Save(string IDNO, string POINT, string IRENTORDNO, ref WebAPIOutput_NPR380Save output)
         {
@@ -1832,6 +1827,78 @@ namespace OtherService
                     WebAPIName = "NPR380Save",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + NPR380SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
+        #region 主動取款查詢 20210714 ADD BY 唐瑋祁
+        public bool NPR390Query(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentDetail output)
+        {
+            bool flag = false;
+
+            output = DoNPR390Query(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_IrentPaymentDetail> DoNPR390Query(WebAPIInput_IrentPaymentDetail input)
+        {
+            WebAPIOutput_IrentPaymentDetail output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR390QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_IrentPaymentDetail>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_IrentPaymentDetail()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR390QueryURL",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR390QueryURL
                 };
                 bool flag = true;
                 string errCode = "";
