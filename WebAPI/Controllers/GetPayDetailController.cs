@@ -1084,8 +1084,11 @@ namespace WebAPI.Controllers
                             fine_price = outputApi.Rent.OvertimeRental,
                             gift_point = gift_point,
                             gift_motor_point = gift_motor_point,
-                            monthly_workday = carInfo.useMonthDiscW,
-                            monthly_holiday = carInfo.useMonthDiscH,
+                            //monthly_workday = carInfo.useMonthDiscW,
+                            //monthly_holiday = carInfo.useMonthDiscH,
+                            //20210720 ADD BY ADAM REASON.訂閱制儲存沿用舊格式汽車採小時計
+                            monthly_workday = carInfo.useMonthDiscW / 60,
+                            monthly_holiday = carInfo.useMonthDiscH / 60,
                             Etag = outputApi.Rent.ETAGRental,
                             parkingFee = outputApi.Rent.ParkingFee,
                             TransDiscount = outputApi.Rent.TransferPrice,
