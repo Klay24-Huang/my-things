@@ -77,9 +77,6 @@
                     },
                 });
 
-                alert(new Date($("#SDate").val()));
-                alert(add_months(dateStr, -1));
-
             },
         }
 
@@ -112,6 +109,13 @@
             var EndDate = new Date($("#EDate").val());
 
             var MaxDate = add_months(StartDate, 1);
+
+
+            if (StartDate > EndDate) {
+                ShowFailMessage("查詢時數使用起日不得大於迄日");
+                return false;
+            }
+
 
             if (EndDate > MaxDate) {
                 ShowFailMessage("查詢起迄日超過範圍");

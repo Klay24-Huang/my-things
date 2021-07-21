@@ -295,10 +295,10 @@ namespace Reposotory.Implement
         /// <param name="SD"></param>
         /// <param name="ED"></param>
         /// <returns></returns>
-        public List<BE_MonthlyReportData> GetMonthlyDetail(string OrderNum, string IDNO, string SD, string ED)
+        public List<BE_MonthlyDetail> GetMonthlyDetail(string OrderNum, string IDNO, string SD, string ED)
         {
             bool flag = true;
-            List<BE_MonthlyReportData> lstQuery = null;
+            //List<BE_MonthlyDetail> lstQuery = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string spName = "usp_GetMonthlyDetail";
             //string SQL = "SELECT * FROM VW_BE_GetMonthlyReportData ";
@@ -330,7 +330,7 @@ namespace Reposotory.Implement
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base>(this.ConnectionString);
-            List<BE_MonthlyReportData> lstOut = new List<BE_MonthlyReportData>();
+            List<BE_MonthlyDetail> lstOut = new List<BE_MonthlyDetail>();
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
 
