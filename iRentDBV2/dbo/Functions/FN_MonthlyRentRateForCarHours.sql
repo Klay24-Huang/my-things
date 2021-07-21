@@ -1,9 +1,9 @@
 ﻿-- =============================================
 -- Author:Umeko
 -- Create date: 2021/07/21
--- Description:取得月租報表中的汽車優惠費率分鐘數
+-- Description:取得月租報表中的汽車優惠費率時數
 -- =============================================
-CREATE FUNCTION FN_MonthlyRentRateForCarMins
+CREATE FUNCTION [dbo].[FN_MonthlyRentRateForCarHours]
 (
 	@RetutnType varchar(10),
 	@ProjType int,
@@ -14,14 +14,14 @@ CREATE FUNCTION FN_MonthlyRentRateForCarMins
 	@gift_point int
 
 )
-RETURNS int
+RETURNS varchar(10)
 AS
 BEGIN
 	if @RetutnType Not in ('Work', 'Holiday')
-		return 0
+		return '-'
 
 	if @WMins = 0 And @HMins = 0
-		return 0
+		return '-'
 	
 	Declare @WPayMins int = 0
 	Declare @HPayMins int = 0
@@ -60,8 +60,10 @@ BEGIN
 	End
 	Else
 	Begin
-		Set @ReturnMins = 0
+		Set @ReturnMins = '-'
 	End
 
-	return @ReturnMins
+	--@ReturnMins as numeric(5,2) 
+
+	return iif(@ReturnMins >0,cast(cast(round((cast(@ReturnMins as numeric(20,4))/60),2) as numeric(20,2)) as varchar(10)),'-')
 END

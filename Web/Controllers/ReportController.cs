@@ -591,7 +591,6 @@ namespace Web.Controllers
             List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_MonthlyDetailForView> lstSubScription2 = new List<BE_MonthlyDetailForView>();
 
             string tSDate = "", tEDate = "", tUserID = "", tOrderNum = "";
 
@@ -635,13 +634,8 @@ namespace Web.Controllers
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
 
-                List<BE_MonthlyDetailForView> lstSubScriptionforView = lstSubScription.ConvertAll<BE_MonthlyDetailForView>(
-                    t => new BE_MonthlyDetailForView(t));
-               
-                lstSubScription2 = lstSubScriptionforView;
-               
             }
-            return View(lstSubScription2);
+            return View(lstSubScription);
         }
         /// <summary>
         /// 月租報表下載
@@ -695,9 +689,6 @@ namespace Web.Controllers
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
 
-            List<BE_MonthlyDetailForView> lstSubScriptionforView = lstSubScription.ConvertAll<BE_MonthlyDetailForView>(
-                t => new BE_MonthlyDetailForView(t));
-
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)"
@@ -713,23 +704,23 @@ namespace Web.Controllers
                 //sheet.AutoSizeColumn(j);
             }
 
-            int len = lstSubScriptionforView.Count;
+            int len = lstSubScription.Count;
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue("H" + lstSubScriptionforView[k].OrderNo.ToString().PadLeft(7, '0'));  //訂單編號
-                content.CreateCell(1).SetCellValue(lstSubScriptionforView[k].IDNO);   //ID
-                content.CreateCell(2).SetCellValue(lstSubScriptionforView[k].lend_place);   //ID
-                content.CreateCell(3).SetCellValue(lstSubScriptionforView[k].UseWorkDayHours);   //汽車－平日
-                content.CreateCell(4).SetCellValue(lstSubScriptionforView[k].UseHolidayHours);   //汽車－假日
-                content.CreateCell(5).SetCellValue((lstSubScriptionforView[k].UseMotoTotalHours).ToString("f1"));   //機車
-                content.CreateCell(6).SetCellValue(lstSubScriptionforView[k].MKTime.ToString("yyyy-MM-dd HH:mm"));
-                content.CreateCell(7).SetCellValue(lstSubScriptionforView[k].SEQNO);   //ID
-                content.CreateCell(8).SetCellValue(lstSubScriptionforView[k].ProjID);   //扣抵方案代碼
-                content.CreateCell(9).SetCellValue(lstSubScriptionforView[k].WorkDayRateForCarHours);//汽車平日優惠費率
-                content.CreateCell(10).SetCellValue(lstSubScriptionforView[k].HolidayRateForCarHours);   //汽車假日優惠費率
-                content.CreateCell(11).SetCellValue(lstSubScriptionforView[k].RateForMotorHours);   //機車優惠費率
-                content.CreateCell(12).SetCellValue(lstSubScriptionforView[k].ProjNM);   //扣抵方案名稱
+                content.CreateCell(0).SetCellValue("H" + lstSubScription[k].OrderNo.ToString().PadLeft(7, '0'));  //訂單編號
+                content.CreateCell(1).SetCellValue(lstSubScription[k].IDNO);   //ID
+                content.CreateCell(2).SetCellValue(lstSubScription[k].lend_place);   //ID
+                content.CreateCell(3).SetCellValue(lstSubScription[k].UseWorkDayHours);   //汽車－平日
+                content.CreateCell(4).SetCellValue(lstSubScription[k].UseHolidayHours);   //汽車－假日
+                content.CreateCell(5).SetCellValue((lstSubScription[k].UseMotoTotalHours).ToString("f1"));   //機車
+                content.CreateCell(6).SetCellValue(lstSubScription[k].MKTime.ToString("yyyy-MM-dd HH:mm"));
+                content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
+                content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //扣抵方案代碼
+                content.CreateCell(9).SetCellValue(lstSubScription[k].WorkDayRateForCarHours);//汽車平日優惠費率
+                content.CreateCell(10).SetCellValue(lstSubScription[k].HolidayRateForCarHours);   //汽車假日優惠費率
+                content.CreateCell(11).SetCellValue(lstSubScription[k].RateForMotorHours);   //機車優惠費率
+                content.CreateCell(12).SetCellValue(lstSubScription[k].ProjNM);   //扣抵方案名稱
             }
 
             for (int l = 0; l < headerFieldLen; l++)

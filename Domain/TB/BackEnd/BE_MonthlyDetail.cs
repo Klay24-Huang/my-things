@@ -40,14 +40,14 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 汽車平日優惠費率分鐘數
         /// </summary>
-        public int WorkDayRateForCarMins { get; set; }
+        public string WorkDayRateForCarHours { get; set; }
         /// <summary>
         /// 汽車假日優惠費率分鐘數
         /// </summary>
-        public int HolidayRateForCarMins { get; set; }
+        public string HolidayRateForCarHours { get; set; }
         /// <summary>
         /// 機車優惠費率分鐘數
         /// </summary>
-        public int RateForMotorMins { get; set; }
+        public string RateForMotorHours { get; set; }
     }
 }

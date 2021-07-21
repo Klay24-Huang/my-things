@@ -1,7 +1,7 @@
-﻿@model  IEnumerable<Domain.TB.BackEnd.BE_MonthlyDetailForView>
+﻿@model  IEnumerable<Domain.TB.BackEnd.BE_MonthlyDetail>
 @{
     int subscriptReportLen = 0;
-    List<Domain.TB.BackEnd.BE_MonthlyDetailForView> subscriptReportData = new List<Domain.TB.BackEnd.BE_MonthlyDetailForView>();
+    List<Domain.TB.BackEnd.BE_MonthlyDetail> subscriptReportData = new List<Domain.TB.BackEnd.BE_MonthlyDetail>();
     //var ticket = (FormsIdentity)User.Identity;
     if (null == Model)
     {
@@ -9,7 +9,7 @@
     }
     else
     {
-        subscriptReportData = Model.ToList<Domain.TB.BackEnd.BE_MonthlyDetailForView>();
+        subscriptReportData = Model.ToList<Domain.TB.BackEnd.BE_MonthlyDetail>();
         subscriptReportLen = subscriptReportData.Count();
 
     }
