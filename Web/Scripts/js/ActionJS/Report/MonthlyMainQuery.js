@@ -21,10 +21,10 @@
 
     SetDefaultDate();
 
-    $("#SDate").flatpickr(
+    $("#dpSDate").flatpickr(
         {
             onChange: (selectedDates, dateStr, instance) => {
-                flatpickr("#EDate",
+                flatpickr("#dpEDate",
                     {
                         enable: [
                             {
@@ -35,7 +35,7 @@
                         onChange: (selectedDates, dateStr, instance) => {
 
                             var mindate = $.format.date(add_months(dateStr, -1), 'yyyy-MM-dd');
-                            flatpickr("#SDate",
+                            flatpickr("#dpSDate",
                                 {
                                     enable: [
                                         {
@@ -46,19 +46,17 @@
 
                                 });
 
-                            if (new Date($("#SDate").val()) < mindate) {
-                                $("#SDate").val(mindate);
-                            }
+                            
                         }
                     });
             },
         }
     );
-    $("#EDate").flatpickr(
+    $("#dpEDate").flatpickr(
         {
             onChange: (selectedDates, dateStr, instance) => {
                 var mindate = $.format.date(add_months(dateStr, -1), 'yyyy-MM-dd');
-                flatpickr("#SDate", {
+                flatpickr("#dpSDate", {
                     enable: [
                         {
                             from: mindate,
@@ -66,7 +64,7 @@
                         },
                     ],
                     onChange: (selectedDates, dateStr, instance) => {
-                        flatpickr("#EDate", {
+                        flatpickr("#dpEDate", {
                             enable: [
                                 {
                                     from: dateStr,
@@ -84,11 +82,11 @@
     function SetDefaultDate() {
         var EndDate = new Date();
         var StartDate = add_months(EndDate, -1);
-        if ($('#SDate').val() == '') {
-            $("#SDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
+        if ($('#dpSDate').val() == '') {
+            $("#dpSDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
         }
-        if ($('#EDate').val() == '') {
-            $("#EDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
+        if ($('#dpEDate').val() == '') {
+            $("#dpEDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
 
         }
     }
@@ -105,8 +103,8 @@
 
     $("#formMonthlyMainQuery").on("submit",
         function () {
-            var StartDate = new Date($("#SDate").val());
-            var EndDate = new Date($("#EDate").val());
+            var StartDate = new Date($("#SdpDate").val());
+            var EndDate = new Date($("#dpEDate").val());
 
             var MaxDate = add_months(StartDate, 1);
 

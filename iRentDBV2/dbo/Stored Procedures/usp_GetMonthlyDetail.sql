@@ -46,7 +46,7 @@ AS
 			ProjNM,
 			Case When ProjType in (0,3) Then Dbo.FN_MonthlyRentRateForCarHours('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) Else '-' End WorkDayRateForCarHours,
 			Case When ProjType in (0,3) Then Dbo.FN_MonthlyRentRateForCarHours('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) Else '-' End HolidayRateForCarHours,
-			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else '-' End RateForMotorHours
+			Case When ProjType = 4 then Case When (t_mins)-(monthly_workday+monthly_holiday+gift_point) > 0 Then Cast( (t_mins)-(monthly_workday+monthly_holiday+gift_point) as varchar(10)) Else '-' End  Else '-' End RateForMotorHours
 			From (
 				SELECT History.OrderNo, History.IDNO, Main.lend_place, History.UseWorkDayHours, History.UseHolidayHours, 
 					History.UseMotoTotalHours, History.MKTime, ISNULL(Rate.SEQNO, 0) AS SEQNO, ISNULL(Rate.ProjID, '') AS ProjID, 
@@ -74,7 +74,7 @@ AS
 			ProjNM,
 			Dbo.FN_MonthlyRentRateForCarHours('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) WorkDayRateForCarHours,
 			Dbo.FN_MonthlyRentRateForCarHours('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) HolidayRateForCarHours,
-			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else 0 End RateForMotorHours
+			Case When ProjType = 4 then Case When (t_mins)-(monthly_workday+monthly_holiday+gift_point) > 0 Then Cast( (t_mins)-(monthly_workday+monthly_holiday+gift_point) as varchar(10)) Else '-' End  Else '-' End RateForMotorHours
 			From (
 				SELECT History.OrderNo, History.IDNO, Main.lend_place, History.UseWorkDayHours, History.UseHolidayHours, 
 					History.UseMotoTotalHours, History.MKTime, ISNULL(Rate.SEQNO, 0) AS SEQNO, ISNULL(Rate.ProjID, '') AS ProjID, 
