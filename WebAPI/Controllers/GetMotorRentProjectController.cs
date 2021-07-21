@@ -294,6 +294,8 @@ namespace WebAPI.Controllers
 
                                 //同步欄位，為了後續比對大小用
                                 newItem.PerMinutesPrice = (float)z.HoildayRateForMoto;    //20210620 ADD BY ADAM REASON.目前機車不分平假日，先用假日去判斷
+                                //20210715 ADD BY ADAM REASON.補上說明欄位
+                                newItem.ProDesc = z.MonProDisc;
                                 #endregion
 
                                 VisProObjs.Add(newItem);

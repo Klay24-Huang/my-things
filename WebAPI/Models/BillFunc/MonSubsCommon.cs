@@ -284,7 +284,7 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public bool TSIB_Escrow_StoreValueCreateAccount(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
         {
-            //return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
+            return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
 
             bool flag = false;
 
@@ -577,6 +577,7 @@ namespace WebAPI.Models.BillFunc
     public class MonSubsSp
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// 取得月租列表
         /// </summary>
@@ -1011,7 +1012,7 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
-        public bool sp_CreateSubsMonth(SPInput_CreateSubsMonth spInput, ref string errCode)
+        public bool sp_CreateSubsMonth(SPInput_CreateSubsMonth spInput, ref string errCode, ref int MonthlyRentId)
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.CreateSubsMonth);
@@ -1028,12 +1029,15 @@ namespace WebAPI.Models.BillFunc
                 if(spOut.ErrorCode != "0000")
                   errCode = spOut.ErrorCode;
                 flag = spOut.xError == 0;
+
+                //20210714 ADD BY ADAM REASON.取流水號
+                MonthlyRentId = spOut.MonthlyRentId;
             }
 
             return flag;
         }
 
-        public bool sp_UpSubsMonth(SPInput_UpSubsMonth spInput, ref string errCode)
+        public bool sp_UpSubsMonth(SPInput_UpSubsMonth spInput, ref string errCode, ref int MonthlyRentId, ref int NowPeriod, ref DateTime OriSDATE)
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
@@ -1050,6 +1054,11 @@ namespace WebAPI.Models.BillFunc
                 if (spOut.ErrorCode != "0000")
                     errCode = spOut.ErrorCode;
                 flag = spOut.xError == 0;
+
+                //20210714 ADD BY ADAM REASON.取流水號
+                MonthlyRentId = spOut.MonthlyRentId;
+                NowPeriod = spOut.UPDPeriod;
+                OriSDATE = spOut.OriSDATE;
             }
 
             return flag;
@@ -1665,6 +1674,31 @@ namespace WebAPI.Models.BillFunc
             }
 
         }
+
+        public bool sp_SaveSubsInvno(SPInput_SaveInvno spInput, ref string errCode)
+        {
+            bool flag = false;
+
+            string spName = "usp_SaveSubsInvno_U1";
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SaveInvno();
+            SQLHelper<SPInput_SaveInvno, SPOut_SaveInvno> sqlHelp = new SQLHelper<SPInput_SaveInvno, SPOut_SaveInvno>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+            /*logger.Trace("exec usp_SaveSubsInvno_U1 '" + spInput.IDNO + "'," + spInput.LogID.ToString() + ",'" + spInput.MonProjID + "'," + spInput.MonProPeriod.ToString() + "," +
+                spInput.ShortDays.ToString() + "," + spInput.NowPeriod.ToString() + "," + spInput.PayTypeId.ToString() + "," + spInput.InvoTypeId.ToString() + ",'" +
+                spInput.InvoiceType + "','" + spInput.CARRIERID + "','" + spInput.UNIMNO + "','" + spInput.NPOBAN + "','" + spInput.Invno + "'," + spInput.InvoicePrice.ToString() + ",'" +
+                spInput.InvoiceDate + "'");
+            logger.Trace(lstError[0].ErrorMsg);*/
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
     }
 
     /// <summary>
@@ -1957,7 +1991,7 @@ namespace WebAPI.Models.BillFunc
                             PeriodPrice = a.PeriodPrice,
                             CarWDHours = a.CarWDHours,
                             CarHDHours = a.CarHDHours,
-                            MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
+                            MotoTotalMins = (a.MotoTotalMins == -999 && a.IsMix==1) ? 0 : Convert.ToInt32(a.MotoTotalMins),
                             WDRateForCar = a.WDRateForCar,
                             HDRateForCar = a.HDRateForCar,
                             WDRateForMoto = a.WDRateForMoto,

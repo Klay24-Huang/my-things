@@ -523,6 +523,9 @@
     <Build Include="dbo\Stored Procedures\usp_InsTransferStoreValueCreateAccountLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyMain.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyDetail.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletTransferStoreValueRLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletStoreValueRLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletPayTransactionRLog.sql" />
     <Build Include="dbo\Functions\FN_MonthlyRentRateForCarMins.sql" />
     <Build Include="dbo\Synonyms\SYN_MonthlyRent.sql" />
   </ItemGroup>

@@ -30,6 +30,7 @@ namespace Domain.SP.Output.Subscription
         public int MonType { get; set; }
         public int IsMoto { get; set; }
         public int IsMix { get; set; }
+        public string MonProDisc { get; set; }
     }
 
 }

@@ -26,6 +26,11 @@ namespace WebAPI.Models.BillFunc
         public string errMsg = "Success";
         private MonSubsSp msp = new MonSubsSp();
 
+        //20210714 ADD BY ADAM REASON.取流水號
+        public int MonthlyRentId = 0;
+        public int NowPeriod = 1;//預設第一期
+        public DateTime OriSDATE;   //原本的起日
+        public string MonthlyRentIds = "";
         public BuyNowNxtCommon()
         {
         }
@@ -79,7 +84,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.MerchantTradeNo = MerchantTradeNo;
                             spIn.TaishinTradeNo = TransactionNo;
                             
-                            flag = msp.sp_CreateSubsMonth(spIn, ref errCode);
+                            flag = msp.sp_CreateSubsMonth(spIn, ref errCode, ref MonthlyRentId);
                             trace.traceAdd("CreateSubsMonth", new { flag, errCode });
                         }
                         else
@@ -113,7 +118,7 @@ namespace WebAPI.Models.BillFunc
                         {
                             spIn.PayTypeId = PayTypeId;
                             spIn.InvoTypeId = InvoTypeId;
-                            flag = msp.sp_UpSubsMonth(spIn, ref errCode);
+                            flag = msp.sp_UpSubsMonth(spIn, ref errCode, ref MonthlyRentId, ref NowPeriod, ref OriSDATE);
                             trace.traceAdd("UpSubsMonth", new { flag,errCode });
                         }
                         else
@@ -135,6 +140,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.LogID = LogID;
                             spIn.MerchantTradeNo = MerchantTradeNo;
                             spIn.TaishinTradeNo = TransactionNo;
+                            spIn.MonthlyRentIds = MonthlyRentIds;
                         }
                         if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0)
                         {
@@ -145,6 +151,7 @@ namespace WebAPI.Models.BillFunc
                         {
                             spIn.PayTypeId = PayTypeId;
                             spIn.InvoTypeId = InvoTypeId;
+                            
                             flag = msp.sp_ArrearsPaySubs(spIn, ref errCode);
                             trace.traceAdd("ArrearsPaySubs", new { flag, errCode }); 
                         }
@@ -173,6 +180,6 @@ namespace WebAPI.Models.BillFunc
 
             return flag;
         }
-    
+        
     }
 }

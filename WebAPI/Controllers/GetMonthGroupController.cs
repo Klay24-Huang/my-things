@@ -142,11 +142,19 @@ namespace WebAPI.Controllers
                                          //       a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.UseUntil.ToString("yyyy/MM/dd HH:mm")
                                          //20210706 ADD BY ADAM REASON.原本時分隱藏起來
                                          UseUntil = apiInput.Mode == "1" ? a.UseUntil.ToString("yyyy/MM/dd") :
-                                                a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd") : a.UseUntil.ToString("yyyy/MM/dd")
+                                                a.UseUntil.ToString("HHmm") == "0000" ? a.UseUntil.AddMinutes(-1).ToString("yyyy/MM/dd") : a.UseUntil.ToString("yyyy/MM/dd"),
+                                         //20210716 ADD BY ADAM REASON.增加信用卡授權金額
+                                         PayPrice = a.PayPrice
                                      }).ToList();
 
                         outputApi.MonProDisc = sp_List.FirstOrDefault().MonProDisc;
                         //outputApi.IsOrder = sp_List.Where(x => x.IsOrder == 1).ToList().Count() > 0 ? 1:0;
+                        //20210715 ADD BY ADAM REASON.針對城市車手調整機車無時數時
+                        cards.Where(x => x.IsMix == 1).ToList().ForEach(x =>
+                        {
+                            x.MotoTotalMins = x.MotoTotalMins == -999 ? 0 : x.MotoTotalMins;
+                        });
+
                         outputApi.MonCards = cards;
                         trace.traceAdd("outputApi", outputApi);
                     }

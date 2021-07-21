@@ -649,6 +649,45 @@ namespace WebAPI.Models.BillFunc
              , double dayBasePrice = 10
              , double FreeMins = 0
             )
+        {
+            if (mOri != null && mOri.Count() > 0) 
+            {               
+                if (mOri.Any(x =>              
+                   (x.Mode != 1 && x.IsMix == 0)
+                ))
+                throw new Exception("mOri商業邏輯錯誤");
+            }
+
+            return MotoRentMonthComp_ori(SD, ED, priceNmin, priceHmin, dayBaseMins, dayMaxMins,
+            lstHoliday, mOri, 
+            Discount, fDayMaxMins, fDayMaxPrice, dayBasePrice, FreeMins);
+        }
+
+        /// <summary>
+        /// 機車月租計算,區分平假日,不分平假日
+        /// </summary>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <param name="priceNmin"></param>
+        /// <param name="priceHmin"></param>
+        /// <param name="dayBaseMins"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <param name="lstHoliday"></param>
+        /// <param name="mOri"></param>
+        /// <param name="Discount"></param>
+        /// <param name="fDayMaxMins"></param>
+        /// <param name="fDayMaxPrice"></param>
+        /// <param name="dayBasePrice"></param>
+        /// <returns></returns>
+        public CarRentInfo MotoRentMonthComp_ori(DateTime SD, DateTime ED, double priceNmin, double priceHmin, int dayBaseMins, double dayMaxMins
+             , List<Holiday> lstHoliday = null
+             , List<MonthlyRentData> mOri = null
+             , int Discount = 0
+             , int fDayMaxMins = 0
+             , double fDayMaxPrice = 0
+             , double dayBasePrice = 10
+             , double FreeMins = 0
+            )
         {//note: MotoRentMonthComp2
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
@@ -674,9 +713,9 @@ namespace WebAPI.Models.BillFunc
             if (mOri != null && mOri.Count() > 0)
             {
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
-                   x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 1
-                ))
+                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
+                    //|| x.Mode != 1
+                 ))
                     throw new Exception("mOri資料內容錯誤");
 
                 if (mOri.GroupBy(x => x.MonthlyRentId).Where(y => y.Count() > 1).Count() > 0)

@@ -32,6 +32,9 @@ namespace Domain.SP.Output.Subscription
         public DateTime EndDate { get; set; }
         //20210617 ADD BY ADAM REASON.增加車型對照圖
         public string CarTypePic { get; set; }
+        //20210717 ADD BY ADAM REASON.MonthlyRentId改由sp取得
+        public int MonthlyRentId { get; set; }
+        public int IsMoto { get; set; }
     }
 
 }

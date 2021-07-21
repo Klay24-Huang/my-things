@@ -268,6 +268,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetTBCode.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetUpSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_InsEscrowHist.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_SaveInvno.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetTBCode.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetUpSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_InsEscrowHist.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_SaveInvno.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />

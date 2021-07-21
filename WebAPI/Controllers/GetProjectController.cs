@@ -626,8 +626,8 @@ namespace WebAPI.Controllers
                                         //newItem.ProjName += "_" + z.MonProjNM;
                                         //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
                                         newItem.ProjName = z.MonProjNM;
-                                        newItem.CarWDHours = z.WorkDayHours;
-                                        newItem.CarHDHours = z.HolidayHours;
+                                        newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
+                                        newItem.CarHDHours = z.HolidayHours == 0 ? -999 : z.HolidayHours;
                                         newItem.MotoTotalMins = z.MotoTotalMins;
                                         newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
                                         newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
@@ -638,6 +638,7 @@ namespace WebAPI.Controllers
                                         newItem.HDRateForCar = z.HoildayRateForCar;
                                         newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                         newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                        newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
                                         var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
                                         {
                                             PriceBill = y.Price, //給預設

@@ -169,9 +169,14 @@ namespace WebAPI.Controllers
                         {
                             var allmons = map.FromSPOutput_GetMonthList_Month(sp_re.AllMonths.Where(x=>x.IsMoto == apiInput.IsMoto).ToList());//區分汽機車
                             var mixCards = allmons.Where(x =>
-                               (x.CarWDHours > 0 || x.CarHDHours > 0) && x.MotoTotalMins > 0).ToList();
+                               (x.CarWDHours > 0 || x.CarHDHours > 0) && ((x.MotoTotalMins > 0 || x.HDRateForMoto < 2) && x.HDRateForMoto >0)).ToList();    //20210715 調整城市車手判斷邏輯
                             var norCards = allmons.Where(x =>
                                !mixCards.Any(y => y.MonProjID == x.MonProjID && y.MonProPeriod == x.MonProPeriod && y.ShortDays == x.ShortDays)).ToList();
+                            //20210715 ADD BY ADAM REASON.針對城市車手調整機車無時數時
+                            mixCards.ForEach(x =>
+                            {
+                                x.MotoTotalMins = x.MotoTotalMins == -999 ? 0 : x.MotoTotalMins;
+                            });
 
                             if(apiInput.IsMoto == 0)
                             {
