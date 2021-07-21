@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 using Domain.Common;
-using Domain.SP.BE.Input;
-using Domain.SP.Output;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
@@ -34,44 +29,43 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
-            bool isWriteError = false;
+            //bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "BE_IrentPaymentDetail";
-            Int64 LogID = 0;
-            Int16 ErrType = 0;
+            //Int64 LogID = 0;
+            //Int16 ErrType = 0;
             IAPI_BE_IrentPaymentDetail apiInput = null;
-            OAPI_BE_IrentPaymentDetail apiOutput = null;
+            //OAPI_BE_IrentPaymentDetail apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string IDNO = "";
             bool isGuest = true;
-            Int16 APPKind = 2;
+            //Int16 APPKind = 2;
             string Contentjson = "";
-
             #endregion
 
             #region 防呆
-            //flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-            //if (flag)
-            //{
-            //    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_Audit>(Contentjson);
-            //    //寫入API Log
-            //    string ClientIP = baseVerify.GetClientIp(Request);
-            //    flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            if (flag)
+            {
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_IrentPaymentDetail>(Contentjson);
+                ////寫入API Log
+                //string ClientIP = baseVerify.GetClientIp(Request);
+                //flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-            //    string[] checkList = { apiInput.UserID };
-            //    string[] errList = { "ERR900" };
-            //    //1.判斷必填
-            //    flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
-            //}
+                //string[] checkList = { apiInput.UserID };
+                //string[] errList = { "ERR900" };
+                ////1.判斷必填
+                //flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+            }
             #endregion
 
             #region TB
-            //這邊資料用api拋給sqyhi06vm
+            //這邊資料用api拋給sqyhi01vm
             HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
             WebAPIOutput_IrentPaymentDetail wsOutput = new WebAPIOutput_IrentPaymentDetail();
+
             WebAPIInput_IrentPaymentDetail spInput = new WebAPIInput_IrentPaymentDetail()
             {
                 SPSD = apiInput.SPSD,
@@ -84,7 +78,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
             return objOutput;
             #endregion
         }

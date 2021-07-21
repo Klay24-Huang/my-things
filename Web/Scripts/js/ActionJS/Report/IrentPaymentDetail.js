@@ -18,12 +18,13 @@
         ShowLoading("資料查詢中…");
         var flag = true;
         var errMsg = "";
-        if ($("#MEMACCOUNT").val() == "") {
-            flag = false;
-            errMsg = "請輸入會員帳號";
-        }
+        //if ($("#MEMACCOUNT").val() == "") {
+        //    flag = false;
+        //    errMsg = "請輸入會員帳號";
+        //}
         Account = $("#Account").val();
         var SendObj = new Object();
+        var ReceiveObj = new Object();
         var SPSD = $("#StartDate").val().replace(/\-/g, '');
         var SPED = $("#EndDate").val().replace(/\-/g, '');
         var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
@@ -36,9 +37,10 @@
             SendObj.SPSD2 = SPSD2;
             SendObj.SPED2 = SPED2;
             SendObj.MEMACCOUNT = MEMACCOUNT;
-            
 
-            DoAjaxAfterGoBack(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
+            ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
+            console.log("poi")
+            console.log(ReceiveObj)
             //disabledLoading();
         } else {
             disabledLoadingAndShowAlert(errMsg);

@@ -420,6 +420,52 @@ function DoAjaxAfterGoBack_EW_2(obj, FailMessage) {
     });
 }
 
+//20210721唐加，主動取款回傳查詢的資料
+function DoAjaxAfterGoBack_GG(obj, API, FailMessage) {
+    var json = JSON.stringify(obj);
+    var ReceiveObj = new Object();
+    //console.log(json);
+    //var site = jsHost + API;
+    var site = "http://localhost:2061/api/" + API //202012唐測試用
+    //console.log("site:" + site);
+    $.ajax({
+        url: site,
+        type: 'POST',
+        data: json,
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',           //'application/json',
+        async: false, //同步呼叫才能成功return
+        success: function (data) {
+            $.busyLoadFull("hide");
+            if (data.Result == "1") {
+                swal({
+                    title: 'SUCCESS',
+                    text: data.ErrorMessage,
+                    icon: 'success'
+                }).then(function (value) {
+                    //history.back(); //會跳回後台首頁
+                });
+            } else {
+                swal({
+                    title: 'Fail1',
+                    text: data.ErrorMessage,
+                    icon: 'error'
+                });
+            }
+            ReceiveObj = data;
+        },
+        error: function (e) {
+            $.busyLoadFull("hide");
+            swal({
+                title: 'Fail2',
+                text: FailMessage,
+                icon: 'error'
+            });
+        }
+    });
+    return ReceiveObj;
+}
 /**
  * 執行完將API回傳的資料丟入callback函式內
  * @param {any} obj
@@ -508,7 +554,6 @@ function DoAjaxAfterCallBackWithOutMessage(obj, API, FailMessage, CallBack) {
 
     });
 }
-
 function SetCity(obj) {
     var CityList = localStorage.getItem("CityList");
     obj.empty();
@@ -864,7 +909,6 @@ function SetCar(obj) {
 function SetManage(obj,showNameObj) {
 
 }
-
 function CheckStorageIsNull(obj) {
     var flag = false;
     if (typeof obj !== 'undefined' && obj !== null) {
@@ -875,14 +919,12 @@ function CheckStorageIsNull(obj) {
 function GetFileExtends(fileName) {
     return (/[.]/.exec(fileName)) ? /[^.]+$/.exec(fileName) : undefined;
 }
-
 function resetFileInput(file) {
    
     file.after(file.clone().val(""));
     file.remove();
    // file.val("");
 }  
-
 function detailMap(lat, lng) {
     window.open("http://maps.google.com.tw/maps?q=" + lng + "," + lat);
 }
@@ -931,8 +973,6 @@ function clearFileInput(id) {
 
     oldInput.parentNode.replaceChild(newInput, oldInput);
 }
-
-
 //20201109 ADD BY JERRY 增加下拉欄位設值的共同處理
 function setPostbackValue() {
     $('select').each(function (i, obj) {
@@ -941,14 +981,12 @@ function setPostbackValue() {
         }
     });
 }
-
 //20201211 ADD BY JERRY 增加依權限產生Menu處理
 function initMenu() {
     var PowerList = $.trim(localStorage.getItem("PowerList")) == '' ? [] : $.parseJSON(localStorage.getItem("PowerList"));
     var MenuList = $.trim(localStorage.getItem("MenuList")) == '' ? [] : $.parseJSON(localStorage.getItem("MenuList"));
     //console.log(PowerList);
     console.log(MenuList);
-
 
     var menuStr = '<ul class="navbar-nav m-auto">' + '\n';
     for (var i = 0; i < MenuList.length; i++) {
