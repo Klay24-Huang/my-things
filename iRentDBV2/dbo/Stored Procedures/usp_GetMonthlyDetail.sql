@@ -43,10 +43,10 @@ AS
 		if @SD is null And @ED is null
 		Begin
 			Select OrderNo,IDNO,lend_place,UseWorkDayHours,UseHolidayHours,UseMotoTotalHours,MKTime,SEQNO,ProjID,
-			ProjNM,ProjType,
-			Dbo.FN_MonthlyRentRateForCarMins('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) WorkDayRateForCarMins,
-			Dbo.FN_MonthlyRentRateForCarMins('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) HolidayRateForCarMins,
-			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else 0 End RateForMotorMins
+			ProjNM,
+			Case When ProjType in (0,3) Then Dbo.FN_MonthlyRentRateForCarHours('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) Else '-' End WorkDayRateForCarHours,
+			Case When ProjType in (0,3) Then Dbo.FN_MonthlyRentRateForCarHours('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) Else '-' End HolidayRateForCarHours,
+			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else '-' End RateForMotorHours
 			From (
 				SELECT History.OrderNo, History.IDNO, Main.lend_place, History.UseWorkDayHours, History.UseHolidayHours, 
 					History.UseMotoTotalHours, History.MKTime, ISNULL(Rate.SEQNO, 0) AS SEQNO, ISNULL(Rate.ProjID, '') AS ProjID, 
@@ -56,9 +56,9 @@ AS
 					Detail.monthly_holiday ,
 					Detail.gift_point ,
 					Detail.gift_motor_point ,
-					(Select w_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'car','')) w_mins,
-					(Select h_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'car','')) h_mins,
-					(Select h_mins+w_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'','')) t_mins
+					Case When Main.ProjType in (0,3) Then (Select w_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'car','')) Else 0 End w_mins,
+					Case When Main.ProjType in (0,3) Then (Select h_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'car','')) Else 0 End h_mins,
+					Case When Main.ProjType = 4  Then (Select w_mins+h_mins From [dbo].[FN_GetRangeMins](Detail.final_start_time, Detail.final_stop_time,0,600,'car','')) Else 0 End t_mins
 				FROM dbo.TB_MonthlyRentHistory AS History WITH (NOLOCK) LEFT OUTER JOIN
 						dbo.TB_MonthlyRent AS Rate WITH (NOLOCK) ON History.MonthlyRentId = Rate.MonthlyRentId INNER JOIN
 						dbo.TB_OrderMain AS Main WITH (NOLOCK) ON Main.order_number = History.OrderNo  INNER JOIN
@@ -71,10 +71,10 @@ AS
 		Else
 		Begin
 			Select OrderNo,IDNO,lend_place,UseWorkDayHours,UseHolidayHours,UseMotoTotalHours,MKTime,SEQNO,ProjID,
-			ProjNM,ProjType,
-			Dbo.FN_MonthlyRentRateForCarMins('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) WorkDayRateForCarMins,
-			Dbo.FN_MonthlyRentRateForCarMins('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) HolidayRateForCarMins,
-			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else 0 End RateForMotorMins
+			ProjNM,
+			Dbo.FN_MonthlyRentRateForCarHours('Work',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) WorkDayRateForCarHours,
+			Dbo.FN_MonthlyRentRateForCarHours('holiday',ProjType,w_mins,h_mins,monthly_workday,monthly_holiday,gift_point) HolidayRateForCarHours,
+			Case When ProjType = 4 then (t_mins)-(monthly_workday+monthly_holiday+gift_point) Else 0 End RateForMotorHours
 			From (
 				SELECT History.OrderNo, History.IDNO, Main.lend_place, History.UseWorkDayHours, History.UseHolidayHours, 
 					History.UseMotoTotalHours, History.MKTime, ISNULL(Rate.SEQNO, 0) AS SEQNO, ISNULL(Rate.ProjID, '') AS ProjID, 

@@ -471,7 +471,6 @@
     <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BannerData.cs" />
     <Compile Include="TB\BatExchangeStationData.cs" />
-    <Compile Include="TB\BackEnd\BE_MonthlyDetailForView.cs" />
     <Compile Include="TB\BonusData.cs" />
     <Compile Include="TB\BonusHistoryData.cs" />
     <Compile Include="TB\CarCmdData.cs" />
