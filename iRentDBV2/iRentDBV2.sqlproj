@@ -65,6 +65,7 @@
     <Folder Include="dbo\Functions" />
     <Folder Include="dbo\SQL Script" />
     <Folder Include="dbo\Trigger" />
+    <Folder Include="dbo\Synonyms\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\TB_Token.sql" />
@@ -500,6 +501,7 @@
     <Build Include="dbo\Tables\TB_BindUUCard_Log.sql" />
     <Build Include="dbo\Stored Procedures\usp_BindUUCardJob.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsAlertEvent.sql" />
+    <Build Include="usp_GetCityParkingFee.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_BookingCancelNew.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsReturnControl.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList.sql" />
@@ -521,8 +523,18 @@
     <Build Include="dbo\Tables\TB_MemberScoreDetail.sql" />
     <Build Include="dbo\Tables\TB_MemberScoreMain.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberScoreBlock_U1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsStoreValueCreateAccountLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletStoreValueLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletPayTransactionLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsPayTransactionLog.sql" />
+    <Build Include="dbo\Tables\TB_TaishinWalletTransferStoreValueLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsTransferStoreValueCreateAccountLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMonthlyMain.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMonthlyDetail.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetAuditList.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetKymcoList.sql" />
+    <Build Include="dbo\Functions\FN_MonthlyRentRateForCarMins.sql" />
+    <Build Include="dbo\Synonyms\SYN_MonthlyRent.sql" />
     <Build Include="dbo\Tables\TB_ScoreDef.sql" />
     <Build Include="dbo\Stored Procedures\usp_CalMedalMileStone.sql" />
     <Build Include="dbo\Stored Procedures\usp_CalMemberMedal.sql" />

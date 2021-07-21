@@ -1,6 +1,10 @@
 ﻿using Domain.TB;
 using Domain.TB.BackEnd;
 using Domain.TB.SubScript;
+using Domain.SP.Input.Common;
+using Domain.SP.Input.MonthlyRent;
+using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -69,6 +73,46 @@ namespace Reposotory.Implement
                 objList = this.GetObjList<MemberAuth>(ref flag, ref errorInfos, str, sqlParameter, str1);
             }
             return objList;
+        }
+
+
+        public List<BE_MonthlyMain> BE_GetMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
+        {
+            bool flag = true;
+            //List<BE_MonthlyQuery> lstQuery = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            string spName = "usp_GetMonthlyMain";
+            SPInput_GetMonthlyMain spInput = new SPInput_GetMonthlyMain
+            {
+                IDNO = string.IsNullOrEmpty(IDNO) ? null : IDNO,
+                hasPointer = hasPointer
+            };
+            if(!string.IsNullOrEmpty(SD))
+            {
+                spInput.SD = Convert.ToDateTime(SD);
+            }
+            if (!string.IsNullOrEmpty(ED))
+            {
+                spInput.ED = Convert.ToDateTime(ED);
+            }
+
+
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base>(this.ConnectionString);
+            List<BE_MonthlyMain> lstOut = new List<BE_MonthlyMain>();
+            DataSet ds = new DataSet();
+            flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
+          
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    lstOut = null;
+                }
+            }
+
+            return lstOut;
         }
 
         public List<BE_MonthlyQuery> BE_QueryMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
@@ -240,6 +284,65 @@ namespace Reposotory.Implement
                 lstQuery = GetObjList<BE_MonthlyReportData>(ref flag, ref lstError, SQL, para, term);
             }
             return lstQuery;
+        }
+
+        /// <summary>
+        /// 月租報表
+        /// </summary>
+        /// <param name="OrderNum"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <returns></returns>
+        public List<BE_MonthlyDetail> GetMonthlyDetail(string OrderNum, string IDNO, string SD, string ED)
+        {
+            bool flag = true;
+            //List<BE_MonthlyDetail> lstQuery = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string spName = "usp_GetMonthlyDetail";
+            //string SQL = "SELECT * FROM VW_BE_GetMonthlyReportData ";
+
+            SPInput_GetMonthlyDetail spInput = new SPInput_GetMonthlyDetail
+            {
+                IDNO = string.IsNullOrEmpty(IDNO) ? null : IDNO,
+            };
+            if (!string.IsNullOrEmpty(OrderNum))
+            {
+                spInput.OrderNo = Convert.ToInt64(OrderNum);
+            }
+            if (!string.IsNullOrEmpty(SD) && !string.IsNullOrEmpty(ED))
+            {
+                spInput.SD = Convert.ToDateTime(SD);
+                spInput.ED = Convert.ToDateTime(ED);
+            }
+            else if (!string.IsNullOrEmpty(SD) && string.IsNullOrEmpty(ED))
+            {
+                spInput.SD = Convert.ToDateTime(SD);
+                spInput.ED = spInput.SD.Value.AddDays(1).AddSeconds(-1);
+            }
+            else if (string.IsNullOrEmpty(SD) && !string.IsNullOrEmpty(ED))
+            {
+                spInput.SD = Convert.ToDateTime(ED);
+                spInput.ED = spInput.SD.Value.AddDays(1).AddSeconds(-1);
+            }
+
+
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base>(this.ConnectionString);
+            List<BE_MonthlyDetail> lstOut = new List<BE_MonthlyDetail>();
+            DataSet ds = new DataSet();
+            flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
+
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    lstOut = null;
+                }
+            }
+
+            return lstOut;
+
         }
     }
 }
