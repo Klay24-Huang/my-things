@@ -143,16 +143,16 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                _repository = new StationAndCarRepository(connetStr);
-                List<MotorRentObj> AllCars = new List<MotorRentObj>();
-                if (apiInput.ShowALL == 1)
-                {
-                    AllCars = _repository.GetAllMotorRent();
-                }
-                else
-                {
-                    AllCars = _repository.GetAllMotorRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                }
+                //_repository = new StationAndCarRepository(connetStr);
+                //List<MotorRentObj> AllCars = new List<MotorRentObj>();
+                //if (apiInput.ShowALL == 1)
+                //{
+                //    AllCars = _repository.GetAllMotorRent();
+                //}
+                //else
+                //{
+                //    AllCars = _repository.GetAllMotorRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
+                //}
 
 
                 // 20210622 UPD BY YEH REASON:因應積分<60分只能用定價專案，取資料改去SP處理
@@ -174,7 +174,7 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
                 //春節限定，將R140專案移除
-                var tempList = AllCars.Where(x => x.ProjID != "R140").ToList();
+                var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
 
                 if(tempList != null && tempList.Count()>0)
                     _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(tempList);               

@@ -120,6 +120,7 @@ namespace WebAPI.Controllers
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
             string MonIds = "";//短期月租Id可多筆
+            string ProjID = "";
             #endregion
             try
             {
@@ -251,6 +252,7 @@ namespace WebAPI.Controllers
                                 motoBaseMins = item.BaseMinutes;
                                 //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
                                 ProjType = item.ProjType;
+                            }
 
                             if (ProjType == 4)
                             {
