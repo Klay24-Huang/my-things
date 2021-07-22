@@ -13,7 +13,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebCommon;
-
 namespace Reposotory.Implement
 {
     public class SubScriptionRepository : BaseRepository
@@ -120,6 +119,7 @@ namespace Reposotory.Implement
             bool flag = true;
             List<BE_MonthlyQuery> lstQuery = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
+            
             string SQL = "SELECT Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'') AS ProjID   ";
             SQL += ",ISNULL(Main.[ProjNM],'') AS ProjNM FROM TB_MonthlyRent AS Main  ";
 

@@ -728,4 +728,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="AlertID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cf55005b-7840-43cb-8fcc-e407a840090f" ChangeDateTime="06/23/2021 17:55:52">
+    <Property Name="ElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Logid" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6be9d1e3-a5f4-496d-b5f3-26c4da20ffb6" ChangeDateTime="06/23/2021 17:59:56">
+    <Property Name="ElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog].[TransFlg]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PROCD" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5b9a3305-4a60-4228-bcee-05dafd99f091" ChangeDateTime="06/23/2021 18:00:25">
+    <Property Name="ElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog].[PROCD]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TRANFLG" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f46e2617-5213-456c-82ca-0740f5041e6b" ChangeDateTime="06/23/2021 18:00:28">
+    <Property Name="ElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog].[PROCDT]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TRANDT" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eb5b897b-284b-46e2-9f1e-c726c41300aa" ChangeDateTime="06/24/2021 01:10:06">
+    <Property Name="ElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog].[Logid]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TB_TaishinWalletStoreValueLog]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SEQNO" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d638072b-60fd-4270-94a9-12125942bb7d" ChangeDateTime="06/29/2021 08:21:50">
+    <Property Name="ElementName" Value="[dbo].[Table1].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Table1]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SEQNO" />
+  </Operation>
 </Operations>

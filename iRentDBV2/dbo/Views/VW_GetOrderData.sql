@@ -67,6 +67,7 @@ AS
 		,VW.PRODESC
 		,VW.PRICE
 		,VW.PRICE_H
+		,VW.FirstFreeMins
 		,VW.CarBrend
 		,VW.CarTypeName
 		,VW.CarTypeGroupCode
@@ -75,13 +76,14 @@ AS
 		,ISNULL(PriceByMinutes.BaseMinutes,0) AS BaseMinutes
 		,ISNULL(PriceByMinutes.BaseMinutesPrice,0) AS BaseMinutesPrice
 		,ISNULL(PriceByMinutes.Price,0.0) AS MinuteOfPrice
+		,ISNULL(PriceByMinutes.PriceH,0.0) AS MinuteOfPriceH
 		,ISNULL(PriceByMinutes.MaxPrice,0) AS MaxPrice
 		,ISNULL(PriceByMinutes.MaxPriceH,0) AS MaxPriceH --20201006 - eason
 		,ISNULL(CarStatus.device3TBA,0) AS device3TBA
 		,ISNULL(CarStatus.deviceRDistance,'') AS RemainingMilage
-		,CarStatus.Latitude AS CarLatitude
-		,CarStatus.Longitude AS CarLongitude
-		,CarStatus.Millage
+		,ISNULL(CarStatus.Latitude,0) AS CarLatitude
+		,ISNULL(CarStatus.Longitude,0) AS CarLongitude
+		,ISNULL(CarStatus.Millage,0) As Millage
 		,Station.Content AS [Content]
 		,Station.Latitude
 		,Station.Longitude
@@ -89,9 +91,9 @@ AS
 		,Station.ADDR 
 		,Station.Tel
 		,Station.Area
-        ,Station.ContentForAPP
-        ,Station.IsRequiredForReturn
-        ,Station.[CityID]
+		,Station.ContentForAPP
+		,Station.IsRequiredForReturn
+		,Station.[CityID]
 		,Station.[AreaID]
 	FROM [dbo].[TB_OrderMain] AS OrderMain WITH(NOLOCK)
 	LEFT JOIN [dbo].[TB_OrderDetail] AS OrderDetil WITH(NOLOCK) ON OrderDetil.order_number=OrderMain.order_number 

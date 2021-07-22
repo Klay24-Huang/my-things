@@ -19,6 +19,5 @@ namespace WebAPI.Models.Param.Input
         /// 預計還車時間
         /// </summary>
         public string EDate { set; get; }
-
     }
 }

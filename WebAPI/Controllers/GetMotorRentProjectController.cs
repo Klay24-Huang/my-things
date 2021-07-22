@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Project;
+using Domain.SP.Input.Subscription;
+using Domain.SP.Output.Subscription;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.TB;
@@ -15,8 +17,10 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -31,6 +35,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetMotorRentProject(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var cr_com = new CarRentCommon();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -53,6 +58,7 @@ namespace WebAPI.Controllers
             DateTime SDate = DateTime.Now;
             DateTime EDate = DateTime.Now.AddHours(1);
             string IDNO = "";
+            var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -106,30 +112,56 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
+
+            #region Token
+
             //Token判斷
-            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            //if (flag && isGuest == false)
+            //{
+            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
+            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            //    {
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
+
+            if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                var token_in = new IBIZ_TokenCk
                 {
                     LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
+                    Access_Token = Access_Token
                 };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
+                var token_re = cr_com.TokenCk(token_in);
+                if (token_re != null)
                 {
-                    flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
-                    errCode = "000000";
+                    IDNO = token_re.IDNO ?? "";
                 }
-                if (flag)
+            }
+
+            #endregion
+
+            //取得機車使用中訂閱制月租
+            if (flag)
+            {
+                if (!string.IsNullOrWhiteSpace(IDNO))
                 {
-                    IDNO = spOut.IDNO;
+                    var sp_in = new SPInput_GetNowSubs()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        SD = SDate,
+                        ED = EDate,
+                        IsMoto = 1
+                    };
+                    var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                        InUseMonth = sp_list;
                 }
             }
 
@@ -247,6 +279,58 @@ namespace WebAPI.Controllers
                 {
                     GetMotorProjectObj = lstTmpData
                 };
+
+                #region 產出月租&Project虛擬卡片 
+
+                if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
+                {
+                    var VisProObjs = new List<MotorProjectObj>();
+                    var ProObjs = outputApi.GetMotorProjectObj;
+                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                    {
+                        ProObjs.ForEach(x => {
+                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
+                            VisProObjs.Add(x);
+                            InUseMonth.ForEach(z =>
+                            {
+                                MotorProjectObj newItem = objUti.Clone(x);
+
+                                #region 月租卡片欄位給值
+                                //newItem.ProjName += "_" + z.MonProjNM;
+                                //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                newItem.ProjName = z.MonProjNM;
+                                newItem.MotoTotalMins = z.MotoTotalMins;
+                                
+                                //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
+                                DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
+                                newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
+
+                                newItem.MonthlyRentId = z.MonthlyRentId;
+                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                newItem.HDRateForMoto = z.HoildayRateForMoto;
+
+                                //同步欄位，為了後續比對大小用
+                                newItem.PerMinutesPrice = (float)z.HoildayRateForMoto;    //20210620 ADD BY ADAM REASON.目前機車不分平假日，先用假日去判斷
+                                //20210715 ADD BY ADAM REASON.補上說明欄位
+                                newItem.ProDesc = z.MonProDisc;
+                                #endregion
+
+                                VisProObjs.Add(newItem);
+                            });
+                        });
+
+                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimum
+                        VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p=>p.MonthlyRentId).First().IsMinimum = 1;
+                        VisProObjs = VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p => p.MonthlyRentId).ToList();
+                        outputApi.GetMotorProjectObj = VisProObjs;
+
+                    }
+                }
+
+                #endregion
             }
             #endregion
 
@@ -261,5 +345,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
     }
 }

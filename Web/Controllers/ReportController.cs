@@ -1,4 +1,5 @@
 ﻿using Domain.TB.BackEnd;
+
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OfficeOpenXml;
@@ -71,7 +72,6 @@ namespace Web.Controllers
             }
             if (!string.IsNullOrEmpty(carid))
             {
-
                 ViewData["CarNo"] = carid;
             }
             if (!string.IsNullOrEmpty(objStation))
@@ -473,6 +473,10 @@ namespace Web.Controllers
                 {
                     ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
                 }
+                else
+                {
+                    ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
+                }
             }
 
             if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
@@ -688,6 +692,7 @@ namespace Web.Controllers
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
+
 
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
