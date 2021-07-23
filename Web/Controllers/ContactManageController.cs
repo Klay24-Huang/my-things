@@ -15,7 +15,7 @@ namespace Web.Controllers
 {
     public class ContactManageController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public ActionResult BookingQuery()
         {
             return View();
@@ -171,7 +171,7 @@ namespace Web.Controllers
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                //sheet.AutoSizeColumn(j);
+                sheet.AutoSizeColumn(j);
             }
             if (flag)
             {
