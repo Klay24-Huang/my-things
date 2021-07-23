@@ -473,10 +473,6 @@ namespace Web.Controllers
                 {
                     ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
                 }
-                else
-                {
-                    ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
-                }
             }
 
             if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
