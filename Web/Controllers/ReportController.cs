@@ -183,9 +183,10 @@ namespace Web.Controllers
                             content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
                         }
                     }
-                   
-                   
-                }else if (data[k].OrderStatus == 2)
+
+
+                }
+                else if (data[k].OrderStatus == 2)
                 {
                     if (data[k].BookingEnd < data[k].BookingStart)
                     {
@@ -439,7 +440,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
         {
-            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             int tmpIsHandle = 2;
@@ -466,7 +467,22 @@ namespace Web.Controllers
                 ViewData["userID"] = tUserID;
             }
 
-            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE >= DS && DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                    ViewData["outerOfDateRangeMsg"] = "";
+                }
+                else
+                {
+                    ViewData["outerOfDateRangeMsg"] = "查詢起迄日超過範圍";
+                }
+            }
+
+            if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
             {
                 //lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
@@ -485,7 +501,7 @@ namespace Web.Controllers
         /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
-            List<BE_MonthlyQuery> lstSubScription = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             int tmpIsHandle = 2;
@@ -510,13 +526,24 @@ namespace Web.Controllers
                 tUserID = userID;
                 ViewData["userID"] = tUserID;
             }
-            if (tmpIsHandle < 2 || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE >= DS && DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                }
+            }
+
+            if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間", "IDNO", "汽車－平日", "汽車－假日", "機車" };
+            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間",
+                "IDNO", "汽車－平日", "汽車－假日", "機車","是否開啟自動續約" ,"方案是否綁約","綁約期數" };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -539,6 +566,9 @@ namespace Web.Controllers
                 content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
                 content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
                 content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
+                content.CreateCell(9).SetCellValue(lstSubScription[k].AutomaticRenewal);
+                content.CreateCell(10).SetCellValue(lstSubScription[k].IsTiedUp);
+                content.CreateCell(11).SetCellValue(lstSubScription[k].MonProPeriod);
             }
 
             //for (int l = 0; l < headerFieldLen; l++)
@@ -565,7 +595,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyDetailQuery(string SDate, string EDate, string userID, string OrderNum)
         {
-            List<BE_MonthlyReportData> lstSubScription = new List<BE_MonthlyReportData>();
+            List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
@@ -594,6 +624,21 @@ namespace Web.Controllers
                 tOrderNum = tOrderNum.Replace("H", "");
             }
             if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE >= DS && DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                    ViewData["outerOfDateRangeMsg"] = "";
+                }
+                else
+                {
+                    ViewData["outerOfDateRangeMsg"] = "查詢時數使用起迄日超過範圍";
+                }
+            }
+            if (isInDateRange || tOrderNum.Length>0 || tUserID.Length > 0)
             {
                 //lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
@@ -610,7 +655,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult MonthlyDetailQueryDownload(string SDate, string EDate, string userID, string OrderNum)
         {
-            List<BE_MonthlyReportData> lstSubScription = new List<BE_MonthlyReportData>();
+            List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
@@ -637,13 +682,26 @@ namespace Web.Controllers
                 ViewData["OrderNum"] = tOrderNum;
                 tOrderNum = tOrderNum.Replace("H", "");
             }
-            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            bool isInDateRange = false;
+
+            if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
+            {
+                if (DE >= DS && DE <= DS.AddMonths(1))
+                {
+                    isInDateRange = true;
+                }
+            }
+            //if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
+            if (isInDateRange || tOrderNum != "" || tUserID != "")
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)", "使用機車(分)", "使用時間", "扣抵訂閱方案編號", "扣抵方案代碼", "扣抵方案名稱" };
+            string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)"
+                , "使用機車(分)", "使用時間", "扣抵訂閱方案編號", "扣抵方案代碼"
+                ,"汽車平日優惠費率","汽車假日優惠費率","機車優惠費率","扣抵方案名稱" };
+
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -665,8 +723,11 @@ namespace Web.Controllers
                 content.CreateCell(5).SetCellValue((lstSubScription[k].UseMotoTotalHours).ToString("f1"));   //機車
                 content.CreateCell(6).SetCellValue(lstSubScription[k].MKTime.ToString("yyyy-MM-dd HH:mm"));
                 content.CreateCell(7).SetCellValue(lstSubScription[k].SEQNO);   //ID
-                content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //ID
-                content.CreateCell(9).SetCellValue(lstSubScription[k].ProjNM);   //汽車－平日
+                content.CreateCell(8).SetCellValue(lstSubScription[k].ProjID);   //扣抵方案代碼
+                content.CreateCell(9).SetCellValue(lstSubScription[k].WorkDayRateForCarHours);//汽車平日優惠費率
+                content.CreateCell(10).SetCellValue(lstSubScription[k].HolidayRateForCarHours);   //汽車假日優惠費率
+                content.CreateCell(11).SetCellValue(lstSubScription[k].RateForMotorHours);   //機車優惠費率
+                content.CreateCell(12).SetCellValue(lstSubScription[k].ProjNM);   //扣抵方案名稱
             }
 
             //for (int l = 0; l < headerFieldLen; l++)
@@ -1201,8 +1262,7 @@ namespace Web.Controllers
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
             lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
-            ViewData["Time_Start"] = Time_Start;
-            ViewData["Time_End"] = Time_End;
+
 
             if (isExport == "true")
             {

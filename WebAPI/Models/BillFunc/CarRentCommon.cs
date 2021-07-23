@@ -248,6 +248,7 @@ namespace WebAPI.Models.BillFunc
         {
             var re = new OBIZ_MonthRent();
             var cr_com = new CarRentCommon();
+            var cr_sp = new CarRentSp();
             var monthlyRentRepository = new MonthlyRentRepository(connetStr);
             var monthlyRentDatas = new List<MonthlyRentData>();
             var billCommon = new BillCommon();
@@ -267,9 +268,25 @@ namespace WebAPI.Models.BillFunc
             //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
             //else
             //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
-           
-            if(sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
-               monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
+
+            if (sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
+            {
+                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
+
+
+                //假日優惠費率置換:只限汽車月租,只置換假日
+                List<int> CarProTypes = new List<int>() { 0, 3 };
+                if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0 && CarProTypes.Any(x=>x == sour.ProjType) && sour.intOrderNO > 0)
+                {
+                    string xErrMsg = "";
+                    foreach (var m in monthlyRentDatas)
+                    {
+                        var pri = cr_sp.sp_GetEstimate("", "", sour.LogID, ref xErrMsg, sour.intOrderNO);
+                        if (pri != null && pri.PRICE_H > 0)
+                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H);
+                    }
+                }
+            }
 
             if (sour.CancelMonthRent)
                 monthlyRentDatas = new List<MonthlyRentData>();
@@ -1394,7 +1411,7 @@ namespace WebAPI.Models.BillFunc
 
     public class CarRentSp
     {
-        public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg)
+        public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg, Int64 OrderNo=0)
         {
             var re = new GetFullProjectVM();
             if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
@@ -1408,6 +1425,7 @@ namespace WebAPI.Models.BillFunc
             param[0] = PROJID;
             param[1] = CARTYPE;
             param[2] = LogID;
+            param[3] = OrderNo;
 
             DataSet ds1 = null;
             string returnMessage = "";
