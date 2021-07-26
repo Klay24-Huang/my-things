@@ -45,120 +45,6 @@ namespace WebAPI.Controllers
         [HttpPost]
         public Dictionary<string, object> DoRePayDetail(Dictionary<string, object> value)
         {
-            #region mark-test
-            //test:測試用
-            //string orders = "7051420,7051526,7051944,7052135,7052152,7052236,7052401,7052440,7052614,7052616,7052622,7052689,7052691,7052792,7052819,7052835,7052869,7052888,7052895,7052902,7052992,7053142,7053238,7053251,7053299,7053527,7053573,7053618,7053681,7053816,7054079,7054178,7054330,7054406,7054414,7054470,7054551,7054875,7054924,7055243,7055255,7055379,7055509,7055680,7055726,7055749,7055907,7056033,7056046,7056124,7056266,7056386,7056453,7056665,7056760,7056950,7057046,7057566,7057688,7057756,7058017,7058023,7058172,7058198,7058245,7058266,7058365,7058380,7058403,7058496,7058642,7058708,7058791,7059075,7059107,7059139,7059268,7059945,7060379,7060397,7061502,7061539,7061684,7062298,7064045,7080181,7085444,7101988,7109662,7123572,7130186,7142738,7149865,7154358,7161595,7169386,7214397,7224589,7227237,7236718,7241930,7258385,7260135,7264496,7268150,7271848,7273027,7273843,7293135,7320618,7330000,7332737,7341093,7346515,7350375,7350987,7357932,7361530,7365101,7365331,7367757,7367804,7385098,7388946,7391136,7395159,7395618,7397913,7398376,7402079,7413069,7417711,7419364,7428046,7428404,7433687,7434931,7437027,7438542,7439580,7439606,7439857,7439935,7440483,7449048,7449479,7453672,7455553,7459065,7461797,7464439,7465626,7465856,7465977,7466751,7471524,7483462,7493849,7532103";
-            //var vv = FixSpring(orders);
-            //int vvv = 1;
-            #endregion
-
-            #region mark-多筆租金計算
-//            string vipJsonSour = @"
-//[
-//	{
-//		'orderNo': 7052691,
-//		'idNo': 'C220861844',
-//		'strSd': '2021-02-13 09:00:00.000',
-//		'strEd': '2021/2/18 9:00 AM',
-//        'insPrice':40
-//	},
-//	{
-//		'orderNo': 7052792,
-//		'idNo': 'T122771818',
-//		'strSd': '2021-02-13 09:50:00.000',
-//		'strEd': '2021/2/18 9:50 AM',
-//        'insPrice':30
-//	},
-//	{
-//		'orderNo': 7052902,
-//		'idNo': 'F123872199',
-//		'strSd': '2021-02-11 17:30:00.000',
-//		'strEd': '2021/2/16 5:30 PM',
-//        'insPrice':30
-//	},
-//	{
-//		'orderNo': 7055509,
-//		'idNo': 'S121033452',
-//		'strSd': '2021-02-12 09:10:00.000',
-//		'strEd': '2021/2/17 9:10 AM',
-//        'insPrice':40
-//	},
-//	{
-//		'orderNo': 7057046,
-//		'idNo': 'F127828839',
-//		'strSd': '2021-02-13 08:30:00.000',
-//		'strEd': '2021/2/18 8:30 AM',
-//        'insPrice':50
-//	},
-//	{
-//		'orderNo': 7058172,
-//		'idNo': 'F227037732',
-//		'strSd': '2021-02-15 10:00:00.000',
-//		'strEd': '2021/2/20 10:00 AM',
-//        'insPrice':40
-//	},
-//	{
-//		'orderNo': 7058403,
-//		'idNo': 'F129034915',
-//		'strSd': '2021-02-13 08:00:00.000',
-//		'strEd': '2021/2/18 8:00 AM',
-//        'insPrice':50
-//	},
-//	{
-//		'orderNo': 7059139,
-//		'idNo': 'K222820688',
-//		'strSd': '2021-02-12 07:30:00.000',
-//		'strEd': '2021/2/17 7:30 AM',
-//        'insPrice':50
-//	},
-//	{
-//		'orderNo': 7059268,
-//		'idNo': 'H220713713',
-//		'strSd': '2021-02-12 09:00:00.000',
-//		'strEd': '2021/2/17 9:00 AM',
-//        'insPrice':50
-//	},
-//	{
-//		'orderNo': 7064045,
-//		'idNo': 'A126766693',
-//		'strSd': '2021-02-16 12:30:00.000',
-//		'strEd': '2021/2/21 12:30 PM',
-//        'insPrice':30
-//	},
-//	{
-//		'orderNo': 7169386,
-//		'idNo': 'R124797032',
-//		'strSd': '2021-02-08 08:30:00.000',
-//		'strEd': '2021/2/13 8:30 AM',
-//        'insPrice':50
-//	}
-//]
-//            ";
-//            vipJsonSour = vipJsonSour.Replace("'", "\"");
-//            var vips = new List<IBIZ_ListRentCompute>();
-//            vips = JsonConvert.DeserializeObject<List<IBIZ_ListRentCompute>>(vipJsonSour);
-//            var list = vips.OrderBy(x => x.orderNo).ToList();
-//            string orderNos = string.Join(",", list.Select(x => x.orderNo.ToString()).ToList());
-//            var vipre = ListRentCompute(vips);
-//            if (vipre != null && vipre.Count() > 0)
-//            {
-//                var carRepo = new CarRentRepo(connetStr);
-//                var ins = (from a in vipre
-//                           select new
-//                           {
-//                               init_price = a.caRent,
-//                               InsPrice = a.InsPrice,
-//                               OrderNo = a.orderNo
-//                           }).ToList();
-
-//                ins.ForEach(x =>
-//                {
-//                    carRepo.UpdOrderMainByOrderNo(x.OrderNo, x.init_price, x.InsPrice);
-//                });
-//            }
-//            int vipp = 1;
-            #endregion
-
             #region 參數宣告
             jsonDts = new List<SPInput_CalFinalPrice>();
             errList = new List<RePayDetailErrVM>();
@@ -187,10 +73,12 @@ namespace WebAPI.Controllers
             {
                 int disc = 0;
                 int motoDisc = 0;
+                string MonIds = "";
                 if (dts.Count() == 1)
                 {
                     disc = inApi.Discount;
                     motoDisc = inApi.MotorDiscount;
+                    MonIds = inApi.MonIds;
                 }
 
                 foreach(var item in dts)
@@ -203,7 +91,8 @@ namespace WebAPI.Controllers
                         RePayMode = inApi.RePayMode,
                         Discount = disc,
                         MotorDiscount =motoDisc,
-                        jsonOut = inApi.jsonOut
+                        jsonOut = inApi.jsonOut,       
+                        MonIds = MonIds
                     };
                     try
                     {
@@ -307,6 +196,7 @@ namespace WebAPI.Controllers
             var cr_com = new CarRentCommon();
             var cr_sp = new CarRentSp();
             var trace = new TraceCom();
+            var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
@@ -380,6 +270,7 @@ namespace WebAPI.Controllers
             DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
+            string MonIds = "";//短期月租Id可多筆
             #endregion
 
             #region trace
@@ -407,6 +298,7 @@ namespace WebAPI.Controllers
                     Discount = apiInput.Discount,
                     MotorDiscount = apiInput.MotorDiscount,
                     isGuest = isGuest,
+                    MonIds = apiInput.MonIds
                 };
                 var inck_re = cr_com.InCheck(input);
                 if (inck_re != null)
@@ -416,6 +308,8 @@ namespace WebAPI.Controllers
                     Discount = inck_re.Discount;
                     tmpOrder = inck_re.longOrderNo;
                 }
+                if (flag)
+                    MonIds = apiInput.MonIds;
             }
 
             #endregion
@@ -839,6 +733,8 @@ namespace WebAPI.Controllers
                 #region 建空模及塞入要輸出的值
                 if (flag)
                 {
+                    int Mode = ProjType == 4 ? 1 : 0;
+                    outputApi.MonBase = carRepo.GetMonths(IDNO, SD, FED, Mode); //短期下拉選項
                     outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
                     outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
                     outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase();
@@ -925,6 +821,7 @@ namespace WebAPI.Controllers
                         ProjType = item.ProjType,
                         MotoDayMaxMins = motoDayMaxMinns,
                         MinuteOfPrice = item.MinuteOfPrice,
+                        MinuteOfPriceH = item.MinuteOfPriceH,
                         hasFine = hasFine,
                         SD = SD,
                         ED = ED,
@@ -934,7 +831,9 @@ namespace WebAPI.Controllers
                         Discount = Discount,
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
-                        carBaseMins = 60
+                        carBaseMins = 60,
+                        FirstFreeMins = item.FirstFreeMins,
+                        MonIds = MonIds
                     };
 
                     if (visMons != null && visMons.Count() > 0)
@@ -1360,6 +1259,10 @@ namespace WebAPI.Controllers
         /// 機車時數
         /// </summary>
         public int MotorDiscount { set; get; } = 0;
+        /// <summary>
+        /// 月租Id,可多筆
+        /// </summary>
+        public string MonIds { get; set; }
     }
 
     public class OAPI_RePayDetailAll

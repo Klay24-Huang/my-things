@@ -121,6 +121,10 @@ namespace Domain.SP.Output.OrderList
         /// 剩餘訂金
         /// </summary>
         public int LastOrderPrice { get; set; }
+        /// <summary>
+        /// 前n分鐘0元
+        /// </summary>
+        public double FirstFreeMins { get; set; }
         #region 機車費用，當ProjType=4時才有值
         /// <summary>
         /// 基本分鐘數
@@ -131,9 +135,13 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int BaseMinutesPrice { set; get; }
         /// <summary>
-        /// 每分鐘多少
+        /// 每分鐘多少-平日
         /// </summary>
         public float MinuteOfPrice { set; get; }
+        /// <summary>
+        /// 每分鐘多少-假日
+        /// </summary>
+        public float MinuteOfPriceH { get; set; }
         /// <summary>
         /// 每日上限金額
         /// </summary>

@@ -62,7 +62,19 @@ namespace OtherService.Enum
             /// <summary>
             /// 遠傳車機韌體資訊
             /// </summary>
-            UpdCarMachineVerInfo
+            UpdCarMachineVerInfo,
+            /// <summary>
+            /// 台新錢包直接儲值+開戶 LOG寫入
+            /// </summary>
+            InsStoreValueCreateAccountLog,
+            /// <summary>
+            /// 台新錢包扣款 LOG寫入
+            /// </summary>
+            InsPayTransactionLog,
+            /// <summary>
+            /// 台新錢包轉贈 LOG寫入
+            /// </summary>
+            InsTransferStoreValueLog
         }
         /// <summary>
         /// 取出SPName
@@ -117,7 +129,15 @@ namespace OtherService.Enum
                 case SPType.UpdCarMachineVerInfo:
                     SPName = "usp_UpdCarMachineVerInfo";
                     break;
-
+                case SPType.InsStoreValueCreateAccountLog:
+                    SPName = "usp_InsStoreValueCreateAccountLog";
+                    break;
+                case SPType.InsPayTransactionLog:
+                    SPName = "usp_InsPayTransactionLog";
+                    break;
+                case SPType.InsTransferStoreValueLog:
+                    SPName = "usp_InsTransferStoreValueCreateAccountLog";
+                    break;
             }
             return SPName;
         }

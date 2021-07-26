@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[TB_MonthlyRent](
 	[MonthlyRentId] [bigint] IDENTITY(1,1) NOT NULL,
+	[MonLvl] [int] NOT NULL,
 	[ProjID] [varchar](20) NOT NULL,
 	[ProjNM] [nvarchar](50) NOT NULL,
 	[SEQNO] [bigint] NOT NULL,
@@ -26,6 +27,9 @@
 	[MonthlyRentId] ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[TB_MonthlyRent] ADD  CONSTRAINT [DF_TB_MonthlyRent_MonLvl]  DEFAULT ((0)) FOR [MonLvl]
 GO
 
 ALTER TABLE [dbo].[TB_MonthlyRent] ADD  CONSTRAINT [DF__TB_Monthl__ProjI__13D39108]  DEFAULT ('') FOR [ProjID]
@@ -77,6 +81,9 @@ ALTER TABLE [dbo].[TB_MonthlyRent] ADD  CONSTRAINT [DF__TB_Monthl__Hoild__1D5CFB
 GO
 
 ALTER TABLE [dbo].[TB_MonthlyRent] ADD  CONSTRAINT [DF__TB_Monthl__MKTim__1E511F7B]  DEFAULT (dateadd(hour,(8),getdate())) FOR [MKTime]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'月租等級' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRent', @level2type=N'COLUMN',@level2name=N'MonLvl'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'短租專案代碼' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TB_MonthlyRent', @level2type=N'COLUMN',@level2name=N'ProjID'

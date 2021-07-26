@@ -40,5 +40,11 @@ namespace WebAPI.Models.Param.Input
         /// 據點代碼
         /// </summary>
         public string StationID { set; get; }
+        /// <summary>
+        /// 選擇的訂閱制制月租
+        /// </summary>
+        public Int64 MonId { get; set; }
+
+
     }
 }

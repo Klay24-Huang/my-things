@@ -3,7 +3,7 @@
 		SELECT Project.[PROJID],[PRONAME],[PRODESC],[PROHOUR],[PROHOUR_MAX],[PROTYPE_N],[PROTYPE_H]
       ,[PROPRICE_N],[PROPRICE_H],[ShowStart],[ShowEnd],[PRSTDT],[PRENDT],[SPCLOCK],[RNTDTLOCK],[SPECProj],Project.[use_flag],[PROJTYPE],[PayMode],[SORT],[IsMonthRent]
 	  ,ProjectStation.IOType,ProjectStation.StationID
-	  ,ProjectDiscount.[CARTYPE],ProjectDiscount.PRICE,ProjectDiscount.PRICE_H
+	  ,ProjectDiscount.[CARTYPE],ProjectDiscount.PRICE,ProjectDiscount.PRICE_H, ProjectDiscount.FirstFreeMins
 	  ,ISNULL(CarTypeData.CarBrend,'') AS CarBrend,ISNULL(CarTypeData.CarTypeName,'') AS CarTypeName,CarTypeGroup.CarTypeGroupCode,CarTypeGroup.CarTypeImg,CarTypeGroup.Seat
 	  ,Operator.OperatorICon,Operator.Score
   FROM [dbo].[TB_Project] AS Project
