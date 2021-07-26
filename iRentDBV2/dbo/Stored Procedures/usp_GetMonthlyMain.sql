@@ -45,48 +45,108 @@ AS
 
 	IF @Error = 0
 	Begin
-			--Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'') AS ProjID
-			--  ,ISNULL(Main.[ProjNM],'') AS ProjNM 
-			--From TB_MonthlyRent AS Main 
-			--Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End 
-		Declare @Sql nvarchar(max)
-		Set @Sql = '
-			--Select @IDNO,@SD,@ED
-			Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-			,Main.MonProPeriod,''Y'' IsTiedUp,''Y'' AutomaticRenewal
-			From SYN_MonthlyRent AS Main 
-			Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End '
+		IF  @SD is null And @ED is null
+		Begin
+			Set @ED = Convert(varchar(10),dbo.GET_TWDATE(),111)
+			Set @SD = DATEADD(month,-1,@ED)
+		End
 
-		Declare @PamareterSql nvarchar(max) = '@IDNO varchar(20), @SD Datetime ,@ED Datetime'
-	
-		IF @SD is not null And @ED is not null 
+		IF @SD is not null And @ED is not null
 		Begin
-			Set @Sql = @Sql + ' And Main.EndDate >= @SD And Main.StartDate <= @ED '
-		End 
-		Else IF @SD is not null And @ED is null 
+			If @hasPointer = 0
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @ED 
+					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else if  @hasPointer = 1
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @ED 
+					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @ED 
+				ORDER BY Main.IDNO ASC
+			End
+		End
+		Else if @SD is not null And @ED is null 
 		Begin
-				Set @Sql = @Sql + ' And Main.EndDate >= @SD And Main.StartDate <= @SD '
+			If @hasPointer = 0
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else if  @hasPointer = 1
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+				ORDER BY Main.IDNO ASC
+			End
 		End
 		Else IF @SD is null And @ED is not null 
 		Begin
-			Set @Sql = @Sql + ' And Main.EndDate >= @ED And Main.StartDate <= @ED '
+			If @hasPointer = 0
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else if  @hasPointer = 1
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
+				ORDER BY Main.IDNO ASC
+			End
+			Else
+			Begin
+				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
+					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+				From SYN_MonthlyRent AS Main 
+				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+					And Main.EndDate >= @SD And Main.StartDate <= @SD 
+				ORDER BY Main.IDNO ASC
+			End
 		End
-
-		IF @hasPointer = 0
-		Begin
-			Set @Sql = @Sql + ' And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0)  '
-		End
-		Else IF @hasPointer = 1
-		Begin
-			Set @Sql = @Sql + ' And (Main.WorkDayHours > 0 OR Main.HolidayHours > 0 OR Main.MotoTotalHours > 0)  '
-		End
-		
-		Set @Sql = @Sql + ' ORDER BY Main.IDNO ASC'
-
-		print @Sql
-		print @PamareterSql
-
-		EXECUTE sp_executesql @Sql , @PamareterSql , @IDNO, @SD , @ED
 	End 
 
 	--寫入錯誤訊息
