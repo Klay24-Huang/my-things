@@ -201,7 +201,7 @@ namespace OtherService
                     TransmittalDate = "",
                     TransDate = output.Result.TransDate,
                     TransId = output.Result.TransId,
-                    SourceTransId = wsInput.StoreTransId,
+                    SourceTransId = "", //這參數是退款才需要用到
                     TransType = "T001",
                     BonusFlag = wsInput.BonusFlag,
                     PriceCustody = wsInput.Custody,
