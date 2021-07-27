@@ -13,6 +13,7 @@
                 $("#DATE2").show();
                 $("#btnSubmitE").show();
                 $("#btnSubmitQ").hide();
+                break;
         }
     });
 
@@ -27,28 +28,31 @@
         Account = $("#Account").val();
         var SendObj = new Object();
         var ReceiveObj = new Object();
-        var SPSD = $("#StartDate").val().replace(/\-/g, '');
-        var SPED = $("#EndDate").val().replace(/\-/g, '');
-        var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
-        var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
+        //var SPSD = $("#StartDate").val().replace(/\-/g, '');
+        //var SPED = $("#EndDate").val().replace(/\-/g, '');
+        //var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
+        //var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
 
         if (flag) {
-            SendObj.SPSD = SPSD;
-            SendObj.SPED = SPED;
-            SendObj.SPSD2 = SPSD2;
-            SendObj.SPED2 = SPED2;
+            SendObj.MODE = 1;
+            SendObj.SPSD = "";
+            SendObj.SPED = "";
+            SendObj.SPSD2 = "";
+            SendObj.SPED2 = "";
+            SendObj.SPSD3 = "";
+            SendObj.SPED3 = "";
             SendObj.MEMACCOUNT = MEMACCOUNT;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
-            console.log("poi")
-            console.log(ReceiveObj)
-            //disabledLoading();
+            //console.log(ReceiveObj)
+            //console.log(ReceiveObj.Data.Data)            
+            aa(ReceiveObj.Data.Data);
+            disabledLoading();
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
     });
-
 
     $("#btnSubmitE").on("click", function () {
         ShowLoading("資料查詢中…");
@@ -95,10 +99,13 @@
         //}
         if (flag) {
             disabledLoading();
+            SendObj.MODE = 1;
             SendObj.SPSD = SPSD;
             SendObj.SPED = SPED;
             SendObj.SPSD2 = SPSD2;
             SendObj.SPED2 = SPED2;
+            SendObj.SPSD3 = "";
+            SendObj.SPED3 = "";
             SendObj.MEMACCOUNT = MEMACCOUNT;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");

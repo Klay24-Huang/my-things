@@ -1429,6 +1429,13 @@ namespace Web.Controllers
         /// </summary>
         public ActionResult IrentPaymentHistory()
         {
+            ViewData["StartDate"] = "";
+            ViewData["EndDate"] = "";
+            ViewData["StartDate2"] = "";
+            ViewData["EndDate2"] = "";
+            ViewData["StartDate3"] = "";
+            ViewData["EndDate3"] = "";
+            ViewData["MEMACCOUNT"] = "";
             return View();
         }
         #endregion

@@ -1855,8 +1855,6 @@ namespace OtherService
             return flag;
         }
         
-
-
         public async Task<WebAPIOutput_IrentPaymentDetail> DoNPR390Query(WebAPIInput_IrentPaymentDetail input)
         {
             WebAPIOutput_IrentPaymentDetail output = null;
@@ -1915,8 +1913,79 @@ namespace OtherService
 
             return output;
         }
+
+        public bool NPR390Query2(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistory output)
+        {
+            bool flag = false;
+
+            output = DoNPR390Query2(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_IrentPaymentHistory> DoNPR390Query2(WebAPIInput_IrentPaymentDetail input)
+        {
+            WebAPIOutput_IrentPaymentHistory output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR390QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_IrentPaymentHistory>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_IrentPaymentHistory()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR390QueryURL",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR390QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
         #endregion
-        
+
         #region 月租訂閱 20210623 Add By Frank
         public bool MonthlyRentSave(WebAPIInput_MonthlyRentSave input, ref WebAPIOutput_MonthlyRentSave output)
         {

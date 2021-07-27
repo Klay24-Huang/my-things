@@ -5,12 +5,14 @@
             case "1":
                 $("#DATE").hide();
                 $("#DATE2").hide();
+                $("#DATE3").hide();
                 $("#btnSubmitE").hide();
                 $("#btnSubmitQ").show();
                 break;
             case "2":
                 $("#DATE").show();
                 $("#DATE2").show();
+                $("#DATE3").show();
                 $("#btnSubmitE").show();
                 $("#btnSubmitQ").hide();
                 break;
@@ -28,17 +30,20 @@
         Account = $("#Account").val();
         var SendObj = new Object();
         var ReceiveObj = new Object();
-        var SPSD = $("#StartDate").val().replace(/\-/g, '');
-        var SPED = $("#EndDate").val().replace(/\-/g, '');
-        var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
-        var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
+        //var SPSD = $("#StartDate").val().replace(/\-/g, '');
+        //var SPED = $("#EndDate").val().replace(/\-/g, '');
+        //var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
+        //var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
 
         if (flag) {
-            SendObj.SPSD = SPSD;
-            SendObj.SPED = SPED;
-            SendObj.SPSD2 = SPSD2;
-            SendObj.SPED2 = SPED2;
+            SendObj.MODE = 2;
+            SendObj.SPSD = "";
+            SendObj.SPED = "";
+            SendObj.SPSD2 = "";
+            SendObj.SPED2 = "";
+            SendObj.SPSD3 = "";
+            SendObj.SPED3 = "";
             SendObj.MEMACCOUNT = MEMACCOUNT;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
@@ -62,6 +67,8 @@
         var SPED = $("#EndDate").val().replace(/\-/g, '');
         var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
         var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
+        var SPSD3 = $("#StartDate3").val().replace(/\-/g, '');
+        var SPED3 = $("#EndDate3").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
         if (SPSD !== "" && SPED !== "") {
             if (SPSD > SPED) {
@@ -95,12 +102,27 @@
         //    flag = false;
         //    errMsg = "未選擇日期";
         //}
+        if (SPSD3 !== "" && SPED3 !== "") {
+            if (SPSD3 > SPED3) {
+                flag = false;
+                errMsg = "起始日期不可大於結束日期";
+            } else {
+                var GetDateDiff = DateDiff(SPSD3, SPED3);
+                if (GetDateDiff > 30) {
+                    flag = false;
+                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                }
+            }
+        }
         if (flag) {
             disabledLoading();
+            SendObj.MODE = 2;
             SendObj.SPSD = SPSD;
             SendObj.SPED = SPED;
             SendObj.SPSD2 = SPSD2;
             SendObj.SPED2 = SPED2;
+            SendObj.SPSD3 = SPSD3;
+            SendObj.SPED3 = SPED3;
             SendObj.MEMACCOUNT = MEMACCOUNT;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
@@ -133,11 +155,13 @@ function aa(detail) {
         //insert Row
         tableRef.insertRow().innerHTML =
             "<td>" + obj[index].CUSTID + "</td>" +
-            "<td>" + obj[index].RENT_NO + "</td>" +
-            "<td>" + obj[index].IRENT_NO + "</td>" +
+            "<td>" + obj[index].DATE1 + "</td>" +
+            "<td>" + obj[index].DATE2 + "</td>" +
+            "<td>" + obj[index].SUCCESS + "</td>" +
+            "<td>" + obj[index].DATE3 + "</td>" +
             "<td>" + obj[index].MEMO + "</td>" +
-            "<td>" + obj[index].ETAG_PARK + "</td>" +
-            "<td>" + obj[index].TOTAMT + "</td>";
+            "<td>" + obj[index].TOTAMT + "</td>" +
+            "<td>" + obj[index].TAISHIN_NO + "</td>";
     }
 }
 
@@ -146,7 +170,7 @@ function tableToExcel(detail) {
     //要匯出的json資料
     var jsonData = detail;
     //列標題，逗號隔開，每一個逗號就是隔開一個單元格
-    let str = `會員帳號,短租合約編號,iRent合約編號,付款說明,罰單/停車單號,取款金額\n`;
+    let str = `會員帳號,預計取款日,實際取款日,是否取款成功,扣款通知寄發日期,授權訊息,取款金額,台新授權編號\n`;
     //增加\t為了不讓表格顯示科學計數法或者其他格式
     for (let i = 0; i < jsonData.length; i++) {
         for (let item in jsonData[i]) {
