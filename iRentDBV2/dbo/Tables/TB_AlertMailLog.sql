@@ -1,5 +1,3 @@
-/****** Object:  Table [dbo].[TB_AlertMailLog]    Script Date: 2021/3/30 下午 05:14:00 ******/
-
 CREATE TABLE [dbo].[TB_AlertMailLog](
 	[AlertID] [bigint] IDENTITY(1,1) NOT NULL,
 	[EventType] [int] NOT NULL,
@@ -8,6 +6,8 @@ CREATE TABLE [dbo].[TB_AlertMailLog](
 	[HasSend] [tinyint] NOT NULL,
 	[CarNo] [varchar](20) NOT NULL,
 	[OrderNo] [bigint] NOT NULL,
+	[StationID] [varchar](10) NOT NULL,
+	[Remark] [varchar](500) NOT NULL,
 	[SendTime] [datetime] NULL,
 	[MKTime] [datetime] NOT NULL,
 	[UPDTime] [datetime] NULL,
@@ -34,6 +34,12 @@ ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_CarNo]  
 GO
 
 ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_OrderNo]  DEFAULT ((0)) FOR [OrderNo]
+GO
+
+ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_StationID]  DEFAULT ('') FOR [StationID]
+GO
+
+ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF_TB_AlertMailLog_Remark]  DEFAULT ('') FOR [Remark]
 GO
 
 ALTER TABLE [dbo].[TB_AlertMailLog] ADD  CONSTRAINT [DF__TB_AlertM__MKTim__51D0C381]  DEFAULT (dateadd(hour,(8),getdate())) FOR [MKTime]
