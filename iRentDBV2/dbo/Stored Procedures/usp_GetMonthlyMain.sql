@@ -56,9 +56,11 @@ AS
 			If @hasPointer = 0
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @ED 
 					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
 				ORDER BY Main.IDNO ASC
@@ -66,9 +68,11 @@ AS
 			Else if  @hasPointer = 1
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @ED 
 					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
 				ORDER BY Main.IDNO ASC
@@ -76,9 +80,11 @@ AS
 			Else
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @ED 
 				ORDER BY Main.IDNO ASC
 			End
@@ -88,9 +94,11 @@ AS
 			If @hasPointer = 0
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
 				ORDER BY Main.IDNO ASC
@@ -98,9 +106,11 @@ AS
 			Else if  @hasPointer = 1
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
 				ORDER BY Main.IDNO ASC
@@ -108,9 +118,11 @@ AS
 			Else
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 				ORDER BY Main.IDNO ASC
 			End
@@ -120,9 +132,11 @@ AS
 			If @hasPointer = 0
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 					And (Main.WorkDayHours=0 AND Main.HolidayHours=0 AND Main.MotoTotalHours=0) 
 				ORDER BY Main.IDNO ASC
@@ -130,9 +144,11 @@ AS
 			Else if  @hasPointer = 1
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 					And (Main.WorkDayHours>0 AND Main.HolidayHours>0 AND Main.MotoTotalHours>0) 
 				ORDER BY Main.IDNO ASC
@@ -140,9 +156,11 @@ AS
 			Else
 			Begin
 				Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-					,Main.MonProPeriod,'Y' IsTiedUp,'Y' AutomaticRenewal
+					,Main.MonProPeriod,'Y' IsTiedUp
+					,Case When NxtMonSetID > 0 Then 'Y' Else 'N' End AutomaticRenewal
 				From SYN_MonthlyRent AS Main 
-				Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End
+				Left Join dbo.TB_SubsNxt AS SubsNxt On Main.MonthlyRentId = SubsNxt.NowMonthlyRentId
+				Where Main.IDNO = Case When @IDNO is null Then Main.IDNO Else @IDNO End
 					And Main.EndDate >= @SD And Main.StartDate <= @SD 
 				ORDER BY Main.IDNO ASC
 			End
