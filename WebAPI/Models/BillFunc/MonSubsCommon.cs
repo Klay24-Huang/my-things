@@ -432,6 +432,7 @@ namespace WebAPI.Models.BillFunc
         /// <returns></returns>
         public double GetCarRentPrice(ICF_GetCarRentPrice sour)
         {
+            var cr_sp = new CarRentSp();
             double re = 0;
             if(sour != null)
             {
@@ -443,8 +444,19 @@ namespace WebAPI.Models.BillFunc
                     var monthlyRentRepository = new MonthlyRentRepository(connetStr);
                     var mOri = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonId.ToString());
 
-                    if(mOri != null && mOri.Count()>0)
-                       sour.mOri = mOri;
+                    if (mOri != null && mOri.Count() > 0) {
+                        string esErrMsg = "";
+                        foreach (var m in mOri)
+                        {//月租假日優惠費率改用一般假日優惠費率
+                            if (!string.IsNullOrWhiteSpace(sour.ProjID) && !string.IsNullOrWhiteSpace(sour.CarType))
+                            {
+                                var p_re = cr_sp.sp_GetEstimate(sour.ProjID, sour.CarType, 99999, ref esErrMsg, 0);
+                                if (p_re != null && p_re.PRICE_H > 0)
+                                    m.HoildayRateForCar = Convert.ToSingle(p_re.PRICE_H);
+                            }
+                        }
+                        sour.mOri = mOri;
+                    }
                 }
 
                 var fn_re = CarRentInCompute(sour);
