@@ -1414,14 +1414,24 @@ namespace WebAPI.Models.BillFunc
         public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg, Int64 OrderNo=0)
         {
             var re = new GetFullProjectVM();
-            if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
-                throw new Exception("PROJID, CARTYPE 必填");
+
+            if(!string.IsNullOrWhiteSpace(PROJID) || !string.IsNullOrWhiteSpace(CARTYPE))
+            {
+                if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
+                    throw new Exception("PROJID, CARTYPE 必填");
+            }
+
+            if (string.IsNullOrWhiteSpace(PROJID) && string.IsNullOrWhiteSpace(CARTYPE))
+            {
+                if (OrderNo == 0)
+                    throw new Exception("OrderNo 必填");
+            }
 
             List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
 
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetEstimate);
 
-            object[] param = new object[3];
+            object[] param = new object[4];
             param[0] = PROJID;
             param[1] = CARTYPE;
             param[2] = LogID;
