@@ -458,9 +458,8 @@ namespace Web.Controllers
             }
             if (flag)
             {
-
-
-                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
+                //lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
+                lstBook = repository.GetOrderExplodeData0727(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);  //todo 暫時測試用，測試無誤時須更新View
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
@@ -529,8 +528,6 @@ namespace Web.Controllers
                     }
                 }
             }
-
-
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
@@ -735,7 +732,8 @@ namespace Web.Controllers
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     obj = new BE_OrderDataCombind()
                     {
-                        Data = repository.GetOrderDetail(tmpOrder),
+                        //Data = repository.GetOrderDetail(tmpOrder),
+                        Data = repository.GetOrderDetail0727(tmpOrder), //todo 暫時測試用，測試無誤時須更新View
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
                         ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
