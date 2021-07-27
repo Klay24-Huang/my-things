@@ -452,7 +452,7 @@ namespace WebAPI.Models.BillFunc
                             {
                                 var p_re = cr_sp.sp_GetEstimate(sour.ProjID, sour.CarType, 99999, ref esErrMsg, 0);
                                 if (p_re != null && p_re.PRICE_H > 0)
-                                    m.HoildayRateForCar = Convert.ToSingle(p_re.PRICE_H);
+                                    m.HoildayRateForCar = Convert.ToSingle(p_re.PRICE_H/10);
                             }
                         }
                         sour.mOri = mOri;
