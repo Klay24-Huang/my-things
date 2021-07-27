@@ -44,10 +44,11 @@ namespace OtherService
         protected string NPR370SaveURL;  //進行轉贈
         protected string NPR380SaveURL;  //換電獎勵 20201201 ADD BY ADAM 
         protected string NPR390QueryURL; //主動取款查詢 20210714 ADD BY 唐瑋祁
-
         protected string EinvBizURL;     //手機條碼檢核
         protected string MonthlyRentURL; //月租訂閱
         protected string ETAG010QueryURL;//ETAG查詢(合約編號)
+        protected string SetMonthlyRentDataURL; //月租訂閱合約儲存
+        protected string SetMonthlyRentDataV2URL;//月租訂閱合約儲存(欠費用)
         protected string ETAG020QueryURL;//ETAG查詢(身份證)
         protected string ETAG031SaveURL; //ETAG沖銷
         protected string connetStr;
@@ -89,6 +90,9 @@ namespace OtherService
             NPR010SaveURL = (ConfigurationManager.AppSettings.Get("NPR010SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR010SaveURL").ToString();
             //主動取款查詢 20210714 ADD BY 唐瑋祁
             NPR390QueryURL = (ConfigurationManager.AppSettings.Get("NPR390QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR390QueryURL").ToString();
+            
+            SetMonthlyRentDataURL = (ConfigurationManager.AppSettings.Get("SetMonthlyRentDataURL") == null) ? "" : ConfigurationManager.AppSettings.Get("SetMonthlyRentDataURL").ToString();
+            SetMonthlyRentDataV2URL = (ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL") == null) ? "" : ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL").ToString();
         }
         /// <summary>
         /// 產生簽章
@@ -1837,6 +1841,7 @@ namespace OtherService
             return output;
         }
         #endregion
+
         #region 主動取款查詢 20210714 ADD BY 唐瑋祁
         public bool NPR390Query(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentDetail output)
         {
@@ -1849,6 +1854,8 @@ namespace OtherService
             }
             return flag;
         }
+        
+
 
         public async Task<WebAPIOutput_IrentPaymentDetail> DoNPR390Query(WebAPIInput_IrentPaymentDetail input)
         {
@@ -1906,6 +1913,174 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
 
+            return output;
+        }
+        #endregion
+        
+        #region 月租訂閱 20210623 Add By Frank
+        public bool MonthlyRentSave(WebAPIInput_MonthlyRentSave input, ref WebAPIOutput_MonthlyRentSave output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoMonthlyRentSave(input).Result;
+
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        public bool MonthlyRentSaveV2(WebAPIInput_MonthlyRebtSaveV2 input, ref WebAPIOutput_MonthlyRentSave output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoMonthlyRentSaveV2(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        private async Task<WebAPIOutput_MonthlyRentSave> DoMonthlyRentSaveV2(WebAPIInput_MonthlyRebtSaveV2 input)
+        {
+            WebAPIOutput_MonthlyRentSave output = null;
+            Int16 IsSuccess = 0;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:4149/api/" + SetMonthlyRentDataURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + SetMonthlyRentDataV2URL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_MonthlyRentSave>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_MonthlyRentSave()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "MonthlyRentSaveV2",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + MonthlyRentURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+            return output;
+        }
+
+        private async Task<WebAPIOutput_MonthlyRentSave> DoMonthlyRentSave(WebAPIInput_MonthlyRentSave input)
+        {
+            WebAPIOutput_MonthlyRentSave output = null;
+            Int16 IsSuccess = 0;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:4149/api/" + SetMonthlyRentDataURL);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + SetMonthlyRentDataURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;                  
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_MonthlyRentSave>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                        }
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_MonthlyRentSave()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "MonthlyRentSave",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + MonthlyRentURL
+
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }          
             return output;
         }
         #endregion

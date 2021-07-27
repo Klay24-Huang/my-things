@@ -30,10 +30,11 @@ namespace Reposotory.Implement.Enum
             switch (type)
             {
                 case SPType.InsMonthHistory:
-                    SPName = "usp_InsMonthlyHistory";
+                    SPName = "usp_InsMonthlyHistory_0301";
                     break;
                 case SPType.ClearMonthTmpHistory:
-                    SPName = "usp_ClearMonthlyTmpHistory";
+                    //SPName = "usp_ClearMonthlyTmpHistory";
+                    SPName = "usp_ClearMonthlyTmpHistory_test";
                     break;
             }
             return SPName;

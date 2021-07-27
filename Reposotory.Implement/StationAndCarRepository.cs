@@ -675,7 +675,8 @@ namespace Reposotory.Implement
             int nowCount = 0;
 
             string SQL = @"
-            SELECT VW.PROJID,
+            SELECT distinct
+                   VW.PROJID,
                    VW.PRONAME,
                    VW.PRODESC,
                    VW.Price,
@@ -691,6 +692,7 @@ namespace Reposotory.Implement
                    irs.ContentForAPP AS Content,
                    irs.Area As CarOfArea,
                    VW.StationID,
+                   MS.MilageBase,
                    Insurance = CASE WHEN E.isMoto=1 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) = 6 THEN 0 ELSE 1 END,
                    InsurancePerHours = CASE WHEN E.isMoto=1 THEN 0 WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours WHEN K.InsuranceLevel < 6 THEN K.InsurancePerHours ELSE 0 END		--安心服務每小時價
             FROM VW_GetFullProjectCollectionOfCarTypeGroup AS VW
@@ -701,6 +703,7 @@ namespace Reposotory.Implement
             LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=@IDNO
 		    LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		    LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3	
+            LEFT JOIN TB_MilageSetting MS WITH(NOLOCK) ON MS.ProjID=VW.PROJID AND MS.use_flag=1
             WHERE Car.CarNo = @CarNo
               AND SPCLOCK='Z'
               AND VW.use_flag=1
