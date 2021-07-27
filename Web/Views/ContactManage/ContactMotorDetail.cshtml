@@ -432,19 +432,71 @@
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                還車里程
-                            </div>
-                            <div class="col-md-3">
-                                @((OrderStatus > 1) ? obj.Data.StopMile.ToString() : "")
-                            </div>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            還車里程
+                        </div>
+                        <div class="col-md-3">
+                            @((OrderStatus > 1) ? obj.Data.StopMile.ToString() : "")
                         </div>
                     </div>
-                </li>
-                <li class="list-group-item">
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            回饋明細
+                        </div>
+                        <div class="col-md-5">
+                            @if (OrderStatus > 0)
+                            {
+                            <div class="container-fluid">
+                                <div class="row text-secondary">
+                                    <div class="col-md-6">
+                                        回饋時數
+                                    </div>
+                                    <div class="col-md-6">
+                                        @(obj.Data.ChgGift>0?($"{@obj.Data.ChgGift}分"):"0分")
+</div>
+                                </div>
+                                <div class="row text-info">
+                                    <div class="col-md-1">
+                                        
+                                    </div>
+                                    <div class="col-md-5">
+                                        換電次數
+                                    </div>
+                                    <div class="col-md-6">
+                                        @(obj.Data.ChgTimes > 0 ? ($"{@obj.Data.ChgTimes}次") : "0次")
+                                    </div>
+                                </div>
+                                <div class="row text-secondary">
+                                    <div class="col-md-6">
+                                        <span class="text-secondary">獎勵時數</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        @(obj.Data.RewardGift > 0?($"{@obj.Data.RewardGift}分"): "0分")
+                                    </div>
+                                </div>
+                                <div class="row  text-secondary">
+                                    <div class="col-md-6">
+                                        總回饋時數
+                                    </div>
+                                    <div class="col-md-6">
+                                        @(obj.Data.TotalGift > 0?($"{@obj.Data.TotalGift}分"): "0分")
+                                    </div>
+                                </div>
+                            </div>
+                            }
+</div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">

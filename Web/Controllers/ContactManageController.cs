@@ -444,7 +444,10 @@ namespace Web.Controllers
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂單編號", "會員帳號", "會員姓名",  "訂單類型", "取/還車站", "車型", "車牌號碼", "優惠方案", "實際取車時間", "實際還車時間"
                                     ,"取車左邊電池電量","取車右邊電池電量","取車核心電池電量","取車平均電量","取車儀表板電量","還車左邊電池電量","還車右邊電池電量","還車核心電池電量","還車平均電量","還車儀表板電量"
-                                    ,"取車里程","還車里程","租金","安心服務費率","安心服務金額","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"};
+                                    ,"取車里程","還車里程","租金","安心服務費率","安心服務金額","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"
+                                    ,"回饋時數","換電次數","獎勵時數","總回饋時數"
+            };
+
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -519,6 +522,10 @@ namespace Web.Controllers
                         content.CreateCell(30).SetCellValue(lstBook[i].MotorPoint);                                     //時數折抵(分)
                         content.CreateCell(31).SetCellValue(lstBook[i].FinalPrice);                                     //會員姓名
 
+                        content.CreateCell(32).SetCellValue($"{lstBook[i].ChgGift}分");    //回饋時數
+                        content.CreateCell(33).SetCellValue($"{lstBook[i].ChgTimes}次");   //換電次數
+                        content.CreateCell(34).SetCellValue($"{lstBook[i].RewardGift}分"); //獎勵時數
+                        content.CreateCell(35).SetCellValue($"{lstBook[i].TotalGift}分");  //總回饋時數
                     }
                 }
             }
