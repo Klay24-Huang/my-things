@@ -1,4 +1,6 @@
-﻿CREATE VIEW [dbo].[VW_BE_GetOrderFullDetail]
+﻿
+
+CREATE VIEW [dbo].[VW_BE_GetOrderFullDetail]
 	AS 
 SELECT OrderMain.[order_number] AS OrderNo,
        OrderMain.[IDNO],
@@ -77,7 +79,15 @@ SELECT OrderMain.[order_number] AS OrderNo,
 	   Detail.parkingSpace ,
 	   ISNULL((SELECT SUM(CASE WHEN RetCode='1000' THEN amount ELSE 0 END) FROM TB_Trade AS Trade WITH(NOLOCK) WHERE Trade.OrderNo=OrderMain.order_number),0) AS PayAmount ,
 	   ISNULL(InsInfo.InsurancePerHours, 0) AS InsurancePerHours ,
-	   ISNULL((SELECT [StationID] FROM [TB_iRentStation] WHERE StationID=OrderMain.lend_place),'') AS StationID --20210325唐加，不然匯出報表會錯，錯好久了
+	   ISNULL((SELECT [StationID] FROM [TB_iRentStation] WHERE StationID=OrderMain.lend_place),'') AS StationID, --20210325唐加，不然匯出報表會錯，錯好久了
+	   --20210727 Add by Umeko s
+	   ISNULL(RSOC_S,0) RSOC_S, 
+	   ISNULL(RSOC_E,0) RSOC_E,
+	   ISNULL(ChgGift,0) ChgGift,
+	   ISNULL(ChgTimes,0) ChgTimes,
+	   ISNULL(RewardGift,0) RewardGift,
+	   ISNULL(TotalGift,0) TotalGif
+	   --20210727 Add by Umeko e
 FROM [dbo].[TB_OrderMain] AS OrderMain WITH(NOLOCK)
 LEFT JOIN TB_OrderDetail AS Detail WITH(NOLOCK) ON Detail.order_number=OrderMain.order_number
 LEFT JOIN TB_MemberData AS MemberData WITH(NOLOCK) ON MemberData.MEMIDNO=OrderMain.IDNO
@@ -86,6 +96,7 @@ LEFT JOIN TB_City AS City WITH(NOLOCK) ON AreaZip.CityID=City.CityID --20210106�
 LEFT JOIN VW_GetCarDetail AS CarDetail WITH(NOLOCK) ON CarDetail.CarNo=OrderMain.CarNo
 LEFT JOIN TB_Project AS Project WITH(NOLOCK) ON Project.PROJID=OrderMain.ProjID
 LEFT JOIN TB_OrderDataByMotor AS MotorData WITH(NOLOCK) ON MotorData.OrderNo=OrderMain.order_number
+Left Join TB_MotorChangeBattHis As MotorChangeBatteryReward With(Nolock) On MotorChangeBatteryReward.order_number = OrderMain.order_number--20210727 Add by Umeko
 LEFT JOIN TB_OrderOtherFee AS OrderOtherFee WITH(NOLOCK) ON OrderOtherFee.OrderNo=OrderMain.order_number
 LEFT JOIN TB_BookingInsuranceOfUser AS Ins WITH(NOLOCK) ON MemberData.MEMIDNO=Ins.IDNO
 INNER JOIN TB_CarInfo AS CarInfo WITH(NOLOCK) ON CarInfo.CarNo=OrderMain.CarNo
