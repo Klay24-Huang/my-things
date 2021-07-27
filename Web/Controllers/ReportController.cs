@@ -1110,8 +1110,8 @@ namespace Web.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult MemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
+        //[HttpPost]
+        public ActionResult ExplodeMemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
         {
             //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
             List<BE_GetMemList> lstRawDataOfMachi = new List<BE_GetMemList>();//SP回傳的資料欄位
