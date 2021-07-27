@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using WebCommon;
 
@@ -24,6 +25,7 @@ using WebCommon;
  * 2021/04/22 增加 11:超過15分鐘未完成還車作業、12:超過預約還車時間30分鐘未還車
  * 2021/04/26 11:超過15分鐘未完成還車作業、12:超過預約還車時間30分鐘未還車 增加訂單編號
  * 2021/07/08 增加 13:取車1小時前沒有車
+ * 2021/07/27 增加 14:三日未出租
  */
 
 namespace SendEventMail
@@ -76,6 +78,8 @@ namespace SendEventMail
         {
             try
             {
+                Thread.Sleep(500);  // 等0.5秒再取資料
+
                 logger.Info(string.Format("{0}:告警MAIL發送開始", DateTime.Now));
 
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -300,7 +304,6 @@ namespace SendEventMail
 
                                 int SendFlag = SendGridGroupSendMail(GroupHandle.EventType, GroupHandle.Receiver, ToSendList, ref lstError);
 
-                                var NowDate = DateTime.Now;
                                 foreach (var ToSend in ToSendList)
                                 {
                                     string SPName2 = "usp_SYNC_UPDSendAlertMessage";
@@ -315,7 +318,7 @@ namespace SendEventMail
 
                                     if (SendFlag == 0)
                                     {
-                                        SPInput.SendTime = NowDate;
+                                        SPInput.SendTime = DateTime.Now;
                                     }
                                     else
                                     {
@@ -554,6 +557,9 @@ namespace SendEventMail
                     case 13:
                         Title = string.Format("異常告警：{0} 事件名單", "取車1小時前沒有車");
                         break;
+                    case 14:
+                        Title = string.Format("異常告警：{0} 事件名單", "三日未出租");
+                        break;
                 }
 
                 // 依照事件類型調整TABLE內容
@@ -565,10 +571,13 @@ namespace SendEventMail
 
                         foreach (var ToSend in ToSendList)
                         {
-                            Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}",ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}", ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
                         }
 
+                        Table += "</table>";
+
                         break;
+
                     case 13:    // 取車1小時前沒有車
                         Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>被影響合約編號</th><th>發生時間</th></tr>";
 
@@ -577,7 +586,24 @@ namespace SendEventMail
                             Table += string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", ToSend.CarNo, string.Format("H{0}", ToSend.OrderNo), ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
                         }
 
+                        Table += "</table>";
+
                         break;
+
+                    case 14:    // 三日未出租
+                        Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>據點</th></tr>";
+
+                        foreach (var ToSend in ToSendList)
+                        {
+                            Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.StationID);
+                        }
+
+                        Table += "</table>";
+
+                        Body += string.Format("<p>{0}{1}</p>", "資料時間：", ToSendList.FirstOrDefault().MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
+
+                        break;
+
                     default:
                         Table += "<table border=1><tr style='background-color:#8DD26F;'><th>車號</th><th>發生時間</th></tr>";
 
@@ -586,12 +612,12 @@ namespace SendEventMail
                             Table += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", ToSend.CarNo, ToSend.MKTime.ToString("yyyy/MM/dd tt hh:mm:ss"));
                         }
 
+                        Table += "</table>";
+
                         break;
                 }
-                
-                Table += "</table>";
 
-                Body = string.Format("<p>{0}</p>", Table);
+                Body += string.Format("<p>{0}</p>", Table);
 
                 flag = Task.Run(() => send.DoSendMail(Title, Body, Receiver)).Result;
             }
