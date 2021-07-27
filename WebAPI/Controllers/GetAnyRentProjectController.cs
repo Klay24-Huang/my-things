@@ -379,7 +379,9 @@ namespace WebAPI.Controllers
                 dayMaxHour = 10,
                 lstHoliday = lstHoliday,
                 Discount = 0,
-                FreeMins = 0
+                FreeMins = 0,
+                ProjID = spItem.PROJID,
+                CarType = spItem.CarType
             };
             re = Convert.ToInt32(new MonSubsCommon().GetCarRentPrice(input));            
 
