@@ -13,6 +13,7 @@
                 $("#DATE2").show();
                 $("#btnSubmitE").show();
                 $("#btnSubmitQ").hide();
+                break;
         }
     });
 
@@ -41,14 +42,15 @@
             SendObj.MEMACCOUNT = MEMACCOUNT;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
-            console.log("poi")
-            console.log(ReceiveObj)
+            //console.log("poi")
+            //console.log(ReceiveObj)
+            //console.log(ReceiveObj.Data.Data)
             //disabledLoading();
+            aa(ReceiveObj.Data.Data);
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }
     });
-
 
     $("#btnSubmitE").on("click", function () {
         ShowLoading("資料查詢中…");
