@@ -622,7 +622,10 @@ namespace WebAPI.Controllers
                                         newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
                                         newItem.MonthlyRentId = z.MonthlyRentId;
                                         newItem.WDRateForCar = z.WorkDayRateForCar;
-                                        newItem.HDRateForCar = z.HoildayRateForCar;
+
+                                        //newItem.HDRateForCar = z.HoildayRateForCar;
+                                        newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+
                                         newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                         newItem.HDRateForMoto = z.HoildayRateForMoto;
                                         newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
@@ -747,7 +750,9 @@ namespace WebAPI.Controllers
                     dayMaxHour = 10,
                     lstHoliday = lstHoliday,
                     Discount = 0,
-                    FreeMins = 0
+                    FreeMins = 0,
+                    ProjID = spItem.PROJID,
+                    CarType = spItem.CarType
                 };
                 re =  Convert.ToInt32(new MonSubsCommon().GetCarRentPrice(input));
             }

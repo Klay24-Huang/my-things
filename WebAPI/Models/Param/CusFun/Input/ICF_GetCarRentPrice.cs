@@ -13,5 +13,12 @@ namespace WebAPI.Models.Param.CusFun.Input
         /// <mark>對應TB_MonthlyRent-MonthlyRentId</mark>
         public Int64 MonId { get; set; }
         public string IDNO { get; set; }
+
+        #region 為了置換月租假日價格
+
+        public string ProjID { get; set; }
+        public string CarType { get; set; }
+
+        #endregion
     }
 }
