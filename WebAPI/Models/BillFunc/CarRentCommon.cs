@@ -1431,7 +1431,7 @@ namespace WebAPI.Models.BillFunc
 
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetEstimate);
 
-            object[] param = new object[3];
+            object[] param = new object[4];
             param[0] = PROJID;
             param[1] = CARTYPE;
             param[2] = LogID;
