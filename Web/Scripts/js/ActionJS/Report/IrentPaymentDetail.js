@@ -21,11 +21,11 @@
         ShowLoading("資料查詢中…");
         var flag = true;
         var errMsg = "";
+        Account = $("#Account").val();
         //if ($("#MEMACCOUNT").val() == "") {
         //    flag = false;
         //    errMsg = "請輸入會員帳號";
         //}
-        Account = $("#Account").val();
         var SendObj = new Object();
         var ReceiveObj = new Object();
         //var SPSD = $("#StartDate").val().replace(/\-/g, '');
@@ -43,6 +43,7 @@
             SendObj.SPSD3 = "";
             SendObj.SPED3 = "";
             SendObj.MEMACCOUNT = MEMACCOUNT;
+            SendObj.UserID = Account;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
             //console.log(ReceiveObj)
@@ -56,6 +57,7 @@
 
     $("#btnSubmitE").on("click", function () {
         ShowLoading("資料查詢中…");
+        Account = $("#Account").val();
         var flag = true;
         var errMsg = "";
         var SendObj = new Object();
@@ -99,7 +101,7 @@
         //}
         if (flag) {
             disabledLoading();
-            SendObj.MODE = 1;
+            SendObj.MODE = 2;
             SendObj.SPSD = SPSD;
             SendObj.SPED = SPED;
             SendObj.SPSD2 = SPSD2;
@@ -107,6 +109,7 @@
             SendObj.SPSD3 = "";
             SendObj.SPED3 = "";
             SendObj.MEMACCOUNT = MEMACCOUNT;
+            SendObj.UserID = Account;
 
             ReceiveObj = DoAjaxAfterGoBack_GG(SendObj, "BE_IrentPaymentDetail", "查詢發生錯誤");
             tableToExcel(ReceiveObj.Data.Data);
@@ -151,7 +154,7 @@ function tableToExcel(detail) {
     //要匯出的json資料
     var jsonData = detail;
     //列標題，逗號隔開，每一個逗號就是隔開一個單元格
-    let str = `會員帳號,短租合約編號,iRent合約編號,付款說明,罰單/停車單號,取款金額\n`;
+    let str = `客戶編號,預約編號,合約編號,付款說明,費用,已付金額,車號,罰單/停車單號,取車日,還車日,還車據點,iRent訂單編號,欠費金額\n`;
     //增加\t為了不讓表格顯示科學計數法或者其他格式
     for (let i = 0; i < jsonData.length; i++) {
         for (let item in jsonData[i]) {

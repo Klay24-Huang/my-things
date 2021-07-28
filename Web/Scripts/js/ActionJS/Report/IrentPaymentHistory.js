@@ -37,7 +37,7 @@
         var MEMACCOUNT = $("#MEMACCOUNT").val();
 
         if (flag) {
-            SendObj.MODE = 2;
+            SendObj.MODE = 3;
             SendObj.SPSD = "";
             SendObj.SPED = "";
             SendObj.SPSD2 = "";
@@ -116,7 +116,7 @@
         }
         if (flag) {
             disabledLoading();
-            SendObj.MODE = 2;
+            SendObj.MODE = 4;
             SendObj.SPSD = SPSD;
             SendObj.SPED = SPED;
             SendObj.SPSD2 = SPSD2;
@@ -170,7 +170,7 @@ function tableToExcel(detail) {
     //要匯出的json資料
     var jsonData = detail;
     //列標題，逗號隔開，每一個逗號就是隔開一個單元格
-    let str = `會員帳號,預計取款日,實際取款日,是否取款成功,扣款通知寄發日期,授權訊息,取款金額,台新授權編號\n`;
+    let str = `會員帳號,欠款金額,是否綁卡,是否成功取款,是否發送扣款信,預計取款時間,實際取款時間,EMail,授權結果代碼,授權訊息,取款訂單編號,授權台新編號,短租收款編號,授權金額\n`;
     //增加\t為了不讓表格顯示科學計數法或者其他格式
     for (let i = 0; i < jsonData.length; i++) {
         for (let item in jsonData[i]) {

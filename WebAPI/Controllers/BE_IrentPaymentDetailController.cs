@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
 
 
             #region 這邊資料用api拋給sqyhi01vm
-            if (apiInput.MODE==1)
+            if (apiInput.MODE == 1)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_IrentPaymentDetail wsOutput = new WebAPIOutput_IrentPaymentDetail();
@@ -79,13 +79,33 @@ namespace WebAPI.Controllers
                     MEMACCOUNT = apiInput.MEMACCOUNT
                 };
                 flag = hiEasyRentAPI.NPR390Query(spInput, ref wsOutput);
-                #endregion
 
-                #region 輸出
+                //輸出
                 baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
                 return objOutput;
             }
-            else
+            else if (apiInput.MODE == 2)
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_IrentPaymentDetailExplode wsOutput = new WebAPIOutput_IrentPaymentDetailExplode();
+                WebAPIInput_IrentPaymentDetail spInput = new WebAPIInput_IrentPaymentDetail()
+                {
+                    MODE = apiInput.MODE,
+                    SPSD = apiInput.SPSD,
+                    SPED = apiInput.SPED,
+                    SPSD2 = apiInput.SPSD2,
+                    SPED2 = apiInput.SPED2,
+                    SPSD3 = apiInput.SPSD3,
+                    SPED3 = apiInput.SPED3,
+                    MEMACCOUNT = apiInput.MEMACCOUNT
+                };
+                flag = hiEasyRentAPI.NPR390Query2(spInput, ref wsOutput);
+
+                //輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
+                return objOutput;
+            }
+            else if (apiInput.MODE == 3)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_IrentPaymentHistory wsOutput = new WebAPIOutput_IrentPaymentHistory();
@@ -100,15 +120,35 @@ namespace WebAPI.Controllers
                     SPED3 = apiInput.SPED3,
                     MEMACCOUNT = apiInput.MEMACCOUNT
                 };
-                flag = hiEasyRentAPI.NPR390Query2(spInput, ref wsOutput);
-                #endregion
+                flag = hiEasyRentAPI.NPR390Query3(spInput, ref wsOutput);
 
-                #region 輸出
+                //輸出
                 baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
-                return objOutput;
+                return objOutput;           
             }
-            
+            else
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_IrentPaymentHistoryExplode wsOutput = new WebAPIOutput_IrentPaymentHistoryExplode();
+                WebAPIInput_IrentPaymentDetail spInput = new WebAPIInput_IrentPaymentDetail()
+                {
+                    MODE = apiInput.MODE,
+                    SPSD = apiInput.SPSD,
+                    SPED = apiInput.SPED,
+                    SPSD2 = apiInput.SPSD2,
+                    SPED2 = apiInput.SPED2,
+                    SPSD3 = apiInput.SPSD3,
+                    SPED3 = apiInput.SPED3,
+                    MEMACCOUNT = apiInput.MEMACCOUNT
+                };
+                flag = hiEasyRentAPI.NPR390Query4(spInput, ref wsOutput);
+
+                //輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
+                return objOutput;      
+            }
             #endregion
+
         }
     }
 }

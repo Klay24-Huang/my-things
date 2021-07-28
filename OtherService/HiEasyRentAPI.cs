@@ -1914,7 +1914,7 @@ namespace OtherService
             return output;
         }
 
-        public bool NPR390Query2(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistory output)
+        public bool NPR390Query2(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentDetailExplode output)
         {
             bool flag = false;
 
@@ -1926,7 +1926,78 @@ namespace OtherService
             return flag;
         }
 
-        public async Task<WebAPIOutput_IrentPaymentHistory> DoNPR390Query2(WebAPIInput_IrentPaymentDetail input)
+        public async Task<WebAPIOutput_IrentPaymentDetailExplode> DoNPR390Query2(WebAPIInput_IrentPaymentDetail input)
+        {
+            WebAPIOutput_IrentPaymentDetailExplode output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR390QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_IrentPaymentDetailExplode>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_IrentPaymentDetailExplode()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR390QueryURL",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR390QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+
+        public bool NPR390Query3(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistory output)
+        {
+            bool flag = false;
+
+            output = DoNPR390Query3(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_IrentPaymentHistory> DoNPR390Query3(WebAPIInput_IrentPaymentDetail input)
         {
             WebAPIOutput_IrentPaymentHistory output = null;
             DateTime MKTime = DateTime.Now;
@@ -1960,6 +2031,78 @@ namespace OtherService
             {
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_IrentPaymentHistory()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR390QueryURL",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR390QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+
+
+        public bool NPR390Query4(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistoryExplode output)
+        {
+            bool flag = false;
+
+            output = DoNPR390Query4(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_IrentPaymentHistoryExplode> DoNPR390Query4(WebAPIInput_IrentPaymentDetail input)
+        {
+            WebAPIOutput_IrentPaymentHistoryExplode output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR390QueryURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_IrentPaymentHistoryExplode>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_IrentPaymentHistoryExplode()
                 {
                     Message = "發生異常錯誤",
                     Result = false
