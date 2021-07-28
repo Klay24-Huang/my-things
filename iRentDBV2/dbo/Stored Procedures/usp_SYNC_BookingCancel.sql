@@ -94,14 +94,14 @@ BEGIN TRY
 		[CarNo] VARCHAR(20),
 		[ProjType] INT,
 		UseTimeDiff	INT
-	)
+	);
 
 	/*過15分鐘未取車，系統自動取消*/
 	--寫入暫存表
 	-- 20210528;UPD BY YEH REASON.增加系統取消積分扣分用欄位
 	INSERT INTO @sync_order_data ([OrderNum],[citizen_id],[Title],[DeviceToken],[cancel_status],[car_mgt_status],[booking_status],CarNo,ProjType
 									,IDNO,StartTime,StopTime,UseTimeDiff)
-	SELECT DISTINCT OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),cancel_status,car_mgt_status,booking_status,CarNo	,PROJTYPE	--20201218 ADD BY ADAM 
+	SELECT DISTINCT OrderNum,IDNO,ISNULL([Title],''),ISNULL([DeviceToken],''),cancel_status,car_mgt_status,booking_status,CarNo,PROJTYPE	--20201218 ADD BY ADAM 
 		,IDNO,StartTime,StopTime,DATEDIFF(HOUR,StartTime,StopTime)
 	FROM VW_SYNC_GetSyncData WITH(NOLOCK)
 	WHERE car_mgt_status=0 AND booking_status=0  AND cancel_status=0 
@@ -159,9 +159,11 @@ BEGIN TRY
 	DROP TABLE IF EXISTS #CarList;
 
 	-- 20210707 ADD BY YEH REASON:取出還在用車中的車輛清單
-	SELECT CarNo
+	SELECT order_number,IDNO,CarNo
 	INTO #CarList 
-	FROM TB_OrderMain WITH(NOLOCK) WHERE (car_mgt_status>=4 AND car_mgt_status<16) AND cancel_status=0 AND ProjType=0;
+	FROM TB_OrderMain WITH(NOLOCK) 
+	WHERE (car_mgt_status>=4 AND car_mgt_status<16) AND cancel_status=0 AND ProjType=0 
+	AND start_time>='2021/1/1 00:00:00';
 
 	-- 20210707 ADD BY YEH REASON.同站 預約用車時間>=10小時積分扣-25分
 	INSERT INTO TB_MemberScoreDetail([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
@@ -171,7 +173,9 @@ BEGIN TRY
 	FROM @sync_order_data
 	WHERE ProjType=0
 	AND UseTimeDiff >= 10
-	AND CarNo NOT IN (SELECT CarNo FROM #CarList);	-- 20210602 ADD BY YEH REASON:正在用車被系統取消不扣分
+	AND CarNo NOT IN (SELECT CarNo FROM #CarList)	-- 20210602 ADD BY YEH REASON:正在用車被系統取消不扣分
+	-- 20210726 UPD BY YEH REASON:增加判斷不存在TB_MemberScoreDetail才寫入
+	AND OrderNum NOT IN (SELECT ORDERNO FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE DEF_SEQ=5 AND ORDERNO NOT IN (SELECT OrderNum FROM @sync_order_data) );
 
 	-- 20210707 ADD BY YEH REASON.同站 預約用車時間<10小時積分扣-20分
 	INSERT INTO TB_MemberScoreDetail([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
@@ -181,7 +185,18 @@ BEGIN TRY
 	FROM @sync_order_data
 	WHERE ProjType=0
 	AND UseTimeDiff < 10
-	AND CarNo NOT IN (SELECT CarNo FROM #CarList);	-- 20210602 ADD BY YEH REASON:正在用車被系統取消不扣分
+	AND CarNo NOT IN (SELECT CarNo FROM #CarList)	-- 20210602 ADD BY YEH REASON:正在用車被系統取消不扣分
+	-- 20210726 UPD BY YEH REASON:增加判斷不存在TB_MemberScoreDetail才寫入
+	AND OrderNum NOT IN (SELECT ORDERNO FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE DEF_SEQ=4 AND ORDERNO NOT IN (SELECT OrderNum FROM @sync_order_data) );	
+
+	-- 20210726 UPD BY YEH REASON:前位使用者逾時用車導致訂單被系統取消時，要扣前位使用者(影響後續用戶租用)的分數
+	INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+									 MEMIDNO,ORDERNO,DEF_SEQ,SCORE,UIDISABLE,ISPROCESSED)
+	SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
+		IDNO,order_number,14,-20,0,-1
+	FROM #CarList
+	WHERE CarNo IN (SELECT CarNo FROM @sync_order_data)
+	AND order_number NOT IN (SELECT ORDERNO FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE DEF_SEQ=14 AND ORDERNO NOT IN (SELECT OrderNum FROM @sync_order_data) );
 
 	DROP TABLE IF EXISTS #CarList;
 
@@ -218,12 +233,14 @@ BEGIN TRY
 	set @hourSub2delay = DATEADD(HOUR,-2, @NowTime);
 
 	--寫入暫存表
-	insert into @sync_order_data (OrderNum,citizen_id,Title,DeviceToken,cancel_status,car_mgt_status,booking_status,IDNO,CarNo,StopTime,ProjType,FinalStartTime)
-	SELECT distinct OrderNum,IDNO,ISNULL(Title,''),ISNULL(DeviceToken,''),cancel_status,car_mgt_status,booking_status,IDNO,CarNo,StopTime,PROJTYPE,FinalStartTime
+	INSERT INTO @sync_order_data (OrderNum,citizen_id,Title,DeviceToken,cancel_status,car_mgt_status,booking_status,
+									IDNO,CarNo,StopTime,ProjType,FinalStartTime)
+	SELECT distinct OrderNum,IDNO,ISNULL(Title,''),ISNULL(DeviceToken,''),cancel_status,car_mgt_status,booking_status,
+		IDNO,CarNo,StopTime,PROJTYPE,FinalStartTime
 	FROM VW_SYNC_GetSyncData WITH(NOLOCK)
 	WHERE (car_mgt_status>=4 AND car_mgt_status<16) AND booking_status<5 AND cancel_status=0 
 	AND StopTime<=@NowTime AND FineTime = '1911-01-01 00:00:00.000'
-	AND OrderNum NOT IN (SELECT OrderNum FROM TB_PersonNotification WHERE NType=4 );
+	AND OrderNum NOT IN (SELECT OrderNum FROM TB_PersonNotification WHERE NType=4);
 
 	--寫入訂單歷程記錄
 	INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
@@ -255,8 +272,10 @@ BEGIN TRY
 	INNER JOIN @sync_order_data B ON A.CarNo=B.CarNo AND B.ProjType=0
 	WHERE A.ProjType=0
 	AND A.car_mgt_status=0 AND A.cancel_status=0
-	AND DATEDIFF(MINUTE,B.StopTime,A.start_time) <= 40
-	AND FinalStartTime >= '2021/7/7 12:00:00';
+	AND DATEDIFF(MINUTE, B.StopTime, A.start_time) <= 40
+	AND B.FinalStartTime >= '2021/7/7 12:00:00'
+	-- 20210726 UPD BY YEH REASON:增加判斷不存在TB_MemberScoreDetail才寫入
+	AND B.OrderNum NOT IN (SELECT ORDERNO FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE DEF_SEQ=14 AND ORDERNO IN (SELECT ORDERNO FROM @sync_order_data) );
 
 	--清除共用表
 	delete from @sync_order_data
