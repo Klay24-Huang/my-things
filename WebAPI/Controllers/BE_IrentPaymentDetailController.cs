@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
     public class BE_IrentPaymentDetailController : ApiController
     {
         [HttpPost]
-        public Dictionary<string, object> DoBE_Audit(Dictionary<string, object> value)
+        public Dictionary<string, object> DoBE_IrentPaymentDetail(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
