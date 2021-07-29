@@ -429,7 +429,6 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 春節不能使用折扣點數
-                    //dev: 春節不能使用折扣點數 
                     var vsd = new DateTime();
                     var ved = new DateTime();
                     if (neverHasFine.Contains(ProjType))

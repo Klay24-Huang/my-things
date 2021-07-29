@@ -1255,7 +1255,6 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 取得虛擬月租
-                //dev:取得虛擬月租
 
                 if (OrderDataLists != null && OrderDataLists.Count() > 0)
                 {
