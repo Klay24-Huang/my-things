@@ -884,6 +884,59 @@ namespace WebAPI.Models.BillFunc
         }
 
         /// <summary>
+        /// 取得信用卡刷卡狀態
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<SPOut_GetSubsCreditStatus> sp_GetSubsCreditStatus(SPInput_GetSubsCreditStatus spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetSubsCreditStatus>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCreditStatus);
+                string SPName = "usp_GetSubsCreditStatus_Q1";//hack: fix spNm
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.APIID,
+                        spInput.ActionNM,
+                        spInput.ApiCallKey,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2)
+                        re = objUti.ConvertToList<SPOut_GetSubsCreditStatus>(ds1.Tables[0]);
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 取得待執行履保付款呼叫列表
         /// </summary>
         /// <param name="spInput"></param>
@@ -1085,6 +1138,33 @@ namespace WebAPI.Models.BillFunc
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsNxt();
             SQLHelper<SPInput_SetSubsNxt, SPOut_SetSubsNxt> sqlHelp = new SQLHelper<SPInput_SetSubsNxt, SPOut_SetSubsNxt>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 設定訂閱制信用卡刷卡狀態
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SetSubsCreditStatus(SPInput_SetSubsCreditStatus spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
+            string spName = "usp_SetSubsCreditStatus_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetSubsCreditStatus();
+            SQLHelper<SPInput_SetSubsCreditStatus, SPOut_SetSubsCreditStatus> sqlHelp = new SQLHelper<SPInput_SetSubsCreditStatus, SPOut_SetSubsCreditStatus>(connetStr);
             bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
 
             if (spFlag && spOut != null)
