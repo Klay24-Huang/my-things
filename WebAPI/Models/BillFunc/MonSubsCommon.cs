@@ -242,7 +242,7 @@ namespace WebAPI.Models.BillFunc
                 trace.BaseMsg = ex.Message;
             }
 
-            if (string.IsNullOrWhiteSpace(trace.BaseMsg))
+            if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
                 carRepo.AddTraceLog(FunId, FunNm, eumTraceType.exception, trace);
             else
             {
