@@ -242,7 +242,7 @@ namespace WebAPI.Models.BillFunc
                 trace.BaseMsg = ex.Message;
             }
 
-            if (string.IsNullOrWhiteSpace(trace.BaseMsg))
+            if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
                 carRepo.AddTraceLog(FunId, FunNm, eumTraceType.exception, trace);
             else
             {
@@ -605,7 +605,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthList);
-                string SPName = "usp_GetMonthList_U1";//hack: fix spNm
+                string SPName = "usp_GetMonthList_U1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -652,7 +652,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMySubs);
-                string SPName = "usp_GetMySubs_Q1";//hack: fix spNm
+                string SPName = "usp_GetMySubs_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -707,7 +707,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetChgSubsList);
-                string SPName = "usp_GetChgSubsList_Q1";//hack: fix spNm
+                string SPName = "usp_GetChgSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -768,7 +768,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetUpSubsList);
-                string SPName = "usp_GetUpSubsList_Q1";//hack: fix spNm
+                string SPName = "usp_GetUpSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -830,7 +830,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCNT);
-                string SPName = "usp_GetSubsCNT_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsCNT_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -896,7 +896,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCreditStatus);
-                string SPName = "usp_GetSubsCreditStatus_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsCreditStatus_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -949,7 +949,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsEscrowPay);
-                string SPName = "usp_GetSubsEscrowPay_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsEscrowPay_Q1";
                 object[][] parms1 = {
                     new object[] {
                     },
@@ -996,7 +996,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthGroup);
-                string SPName = "usp_GetMonthGroup_Q01";//hack: fix spNm
+                string SPName = "usp_GetMonthGroup_Q01";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1041,7 +1041,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetBuyNowInfo);
-                string SPName = "usp_GetBuyNowInfo_Q1";//hack: fix spNm
+                string SPName = "usp_GetBuyNowInfo_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1081,7 +1081,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.CreateSubsMonth);
-            string spName = "usp_CreateSubsMonth_U1";//hack: fix spNm
+            string spName = "usp_CreateSubsMonth_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1106,7 +1106,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
-            string spName = "usp_UpSubsMonth_U1";//hack: fix spNm
+            string spName = "usp_UpSubsMonth_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1133,7 +1133,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
-            string spName = "usp_SetSubsNxt_U1";//hack: fix spNm
+            string spName = "usp_SetSubsNxt_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsNxt();
@@ -1160,7 +1160,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
-            string spName = "usp_SetSubsCreditStatus_U1";//hack: fix spNm
+            string spName = "usp_SetSubsCreditStatus_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsCreditStatus();
@@ -1187,7 +1187,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
-            string spName = "usp_SetSubsPayInvoDef_U1";//hack: fix spNm
+            string spName = "usp_SetSubsPayInvoDef_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsPayInvoDef();
@@ -1214,7 +1214,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.ArrearsPaySubs);
-            string spName = "usp_ArrearsPaySubs_U1";//hack: fix spNm
+            string spName = "usp_ArrearsPaySubs_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1242,7 +1242,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
-            string spName = "usp_InsEscrowHist_U1";//hack: fix spNm
+            string spName = "usp_InsEscrowHist_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_InsEscrowHist();
@@ -1266,7 +1266,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsHist);
-                string SPName = "usp_GetSubsHist_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsHist_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1327,7 +1327,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrsSubsList);
-                string SPName = "usp_GetArrsSubsList_Q1";//hack: fix spNm
+                string SPName = "usp_GetArrsSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1390,7 +1390,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsMonthByOrderNo);
-                string SPName = "usp_GetSubsMonthByOrderNo_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsMonthByOrderNo_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1438,7 +1438,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.DelSubsHist);
-            string spName = "usp_DelSubsHist_U1";//hack: fix spNm
+            string spName = "usp_DelSubsHist_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_DelSubsHist();
@@ -1466,7 +1466,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsBookingMonth);
-            string spName = "usp_SetSubsBookingMonth_U1";//hack: fix spNm
+            string spName = "usp_SetSubsBookingMonth_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsBookingMonth();
@@ -1496,7 +1496,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetNowSubs);
-                string SPName = "usp_GetNowSubs_Q1";//hack: fix spNm
+                string SPName = "usp_GetNowSubs_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
@@ -1547,7 +1547,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetTBCode);
-                string SPName = "usp_GetTBCode_Q1";//hack: fix spNm
+                string SPName = "usp_GetTBCode_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.CodeGroup
@@ -1594,7 +1594,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonSetInfo);
-                string SPName = "usp_GetMonSetInfo_Q1";//hack: fix spNm
+                string SPName = "usp_GetMonSetInfo_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.LogID,
@@ -1657,7 +1657,7 @@ namespace WebAPI.Models.BillFunc
                     return null;
 
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsBookingMonth);
-                string SPName = "usp_GetSubsBookingMonth_Q1";//hack: fix spNm
+                string SPName = "usp_GetSubsBookingMonth_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.OrderNo,
