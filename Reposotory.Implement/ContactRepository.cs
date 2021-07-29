@@ -452,7 +452,6 @@ namespace Reposotory.Implement
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_OrderDetailData> lstOrder = null;
     
-
             int nowCount = 0;
             string SQL = "SELECT *  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
 
@@ -565,10 +564,8 @@ namespace Reposotory.Implement
             }
             lstOrder = GetObjList<BE_OrderDetailData>(ref flag, ref lstError, SQL, para, term);
      
-
             return lstOrder;
         }
-
 
         public List<BE_OrderDetailData> GetOrderExplodeData_New(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED, bool IsBooking)
         {
