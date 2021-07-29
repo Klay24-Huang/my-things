@@ -73,8 +73,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.OrderNo, apiInput.WithoutGoldFlow };
-                string[] errList = { "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.OrderNo }; //apiInput.WithoutGoldFlow 唐拿掉，因為SP已經不需要ㄌ，前端已沒丟進來，是誰還掛在這邊阿??
+                string[] errList = { "ERR900", "ERR900" }; //"ERR900"
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
 
