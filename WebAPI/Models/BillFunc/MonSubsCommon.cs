@@ -1160,6 +1160,33 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
+            string spName = "usp_SetSubsCreditStatus_U1";//hack: fix spNm
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetSubsCreditStatus();
+            SQLHelper<SPInput_SetSubsCreditStatus, SPOut_SetSubsCreditStatus> sqlHelp = new SQLHelper<SPInput_SetSubsCreditStatus, SPOut_SetSubsCreditStatus>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
+        /// <summary>
+        /// 設定訂閱制信用卡刷卡狀態
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SetSubsCreditStatus(SPInput_SetSubsCreditStatus spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
             string spName = "usp_SetSubsCreditStatus_U1";
 
             var lstError = new List<ErrorInfo>();
