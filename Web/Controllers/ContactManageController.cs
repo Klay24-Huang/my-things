@@ -16,8 +16,8 @@ namespace Web.Controllers
     public class ContactManageController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        //20210728唐加，讓合約查詢也查鏡像db，但user說合約查詢要即時，故先不用
-        //private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        //20210728唐加，讓所有查資料的功能查鏡像db
+        private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
         public ActionResult BookingQuery()
         {
@@ -28,7 +28,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
@@ -96,7 +96,7 @@ namespace Web.Controllers
         public ActionResult BookingQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
             ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
             ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
@@ -225,7 +225,7 @@ namespace Web.Controllers
         public ActionResult BookingQueryExplode2(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
             ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
             ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
@@ -390,7 +390,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
@@ -466,7 +466,7 @@ namespace Web.Controllers
             ViewData["OrderNo"] = OrderNo;
             if (string.IsNullOrWhiteSpace(OrderNo) == false)
             {
-                ContactRepository repository = new ContactRepository(connetStr);
+                ContactRepository repository = new ContactRepository(connetStrMirror);
                 List<BE_OrderHistoryData> lstData = new List<BE_OrderHistoryData>();
                 lstData = repository.GetOrderHistory(Convert.ToInt64(OrderNo.Replace("H", "")));
                 return View(lstData);
@@ -491,7 +491,7 @@ namespace Web.Controllers
         public ActionResult ContactQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
             ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
             ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
@@ -729,7 +729,7 @@ namespace Web.Controllers
         public ActionResult ContactDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(DetailOrderNo))
@@ -824,7 +824,7 @@ namespace Web.Controllers
         public ActionResult ContactMotorDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(DetailOrderNo))
@@ -873,7 +873,7 @@ namespace Web.Controllers
         {
 
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(OrderNo))
@@ -956,7 +956,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
