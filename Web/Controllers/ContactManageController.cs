@@ -490,7 +490,6 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
-
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
             ContactRepository repository = new ContactRepository(connetStr);
             bool flag = true;
@@ -539,7 +538,6 @@ namespace Web.Controllers
             {
                 if (tmpOrder != "")
                 {
-
                     // OrderNum = OrderNum.ToUpper();
                     if (tmpOrder.Replace(" ", "").ToUpper().IndexOf('H') >= 0)
                     {
@@ -549,13 +547,11 @@ namespace Web.Controllers
                     {
                         flag = false;
                     }
-
                 }
                 else
                 {
                     tmpOrder = "0";
                 }
-
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
@@ -580,7 +576,6 @@ namespace Web.Controllers
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
-
                     int DataLen = lstBook.Count();
                     for (int i = 0; i < DataLen; i++)
                     {
@@ -599,7 +594,6 @@ namespace Web.Controllers
                             {
                                 OrderStatus = "完成還車付款";
                             }
-
                         }
                         IRow content = sheet.CreateRow(i + 1);
                         content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));    //合約
