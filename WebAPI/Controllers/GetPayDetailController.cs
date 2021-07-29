@@ -806,6 +806,8 @@ namespace WebAPI.Controllers
                         if (visMons != null && visMons.Count() > 0)
                             input.VisMons = visMons;
 
+                        trace.traceAdd("monIn", input);
+
                         var mon_re = cr_com.MonthRentSave(input);
                         //var mon_re = cr_com.MonthRentNoSave(input);//test: getPayDetail
                         if (mon_re != null)
