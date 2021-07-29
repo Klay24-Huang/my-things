@@ -314,7 +314,7 @@ function DoAjaxAfterGoBack(obj, API, FailMessage) {
             } else {
 
                 swal({
-                    title: 'Fail1',
+                    title: 'Fail41',
                     text: data.ErrorMessage,
                     icon: 'error'
                 });
