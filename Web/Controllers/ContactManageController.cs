@@ -571,8 +571,8 @@ namespace Web.Controllers
             }
             if (flag)
             {
-                //lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
-                lstBook = repository.GetOrderExplodeData0727(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);  //todo 暫時測試用，測試無誤時須更新View
+                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
+                //lstBook = repository.GetOrderExplodeData0727(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);  //todo 暫時測試用，測試無誤時須更新View
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
@@ -644,7 +644,7 @@ namespace Web.Controllers
             workbook.Write(ms);
             // workbook.Close();
             //   return View();
-            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "合約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         /// <summary>
         /// 機車合約修改
