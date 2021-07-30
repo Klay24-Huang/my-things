@@ -1,8 +1,11 @@
--- =============================================
--- Author:      YEH
--- Create Date: 2021-05-18
--- Description: 取得會員積分明細
--- =============================================
+/****************************************************************
+** 用　　途：取得會員積分明細
+*****************************************************************
+** Change History
+*****************************************************************
+** 20210518 ADD BY YEH
+** 20210702 UPD BY YEH REASON:積分<0顯示0
+*****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetMemberScore_Q1]
 (   
 	@MSG		VARCHAR(10)	OUTPUT	,
@@ -38,8 +41,9 @@ BEGIN
 
 		IF @Error = 0
 		BEGIN
-			--總積分
-			SELECT SCORE FROM TB_MemberScoreMain WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+			-- 總積分
+			-- 20210702 UPD BY YEH REASON:積分<0顯示0
+			SELECT IIF(SCORE > 0, SCORE, 0) AS SCORE FROM TB_MemberScoreMain WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
 			--明細
 			;WITH T
@@ -48,7 +52,8 @@ BEGIN
 					CONVERT(VARCHAR, A.A_SYSDT, 120) AS GetDate,
 					A.SEQ,
 					A.SCORE,
-					CASE WHEN B.SCTYPENO='O' THEN A.UIDESC ELSE B.UIDESC END AS UIDESC
+					CASE WHEN B.SCTYPENO='O' THEN A.UIDESC ELSE B.UIDESC END AS UIDESC,
+					CASE WHEN A.ORDERNO <> 0 THEN CONCAT('H',A.ORDERNO) ELSE '' END AS ORDERNO
 				FROM TB_MemberScoreDetail A WITH(NOLOCK)
 				LEFT JOIN TB_ScoreDef B WITH(NOLOCK) ON B.SEQ=A.DEF_SEQ
 				WHERE A.MEMIDNO=@IDNO AND A.UIDISABLE=0 AND A.ISPROCESSED=1
@@ -88,4 +93,3 @@ BEGIN
 END
 
 GO
-

@@ -30,7 +30,6 @@
     int HistoryLen = 0;
     string UPD_MEMBER_NAME_USER = (System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["UPD_MEMBER_NAME_USER"].ToString();
     int MileStoneLen = 0;
-    //int MileStoneDetail = 0;
     string MileStoneDetail = "";
     int MemberScore = 0;
 
@@ -892,7 +891,7 @@
                                     積分歷程
                                 </div>
                                 <div class="col-md-3">
-                                    @obj.MemberScore[0].SCORETOTAL
+                                    @((obj.MemberScore.Count() == 0) ? 0 : Int32.Parse(obj.MemberScore[0].SCORETOTAL))
                                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#memberScore_modal">顯示積分歷程</button>
                                 </div>
                             </div>

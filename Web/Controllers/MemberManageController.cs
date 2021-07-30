@@ -108,6 +108,7 @@ namespace Web.Controllers
             List<BE_SameMobileData> lstMobile = null;
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
+            List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
 
             //Newtonsoft.Json序列化
             string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
@@ -121,6 +122,7 @@ namespace Web.Controllers
             Data.MileStone = lstMileStone;
             //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
             //Data.MileStoneDetail = lstMileStoneDetail;
+            Data.MemberScore = lstMemberScore;
 
             Data.InsuranceData = lstInsuranceData;
 
@@ -825,6 +827,8 @@ namespace Web.Controllers
                     ViewData["IDNO"] = IDNO;
                     ViewData["resultMessage"] = response;
                     ViewData["IRent_Only"] = IRent_Only;
+
+                    return View();
                 }
 
                 ViewData["result"] = "0";

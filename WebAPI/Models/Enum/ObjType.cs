@@ -929,7 +929,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
-                    SPName = "usp_GetMemberStatus";
+                    //SPName = "usp_GetMemberStatus";
+                    SPName = "usp_GetMemberStatus_ForTest";     // 20210708 UPD BY YEH REASON:阿舒要測試東西，先指向測試版本
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";

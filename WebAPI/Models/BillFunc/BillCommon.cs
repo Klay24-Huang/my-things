@@ -1,10 +1,12 @@
 ﻿using Domain.SP.Input.Bill;
 using Domain.SP.Output.Bill;
 using Domain.TB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Web;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Utils;
@@ -347,6 +349,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Discount">折扣</param>
         /// <param name="FreeMins">前n免費</param>
         /// <returns></returns>
+        /// <mark>2020-12-07 eason</mark>
         public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
                     , List<MonthlyRentData> mOri
                     , int Discount
@@ -363,7 +366,7 @@ namespace WebAPI.Models.BillFunc
             if (mins >= daybaseMins)
                 daybaseMins = 0;
             return CarRentInCompute_ori(SD, ED, priceN, priceH, daybaseMins, dayMaxHour, lstHoliday,
-                  mOri, Discount, FreeMins
+                  mOri, Discount //, FreeMins
                 );
         }
 
@@ -385,7 +388,9 @@ namespace WebAPI.Models.BillFunc
             , List<MonthlyRentData> mOri
             , int Discount
             , double FreeMins = 0
-            )
+                    )
+
+
         {//note: CarRentInCompute2
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
@@ -622,6 +627,27 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+
+        #region 修正汽車基消
+        //public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
+        //    , List<MonthlyRentData> mOri
+        //    , int Discount
+        //    )
+        //{
+        //    var re = new CarRentInfo();
+        //    if (SD == null || ED == null || SD < ED)
+        //        throw new Exception("SD, ED錯誤");
+
+        //    SD = SD.AddSeconds(SD.Second * -1);
+        //    ED = ED.AddSeconds(ED.Second * -1);
+        //    var mins = ED.Subtract(SD).TotalMinutes;
+
+        //    if(mins < 60)
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 60, dayMaxHour, lstHoliday, mOri, Discount);
+        //    else
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 0, dayMaxHour, lstHoliday, mOri, Discount);          
+        //}
+        #endregion
 
         /// <summary>
         /// 機車月租計算,區分平假日,不分平假日
@@ -940,13 +966,15 @@ namespace WebAPI.Models.BillFunc
             if (mOri != null && mOri.Count() > 0)
             {
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
-                   x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 1
-                ))
+                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
+                    //|| x.Mode != 1
+                 ))
                     throw new Exception("mOri資料內容錯誤");
 
                 if (mOri.GroupBy(x => x.MonthlyRentId).Where(y => y.Count() > 1).Count() > 0)
                     throw new Exception("MonthlyRentId不可重複");
+
+                mOri = mOri.OrderByDescending(x => x.MonLvl).ToList();
 
                 mFinal = objUti.Clone(mOri);
             }

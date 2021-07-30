@@ -72,7 +72,6 @@ namespace Web.Controllers
             }
             if (!string.IsNullOrEmpty(carid))
             {
-
                 ViewData["CarNo"] = carid;
             }
             if (!string.IsNullOrEmpty(objStation))
@@ -172,7 +171,7 @@ namespace Web.Controllers
                 }
                 else if (data[k].OrderStatus == 5)
                 {
-                    if(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss")!= "1900-01-01 00:00:00" && data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss") != "1900-01-01 00:00:00")
+                    if (data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") != "1900-01-01 00:00:00" && data[k].BookingStart.ToString("yyyy-MM-dd HH:mm:ss") != "1900-01-01 00:00:00")
                     {
                         if (data[k].BookingEnd < data[k].BookingStart)
                         {
@@ -484,9 +483,9 @@ namespace Web.Controllers
 
             if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
             {
-                //lstSubScription = _repository.BE_QueryMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
+
 
 
             return View(lstSubScription);
@@ -623,7 +622,6 @@ namespace Web.Controllers
                 ViewData["OrderNum"] = tOrderNum;
                 tOrderNum = tOrderNum.Replace("H", "");
             }
-            if (tOrderNum != "" || tUserID != "" || tSDate != "" || tEDate != "")
             bool isInDateRange = false;
 
             if (DateTime.TryParse(tSDate, out DateTime DS) && DateTime.TryParse(tEDate, out DateTime DE))
@@ -640,8 +638,8 @@ namespace Web.Controllers
             }
             if (isInDateRange || tOrderNum.Length>0 || tUserID.Length > 0)
             {
-                //lstSubScription = _repository.GetMonthlyReportQuery(tOrderNum, tUserID, tSDate, tEDate);
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
+
             }
             return View(lstSubScription);
         }
@@ -696,6 +694,8 @@ namespace Web.Controllers
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
+
+
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂單編號", "IDNO", "出車據點", "使用汽車－平日(時)", "使用汽車－假日(時)"
@@ -740,7 +740,7 @@ namespace Web.Controllers
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "月租訂閱明細_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #endregion
-        
+
         #region 進出停車場明細
         /// <summary>
         /// 進出停車場明細

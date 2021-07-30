@@ -252,6 +252,34 @@ namespace WebAPI.Controllers
                                 motoBaseMins = item.BaseMinutes;
                                 //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
                                 ProjType = item.ProjType;
+                            }
+
+                            if (ProjType == 4)
+                            {
+                                if (item.BaseMinutes == 0)
+                                {
+                                    flag = false;
+                                    errMsg = "訂單資訊中BaseMinutes(機車基本分鐘數)不可為0";
+                                    errCode = "ERR914";//資料邏輯錯誤                                   
+                                }
+
+                                if (flag)
+                                {
+                                    if (item.BaseMinutesPrice == 0)
+                                    {
+                                        flag = false;
+                                        errMsg = "訂單資訊中BaseMinutesPrice(機車基消)不可為0";
+                                        errCode = "ERR914";//資料邏輯錯誤
+                                    }
+                                }
+                            }
+
+                            if (flag)
+                            {
+                                trace.OrderNo = item.OrderNo;
+                                motoBaseMins = item.BaseMinutes;
+                                //motoMaxMins = item.  --目前資料未包含機車上限分鐘數
+                                ProjType = item.ProjType;
                                 UseOrderPrice = item.UseOrderPrice;
                                 OrderPrice = item.OrderPrice;
                                 ProjID = item.ProjID;
@@ -796,10 +824,10 @@ namespace WebAPI.Controllers
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
                             carBaseMins = 60,
-                            FirstFreeMins = item.FirstFreeMins,
-                            MonIds = MonIds,
                             CancelMonthRent = (ProjID == "R024"),
-                            MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                            MaxPrice = item.MaxPrice,    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                            FirstFreeMins = item.FirstFreeMins,
+                            MonIds = MonIds
                         };
 
                         if (visMons != null && visMons.Count() > 0)
@@ -808,7 +836,6 @@ namespace WebAPI.Controllers
                         trace.traceAdd("monIn", input);
 
                         var mon_re = cr_com.MonthRentSave(input);
-                        //var mon_re = cr_com.MonthRentNoSave(input);//test: getPayDetail
                         if (mon_re != null)
                         {
                             trace.traceAdd(nameof(mon_re), mon_re);

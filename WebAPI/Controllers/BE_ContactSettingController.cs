@@ -951,6 +951,8 @@ namespace WebAPI.Controllers
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
             string MonIds = "";//短期月租Id可多筆
+
+            string ProjID = "";
             #endregion
             #region trace-in
             trace.OrderNo = tmpOrder;
@@ -1009,6 +1011,7 @@ namespace WebAPI.Controllers
                     ProjType = item.ProjType;
                     UseOrderPrice = item.UseOrderPrice;
                     OrderPrice = item.OrderPrice;
+                    ProjID = item.ProjID;
                 }
                 //取得專案狀態
                 if (flag)
@@ -1571,6 +1574,8 @@ namespace WebAPI.Controllers
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
                         carBaseMins = 60,
+                        CancelMonthRent = (ProjID == "R024"),
+                        MaxPrice = item.MaxPrice,    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                         FirstFreeMins = item.FirstFreeMins,
                         MonIds = MonIds,
                         //CancelMonthRent = (ProjID == "R024"),

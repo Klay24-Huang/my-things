@@ -701,6 +701,7 @@ namespace WebAPI.Controllers
         }
         #endregion
 
+        #region 預估金額
         private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, string funNM = "",Int64 MonId=0)
         {
             int re = 0;
@@ -759,6 +760,6 @@ namespace WebAPI.Controllers
 
             return re;
         }
-        //#endregion
+        #endregion
     }
 }

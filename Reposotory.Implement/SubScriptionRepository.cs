@@ -75,7 +75,7 @@ namespace Reposotory.Implement
         }
 
 
-        public List<BE_MonthlyQuery> BE_GetMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
+        public List<BE_MonthlyMain> BE_GetMonthlyMain(string IDNO, string SD, string ED, int hasPointer)
         {
             bool flag = true;
             //List<BE_MonthlyQuery> lstQuery = null;
@@ -99,7 +99,7 @@ namespace Reposotory.Implement
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyMain, SPOutput_Base>(this.ConnectionString);
-            List<BE_MonthlyQuery> lstOut = new List<BE_MonthlyQuery>();
+            List<BE_MonthlyMain> lstOut = new List<BE_MonthlyMain>();
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
           
@@ -294,10 +294,10 @@ namespace Reposotory.Implement
         /// <param name="SD"></param>
         /// <param name="ED"></param>
         /// <returns></returns>
-        public List<BE_MonthlyReportData> GetMonthlyDetail(string OrderNum, string IDNO, string SD, string ED)
+        public List<BE_MonthlyDetail> GetMonthlyDetail(string OrderNum, string IDNO, string SD, string ED)
         {
             bool flag = true;
-            List<BE_MonthlyReportData> lstQuery = null;
+            //List<BE_MonthlyDetail> lstQuery = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string spName = "usp_GetMonthlyDetail";
             //string SQL = "SELECT * FROM VW_BE_GetMonthlyReportData ";
@@ -329,7 +329,7 @@ namespace Reposotory.Implement
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMonthlyDetail, SPOutput_Base>(this.ConnectionString);
-            List<BE_MonthlyReportData> lstOut = new List<BE_MonthlyReportData>();
+            List<BE_MonthlyDetail> lstOut = new List<BE_MonthlyDetail>();
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
 

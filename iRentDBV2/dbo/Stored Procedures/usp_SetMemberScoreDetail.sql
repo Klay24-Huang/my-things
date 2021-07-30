@@ -1,48 +1,9 @@
-/****** Object:  StoredProcedure [dbo].[usp_SetMemberScoreDetail]    Script Date: 2020/10/27 上午 10:38:05 ******/
 /****************************************************************
-** Name: [dbo].[usp_SetMemberScoreDetail]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
-
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_RegisterMemberData]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:
-** Date:
-**
+** 用　　途：會員積分記錄刪除
 *****************************************************************
 ** Change History
 *****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 
-**			 |			  |
+** 20210519 ADD BY YEH
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SetMemberScoreDetail]
 	@IDNO				VARCHAR(10)				,	--帳號
@@ -129,4 +90,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetMemberScoreDetail';
 GO
-

@@ -98,7 +98,7 @@ BEGIN TRY
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=E.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3
 		WHERE Car.CarNo = @CarNo
 		AND ((P.SPCLOCK='Z') OR (@SpecStatus<>'' AND P.SPCLOCK=@SpecStatus))
-		ORDER BY PROJID ASC;
+		ORDER BY P.PROJID ASC;
 	END
 
 	DROP TABLE IF EXISTS #TB_Project
@@ -128,4 +128,3 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 GO
-

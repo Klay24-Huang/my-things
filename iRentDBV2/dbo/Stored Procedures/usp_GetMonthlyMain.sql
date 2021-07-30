@@ -53,7 +53,8 @@ AS
 		Set @Sql = '
 			--Select @IDNO,@SD,@ED
 			Select Main.IDNO,Main.WorkDayHours,Main.HolidayHours,Main.MotoTotalHours,Main.StartDate,Main.EndDate,ISNULL(Main.SEQNO,0) AS SEQNO,ISNULL(Main.[ProjID],'''') AS ProjID,ISNULL(Main.[ProjNM],'''') AS ProjNM 
-			From TB_MonthlyRent AS Main 
+			,Main.MonProPeriod,''Y'' IsTiedUp,''Y'' AutomaticRenewal
+			From SYN_MonthlyRent AS Main 
 			Where Main.IDNO = Case When @IDNO is null Then IDNO Else @IDNO End '
 
 		Declare @PamareterSql nvarchar(max) = '@IDNO varchar(20), @SD Datetime ,@ED Datetime'

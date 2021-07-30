@@ -62,6 +62,10 @@ namespace OtherService.Enum
             /// <summary>
             /// 遠傳車機韌體資訊
             /// </summary>
+            UpdCarMachineVerInfo,
+            /// <summary>
+            /// 台新錢包直接儲值+開戶 LOG寫入
+            /// </summary>
             InsStoreValueCreateAccountLog,
             /// <summary>
             /// 台新錢包扣款 LOG寫入
