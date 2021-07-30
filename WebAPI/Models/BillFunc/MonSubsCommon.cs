@@ -319,7 +319,8 @@ namespace WebAPI.Models.BillFunc
             string SignCode = WalletAPI.GenerateSignCode(escrow.MerchantId, utcTimeStamp, body, APIKey);
             WebAPIOutput_StoreValueCreateAccount output = null;
             flag = WalletAPI.DoStoreValueCreateAccount(escrow, escrow.MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-           
+            logger.Debug("WebAPI_CreateAccountAndStoredMoney=>" + JsonConvert.SerializeObject(escrow));
+            logger.Debug("WebAPIOutput_StoreValueCreateAccount=>" + JsonConvert.SerializeObject(output));
             #region 將執行結果寫入TB
             if (flag)
             {
@@ -385,7 +386,8 @@ namespace WebAPI.Models.BillFunc
                 string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
                 WebAPIOutput_PayTransaction output = null;
                 flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-
+                logger.Debug("WebAPI_PayTransaction=>" + JsonConvert.SerializeObject(wallet));
+                logger.Debug("WebAPIOutput_PayTransaction=>" + JsonConvert.SerializeObject(output));
                 var spin = new SPInput_SetSubsBookingMonth()
                 {
                     IDNO = sour.IDNO,
