@@ -1577,9 +1577,7 @@ namespace WebAPI.Controllers
                         CancelMonthRent = (ProjID == "R024"),
                         MaxPrice = item.MaxPrice,    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                         FirstFreeMins = item.FirstFreeMins,
-                        MonIds = MonIds,
-                        //CancelMonthRent = (ProjID == "R024"),
-                        MaxPrice = item.MaxPrice    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                        MonIds = MonIds
                     };
 
                     if (visMons != null && visMons.Count() > 0)
