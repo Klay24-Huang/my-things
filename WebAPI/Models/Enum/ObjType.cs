@@ -1014,7 +1014,8 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_UpdateOrderAuthReturnList";
                     break;
                 case SPType.GetEstimate:
-                    SPName = "usp_GetEstimate_Q1";
+                    //SPName = "usp_GetEstimate_Q1";
+                    SPName = "usp_GetEstimate_Q1_0727";
                     break;
                 case SPType.GetCarReturnMillage:    // 取得還車里程 20210219 ADD
                     SPName = "usp_GetCarReturnMillage";

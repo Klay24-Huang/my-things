@@ -150,7 +150,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">匯出</button>
+                                <button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">簡易匯出</button>
+                                <button type="button" name="btnExplode2" id="btnExplode2" class="btn btn-primary">匯出</button>
                                 <input type="hidden" name="Mode" id="Mode" value="@(Mode)" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
@@ -173,6 +174,15 @@
     <input type="hidden" id="ExplodeobjStation" name="ExplodeobjStation" value="">
     <input type="hidden" id="ExplodeSDate" name="ExplodeSDate" value="">
     <input type="hidden" id="ExplodeEDate" name="ExplodeEDate" value="">
+}
+@using (Html.BeginForm("BookingQueryExplode2", "ContactManage", FormMethod.Post, new { id = "formbookingExplode2" }))
+{
+    <input type="hidden" id="ExplodeOrderNum2" name="ExplodeOrderNum" value="">
+    <input type="hidden" id="ExplodeuserID2" name="ExplodeuserID" value="">
+    <input type="hidden" id="ExplodeobjCar2" name="ExplodeobjCar" value="">
+    <input type="hidden" id="ExplodeobjStation2" name="ExplodeobjStation" value="">
+    <input type="hidden" id="ExplodeSDate2" name="ExplodeSDate" value="">
+    <input type="hidden" id="ExplodeEDate2" name="ExplodeEDate" value="">
 }
 <!--查詢介面結束-->
 <!--輸出表格-->

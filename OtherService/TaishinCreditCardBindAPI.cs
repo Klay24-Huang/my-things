@@ -251,7 +251,7 @@ namespace OtherService
         }
         
         public bool DoGetCreditCardListCache(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output,bool refresh=false)
-        {//hack: DoGetCreditCardListCache
+        {
             bool flag = false;
             string cacheNm = "BankCardCache";
             string bankNm = "TSIB";
@@ -930,6 +930,20 @@ namespace OtherService
                 tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
                 //  tmpOrder = Convert.ToInt64(tmp);
                 creditType = 3;
+            }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
+                creditType = 4;
+            }
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
+                creditType = 5;
             }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {

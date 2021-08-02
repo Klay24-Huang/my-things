@@ -26,7 +26,7 @@ namespace WebAPI.Models.BillFunc
             try
             {
                 //string SPName = new ObjType().GetSPName(ObjType.SPType.GetAlliRentStation);
-                string SPName = "usp_GetAlliRentStation_Q1";//hack: fix spNm
+                string SPName = "usp_GetAlliRentStation_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.LogID,

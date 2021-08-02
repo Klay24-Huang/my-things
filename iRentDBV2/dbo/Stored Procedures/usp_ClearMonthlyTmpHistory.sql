@@ -98,9 +98,12 @@ SET @OrderNo=ISNULL (@OrderNo,0);
 		 BEGIN
 			--回存
 		    UPDATE TB_MonthlyRent 
-			SET TB_MonthlyRent.[WorkDayHours]  =TB_MonthlyRent.[WorkDayHours]+History.UseWorkDayHours,    
-				TB_MonthlyRent.[HolidayHours]  =TB_MonthlyRent.[HolidayHours]+History.UseHolidayHours ,   
-				TB_MonthlyRent.[MotoTotalHours]=TB_MonthlyRent.[MotoTotalHours]+History.UseMotoTotalHours,
+			SET TB_MonthlyRent.CarTotalHours   = TB_MonthlyRent.CarTotalHours + History.UseCarTotalHours,
+			    TB_MonthlyRent.WorkDayHours    = TB_MonthlyRent.WorkDayHours + History.UseWorkDayHours,    
+				TB_MonthlyRent.HolidayHours    = TB_MonthlyRent.HolidayHours + History.UseHolidayHours ,   
+				TB_MonthlyRent.MotoTotalHours  = TB_MonthlyRent.MotoTotalHours + History.UseMotoTotalHours,
+				TB_MonthlyRent.MotoWorkDayMins = TB_MonthlyRent.MotoWorkDayMins + History.UseMotoWorkDayMins,
+				TB_MonthlyRent.MotoHolidayMins = TB_MonthlyRent.MotoHolidayMins + History.UseMotoHolidayMins,
 				UPDTime=@NowTime
 			FROM TB_MonthlyRentHistory AS History
 			WHERE TB_MonthlyRent.MonthlyRentId=History.MonthlyRentId AND History.OrderNo=@OrderNo;
