@@ -234,7 +234,7 @@ namespace WebAPI.Controllers
                     tbExtSigninList = new List<ExtSigninList>(),
                     //20210218唐:這邊還要加 IRENTFLG(N未審T審失敗Y審通過)
                     //PROCD = (apiInput.IsNew==1) ? "A" : "U",
-                    IRENTFLG = (apiInput.AuditStatus == 0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")
+                    IRENTFLG = (apiInput.AuditStatus == 0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")//AuditStatus=1通過、-1不通過、0都沒勾選
                 };
                 flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }

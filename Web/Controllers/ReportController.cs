@@ -1407,5 +1407,37 @@ namespace Web.Controllers
             return File(fileStream, "application/xlsx", $"{Time_Start}_to_{Time_End}_車輛隨租定位({carType}).xlsx");
         }
         #endregion
+
+        #region 主動取款明細查詢
+        /// <summary>
+        /// 主動取款明細查詢 - 20210714唐加
+        /// </summary>
+        public ActionResult IrentPaymentDetail()
+        {
+            ViewData["StartDate"] = "";
+            ViewData["EndDate"] = "";
+            ViewData["StartDate2"] = "";
+            ViewData["EndDate2"] = "";
+            ViewData["MEMACCOUNT"] = "";
+            return View();
+        }
+        #endregion
+
+        #region 主動取款歷程查詢
+        /// <summary>
+        /// 主動取款歷程查詢 - 20210714唐加
+        /// </summary>
+        public ActionResult IrentPaymentHistory()
+        {
+            ViewData["StartDate"] = "";
+            ViewData["EndDate"] = "";
+            ViewData["StartDate2"] = "";
+            ViewData["EndDate2"] = "";
+            ViewData["StartDate3"] = "";
+            ViewData["EndDate3"] = "";
+            ViewData["MEMACCOUNT"] = "";
+            return View();
+        }
+        #endregion
     }
 }

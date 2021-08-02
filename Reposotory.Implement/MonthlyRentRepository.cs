@@ -124,7 +124,7 @@ namespace Reposotory.Implement
             IsMix=case when ((s.CarWDHours > 0 or s.CarHDHours > 0) and (s.MotoTotalMins > 0 or s.HDRateForMoto < 2)) then 1 else 0 end
             FROM SYN_MonthlyRent m JOIN TB_MonthlyRentSet s  
             on s.MonProjID = m.ProjID and s.MonProPeriod = m.MonProPeriod and s.ShortDays = m.ShortDays
-            ";//hack: fix TB_MonthlyRent_test(名稱修正)
+            ";
 
             SqlParameter[] para = new SqlParameter[1];
             string term = "";

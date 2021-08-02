@@ -154,7 +154,7 @@ function aa(detail,actionname) {
     $('#myTable tbody td').remove()
 
     const obj = $.grep(detail, function (n, i) { return n.Action === actionname; });
-    console.log(obj)
+    //console.log(obj)
 
     //data:
     var pp = $.grep(detail, function (n, i) { return n.Action === actionname; }).length

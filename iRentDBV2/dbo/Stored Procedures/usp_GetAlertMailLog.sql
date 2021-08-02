@@ -1,12 +1,10 @@
-/****** Object:  StoredProcedure [dbo].[usp_GetAlertMailLog]    Script Date: 2021/4/7 上午 11:05:36 ******/
-
 /****************************************************************
 ** Change History
 *****************************************************************
 ** Date:     |   Author:  |          Description:
 ** ----------|------------| ------------------------------------
-** 2021/04/07 11:10:00 Jet Add
-** 
+** 2021/04/07 ADD BY YEH
+** 2021/07/26 UPD BY YEH REASON:增加StationID
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetAlertMailLog]
 	@SDate	DATETIME,	--起日
@@ -17,7 +15,7 @@ DECLARE @NowDate Datetime;
 
 SET @NowDate=DATEADD(HOUR,8,GETDATE());
 
-SELECT AlertID,EventType,Receiver,CarNo,OrderNo,HasSend,SendTime,MKTime 
+SELECT AlertID,EventType,Receiver,CarNo,OrderNo,StationID,HasSend,SendTime,MKTime 
 FROM TB_AlertMailLog WITH(NOLOCK) 
 WHERE 1=1 
 AND (HasSend=0 AND MKTime BETWEEN @SDate AND @EDate) 

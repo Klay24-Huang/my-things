@@ -10,7 +10,7 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 版號
         /// </summary>
-        public static readonly string codeVersion = "202103171600";//hack: 修改程式請修正此版號
+        public static readonly string codeVersion = "202107291115";//hack: 修改程式請修正此版號
 
         public static readonly string strSpringSd = "2021-02-09 00:00:00";//春節起
         public static readonly string strSpringEd = "2021-02-17 00:00:00";//春節迄
@@ -24,6 +24,7 @@ namespace WebAPI.Models.BillFunc
         {
             new Tuple<int, string>(99990001,"ori_TSIBCardTrade"),
             new Tuple<int, string>(99990002,"exeNxt"),
+            new Tuple<int, string>(99990003,"MonthRentSave"),
         };
 
         /// <summary>

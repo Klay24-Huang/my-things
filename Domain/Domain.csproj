@@ -266,6 +266,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetNowSubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsBookingMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsCNT.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_GetSubsCreditStatus.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsEscrowPay.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetSubsMonthByOrderNo.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetUpSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_InsEscrowHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsBookingMonth.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_SetSubsCreditStatus.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
@@ -352,6 +354,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetNowSubs.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsBookingMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsCNT.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_GetSubsCreditStatus.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsEscrowPay.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsMonthByOrderNo.cs" />
@@ -359,6 +362,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetUpSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_InsEscrowHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsBookingMonth.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_SetSubsCreditStatus.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
@@ -541,6 +545,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EinvBiz.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ETAG010.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_IrentPaymentDetail.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_MonthlyRentSave.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR010Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR013Reg.cs" />
@@ -607,6 +612,10 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_EinvBiz.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_ETAG010QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentDetail.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentDetailExplode.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistory.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistoryExplode.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_MonthlyRentSave.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR013Reg.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />
@@ -628,6 +637,10 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370SaveData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR380Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData2.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData3.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_MochiLogin.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_ParkData.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_QueryBillByCar.cs" />

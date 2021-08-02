@@ -70,6 +70,12 @@
     <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
       <HintPath>..\packages\Pipelines.Sockets.Unofficial.2.2.0\lib\net461\Pipelines.Sockets.Unofficial.dll</HintPath>
     </Reference>
+    <Reference Include="Prometheus.NetFramework.AspNet, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559, processorArchitecture=MSIL">
+      <HintPath>..\packages\prometheus-net.NetFramework.AspNet.4.2.0\lib\net461\Prometheus.NetFramework.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Prometheus.NetStandard, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559, processorArchitecture=MSIL">
+      <HintPath>..\packages\prometheus-net.4.2.0\lib\net461\Prometheus.NetStandard.dll</HintPath>
+    </Reference>
     <Reference Include="SSAPI.Local">
       <HintPath>Reference\SSAPI.Local.dll</HintPath>
     </Reference>
@@ -230,6 +236,7 @@
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
     <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
+    <Compile Include="Controllers\BE_IrentPaymentDetailController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
     <Compile Include="Controllers\BE_QueryMenuByUserGroupController.cs" />
@@ -445,6 +452,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsertChargeParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_IrentPaymentDetail.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_NewsHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFunc.cs" />
@@ -617,6 +625,7 @@
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
     <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BE_IrentPaymentDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />

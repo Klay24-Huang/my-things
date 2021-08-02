@@ -460,7 +460,6 @@ namespace WebAPI.Controllers
                         #endregion
 
                         #region 取得虛擬月租
-                        //dev:取得虛擬月租
 
                         if (OrderDataLists != null && OrderDataLists.Count() > 0)
                         {
@@ -832,6 +831,8 @@ namespace WebAPI.Controllers
 
                         if (visMons != null && visMons.Count() > 0)
                             input.VisMons = visMons;
+
+                        trace.traceAdd("monIn", input);
 
                         var mon_re = cr_com.MonthRentSave(input);
                         if (mon_re != null)

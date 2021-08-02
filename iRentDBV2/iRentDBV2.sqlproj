@@ -501,7 +501,6 @@
     <Build Include="dbo\Tables\TB_BindUUCard_Log.sql" />
     <Build Include="dbo\Stored Procedures\usp_BindUUCardJob.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsAlertEvent.sql" />
-    <Build Include="usp_GetCityParkingFee.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_BookingCancelNew.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsReturnControl.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList.sql" />
@@ -561,6 +560,8 @@
     <Build Include="dbo\Stored Procedures\usp_CalOrderScore.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayBack_V2.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMedalHistory.sql" />
+    <Build Include="dbo\Views\VW_BE_GetOrderFullDetail_0727.sql" />
+    <Build Include="dbo\Tables\TB_BatchHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

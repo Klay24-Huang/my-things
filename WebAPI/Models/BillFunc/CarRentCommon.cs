@@ -32,7 +32,6 @@ namespace WebAPI.Models.BillFunc
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
 
-
         public OBIZ_TokenCk TokenCk(IBIZ_TokenCk sour)
         {
             var re = new OBIZ_TokenCk();
@@ -249,13 +248,18 @@ namespace WebAPI.Models.BillFunc
             var re = new OBIZ_MonthRent();
             var cr_com = new CarRentCommon();
             var cr_sp = new CarRentSp();
+            var trace = new TraceCom();
+            var carRepo = new CarRentRepo();
             var monthlyRentRepository = new MonthlyRentRepository(connetStr);
             var monthlyRentDatas = new List<MonthlyRentData>();
             var billCommon = new BillCommon();
             var errCode = re.errCode;
+            string funNm = "MonthRentSave";
             re.flag = true;
             re.UseMonthMode = false;
             re.IsMonthRent = 0;
+
+            trace.traceAdd("fnIn", sour);
 
             bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
 
@@ -273,7 +277,6 @@ namespace WebAPI.Models.BillFunc
             {
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
 
-
                 //假日優惠費率置換:只限汽車月租,只置換假日
                 List<int> CarProTypes = new List<int>() { 0, 3 };
                 if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0 && CarProTypes.Any(x=>x == sour.ProjType) && sour.intOrderNO > 0)
@@ -283,13 +286,16 @@ namespace WebAPI.Models.BillFunc
                     {
                         var pri = cr_sp.sp_GetEstimate("", "", sour.LogID, ref xErrMsg, sour.intOrderNO);
                         if (pri != null && pri.PRICE_H > 0)
-                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H);
+                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H/10);
                     }
+                    trace.FlowList.Add("置換汽車假日優惠費率");                    
                 }
             }
 
             if (sour.CancelMonthRent)
                 monthlyRentDatas = new List<MonthlyRentData>();
+
+            trace.traceAdd("monthlyRentDatas", monthlyRentDatas);
 
             //虛擬月租
             if (sour.VisMons != null && sour.VisMons.Count() > 0)
@@ -299,126 +305,138 @@ namespace WebAPI.Models.BillFunc
                 re.monthlyRentDatas = monthlyRentDatas;
 
             int MonthlyLen = monthlyRentDatas.Count;
+
             if (MonthlyLen > 0)
             {
                 re.UseMonthMode = true;
                 re.IsMonthRent = 1;
 
                 if (re.flag)
-                {
-                    if (sour.ProjType == 4)
+                {                    
+                    try
                     {
-                        var motoMonth = objUti.Clone(monthlyRentDatas);
-                        int motoDisc = sour.Discount;
-
-                        DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
-                        DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
-
-                        //春前
-                        if (sour.ED <= sprSD)
+                        if (sour.ProjType == 4)
                         {
-                            // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
-                            if (xre != null)
+                            var motoMonth = objUti.Clone(monthlyRentDatas);
+                            int motoDisc = sour.Discount;
+
+                            DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+                            DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+
+                            //春前
+                            if (sour.ED <= sprSD)
                             {
-                                re.carInfo = xre;
-                                re.CarRental = xre.RentInPay;
-                                if (xre.mFinal != null && xre.mFinal.Count > 0)
-                                    motoMonth = xre.mFinal;
-                                else
-                                    motoMonth = new List<MonthlyRentData>();
-                                re.useDisc = xre.useDisc;
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPrice, sour.MotoBaseMins, 200, sour.lstHoliday, motoMonth, motoDisc, 199, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
+                                if (xre != null)
+                                {
+                                    re.carInfo = xre;
+                                    re.CarRental = xre.RentInPay;
+                                    if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                        motoMonth = xre.mFinal;
+                                    else
+                                        motoMonth = new List<MonthlyRentData>();
+                                    re.useDisc = xre.useDisc;
+                                }
+                            }
+                            //春後
+                            else
+                            {
+                                // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                                var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
+                                if (xre != null)
+                                {
+                                    re.carInfo = xre;
+                                    re.CarRental = xre.RentInPay;
+                                    if (xre.mFinal != null && xre.mFinal.Count > 0)
+                                        motoMonth = xre.mFinal;
+                                    else
+                                        motoMonth = new List<MonthlyRentData>();
+                                    re.useDisc = xre.useDisc;
+                                }
+                            }
+
+                            if (motoMonth != null && motoMonth.Count() > 0 && //虛擬月租不存
+                                sour.VisMons != null && sour.VisMons.Count() > 0)
+                                motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
+
+                            //motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins >0 || x.MotoHolidayMins > 0).ToList();
+                            if (motoMonth.Count > 0)
+                            {
+                                int UseLen = motoMonth.Count;
+                                for (int i = 0; i < UseLen; i++)
+                                {
+                                    re.flag = monthlyRentRepository.InsMonthlyHistory(
+                                        sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId,
+                                        0, 0, 0,
+                                        Convert.ToInt32(motoMonth[i].MotoTotalHours),
+                                        Convert.ToInt32(motoMonth[i].MotoWorkDayMins),
+                                        Convert.ToInt32(motoMonth[i].MotoHolidayMins),
+                                        sour.LogID, ref errCode); //寫入記錄
+                                }
                             }
                         }
-                        //春後
                         else
                         {
-                            // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
-                            if (xre != null)
+                            List<MonthlyRentData> UseMonthlyRent = new List<MonthlyRentData>();
+
+                            UseMonthlyRent = monthlyRentDatas;
+
+                            int xDiscount = sour.Discount;//帶入月租運算的折扣
+                            if (sour.hasFine)
                             {
-                                re.carInfo = xre;
-                                re.CarRental = xre.RentInPay;
-                                if (xre.mFinal != null && xre.mFinal.Count > 0)
-                                    motoMonth = xre.mFinal;
-                                else
-                                    motoMonth = new List<MonthlyRentData>();
-                                re.useDisc = xre.useDisc;
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                if (re.carInfo != null)
+                                {
+                                    re.CarRental += re.carInfo.RentInPay;
+                                    if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
+                                        UseMonthlyRent = re.carInfo.mFinal;
+                                    else
+                                        UseMonthlyRent = new List<MonthlyRentData>();
+                                    re.useDisc = re.carInfo.useDisc;
+                                }
+                            }
+                            else
+                            {
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                if (re.carInfo != null)
+                                {
+                                    re.CarRental += re.carInfo.RentInPay;
+                                    if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
+                                        UseMonthlyRent = re.carInfo.mFinal;
+                                    else
+                                        UseMonthlyRent = new List<MonthlyRentData>();
+                                    re.useDisc = re.carInfo.useDisc;
+                                }
+                            }
+
+                            if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
+                                sour.VisMons != null && sour.VisMons.Count() > 0)
+                                UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
+
+                            if (UseMonthlyRent.Count > 0)
+                            {
+                                int UseLen = UseMonthlyRent.Count;
+                                for (int i = 0; i < UseLen; i++)
+                                {
+                                    re.flag = monthlyRentRepository.InsMonthlyHistory(
+                                        sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId,
+                                        Convert.ToInt32(UseMonthlyRent[i].CarTotalHours * 60),
+                                        Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60),
+                                        Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60),
+                                        0, 0, 0,
+                                        sour.LogID, ref errCode); //寫入記錄
+                                }
                             }
                         }
-
-                        if (motoMonth != null && motoMonth.Count() > 0 && //虛擬月租不存
-                            sour.VisMons != null && sour.VisMons.Count() > 0)
-                            motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
-
-                        //motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins >0 || x.MotoHolidayMins > 0).ToList();
-                        if (motoMonth.Count > 0)
-                        {
-                            int UseLen = motoMonth.Count;
-                            for (int i = 0; i < UseLen; i++)
-                            {
-                                re.flag = monthlyRentRepository.InsMonthlyHistory(
-                                    sour.IDNO, sour.intOrderNO, motoMonth[i].MonthlyRentId,
-                                    0, 0, 0,
-                                    Convert.ToInt32(motoMonth[i].MotoTotalHours),
-                                    Convert.ToInt32(motoMonth[i].MotoWorkDayMins),
-                                    Convert.ToInt32(motoMonth[i].MotoHolidayMins),
-                                    sour.LogID, ref errCode); //寫入記錄
-                            }
-                        }
+                        trace.FlowList.Add("月租計算");
                     }
-                    else
+                    catch(Exception ex) 
                     {
-                        List<MonthlyRentData> UseMonthlyRent = new List<MonthlyRentData>();
-
-                        UseMonthlyRent = monthlyRentDatas;
-
-                        int xDiscount = sour.Discount;//帶入月租運算的折扣
-                        if (sour.hasFine)
-                        {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
-                            if (re.carInfo != null)
-                            {
-                                re.CarRental += re.carInfo.RentInPay;
-                                if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
-                                    UseMonthlyRent = re.carInfo.mFinal;
-                                else
-                                    UseMonthlyRent = new List<MonthlyRentData>();
-                                re.useDisc = re.carInfo.useDisc;
-                            }
-                        }
-                        else
-                        {
-                            re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
-                            if (re.carInfo != null)
-                            {
-                                re.CarRental += re.carInfo.RentInPay;
-                                if (re.carInfo.mFinal != null && re.carInfo.mFinal.Count > 0)
-                                    UseMonthlyRent = re.carInfo.mFinal;
-                                else
-                                    UseMonthlyRent = new List<MonthlyRentData>();
-                                re.useDisc = re.carInfo.useDisc;
-                            }
-                        }
-
-                        if (UseMonthlyRent != null && UseMonthlyRent.Count() > 0 && //虛擬月租不存
-                            sour.VisMons != null && sour.VisMons.Count() > 0)
-                            UseMonthlyRent = UseMonthlyRent.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
-
-                        if (UseMonthlyRent.Count > 0)
-                        {
-                            int UseLen = UseMonthlyRent.Count;
-                            for (int i = 0; i < UseLen; i++)
-                            {
-                                re.flag = monthlyRentRepository.InsMonthlyHistory(
-                                    sour.IDNO, sour.intOrderNO, UseMonthlyRent[i].MonthlyRentId,
-                                    Convert.ToInt32(UseMonthlyRent[i].CarTotalHours * 60),
-                                    Convert.ToInt32(UseMonthlyRent[i].WorkDayHours * 60),
-                                    Convert.ToInt32(UseMonthlyRent[i].HolidayHours * 60),
-                                    0, 0, 0,
-                                    sour.LogID, ref errCode); //寫入記錄
-                            }
-                        }
+                        int FunId = SiteUV.GetFunId(funNm);
+                        trace.BaseMsg = ex.Message;
+                        carRepo.AddTraceLog(FunId, funNm, trace, re.flag);
+                        throw;
                     }
                 }
             }
@@ -1414,14 +1432,24 @@ namespace WebAPI.Models.BillFunc
         public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg, Int64 OrderNo=0)
         {
             var re = new GetFullProjectVM();
-            if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
-                throw new Exception("PROJID, CARTYPE 必填");
+
+            if(!string.IsNullOrWhiteSpace(PROJID) || !string.IsNullOrWhiteSpace(CARTYPE))
+            {
+                if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
+                    throw new Exception("PROJID, CARTYPE 必填");
+            }
+
+            if (string.IsNullOrWhiteSpace(PROJID) && string.IsNullOrWhiteSpace(CARTYPE))
+            {
+                if (OrderNo == 0)
+                    throw new Exception("OrderNo 必填");
+            }
 
             List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
 
             string SPName = new ObjType().GetSPName(ObjType.SPType.GetEstimate);
 
-            object[] param = new object[3];
+            object[] param = new object[4];
             param[0] = PROJID;
             param[1] = CARTYPE;
             param[2] = LogID;

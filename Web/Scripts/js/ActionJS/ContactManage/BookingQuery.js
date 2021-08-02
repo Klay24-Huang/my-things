@@ -21,7 +21,10 @@
 
     }
     $("#btnExplode").on("click", function () {
-        doExplode();
+        doExplode(1);
+    });
+    $("#btnExplode2").on("click", function () {
+        doExplode(2);
     });
 
 })
@@ -137,7 +140,7 @@ function ReBook(OrderNo) {
 function setStation(StationID) {
     $('#StationID').val(StationID);
 }
-function doExplode() {
+function doExplode(mode) {
     ShowLoading("資料匯出中…");
     var flag = true;
     var errMsg = "";
@@ -160,15 +163,27 @@ function doExplode() {
     }
     if (flag) {
         //    blockUI();
-        console.log("i call explode");
+        //console.log("i call explode");
         $("#ExplodeOrderNum").val($("#OrderNo").val());
         $("#ExplodeuserID").val($("#IDNO").val());
         $("#ExplodeobjCar").val($("#CarNo").val());
         $("#ExplodeobjStation").val($("#StationID").val());
         $("#ExplodeSDate").val($("#StartDate").val());
         $("#ExplodeEDate").val($("#EndDate").val());
+
+        $("#ExplodeOrderNum2").val($("#OrderNo").val());
+        $("#ExplodeuserID2").val($("#IDNO").val());
+        $("#ExplodeobjCar2").val($("#CarNo").val());
+        $("#ExplodeobjStation2").val($("#StationID").val());
+        $("#ExplodeSDate2").val($("#StartDate").val());
+        $("#ExplodeEDate2").val($("#EndDate").val());
+
         disabledLoading();
-        $("#formbookingExplode").submit();
+        if (mode == 1) {
+            $("#formbookingExplode").submit();
+        } else if(mode==2) {
+            $("#formbookingExplode2").submit();
+        }
     } else {
         disabledLoadingAndShowAlert(errMsg);
     }

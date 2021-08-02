@@ -10,5 +10,6 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     /// </summary>
     public class NullOutput
     {
+
     }
 }

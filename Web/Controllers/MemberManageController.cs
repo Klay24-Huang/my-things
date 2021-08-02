@@ -109,6 +109,7 @@ namespace Web.Controllers
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
             List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+            List<BE_ScoreBlock> lstScoreBlock = new MemberRepository(connetStr).GetScoreBlock(AuditIDNO);
 
             //Newtonsoft.Json序列化
             string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
@@ -123,8 +124,8 @@ namespace Web.Controllers
             //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
             //Data.MileStoneDetail = lstMileStoneDetail;
             Data.MemberScore = lstMemberScore;
-
             Data.InsuranceData = lstInsuranceData;
+            Data.ScoreBlock = lstScoreBlock;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";
@@ -376,7 +377,6 @@ namespace Web.Controllers
                     }
                 }
             }
-
             return View(Data);
         }
         #endregion
