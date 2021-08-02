@@ -470,7 +470,7 @@ namespace Web.Controllers
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
-                    ViewData["errorMsg"] = "";
+                    ViewData["errorMsg"] = "ok";
                 }
                 else
                 {
