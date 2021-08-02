@@ -515,7 +515,7 @@ namespace WebAPI.Models.BillFunc
                             }
                         });
 
-                        m.CarTotalHours -= (Convert.ToSingle(carAllDisc));//使用點數
+                        m.CarTotalHours -= (Convert.ToSingle(carAllDisc));//使用點數(原始點數-剩餘點數)
                     }
                     else
                     {
@@ -543,8 +543,8 @@ namespace WebAPI.Models.BillFunc
                             }
                         });
 
-                        m.WorkDayHours -= Convert.ToSingle(wdisc);//使用點數
-                        m.HolidayHours -= Convert.ToSingle(hdisc);//使用點數
+                        m.WorkDayHours -= Convert.ToSingle(wdisc);//使用點數(原始點數-剩餘點數)
+                        m.HolidayHours -= Convert.ToSingle(hdisc);//使用點數(原始點數-剩餘點數)
                     }
                 }
 
@@ -560,6 +560,14 @@ namespace WebAPI.Models.BillFunc
                 }
             }
 
+            #region 混和折扣前先記錄使用月租點數
+
+            re.useMonthDisc = m_wDisc + m_hDisc;
+            re.useMonthDiscW = m_wDisc;
+            re.useMonthDiscH = m_hDisc;
+
+            #endregion
+
             //價高先折
             dpList = dayPayList.Where(z => z.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(y => y.xDate).ToList();
             dpList.ForEach(x =>
@@ -574,17 +582,9 @@ namespace WebAPI.Models.BillFunc
                     else if (x.DateType == eumDateType.hDay.ToString())
                         hDisc += useDisc;
                     else if (x.DateType.Contains("h"))
-                    {
                         m_hDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType.Replace("h", string.Empty).Trim()).FirstOrDefault();
-                        mm.HolidayHours -= Convert.ToSingle(useDisc);
-                    }
                     else
-                    {
                         m_wDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType).FirstOrDefault();
-                        mm.WorkDayHours -= Convert.ToSingle(useDisc);
-                    }
                 }
             });
 
@@ -603,28 +603,24 @@ namespace WebAPI.Models.BillFunc
             }
 
             re.useDisc = Convert.ToInt32(Convert.ToDouble(Discount) - lastDisc);
-            re.useMonthDisc = m_wDisc + m_hDisc;
-            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60).Sum() +
-                mOri.Select(x => x.HolidayHours * 60).Sum() - (m_wDisc + m_hDisc);
+
+            //原始總點數-使用總點數
+            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum() -
+                  mFinal.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum();
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
             {
                 mFinal.ForEach(x =>
                 {
-                    x.CarTotalHours = (x.CarTotalHours / 60);
-                    x.HolidayHours = (x.HolidayHours / 60);//分轉回小時
-                    x.WorkDayHours = (x.WorkDayHours / 60);//分轉回小時                    
+                    x.CarTotalHours = (x.CarTotalHours / 60);//使用的小時數,分轉回小時
+                    x.HolidayHours = (x.HolidayHours / 60);//使用的小時數,分轉回小時
+                    x.WorkDayHours = (x.WorkDayHours / 60);//使用的小時數,分轉回小時 
                 });
                 re.mFinal = mFinal;
             }
 
             dre = dre > 0 ? dre : 0;
-
-            re.useMonthDiscW = m_wDisc;
-            re.useMonthDiscH = m_hDisc;
-
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
-
             return re;
         }
 
