@@ -616,6 +616,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentDetailExplode.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistory.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistoryExplode.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistorySendMail.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_MonthlyRentSave.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR013Reg.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />

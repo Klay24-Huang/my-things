@@ -180,12 +180,20 @@ function DoSend(mail) {
     var flag = true;
     var errMsg = "";
     var SendObj = new Object();
+    var MEMACCOUNT = $("#MEMACCOUNT").val();
     if (flag) {
         disabledLoading();
-        SendObj.MEMEMAIL = mail;
-        //SendObj.memo = "測試測試";
+        //SendObj.MEMEMAIL = mail;
+        SendObj.MODE = 5;
+        SendObj.SPSD = "";
+        SendObj.SPED = "";
+        SendObj.SPSD2 = "";
+        SendObj.SPED2 = "";
+        SendObj.SPSD3 = "";
+        SendObj.SPED3 = "";
+        SendObj.MEMACCOUNT = MEMACCOUNT;
 
-        DoAjaxAfterGoBack(SendObj, "ReSendEMail2", "發送發生錯誤");
+        DoAjaxAfterGoBack(SendObj, "BE_IrentPaymentDetail", "發送發生錯誤");
     } else {
         disabledLoadingAndShowAlert(errMsg);
     }

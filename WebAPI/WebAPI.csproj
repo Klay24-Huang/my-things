@@ -364,7 +364,6 @@
     <Compile Include="Controllers\Register_Step1Controller.cs" />
     <Compile Include="Controllers\Register_Step2Controller.cs" />
     <Compile Include="Controllers\RePayDetailController.cs" />
-    <Compile Include="Controllers\ReSendEMail2Controller.cs" />
     <Compile Include="Controllers\ReSendEMailController.cs" />
     <Compile Include="Controllers\ResponseInfoController.cs" />
     <Compile Include="Controllers\ReturnCarController.cs" />
