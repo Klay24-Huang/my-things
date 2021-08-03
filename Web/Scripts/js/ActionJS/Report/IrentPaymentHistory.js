@@ -36,6 +36,11 @@
         //var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
 
+        if (MEMACCOUNT == "") {
+            flag = false;
+            errMsg = "請輸入會員帳號";
+        }
+
         if (flag) {
             SendObj.MODE = 3;
             SendObj.SPSD = "";
@@ -70,15 +75,19 @@
         var SPSD3 = $("#StartDate3").val().replace(/\-/g, '');
         var SPED3 = $("#EndDate3").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
+        if (SPSD == "" && SPED == "" && SPSD2 == "" && SPED2 == "" && SPSD3 == "" && SPED3 == "") {
+            flag = false;
+            errMsg = "請選擇時間";
+        }
         if (SPSD !== "" && SPED !== "") {
             if (SPSD > SPED) {
                 flag = false;
                 errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SPSD, SPED);
-                if (GetDateDiff > 30) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                    errMsg = "時間區間不可大於31天，撈太多資料有效能issue";
                 }
             }
         }
@@ -92,9 +101,9 @@
                 errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SPSD2, SPED2);
-                if (GetDateDiff > 30) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                    errMsg = "時間區間不可大於31天，撈太多資料有效能issue";
                 }
             }
         }
@@ -108,9 +117,9 @@
                 errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SPSD3, SPED3);
-                if (GetDateDiff > 30) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                    errMsg = "時間區間不可大於31天，撈太多資料有效能issue";
                 }
             }
         }
@@ -161,10 +170,26 @@ function aa(detail) {
             "<td>" + obj[index].DATE3 + "</td>" +
             "<td>" + obj[index].MEMO + "</td>" +
             "<td>" + obj[index].TOTAMT + "</td>" +
-            "<td>" + obj[index].TAISHIN_NO + "</td>";
+            "<td>" + obj[index].TAISHIN_NO + "</td>" +
+            "<td>" + "<button type=\"button\" id=\"btnSubmit1\" class=\"btn btn-info btn-submit\" onclick=DoSend(\"benson922@hotaimotor.com.tw\");>送出</button>"+ "</td>";
     }
 }
 
+function DoSend(mail) {
+    ShowLoading("資料查詢中…");
+    var flag = true;
+    var errMsg = "";
+    var SendObj = new Object();
+    if (flag) {
+        disabledLoading();
+        SendObj.MEMEMAIL = mail;
+        //SendObj.memo = "測試測試";
+
+        DoAjaxAfterGoBack(SendObj, "ReSendEMail2", "發送發生錯誤");
+    } else {
+        disabledLoadingAndShowAlert(errMsg);
+    }
+}
 
 function tableToExcel(detail) {
     //要匯出的json資料
