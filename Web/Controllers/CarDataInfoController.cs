@@ -1095,6 +1095,7 @@ namespace Web.Controllers
 
                                 try
                                 {
+                                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
                                     string url = ConfigurationManager.AppSettings["jsHost"] + "BE_HandleCarBind";
                                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                                     request.Method = "POST";
