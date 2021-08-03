@@ -81,21 +81,21 @@ namespace WebAPI.Controllers
 
             #endregion
             #region TB
-            if (flag)
-            {
-                string spName = new ObjType().GetSPName(ObjType.SPType.ReSendEmail);
-                SPInput_ReSendEMail spInput = new SPInput_ReSendEMail()
-                {
-                    LogID = LogID,
-                    IDNO = "",
-                    DeviceID = "",
-                    EMAIL = apiInput.MEMEMAIL
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_ReSendEMail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReSendEMail, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
+            //if (flag)
+            //{
+            //    string spName = new ObjType().GetSPName(ObjType.SPType.ReSendEmail);
+            //    SPInput_ReSendEMail spInput = new SPInput_ReSendEMail()
+            //    {
+            //        LogID = LogID,
+            //        IDNO = "",
+            //        DeviceID = "",
+            //        EMAIL = apiInput.MEMEMAIL
+            //    };
+            //    SPOutput_Base spOut = new SPOutput_Base();
+            //    SQLHelper<SPInput_ReSendEMail, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReSendEMail, SPOutput_Base>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            //}
             #endregion
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
