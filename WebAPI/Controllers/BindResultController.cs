@@ -25,6 +25,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
+using Prometheus; //20210707唐加prometheus
 
 namespace WebAPI.Controllers
 {
@@ -33,6 +34,15 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BindResultController : ApiController
     {
+        //唐加prometheus
+        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BindResult_CallTimes", "the number of call api times");
+        private static readonly Counter ProcessedJobCount2 = Metrics.CreateCounter("BindResult_CallTaishin", "the number of call TaishinApi error");
+        private static readonly Counter ProcessedJobCount3 = Metrics.CreateCounter("BindResult_DoGetCreditCardList", "the number of call DoGetCreditCardList error");
+        private static readonly Counter ProcessedJobCount4 = Metrics.CreateCounter("BindResult_DoDeleteCreditCardAuth", "the number of call DoDeleteCreditCardAuth error");
+        private static readonly Counter ProcessedJobCount5 = Metrics.CreateCounter("BindResult_Error", "the number of call api error");
+        private static readonly Counter ProcessedJobCount6 = Metrics.CreateCounter("BindResult_OrderNoNull", "the number of call api error");
+        private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("BindResult_hasFind", "the number of call api error");
+
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
@@ -41,6 +51,7 @@ namespace WebAPI.Controllers
 
         public Dictionary<string, object> DoBindResult(Dictionary<string, object> value)
         {
+            ProcessedJobCount1.Inc();//唐加prometheus
             #region 初始宣告
 
             logger.Trace("Init:" + JsonConvert.SerializeObject(value));
@@ -76,8 +87,6 @@ namespace WebAPI.Controllers
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
-
                 }
 
                 string IDNO = apiInput.RequestParams.MemberId;
@@ -108,6 +117,7 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR197";
+                            ProcessedJobCount6.Inc();
                         }
                     }
                     logger.Trace("Call:" + JsonConvert.SerializeObject(apiInput) + ",Error:" + errCode);
@@ -118,7 +128,6 @@ namespace WebAPI.Controllers
                 object[] objparms = new object[1];
                 try
                 {
-
                     if (apiInput.RequestParams.CardToken != null && apiInput.RequestParams.CardStatus != null)
                     {
                         if (apiInput.RequestParams.CardToken != "" && apiInput.RequestParams.CardStatus == "1")
@@ -140,6 +149,7 @@ namespace WebAPI.Controllers
                 }
                 catch (Exception ex)
                 {
+                    ProcessedJobCount2.Inc();//唐加prometheus
                     logger.Trace("setRequestParams Error:" + ex.Message);
                 }
                 if (flag)
@@ -169,6 +179,7 @@ namespace WebAPI.Controllers
                     }
                     catch (Exception ex)
                     {
+                        ProcessedJobCount3.Inc();//唐加prometheus
                         flag = false;
                         logger.Trace("GetCreditCardList_End:" + JsonConvert.SerializeObject(wsOutput) + ",Error:" + ex.Message);
                     }
@@ -241,6 +252,7 @@ namespace WebAPI.Controllers
                         }
                         catch (Exception ex)
                         {
+                            ProcessedJobCount4.Inc();//唐加prometheus
                             logger.Trace("DoDeleteCreditCardAuth:" + ",Error:" + ex.Message);
                             flag = false;
                             errCode = "ERR195";
@@ -250,6 +262,7 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR195";
+                        ProcessedJobCount7.Inc();//唐加prometheus
                     }
 
                     object[][] parms1 = {
@@ -291,6 +304,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                ProcessedJobCount5.Inc();//唐加prometheus
                 logger.Trace("OUTTER_ERROR:" + ",Error:" + ex.Message);
             }
             #region 輸出
