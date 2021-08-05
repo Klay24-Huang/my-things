@@ -171,7 +171,8 @@ function aa(detail) {
             "<td>" + obj[index].MEMO + "</td>" +
             "<td>" + obj[index].TOTAMT + "</td>" +
             "<td>" + obj[index].TAISHIN_NO + "</td>" +
-            "<td>" + "<button type=\"button\" id=\"btnSubmit1\" class=\"btn btn-info btn-submit\" onclick=DoSend(\"benson922@hotaimotor.com.tw\");>送出</button>"+ "</td>";
+            //"<td>" + "<button type=\"button\" id=\"btnSubmit1\" class=\"btn btn-info btn-submit\" onclick=DoSend(\"benson922@hotaimotor.com.tw\");>送出</button>" + "</td>";
+            "<td>" + "<button type=\"button\" class=\"btn btn-info btn-submit\" onclick=DoSend(" + obj[index].EMail + ");>送出</button>" + "</td>";
     }
 }
 
