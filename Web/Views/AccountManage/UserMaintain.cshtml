@@ -215,7 +215,7 @@
                     </div>
                 </li>
 
-                <!--20210209唐加-->        
+                <!--20210209唐加-->
                 <li class="list-group-item" id="mtype" style="display:none;">
                     <div class="container-fluid">
                         <div class="row">
@@ -241,7 +241,7 @@
                         </div>
                     </div>
                 </li>
-                
+
 
 
 
@@ -263,10 +263,10 @@
     </div>
 
     <!--end card-->
-                            </div>
+</div>
 <!--輸出表格-->
 <div class="container mt-4" id="panelResult" name="panelResult">
-    <table class="table bg-white table-striped bg-white mt-4 "  data-limit-navigation="5">
+    <table class="table bg-white table-striped bg-white mt-4 " data-limit-navigation="5">
         <thead class="text-white bg-primary">
             <tr>
                 <th data-sort="false"></th>
@@ -279,6 +279,8 @@
                 <th data-hide="all" scope="col"></th>
                 <th data-hide="all" scope="col">有效起迄日(起)</th>
                 <th data-hide="all" scope="col">有效起迄日(迄)</th>
+                <th scope="col">區域</th>
+                <th scope="col">種類</th>
                 <th scope="col">修改</th>
             </tr>
         </thead>
@@ -295,37 +297,69 @@
                 {
                     for (int i = 0; i < ResultLen; i++)
                     {
-        <tr>
-            <td></td>
-            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].SEQNO)" id="PK_@(lstData[i].SEQNO)" value="@(lstData[i].SEQNO)" /></td>
-            <td scope="col">@lstData[i].Account <input type="text" name="UserAccount_@(lstData[i].SEQNO)" id="UserAccount_@(lstData[i].SEQNO)" value="@(lstData[i].Account)" class="form-control" style="display:none" /></td>
-            <td scope="col">@lstData[i].UserName<input type="text" name="UserName_@(lstData[i].SEQNO)" id="UserName_@(lstData[i].SEQNO)" value="@(lstData[i].UserName)" class="form-control" style="display:none" /></td>
-            <td scope="col">**********<input type="text" name="UserPWD_@(lstData[i].SEQNO)" id="UserPWD_@(lstData[i].SEQNO)" value="" class="form-control" style="display:none" placeholder="不修改密碼請勿輸入" /></td>
-            <td scope="col">@(lstData[i].UserGroupName)<select class="form-control" style="display:none;" name="UserGroupName_@(lstData[i].SEQNO)" id="UserGroupName_@(lstData[i].SEQNO)"></select><input type="hidden" name="UserGroupID_@(lstData[i].SEQNO)" id="UserGroupID_@(lstData[i].SEQNO)" value="@(lstData[i].UserGroupID)" /></td>
-            <td scope="col">@lstData[i].OperatorName<select class="form-control" style="display:none;" name="OperatorName_@(lstData[i].SEQNO)" id="OperatorName_@(lstData[i].SEQNO)"></select><input type="hidden" name="OperatorID_@(lstData[i].SEQNO)" id="OperatorID_@(lstData[i].SEQNO)" value="@(lstData[i].Operator)" /></td>
-            <td scope="col"><button type="button" class="btn btn-primary" onclick="showPower('@(lstData[i].PowerList)');">檢視權限</button></td>
-            <td scope="col">
-                @lstData[i].StartDate.ToString("yyyy-MM-dd")
+                        <tr>
+                            <td></td>
+                            <td scope="row">@((i+1).ToString())<input type="hidden" name="PK_@(lstData[i].SEQNO)" id="PK_@(lstData[i].SEQNO)" value="@(lstData[i].SEQNO)" /></td>
+                            <td scope="col">@lstData[i].Account <input type="text" name="UserAccount_@(lstData[i].SEQNO)" id="UserAccount_@(lstData[i].SEQNO)" value="@(lstData[i].Account)" class="form-control" style="display:none" /></td>
+                            <td scope="col">@lstData[i].UserName<input type="text" name="UserName_@(lstData[i].SEQNO)" id="UserName_@(lstData[i].SEQNO)" value="@(lstData[i].UserName)" class="form-control" style="display:none" /></td>
+                            <td scope="col">**********<input type="text" name="UserPWD_@(lstData[i].SEQNO)" id="UserPWD_@(lstData[i].SEQNO)" value="" class="form-control" style="display:none" placeholder="不修改密碼請勿輸入" /></td>
+                            <td scope="col">@(lstData[i].UserGroupName)<select class="form-control" style="display:none;" name="UserGroupName_@(lstData[i].SEQNO)" id="UserGroupName_@(lstData[i].SEQNO)"></select><input type="hidden" name="UserGroupID_@(lstData[i].SEQNO)" id="UserGroupID_@(lstData[i].SEQNO)" value="@(lstData[i].UserGroupID)" /></td>
+                            <td scope="col">@lstData[i].OperatorName<select class="form-control" style="display:none;" name="OperatorName_@(lstData[i].SEQNO)" id="OperatorName_@(lstData[i].SEQNO)"></select><input type="hidden" name="OperatorID_@(lstData[i].SEQNO)" id="OperatorID_@(lstData[i].SEQNO)" value="@(lstData[i].Operator)" /></td>
+                            <td scope="col"><button type="button" class="btn btn-primary" onclick="showPower('@(lstData[i].PowerList)');">檢視權限</button></td>
+                            <td scope="col">
+                                @lstData[i].StartDate.ToString("yyyy-MM-dd")
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].SEQNO)" name="StartDate_@(lstData[i].SEQNO)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
 
-                <div class="custom-datepicker">
-                    <input class="datePicker form-control" type="text" id="StartDate_@(lstData[i].SEQNO)" name="StartDate_@(lstData[i].SEQNO)" value="@lstData[i].StartDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                                </div>
 
-                </div>
+                            </td>
+                            <td scope="col">
+                                @lstData[i].EndDate.ToString("yyyy-MM-dd")
+                                <div class="custom-datepicker">
+                                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].SEQNO)" name="EndDate_@(lstData[i].SEQNO)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
 
-            </td>
-            <td scope="col">
-                @lstData[i].EndDate.ToString("yyyy-MM-dd")
-                <div class="custom-datepicker">
-                    <input class="datePicker form-control" type="text" id="EndDate_@(lstData[i].SEQNO)" name="EndDate_@(lstData[i].SEQNO)" value="@lstData[i].EndDate.ToString("yyyy-MM-dd HH:mm")" readonly="false" style="display:none">
+                                </div>
+                            </td>
 
-                </div>
-            </td>
-            <td scope="col">
-                <Button type="button" id="btnEdit_@(lstData[i].SEQNO)" name="btnEdit_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQNO)');">修改</Button>
-                <Button type="button" id="btnSave_@(lstData[i].SEQNO)" name="btnSave_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQNO)');">儲存</Button>
-                <Button type="button" id="btnReset_@(lstData[i].SEQNO)" name="btnReset_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQNO)');">取消</Button>
-            </td>
-        </tr>
+                            @*20210806唐加*@
+                            <td scope="col">@lstData[i].area
+                                <select class="form-control" style="display:none;" name="Area_@(lstData[i].SEQNO)" id="Area_@(lstData[i].SEQNO)">
+                                    <option value="0" selected></option>
+                                    <option value="北一區">北一區</option>
+                                    <option value="北二區">北二區</option>
+                                    <option value="北三區">北三區</option>
+                                    <option value="北四區">北四區</option>
+                                    <option value="桃竹苗區">桃竹苗區</option>
+                                    <option value="中彰投區">中彰投區</option>
+                                    <option value="雲嘉南區">雲嘉南區</option>
+                                    <option value="高屏區">高屏區</option>
+                                    <option value="花東區">花東區</option>
+                                </select>
+                            </td>
+                            <td scope="col">@lstData[i].type
+                                <select class="form-control" style="display:none;" name="Type_@(lstData[i].SEQNO)" id="Type_@(lstData[i].SEQNO)">
+                                    <option value="0" selected></option>
+                                    <option value="機車整備">機車整備</option>
+                                    <option value="汽車整備(同站)">汽車整備(同站)</option>
+                                    <option value="汽車整備(隨租)">汽車整備(隨租)</option>
+                                    <option value="約聘人員">約聘人員</option>
+                                    <option value="計時人員">計時人員</option>
+                                    <option value="計時機車整備(佛光大)">計時機車整備(佛光大)</option>
+                                    <option value="總監">總監</option>
+                                    <option value="副總監">副總監</option>
+                                    <option value="專車司機">專車司機</option>
+                                    <option value="業務專員">業務專員</option>
+                                    <option value="營管中心">營管中心</option>
+                                </select>
+                            </td>
+
+                            <td scope="col">
+                                <Button type="button" id="btnEdit_@(lstData[i].SEQNO)" name="btnEdit_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQNO)');">修改</Button>
+                                <Button type="button" id="btnSave_@(lstData[i].SEQNO)" name="btnSave_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQNO)');">儲存</Button>
+                                <Button type="button" id="btnReset_@(lstData[i].SEQNO)" name="btnReset_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQNO)');">取消</Button>
+                            </td>
+                        </tr>
                     }
                 }
                 else
