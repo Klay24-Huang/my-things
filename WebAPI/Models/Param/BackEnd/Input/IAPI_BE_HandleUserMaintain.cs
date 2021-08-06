@@ -22,5 +22,8 @@ namespace WebAPI.Models.Param.BackEnd.Input
 
         public List<Power> Power { get; set; }
 
+        public string Area { set; get; }//20210806唐加
+        public string Type { set; get; }//20210806唐加
+
     }
 }

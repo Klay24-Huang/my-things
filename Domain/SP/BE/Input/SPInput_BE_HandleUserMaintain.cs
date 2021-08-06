@@ -22,5 +22,7 @@ namespace Domain.SP.BE.Input
         public string  UserID      {set;get;}
         public string AreaV { set; get; }//20210209唐加
         public string mtypeV { set; get; }//20210209唐加
+        public string Area { set; get; }
+        public string Type { set; get; }
     }
 }

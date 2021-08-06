@@ -18,6 +18,8 @@ namespace Domain.TB.BackEnd
         public string UserGroupName {set;get;}
         public string PowerList     {set;get;}
         public DateTime StartDate     {set;get;}
-        public DateTime EndDate       {set;get;}
+        public DateTime EndDate       {set;get; }
+        public string area { set; get; }
+        public string type { set; get; }
     }
 }
