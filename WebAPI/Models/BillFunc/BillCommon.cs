@@ -701,7 +701,7 @@ namespace WebAPI.Models.BillFunc
             {
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 1
+                   //|| x.Mode != 1
                 ))
                     throw new Exception("mOri資料內容錯誤");
 
