@@ -251,6 +251,7 @@
     <Compile Include="Controllers\BE_UPDFuncGroupController.cs" />
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
+    <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
