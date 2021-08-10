@@ -461,7 +461,6 @@ namespace WebAPI.Models.BillFunc
                     }
                 }
 
-                }
 
                 var fn_re = CarRentInCompute(sour);
                 if (fn_re != null && fn_re.RentInPay > 0)

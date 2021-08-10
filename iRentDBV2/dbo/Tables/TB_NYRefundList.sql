@@ -1,0 +1,25 @@
+﻿CREATE TABLE [dbo].[TB_NYRefundList](
+	[order_number] [bigint] NOT NULL,
+	[IDNO] [varchar](20) NOT NULL,
+	[car_mgt_status] [tinyint] NOT NULL,
+	[cancel_status] [tinyint] NOT NULL,
+	[final_price] [int] NULL,
+	[PAYAMT] [int] NOT NULL,
+	[RETURNAMT] [int] NOT NULL,
+	[OrderAmt] [int] NULL,
+	[RefundAmt] [int] NULL,
+	[cancel_time] [datetime] NULL,
+	[start_time] [datetime] NOT NULL,
+	[stop_time] [datetime] NOT NULL,
+	[CarNo] [varchar](10) NOT NULL,
+	[BRNHCD] [varchar](10) NOT NULL,
+	[DiffDay1] [int] NULL,
+	[NextOrderNumber] [int] NULL,
+	[NextStartTime] [datetime] NULL,
+	[NextStopTime] [datetime] NULL,
+	[NextCarNo] [varchar](10) NULL,
+	[NextBRNHCD] [varchar](10) NULL,
+	[Descript] [nvarchar](100) NULL,
+	[ORDNO] [varchar](50) NULL
+) ON [PRIMARY]
+
