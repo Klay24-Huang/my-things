@@ -59,8 +59,6 @@
 
                             <div class="col-md-3">
                                 <input type="file" class="jfilestyle" accept=".xlsx,.xls" placeholder="請上傳excel檔案" data-theme="blue" id="fileImport" name="fileImport" data-inputSize="" data-text="上傳檔案">
-                                <br/>
-                                <span class="text-danger">@ViewData["errorLine"]</span>
                             </div>
                             <div class="col-md-2">
                                 限定.XLS/XLSX檔
@@ -89,8 +87,17 @@
         </form>
     </div>
 
-    <!--end card-->
 </div>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header text-white bg-primary">
+            執行結果：@ViewData["errorMsg"]
+        </div>
+    </div>
+</div>
+
+<!--end card-->
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4" id="panelResult" name="panelResult">

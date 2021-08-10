@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
+using Prometheus;//唐加
 
 namespace WebAPI
 {
@@ -14,6 +15,9 @@ namespace WebAPI
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
+            //唐加prometheus
+            AspNetMetricServer.RegisterRoutes(GlobalConfiguration.Configuration);
         }
     }
 }

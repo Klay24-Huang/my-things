@@ -5,6 +5,8 @@
 *****************************************************************
 ** 20210531 ADD BY YEH
 ** 20210707 UPD BY YEH REASON:企劃說還車超過2021/7/7 12:00:00才開始計算
+** 20210722 UPD BY YEH REASON:主動取消，前車用車中取消訂單不扣分
+** 20210729 UPD BY YEH REASON:TB_MemberScoreDetail增加ORI_SCORE
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_CalOrderScore]
 	@OrderNo			BIGINT					,	-- 訂單編號
@@ -25,22 +27,24 @@ DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
 DECLARE @NowTime DATETIME;
 
-DECLARE @IDNO VARCHAR(10);			--會員帳號
-DECLARE @ProjType INT;				--專案類型：0:同站;3:路邊;4:機車
-DECLARE @start_time DATETIME;		--預約取車時間
-DECLARE @stop_time DATETIME;		--預約還車時間
-DECLARE @fine_Time DATETIME;		--逾時時間
-DECLARE @lend_place VARCHAR(10);	--出車據點
-DECLARE @final_start_time DATETIME;	--實際出車時間
-DECLARE @final_stop_time DATETIME;	--實際還車時間
-DECLARE @booking_date DATETIME;		--預約時間
-DECLARE @CarNo VARCHAR(10);			--車號
-DECLARE @BookingDiff INT;			--預約差值
-DECLARE @PickDiff INT;				--預計取車差值
-DECLARE @UseDiff INT;				--使用差值
-DECLARE @SEQ INT;					--TB_ScoreDef SEQ(序號)
-DECLARE @ReturnDiff INT;			--還車差值
-DECLARE @ActionStartDate Datetime;	--積分計算起始時間
+DECLARE @IDNO VARCHAR(10);			-- 會員帳號
+DECLARE @ProjType INT;				-- 專案類型：0:同站;3:路邊;4:機車
+DECLARE @start_time DATETIME;		-- 預約取車時間
+DECLARE @stop_time DATETIME;		-- 預約還車時間
+DECLARE @fine_Time DATETIME;		-- 逾時時間
+DECLARE @lend_place VARCHAR(10);	-- 出車據點
+DECLARE @final_start_time DATETIME;	-- 實際出車時間
+DECLARE @final_stop_time DATETIME;	-- 實際還車時間
+DECLARE @booking_date DATETIME;		-- 預約時間
+DECLARE @CarNo VARCHAR(10);			-- 車號
+DECLARE @BookingDiff INT;			-- 預約差值
+DECLARE @PickDiff INT;				-- 預計取車差值
+DECLARE @UseDiff INT;				-- 使用差值
+DECLARE @SEQ INT;					-- TB_ScoreDef SEQ(序號)
+DECLARE @ReturnDiff INT;			-- 還車差值
+DECLARE @ActionStartDate Datetime;	-- 積分計算起始時間
+DECLARE @stop_pick_time DATETIME;	-- 最晚取車時間
+DECLARE @start_pick_time DATETIME;	-- 最早取車時間
 
 /*初始設定*/
 SET @Error=0;
@@ -80,7 +84,8 @@ BEGIN TRY
 			@final_start_time=B.final_start_time,
 			@final_stop_time=B.final_stop_time,
 			@booking_date=A.booking_date,
-			@CarNo=A.CarNo
+			@CarNo=A.CarNo,
+			@stop_pick_time=A.stop_pick_time
 		FROM TB_OrderMain A WITH(NOLOCK)
 		LEFT JOIN TB_OrderDetail B WITH(NOLOCK) ON B.order_number=A.order_number
 		WHERE A.order_number=@OrderNo;
@@ -90,28 +95,40 @@ BEGIN TRY
 			IF @Action = 'A'	-- A:取消預約
 			BEGIN
 				-- 判斷此車號是否正在使用
-				SELECT @hasData=COUNT(*) FROM TB_OrderMain WITH(NOLOCK) WHERE CarNo=@CarNo AND (car_mgt_status>=4 and car_mgt_status<16) AND cancel_status=0;
+				SELECT @hasData=COUNT(*) FROM TB_OrderMain WITH(NOLOCK) 
+				WHERE CarNo=@CarNo AND (car_mgt_status>=4 and car_mgt_status<16) AND cancel_status=0
+				AND start_time>='2021/1/1 00:00:00';
 
 				SET @BookingDiff = DATEDIFF(MINUTE, @booking_date, @start_time);	-- 預約差值
 				SET @PickDiff = DATEDIFF(MINUTE, @NowTime, @start_time);			-- 預計取車差值
 				SET @UseDiff = DATEDIFF(MINUTE, @start_time, @stop_time);			-- 使用差值
+				SET @start_pick_time = DATEADD(MINUTE, -30, @start_time);			-- 最早取車時間
 
 				IF @hasData > 0	-- 車輛使用中
 				BEGIN
-					-- 在30分鐘內取消要對前一單用戶扣分
-					IF (@PickDiff >=0 AND @PickDiff <= 30)
+					-- 20210722 UPD BY YEH REASON:在可取車區間內取消不扣分
+					IF (@start_pick_time <= @NowTime AND @NowTime <= @stop_pick_time)
 					BEGIN
-						-- 前單用戶延誤導致主動取消，前單用戶要扣分
-						INSERT INTO TB_MemberScoreDetail([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-										[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
-						SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
-							IDNO,order_number,14,-20,0,-1
-						FROM TB_OrderMain WITH(NOLOCK)
+						DECLARE @BeforeOrderNo INT;	-- 車輛使用中訂單編號
+
+						SELECT @BeforeOrderNo=order_number FROM TB_OrderMain WITH(NOLOCK)
 						WHERE CarNo=@CarNo AND (car_mgt_status>=4 and car_mgt_status<16) AND cancel_status=0
 						AND start_time>='2021/1/1 00:00:00';
+
+						-- 檢查前單是否有被扣分，沒扣過才扣分
+						IF NOT EXISTS(SELECT * FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE ORDERNO=@OrderNo AND DEF_SEQ=14)
+						BEGIN
+							-- 前單用戶延誤導致主動取消，前單用戶要扣分
+							INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+											MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
+							SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
+								IDNO,order_number,14,-20,-20,0,-1
+							FROM TB_OrderMain WITH(NOLOCK)
+							WHERE order_number=@BeforeOrderNo;
+						END
 					END
 					ELSE
-					BEGIN	-- 不是在30分鐘內取消就要扣分
+					BEGIN	-- 不是在可取車區間內取消就要扣分
 						IF @BookingDiff > 180	-- 預約時間 > 3小時
 						BEGIN
 							IF @PickDiff <= 180	-- 預計取車時間 < 3小時
@@ -148,10 +165,10 @@ BEGIN TRY
 				
 				IF @SEQ <> 0
 				BEGIN
-					INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-														[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+					INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+														MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 					SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-						@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+						@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 					FROM TB_ScoreDef WITH(NOLOCK)
 					WHERE SEQ=@SEQ;
 				END
@@ -171,10 +188,10 @@ BEGIN TRY
 						DECLARE @EarlyMultiple INT;	-- 提早還車扣點倍數
 						SET @EarlyMultiple = ABS(ROUND(@ReturnDiff / 24,0));
 					
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,(@EarlyMultiple * SCORE),0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,(@EarlyMultiple * SCORE),(@EarlyMultiple * SCORE),0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -205,10 +222,10 @@ BEGIN TRY
 								-- 沒超過就一般逾時扣分
 								SET @SEQ=15;
 
-								INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+								INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 								SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-									@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+									@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 								FROM TB_ScoreDef WITH(NOLOCK)
 								WHERE SEQ=@SEQ;
 
@@ -226,10 +243,10 @@ BEGIN TRY
 							-- 沒預扣就一般逾時扣分
 							SET @SEQ=15;
 
-							INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+							INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 							SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-								@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+								@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 							FROM TB_ScoreDef WITH(NOLOCK)
 							WHERE SEQ=@SEQ;
 						END
@@ -240,10 +257,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=1;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -258,10 +275,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=1;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -278,10 +295,10 @@ BEGIN TRY
 							DECLARE @BE_EarlyMultiple INT;	-- 提早還車扣點倍數
 							SET @BE_EarlyMultiple = ABS(ROUND(@ReturnDiff / 24,0));
 					
-							INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-																[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+							INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+																MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 							SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-								@IDNO,@OrderNo,SEQ,(@BE_EarlyMultiple * SCORE),0,@ActionFlag
+								@IDNO,@OrderNo,SEQ,(@BE_EarlyMultiple * SCORE),(@BE_EarlyMultiple * SCORE),0,@ActionFlag
 							FROM TB_ScoreDef WITH(NOLOCK)
 							WHERE SEQ=@SEQ;
 						END
@@ -312,10 +329,10 @@ BEGIN TRY
 									-- 沒超過就一般逾時扣分
 									SET @SEQ=15;
 
-									INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-																[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+									INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+																MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 									SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-										@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+										@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 									FROM TB_ScoreDef WITH(NOLOCK)
 									WHERE SEQ=@SEQ;
 
@@ -333,10 +350,10 @@ BEGIN TRY
 								-- 沒預扣就一般逾時扣分
 								SET @SEQ=15;
 
-								INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-																[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+								INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+																MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 								SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-									@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+									@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 								FROM TB_ScoreDef WITH(NOLOCK)
 								WHERE SEQ=@SEQ;
 							END
@@ -348,10 +365,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=54;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -369,10 +386,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=1;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -384,10 +401,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=1;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -396,10 +413,10 @@ BEGIN TRY
 					BEGIN
 						SET @SEQ=54;
 
-						INSERT INTO TB_MemberScoreDetail ([A_PRGID],[A_USERID],[A_SYSDT],[U_PRGID],[U_USERID],[U_SYSDT],
-															[MEMIDNO],[ORDERNO],[DEF_SEQ],[SCORE],[UIDISABLE],[ISPROCESSED])
+						INSERT INTO TB_MemberScoreDetail (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
+															MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
 						SELECT @MKUser,@IDNO,@NowTime,@MKUser,@IDNO,@NowTime,
-							@IDNO,@OrderNo,SEQ,SCORE,0,@ActionFlag
+							@IDNO,@OrderNo,SEQ,SCORE,SCORE,0,@ActionFlag
 						FROM TB_ScoreDef WITH(NOLOCK)
 						WHERE SEQ=@SEQ;
 					END
@@ -408,13 +425,13 @@ BEGIN TRY
 		END
 
 		-- 寫完Detail就呼叫加總SP將資料寫至Main
-		EXEC [usp_CalMemberScore] @IDNO,'','','','';
+		EXEC usp_CalMemberScore @IDNO,'','','','';
 	END
 
 	-- 寫入錯誤訊息
 	IF @Error=1
 	BEGIN
-		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		INSERT INTO TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
 		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 	END
 END TRY

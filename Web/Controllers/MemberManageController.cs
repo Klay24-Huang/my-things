@@ -20,6 +20,7 @@ using Web.Models.Enum;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using Prometheus;//20210707唐加prometheus
 
 namespace Web.Controllers
 {
@@ -31,6 +32,9 @@ namespace Web.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
+
+        //唐加prometheus
+        private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
 
         #region 會員審核及明細
         /// <summary>
@@ -77,6 +81,9 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult AuditDetail(string AuditIDNO, string UserName)
         {
+            //唐加prometheus
+            EnterCounte.Inc();
+
             if (UserName != null && Session["Account"] != null)
             {
                 List<BE_AuditImage> lstAuditsxx = new MemberRepository(connetStr).UpdateMemberName(AuditIDNO, UserName, Session["Account"].ToString());
@@ -109,6 +116,7 @@ namespace Web.Controllers
             List<BE_MileStone> lstMileStone = new MemberRepository(connetStr).GetMileStone(AuditIDNO);
             List<BE_MileStoneDetail> lstMileStoneDetail = new MemberRepository(connetStr).GetMileStoneDetail(AuditIDNO);
             List<BE_MemberScore> lstMemberScore = new MemberRepository(connetStr).GetMemberScore(AuditIDNO);
+            List<BE_ScoreBlock> lstScoreBlock = new MemberRepository(connetStr).GetScoreBlock(AuditIDNO);
 
             //Newtonsoft.Json序列化
             string jsonData = JsonConvert.SerializeObject(lstMileStoneDetail);
@@ -123,8 +131,8 @@ namespace Web.Controllers
             //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
             //Data.MileStoneDetail = lstMileStoneDetail;
             Data.MemberScore = lstMemberScore;
-
             Data.InsuranceData = lstInsuranceData;
+            Data.ScoreBlock = lstScoreBlock;
 
             BaseParams param = new BaseParams();
             string returnMessage = "";
@@ -376,7 +384,6 @@ namespace Web.Controllers
                     }
                 }
             }
-
             return View(Data);
         }
         #endregion

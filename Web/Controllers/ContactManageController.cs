@@ -16,6 +16,9 @@ namespace Web.Controllers
     public class ContactManageController : Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //20210728唐加，讓所有查資料的功能查鏡像db
+        private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+
         public ActionResult BookingQuery()
         {
             return View();
@@ -25,7 +28,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
@@ -72,7 +75,6 @@ namespace Web.Controllers
                             errCode = "ERR900";
                             errorMsg = "訂單編號格式不符";
                         }
-
                     }
                 }
             }
@@ -93,9 +95,8 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult BookingQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
-
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
             ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
             ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
@@ -104,7 +105,6 @@ namespace Web.Controllers
             ExplodeOrderNum = string.IsNullOrEmpty(ExplodeOrderNum) ? "" : ExplodeOrderNum;
             string tmpOrder = ExplodeOrderNum.ToUpper();
             ExplodeuserID = (string.IsNullOrEmpty(ExplodeuserID) ? "" : ExplodeuserID);
-
             if (ExplodeSDate != "" && ExplodeEDate == "")
             {
                 ExplodeSDate = ExplodeSDate + " 00:00:00";
@@ -133,7 +133,6 @@ namespace Web.Controllers
                     tmpStation = tmpStation.Replace(")", "");
                 }
             }
-
             if (ExplodeobjCar == "" && ExplodeOrderNum == "" && ExplodeuserID == "" && ExplodeSDate == "" && ExplodeEDate == "" && ExplodeobjStation == "")
             {
                 flag = false;
@@ -142,7 +141,6 @@ namespace Web.Controllers
             {
                 if (tmpOrder != "")
                 {
-
                     // OrderNum = OrderNum.ToUpper();
                     if (tmpOrder.Replace(" ", "").ToUpper().IndexOf('H') >= 0)
                     {
@@ -152,36 +150,39 @@ namespace Web.Controllers
                     {
                         flag = false;
                     }
-
                 }
                 else
                 {
                     tmpOrder = "0";
                 }
-
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂單編號", "會員帳號", "會員姓名",  "訂單類型", "取/還車站", "車型", "車牌號碼", "優惠方案", "實際取車時間", "實際還車時間"
-                                    ,"取車左邊電池電量","取車右邊電池電量","取車核心電池電量","取車平均電量","還車左邊電池電量","還車右邊電池電量","還車核心電池電量","還車平均電量"
-                                    ,"取車里程","還車里程","租金","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"};
+            string[] headerField = { 
+                    "訂單編號"
+                    , "會員帳號"
+                    ,"預計取車時間"
+                    ,"預計還車時間"
+                    ,"訂單修改狀態"
+                    , "車型"
+                    , "車牌號碼"
+                    ,  "訂單類型"
+                    , "取/還車站"
+            };
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
             for (int j = 0; j < headerFieldLen; j++)
             {
                 header.CreateCell(j).SetCellValue(headerField[j]);
-                sheet.AutoSizeColumn(j);
+                //sheet.AutoSizeColumn(j);
             }
             if (flag)
             {
-
-
-                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
+                lstBook = repository.GetOrderExplodeData_New(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
-
                     int DataLen = lstBook.Count();
                     for (int i = 0; i < DataLen; i++)
                     {
@@ -200,47 +201,163 @@ namespace Web.Controllers
                             {
                                 OrderStatus = "完成還車付款";
                             }
-
                         }
                         IRow content = sheet.CreateRow(i + 1);
-                        content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));    //合約
-                        content.CreateCell(1).SetCellValue(lstBook[i].IDNO);                                  //會員帳號
-                        content.CreateCell(2).SetCellValue(lstBook[i].UserName);                                     //會員姓名
-
-                        content.CreateCell(3).SetCellValue(OrderStatus);                                                    //訂單類型
-                        content.CreateCell(4).SetCellValue(lstBook[i].LStation + "/" + lstBook[i].RStation);                                     //取/還車站
-                        content.CreateCell(5).SetCellValue(lstBook[i].CarTypeName);                                     //車型
-                        content.CreateCell(6).SetCellValue(lstBook[i].CarNo);    //車牌號碼
-                        content.CreateCell(7).SetCellValue(lstBook[i].PRONAME);                                   //優惠方案
-
-                        content.CreateCell(8).SetCellValue((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車" : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm"));   //實際取車時間
-                        content.CreateCell(9).SetCellValue((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車" : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm"));    //實際還車時間
-                        content.CreateCell(10).SetCellValue((lstBook[i].P_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)));                                     //取車左邊電池電量
-                        content.CreateCell(11).SetCellValue((lstBook[i].P_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_RBA)));                                     //取車右邊電池電量
-                        content.CreateCell(12).SetCellValue((lstBook[i].P_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_MBA)));                                     //取車核心電池電量
-                        content.CreateCell(13).SetCellValue((lstBook[i].P_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_TBA)));    //取車平均電量
-                        content.CreateCell(14).SetCellValue((lstBook[i].R_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)));   //還車左邊電池電量
-                        content.CreateCell(15).SetCellValue((lstBook[i].R_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)));   //還車右邊電池電量
-                        content.CreateCell(16).SetCellValue((lstBook[i].R_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)));   //還車核心電池電量
-                        content.CreateCell(17).SetCellValue((lstBook[i].R_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)));   //還車平均電量
-
-                        content.CreateCell(18).SetCellValue((lstBook[i].StartMile < 0) ? "無資料" : lstBook[i].StartMile.ToString());                                     //取車里程
-                        content.CreateCell(19).SetCellValue((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString());                                     //還車里程
-                        content.CreateCell(20).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString());    //租金
-                        content.CreateCell(21).SetCellValue((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString());                                   //罰金
-                        content.CreateCell(22).SetCellValue((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString());                                     //油資
-                        content.CreateCell(23).SetCellValue((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString());    //ETag費用
-                        content.CreateCell(24).SetCellValue((lstBook[i].TransDiscount > 0) ? "" : (-1 * lstBook[i].TransDiscount).ToString());    //轉乘優惠
-                        content.CreateCell(25).SetCellValue(lstBook[i].CarPoint);                                     //時數折抵(分)
-                        content.CreateCell(26).SetCellValue(lstBook[i].MotorPoint);                                     //時數折抵(分)
-                        content.CreateCell(27).SetCellValue(lstBook[i].FinalPrice);                                     //會員姓名
-
+                        content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));//合約
+                        content.CreateCell(1).SetCellValue(lstBook[i].IDNO);//會員帳號
+                        content.CreateCell(2).SetCellValue(lstBook[i].SD);//"預計取車時間"
+                        content.CreateCell(3).SetCellValue(lstBook[i].ED);//"預計還車時間"
+                        content.CreateCell(4).SetCellValue(lstBook[i].CS);//"訂單修改狀態"
+                        content.CreateCell(5).SetCellValue(lstBook[i].CarTypeName);//車型
+                        content.CreateCell(6).SetCellValue(lstBook[i].CarNo);//車牌號碼
+                        content.CreateCell(7).SetCellValue(OrderStatus); //訂單類型
+                        content.CreateCell(8).SetCellValue(lstBook[i].LStation + "/" + lstBook[i].RStation);//取/還車站
                     }
                 }
             }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            // workbook.Close();
+            //   return View();
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "簡易預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        [HttpPost]
+        public ActionResult BookingQueryExplode2(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
+        {
+            List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
+            ContactRepository repository = new ContactRepository(connetStrMirror);
+            bool flag = true;
+            ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
+            ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
+            ExplodeSDate = (string.IsNullOrEmpty(ExplodeSDate) ? "" : ExplodeSDate);
+            ExplodeEDate = (string.IsNullOrEmpty(ExplodeEDate) ? "" : ExplodeEDate);
+            ExplodeOrderNum = string.IsNullOrEmpty(ExplodeOrderNum) ? "" : ExplodeOrderNum;
+            string tmpOrder = ExplodeOrderNum.ToUpper();
+            ExplodeuserID = (string.IsNullOrEmpty(ExplodeuserID) ? "" : ExplodeuserID);
+            if (ExplodeSDate != "" && ExplodeEDate == "")
+            {
+                ExplodeSDate = ExplodeSDate + " 00:00:00";
+            }
+            else if (ExplodeSDate == "" && ExplodeEDate != "")
+            {
+                ExplodeEDate = ExplodeEDate + " 23:59:59";
+            }
+            else if (ExplodeSDate != "" && ExplodeEDate != "")
+            {
+                ExplodeSDate = ExplodeSDate + " 00:00:00";
+                ExplodeEDate = ExplodeEDate + " 23:59:59";
+            }
+            ExplodeobjStation = (string.IsNullOrEmpty(ExplodeobjStation)) ? "" : ExplodeobjStation;
+            string tmpStation = ExplodeobjStation;
+            if (ExplodeobjStation != "" && ExplodeobjStation.ToLower() != "all")
+            {
+                int index = ExplodeobjStation.IndexOf('(');
+                if (index > -1)
+                {
+                    index += 1;
+                }
+                if (index > -1)
+                {
+                    tmpStation = ExplodeobjStation.Substring(index);
+                    tmpStation = tmpStation.Replace(")", "");
+                }
+            }
+            if (ExplodeobjCar == "" && ExplodeOrderNum == "" && ExplodeuserID == "" && ExplodeSDate == "" && ExplodeEDate == "" && ExplodeobjStation == "")
+            {
+                flag = false;
+            }
+            if (flag)
+            {
+                if (tmpOrder != "")
+                {
+                    // OrderNum = OrderNum.ToUpper();
+                    if (tmpOrder.Replace(" ", "").ToUpper().IndexOf('H') >= 0)
+                    {
+                        tmpOrder = Convert.ToInt64(tmpOrder.Replace("H", "")).ToString();
+                    }
+                    else
+                    {
+                        flag = false;
+                    }
+                }
+                else
+                {
+                    tmpOrder = "0";
+                }
+            }
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+            string[] headerField = { "訂單編號", "會員帳號", "會員姓名",  "訂單類型", "取/還車站", "車型", "車牌號碼", "優惠方案", "實際取車時間", "實際還車時間"
+                                    ,"取車左邊電池電量","取車右邊電池電量","取車核心電池電量","取車平均電量","還車左邊電池電量","還車右邊電池電量","還車核心電池電量","還車平均電量"
+                                    ,"取車里程","還車里程","租金","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"};
+            int headerFieldLen = headerField.Length;
 
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+                //sheet.AutoSizeColumn(j);
+            }
+            if (flag)
+            {
+                lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
+                int BookCount = lstBook.Count();
+                if (BookCount > 0)
+                {
+                    int DataLen = lstBook.Count();
+                    for (int i = 0; i < DataLen; i++)
+                    {
+                        string OrderStatus = "預約完成";
+                        if (lstBook[i].CS > 0)
+                        {
+                            OrderStatus = "取消訂單";
+                        }
+                        else
+                        {
+                            if (lstBook[i].CMS >= 4 && lstBook[i].CMS < 15)
+                            {
+                                OrderStatus = "取車完成";
+                            }
+                            else if (lstBook[i].CMS == 15)
+                            {
+                                OrderStatus = "完成還車付款";
+                            }
+                        }
+                        IRow content = sheet.CreateRow(i + 1);
+                        content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));//合約
+                        content.CreateCell(1).SetCellValue(lstBook[i].IDNO);//會員帳號
+                        content.CreateCell(2).SetCellValue(lstBook[i].UserName);//會員姓名
 
+                        content.CreateCell(3).SetCellValue(OrderStatus);//訂單類型
+                        content.CreateCell(4).SetCellValue(lstBook[i].LStation + "/" + lstBook[i].RStation);//取/還車站
+                        content.CreateCell(5).SetCellValue(lstBook[i].CarTypeName);//車型
+                        content.CreateCell(6).SetCellValue(lstBook[i].CarNo);//車牌號碼
+                        content.CreateCell(7).SetCellValue(lstBook[i].PRONAME);//優惠方案
 
+                        content.CreateCell(8).SetCellValue((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車" : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm"));//實際取車時間
+                        content.CreateCell(9).SetCellValue((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車" : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm"));//實際還車時間
+                        content.CreateCell(10).SetCellValue((lstBook[i].P_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)));//取車左邊電池電量
+                        content.CreateCell(11).SetCellValue((lstBook[i].P_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_RBA)));//取車右邊電池電量
+                        content.CreateCell(12).SetCellValue((lstBook[i].P_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_MBA)));//取車核心電池電量
+                        content.CreateCell(13).SetCellValue((lstBook[i].P_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_TBA)));//取車平均電量
+                        content.CreateCell(14).SetCellValue((lstBook[i].R_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)));//還車左邊電池電量
+                        content.CreateCell(15).SetCellValue((lstBook[i].R_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)));//還車右邊電池電量
+                        content.CreateCell(16).SetCellValue((lstBook[i].R_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)));//還車核心電池電量
+                        content.CreateCell(17).SetCellValue((lstBook[i].R_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)));//還車平均電量
+
+                        content.CreateCell(18).SetCellValue((lstBook[i].StartMile < 0) ? "無資料" : lstBook[i].StartMile.ToString());//取車里程
+                        content.CreateCell(19).SetCellValue((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString());//還車里程
+                        content.CreateCell(20).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString());//租金
+                        content.CreateCell(21).SetCellValue((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString());//罰金
+                        content.CreateCell(22).SetCellValue((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString());//油資
+                        content.CreateCell(23).SetCellValue((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString());    //ETag費用
+                        content.CreateCell(24).SetCellValue((lstBook[i].TransDiscount > 0) ? "" : (-1 * lstBook[i].TransDiscount).ToString());//轉乘優惠
+                        content.CreateCell(25).SetCellValue(lstBook[i].CarPoint);//時數折抵(分)
+                        content.CreateCell(26).SetCellValue(lstBook[i].MotorPoint);//時數折抵(分)
+                        content.CreateCell(27).SetCellValue(lstBook[i].FinalPrice);//會員姓名
+                    }
+                }
+            }
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
@@ -273,7 +390,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;
@@ -349,7 +466,7 @@ namespace Web.Controllers
             ViewData["OrderNo"] = OrderNo;
             if (string.IsNullOrWhiteSpace(OrderNo) == false)
             {
-                ContactRepository repository = new ContactRepository(connetStr);
+                ContactRepository repository = new ContactRepository(connetStrMirror);
                 List<BE_OrderHistoryData> lstData = new List<BE_OrderHistoryData>();
                 lstData = repository.GetOrderHistory(Convert.ToInt64(OrderNo.Replace("H", "")));
                 return View(lstData);
@@ -373,9 +490,8 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
-
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
             ExplodeobjCar = (string.IsNullOrEmpty(ExplodeobjCar)) ? "" : ExplodeobjCar;
             ExplodeobjCar = ("-1" == ExplodeobjCar) ? "" : ExplodeobjCar;
@@ -422,7 +538,6 @@ namespace Web.Controllers
             {
                 if (tmpOrder != "")
                 {
-
                     // OrderNum = OrderNum.ToUpper();
                     if (tmpOrder.Replace(" ", "").ToUpper().IndexOf('H') >= 0)
                     {
@@ -432,19 +547,20 @@ namespace Web.Controllers
                     {
                         flag = false;
                     }
-
                 }
                 else
                 {
                     tmpOrder = "0";
                 }
-
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂單編號", "會員帳號", "會員姓名",  "訂單類型", "取/還車站", "車型", "車牌號碼", "優惠方案", "實際取車時間", "實際還車時間"
-                                    ,"取車左邊電池電量","取車右邊電池電量","取車核心電池電量","取車平均電量","還車左邊電池電量","還車右邊電池電量","還車核心電池電量","還車平均電量"
-                                    ,"取車里程","還車里程","租金","安心服務費率","安心服務金額","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"};
+                                    ,"取車左邊電池電量","取車右邊電池電量","取車核心電池電量","取車平均電量","取車儀表板電量","還車左邊電池電量","還車右邊電池電量","還車核心電池電量","還車平均電量","還車儀表板電量"
+                                    ,"取車里程","還車里程","租金","安心服務費率","安心服務金額","罰金","油資","ETag費用","轉乘優惠","時數折抵(汽車)","時數折抵(機車)","結算金額"
+                                    ,"回饋時數","換電次數","獎勵時數","總回饋時數"
+            };
+
             int headerFieldLen = headerField.Length;
 
             IRow header = sheet.CreateRow(0);
@@ -455,13 +571,11 @@ namespace Web.Controllers
             }
             if (flag)
             {
-
-
                 lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
+                //lstBook = repository.GetOrderExplodeData0727(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);  //todo 暫時測試用，測試無誤時須更新View
                 int BookCount = lstBook.Count();
                 if (BookCount > 0)
                 {
-
                     int DataLen = lstBook.Count();
                     for (int i = 0; i < DataLen; i++)
                     {
@@ -480,7 +594,6 @@ namespace Web.Controllers
                             {
                                 OrderStatus = "完成還車付款";
                             }
-
                         }
                         IRow content = sheet.CreateRow(i + 1);
                         content.CreateCell(0).SetCellValue("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0'));    //合約
@@ -499,35 +612,39 @@ namespace Web.Controllers
                         content.CreateCell(11).SetCellValue((lstBook[i].P_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_RBA)));                                     //取車右邊電池電量
                         content.CreateCell(12).SetCellValue((lstBook[i].P_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_MBA)));                                     //取車核心電池電量
                         content.CreateCell(13).SetCellValue((lstBook[i].P_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_TBA)));    //取車平均電量
-                        content.CreateCell(14).SetCellValue((lstBook[i].R_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)));   //還車左邊電池電量
-                        content.CreateCell(15).SetCellValue((lstBook[i].R_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)));   //還車右邊電池電量
-                        content.CreateCell(16).SetCellValue((lstBook[i].R_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)));   //還車核心電池電量
-                        content.CreateCell(17).SetCellValue((lstBook[i].R_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)));   //還車平均電量
+                        content.CreateCell(14).SetCellValue((lstBook[i].RSOC_S) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_S)));  //取車儀表板電量
+                        content.CreateCell(15).SetCellValue((lstBook[i].R_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)));   //還車左邊電池電量
+                        content.CreateCell(16).SetCellValue((lstBook[i].R_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)));   //還車右邊電池電量
+                        content.CreateCell(17).SetCellValue((lstBook[i].R_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)));   //還車核心電池電量
+                        content.CreateCell(18).SetCellValue((lstBook[i].R_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)));   //還車平均電量
+                        content.CreateCell(19).SetCellValue((lstBook[i].RSOC_E) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_E)));  //還車儀表板電量
 
-                        content.CreateCell(18).SetCellValue((lstBook[i].StartMile < 0) ? "無資料" : lstBook[i].StartMile.ToString());                                     //取車里程
-                        content.CreateCell(19).SetCellValue((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString());                                     //還車里程
-                        content.CreateCell(20).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString());    //租金
-                        content.CreateCell(21).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].InsurancePerHours.ToString());    //安心服務費率
-                        content.CreateCell(22).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].Insurance_price.ToString());    //安心服務金額 //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
-                        content.CreateCell(23).SetCellValue((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString());                                   //罰金
-                        content.CreateCell(24).SetCellValue((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString());                                     //油資
-                        content.CreateCell(25).SetCellValue((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString());    //ETag費用
-                        content.CreateCell(26).SetCellValue((lstBook[i].TransDiscount > 0) ? "" : (-1 * lstBook[i].TransDiscount).ToString());    //轉乘優惠
-                        content.CreateCell(27).SetCellValue(lstBook[i].CarPoint);                                     //時數折抵(分)
-                        content.CreateCell(28).SetCellValue(lstBook[i].MotorPoint);                                     //時數折抵(分)
-                        content.CreateCell(29).SetCellValue(lstBook[i].FinalPrice);                                     //會員姓名
+                        content.CreateCell(20).SetCellValue((lstBook[i].StartMile < 0) ? "無資料" : lstBook[i].StartMile.ToString());                                     //取車里程
+                        content.CreateCell(21).SetCellValue((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString());                                     //還車里程
+                        content.CreateCell(22).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString());    //租金
+                        content.CreateCell(23).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].InsurancePerHours.ToString());    //安心服務費率
+                        content.CreateCell(24).SetCellValue((lstBook[i].PurePrice < 0) ? "" : lstBook[i].Insurance_price.ToString());    //安心服務金額 //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
+                        content.CreateCell(25).SetCellValue((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString());                                   //罰金
+                        content.CreateCell(26).SetCellValue((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString());                                     //油資
+                        content.CreateCell(27).SetCellValue((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString());    //ETag費用
+                        content.CreateCell(28).SetCellValue((lstBook[i].TransDiscount > 0) ? "" : (-1 * lstBook[i].TransDiscount).ToString());    //轉乘優惠
+                        content.CreateCell(29).SetCellValue(lstBook[i].CarPoint);                                     //時數折抵(分)
+                        content.CreateCell(30).SetCellValue(lstBook[i].MotorPoint);                                     //時數折抵(分)
+                        content.CreateCell(31).SetCellValue(lstBook[i].FinalPrice);                                     //會員姓名
 
+                        content.CreateCell(32).SetCellValue($"{lstBook[i].ChgGift}分");    //回饋時數
+                        content.CreateCell(33).SetCellValue($"{lstBook[i].ChgTimes}次");   //換電次數
+                        content.CreateCell(34).SetCellValue($"{lstBook[i].RewardGift}分"); //獎勵時數
+                        content.CreateCell(35).SetCellValue($"{lstBook[i].TotalGift}分");  //總回饋時數
                     }
                 }
             }
-
-
 
             MemoryStream ms = new MemoryStream();
             workbook.Write(ms);
             // workbook.Close();
             //   return View();
-            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "合約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         /// <summary>
         /// 機車合約修改
@@ -612,7 +729,7 @@ namespace Web.Controllers
         public ActionResult ContactDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(DetailOrderNo))
@@ -707,7 +824,7 @@ namespace Web.Controllers
         public ActionResult ContactMotorDetail(string DetailOrderNo)
         {
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(DetailOrderNo))
@@ -726,7 +843,8 @@ namespace Web.Controllers
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     obj = new BE_OrderDataCombind()
                     {
-                        Data = repository.GetOrderDetail(tmpOrder),
+                        //Data = repository.GetOrderDetail(tmpOrder),
+                        Data = repository.GetOrderDetail0727(tmpOrder), //todo 暫時測試用，測試無誤時須更新View
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
                         ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
                         ParkingCarImage = repository.GetOrderParkingImage(tmpOrder),
@@ -755,7 +873,7 @@ namespace Web.Controllers
         {
 
             BE_OrderDataCombind obj = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
             bool flag = true;
             if (string.IsNullOrEmpty(OrderNo))
@@ -838,7 +956,7 @@ namespace Web.Controllers
         {
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
-            ContactRepository repository = new ContactRepository(connetStr);
+            ContactRepository repository = new ContactRepository(connetStrMirror);
             ViewData["CarNo"] = CarNo;
             ViewData["StationID"] = StationID;
             ViewData["IDNO"] = IDNO;

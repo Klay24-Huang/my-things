@@ -459,6 +459,7 @@ namespace WebAPI.Models.BillFunc
                         }
                         sour.mOri = mOri;
                     }
+                }
 
                 }
 
@@ -1163,7 +1164,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
-            string spName = "usp_SetSubsCreditStatus_U1";//hack: fix spNm
+            string spName = "usp_SetSubsCreditStatus_U1";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsCreditStatus();

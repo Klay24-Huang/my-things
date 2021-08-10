@@ -16,6 +16,7 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using Prometheus; //20210707唐加prometheus
 
 namespace WebAPI.Controllers
 {
@@ -24,6 +25,9 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BE_AuditController : ApiController
     {
+        //唐加prometheus
+        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BENSON_BE_AuditDetail", "the number of CALL BE_Audit");
+
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
@@ -36,6 +40,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public Dictionary<string, object> DoBE_Audit(Dictionary<string, object> value)
         {
+            ProcessedJobCount1.Inc();//唐加prometheus
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
@@ -234,7 +239,7 @@ namespace WebAPI.Controllers
                     tbExtSigninList = new List<ExtSigninList>(),
                     //20210218唐:這邊還要加 IRENTFLG(N未審T審失敗Y審通過)
                     //PROCD = (apiInput.IsNew==1) ? "A" : "U",
-                    IRENTFLG = (apiInput.AuditStatus == 0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")
+                    IRENTFLG = (apiInput.AuditStatus == 0) ? "N" : ((apiInput.AuditStatus == -1) ? "T" : "Y")//AuditStatus=1通過、-1不通過、0都沒勾選
                 };
                 flag = hiEasyRentAPI.NPR010Save(spInput, ref wsOutput);
             }
