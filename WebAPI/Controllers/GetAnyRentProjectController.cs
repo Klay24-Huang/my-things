@@ -325,7 +325,10 @@ namespace WebAPI.Controllers
 
                                 newItem.MonthlyRentId = z.MonthlyRentId;
                                 newItem.WDRateForCar = z.WorkDayRateForCar;
-                                newItem.HDRateForCar = z.HoildayRateForCar;
+
+                                //newItem.HDRateForCar = z.HoildayRateForCar;
+                                newItem.HDRateForCar = x.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+
                                 newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = z.HoildayRateForMoto;
                                 //20210715 ADD BY ADAM REASON.補上月租說明
@@ -333,7 +336,9 @@ namespace WebAPI.Controllers
                                 var fn_in = new ProjectAndCarTypeData()
                                 {
                                     Price = x.WorkdayPerHour * 10,
-                                    PRICE_H = x.HolidayPerHour * 10
+                                    PRICE_H = x.HolidayPerHour * 10,
+                                    PROJID = x.ProjID,
+                                    CarType = x.CarType
                                 };
                                 newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
                                 #endregion
@@ -381,7 +386,9 @@ namespace WebAPI.Controllers
                 dayMaxHour = 10,
                 lstHoliday = lstHoliday,
                 Discount = 0,
-                FreeMins = 0
+                FreeMins = 0,
+                ProjID = spItem.PROJID,
+                CarType = spItem.CarType
             };
             re = Convert.ToInt32(new MonSubsCommon().GetCarRentPrice(input));            
 

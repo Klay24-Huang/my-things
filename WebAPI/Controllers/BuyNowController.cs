@@ -442,6 +442,27 @@ namespace WebAPI.Controllers
 
                 #region TB
 
+                //是否已刷過卡
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                }
+
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -500,11 +521,29 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
-                        
+
+                        #region 刷卡狀態-共用
+
+                        string spErrCode = "";
+                        var spIn = new SPInput_SetSubsCreditStatus()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            APIID = 181,
+                            ActionNM = funName,
+                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
+                            CreditStatus = 0
+                        };
+
+                        #endregion
+
                         try
-                        {                                
+                        {
+                            //寫入刷卡狀態-未送
+                            var sp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
-                            
+
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
 
@@ -515,14 +554,32 @@ namespace WebAPI.Controllers
                                 CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
+
+                            #region 更新刷卡狀態-一般
+
+                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
+                            if (WsOut != null)
+                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
+                            //更新信用卡呼叫紀錄
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
-                            throw new Exception("TSIBTrade Fail");
-                            
+
+                            #region 更新刷卡狀態-例外
+
+                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
+                            spIn.Note = ex.Message;
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
+
+                            throw new Exception("TSIBTrade Fail");                            
                         }
 
                         trace.FlowList.Add("信用卡交易");
@@ -809,6 +866,27 @@ namespace WebAPI.Controllers
 
                 #region TB
 
+                //是否已刷過卡
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                }
+
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -883,8 +961,27 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
+                        
+                        #region 刷卡狀態-共用
+
+                        string spErrCode = "";
+                        var spIn = new SPInput_SetSubsCreditStatus()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            APIID = 181,
+                            ActionNM = funName,
+                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
+                            CreditStatus = 0
+                        };
+
+                        #endregion
+
                         try
                         {
+                            //寫入刷卡狀態-未送
+                            var sp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
@@ -897,12 +994,30 @@ namespace WebAPI.Controllers
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
 
+                            #region 更新刷卡狀態-一般
+
+                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
+                            if (WsOut != null)
+                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
+                            //更新信用卡呼叫紀錄
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
+
+                            #region 更新刷卡狀態-例外
+
+                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
+                            spIn.Note = ex.Message;
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
+
                             throw new Exception("TSIBTrade Fail");
                         }
 
@@ -1178,6 +1293,27 @@ namespace WebAPI.Controllers
 
                 #region TB
 
+                //是否已刷過卡
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                }
+
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -1235,8 +1371,27 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
+                        
+                        #region 刷卡狀態-共用
+
+                        string spErrCode = "";
+                        var spIn = new SPInput_SetSubsCreditStatus()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            APIID = 181,
+                            ActionNM = funName,
+                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
+                            CreditStatus = 0
+                        };
+
+                        #endregion
+
                         try
                         {
+                            //寫入刷卡狀態-未送
+                            var xsp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
                             flag = mscom.MonArrears_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode); 
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
@@ -1248,12 +1403,31 @@ namespace WebAPI.Controllers
                                 CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
+
+                            #region 更新刷卡狀態-一般
+
+                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
+                            if (WsOut != null)
+                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
+                            //更新信用卡呼叫紀錄
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
+
+                            #region 更新刷卡狀態-例外
+
+                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
+                            spIn.Note = ex.Message;
+                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
+
+                            #endregion
+
                             throw new Exception("TSIBTrade Fail");
                         }
 

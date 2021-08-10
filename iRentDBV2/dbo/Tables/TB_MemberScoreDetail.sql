@@ -1,0 +1,62 @@
+CREATE TABLE [dbo].[TB_MemberScoreDetail](
+	[A_PRGID] [varchar](50) NOT NULL,
+	[A_USERID] [varchar](10) NOT NULL,
+	[A_SYSDT] [datetime] NOT NULL,
+	[U_PRGID] [varchar](50) NOT NULL,
+	[U_USERID] [varchar](10) NOT NULL,
+	[U_SYSDT] [datetime] NOT NULL,
+	[SEQ] [int] IDENTITY(1,1) NOT NULL,
+	[MEMIDNO] [varchar](10) NOT NULL,
+	[ORDERNO] [bigint] NULL,
+	[DEF_SEQ] [int] NOT NULL,
+	[SCORE] [int] NOT NULL,
+	[UIDISABLE] [int] NOT NULL,
+	[ISPROCESSED] [int] NOT NULL,
+	[UIDESC] [varchar](50) NOT NULL,
+	[UIDISABLE_DT] [datetime] NULL,
+ CONSTRAINT [PK_TB_MemberScoreDetail] PRIMARY KEY CLUSTERED 
+(
+	[SEQ] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__A_PRG__10D7F423]  DEFAULT ('') FOR [A_PRGID]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__A_USE__11CC185C]  DEFAULT ('') FOR [A_USERID]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__A_SYS__12C03C95]  DEFAULT (dateadd(hour,(8),getdate())) FOR [A_SYSDT]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__U_PRG__13B460CE]  DEFAULT ('') FOR [U_PRGID]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__U_USE__14A88507]  DEFAULT ('') FOR [U_USERID]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__U_SYS__159CA940]  DEFAULT (dateadd(hour,(8),getdate())) FOR [U_SYSDT]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__MEMID__1690CD79]  DEFAULT ('') FOR [MEMIDNO]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__ORDER__187915EB]  DEFAULT ((0)) FOR [ORDERNO]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__DEF_S__196D3A24]  DEFAULT ((0)) FOR [DEF_SEQ]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__SCORE__1E31EF41]  DEFAULT ((0)) FOR [SCORE]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__UIDIS__201A37B3]  DEFAULT ((0)) FOR [UIDISABLE]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF__TB_Member__ISPRO__210E5BEC]  DEFAULT ((0)) FOR [ISPROCESSED]
+GO
+
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF_TB_MemberScoreDetail_UIDESC]  DEFAULT ('') FOR [UIDESC]
+GO
+

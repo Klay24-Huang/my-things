@@ -33,7 +33,7 @@ iRentApi20 Web API版本
 - [GetAnyRentProject 取得專案與資費(路邊)](#GetAnyRentProject)
 - [MotorRent 取得路邊租還機車](#MotorRent)
 - [GetMotorRentProject 取得專案與資費(機車)](#GetMotorRentProject)
-- [GetProject 取得專案與資費](#GetProject)
+- [GetPolygon 取得電子柵欄](#GetPolygon)
 
 取還車跟車機操控相關
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
@@ -54,11 +54,13 @@ iRentApi20 Web API版本
 - [GetArrsSubsList 訂閱制欠費查詢](#GetArrsSubsList)
 - [SetSubsNxt 設定自動續約](#SetSubsNxt)
 
-訂單相關
+預約以及訂單相關
 - [OrderDetail 歷史訂單明細](#OrderDetail)
+- [Booking 預約](#Booking)
 
 車輛調度停車場
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
+- [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
 ----------
 # 修改歷程
@@ -104,6 +106,11 @@ iRentApi20 Web API版本
 20210528 新增車輛調度停車場相關API
 
 20210601 取得會員徽章(GetMemberMedal)、取得地圖徽章(GetMapMedal)欄位值調整
+
+20210609 補上預約
+
+20210708 新增電子柵欄API
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -1122,7 +1129,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentcar-app-test.azurefd.net
+  測試環境：https://irentcar-app-test.azurefd.net/
 
 * 傳送跟接收採JSON格式
 
@@ -1135,20 +1142,18 @@ iRentApi20 Web API版本
 | 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
 | --------- | -------- | :--: | :----: | ----------- |
 | StationID | 據點代碼 | Y | string | X0II |
-| ☆CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
+| CarType	| 車型代碼 | N | string | PRIUSC |
+| SDate		| 預計取車時間 | Y | string | 2021-06-10 00:00:00 |
+| EDate		| 預計還車時間 | Y | string | 2021-06-11 00:00:00 |
+| Mode		| 顯示方式(0:依據點 1:依經緯度)	| Y | int | 0 |
+| Latitude | 緯度(Mode=1必填) | | double | |
+| Longitude | 經度(Mode=1必填) | | double | |
+| Radius 	| 半徑(Mode=1必填) | | double | 0 |
+| Insurance | 是否使用安心服務 | Y | int | 0 |
+| CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
+| Seats		| 座椅數 | N |  array int | [ 4 ] |
 
 
-* Seats 回傳參數說明
-
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| SDate | 預計取車時間 | Y | string | 2021-03-12 14:00:00 |
-| EDate | 預計還車時間 | Y | string | 2021-03-13 15:00:00 |
-| Mode | 顯示方式 | Y | int | 0:依據點代碼 1:依經緯度 |
-| Latitude | 緯度 |  | float | |
-| Longitude | 經度 | | float | |
-| Radius | 半徑 | | float | 0 |
-| Insurance | 是否使用安心服務 | Y | int | 0:否 1:是 |
 
 * input範例
 ```
@@ -1156,9 +1161,9 @@ iRentApi20 Web API版本
     "CarTypes": [ "PRIUSC" ],
     "StationID": "X0II",
     "SDate": "2021-03-12 14:00:00",
-    "Latitude": "",
-    "Radius": "0",
     "EDate": "2021-03-13 15:00:00",
+	"Latitude": "",
+    "Radius": "0",
     "Mode": "0",
     "Longitude": "",
     "Insurance": 0
@@ -1175,6 +1180,7 @@ iRentApi20 Web API版本
 | NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | Data | 資料物件 | | |
+| HasRentCard	| 是否有可租的卡片 | boolean | false |
 | GetProjectObj | 回傳清單 | List | |
 
 
@@ -1194,6 +1200,7 @@ iRentApi20 Web API版本
 | Mininum | 最低價 | int | 168 |
 | IsRent | 是否有車可租(BY據點) | string | Y/N |
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
+| IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
 | ProjectObj | 專案清單 | List | |
 | StationInfoObj | 站點照片 | List |  |
 
@@ -1222,6 +1229,20 @@ iRentApi20 Web API版本
 | CarOfArea | 站別類型 | string | 同站 |
 | Content | 其他備註 | string | ... |
 | IsRent | 是否可租 | string | Y/N |
+| IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
+| IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
+| MonthlyRentId | 訂閱制月租ID			| int | 1234 |
+| CarWDHours	| 汽車平日時數         | double | 3.0    |
+| CarHDHours	| 汽車假日時數         | double | 3.0      |
+| MotoTotalMins	| 機車不分平假日分鐘數 | int | 300   |
+| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
+| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
+| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
+| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
+| MonthStartDate | 月租全期(開始日) | string | 2021/05/21 |
+| MonthEndDate | 月租全期(結束日) | string | 2021/05/21 |
+
+
 
 * StationInfoObj參數說明
 
@@ -1241,6 +1262,7 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
+		"HasRentCard": false,
         "GetProjectObj": [
             {
                 "StationID": "X0II",
@@ -1255,28 +1277,75 @@ iRentApi20 Web API版本
                 "Minimum": 1774,
                 "IsRent": "Y",
                 "IsFavStation": 0,
+				"IsShowCard": 0,
                 "ProjectObj": [
                     {
-                        "StationID": "X0II",
+                        "StationID": "XXXX",
                         "ProjID": "P735",
                         "ProjName": "同站汽車99推廣專案",
-                        "ProDesc": "1.本專案限iRent會員使用。  \r\n2.本專案活動期間為即日起~2021/3/31。  \r\n3.本專案優惠價：平日時租99元，日租990元；假日時租168元或198元，日租1,680元或1,980元(各車款價格詳見「關於iRent─租車費率」)。還車時依實際使用情形再收取里程費及eTag過路費。  \r\n4.平日定義: 週一至週五(不含國定假日)。  \r\n5.本專案為同站租還服務，還車需將車輛停放回原站點。  \r\n6.預約租車時請選擇適合之預計取車時間，預約訂單成立後每台車將保留15分鐘。若超過預計取車時間15分鐘仍未取車，系統將自動取消該筆預約。  \r\n7.本專案不得累計網路會員e-bonus，且不得折抵消費金額。  \r\n8.平日優惠價迄日為2021/3/31，非平日優惠價期間以推廣價計算租金",
+                        "ProDesc": "1.本專案限iRent會員使用。\n2.本專案活動期間為2020/1/30~2021/6/30。\n3.本專案優惠價：平日時租99元，日租990元；假日時租168元或198元，日租1,680元或1,980元(各車款價格詳見「關於iRent─租車費率」)。還車時依實際使用情形再收取里程費及eTag過路費。\n4.平日定義: 週一至週五(不含國定假日)。\n5.本專案為同站租還服務，還車需將車輛停放回原站點。\n6.預約租車時請選擇適合之預計取車時間，預約訂單成立後每台車將保留15分鐘。若超過預計取車時間15分鐘仍未取車，系統將自動取消該筆預約。\n7.本專案不得累計網路會員e-bonus，且不得折抵消費金額。\n8.實際費率以出車當日公告之活動內容為準。",
                         "CarBrend": "TOYOTA",
-                        "CarType": "PRIUSC",
-                        "CarTypeName": "TOYOTA PRIUSc",
-                        "CarTypePic": "priusC",
+                        "CarType": "COROLLA CROSS",
+                        "CarTypeName": "TOYOTA COROLLA CROSS",
+                        "CarTypePic": "cross",
                         "Seat": 5,
                         "Operator": "supplierIrent",
                         "OperatorScore": 5.0,
                         "Insurance": 1,
-                        "InsurancePerHour": 50,
-                        "IsMinimum": 1,
-                        "Price": 1774,
+                        "InsurancePerHour": 70,
+                        "IsMinimum": 0,
+                        "Price": 195,
+                        "WorkdayPerHour": 135,
+                        "HolidayPerHour": 218,
+                        "CarOfArea": "XXXX",
+                        "Content": "",
+                        "IsRent": "N",
+                        "IsFavStation": 0,
+                        "IsShowCard": 0,
+                        "MonthlyRentId": 0,
+                        "CarWDHours": 0.0,
+                        "CarHDHours": 0.0,
+                        "MotoTotalMins": 0.0,
+                        "WDRateForCar": 0.0,
+                        "HDRateForCar": 0.0,
+                        "WDRateForMoto": 0.0,
+                        "HDRateForMoto": 0.0,
+                        "MonthStartDate": "",
+                        "MonthEndDate": ""
+                    },
+                    {
+                        "StationID": "XXXX",
+                        "ProjID": "P735",
+                        "ProjName": "同站汽車99推廣專案_測試_汽包機66-3",
+                        "ProDesc": "1.本專案限iRent會員使用。\n2.本專案活動期間為2020/1/30~2021/6/30。\n3.本專案優惠價：平日時租99元，日租990元；假日時租168元或198元，日租1,680元或1,980元(各車款價格詳見「關於iRent─租車費率」)。還車時依實際使用情形再收取里程費及eTag過路費。\n4.平日定義: 週一至週五(不含國定假日)。\n5.本專案為同站租還服務，還車需將車輛停放回原站點。\n6.預約租車時請選擇適合之預計取車時間，預約訂單成立後每台車將保留15分鐘。若超過預計取車時間15分鐘仍未取車，系統將自動取消該筆預約。\n7.本專案不得累計網路會員e-bonus，且不得折抵消費金額。\n8.實際費率以出車當日公告之活動內容為準。",
+                        "CarBrend": "TOYOTA",
+                        "CarType": "COROLLA CROSS",
+                        "CarTypeName": "TOYOTA COROLLA CROSS",
+                        "CarTypePic": "cross",
+                        "Seat": 5,
+                        "Operator": "supplierIrent",
+                        "OperatorScore": 5.0,
+                        "Insurance": 1,
+                        "InsurancePerHour": 70,
+                        "IsMinimum": 0,
+                        "Price": 0,
                         "WorkdayPerHour": 99,
                         "HolidayPerHour": 168,
-                        "CarOfArea": "同站",
+                        "CarOfArea": "XXXX",
                         "Content": "",
-                        "IsRent": "Y"
+                        "IsRent": "N",
+                        "IsFavStation": 0,
+                        "IsShowCard": 0,
+                        "MonthlyRentId": 1019,
+                        "CarWDHours": 3.0,
+                        "CarHDHours": 3.0,
+                        "MotoTotalMins": 300.0,
+                        "WDRateForCar": 99.0,
+                        "HDRateForCar": 168.0,
+                        "WDRateForMoto": 1.0,
+                        "HDRateForMoto": 1.2,
+                        "MonthStartDate": "2021/06/07",
+                        "MonthEndDate": "2021/09/05"
                     }
                 ],
                 "StationInfoObj": [
@@ -1319,6 +1388,72 @@ iRentApi20 Web API版本
 
 -------------
 
+## GetPolygon取得電子柵欄
+### [/api/GetPolygon/]
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+  
+* input傳入參數說明
+
+| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
+| --------- | -------- | :--: | :----: | ----------- |
+| StationID | 據點代碼 | Y | string | X0II |
+| ☆IsMotor| 機車汽車| Y | INT | 0:機車,1:汽車 |
+
+
+
+
+* input範例
+```input範例
+{
+    "StationID": "X0G1",
+    "IsMotor": 0
+}
+```
+
+* output回傳參數說明
+
+| 參數名稱 | 參數說明     |  型態  | 範例 |
+| -------- | ------------ | :----: | ---- |
+| Result | 是否成功 | int | 0:失敗 1:成功  |
+| ErrorCode | 錯誤碼 | string | |
+| ErrorMessage | 錯誤訊息 | string | |
+| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
+| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
+| Data | 資料物件 | | |
+| PolygonType| 電子柵欄模式 | int | 0:優惠的取車;1:優惠的還車 |
+| PolygonObj| 電子柵欄經緯度清單 | List |  |
+
+* output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "PolygonType": 0,
+        "PolygonObj": [
+            "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
+        ]
+    }
+}
+```
+
+-------------
 
 
 ## GetBanner 取得廣告資訊
@@ -2766,12 +2901,12 @@ iRentApi20 Web API版本
 
 * MyCar, MyMoto 參數說明
 
-| 參數名稱  | 參數說明             | 型態   | 範例                                   |
-| --------- | -------------------- | ------ | -------------------------------------- |
-| 其餘參數  | 同NorMonCards        |        | 參考NorMonCards, MixMonCards  參數說明 |
-| NxtPay    | 下期是否已付款0否1是 | int    | 0                                      |
-| StartDate | 訂閱制月租起日       | string | 05/18 00:00                            |
-| EndDate   | 訂閱制月租迄日       | string | 06/16 23:59                            |
+| 參數名稱  | 參數說明       | 型態   | 範例                                   |
+| --------- | -------------- | ------ | -------------------------------------- |
+| 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
+| NxtPay	| 下期是否有繳費(0否1是) | int | 0 |
+| StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
+| EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
 
   
 
@@ -3117,7 +3252,7 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
         "MyCar": {
-            "NxtPay": 0,
+			"NxtPay": 0,
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR66",
@@ -3138,7 +3273,7 @@ iRentApi20 Web API版本
 			"IsMix": 1
         },
         "MyMoto": {
-            "NxtPay": 1, 
+			"NxtPay": 0,
             "StartDate": "05/18 00:00",
             "EndDate": "06/16 23:59",
             "MonProjID": "MR200",
@@ -3190,12 +3325,14 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明                 | 必要 |  型態   | 範例                              |
 | ---------- | ------------------------ | :--: | :----:  | ----------------------------------|
 | MonProjID  | 專案代碼                 |  Y   |  string | MR66                              |
+| Mode		 | 使用模式(0:一般 1:變更合約 |  N   | string  | 0								 |
 
 * input範例
 
 ```
 {
     "MonProjID": "MR66",
+	"Mode":0
 }
 ```
 
@@ -3221,6 +3358,7 @@ iRentApi20 Web API版本
 
 | 參數名稱      | 參數說明             |  型態  | 範例     |
 | -----------   | ----------           | :----: | ---------|
+| UseUntil		| 使用期限(Mode=1時，此欄位變為變更合約用的開始時間)  | string | 2022/02/28 00:00|
 | MonProjID     | 方案代碼(key)        | string | MR66     |
 | MonProjNM     | 方案名稱        | string | MR66測試 |
 | MonProPeriod  | 總期數(key)          | int    | 3        |
@@ -3237,7 +3375,6 @@ iRentApi20 Web API版本
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
 | IsMix | 是否為城市車手(0否1是) | int | 0 |
-| UseUntil | 可以使用到什麼時候 | string | 2021/09/01 |
 
 * Output範例
 ```
@@ -3251,7 +3388,7 @@ iRentApi20 Web API版本
         "MonProDisc": "汽包機66-6注意事項",
         "MonCards": [
             {
-                "UseUntil": "2021/09/01",
+				"UseUntil": "2022/02/28 00:00",
                 "MonProjID": "MR66",
                 "MonProjNM": "測試_汽包機66-6",
                 "MonProPeriod": 6,
@@ -3306,8 +3443,8 @@ iRentApi20 Web API版本
 | MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
 | ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
 | SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
-| PayTypeId    | 付款方式              |  Y   |  int   | 0    |
-| InvoTypeId   | 發票方式              |  Y   |  int   | 2    |
+| PayTypeId    | 付款方式              |  N   |  int   | 0    |
+| InvoTypeId   | 發票方式              |  N   |  int   | 2    |
 
 
 
@@ -3387,8 +3524,8 @@ iRentApi20 Web API版本
 | UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
 | UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
 | UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
-| PayTypeId       | 付款方式          | Y    | int    | 0     |
-| InvoTypeId      | 發票方式          | Y    | int    | 2     |
+| PayTypeId       | 付款方式          | N    | int    | 0     |
+| InvoTypeId      | 發票方式          | N    | int    | 2     |
 
 
 * input範例 (月租升轉)
@@ -3464,8 +3601,8 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明 | 必要 | 型態 | 範例 |
 | ---------- | -------- | ---- | ---- | ---- |
-| PayTypeId  | 付款方式 | Y    | int  | 0    |
-| InvoTypeId | 發票方式 | Y    | int  | 2    |
+| PayTypeId  | 付款方式 | N    | int  | 0    |
+| InvoTypeId | 發票方式 | N    | int  | 2    |
 
 
 * input範例 (月租欠費繳交)
@@ -3581,17 +3718,16 @@ iRentApi20 Web API版本
 | HDRateForCar | 汽車假日優惠價 | double | 168.0 |
 | WDRateForMoto | 機車平日優惠價 | double | 1.0 |
 | HDRateForMoto | 機車假日優惠價 | double | 1.2 |
-| StartDate 	| 起日 			| string | 05/18 |
-| EndDate 		| 迄日 			| string | 06/16 23:59 |
-| MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
-| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
+| StartDate 	| 起日 			| string | 2021/05/18 00:00|
+| EndDate 		| 迄日 			| string | 2021/06/16 23:59 |
+| MonthStartDate | 全月租專案起日 | string | 2021/05/18 00:00|
+| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 23:59|
 | NxtMonProPeriod | 下期續訂總期數 | string | 3 |
 | IsMix | 是否為城市車手 (0否1是) | int | 1 |
 | IsUpd | 是否已升級 (0否1是) | int | 0 |
 | SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
 | IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
 | IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
-| NxtPay | 下期是否已付款 (0否1是) | int | 0 |
 | IsMoto	    | 是否為機車0否1是     | int    | 0        |
 
 * Output範例
@@ -3615,17 +3751,16 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "StartDate": "05/26",
-            "EndDate": "06/24 23:59",
-            "MonthStartDate": "2021/05/26",
-            "MonthEndDate": "2021/08/24",
+            "StartDate": "2021/05/26 00:00",
+            "EndDate": "2021/06/24 23:59",
+            "MonthStartDate": "2021/05/26 00:00",
+            "MonthEndDate": "2021/08/24 23:59",
             "NxtMonProPeriod": 3,
             "IsMix": 1,
             "IsUpd": 0,
             "SubsNxt": 1,
             "IsChange": 0,
             "IsPay": 1,
-            "NxtPay": 0,
 			"IsMoto": 0
         }
     }
@@ -3707,12 +3842,12 @@ iRentApi20 Web API版本
 | HDRateForCar | 機車平日優惠價 | double | 168.0 |
 | WDRateForMoto | 機車平日優惠價 | double | 1.0 |
 | HDRateForMoto | 機車假日優惠價 | double | 1.2 |
-| StartDate | 起日 			| string | 05/18 |
-| EndDate	| 迄日 			| string | 08/16 |
+| StartDate | 起日 			| string | 2021/05/18 00:00 |
+| EndDate	| 迄日 			| string | 2021/08/16 23:59|
 | MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
 | IsMix		| 是否為城市車手 | int | 1 |
-| MonthStartDate | 全月租專案起日 | string | 2021/05/18 |
-| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 |
+| MonthStartDate | 全月租專案起日 | string | 2021/05/18 00:00|
+| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 23:59|
 | NxtMonProPeriod | 下期續訂總期數 | string | 3 |
 | IsUpd | 是否已升級 (0否1是) | int | 0 |
 | SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
@@ -3742,12 +3877,12 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "StartDate": "05/18",
-            "EndDate": "08/16",
+            "StartDate": "2021/05/18 00:00",
+            "EndDate": "2021/08/16 23:59",
             "MonProDisc": "汽包機66-3注意事項",
 			"IsMix": 1,
-			"MonthStartDate": "2021/05/26",
-            "MonthEndDate": "2021/08/24",
+			"MonthStartDate": "2021/05/26 00:00",
+            "MonthEndDate": "2021/08/24 23:59",
             "NxtMonProPeriod": 3,
             "IsUpd": 0,
             "SubsNxt": 1,
@@ -3768,12 +3903,12 @@ iRentApi20 Web API版本
             "HDRateForCar": 168.0,
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
-            "StartDate": "2021/08/16",
-            "EndDate": "2021/11/14",
+            "StartDate": "2021/08/16 00:00",
+            "EndDate": "2021/11/14 23:59",
             "MonProDisc": "汽包機66-3注意事項",
 			"IsMix": 1,
-			"MonthStartDate": "2021/05/26",
-            "MonthEndDate": "2021/08/24",
+			"MonthStartDate": "2021/05/26 00:00",
+            "MonthEndDate": "2021/08/24 23:59",
             "NxtMonProPeriod": 3,
             "IsUpd": 0,
             "SubsNxt": 1,
@@ -3981,12 +4116,19 @@ iRentApi20 Web API版本
 | IsMix			| 是否為城市車手 | int | 1 |
 | AddPrice		| 加價購金額	| int | 1000 |
 | IsMoto		| 是否為機車	| int | 0 |
+| UseUntil		| 使用期限		| string | 2021/08/25 23:59 |
 
 * Output範例
 
 ```
 {
-    "NorCards": [
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+		"NorCards": [
             {
                 "MonProjID": "MR101",
                 "MonProPeriod": 3,
@@ -4003,45 +4145,50 @@ iRentApi20 Web API版本
                 "IsDiscount": 0,
 				"IsMix" : 0,
 				"AddPrice": 1000,
-				"IsMoto": 0
+				"IsMoto": 0,
+				"UseUntil": "2021/08/25 23:59"
             }	
-	],
-    "MixCards": [{
-            "MonProjID": "MR102",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機102-3",
-            "PeriodPrice": 7300,
-            "CarWDHours": 4.0,
-            "CarHDHours": 4.0,
-            "MotoTotalMins": 400,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-			"IsMix" : 1,
-			"AddPrice": 2000,
-			"IsMoto": 0
-        }, {
-            "MonProjID": "MR103",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機103-3",
-            "PeriodPrice": 7800,
-            "CarWDHours": 4.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-			"IsMix":1,
-			"AddPrice": 3000,
-			"IsMoto": 0
-        }
-    ]
+		],
+		"MixCards": [{
+				"MonProjID": "MR102",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"MonProjNM": "測試_汽包機102-3",
+				"PeriodPrice": 7300,
+				"CarWDHours": 4.0,
+				"CarHDHours": 4.0,
+				"MotoTotalMins": 400,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsMix" : 1,
+				"AddPrice": 2000,
+				"IsMoto": 0,
+				"UseUntil": "2021/08/25 23:59"
+			}, 
+			{
+				"MonProjID": "MR103",
+				"MonProPeriod": 3,
+				"ShortDays": 0,
+				"MonProjNM": "測試_汽包機103-3",
+				"PeriodPrice": 7800,
+				"CarWDHours": 4.0,
+				"CarHDHours": 3.0,
+				"MotoTotalMins": 300,
+				"WDRateForCar": 99.0,
+				"HDRateForCar": 168.0,
+				"WDRateForMoto": 1.0,
+				"HDRateForMoto": 1.2,
+				"IsDiscount": 0,
+				"IsMix":1,
+				"AddPrice": 3000,
+				"IsMoto": 0,
+				"UseUntil": "2021/08/25 23:59"
+			}
+		]
+	}
 }
 ```
 
@@ -4103,6 +4250,12 @@ iRentApi20 Web API版本
 | invoice_date | 發票日期 | string  | 2021/05/18 |
 | invoice_price| 發票金額 | int     | 7000 |
 | IsMix | 是否為城市車手0否1是 | int | 0 |
+| CARRIERID 	| 載具號碼 | string | /SI2Q4FQ |
+| NPOBAN		| 捐贈碼  | string  | 1234 |
+| InvoiceType	| 發票方式(1:捐贈2:會員載具 3:二聯 4:三聯 5:手機條碼 6:自然人憑證 | int | 2 |
+| NPOBAN_Name	| 捐贈單位 | string | 財團法人中華民國兒童癌症基金會 |
+
+
 
 
 
@@ -4141,7 +4294,11 @@ iRentApi20 Web API版本
                 "invoiceCode": "A12345678",
                 "invoice_date": "2021/05/19",
                 "invoice_price": 7000,
-                "IsMix":0
+                "IsMix":0,
+				"CARRIERID": "",
+                "NPOBAN": "88888",
+				"InvoiceType": 1,
+				"NPOBAN_Name": "財團法人中華民國兒童癌症基金會"
             },
             {
                 "MonProjID": "MR66",
@@ -4162,12 +4319,16 @@ iRentApi20 Web API版本
                 "EndDate": "2021/08/16",
                 "PerNo": 3,
                 "MonthlyRentId": 913,
-                "InvType": "捐贈碼",
+                "InvType": "會員載具",
                 "unified_business_no": "12345678",
                 "invoiceCode": "A12345678",
                 "invoice_date": "2021/05/19",
                 "invoice_price": 7000,
-                "IsMix":0
+                "IsMix":0,
+				"CARRIERID": "",
+                "NPOBAN": "",
+				"InvoiceType": 2,
+				"NPOBAN_Name": ""
             }
         ]
     }
@@ -4239,7 +4400,7 @@ iRentApi20 Web API版本
 
   正式環境：https://irentcar-app.azurefd.net/
 
-  測試環境：https://irentcar-app-test.azurefd.net
+  測試環境：https://irentcar-app-test.azurefd.net/
 
 * 傳送跟接收採JSON格式
 
@@ -4259,6 +4420,7 @@ iRentApi20 Web API版本
 | Cards-StartDate | 月租起日         | string |  　 |
 | Cards-EndDate | 月租迄日 | string | |
 | Cards-ProjNm | 月租專案名稱 | string | |
+| Cards-CarTypePic | 車型對照檔名 | string | priusC |
 | Cards-Arrs | 欠費明細 | list | |
 
 
@@ -4277,47 +4439,56 @@ iRentApi20 Web API版本
 
 ```
 {
-	"TotalArresPrice": 27000,
-	"Cards": [
-		{
-			"StartDate": "2021/05/19",
-			"EndDate": "2021/08/17",
-			"ProjNm": "測試_機車2000",
-			"Arrs": [
-				{
-					"Period": 1,
-					"ArresPrice": 2000
-				},
-				{
-					"Period": 2,
-					"ArresPrice": 2000
-				},
-				{
-					"Period": 3,
-					"ArresPrice": 2000
-				}
-			]
-		},
-		{
-			"StartDate": "2021/05/18",
-			"EndDate": "2021/08/16",
-			"ProjNm": "測試_汽包機66-3",
-			"Arrs": [
-				{
-					"Period": 1,
-					"ArresPrice": 7000
-				},
-				{
-					"Period": 2,
-					"ArresPrice": 7000
-				},
-				{
-					"Period": 3,
-					"ArresPrice": 7000
-				}
-			]
-		}
-	]
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+		"TotalArresPrice": 27000,
+		"Cards": [
+			{
+				"StartDate": "2021/05/19",
+				"EndDate": "2021/08/17",
+				"ProjNm": "測試_機車2000",
+				"CarTypePic": "iretScooter",
+				"Arrs": [
+					{
+						"Period": 1,
+						"ArresPrice": 2000
+					},
+					{
+						"Period": 2,
+						"ArresPrice": 2000
+					},
+					{
+						"Period": 3,
+						"ArresPrice": 2000
+					}
+				]
+			},
+			{
+				"StartDate": "2021/05/18",
+				"EndDate": "2021/08/16",
+				"ProjNm": "測試_汽包機66-3",
+				"CarTypePic": "priusC",
+				"Arrs": [
+					{
+						"Period": 1,
+						"ArresPrice": 7000
+					},
+					{
+						"Period": 2,
+						"ArresPrice": 7000
+					},
+					{
+						"Period": 3,
+						"ArresPrice": 7000
+					}
+				]
+			}
+		]
+	}
 }
 ```
 
@@ -4385,7 +4556,7 @@ iRentApi20 Web API版本
 ```
 
 
-# 訂單相關
+# 預約以及訂單相關
 
 
 
@@ -4559,6 +4730,111 @@ iRentApi20 Web API版本
     
 }
 ```
+
+
+------
+
+## Booking
+
+### [/api/Booking/]
+
+* 20210609補上
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| ProjID	| 專案代碼 |  Y   | string | P735 |
+| SDate		| 預計取車時間 | N | string |  |
+| EDate		| 預計還車時間 | N | string |  |
+| CarNo 	| 車號		| Y | string | RCG-0521 |
+| CarType	| 車型代碼	| Y | string | |
+| Insurance | 是否加購安心服務 | Y | int | 1 |
+| StationID | 據點代碼 | Y | string | X0II |
+| MonId		| 選擇的訂閱制月租 | Y | int | 123456 |
+
+
+* input範例 -同站預約
+
+```
+{
+	"ProjID": "P735",
+	"SDate": "2021-05-11 10:30:00",
+    "EDate": "2021-05-11 11:30:00",
+    "CarNo": "",
+    "CarType": "COROLLA CROSS",
+    "Insurance": 0,
+    "StationID": "XXXX"
+    "ModId": 0
+}
+```
+
+* input範例 -機車預約
+```
+{
+	"ProjID": "P686",
+	"SDate": "",
+	"EDate": "",
+	"CarNo": "EWJ-8339",
+	"CarType": "MANY-110",
+	"Insurance": 0,
+	"StationID": ""
+	"ModId": 0
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderNo      | 訂單編號           | string | H10455246     |
+| LastPickTime   | 最晚的取車時間	| string | 20210608020120 |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "OrderNo": "H10791575",
+        "LastPickTime": "20210608020120"
+    }
+}
+```
+
+-----
+
 
 # 車輛調度停車場相關
 

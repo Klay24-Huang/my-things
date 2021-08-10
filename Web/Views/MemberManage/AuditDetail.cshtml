@@ -35,6 +35,7 @@
     //string[] aa;
     //List<string> termsList = new List<string>();
     //string aa="";
+    int MemberScore = 0;
 
     if (Model != null)
     {
@@ -145,6 +146,7 @@
         //MileStoneDetail = (obj.MileStoneDetail == null) ? 0 : obj.MileStoneDetail.Count();
         MileStoneDetail = obj.JsonMileStoneDetail;
         //aa = new string[MileStoneLen];
+        MemberScore = (obj.MemberScore == null) ? 0 : obj.MemberScore.Count();
 
         if (HistoryLen > 0)
         {
@@ -815,6 +817,19 @@
                                 </div>
                                 <div class="col-md-3">
                                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#mileStone_modal">顯示會員勳章</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    積分歷程
+                                </div>
+                                <div class="col-md-3">
+                                    @((obj.MemberScore.Count() == 0) ? 0 : Int32.Parse(obj.MemberScore[0].SCORETOTAL))
+                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#memberScore_modal">顯示積分歷程</button>
                                 </div>
                             </div>
                         </div>
@@ -1748,6 +1763,69 @@
                 </div>
                 <div class="modal-footer">
                     @*<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="CloseModel">關閉</button>*@
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="memberScore_modal" class="modal fade">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table class="table table-striped bg-white mt-4 " data-limit-navigation="5">
+                        <thead class="text-white bg-primary">
+                            <tr>
+                                <th scope="col">姓名</th>
+                                <th scope="col">加/扣分時間</th>
+                                <th scope="col">評分行為(主項)</th>
+                                <th scope="col">評分行為(子項)</th>
+                                <th scope="col">加/扣分</th>
+                                <th scope="col">出車時間</th>
+                                <th scope="col">訂單編號</th>
+                                <th scope="col">APP刪除</th>
+                                <th scope="col">隱藏時間</th>
+                                <th scope="col">操作人員</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (MemberScore == 0)
+                            {
+                                <tr>
+                                    <td colspan="10" class="text-center">
+                                        查無結果
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < MemberScore; i++)
+                                {
+                                    <tr>
+                                        <td scope="col">@(obj.MemberScore[i].MEMCNAME)</td>
+                                        <td scope="col">@(obj.MemberScore[i].A_SYSDT)</td>
+                                        <td scope="col">@(obj.MemberScore[i].DAD)</td>
+                                        <td scope="col">@(obj.MemberScore[i].SON)</td>
+                                        <td scope="col">@(obj.MemberScore[i].SCORE)</td>
+                                        <td scope="col">@(obj.MemberScore[i].TIME)</td>
+                                        <td scope="col">@(obj.MemberScore[i].ORDERNO)</td>
+                                        <td scope="col">@(obj.MemberScore[i].APP)</td>
+                                        <td scope="col">@(obj.MemberScore[i].DEL)</td>
+                                        <td scope="col">@(obj.MemberScore[i].GM)</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot class="hide-if-no-paging">
+                            <tr>
+                                <td colspan="10" class="text-center">
+                                    <ul class="pagination"></ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
                 </div>
             </div>

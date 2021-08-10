@@ -1,10 +1,12 @@
 ﻿using Domain.SP.Input.Bill;
 using Domain.SP.Output.Bill;
 using Domain.TB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Web;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Utils;
@@ -347,6 +349,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Discount">折扣</param>
         /// <param name="FreeMins">前n免費</param>
         /// <returns></returns>
+        /// <mark>2020-12-07 eason</mark>
         public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
                     , List<MonthlyRentData> mOri
                     , int Discount
@@ -363,7 +366,7 @@ namespace WebAPI.Models.BillFunc
             if (mins >= daybaseMins)
                 daybaseMins = 0;
             return CarRentInCompute_ori(SD, ED, priceN, priceH, daybaseMins, dayMaxHour, lstHoliday,
-                  mOri, Discount, FreeMins
+                  mOri, Discount //, FreeMins
                 );
         }
 
@@ -385,7 +388,9 @@ namespace WebAPI.Models.BillFunc
             , List<MonthlyRentData> mOri
             , int Discount
             , double FreeMins = 0
-            )
+                    )
+
+
         {//note: CarRentInCompute2
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
@@ -510,7 +515,7 @@ namespace WebAPI.Models.BillFunc
                             }
                         });
 
-                        m.CarTotalHours -= (Convert.ToSingle(carAllDisc));//使用點數
+                        m.CarTotalHours -= (Convert.ToSingle(carAllDisc));//使用點數(原始點數-剩餘點數)
                     }
                     else
                     {
@@ -538,8 +543,8 @@ namespace WebAPI.Models.BillFunc
                             }
                         });
 
-                        m.WorkDayHours -= Convert.ToSingle(wdisc);//使用點數
-                        m.HolidayHours -= Convert.ToSingle(hdisc);//使用點數
+                        m.WorkDayHours -= Convert.ToSingle(wdisc);//使用點數(原始點數-剩餘點數)
+                        m.HolidayHours -= Convert.ToSingle(hdisc);//使用點數(原始點數-剩餘點數)
                     }
                 }
 
@@ -555,6 +560,14 @@ namespace WebAPI.Models.BillFunc
                 }
             }
 
+            #region 混和折扣前先記錄使用月租點數
+
+            re.useMonthDisc = m_wDisc + m_hDisc;
+            re.useMonthDiscW = m_wDisc;
+            re.useMonthDiscH = m_hDisc;
+
+            #endregion
+
             //價高先折
             dpList = dayPayList.Where(z => z.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(y => y.xDate).ToList();
             dpList.ForEach(x =>
@@ -569,17 +582,9 @@ namespace WebAPI.Models.BillFunc
                     else if (x.DateType == eumDateType.hDay.ToString())
                         hDisc += useDisc;
                     else if (x.DateType.Contains("h"))
-                    {
                         m_hDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType.Replace("h", string.Empty).Trim()).FirstOrDefault();
-                        mm.HolidayHours -= Convert.ToSingle(useDisc);
-                    }
                     else
-                    {
                         m_wDisc += useDisc;
-                        var mm = mFinal.Where(w => w.MonthlyRentId.ToString() == x.DateType).FirstOrDefault();
-                        mm.WorkDayHours -= Convert.ToSingle(useDisc);
-                    }
                 }
             });
 
@@ -598,30 +603,47 @@ namespace WebAPI.Models.BillFunc
             }
 
             re.useDisc = Convert.ToInt32(Convert.ToDouble(Discount) - lastDisc);
-            re.useMonthDisc = m_wDisc + m_hDisc;
-            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60).Sum() +
-                mOri.Select(x => x.HolidayHours * 60).Sum() - (m_wDisc + m_hDisc);
+
+            //原始總點數-使用總點數
+            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum() -
+                  mFinal.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum();
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
             {
                 mFinal.ForEach(x =>
                 {
-                    x.CarTotalHours = (x.CarTotalHours / 60);
-                    x.HolidayHours = (x.HolidayHours / 60);//分轉回小時
-                    x.WorkDayHours = (x.WorkDayHours / 60);//分轉回小時                    
+                    x.CarTotalHours = (x.CarTotalHours / 60);//使用的小時數,分轉回小時
+                    x.HolidayHours = (x.HolidayHours / 60);//使用的小時數,分轉回小時
+                    x.WorkDayHours = (x.WorkDayHours / 60);//使用的小時數,分轉回小時 
                 });
                 re.mFinal = mFinal;
             }
 
             dre = dre > 0 ? dre : 0;
-
-            re.useMonthDiscW = m_wDisc;
-            re.useMonthDiscH = m_hDisc;
-
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
-
             return re;
         }
+
+        #region 修正汽車基消
+        //public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
+        //    , List<MonthlyRentData> mOri
+        //    , int Discount
+        //    )
+        //{
+        //    var re = new CarRentInfo();
+        //    if (SD == null || ED == null || SD < ED)
+        //        throw new Exception("SD, ED錯誤");
+
+        //    SD = SD.AddSeconds(SD.Second * -1);
+        //    ED = ED.AddSeconds(ED.Second * -1);
+        //    var mins = ED.Subtract(SD).TotalMinutes;
+
+        //    if(mins < 60)
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 60, dayMaxHour, lstHoliday, mOri, Discount);
+        //    else
+        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 0, dayMaxHour, lstHoliday, mOri, Discount);          
+        //}
+        #endregion
 
         /// <summary>
         /// 機車月租計算,區分平假日,不分平假日
@@ -940,13 +962,15 @@ namespace WebAPI.Models.BillFunc
             if (mOri != null && mOri.Count() > 0)
             {
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
-                   x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                   || x.Mode != 1
-                ))
+                    x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
+                    //|| x.Mode != 1
+                 ))
                     throw new Exception("mOri資料內容錯誤");
 
                 if (mOri.GroupBy(x => x.MonthlyRentId).Where(y => y.Count() > 1).Count() > 0)
                     throw new Exception("MonthlyRentId不可重複");
+
+                mOri = mOri.OrderByDescending(x => x.MonLvl).ToList();
 
                 mFinal = objUti.Clone(mOri);
             }

@@ -97,6 +97,10 @@ namespace Domain.WebAPI.Output.CENS
         /// iButtonKey
         /// </summary>
         public string IButtonKey { get; set; }
+        /// <summary>
+        /// 車機韌體
+        /// </summary>
+        public string fwver { set; get; }
 
     }
 }
