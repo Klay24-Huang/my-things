@@ -1,96 +1,98 @@
-﻿CREATE TABLE [dbo].[TB_NYRefund]
+﻿CREATE TABLE [dbo].[TB_MotorChangeBattHis]
 (
-	[order_number] INT NOT NULL PRIMARY KEY, 
-    [IDNO] VARCHAR(10) NOT NULL DEFAULT (''), 
-    [DiffDay] INT NOT NULL DEFAULT 0, 
-    [ChkFLG] VARCHAR(1) NOT NULL DEFAULT(''), 
-    [ChkTime] DATETIME NULL,
-    [PayFLG] VARCHAR(1) NOT NULL DEFAULT(''),
-    [OrderAmt] [int] NOT NULL,
-    [RefundAmt] INT NOT NULL DEFAULT 0, 
-    [MKTime] DATETIME NULL, 
-    [UPDTime] DATETIME NULL
+	[SEQNO] [int] IDENTITY(1,1) NOT NULL,
+	[order_number] [bigint] NOT NULL,
+	[ChgTimes] [int] NOT NULL,
+	[RSOC_S] [float] NOT NULL,
+	[RSOC_E] [float] NOT NULL,
+	[ChgGift] [int] NOT NULL,
+	[RewardGift] [int] NOT NULL,
+	[TotalGift] [int] NOT NULL,
+	[MKTime] [datetime] NULL,
 )
+
+
+
+
 
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'退款金額',
+    @value = N'流水號',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'RefundAmt'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'建立時間',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
-    @level2type = N'COLUMN',
-    @level2name = N'MKTime'
-GO
-EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'更新時間',
-    @level0type = N'SCHEMA',
-    @level0name = N'dbo',
-    @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
-    @level2type = N'COLUMN',
-    @level2name = N'UPDTime'
+    @level2name = N'SEQNO'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
     @value = N'訂單編號',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
     @level2name = N'order_number'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'會員編號',
+    @value = N'換電次數',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'IDNO'
+    @level2name = N'ChgTimes'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'提早取消天數',
+    @value = N'取車電量',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'DiffDay'
+    @level2name = N'RSOC_S'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'是否付款',
+    @value = N'還車電量',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'PayFLG'
+    @level2name = N'RSOC_E'
 GO
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'排程是否確認',
+    @value = N'換電時數',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'ChkFLG'
+    @level2name = N'ChgGift'
 GO
-
 EXEC sp_addextendedproperty @name = N'MS_Description',
-    @value = N'訂金',
+    @value = N'獎勵時數',
     @level0type = N'SCHEMA',
     @level0name = N'dbo',
     @level1type = N'TABLE',
-    @level1name = N'TB_NYRefund',
+    @level1name = N'TB_MotorChangeBattHis',
     @level2type = N'COLUMN',
-    @level2name = N'OrderAmt'
+    @level2name = N'RewardGift'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'總時數=換電+獎勵',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MotorChangeBattHis',
+    @level2type = N'COLUMN',
+    @level2name = N'TotalGift'
+GO
+EXEC sp_addextendedproperty @name = N'MS_Description',
+    @value = N'產生時間',
+    @level0type = N'SCHEMA',
+    @level0name = N'dbo',
+    @level1type = N'TABLE',
+    @level1name = N'TB_MotorChangeBattHis',
+    @level2type = N'COLUMN',
+    @level2name = N'MKTime'
