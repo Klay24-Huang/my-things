@@ -146,8 +146,9 @@ namespace WebAPI.Controllers
                     Mode = apiInput.Mode,
                     PowerStr = PowerStr,
                     AreaV = apiInput.AreaV, //20210209唐加
-                    mtypeV = apiInput.mtypeV //20210209唐加
-
+                    mtypeV = apiInput.mtypeV, //20210209唐加
+                    Area = apiInput.Area,
+                    Type = apiInput.Type
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_HandleUserMaintain, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleUserMaintain, SPOutput_Base>(connetStr);

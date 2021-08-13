@@ -275,11 +275,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_InsEscrowHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsCreditStatus.cs" />
-    <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
-    <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
-    <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SaveInvno.cs" />
-    <Compile Include="SP\Input\Subscription\SPInput_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
@@ -363,11 +359,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_InsEscrowHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsCreditStatus.cs" />
-    <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
-    <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />
-    <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SaveInvno.cs" />
-    <Compile Include="SP\Output\Subscription\SPOut_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
@@ -616,6 +608,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentDetailExplode.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistory.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistoryExplode.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistorySendMail.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_MonthlyRentSave.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR013Reg.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />

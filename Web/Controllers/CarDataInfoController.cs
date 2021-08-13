@@ -615,7 +615,7 @@ namespace Web.Controllers
                         {
                             //20210105_Eric_增加防呆，若全部空白則跳開
                             bool CheckNotAllNull = false;
-                            for (int j = 0; j < 8; j++)
+                            for (int j = 0; j < sheetLen; j++)
                             {
                                 if (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {
@@ -1095,6 +1095,7 @@ namespace Web.Controllers
 
                                 try
                                 {
+                                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
                                     string url = ConfigurationManager.AppSettings["jsHost"] + "BE_HandleCarBind";
                                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                                     request.Method = "POST";

@@ -425,8 +425,8 @@ function DoAjaxAfterGoBack_GG(obj, API, FailMessage) {
     var json = JSON.stringify(obj);
     var ReceiveObj = new Object();
     //console.log(json);
-    //var site = jsHost + API;
-    var site = "http://localhost:2061/api/" + API //202012唐測試用
+    var site = jsHost + API;
+    //var site = "http://localhost:2061/api/" + API //202012唐測試用
     //console.log("site:" + site);
     $.ajax({
         url: site,
@@ -466,6 +466,7 @@ function DoAjaxAfterGoBack_GG(obj, API, FailMessage) {
     });
     return ReceiveObj;
 }
+
 /**
  * 執行完將API回傳的資料丟入callback函式內
  * @param {any} obj

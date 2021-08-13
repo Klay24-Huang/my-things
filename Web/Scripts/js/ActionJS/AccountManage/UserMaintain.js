@@ -9,6 +9,8 @@ var StartDate = "";
 var EndDate = "";
 var AreaV = ""; //20210209唐加
 var mtypeV = ""; //20210209唐加
+var Area = ""; //20210806唐加
+var Type = ""; //20210806唐加
 
 $(document).ready(function () {
 
@@ -240,6 +242,10 @@ function DoEdit(Id) {
         $("#UserGroupName_" + NowEditID).empty().hide();
         $("#OperatorName_" + NowEditID).empty().hide();
         $("#OperatorName_" + NowEditID).unbind("change");
+        $("#Area_" + NowEditID).empty().hide();
+        //$("#Area_" + NowEditID).unbind("change");
+        $("#Type_" + NowEditID).empty().hide();
+        //$("#Type_" + NowEditID).unbind("change");
 
         $("#StartDate_" + NowEditID).val(StartDate).hide();
         $("#EndDate_" + NowEditID).val(EndDate).hide();
@@ -265,6 +271,8 @@ function DoEdit(Id) {
     $("#OperatorName_" + Id).show();
     $("#ddlOperator").find('option').clone().appendTo('#OperatorName_' + Id);
     $("#OperatorName_" + Id).val(OperatorID);
+    $("#Area_" + Id).show();
+    $("#Type_" + Id).show();
 
     var OperatorNameChange = function (OperatorValue) {
         if (OperatorValue != "0" && OperatorValue != "") {
@@ -321,6 +329,8 @@ function DoReset(Id) {
     $("#OperatorName_" + Id).val(OperatorID).hide();
     $("#StartDate_" + Id).val(StartDate).hide();
     $("#EndDate_" + Id).val(EndDate).hide();
+    $("#Area_" + Id).val(Area).hide();
+    $("#Type_" + Id).val(Type).hide();
 
     $("#btnReset_" + Id).hide();
     $("#btnSave_" + Id).hide();
@@ -342,6 +352,8 @@ function DoSave(Id) {
     OperatorID = $("#OperatorName_" + Id).val();
     StartDate = $("#StartDate_" + Id).val();
     EndDate = $("#EndDate_" + Id).val();
+    Area = $("#Area_" + Id).val();
+    Type = $("#Type_" + Id).val();
     var Account = $("#Account").val();
 
     var flag = true;
@@ -387,6 +399,8 @@ function DoSave(Id) {
         obj.StartDate = StartDate.replace(/\//g, "").replace(/\-/g, "");
         obj.EndDate = EndDate.replace(/\//g, "").replace(/\-/g, "");
         obj.Mode = Mode;
+        obj.Area = Area;
+        obj.Type = Type;
         DoAjaxAfterReload(obj, "BE_HandleUserMaintain", "修改使用者者發生錯誤");
     } else {
         disabledLoading(errMsg)
