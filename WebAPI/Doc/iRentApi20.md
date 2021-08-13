@@ -6,6 +6,11 @@ iRentApi20 Web API版本
 
 目錄
 
+註冊相關
+
+- [Register_Step2 設定密碼](#Register_Step2)
+- [RegisterMemberData 設定會員資料](#RegisterMemberData)
+
 登入相關
 
 - [Login 登入](#Login)
@@ -18,6 +23,7 @@ iRentApi20 Web API版本
 - [GetMemberScore 取得會員積分](#GetMemberScore)
 - [SetMemberScoreDetail 修改會員積分明細](#SetMemberScoreDetail)
 - [GetMemberMedal 取得會員徽章](#GetMemberMedal)
+- [SetMemberCMK 更新會員條款](#SetMemberCMK)
 
 首頁地圖相關
 
@@ -111,6 +117,12 @@ iRentApi20 Web API版本
 
 20210708 新增電子柵欄API
 
+20210811 新增設定密碼(Register_Step2)
+
+20210812 新增設定會員資料(RegisterMemberData)、取得會員狀態(GetMemberStatus)增加欄位
+
+20210813 新增更新會員條款(SetMemberCMK)
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -130,6 +142,150 @@ iRentApi20 Web API版本
 | ERR900 | 參數遺漏(必填參數遺漏) |
 | ERR901 | 參數遺漏(未傳入參數) |
 | ERR902 | 參數遺漏(格式不符) |
+
+
+
+# 註冊相關
+
+## Register_Step2 設定密碼
+
+### [/api/Register_Step2/]
+
+- 20210811發佈
+
+- ASP.NET Web API (REST API)
+
+- api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                                                         |
+| ---------- | ------------------------ | :--: | :----: | ------------------------------------------------------------ |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                                                   |
+| PWD        | 密碼                     |  Y   | string | 0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99                            |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                                            |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                                                       |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "DeviceID": "170f2199f13bf36bcb6bf85a3e1c19c99",
+    "PWD": "0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app": 0,
+    "appVersion": "5.10.0"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+
+
+## RegisterMemberData 設定會員資料
+
+### [/api/RegisterMemberData/]
+
+- 20210812發佈
+
+- ASP.NET Web API (REST API)
+
+- api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
+| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+| MEMCNAME   | 姓名                     |  Y   | string | 花蓮咘                            |
+| MEMBIRTH   | 生日                     |  Y   | string | 2020-05-03                        |
+| AreaID     | 行政區ID                 |  Y   |  int   | 347                               |
+| MEMADDR    | 會員住址                 |  Y   | string | 中山路276號                       |
+| MEMEMAIL   | 會員email                |  Y   | string | bubu@hotaimotor.com.tw            |
+| Signture   | 電子簽名（Base64)        |  Y   | string |                                   |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "DeviceID": "170f2199f13bf36bcb6bf85a3e1c19c99",
+    "app": 0,
+    "appVersion": "5.10.0",
+    "MEMCNAME": "花蓮咘",
+    "MEMBIRTH": "2020-05-03",
+    "AreaID": 347,
+    "MEMADDR": "中山路276號",
+    "MEMEMAIL": "bubu@hotaimotor.com.tw",
+    "Signture": "/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAB+AKADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
 
 
 
@@ -514,6 +670,7 @@ iRentApi20 Web API版本
 | Score           | 會員積分                                                     |  int   | 100        |
 | BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
 | BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
+| CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
 
 * Output範例
 
@@ -548,7 +705,8 @@ iRentApi20 Web API版本
             "TotalRentCount": 0,
             "Score": 100,
             "BlockFlag": 0,
-            "BLOCK_EDATE": ""
+            "BLOCK_EDATE": "",
+            "CMKStatus": "Y"
         }
     }
 }
@@ -806,6 +964,66 @@ iRentApi20 Web API版本
             }
         ]
     }
+}
+```
+
+
+
+## SetMemberCMK 更新會員條款
+
+### [/api/SetMemberCMK/]
+
+- 20210813發佈
+
+- ASP.NET Web API (REST API)
+
+- api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* Input 傳入參數說明
+
+| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例 |
+| --------- | ------------------------------ | :--: | :----: | ---- |
+| CHKStatus | 是否同意 (Y：同意 / N：不同意) |  Y   | string | Y    |
+
+* Input範例
+
+```
+{
+    "CHKStatus": "Y"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
 }
 ```
 
