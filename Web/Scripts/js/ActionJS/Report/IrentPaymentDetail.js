@@ -34,6 +34,11 @@
         //var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
 
+        if (MEMACCOUNT == "") {
+            flag = false;
+            errMsg = "請輸入會員帳號";
+        }
+
         if (flag) {
             SendObj.MODE = 1;
             SendObj.SPSD = "";
@@ -67,15 +72,19 @@
         var SPSD2 = $("#StartDate2").val().replace(/\-/g, '');
         var SPED2 = $("#EndDate2").val().replace(/\-/g, '');
         var MEMACCOUNT = $("#MEMACCOUNT").val();
+        if (SPSD == "" && SPED == "" && SPSD2 == "" && SPED2 == "") {
+            flag = false;
+            errMsg = "請選擇時間";
+        }
         if (SPSD !== "" && SPED !== "") {
             if (SPSD > SPED) {
                 flag = false;
                 errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SPSD, SPED);
-                if (GetDateDiff > 30) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                    errMsg = "時間區間不可大於31天，撈太多資料有效能issue";
                 }
             }
         }
@@ -89,9 +98,9 @@
                 errMsg = "起始日期不可大於結束日期";
             } else {
                 var GetDateDiff = DateDiff(SPSD2, SPED2);
-                if (GetDateDiff > 30) {
+                if (GetDateDiff > 31) {
                     flag = false;
-                    errMsg = "時間區間不可大於30天，撈太多資料有效能issue";
+                    errMsg = "時間區間不可大於31天，撈太多資料有效能issue";
                 }
             }
         }

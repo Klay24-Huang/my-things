@@ -5,6 +5,46 @@
     string CredentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
     string ImgURL = StorageBaseURL + CarContainer + "/";
     Domain.TB.BackEnd.BE_OrderDetailData obj = null;
+    //Domain.TB.BackEnd.BE_OrderDetailData obj = new Domain.TB.BackEnd.BE_OrderDetailData();
+
+
+    //TEST用
+    //obj.OrderNo = 0;
+    //obj.CarNo = "AAA";
+    //obj.EngineNO = "aee";
+    //obj.CarColor = "彩色";
+    //obj.CarBrend = "1";
+    //obj.CarTypeName = "2";
+    //obj.ED = DateTime.Now;
+    //obj.LStation = "";
+    //obj.FS = DateTime.Now;
+    //obj.UserName = "";
+    //obj.IDNO = "";
+    //obj.MEMBIRTH = DateTime.Now;
+    //obj.CityName = "";
+    //obj.TEL = "";
+    //obj.AreaName = "";
+    //obj.MEMADDR = "";
+    //obj.CarRent = 12;
+    //obj.Mileage = 1;
+    //obj.FinalPrice = 245;
+    //obj.StartMile = 2000;
+    //obj.StopMile = 200;
+    //obj.FE = DateTime.Now;
+
+    //bool contract;
+
+    //if(obj.OrderNo == 0)
+    //{
+    //    contract = false;
+    //}
+    //else
+    //{
+    //    contract = true;
+    //}
+
+
+
     string OrderKind = ""; //訂單類型
     string OrderModify = "";
     string[] InvoiceKind = { "", "捐贈", "EMAIL", "二聯式發票以email寄送，中獎另行通知", "三聯式發票，請至官網查詢下載", "手機條碼載具", "自然人憑證載具" };
@@ -50,9 +90,10 @@
     <script src="~/Content/Contact/js/jquery-1.10.2.min.js"></script>
 </head>
 
-    <body>
-
-        <main class="container">
+<body>
+    <main class="container">
+        @if (Model != null)
+        {
             <div class="row no-gutters justify-content-center mt-2">
                 <img class="col-md-5 col-12 logo" src="~/Content/Contact/images/logo_big.jpg" />
             </div>
@@ -176,17 +217,17 @@
                         </div>
                     </div>
                     <div class="row no-gutters border border-secondary border-bottom-0">
-                        <div class="col-4 p-1">
-                            <label class="table-label">其他駕駛人姓名</label>
-                            <p></p>
-                        </div>
-                        <div class="col-4 border-left border-secondary p-1">
-                            <label class="table-label">護照/身份證號碼</label>
-                            <p></p>
-                        </div>
-                        <div class="col-4 border-left border-secondary p-1">
-                            <label class="table-label">聯絡電話</label>
-                            <p></p>
+                        <div class="col-12 p-1 row">
+                            <label class="table-label col-12">其他駕駛人</label>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
+                            <div class="col-4"><span style="font-size:0.8rem">王小美 A123456789</span></div>
                         </div>
                     </div>
                     <div class="row no-gutters border border-secondary border-bottom-0">
@@ -239,7 +280,7 @@
                             <div class="text-sm text-right">(本出租單無出車收款人簽章無效)</div>
                         </div>
                     </div>
-                    <div class="row no-gutters border border-secondary border-top-0 flex-1" style="min-height: 200px">
+                    <div class="row no-gutters border border-secondary border-top-0 flex-1" style="min-height: 67px">
                         <div class="col-12 p-1">
                             <h6><b>備註欄：</b></h6>
                         </div>
@@ -381,7 +422,7 @@
                                 </li>
                                 <li class="d-flex"><span class="mr-1">3.</span>上述保險不包括因自然災害（如洪水、颱風、地震等）造成之損傷及車內配備遺失或損壞之賠償責任，承租人有保管之責，若有損竊事實發生，相關賠償概由承租人負擔。</li>
                                 <!-- <li class="d-flex"><span class="mr-1">5.</span>本車輛之燃油，期間所有停車費及交通罰鍰概由承租人負擔。</li>
-                        <li class="d-flex"><span class="mr-1">6.</span>隨車證件：行照、強制保卡。</li>-->
+                                <li class="d-flex"><span class="mr-1">6.</span>隨車證件：行照、強制保卡。</li>-->
                             </ul>
                         </div>
                     </div>
@@ -469,716 +510,721 @@
                     <div style="padding-left: 80px">(契約條款詳閱背面)</div>
                     <div style="padding-left: 80px">第一聯：客戶聯</div>
                 </div>
- 
-            </div>
-            <div class="row no-gutters mt-5 mb-5">
-                <p class="text-white bg-secondary text-lg-center col-12 mb-2" style="font-size: 1.5rem;font-weight: 500;line-height: 1.2;"><b class="text-white">用車相關規範</b></p>
-                <p class="text-sm"><b>親愛的 iRent會員 您好</b></p><br />
-                <p class="text-sm">誠摯的歡迎您使用iRent服務，以下為用車相關規範，請仔細閱讀，謝謝您的支持與合作。</p>
-                <ul class="col-12">
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">1.</div>
-                        <div>
-                            承租人年滿20歲者，須持有中華民國有效身分證或持居留期限3個月以上之中華民國居留證者；18歲以上未滿20歲者，除上述條件外，須簽署法定代理人同意書。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">2.</div>
-                        <div>
-                            承租人因酗酒駕車、犯罪行為合法拘捕、吸食禁藥、故意行為、轉介於無照駕駛人或違約行為致使車輛損壞，需由承租人負全部賠償責任，不受車損最高自負額限制。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">3.</div>
-                        <div>
-                            政府對違規使用道路者祭出重罰：凡行車速度超過規定之最高時速60公里以上競速飆車及在道路蛇行得罰款新台幣(下同)6,000元至24,000元整，並得吊扣車牌3個月，上述違規行為除罰單金額由承租人負擔外，另就車牌吊扣致本公司營業損失部份，亦由承租人負擔。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">4.</div>
-                        <div>
-                            車輛若有瑕疵或操作不良時，請立刻撥打服務專線回報，否則仍將負擔租金費用。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">5.</div>
-                        <div>
-                            輪胎單獨破損爆胎或無氣時懇請立即停駛並就地更換或聯絡道路救援服務處理，否則造成車胎無法修補或其他機零件損壞，承租人需自行負擔賠償事宜。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">6.</div>
-                        <div>
-                            車輛僅限預約會員本人駕駛，違者取消會員資格。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">7.</div>
-                        <div>
-                            iRent APP汽(機)車出租單限預約會員本人親簽，且使用本人信用卡付款，違者取消會員資格。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">8.</div>
-                        <div>
-                            加油卡僅限使用於當次預約承租之和運/和雲車輛;電動機車內電池僅限使用於當次預約承租之和雲車輛。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">9.</div>
-                        <div>
-                            「同站租還」租汽車限同一據點取還，且需將車輛停放於規定之地點，否則將收取將車輛運回停車位之相關費用。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">10.</div>
-                        <div class="text-red">
-                            「路邊租還」租汽(機)車限於系統公告之特定區域取還車(區域範圍詳見App地圖)，違者將依下列第十五條至第十九條酌收車輛調度相關費用，且不得跨服務區還車，違者將收取3,000元/次作為車輛調度相關費用。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">11.</div>
-                        <div>
-                            還車逾時且未於預約使用時間結束前申請延長還車者，超出部分按時租定價收費，逾時六小時以上者以一日租金計算額外計算收費，並收取3,000元/次作為車輛調度相關費用。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">12.</div>
-                        <div>
-                            車輛內外部製作物(含租車手冊、車身貼紙)非自然原因損壞者，將依原價收取重製工本費(車身貼紙100元/處、租車手冊500元/本、遮陽板卡夾500元/個等)。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">13.</div>
-                        <div>
-                            若遺失車輛相關文件/票卡，將依原價收取重製工本費(行照200元、強制責任險保險卡100元、停車卡1,000元、加油卡100元等)。
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">14.</div>
-                        <div>
-                            車輛內部髒污及吸菸者，將收取900元/次作為清潔整備費用。
-                        </div>
-                    </li>
-                    <!--有子項目-->
-                    <li class="d-flex" text-sm>
-                        <div class="rule-label-number ">15.</div>
-                        <div class="flex-1">
-                            <div>
-                                北區-汽車路邊租還(台北市/新北市/基隆市/桃園市/新竹縣市) 服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
-                            </div>
-                            <div class="row no-gutters">
-                                <ul class="col-12">
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0 ">a.</div><div>
-
-                                            還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
-
-                                        </div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">b.</div>
-                                        <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">c.</div>
-                                        <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex" text-sm>
-                        <div class="rule-label-number ">16.</div>
-                        <div class="flex-1">
-                            <div>
-                                台中-汽車路邊租還(台中市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格及其他「路邊」合法免費停車格(如累進費率、差別費率停車格，不含白線區域、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
-                            </div>
-                            <div class="row no-gutters">
-                                <ul class="col-12">
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">a.</div>
-                                        <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">c.</div>
-                                        <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex" text-sm>
-                        <div class="rule-label-number ">17.</div>
-                        <div class="flex-1">
-                            <div>
-                                台南-汽車路邊租還(台南市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
-                            </div>
-                            <div class="row no-gutters">
-                                <ul class="col-12">
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0 ">a.</div><div>
-
-                                            還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
-
-                                        </div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">b.</div>
-                                        <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">c.</div>
-                                        <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex" text-sm>
-                        <div class="rule-label-number ">18.</div>
-                        <div class="flex-1">
-                            <div>
-                                高雄-汽車路邊租還(高雄市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
-                            </div>
-                            <div class="row no-gutters">
-                                <ul class="col-12">
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0 ">a.</div><div>
-
-                                            還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
-
-                                        </div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">b.</div>
-                                        <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">c.</div>
-                                        <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex" text-sm>
-                        <div class="rule-label-number ">19.</div>
-                        <div class="flex-1">
-                            <div>
-                                機車路邊租還(台北市/新北市/桃園市/台中市/台南市/高雄市/宜蘭縣)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
-                            </div>
-                            <div class="row no-gutters">
-                                <ul class="col-12">
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0 ">a.</div>
-                                        <div>還車時，若未將車輛停放至系統公告之特定區域（區域範圍詳見App地圖），將收取3,000元/次車輛調度費用。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">b.</div>
-                                        <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取1,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
-                                    </li>
-                                    <li class="d-flex text-sm ">
-                                        <div class="mr-3 flex-0">c.</div>
-                                        <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取1,000元/次作為車輛調度相關費用。</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex text-sm">
-                        <div class="rule-label-number">20.</div>
-                        <div>
-                            其餘未於此說明之事宜，以和運/和雲租車契約為主。
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <!--會員條款-->
-            <div class="row no-gutters mt-5 mb-5">
-                <p class="text-white bg-secondary text-lg-center col-12 mb-2" style="font-size: 1.5rem;font-weight: 500;line-height: 1.2;"><b class="text-white">iRent會員條款</b></p>
-                <p class="text-sm"><b>親愛的 iRent會員 您好</b></p><br />
-                 <p class="text-sm">誠摯的歡迎您加入iRent24小時自助租車，以下為iRent會員約定條款，請仔細閱讀，謝謝您的支持與合作。</p>
-                 <ul class="col-12">
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">1.</div>
-                         <div>
-                             會員年滿20歲以上者，須為中華民國國籍自然人、無戶籍之國民或非中華民國國民之外國人，且須持有身份證(或居留期限3個月以上之居留證)、有效駕照及合法有效之信用卡；18歲以上未滿20歲者，除上述條件外，須簽署法定代理人同意書。本公司僅接受個人名義申請會員，嚴禁廠商假冒會員身份，干擾各項交易之進行。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">2.</div>
-                         <div>
-                             特殊身分之資格從審核通過起一年內有效(持居留證申請者則依居留期限作為會員有效期限)，逾期需重新上傳證件照並審核申請。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">3.</div>
-                         <div>
-                             若取車人非會員本人或無法出示有效駕照或駕照遭吊扣、吊銷者，為維護本公司權益，本公司有權取消該筆訂單，不提供租車服務。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">4.</div>
-                         <div>
-                             會員註冊時，應提供完整詳實正確的個人資料，事後如有變更，應自行於App上更新。
-                         </div>
-                     </li>
-                     <li class="d-flex" text-sm>
-                         <div class="rule-label-number ">5.</div>
-                         <div class="flex-1">
-                             <div>
-                                 會員如有發生下列情況，本公司將終止其會員資格及使用各項服務之權利：
-                             </div>
-                             <div class="row no-gutters">
-                                 <ul class="col-12">
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0 ">￭</div>
-                                         <div>提供不實的個人資料。</div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">￭</div>
-                                         <div>提供偽冒、非法取得或非本人之信用卡號進行交易。</div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">￭</div>
-                                         <div>意圖入侵或破壞本App各項服務及系統。</div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">￭</div>
-                                         <div>違反本公司交易規定、消費者保護法、公平交易法或其他中華民國法律。</div>
-                                     </li>
-                                 </ul>
-                             </div>
-                             <div class="row no-gutters">
-                                 如有上述情事發生，除應由會員本身自負法律責任外，本公司也將主動配合主管機關調查處理，若因此而使本公司衍伸出各種損害及費用，會員應負擔賠償責任。
-
-
-                             </div>
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">6.</div>
-                         <div>
-                             為維護會員自身權益，會員應妥善保管帳號及密碼等相關資訊，切勿洩漏或提供他人使用。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">7.</div>
-                         <div class="text-red">
-                             會員了解並同意本公司逕以會員提供之信用卡收取用車費用、銷售稅金及「用車相關規範」所提及之未遵守規範所產生費用(包含但不限於車輛調度、還車逾時未延長、車輛內外部製作物損毀、車內髒污及吸菸、車籍文件/票卡遺失等相關費用)。若會員提供之信用卡拒付任何應付金額，本公司將暫停會員資格及iRent服務使用權。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">8.</div>
-                         <div>
-                             會員了解並同意本公司系統運作可能因電信業者、信用卡收單業者所提供之網路系統軟硬體設備之故障，或因天災等不可抗力因素而出現中斷、故障、延遲、資料傳輸或儲存錯誤。若導致會員無法即時完成線上預約自駕租車或附駕駛接送服務，而導致行程延後等情事發生，本公司恕不負相關責任。同時，會員了解且同意，若有自本App擷取任何資料或圖片，而導致會員電腦系統出現損害，本公司亦不負賠償之責任。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">9.</div>
-                         <div>
-                             會員所提供之個人資料內容，本公司會嚴守個人資料保護法之規範，在未經會員同意之前，本公司不會對外洩漏會員個人資料予其他第三人，並會對資料做最嚴密的保護。本App採用TWCA(臺灣網路認證) SAN SSL網站整合加密機制，提供重要資訊安全且隱密的網路通訊，信用卡資料傳輸採用128位元的AES資料加密機制，保障客戶資訊安全。
-                         </div>
-                     </li>
-                     <li class="d-flex" text-sm>
-                         <div class="rule-label-number ">10.</div>
-                         <div class="flex-1">
-                             <div>
-                                 本公司依據個人資料保護法（以下稱個資法）規定，向會員告知下列事項，請會員詳閱：
-                             </div>
-                             <div class="row no-gutters">
-                                 <ul class="col-12">
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0 ">一、</div>
-                                         <div>
-                                             蒐集之目的：
-                                             <ul>
-                                                 <li class="d-flex text-sm">（一）辦理租賃等相關業務；</li>
-                                                 <li class="d-flex text-sm">（二）契約、類似契約或其他法律關係事務；帳務管理及債權交易業務；授信業務；債權整貼現及收買業務；徵信業務（含上下游及同業間彼此照會、租賃同業、關係企業、票信等照會之徵信行為）；個人資料之合法交易業務;</li>
-                                                 <li class="d-flex text-sm">（三）調查、統計與研究分析；消費者、客戶管理與服務；消費者保護；其他經營合於營業登記項目或組織章程所定之業務；</li>
-                                                 <li class="d-flex text-sm">（四）行銷：包括本公司、和泰汽車及其關係企業、台灣地區授權經銷商及有合作關係第三人等，於行銷或合作目的之範圍內使用。</li>
-                                             </ul>
-                                         </div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">二、</div>
-                                         <div>蒐集之個人資料類別：識別類（包括但不限姓名、出生年月日、國民身分證統一編號、護照號碼、電話(住宅)(公司)、行動電話、e-mail、戶籍地址及聯絡地址）、特徵類、家庭情形、社會情況、教育、考選、技術或其他專業、受僱情形、財務細節、商業資訊、交易資訊、行動及網路媒體資訊等；含與本公司相關業務之申請書或契約書內容及其他具有正當合理關聯之紀錄、本公司現存會員之所有資料，但仍以本公司與會員往來之相關業務所實際蒐集之個人資料為準。本人同意本公司為連繫及辦理租車業務之需求，得以取得本人個人資料及車載通訊盒所回傳之車輛運行及定位資料。</div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">三、</div>
-                                         <div>
-                                             個人資料利用之期間、對象、地區及方式：
-                                             <ul>
-                                                 <li class="d-flex text-sm">（一）期間：個人資料蒐集之特定目的存續期間，依相關法令或契約約定之保存期限（如：商業會計法等）或本公司因執行業務所必須之保存期間，或截至會員主動請求本公司刪除、停止處理或利用會員個人資料之日止。</li>
-                                                 <li class="d-flex text-sm">（二）對象：會員瞭解並同意本公司將：(1)為行銷與執行研究分析之目的，將會員基本資料提供予和運租車、和雲行動服務、和泰汽車及其關係企業、台灣地區授權經銷商及有合作關係第三人(註)，會員知悉並同意對象範圍及於未來於和泰汽車及附註所述公司官方網站所增加之公司(https://pressroom.hotaimotor.com.tw/)為行銷建檔並寄送行銷優惠通知以及其他與本公司有業務往來之機構、依法有調查權機關或金融監理機關。會員得隨時透過和運/和雲客服中心電話0800-024-550要求本公司停止運用會員基本資料進行行銷。</li>
-                                                 <li class="d-flex text-sm">（三）地區：前揭利用對象之國內外營業所在地及未受中央目的事業主管機關限制之國際傳輸個人資料之接收者營業所在地。</li>
-                                                 <li class="d-flex text-sm">（四）方式：以符合個人資料保護相關法令之自動化機器或其他非自動化方式之利用方式 (例如使用電子文件、紙本或其他合於當時科技之適當方式)</li>
-                                             </ul>
-
-                                         </div>
-                                     </li>
-                                     <li class="d-flex text-sm ">
-                                         <div class="mr-3 flex-0">四、</div>
-                                         <div class="row">
-                                             依據個資法第三條規定，會員就本公司保有會員之個人資料得行使下列權利：
-
-                                             <ul>
-
-                                                 <li class="d-flex text-sm">（一） 得向本公司查詢、請求閱覽或請求製給複製本，而本公司依法得酌收必要成本費用。</li>
-
-                                                 <li class="d-flex text-sm">（二） 得向本公司請求補充或更正，惟依法會員應為適當之釋明。</li>
-
-                                                 <li class="d-flex text-sm">（三） 得向本公司請求停止蒐集、處理或利用及請求刪除，惟依法本公司因執行業務所必須者，得不依會員請求為之。</li>
-                                             </ul>
-                                             會員得自由選擇是否提供相關個人資料：會員得自由選擇是否提供相關個人資料，惟會員若拒絕提供相關個人資料，本公司將無法進行必要之審核及處理作業，致無法提供會員完善之相關業務或服務。
-                                             經本公司向會員告知上開事項，會員已清楚瞭解及知悉 貴公司蒐集、處理或利用會員個人資料之目的及用途，會員並同意本公司在上述告知事項一至三範圍內蒐集、處理或利用會員之個人資料。
-                                         </div>
-                                     </li>
-
-                                 </ul>
-                             </div>
-
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">11.</div>
-                         <div>
-                             會員必須遵守本App會員的會員規範及相關交易規定，會員且同意其訂購行為以本公司所示之電子交易資料為準。如有任何糾紛，以該電子交易資料作為認定標準。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">12.</div>
-                         <div>
-                             本App上所有資料，包括文字、圖片、影片、聲音、軟體等，均受中華民國著作權法及國際智慧財產權相關條文保護，請尊重著作權及智慧財產權，違者將依法處理。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">13.</div>
-                         <div>
-                             iRent會員申請加入屬於免費性質，本公司得隨時更改或停止各項服務或專案之內容或終止任一會員帳戶服務之權利，無須事先告知會員，會員不得因此要求任何賠償。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">14.</div>
-                         <div>
-                             會員同意若因會員規範有所爭議或糾紛，將以台灣台北地方法院作為第一審管轄法院。但不排除以消費者保護法第四十七條及民事訴訟法第四百三十六條之九規定之小額訴訟管轄法院適用。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label-number">15.</div>
-                         <div>
-                             其他未盡事宜之說明，以本公司實際現場公布者為準。
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm"></li>
-                     <li class="d-flex text-sm mt-3">
-                         <div class="rule-label">註1：</div>
-                         <div>
-                             未持有三個月以上居留證之客戶請直接利用和運租車官網非會員專區租車，或電洽0800-024-550。
-                             Non-TW citizens please use the non-membership page ,or call the toll-free number +886800-025-550 ext.1 to make reservation.
-
-                         </div>
-                     </li>
-                     <li class="d-flex text-sm">
-                         <div class="rule-label">註2：</div>
-                         <div>
-                             國都汽車、北都汽車、桃苗汽車、中部汽車、南都汽車、高都汽車、蘭揚汽車、東部汽車、和航汽車、中誠汽車、和榮汽車、長源汽車、和泰豐田物料運搬、和泰聯網、和泰移動服務、和泰產險、和潤企業、和運租車、和雲行動服務、車美仕、興聯科技、和泰興業、國瑞汽車、和展投資、和昭實業、和安保代、和全保代、和勁行銷、和泰服務行銷、泛台貨櫃運輸、益台通運、樺台通運、快順倉儲交通、大全彩藝、旭和螺絲、台灣橫濱輪胎、台灣柏原和泰、多羅滿汽車零配件等關係企業及本公司共同行銷、交互運用客戶資料、合作推廣業務之公司。
-                         </div>
-                     </li>
-                 </ul>
-                        <div class="col-12 d-flex justify-content-end no-gutters mt-5 mb-5">
-             
-                         <img src="~/Content/Contact/images/logo.png" style="max-height: 60px" class="mr-3" />
-                      
-
-                             <img src="~/Content/Contact/images/logo_1.jpg" style="max-height: 60px" />
-                         </div>
 
             </div>
-                    <div class="row no-gutters mt-5 mb-5">
-                        <h4 class="text-center col-12 mb-2"><b>iRent24 小時自助租車租賃契約</b></h4>
-                        <p class="text-sm">出租人(以下簡稱甲方)依本約所載全部(包括印刷及手寫)之條款及條件，經簽約前與承租人(以下簡稱乙方)逐條說明契約內容審閱完成，將甲方所指定之客車隨車附件租與乙方使用，雙方同意訂立本契約書。</p>
-                        <ul class="col-12">
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第一條</div>
-                                <div>
-                                    小客車(機車)及隨車附件之所有權歸屬甲方，本合約僅係將該小客車(機車)及隨車附件租與乙方使用，乙方並不取得其他任何權利。在租賃期間內，乙方並非甲方任何目的之代理人，有關小客車(機車)之任何零件或附件之修護或更換，需經甲方事前核准。乙方於租賃期間內應依本合約給付甲方全部之租金與相關費用。如乙方為兩人或以上時，應負連帶給付責任。甲方不另收取保證金或擔保品。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第二條</div>
-                                <div>乙方同意該租用之小客車(機車)、安全配備與隨車附件齊全，具有良好之性能及狀況，並同意負擔於租賃期間內所消耗之燃料，燃料收費標準依甲方所規範，並保證以合法銷售之無鉛汽油為限，如有違反本約定致租賃車輛故障者，應負擔損害賠償責任。乙方還汽車時，油量應留1/4。</div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第三條</div>
-                                <div>
-                                    乙方應依約定時間交還車輛，未於預計還車時間內還車者，將收取3,000元/次車輛調度之相關費用，另再收取「未經授權的使用費」，每一小時按時租定價計算收費，逾時六小時以上者以一日之租金額外計算收費(每30分鐘為最小計費起算單位，且不適用任何優惠)。但因車輛本身機件故障，致乙方不能依約定時間交還車輛者，不在此限。提前還車時間每滿一日以上者，得請求退還每滿一日部分租金，但乙方享有天數折扣者，甲方得依實際使用日數重算租金，再退還餘額。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第四條</div>
-                                <div>
-                                    租賃期間乙方應自行駕駛(騎乘)，非經甲方事先同意並登記於本合約不得交由他人駕駛(騎乘)，亦不得擅交無駕照之他人駕駛、從事汽車運輸業行為或充作教練車等用途；並不得載送違禁品、危險品、不潔或易於污損車輛之物品及不適宜隨車之動物類等。違反約定者，甲方得終止租賃契約且即時收回車輛，如另有損壞，得向乙方請求賠償。另，若乙方造成車輛不潔(含寵物毛髮)、汙損、殘留異/菸味等，甲方得向乙方收取900元/次作為清潔整備費用。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第五條</div>
-                                <div>
-                                    租賃期間乙方應配合稽查人員查驗出示駕駛執照、強制汽車責任保險證、汽(機)車出租單及行車執照，其間所生之停車費、過路通行費(依照公告牌價收取)等費用，概由乙方自行負擔。前項因違規所生之處罰案件，有關罰鍰應由乙方負責繳清，如由甲方代為繳納者，乙方應負責償還；若乙方有違反道路交通管理處罰條例第三十五條之情形，而租賃車輛依同條例第八十五條之二規定遭逕行移置保管時，乙方同意委託甲方代乙方辦理分期繳納罰鍰以領回車輛；有關牌照被扣部份，自牌照被扣之日起至公路監理機關通知得領回日止之租金，由乙方負擔。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第六條</div>
-                                <div class="flex-1">
-                                    <span>該小客車(機車)不得使用於下情況：</span>
-                                    <div class="row no-gutters">
-                                        <ul class="col-6">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>為收取明示或默示之報酬而攬載乘客或貨物。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>用以推動或拖曳任何車輛或物體。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>供競賽或其他試驗性目的。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>為任何違反中華民國法令或其他違法目的之使用。</div></li>
-                                        </ul>
-                                        <ul class="col-6">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>服用麻醉或迷幻藥物或酒醉駕車。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>准許或指使任何無合法駕駛執照之人使用。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(七)</div><div>以詐欺或委虛偽陳述之方法向甲方取得小客車。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(八)</div><div>嚴禁超載。</div></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第七條</div>
-                                <div class="flex-1">
-                                    <div>
-                                        本車輛發生擦撞、毀損、翻覆、失竊或其他肇事等意外事故時，乙方應立即報案並通知甲方以原廠修護處理，如因可歸責於乙方之事由所生之拖車費、修理費及第十一條後段規定車輛修理期間之租金，應由乙方負擔。
-                                    </div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>立即通知甲方及警察機關，且於24小時內提出包括圖解之詳細報告，並填寫甲方出具之意外事故報告表交與甲方。(和運/和雲租車免付費服務專線<span class="text-red" style="font-size: 16px">0800-024-550按1</span>，作相關後續處理)</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>取得意外之人及其他證人之姓名與地址。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>未徵得保險公司同意前，不得私下與肇事對方達成和解。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>警方處理完畢，若車輛行駛有危險之虞，請撥專屬道路救援專線(0800-024-550按 5)，拖吊至最近之原廠維修，請勿將該小客車棄置於無人看管之處所。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>若發現小客車(機車)有機件異狀或中途拋錨，應立即告知甲方或至指定之保修廠作緊急修護，甲方同意乙方等待車輛修復之時間得以延長補足，或免收租金，但因此造成之不便，時間等衍生之損失，均不得要求甲方賠償。惟車輛駛出行駛40公里內或一小時內，機件發生故障者，乙方應立即通知甲方處理，並得要求換車，如甲方無車供應，乙方得要求解約，雙方均不得要求任何一方賠償。但一般破胎或爆胎者由乙方負責自行修復。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>如乙方怠於前項通知或違反本條(一)~(四)之規定，致喪失保險索賠權益時，所有損害均由乙方負擔。汽(機)車之毀損非經甲方之許可擅自在外修護者，甲方得請求以原廠估價予以重修，修理費由乙方負擔。</div></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm"><div class="rule-label">第八條</div><div>乙方應盡善良管理人注意義務保管及維護本車輛，禁止出賣、設質、抵押、讓與擔保、典當車輛等行為。</div></li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第九條</div>
-                                <div class="flex-1">
-                                    <div>該小客車甲方已經投保強制險，乙方依本合約之規定使用小客車時，造成第三人死亡，身體傷害之最高理賠總額，每一事故新台幣200萬元。若因乙方過失其應負責賠償損失之金額超過上述標準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制汽車責任險外，甲方另已投保下列保險、保障：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>駕駛人及乘客個人意外險：最高理賠每一事故新台幣 1,500 萬至 2,100 萬元( 5 或 7人* 300 萬)，即每一名乘客均有新台幣300 萬元之保障(超載部份除外)。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡/每次事故傷亡總保額/每次事故財務損失保額分別為 200 萬元/ 400 萬元/ 50 萬元。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>竊盜保障(10%自負額由承租人負擔)：因可歸責於乙方之事由致本車輛遺失或被盜者，甲方同意乙方支付市價與保險賠償金額之差額(不含VCD、音響、備胎等零件失竊及本約第10條所約定之營業損失，最長以20日為限)。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備(VCD、音響、備胎等零件)遺失或損壞之賠償責任，承租人對車體、車輛內/外部配備及相關證件/卡片(停車卡/加油卡/行照/強卡等)有保管之責，倘有損竊事實發生，相關賠償概由承租人負擔(停車卡1,000元、加油卡100元、行照200元、強卡100元、車身貼紙100元/處、租車手冊500元等)。</div></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex" text-sm>
-                                <div class="rule-label">第十條</div>
-                                <div class="flex-1">
-                                    <div>
-                                        該機車甲方已經投保強制險附加駕駛人傷害險，乙方依本合約之規定使用機車時，造成第三人死亡，身體傷害之最高理賠總額，每一事故新台幣200萬元。若因乙方過失其應負責賠償損失之金額超過上述標準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制機車責任險外，甲方另已投保下列保險：
-                                    </div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>乘客體傷責任險：每一個人體傷或死亡新台幣200萬元，每一意外事故之總額新台幣200萬元。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡/每次事故傷亡總保額/每次事故財務損失保額分別為200萬元/ 400 萬元/ 50 元。</div></li>
-                                            <li class="d-flex text-sm">
-                                                <div class="mr-3 flex-0">(三)</div>
-                                                <div>
-                                                    上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備(3/4安全帽、半罩式安全帽)遺失或損壞之賠償責任，承租人對車體、車輛內/外部配備及有保管之責，倘有損竊事實發生，相關賠償概由承租人負擔(3/4安全帽1,000元、半罩式安全帽500元)。
-                                                </div>
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="d-flex" text-sm>
-                                <div class="rule-label">第十一條</div>
-                                <div class="flex-1">
-                                    <div>
-                                        <span class="text-red">承租汽車(機車)如發生損傷，甲方同意乙賠償金額汽車最高以新台幣壹萬元為限、機車以新台幣壹仟元為限</span>，但有以下情形之一者，乙方應依實際維修費用賠償予甲方：
-                                    </div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>本租約應由乙方於租賃期間全程自行駕駛(騎乘)，非經甲方事先同意不得交由他人駕駛(騎乘)。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>違反租約第四條、第六條及第七條等約定。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>酒駕或其所致之毀損滅失。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>不明車損所致之毀損滅失。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>因自然災害(如颱風、地震、洪水等)所致之毀損滅失。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>乙方自願負擔車輛損失而與對方和解等類似情況。</div></li>
-                                        </ul>
-
-                                    </div>
-                                    <div>
-                                        乙方除前項約定賠償外，於車輛修復（含失竊）期間，需另依下列標準賠償營業損失：
-                                        承租汽車之營業損失賠償原則：
-                                    </div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>十日以內者，償付該期間百分之七十之定價。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>在十一日以上十五日以內，償付該期間百分之六十之定價。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>在十六日以上者，並應償付該期間百分之五十之定價。但期間之計算，最常以二十日為限。</div></li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        承租機車之營業損失賠償原則：
-                                    </div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>十日以內者，償付該期間百分之六十之定價。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>十一日以上十五日以內，償付該期間百分之五十之定價。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>修理期間之計算，最長以十五日為限。</div></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十二條</div>
-                                <div>
-                                    甲方應擔保租賃期間內本車輛合於約定使用狀態，如違反，雙方得依物之瑕疵擔保或債務不履行等相關法律規定辦理。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十三條</div>
-                                <div>
-                                    行車速度超過規定最高時速60公里以上競速飆車或道路蛇行產生罰款及造成車牌吊銷，承租人須負擔賠償(含本公司營業損失)。
-
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十四條</div>
-                                <div>
-                                    乙方欲續租本車輛時，應在預計還車前20分鐘利用甲方iRent APP進行延長用車申請，申請核可始為有效。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十五條</div>
-                                <div>
-                                    乙方了解並同意甲方逕以乙方提供之信用卡收取用車費用、銷售稅金及「小客車租賃契約」所提及之乙方未遵守契約所產生費用(包含但不限於還車逾時未延長、車輛內外部製作物損毀、車內髒污及吸菸、車輛相關文件/票卡遺失等項目)。若乙方提供之信用卡拒付任何應付金額，甲方將暫停乙方會員資格及iRent服務使用權並循法律途徑處理。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十六條</div>
-                                <div>
-                                    使用「同站租還」服務時，乙方還汽車地點需符合甲方規範，未依規範者，甲方除收取處理費新台幣3,000元車輛調度相關費用外，並可取消乙方iRent會員資格且不另通知。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十七條</div>
-                                <div>
-                                    使用「路邊租還」服務時，乙方限於系統公告之特定區域取還汽(機)車（各服務區域範圍、使用說明請詳見App專案說明，並依App地圖顯示為主），違者將依下列第十八條至第二十二條酌收車輛調度相關費用，跨服務區還車者，除收3,000元車輛調度相關費用外，並可取消乙方iRent會員資格且不另通知。
-                                </div>
-                            </li>
+        }
 
 
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十八條</div>
-                                <div class="flex-1">
-                                    <div><span class="text-red">乙方使用北區-汽車路邊租還(台北市/新北市/基隆市/桃園市/新竹縣市)服務</span>時，還車限停放於服務區域內「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
-                                        </ul>
 
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第十九條</div>
-                                <div class="flex-1">
-                                    <div><span class="text-red">乙方使用台中-汽車路邊租還(台中市)服務</span>時，還車限停放於台中市政府「路邊」公有停車格其他「路邊」合法免費停車格(如累進費率、差別費率停車格，不含白線區域、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
-                                        </ul>
-
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿條</div>
-                                <div class="flex-1">
-                                    <div><span class="text-red">乙方使用台南-汽車路邊租還(台南市)服務</span>時，還車限停放於台南市政府「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
-                                        </ul>
-
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿一條</div>
-                                <div class="flex-1">
-                                    <div><span class="text-red">乙方使用高雄-汽車路邊租還(高雄市)服務</span>時，還車限停放於高雄市政府「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
-                                        </ul>
-
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿二條</div>
-                                <div class="flex-1">
-                                    <div><span class="text-red">乙方使用機車路邊租還(台北市/新北市/桃園市/台中市/台南市/高雄市/宜蘭縣)服務</span>時，還車限停放於服務區域內「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
-                                    <div class="row no-gutters">
-                                        <ul class="col-12">
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若未將車輛停放至系統公告之特定區域（區域範圍詳見App地圖），將收取2,000元/次罰款、1,000元/次車輛調度費用。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取1,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
-                                            <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取1,000元/次作為車輛調度相關費用。</div></li>
-                                        </ul>
-
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿三條</div>
-                                <div>
-                                    甲方對乙方留存之個人資料負有保密義務，非經乙方書面同意，甲方不得對外揭露或為契約目的範圍外之利用，並應處理個人資料保護法之規定保護個人資料。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿四條</div>
-                                <div>
-                                    因本契約發生訴訟時，甲、乙雙方同意以台灣臺北地方法院為第一審管轄法院，但不得排除消費者保護法第四十七條及民事訴訟法第四百三十六條之九規定之小額訴訟管轄法院之適用。
-                                </div>
-                            </li>
-                            <li class="d-flex text-sm">
-                                <div class="rule-label">第廿五條</div>
-                                <div>
-                                    本契約如有未訂事宜，依相關法令、習慣及誠信原則公平解決之。
-                                </div>
-                            </li>
-                        </ul>
+        <div class="row no-gutters mt-5 mb-5">
+            <p class="text-white bg-secondary text-lg-center col-12 mb-2" style="font-size: 1.5rem;font-weight: 500;line-height: 1.2;"><b class="text-white">用車相關規範</b></p>
+            <p class="text-sm"><b>親愛的 iRent會員 您好</b></p><br />
+            <p class="text-sm">誠摯的歡迎您使用iRent服務，以下為用車相關規範，請仔細閱讀，謝謝您的支持與合作。</p>
+            <ul class="col-12">
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">1.</div>
+                    <div>
+                        承租人年滿20歲者，須持有中華民國有效身分證或持居留期限3個月以上之中華民國居留證者；18歲以上未滿20歲者，除上述條件外，須簽署法定代理人同意書。
                     </div>
-        </main>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">2.</div>
+                    <div>
+                        承租人因酗酒駕車、犯罪行為合法拘捕、吸食禁藥、故意行為、轉介於無照駕駛人或違約行為致使車輛損壞，需由承租人負全部賠償責任，不受車損最高自負額限制。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">3.</div>
+                    <div>
+                        政府對違規使用道路者祭出重罰：凡行車速度超過規定之最高時速60公里以上競速飆車及在道路蛇行得罰款新台幣(下同)6,000元至24,000元整，並得吊扣車牌3個月，上述違規行為除罰單金額由承租人負擔外，另就車牌吊扣致本公司營業損失部份，亦由承租人負擔。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">4.</div>
+                    <div>
+                        車輛若有瑕疵或操作不良時，請立刻撥打服務專線回報，否則仍將負擔租金費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">5.</div>
+                    <div>
+                        輪胎單獨破損爆胎或無氣時懇請立即停駛並就地更換或聯絡道路救援服務處理，否則造成車胎無法修補或其他機零件損壞，承租人需自行負擔賠償事宜。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">6.</div>
+                    <div>
+                        車輛僅限預約會員本人駕駛，違者取消會員資格。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">7.</div>
+                    <div>
+                        iRent APP汽(機)車出租單限預約會員本人親簽，且使用本人信用卡付款，違者取消會員資格。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">8.</div>
+                    <div>
+                        加油卡僅限使用於當次預約承租之和運/和雲車輛;電動機車內電池僅限使用於當次預約承租之和雲車輛。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">9.</div>
+                    <div>
+                        「同站租還」租汽車限同一據點取還，且需將車輛停放於規定之地點，否則將收取將車輛運回停車位之相關費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">10.</div>
+                    <div class="text-red">
+                        「路邊租還」租汽(機)車限於系統公告之特定區域取還車(區域範圍詳見App地圖)，違者將依下列第十五條至第十九條酌收車輛調度相關費用，且不得跨服務區還車，違者將收取3,000元/次作為車輛調度相關費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">11.</div>
+                    <div>
+                        還車逾時且未於預約使用時間結束前申請延長還車者，超出部分按時租定價收費，逾時六小時以上者以一日租金計算額外計算收費，並收取3,000元/次作為車輛調度相關費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">12.</div>
+                    <div>
+                        車輛內外部製作物(含租車手冊、車身貼紙)非自然原因損壞者，將依原價收取重製工本費(車身貼紙100元/處、租車手冊500元/本、遮陽板卡夾500元/個等)。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">13.</div>
+                    <div>
+                        若遺失車輛相關文件/票卡，將依原價收取重製工本費(行照200元、強制責任險保險卡100元、停車卡1,000元、加油卡100元等)。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">14.</div>
+                    <div>
+                        車輛內部髒污及吸菸者，將收取900元/次作為清潔整備費用。
+                    </div>
+                </li>
+                <!--有子項目-->
+                <li class="d-flex" text-sm>
+                    <div class="rule-label-number ">15.</div>
+                    <div class="flex-1">
+                        <div>
+                            北區-汽車路邊租還(台北市/新北市/基隆市/桃園市/新竹縣市) 服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
 
-    </body>
+                                        還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div>
+                                    <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div>
+                                    <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label-number ">16.</div>
+                    <div class="flex-1">
+                        <div>
+                            台中-汽車路邊租還(台中市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格及其他「路邊」合法免費停車格(如累進費率、差別費率停車格，不含白線區域、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">a.</div>
+                                    <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div>
+                                    <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label-number ">17.</div>
+                    <div class="flex-1">
+                        <div>
+                            台南-汽車路邊租還(台南市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
+
+                                        還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div>
+                                    <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div>
+                                    <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label-number ">18.</div>
+                    <div class="flex-1">
+                        <div>
+                            高雄-汽車路邊租還(高雄市)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div><div>
+
+                                        還車時，若將車輛停放於<b>「累進費率停車格」</b>造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。
+
+                                    </div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div>
+                                    <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div>
+                                    <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label-number ">19.</div>
+                    <div class="flex-1">
+                        <div>
+                            機車路邊租還(台北市/新北市/桃園市/台中市/台南市/高雄市/宜蘭縣)服務還車限停放於服務區域內<span class="text-red">「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</span>
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0 ">a.</div>
+                                    <div>還車時，若未將車輛停放至系統公告之特定區域（區域範圍詳見App地圖），將收取3,000元/次車輛調度費用。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">b.</div>
+                                    <div>還車時，若將車輛停放於<b>「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」</b>，除照價收取停車費(上限3天)外，將再收取1,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div>
+                                </li>
+                                <li class="d-flex text-sm ">
+                                    <div class="mr-3 flex-0">c.</div>
+                                    <div>還車時，若將車輛停放於<b>「紅線及其他違法停車處(包含但不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車裝卸專用等特殊停車格)</b>」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取1,000元/次作為車輛調度相關費用。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label-number">20.</div>
+                    <div>
+                        其餘未於此說明之事宜，以和運/和雲租車契約為主。
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!--會員條款-->
+        @*2021.08.12 企劃要求移除 By Frank*@
+        @*<div class="row no-gutters mt-5 mb-5">
+            <p class="text-white bg-secondary text-lg-center col-12 mb-2" style="font-size: 1.5rem;font-weight: 500;line-height: 1.2;"><b class="text-white">iRent會員條款</b></p>
+            <p class="text-sm"><b>親愛的 iRent會員 您好</b></p><br />
+             <p class="text-sm">誠摯的歡迎您加入iRent24小時自助租車，以下為iRent會員約定條款，請仔細閱讀，謝謝您的支持與合作。</p>
+             <ul class="col-12">
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">1.</div>
+                     <div>
+                         會員年滿20歲以上者，須為中華民國國籍自然人、無戶籍之國民或非中華民國國民之外國人，且須持有身份證(或居留期限3個月以上之居留證)、有效駕照及合法有效之信用卡；18歲以上未滿20歲者，除上述條件外，須簽署法定代理人同意書。本公司僅接受個人名義申請會員，嚴禁廠商假冒會員身份，干擾各項交易之進行。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">2.</div>
+                     <div>
+                         特殊身分之資格從審核通過起一年內有效(持居留證申請者則依居留期限作為會員有效期限)，逾期需重新上傳證件照並審核申請。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">3.</div>
+                     <div>
+                         若取車人非會員本人或無法出示有效駕照或駕照遭吊扣、吊銷者，為維護本公司權益，本公司有權取消該筆訂單，不提供租車服務。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">4.</div>
+                     <div>
+                         會員註冊時，應提供完整詳實正確的個人資料，事後如有變更，應自行於App上更新。
+                     </div>
+                 </li>
+                 <li class="d-flex" text-sm>
+                     <div class="rule-label-number ">5.</div>
+                     <div class="flex-1">
+                         <div>
+                             會員如有發生下列情況，本公司將終止其會員資格及使用各項服務之權利：
+                         </div>
+                         <div class="row no-gutters">
+                             <ul class="col-12">
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0 ">￭</div>
+                                     <div>提供不實的個人資料。</div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">￭</div>
+                                     <div>提供偽冒、非法取得或非本人之信用卡號進行交易。</div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">￭</div>
+                                     <div>意圖入侵或破壞本App各項服務及系統。</div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">￭</div>
+                                     <div>違反本公司交易規定、消費者保護法、公平交易法或其他中華民國法律。</div>
+                                 </li>
+                             </ul>
+                         </div>
+                         <div class="row no-gutters">
+                             如有上述情事發生，除應由會員本身自負法律責任外，本公司也將主動配合主管機關調查處理，若因此而使本公司衍伸出各種損害及費用，會員應負擔賠償責任。
+
+
+                         </div>
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">6.</div>
+                     <div>
+                         為維護會員自身權益，會員應妥善保管帳號及密碼等相關資訊，切勿洩漏或提供他人使用。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">7.</div>
+                     <div class="text-red">
+                         會員了解並同意本公司逕以會員提供之信用卡收取用車費用、銷售稅金及「用車相關規範」所提及之未遵守規範所產生費用(包含但不限於車輛調度、還車逾時未延長、車輛內外部製作物損毀、車內髒污及吸菸、車籍文件/票卡遺失等相關費用)。若會員提供之信用卡拒付任何應付金額，本公司將暫停會員資格及iRent服務使用權。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">8.</div>
+                     <div>
+                         會員了解並同意本公司系統運作可能因電信業者、信用卡收單業者所提供之網路系統軟硬體設備之故障，或因天災等不可抗力因素而出現中斷、故障、延遲、資料傳輸或儲存錯誤。若導致會員無法即時完成線上預約自駕租車或附駕駛接送服務，而導致行程延後等情事發生，本公司恕不負相關責任。同時，會員了解且同意，若有自本App擷取任何資料或圖片，而導致會員電腦系統出現損害，本公司亦不負賠償之責任。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">9.</div>
+                     <div>
+                         會員所提供之個人資料內容，本公司會嚴守個人資料保護法之規範，在未經會員同意之前，本公司不會對外洩漏會員個人資料予其他第三人，並會對資料做最嚴密的保護。本App採用TWCA(臺灣網路認證) SAN SSL網站整合加密機制，提供重要資訊安全且隱密的網路通訊，信用卡資料傳輸採用128位元的AES資料加密機制，保障客戶資訊安全。
+                     </div>
+                 </li>
+                 <li class="d-flex" text-sm>
+                     <div class="rule-label-number ">10.</div>
+                     <div class="flex-1">
+                         <div>
+                             本公司依據個人資料保護法（以下稱個資法）規定，向會員告知下列事項，請會員詳閱：
+                         </div>
+                         <div class="row no-gutters">
+                             <ul class="col-12">
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0 ">一、</div>
+                                     <div>
+                                         蒐集之目的：
+                                         <ul>
+                                             <li class="d-flex text-sm">（一）辦理租賃等相關業務；</li>
+                                             <li class="d-flex text-sm">（二）契約、類似契約或其他法律關係事務；帳務管理及債權交易業務；授信業務；債權整貼現及收買業務；徵信業務（含上下游及同業間彼此照會、租賃同業、關係企業、票信等照會之徵信行為）；個人資料之合法交易業務;</li>
+                                             <li class="d-flex text-sm">（三）調查、統計與研究分析；消費者、客戶管理與服務；消費者保護；其他經營合於營業登記項目或組織章程所定之業務；</li>
+                                             <li class="d-flex text-sm">（四）行銷：包括本公司、和泰汽車及其關係企業、台灣地區授權經銷商及有合作關係第三人等，於行銷或合作目的之範圍內使用。</li>
+                                         </ul>
+                                     </div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">二、</div>
+                                     <div>蒐集之個人資料類別：識別類（包括但不限姓名、出生年月日、國民身分證統一編號、護照號碼、電話(住宅)(公司)、行動電話、e-mail、戶籍地址及聯絡地址）、特徵類、家庭情形、社會情況、教育、考選、技術或其他專業、受僱情形、財務細節、商業資訊、交易資訊、行動及網路媒體資訊等；含與本公司相關業務之申請書或契約書內容及其他具有正當合理關聯之紀錄、本公司現存會員之所有資料，但仍以本公司與會員往來之相關業務所實際蒐集之個人資料為準。本人同意本公司為連繫及辦理租車業務之需求，得以取得本人個人資料及車載通訊盒所回傳之車輛運行及定位資料。</div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">三、</div>
+                                     <div>
+                                         個人資料利用之期間、對象、地區及方式：
+                                         <ul>
+                                             <li class="d-flex text-sm">（一）期間：個人資料蒐集之特定目的存續期間，依相關法令或契約約定之保存期限（如：商業會計法等）或本公司因執行業務所必須之保存期間，或截至會員主動請求本公司刪除、停止處理或利用會員個人資料之日止。</li>
+                                             <li class="d-flex text-sm">（二）對象：會員瞭解並同意本公司將：(1)為行銷與執行研究分析之目的，將會員基本資料提供予和運租車、和雲行動服務、和泰汽車及其關係企業、台灣地區授權經銷商及有合作關係第三人(註)，會員知悉並同意對象範圍及於未來於和泰汽車及附註所述公司官方網站所增加之公司(https://pressroom.hotaimotor.com.tw/)為行銷建檔並寄送行銷優惠通知以及其他與本公司有業務往來之機構、依法有調查權機關或金融監理機關。會員得隨時透過和運/和雲客服中心電話0800-024-550要求本公司停止運用會員基本資料進行行銷。</li>
+                                             <li class="d-flex text-sm">（三）地區：前揭利用對象之國內外營業所在地及未受中央目的事業主管機關限制之國際傳輸個人資料之接收者營業所在地。</li>
+                                             <li class="d-flex text-sm">（四）方式：以符合個人資料保護相關法令之自動化機器或其他非自動化方式之利用方式 (例如使用電子文件、紙本或其他合於當時科技之適當方式)</li>
+                                         </ul>
+
+                                     </div>
+                                 </li>
+                                 <li class="d-flex text-sm ">
+                                     <div class="mr-3 flex-0">四、</div>
+                                     <div class="row">
+                                         依據個資法第三條規定，會員就本公司保有會員之個人資料得行使下列權利：
+
+                                         <ul>
+
+                                             <li class="d-flex text-sm">（一） 得向本公司查詢、請求閱覽或請求製給複製本，而本公司依法得酌收必要成本費用。</li>
+
+                                             <li class="d-flex text-sm">（二） 得向本公司請求補充或更正，惟依法會員應為適當之釋明。</li>
+
+                                             <li class="d-flex text-sm">（三） 得向本公司請求停止蒐集、處理或利用及請求刪除，惟依法本公司因執行業務所必須者，得不依會員請求為之。</li>
+                                         </ul>
+                                         會員得自由選擇是否提供相關個人資料：會員得自由選擇是否提供相關個人資料，惟會員若拒絕提供相關個人資料，本公司將無法進行必要之審核及處理作業，致無法提供會員完善之相關業務或服務。
+                                         經本公司向會員告知上開事項，會員已清楚瞭解及知悉 貴公司蒐集、處理或利用會員個人資料之目的及用途，會員並同意本公司在上述告知事項一至三範圍內蒐集、處理或利用會員之個人資料。
+                                     </div>
+                                 </li>
+
+                             </ul>
+                         </div>
+
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">11.</div>
+                     <div>
+                         會員必須遵守本App會員的會員規範及相關交易規定，會員且同意其訂購行為以本公司所示之電子交易資料為準。如有任何糾紛，以該電子交易資料作為認定標準。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">12.</div>
+                     <div>
+                         本App上所有資料，包括文字、圖片、影片、聲音、軟體等，均受中華民國著作權法及國際智慧財產權相關條文保護，請尊重著作權及智慧財產權，違者將依法處理。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">13.</div>
+                     <div>
+                         iRent會員申請加入屬於免費性質，本公司得隨時更改或停止各項服務或專案之內容或終止任一會員帳戶服務之權利，無須事先告知會員，會員不得因此要求任何賠償。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">14.</div>
+                     <div>
+                         會員同意若因會員規範有所爭議或糾紛，將以台灣台北地方法院作為第一審管轄法院。但不排除以消費者保護法第四十七條及民事訴訟法第四百三十六條之九規定之小額訴訟管轄法院適用。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label-number">15.</div>
+                     <div>
+                         其他未盡事宜之說明，以本公司實際現場公布者為準。
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm"></li>
+                 <li class="d-flex text-sm mt-3">
+                     <div class="rule-label">註1：</div>
+                     <div>
+                         未持有三個月以上居留證之客戶請直接利用和運租車官網非會員專區租車，或電洽0800-024-550。
+                         Non-TW citizens please use the non-membership page ,or call the toll-free number +886800-025-550 ext.1 to make reservation.
+
+                     </div>
+                 </li>
+                 <li class="d-flex text-sm">
+                     <div class="rule-label">註2：</div>
+                     <div>
+                         國都汽車、北都汽車、桃苗汽車、中部汽車、南都汽車、高都汽車、蘭揚汽車、東部汽車、和航汽車、中誠汽車、和榮汽車、長源汽車、和泰豐田物料運搬、和泰聯網、和泰移動服務、和泰產險、和潤企業、和運租車、和雲行動服務、車美仕、興聯科技、和泰興業、國瑞汽車、和展投資、和昭實業、和安保代、和全保代、和勁行銷、和泰服務行銷、泛台貨櫃運輸、益台通運、樺台通運、快順倉儲交通、大全彩藝、旭和螺絲、台灣橫濱輪胎、台灣柏原和泰、多羅滿汽車零配件等關係企業及本公司共同行銷、交互運用客戶資料、合作推廣業務之公司。
+                     </div>
+                 </li>
+             </ul>
+                    <div class="col-12 d-flex justify-content-end no-gutters mt-5 mb-5">
+
+                     <img src="~/Content/Contact/images/logo.png" style="max-height: 60px" class="mr-3" />
+
+
+                         <img src="~/Content/Contact/images/logo_1.jpg" style="max-height: 60px" />
+                     </div>*@
+
+        </div>
+        <div class="row no-gutters mt-5 mb-5">
+            <h4 class="text-center col-12 mb-2"><b>iRent24 小時自助租車租賃契約</b></h4>
+            <p class="text-sm">出租人(以下簡稱甲方)依本約所載全部(包括印刷及手寫)之條款及條件，經簽約前與承租人(以下簡稱乙方)逐條說明契約內容審閱完成，將甲方所指定之客車隨車附件租與乙方使用，雙方同意訂立本契約書。</p>
+            <ul class="col-12">
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第一條</div>
+                    <div>
+                        小客車(機車)及隨車附件之所有權歸屬甲方，本合約僅係將該小客車(機車)及隨車附件租與乙方使用，乙方並不取得其他任何權利。在租賃期間內，乙方並非甲方任何目的之代理人，有關小客車(機車)之任何零件或附件之修護或更換，需經甲方事前核准。乙方於租賃期間內應依本合約給付甲方全部之租金與相關費用。如乙方為兩人或以上時，應負連帶給付責任。甲方不另收取保證金或擔保品。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第二條</div>
+                    <div>乙方同意該租用之小客車(機車)、安全配備與隨車附件齊全，具有良好之性能及狀況，並同意負擔於租賃期間內所消耗之燃料，燃料收費標準依甲方所規範，並保證以合法銷售之無鉛汽油為限，如有違反本約定致租賃車輛故障者，應負擔損害賠償責任。乙方還汽車時，油量應留1/4。</div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第三條</div>
+                    <div>
+                        乙方應依約定時間交還車輛，未於預計還車時間內還車者，將收取3,000元/次車輛調度之相關費用，另再收取「未經授權的使用費」，每一小時按時租定價計算收費，逾時六小時以上者以一日之租金額外計算收費(每30分鐘為最小計費起算單位，且不適用任何優惠)。但因車輛本身機件故障，致乙方不能依約定時間交還車輛者，不在此限。提前還車時間每滿一日以上者，得請求退還每滿一日部分租金，但乙方享有天數折扣者，甲方得依實際使用日數重算租金，再退還餘額。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第四條</div>
+                    <div>
+                        租賃期間乙方應自行駕駛(騎乘)，非經甲方事先同意並登記於本合約不得交由他人駕駛(騎乘)，亦不得擅交無駕照之他人駕駛、從事汽車運輸業行為或充作教練車等用途；並不得載送違禁品、危險品、不潔或易於污損車輛之物品及不適宜隨車之動物類等。違反約定者，甲方得終止租賃契約且即時收回車輛，如另有損壞，得向乙方請求賠償。另，若乙方造成車輛不潔(含寵物毛髮)、汙損、殘留異/菸味等，甲方得向乙方收取900元/次作為清潔整備費用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第五條</div>
+                    <div>
+                        租賃期間乙方應配合稽查人員查驗出示駕駛執照、強制汽車責任保險證、汽(機)車出租單及行車執照，其間所生之停車費、過路通行費(依照公告牌價收取)等費用，概由乙方自行負擔。前項因違規所生之處罰案件，有關罰鍰應由乙方負責繳清，如由甲方代為繳納者，乙方應負責償還；若乙方有違反道路交通管理處罰條例第三十五條之情形，而租賃車輛依同條例第八十五條之二規定遭逕行移置保管時，乙方同意委託甲方代乙方辦理分期繳納罰鍰以領回車輛；有關牌照被扣部份，自牌照被扣之日起至公路監理機關通知得領回日止之租金，由乙方負擔。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第六條</div>
+                    <div class="flex-1">
+                        <span>該小客車(機車)不得使用於下情況：</span>
+                        <div class="row no-gutters">
+                            <ul class="col-6">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>為收取明示或默示之報酬而攬載乘客或貨物。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>用以推動或拖曳任何車輛或物體。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>供競賽或其他試驗性目的。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>為任何違反中華民國法令或其他違法目的之使用。</div></li>
+                            </ul>
+                            <ul class="col-6">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>服用麻醉或迷幻藥物或酒醉駕車。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>准許或指使任何無合法駕駛執照之人使用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(七)</div><div>以詐欺或委虛偽陳述之方法向甲方取得小客車。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(八)</div><div>嚴禁超載。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第七條</div>
+                    <div class="flex-1">
+                        <div>
+                            本車輛發生擦撞、毀損、翻覆、失竊或其他肇事等意外事故時，乙方應立即報案並通知甲方以原廠修護處理，如因可歸責於乙方之事由所生之拖車費、修理費及第十一條後段規定車輛修理期間之租金，應由乙方負擔。
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>立即通知甲方及警察機關，且於24小時內提出包括圖解之詳細報告，並填寫甲方出具之意外事故報告表交與甲方。(和運/和雲租車免付費服務專線<span class="text-red" style="font-size: 16px">0800-024-550按1</span>，作相關後續處理)</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>取得意外之人及其他證人之姓名與地址。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>未徵得保險公司同意前，不得私下與肇事對方達成和解。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>警方處理完畢，若車輛行駛有危險之虞，請撥專屬道路救援專線(0800-024-550按 5)，拖吊至最近之原廠維修，請勿將該小客車棄置於無人看管之處所。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>若發現小客車(機車)有機件異狀或中途拋錨，應立即告知甲方或至指定之保修廠作緊急修護，甲方同意乙方等待車輛修復之時間得以延長補足，或免收租金，但因此造成之不便，時間等衍生之損失，均不得要求甲方賠償。惟車輛駛出行駛40公里內或一小時內，機件發生故障者，乙方應立即通知甲方處理，並得要求換車，如甲方無車供應，乙方得要求解約，雙方均不得要求任何一方賠償。但一般破胎或爆胎者由乙方負責自行修復。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>如乙方怠於前項通知或違反本條(一)~(四)之規定，致喪失保險索賠權益時，所有損害均由乙方負擔。汽(機)車之毀損非經甲方之許可擅自在外修護者，甲方得請求以原廠估價予以重修，修理費由乙方負擔。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex text-sm"><div class="rule-label">第八條</div><div>乙方應盡善良管理人注意義務保管及維護本車輛，禁止出賣、設質、抵押、讓與擔保、典當車輛等行為。</div></li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第九條</div>
+                    <div class="flex-1">
+                        <div>該小客車甲方已經投保強制險，乙方依本合約之規定使用小客車時，造成第三人死亡，身體傷害之最高理賠總額，每一事故新台幣200萬元。若因乙方過失其應負責賠償損失之金額超過上述標準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制汽車責任險外，甲方另已投保下列保險、保障：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>駕駛人及乘客個人意外險：最高理賠每一事故新台幣 1,500 萬至 2,100 萬元( 5 或 7人* 300 萬)，即每一名乘客均有新台幣300 萬元之保障(超載部份除外)。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡/每次事故傷亡總保額/每次事故財務損失保額分別為 200 萬元/ 400 萬元/ 50 萬元。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>竊盜保障(10%自負額由承租人負擔)：因可歸責於乙方之事由致本車輛遺失或被盜者，甲方同意乙方支付市價與保險賠償金額之差額(不含VCD、音響、備胎等零件失竊及本約第10條所約定之營業損失，最長以20日為限)。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備(VCD、音響、備胎等零件)遺失或損壞之賠償責任，承租人對車體、車輛內/外部配備及相關證件/卡片(停車卡/加油卡/行照/強卡等)有保管之責，倘有損竊事實發生，相關賠償概由承租人負擔(停車卡1,000元、加油卡100元、行照200元、強卡100元、車身貼紙100元/處、租車手冊500元等)。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第十條</div>
+                    <div class="flex-1">
+                        <div>
+                            該機車甲方已經投保強制險附加駕駛人傷害險，乙方依本合約之規定使用機車時，造成第三人死亡，身體傷害之最高理賠總額，每一事故新台幣200萬元。若因乙方過失其應負責賠償損失之金額超過上述標準上限及範圍者(財損、精神工作等損失)，由乙方自負擔，與甲方無涉。本車輛除強制機車責任險外，甲方另已投保下列保險：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>乘客體傷責任險：每一個人體傷或死亡新台幣200萬元，每一意外事故之總額新台幣200萬元。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>任意第三人責任險：每人傷亡/每次事故傷亡總保額/每次事故財務損失保額分別為200萬元/ 400 萬元/ 50 元。</div></li>
+                                <li class="d-flex text-sm">
+                                    <div class="mr-3 flex-0">(三)</div>
+                                    <div>
+                                        上述保險不包括因自然災害(如洪水、颱風、地震等)造成之損傷及車內配備(3/4安全帽、半罩式安全帽)遺失或損壞之賠償責任，承租人對車體、車輛內/外部配備及有保管之責，倘有損竊事實發生，相關賠償概由承租人負擔(3/4安全帽1,000元、半罩式安全帽500元)。
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex" text-sm>
+                    <div class="rule-label">第十一條</div>
+                    <div class="flex-1">
+                        <div>
+                            <span class="text-red">承租汽車(機車)如發生損傷，甲方同意乙賠償金額汽車最高以新台幣壹萬元為限、機車以新台幣壹仟元為限</span>，但有以下情形之一者，乙方應依實際維修費用賠償予甲方：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>本租約應由乙方於租賃期間全程自行駕駛(騎乘)，非經甲方事先同意不得交由他人駕駛(騎乘)。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>違反租約第四條、第六條及第七條等約定。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>酒駕或其所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(四)</div><div>不明車損所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(五)</div><div>因自然災害(如颱風、地震、洪水等)所致之毀損滅失。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(六)</div><div>乙方自願負擔車輛損失而與對方和解等類似情況。</div></li>
+                            </ul>
+
+                        </div>
+                        <div>
+                            乙方除前項約定賠償外，於車輛修復（含失竊）期間，需另依下列標準賠償營業損失：
+                            承租汽車之營業損失賠償原則：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>十日以內者，償付該期間百分之七十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>在十一日以上十五日以內，償付該期間百分之六十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>在十六日以上者，並應償付該期間百分之五十之定價。但期間之計算，最常以二十日為限。</div></li>
+                            </ul>
+                        </div>
+                        <div>
+                            承租機車之營業損失賠償原則：
+                        </div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(一)</div><div>十日以內者，償付該期間百分之六十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(二)</div><div>十一日以上十五日以內，償付該期間百分之五十之定價。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">(三)</div><div>修理期間之計算，最長以十五日為限。</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十二條</div>
+                    <div>
+                        甲方應擔保租賃期間內本車輛合於約定使用狀態，如違反，雙方得依物之瑕疵擔保或債務不履行等相關法律規定辦理。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十三條</div>
+                    <div>
+                        行車速度超過規定最高時速60公里以上競速飆車或道路蛇行產生罰款及造成車牌吊銷，承租人須負擔賠償(含本公司營業損失)。
+
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十四條</div>
+                    <div>
+                        乙方欲續租本車輛時，應在預計還車前20分鐘利用甲方iRent APP進行延長用車申請，申請核可始為有效。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十五條</div>
+                    <div>
+                        乙方了解並同意甲方逕以乙方提供之信用卡收取用車費用、銷售稅金及「小客車租賃契約」所提及之乙方未遵守契約所產生費用(包含但不限於還車逾時未延長、車輛內外部製作物損毀、車內髒污及吸菸、車輛相關文件/票卡遺失等項目)。若乙方提供之信用卡拒付任何應付金額，甲方將暫停乙方會員資格及iRent服務使用權並循法律途徑處理。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十六條</div>
+                    <div>
+                        使用「同站租還」服務時，乙方還汽車地點需符合甲方規範，未依規範者，甲方除收取處理費新台幣3,000元車輛調度相關費用外，並可取消乙方iRent會員資格且不另通知。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十七條</div>
+                    <div>
+                        使用「路邊租還」服務時，乙方限於系統公告之特定區域取還汽(機)車（各服務區域範圍、使用說明請詳見App專案說明，並依App地圖顯示為主），違者將依下列第十八條至第二十二條酌收車輛調度相關費用，跨服務區還車者，除收3,000元車輛調度相關費用外，並可取消乙方iRent會員資格且不另通知。
+                    </div>
+                </li>
+
+
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十八條</div>
+                    <div class="flex-1">
+                        <div><span class="text-red">乙方使用北區-汽車路邊租還(台北市/新北市/基隆市/桃園市/新竹縣市)服務</span>時，還車限停放於服務區域內「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第十九條</div>
+                    <div class="flex-1">
+                        <div><span class="text-red">乙方使用台中-汽車路邊租還(台中市)服務</span>時，還車限停放於台中市政府「路邊」公有停車格其他「路邊」合法免費停車格(如累進費率、差別費率停車格，不含白線區域、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿條</div>
+                    <div class="flex-1">
+                        <div><span class="text-red">乙方使用台南-汽車路邊租還(台南市)服務</span>時，還車限停放於台南市政府「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿一條</div>
+                    <div class="flex-1">
+                        <div><span class="text-red">乙方使用高雄-汽車路邊租還(高雄市)服務</span>時，還車限停放於高雄市政府「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若將車輛停放於「累進費率停車格」造成額外停車費，除依實際金額收取停車費(上限3天)，將收取500元/次作為車輛調度相關費用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取3,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處(包含不限於限時停車、時段性禁停、汽機車共用、身心障礙專用、貨車裝卸專用等特殊停車格)」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取3,000元/次作為車輛調度相關費用。</div></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿二條</div>
+                    <div class="flex-1">
+                        <div><span class="text-red">乙方使用機車路邊租還(台北市/新北市/桃園市/台中市/台南市/高雄市/宜蘭縣)服務</span>時，還車限停放於服務區域內「路邊」公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有6歲以下兒童者專用、貨車專卸專用等特殊停車格)，違者將依下列條款酌收車輛調度相關費用：</div>
+                        <div class="row no-gutters">
+                            <ul class="col-12">
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">a.</div><div>還車時，若未將車輛停放至系統公告之特定區域（區域範圍詳見App地圖），將收取2,000元/次罰款、1,000元/次車輛調度費用。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">b.</div><div>還車時，若將車輛停放於「私人車庫/停車區、任何有進出閘門之停車場及非路邊停車格之地點」，除照價收取停車費(上限3天)外，將再收取1,000元/次車輛調度費用外，並暫停iRent使用權限三個月。</div></li>
+                                <li class="d-flex text-sm"><div class="mr-3 flex-0">c.</div><div>還車時，若將車輛停放於「紅線及其他違法停車處」造成罰單/拖吊費用，除照價收取罰單/拖吊費用外，將再收取1,000元/次作為車輛調度相關費用。</div></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿三條</div>
+                    <div>
+                        甲方對乙方留存之個人資料負有保密義務，非經乙方書面同意，甲方不得對外揭露或為契約目的範圍外之利用，並應處理個人資料保護法之規定保護個人資料。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿四條</div>
+                    <div>
+                        因本契約發生訴訟時，甲、乙雙方同意以台灣臺北地方法院為第一審管轄法院，但不得排除消費者保護法第四十七條及民事訴訟法第四百三十六條之九規定之小額訴訟管轄法院之適用。
+                    </div>
+                </li>
+                <li class="d-flex text-sm">
+                    <div class="rule-label">第廿五條</div>
+                    <div>
+                        本契約如有未訂事宜，依相關法令、習慣及誠信原則公平解決之。
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+</body>
 
 
 </html>

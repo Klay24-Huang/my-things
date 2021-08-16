@@ -19,6 +19,7 @@
     [lastCleanTime] DATETIME        NULL,
     [lastRentTimes] INT             DEFAULT ((0)) NOT NULL,
     [MKTime]        DATETIME       DEFAULT (DATEADD(HOUR,8,GETDATE())) NOT NULL,
+    [UPTime] DATETIME NULL, 
     CONSTRAINT [PK_TB_CarCleanLog] PRIMARY KEY CLUSTERED ([OrderNum] ASC)
 );
 

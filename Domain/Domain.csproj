@@ -188,6 +188,7 @@
     <Compile Include="SP\Input\MonthlyRent\SPInput_GetMonthlyDetail.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_GetMonthlyMain.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
+    <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyPayData.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetFinishOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderDetail.cs" />
@@ -608,6 +609,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentDetailExplode.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistory.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistoryExplode.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_IrentPaymentHistorySendMail.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_MonthlyRentSave.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR013Reg.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR060Save.cs" />

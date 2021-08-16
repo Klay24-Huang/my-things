@@ -86,14 +86,14 @@ namespace WebAPI.Models.BillFunc
         {
             //return true;//hack: fix 信用卡交易暫時關閉,上線再打開
             //hack 重要 這個是因為APP要測試才開放的，預計
-            if (sour.IDNO != "S124413890" && sour.IDNO != "K122319624" && sour.IDNO != "H123315066" && sour.IDNO != "C121275662")
-            {
+            //if (sour.IDNO != "S124413890" && sour.IDNO != "K122319624" && sour.IDNO != "H123315066" && sour.IDNO != "C121275662")
+            //{
                 return ori_TSIBCardTrade(sour, ref WSAuthOutput, ref Amount, ref errCode);
-            }
-            else
-            {
-                return true;
-            }
+            //}
+            //else
+            //{
+            //    return true;
+            //}
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public bool TSIB_Escrow_StoreValueCreateAccount(ICF_TSIB_Escrow sour, ref string errCode, ref string errMsg)
         {
-            return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
+            //return true;//hack: fix 履約保證api暫時關閉,正式上線再刪除此行 
 
             bool flag = false;
 
@@ -319,7 +319,8 @@ namespace WebAPI.Models.BillFunc
             string SignCode = WalletAPI.GenerateSignCode(escrow.MerchantId, utcTimeStamp, body, APIKey);
             WebAPIOutput_StoreValueCreateAccount output = null;
             flag = WalletAPI.DoStoreValueCreateAccount(escrow, escrow.MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-           
+            logger.Debug("WebAPI_CreateAccountAndStoredMoney=>" + JsonConvert.SerializeObject(escrow));
+            logger.Debug("WebAPIOutput_StoreValueCreateAccount=>" + JsonConvert.SerializeObject(output));
             #region 將執行結果寫入TB
             if (flag)
             {
@@ -385,7 +386,8 @@ namespace WebAPI.Models.BillFunc
                 string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
                 WebAPIOutput_PayTransaction output = null;
                 flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-
+                logger.Debug("WebAPI_PayTransaction=>" + JsonConvert.SerializeObject(wallet));
+                logger.Debug("WebAPIOutput_PayTransaction=>" + JsonConvert.SerializeObject(output));
                 var spin = new SPInput_SetSubsBookingMonth()
                 {
                     IDNO = sour.IDNO,

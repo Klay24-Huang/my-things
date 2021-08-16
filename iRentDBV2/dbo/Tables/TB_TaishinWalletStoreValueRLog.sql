@@ -31,7 +31,7 @@
     [BatchId]               VARCHAR (30)    DEFAULT ('') NOT NULL,
     [TRANFLG]               VARCHAR (1)     DEFAULT ('') NOT NULL,
     [TRANDT]                DATETIME        NULL,
-    [MKTime]                DATETIME        DEFAULT ([dbo].[Get_TWDATE]()) NOT NULL,
+    [MKTime]                DATETIME        DEFAULT ([Get_TWDATE]()) NOT NULL,
     CONSTRAINT [PK_TB_TaishinWalletStoreValueRLog_SEQNO] PRIMARY KEY CLUSTERED ([SEQNO] ASC)
 );
 

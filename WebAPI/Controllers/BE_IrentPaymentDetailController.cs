@@ -126,7 +126,7 @@ namespace WebAPI.Controllers
                 baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
                 return objOutput;           
             }
-            else
+            else if (apiInput.MODE == 4)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_IrentPaymentHistoryExplode wsOutput = new WebAPIOutput_IrentPaymentHistoryExplode();
@@ -146,6 +146,27 @@ namespace WebAPI.Controllers
                 //輸出
                 baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
                 return objOutput;      
+            }
+            else
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIOutput_IrentPaymentHistorySendMail wsOutput = new WebAPIOutput_IrentPaymentHistorySendMail();
+                WebAPIInput_IrentPaymentDetail spInput = new WebAPIInput_IrentPaymentDetail()
+                {
+                    MODE = apiInput.MODE,
+                    SPSD = apiInput.SPSD,
+                    SPED = apiInput.SPED,
+                    SPSD2 = apiInput.SPSD2,
+                    SPED2 = apiInput.SPED2,
+                    SPSD3 = apiInput.SPSD3,
+                    SPED3 = apiInput.SPED3,
+                    MEMACCOUNT = apiInput.MEMACCOUNT
+                };
+                flag = hiEasyRentAPI.NPR390Query5(spInput, ref wsOutput);
+
+                //輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, wsOutput, token);
+                return objOutput;
             }
             #endregion
 

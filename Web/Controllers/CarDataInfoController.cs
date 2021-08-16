@@ -615,7 +615,7 @@ namespace Web.Controllers
                         {
                             //20210105_Eric_增加防呆，若全部空白則跳開
                             bool CheckNotAllNull = false;
-                            for (int j = 0; j < 8; j++)
+                            for (int j = 0; j < sheetLen; j++)
                             {
                                 if (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {

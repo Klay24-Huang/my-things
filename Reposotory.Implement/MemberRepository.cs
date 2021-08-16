@@ -439,7 +439,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+                SQL += " WHERE " + term + " order by A_SYSDT DESC";// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
             }
             lstAudits = GetObjList<BE_MemberScore>(ref flag, ref lstError, SQL, para, term);
 

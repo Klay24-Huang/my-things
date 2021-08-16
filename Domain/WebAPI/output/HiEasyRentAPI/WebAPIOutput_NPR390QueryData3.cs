@@ -16,5 +16,6 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         public string MEMO { set; get; }
         public string TOTAMT { set; get; }
         public string TAISHIN_NO { set; get; }
+        public string EMail { set; get; }
     }
 }

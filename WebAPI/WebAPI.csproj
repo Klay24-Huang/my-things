@@ -251,6 +251,7 @@
     <Compile Include="Controllers\BE_UPDFuncGroupController.cs" />
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
+    <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -578,6 +580,7 @@
     <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
     <Compile Include="Models\Param\Input\IAPI_RePayDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReSendEMail2.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchMotor.cs" />
