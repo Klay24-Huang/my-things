@@ -175,6 +175,7 @@
     <Compile Include="SP\Input\Member\SPInput_GetUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberStatus.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetDefPayMode.cs" />
+    <Compile Include="SP\Input\Member\SPInput_SetMemberCMK.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetMemberData.cs" />
     <Compile Include="SP\Input\Member\SPInput_InsUnBindLog.cs" />
     <Compile Include="SP\Input\Member\SPInput_SetMemberScoreDetail.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="SP\Output\Member\MapMedalList.cs" />
     <Compile Include="SP\Output\Member\MemberMedalList.cs" />
     <Compile Include="SP\Output\Member\MemberScoreList.cs" />
+    <Compile Include="SP\Output\Member\MemberCMKList.cs" />
     <Compile Include="SP\Output\Mochi\SPOutput_GetMachiToken.cs" />
     <Compile Include="SP\Output\OrderList\OrderCancelDataList.cs" />
     <Compile Include="SP\Output\OrderList\OrderFinishDataList.cs" />

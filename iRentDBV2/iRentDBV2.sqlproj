@@ -562,6 +562,7 @@
     <Build Include="dbo\Views\VW_BE_GetOrderFullDetail_0727.sql" />
     <Build Include="dbo\Tables\TB_BatchHistory.sql" />
     <Build Include="dbo\Tables\TB_NYRefundList.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
   </ItemGroup>
   <ItemGroup>

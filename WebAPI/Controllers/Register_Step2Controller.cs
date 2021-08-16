@@ -5,19 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 設定密碼 20200812 recheck ok
+    /// 設定密碼
     /// </summary>
     public class Register_Step2Controller : ApiController
     {
@@ -35,16 +33,14 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_Register_Step2 apiInput = null;
-            OAPI_Login CheckAccountAPI = null;
+            NullOutput ApiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
-            // string VerifyCode = "";
             string Contentjson = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
             if (flag)
             {
@@ -65,7 +61,6 @@ namespace WebAPI.Controllers
                     {
                         errCode = "ERR103";
                     }
-
                 }
                 if (flag)
                 {
@@ -98,15 +93,13 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-
                 string spName = new ObjType().GetSPName(ObjType.SPType.Register_Step2);
                 SPInput_Register_Step2 spInput = new SPInput_Register_Step2()
                 {
                     LogID = LogID,
                     IDNO = apiInput.IDNO,
-                    PWD=apiInput.PWD,
+                    PWD = apiInput.PWD,
                     DeviceID = apiInput.DeviceID,
-                 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_Register_Step2, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_Register_Step2, SPOutput_Base>(connetStr);
@@ -114,14 +107,15 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
             #endregion
+
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, ApiOutput, token);
             return objOutput;
             #endregion
         }
