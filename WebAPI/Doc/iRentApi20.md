@@ -3593,6 +3593,7 @@ iRentApi20 Web API版本
 | IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
 | IsPay	| 當期是否有繳費(0否1是) | int | 1 |
 | IsMix | 是否為城市車手(0否1是) | int | 0 |
+| PayPrice		| 信用卡授權金額	   | int	| 7000	   |
 
 * Output範例
 ```
@@ -3622,7 +3623,8 @@ iRentApi20 Web API版本
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
                 "IsPay": 0,
-				"IsMix": 1
+				"IsMix": 1,
+				"PayPrice":7000
             }
         ]
     }
@@ -4997,7 +4999,7 @@ iRentApi20 Web API版本
     "CarType": "COROLLA CROSS",
     "Insurance": 0,
     "StationID": "XXXX"
-    "ModId": 0
+    "MonId": 0
 }
 ```
 
@@ -5011,7 +5013,7 @@ iRentApi20 Web API版本
 	"CarType": "MANY-110",
 	"Insurance": 0,
 	"StationID": ""
-	"ModId": 0
+	"MonId": 0
 }
 ```
 
