@@ -260,6 +260,7 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
@@ -562,6 +563,7 @@
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonPeriodDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlyPayInv.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRentExchange.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
@@ -685,6 +687,7 @@
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_MonPeriodDetail.cs" />
+    <Compile Include="Models\Param\Output\OAPI_MonthlyPayInv.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />

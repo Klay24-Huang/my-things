@@ -187,6 +187,7 @@
     <Compile Include="SP\Input\MonthlyRent\SPInput_ClearMonthlyTmpHistory.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_GetMonthlyDetail.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_GetMonthlyMain.cs" />
+    <Compile Include="SP\Input\MonthlyRent\SPInput_GetMonthlyPayInv.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyPayData.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
@@ -347,6 +348,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_GetChgSubsList.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetInvData.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetMonSetInfo.cs" />
+    <Compile Include="SP\Output\MonthlyRent\SPOut_GetMonthlyPayInv.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetMySubs.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetNowSubs.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetSubsBookingMonth.cs" />

@@ -5,6 +5,15 @@
 *****************************************************************
 ** 20210810 ADD BY AMBER
 *****************************************************************/
+/* EXAMPLE
+BEGIN TRAN
+DECLARE @ErrorCode VARCHAR(6),@ErrorMsg NVARCHAR(100)
+EXEC usp_InsMonthlyPayData @ErrorCode OUTPUT,@ErrorMsg OUTPUT,'',''
+SELECT * FROM TB_OrderAuthMonthly WITH(NOLOCK)
+SELECT @ErrorCode,@ErrorMsg
+ROLLBACK TRAN
+*/
+
 CREATE PROCEDURE [dbo].[usp_InsMonthlyPayData]            
 　　@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -32,16 +41,16 @@ BEGIN TRY
 	        DROP TABLE IF EXISTS #MonthlyPayTmp;
 			DROP TABLE IF EXISTS #SeqMonthlyPayTmp;
 
-			SELECT 		
+			SELECT TOP 1
 			A.IDNO,A.MonProPeriod,A.ProjID,A.ShortDays  
 			INTO #MonthlyPayTmp
 			FROM SYN_MonthlyRent A WITH(NOLOCK) 
 			LEFT JOIN TB_MonthlyPay B WITH(NOLOCK) ON A.MonthlyRentId=B.MonthlyRentId
 			WHERE CONVERT(VARCHAR,DATEADD(day,-1,A.StartDate),112)=CONVERT(VARCHAR,@NowTime,112)
 			AND A.useFlag=1 AND A.MonProPeriod >2 AND ISNULL(B.ActualPay,0)=0 
-			AND NOT EXISTS (SELECT 1 FROM TB_OrderAuthMonthly O
-			WHERE O.MonthlyRentId =A.MonthlyRentId)
-			AND A.MonthlyRentId=316;
+			AND NOT EXISTS (SELECT 1 FROM TB_OrderAuthMonthly O WITH(NOLOCK) 
+			WHERE O.MonthlyRentId =A.MonthlyRentId);
+			
 			
 			SELECT * INTO #SeqMonthlyPayTmp FROM (
 		    SELECT ROW_NUMBER() OVER(PARTITION BY S.MonProPeriod,S.ProjID,S.ShortDays,S.IDNO ORDER BY S.startDate) AS NowPeriod,
@@ -80,7 +89,11 @@ BEGIN TRY
 		FROM #SeqMonthlyPayTmp SMPT
 	    JOIN TB_MonthlyRentSet S WITH(NOLOCK) 
 		ON SMPT.ProjID=S.MonProjID AND SMPT.MonProPeriod=S.MonProPeriod  AND SMPT.ShortDays = S.ShortDays;
-
+		
+		INSERT INTO [dbo].[TB_OrderAuthMonthly_LOG] 
+		SELECT 'A',A.* FROM [dbo].[TB_OrderAuthMonthly] A WITH(NOLOCK) 
+		JOIN #SeqMonthlyPayTmp T ON A.MonthlyRentId=T.MonthlyRentId AND A.IDNO=T.IDNO
+		WHERE A.AuthFlg=0;
 	END
 	--寫入錯誤訊息
 	IF @Error=1
@@ -96,10 +109,10 @@ BEGIN CATCH
 	SET @SQLExceptionCode=ERROR_NUMBER();
 	SET @SQLExceptionMsg=ERROR_MESSAGE();
 	IF @@TRANCOUNT > 0
-			BEGIN
-				print 'rolling back transaction' /* <- this is never printed */
-				ROLLBACK TRAN
-			END
+	BEGIN
+	print 'rolling back transaction' /* <- this is never printed */
+		ROLLBACK TRAN
+	END
 	SET @IsSystem=1;
 	SET @ErrorType=4;
 	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
