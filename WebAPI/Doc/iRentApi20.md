@@ -24,6 +24,7 @@ iRentApi20 Web API版本
 - [SetMemberScoreDetail 修改會員積分明細](#SetMemberScoreDetail)
 - [GetMemberMedal 取得會員徽章](#GetMemberMedal)
 - [SetMemberCMK 更新會員條款](#SetMemberCMK)
+- [TransWebMemCMK 拋轉官網會員同意資料](#TransWebMemCMK)
 
 首頁地圖相關
 
@@ -122,6 +123,8 @@ iRentApi20 Web API版本
 20210812 新增設定會員資料(RegisterMemberData)、取得會員狀態(GetMemberStatus)增加欄位
 
 20210813 新增更新會員條款(SetMemberCMK)
+
+20210818 新增拋轉官網會員同意資料(TransWebMemCMK)
 
 
 # Header參數相關說明
@@ -1000,6 +1003,79 @@ iRentApi20 Web API版本
 ```
 {
     "CHKStatus": "Y"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+
+
+## TransWebMemCMK 拋轉官網會員同意資料
+
+### [/api/TransWebMemCMK/]
+
+- 20210818發佈
+
+- ASP.NET Web API (REST API)
+
+- api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+- 傳送跟接收採JSON格式
+
+* 動作 [POST]
+* Input 傳入參數說明
+
+| 參數名稱  | 參數說明                       | 必要 |   型態   | 範例                |
+| --------- | ------------------------------ | :--: | :------: | ------------------- |
+| IDNO      | 身分證字號                     |  Y   |  string  | A123456789          |
+| VerType   | 同意書版本類型                 |  Y   |  string  | Hims                |
+| Version   | 同意書版本號                   |  Y   |  string  | 100                 |
+| Source    | 同意來源管道 (I:IRENT W:官網)  |  Y   |  string  | W                   |
+| AgreeDate | 同意時間                       |  Y   | datetime | 2021-08-17T14:45:21 |
+| TEL       | 電話通知狀態 (N:不通知 Y:通知) |  Y   |  string  | Y                   |
+| SMS       | 簡訊通知狀態 (N:不通知 Y:通知) |  Y   |  string  | Y                   |
+| EMAIL     | EMAIL通知 (N:不通知 Y:通知)    |  Y   |  string  | Y                   |
+| POST      | 郵寄通知 (N:不通知 Y:通知)     |  Y   |  string  | Y                   |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "VerType": "Hims",
+    "Version": "100",
+    "Source": "W",
+    "AgreeDate": "2021/8/17 14:41:00",
+    "TEL": "Y",
+    "SMS": "Y",
+    "EMAIL": "Y",
+    "POST": "Y"
 }
 ```
 

@@ -4,6 +4,7 @@
 ** Change History
 *****************************************************************
 ** 20210810 ADD BY YEH
+** 20210817;UPD BY YEH REASON:更新會員主檔(活動及優惠訊息通知)
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_SetMemberCMK]
 	@IDNO				VARCHAR(10)				,	-- 帳號
@@ -30,6 +31,7 @@ DECLARE @hasData	TINYINT;
 DECLARE @NowTime	DATETIME;
 DECLARE @MEMRFNBR	INT;	-- 短租會員流水號
 DECLARE @APIID		INT;
+DECLARE @MEMMSG		VARCHAR(1);	-- 活動及優惠訊息通知(Y:是 N:否)
 
 /*初始設定*/
 SET @Error=0;
@@ -63,8 +65,8 @@ BEGIN TRY
 			SELECT TOP 1 @Version=Version FROM TB_CMKDef WITH(NOLOCK) WHERE VerType=@VerType AND @NowTime >= SDATE ORDER BY Version DESC;
 		END
 
-		-- 取得短租會員流水號
-		SELECT @MEMRFNBR=MEMRFNBR FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+		-- 取得短租會員流水號、活動及優惠訊息通知
+		SELECT @MEMRFNBR=MEMRFNBR,@MEMMSG=MEMMSG FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
 		-- 取得APIID
 		SELECT @APIID=APIID FROM TB_APIList WITH(NOLOCK) WHERE APIName=@APIName;
@@ -99,6 +101,21 @@ BEGIN TRY
 		-- 寫LOG
 		INSERT INTO TB_MemberCMK_LOG
 		SELECT * FROM TB_MemberCMK WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND VerType=@VerType;
+
+		-- 20210817;UPD BY YEH REASON:更新會員主檔(活動及優惠訊息通知)
+		IF @MEMMSG <> @EMAIL
+		BEGIN
+			UPDATE TB_MemberData
+			SET MEMMSG=@EMAIL,
+				U_PRGID=@APIID,
+				U_USERID=@IDNO,
+				U_SYSDT=@NowTime
+			WHERE MEMIDNO=@IDNO;
+
+			-- 寫LOG
+			INSERT INTO TB_MemberData_Log
+			SELECT 'U',@APIID,@NowTime,* FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+		END
 
 		-- 取得要回傳的資料
 		SELECT MEMIDNO,VerType,Version,Source,AgreeDate,TEL,SMS,EMAIL,POST 
