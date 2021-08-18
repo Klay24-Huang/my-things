@@ -281,6 +281,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetWalletStoreTradeTransHistory.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\MA\Input\SPInpupt_MA_CleanCarStart.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_CleanCarEndNew.cs" />
@@ -365,6 +366,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
+    <Compile Include="SP\Output\Wallet\SPOut_GetWalletStoreTradeTransHistory.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />
     <Compile Include="Sync\Input\SPInput_SYNC_BookingCancel.cs" />
     <Compile Include="Sync\Input\SPInput_SYNC_UPDEventMessage.cs" />
