@@ -336,6 +336,7 @@ namespace WebAPI.Controllers
                                 GIFT_MOTO = obj.GIFT_MOTO,
                                 PAYAMT = obj.PAYAMT.ToString(),
                                 INBRNHCD = obj.OUTBRNHCD,
+                                PARKINGAMT2 = obj.PARKINGAMT2.ToString()   //20210818 ADD BY ADAM REASON.補上停車費
                             };
 
                             if (obj.PAYAMT > 0)
