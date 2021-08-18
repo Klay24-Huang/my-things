@@ -765,7 +765,8 @@ namespace Reposotory.Implement
             //BE_ScoreBlock obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string SQL = " select TOP 1 A.START_DT AS Sdate,A.END_DT AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            //string SQL = " select TOP 1 CONVERT(CHAR(10),A.START_DT,120)+' 00:00:00.000' AS Sdate,CONVERT(CHAR(10),A.END_DT,120)+' 00:00:00.000' AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            string SQL = " select TOP 1 CONVERT(CHAR(10),A.START_DT,120)+' 00:00:00.000' AS Sdate,CONVERT(CHAR(10),A.END_DT,120)+' 00:00:00.000' AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
             {
