@@ -11,7 +11,23 @@ namespace WebAPI.Models.Param.Output
     }
 
     public class OAPI_WalletStoreTradeTrans
-    {      
+    {
+        /// <summary>
+        /// 組織代號(公司代碼)Key
+        /// </summary>
+        public string ORGID { get; set; }
+        /// <summary>
+        /// 身分證號Key
+        /// </summary>
+        public string IDNO { get; set; }
+        /// <summary>
+        /// 帳款流水號(by會員)Key
+        /// </summary>
+        public int SEQNO { get; set; }
+        /// <summary>
+        /// 財務-上游批號(IR編)Key
+        /// </summary>
+        public string F_INFNO { get; set; }
         /// <summary>
         /// 交易年分
         /// </summary>
@@ -39,7 +55,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 交易金額
         /// </summary>
-        public decimal TradeAMT { get; set; }
+        public int TradeAMT { get; set; }
 
         /// <summary>
         /// APP上是否顯示：0:隱藏,1:顯示

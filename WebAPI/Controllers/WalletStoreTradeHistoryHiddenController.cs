@@ -17,16 +17,15 @@ using WebAPI.Service;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 錢包歷史紀錄
+    /// 錢包歷程-儲值交易紀錄隱藏
     /// </summary>
-    public class WalletStoreTradeTransHistoryController : ApiController
+    public class WalletStoreTradeHistoryHiddenController : ApiController
     {
         [HttpPost()]
-        public Dictionary<string, object> DoWalletStoreTradeTransHistory([FromBody] Dictionary<string, object> value)
+        public Dictionary<string, object> DoWalletStoreTradeHistoryHidden([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var wsp = new WalletSp();
-            var wMap = new WalletMap();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -38,11 +37,10 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoreTradeTransHistory";
+            string funName = "WalletStoreTradeHistoryHidden";
             Int64 LogID = 0;
-            var apiInput = new IAPI_WalletStoreTradeTransHistory();
-            var outputApi = new OAPI_WalletStoreTradeTransHistory();
-            outputApi.TradeHis = new List<OAPI_WalletStoreTradeTrans>();
+            var apiInput = new IAPI_WalletStoreTradeHistoryHidden();
+            var outputApi = new OAPI_WalletStoreTradeHistoryHidden();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -62,10 +60,18 @@ namespace WebAPI.Controllers
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletStoreTradeTransHistory>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletStoreTradeHistoryHidden>(Contentjson);
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+                    if(apiInput == null || string.IsNullOrWhiteSpace(apiInput.ORGID) || apiInput.SEQNO <= 0 || string.IsNullOrWhiteSpace(apiInput.F_INFNO))
+                    {
+                        flag = false;
+                        errMsg = "ORGID, SEQNO, F_INFNO必填";
+                        errCode = "ERR257";
+                    }
+
                     //不開放訪客
                     if (flag)
                     {
@@ -73,16 +79,6 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR101";
-                        }
-                    }
-
-                    if (flag) 
-                    {
-                        if (apiInput.SD == null || apiInput.ED == null)
-                        {
-                            flag = false;
-                            errMsg = "SD, ED為必填";
-                            errCode = "ERR257";//參數遺漏
                         }
                     }
 
@@ -120,24 +116,16 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    var spIn = new SPInput_GetWalletStoreTradeTransHistory()
+                    var spIn = new SPInput_WalletStoreTradeHistoryHidden()
                     {
                         IDNO = IDNO,
                         LogID = LogID,
-                        SD = apiInput.SD,
-                        ED = apiInput.ED
+                        ORGID = apiInput.ORGID,
+                        SEQNO = apiInput.SEQNO,
+                        F_INFNO = apiInput.F_INFNO
                     };
                     trace.traceAdd("spIn", spIn);
-                    var sp_list = wsp.sp_GetWalletStoreTradeTransHistory(spIn, ref errCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        var vmList = wMap.FromSPOut_GetWalletStoreTradeTransHistory(sp_list);
-                        if (vmList != null && vmList.Count() > 0) 
-                            outputApi.TradeHis = vmList;
-
-                        trace.traceAdd("sp_list", sp_list);
-                    }                   
-                   
+                    flag = wsp.sp_WalletStoreTradeHistoryHidden(spIn, ref errCode);
                     trace.FlowList.Add("sp呼叫");
                 }
 
@@ -148,13 +136,13 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
             }
 
-            carRepo.AddTraceLog(206, funName, trace, flag);
+            carRepo.AddTraceLog(208, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
             #endregion        
         }
-    
+
     }
 }

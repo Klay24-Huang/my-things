@@ -92,7 +92,28 @@ namespace WebAPI.Service
                 throw ex;
             }
         }
-    
+
+        public bool sp_WalletStoreTradeHistoryHidden(SPInput_WalletStoreTradeHistoryHidden spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
+            string spName = "usp_WalletStoreTradeHistoryHidden_U1";
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_WalletStoreTradeHistoryHidden();
+            SQLHelper<SPInput_WalletStoreTradeHistoryHidden, SPOut_WalletStoreTradeHistoryHidden> sqlHelp = new SQLHelper<SPInput_WalletStoreTradeHistoryHidden, SPOut_WalletStoreTradeHistoryHidden>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
     }
 
     public class WalletMap
@@ -105,12 +126,16 @@ namespace WebAPI.Service
                 re = (from a in sour
                       select new OAPI_WalletStoreTradeTrans
                       {
+                          ORGID = a.ORGID,
+                          IDNO = a.IDNO,
+                          SEQNO = a.SEQNO,
+                          F_INFNO = a.F_INFNO,
                           TradeYear = Convert.ToDateTime(a.TradeDate).Year,
                           TradeDate = Convert.ToDateTime(a.TradeDate).ToString("MM/dd"),
                           TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),  
                           TradeTypeNm = a.CodeName,
                           TradeNote = a.TradeNote,
-                          TradeAMT = a.TradeAMT,
+                          TradeAMT = Convert.ToInt32(a.TradeAMT),
                           ShowFLG = 1
                       }).ToList(); 
             }

@@ -398,6 +398,7 @@
     <Compile Include="Controllers\WalletHistoryController.cs" />
     <Compile Include="Controllers\WalletPayTransactionController.cs" />
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletStoreTradeHistoryHiddenController.cs" />
     <Compile Include="Controllers\WalletStoreTradeTransHistoryController.cs" />
     <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
@@ -610,6 +611,7 @@
     <Compile Include="Models\Param\Input\IAPI_RecieveTsac.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferStoredValue.cs" />
@@ -705,6 +707,7 @@
     <Compile Include="Models\Param\Output\OAPI_VER_USER_POW.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
