@@ -66,6 +66,9 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_MonthlyPayInv>(Contentjson);
+                    //寫入API Log
+                    string ClientIP = baseVerify.GetClientIp(Request);
+                    flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                     //必填檢查
                     if (apiInput.MonthlyRentId == 0 || string.IsNullOrWhiteSpace(apiInput.IdNo))

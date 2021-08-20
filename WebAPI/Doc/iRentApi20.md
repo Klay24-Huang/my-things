@@ -62,6 +62,11 @@ iRentApi20 Web API版本
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
 - [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
+電子錢包相關
+- [CreditAndWalletQuery 查詢綁卡跟錢包](#CreditAndWalletQuery)
+- [WalletStoreTradeTransHistory 錢包歷史紀錄查詢](#WalletStoreTradeTransHistory)
+- [WalletStoreTradeHistoryHidden 錢包歷程-儲值交易紀錄隱藏](#WalletStoreTradeHistoryHidden)
+
 ----------
 # 修改歷程
 
@@ -111,6 +116,7 @@ iRentApi20 Web API版本
 
 20210708 新增電子柵欄API
 
+20210819 新增電子錢包相關API
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5076,6 +5082,293 @@ iRentApi20 Web API版本
                 "Latitude": 25.060341,
                 "OpenTime": "2020-12-16T00:00:00",
                 "CloseTime": "2099-12-31T00:00:00"
+            }
+        ]
+    }
+}
+```
+----
+
+## CreditAndWalletQuery
+
+### [/api/CreditAndWalletQuery/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態    | 範例             |
+| --------- | ---------- | :--: | :----:   | ---------------- |
+
+* input範例
+
+```
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明            |  型態  | 範例          |
+| ------------ | ------------------  | :----: | ------------- |
+| HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 1             |
+| TotalAmount  | 錢包剩餘金額        | int    | 20000         |
+| BindListObj  | 綁卡列表            | List   |               |
+
+* BindListObj 回傳參數說明
+
+| 參數名稱         | 參數說明                            | 型態   | 範例          |
+| ---------------- | ----------------------------------  | :----: | ------------- |
+| BankNo           | 銀行帳號                            | string | 待確認        |
+| CardNumber       | 信用卡卡號                          | string | 待確認        |
+| CardName         | 信用卡自訂名稱                      | string | 待確認        |
+| AvailableAmount  | 剩餘額度                            | string | 待確認        |
+| CardToken        | 替代性信用卡卡號或替代表銀行卡號    | string | 待確認        |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+		"HasBind": 1,
+		"BindListObj": [
+		  {
+		    "BankNo": "待確認",
+			"CardNumber": "待確認",
+			"CardName": "待確認待確認",
+			"AvailableAmount": "50000",
+			"CardToken": "待確認"
+		  }
+		],
+		"SEQNO": 9,
+		"HasWallet": 1,
+		"TotalAmount": 20000	
+    }
+}
+```
+
+----
+
+## WalletStoreTradeTransHistory
+
+### [/api/WalletStoreTradeTransHistory/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態    | 範例             |
+| --------- | ---------- | :--: | :----:   | ---------------- |
+| SD        | 查詢起日   |  Y   | DateTime | 2021-08-01 00:00 |
+| ED        | 查詢迄日   |  Y   | DateTime | 2021-08-30 00:00 |
+
+* input範例
+
+```
+{
+    "SD":"2021-08-01 00:00",
+    "ED":"2021-08-30 00:00"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| Data-TradeHis| 錢包歷史紀錄       |  List  |               |
+
+* Data-TradeHis 回傳參數說明
+
+| 參數名稱    | 參數說明           |  型態  | 範例          |
+| ----------- | ------------------ | :----: | ------------- |
+| ORGID       | 組織代號(公司代碼) | string | 01            |
+| IDNO        | 身分證號           | string | A123456789    |
+| SEQNO       | 帳款流水號         |  int   | 1             |
+| F_INFNO     | 上游批號           | string | TaishinNo09   |
+| TradeYear   | 交易年分           |  int   | 2021          |
+| TradeDate   | 交易日期           | string | 08/17         |
+| TradeTime   | 交易時間           | string | 20:05         |
+| TradeTypeNm | 交易類別           | string | 錢包提領      |
+| TradeNote   | 交易類別註記       | string | 電子錢包提領  |
+| TradeAMT    | 交易金額           |  int   | 1000          |
+| ShowFLG     | APP上是否顯示      |  int   | 0:隱藏,1:顯示 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "TradeHis": [
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 9,
+                "F_INFNO": "TaishinNo09",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "20:05",
+                "TradeTypeNm": "錢包提領",
+                "TradeNote": "電子錢包提領",
+                "TradeAMT": -6000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 8,
+                "F_INFNO": "TaishinNo10",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "H11216402",
+                "TradeAMT": -800,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 7,
+                "F_INFNO": "TaishinNo08",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "訂閱制",
+                "TradeAMT": -2999,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 6,
+                "F_INFNO": "TaishinNo06",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "轉贈",
+                "TradeNote": "轉贈人 陳O安",
+                "TradeAMT": 2000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 5,
+                "F_INFNO": "TaishinNo05",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "合約退款",
+                "TradeNote": "合約退款",
+                "TradeAMT": 500,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 4,
+                "F_INFNO": "TaishinNo04",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包加值(虛擬帳號轉帳)",
+                "TradeNote": "虛擬帳號轉帳",
+                "TradeAMT": 3000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 3,
+                "F_INFNO": "TaishinNo03",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包加值(超商繳款)",
+                "TradeNote": "超商繳款",
+                "TradeAMT": 8000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 2,
+                "F_INFNO": "TaishinNO01",
+                "TradeYear": 2021,
+                "TradeDate": "08/13",
+                "TradeTime": "00:00",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "H11845561",
+                "TradeAMT": -1000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 1,
+                "F_INFNO": "TaishinNo02",
+                "TradeYear": 2021,
+                "TradeDate": "08/13",
+                "TradeTime": "00:00",
+                "TradeTypeNm": "錢包加值(網路刷卡)",
+                "TradeNote": "信用卡*6906",
+                "TradeAMT": 30000,
+                "ShowFLG": 1
             }
         ]
     }
