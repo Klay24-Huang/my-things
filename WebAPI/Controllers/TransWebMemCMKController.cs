@@ -41,6 +41,7 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string Contentjson = "";
+            DateTime AgreeDate = DateTime.Now;
             #endregion
 
             #region 防呆
@@ -52,10 +53,19 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.IDNO, apiInput.VerType, apiInput.Version, apiInput.Source, apiInput.TEL, apiInput.SMS, apiInput.EMAIL, apiInput.POST };
-                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.IDNO, apiInput.VerType, apiInput.Version, apiInput.Source, apiInput.AgreeDate, apiInput.TEL, apiInput.SMS, apiInput.EMAIL, apiInput.POST };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900", "ERR900" };
                 // 判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                if (flag)
+                {
+                    // 檢查日期格式
+                    flag = DateTime.TryParse(apiInput.AgreeDate, out AgreeDate);
+                    if (!flag)
+                    {
+                        errCode = "ERR900";
+                    }
+                }
             }
             #endregion
 
@@ -67,7 +77,7 @@ namespace WebAPI.Controllers
                 {
                     IDNO = apiInput.IDNO,
                     Source = apiInput.Source,
-                    AgreeDate = apiInput.AgreeDate,
+                    AgreeDate = AgreeDate,
                     VerType = apiInput.VerType,
                     Version = apiInput.Version,
                     TEL = apiInput.TEL,

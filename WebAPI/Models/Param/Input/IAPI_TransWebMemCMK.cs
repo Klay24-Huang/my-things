@@ -29,7 +29,7 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 同意時間
         /// </summary>
-        public DateTime AgreeDate { get; set; }
+        public string AgreeDate { get; set; }
 
         /// <summary>
         /// 電話通知狀態
