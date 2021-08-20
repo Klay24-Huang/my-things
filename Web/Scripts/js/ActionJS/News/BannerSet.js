@@ -26,14 +26,14 @@
     }
 });
 function goMaintain(SEQNO) {
-    console.log('qq:' + SEQNO)
-    console.log('qqaa:' + typeof (SEQNO))
+    //console.log('qq:' + SEQNO)
+    //console.log('qqaa:' + typeof (SEQNO))
 
     //var a = parseInt(SEQNO);
     //console.log('www:' + a)
     //console.log('rrrr:' + typeof (a))
     $("#MaintainBanner").val(SEQNO);
-    console.log('oooooo:' + $("#MaintainBanner").val())
+    //console.log('oooooo:' + $("#MaintainBanner").val())
     $("#frmBannerMaintain").submit();
 }
 function GoAddNew() {
