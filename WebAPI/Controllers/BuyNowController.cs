@@ -631,7 +631,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 發票
-                    if (flag)
+                    if (flag && ProdPrice > 0)
                     {
                         try
                         {
@@ -1476,7 +1476,7 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    if (flag)
+                    if (flag && ProdPrice > 0)  //阻擋0元發票
                     {
                         try
                         {
