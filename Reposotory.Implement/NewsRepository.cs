@@ -103,7 +103,7 @@ namespace Reposotory.Implement
             {
                 SQL += " WHERE " + term;
             }
-            SQL += " ORDER BY QUEUE DESC,STARTDATE DESC ";
+            SQL += " ORDER BY A_SYSDT DESC ";
             lstBanner = GetObjList<BE_GetBannerInfo>(ref flag, ref lstError, SQL, para, term);
             return lstBanner;
         }
