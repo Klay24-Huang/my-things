@@ -3,18 +3,35 @@
     public class OAPI_WalletTransferCheck
     {
         /// <summary>
-        /// 姓名
+        /// 驗證結果(1成功,0失敗)
         /// </summary>
-        public string Name { get; set; }
-
+        public int CkResult { get; set; } = 0;
         /// <summary>
-        /// 電話
+        /// 錢包剩餘金額
         /// </summary>
-        public string PhoneNo { get; set; }
-
+        //public int WalletAmount { get; set; } = 0;
         /// <summary>
-        /// 轉贈金額
+        /// 當月入賬總金額
         /// </summary>
-        public int Amount { get; set; }
+        //public int MonTransIn { get; set; } = 0;
+
+        #region mark
+
+        ///// <summary>
+        ///// 姓名
+        ///// </summary>
+        //public string Name { get; set; }
+
+        ///// <summary>
+        ///// 電話
+        ///// </summary>
+        //public string PhoneNo { get; set; }
+
+        ///// <summary>
+        ///// 轉贈金額
+        ///// </summary>
+        //public int Amount { get; set; }
+
+        #endregion
     }
 }

@@ -93,6 +93,55 @@ namespace WebAPI.Service
             }
         }
 
+        public List<SPOut_WalletTransferCheck> sp_WalletTransferCheck(SPInput_WalletTransferCheck spInput, ref string errCode)
+        {
+            var re = new List<SPOut_WalletTransferCheck>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.WalletTransferCheck);
+                string SPName = "usp_WalletTransferCheck_Q1";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID,
+                        spInput.PhoneNo,
+                        spInput.SetNow
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2) 
+                    {
+                        re = objUti.ConvertToList<SPOut_WalletTransferCheck>(ds1.Tables[0]);
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[1]);
+                        errCode = re_db.ErrorCode;
+                    }
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
         public bool sp_WalletStoreTradeHistoryHidden(SPInput_WalletStoreTradeHistoryHidden spInput, ref string errCode)
         {
             bool flag = false;
