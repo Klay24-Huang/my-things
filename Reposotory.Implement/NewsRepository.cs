@@ -94,6 +94,9 @@ namespace Reposotory.Implement
                 case "2":
                     term += "convert(char(8),getdate(),112) < convert(char(8),STARTDATE,112)";
                     break;
+                case "3":
+                    term += "1=1";
+                    break;
             }
 
             if (term != "")

@@ -43,6 +43,7 @@
                             </div>
                             <div class="col-md-3">
                                 <select id="Status" name="Status" class="form-control">
+                                    <option value="3">全部</option>
                                     <option value="0">失效</option>
                                     <option value="1">有效</option>
                                     <option value="2">待生效</option>
@@ -130,7 +131,20 @@
                             <th scope="col">@(lstData[i].MarqueeText)</th>
                             <th scope="col">@(lstData[i].STARTDATE)</th>
                             <th scope="col">@(lstData[i].ENDDATE)</th>
-                            <th scope="col">@(lstData[i].Status)</th>
+                            @{ 
+                                if (lstData[i].Status == "失效") 
+                                { 
+                                    <th scope="col" style="color:red">@(lstData[i].Status)</th>
+                                }
+                                else if (lstData[i].Status == "有效") 
+                                { 
+                                    <th scope="col" style="color:green">@(lstData[i].Status)</th>
+                                }
+                                else 
+                                { 
+                                    <th scope="col" style="color:orange">@(lstData[i].Status)</th>
+                                }
+                            }             
                             <th scope="col"><button class="btn btn-outline-info" id="btn_@(lstData[i].SEQNO)" name="btn_@(lstData[i].SEQNO)" onclick="goMaintain('@(lstData[i].SEQNO)')">詳細設定</button></th>
                         </tr>
                     }
