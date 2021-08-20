@@ -4,6 +4,7 @@
 
 iRentApi20 Web API版本
 
+
 目錄
 
 登入相關
@@ -36,10 +37,14 @@ iRentApi20 Web API版本
 - [GetPolygon 取得電子柵欄](#GetPolygon)
 
 取還車跟車機操控相關
+
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 - [GetPayDetail 取得租金明細](#GetPayDetail)
+- [BookingStart 汽車取車](#BookingStart)
+- [BookingStartMotor 機車取車](#BookingStartMotor)
 
 月租訂閱制相關
+
 - [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
 - [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
 - [BuyNow/AddMonth 月租購買](#BuyNowAddMonth)
@@ -55,13 +60,25 @@ iRentApi20 Web API版本
 - [SetSubsNxt 設定自動續約](#SetSubsNxt)
 
 預約以及訂單相關
+
 - [OrderDetail 歷史訂單明細](#OrderDetail)
 - [Booking 預約](#Booking)
+- [BookingQuery 訂單列表](#BookingQuery)
+- [BookingFinishQuery 完成的訂單查詢](#BookingFinishQuery)
+- [BookingDelete 刪除的訂單](#BookingDelete)
 
 車輛調度停車場
+
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
 - [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
+共同承租人機制
+
+- [JointRentInviteeListQuery 共同承租人邀請清單查詢](#JointRentInviteeListQuery)
+- [JointRentInviteeVerify 共同承租人邀請檢核](#JointRentInviteeVerify)
+- [JointRentInvitation 案件共同承租人邀請](#JointRentInvitation)
+- [JointRentInviteeModify 案件共同承租人邀請狀態維護](#JointRentInviteeModify)
+- [JointRentIviteeFeedBack 案件共同承租人回應邀請](#JointRentIviteeFeedBack)
 ----------
 # 修改歷程
 
@@ -111,6 +128,35 @@ iRentApi20 Web API版本
 
 20210708 新增電子柵欄API
 
+20210819 新增共同承租人邀請清單查詢API
+
+20210819 共同承租人邀請檢核API
+
+20210819 案件共同承租人邀請API
+
+20210819 案件共同承租人邀請狀態維護API
+
+20210819 案件共同承租人回應邀請API
+
+20210819 歷史訂單明細(OrderDetail)增加欄位承租人類型(RenterType)
+
+20210820 補訂單清單查詢API
+
+20210820 訂單清單查詢(BookingQuery)增加欄位承租人類型(RenterType)
+
+20210820 補汽車取車API
+
+20210820 汽車取車(BookingStart)增加欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
+
+20210820 補機車取車API
+
+20210820 補機車取車(BookingStartMotor)增加欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
+
+20210820 補完成的訂單查詢API
+
+20210820 完成的訂單查詢(BookingFinishQuery)增加欄位是否為共同承租訂單(IsJointOrder)
+
+20210820 補刪除訂單API
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -2802,6 +2848,138 @@ iRentApi20 Web API版本
 ```
 
 ----
+## BookingStart 汽車取車
+
+### [/api/BookingStart/]
+
+* 20210820補資料
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
+| SKBToken | SKB的token | Y | int | 0 |
+| Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
+| skipNoFeedbackInvitees | 略過未回應的共同承租被邀請人 | N | string | Y:略過 |
+
+* input範例
+
+```
+{
+    "SKBToken": "",
+    "OrderNo": "H10641049",
+    "Insurance": 0,
+    "ED": ""
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## BookingStartMotor 機車取車
+
+### [/api/BookingStartMotor/]
+
+* 20210820補資料
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
+| SKBToken | SKB的token | Y | int | 0 |
+| Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
+| skipNoFeedbackInvitees | 略過未回應的共同承租被邀請人 | N | string | Y:略過 |
+
+* input範例
+
+```
+{
+    "SKBToken": "",
+    "OrderNo": "H10641049",
+    "Insurance": 0,
+    "ED": ""
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+
+----
 
 # 月租訂閱制相關
 
@@ -4564,7 +4742,7 @@ iRentApi20 Web API版本
 
 ### [/api/OrderDetail/]
 
-* 20210517修改
+* 20210819修改
 
 * ASP.NET Web API (REST API)
 
@@ -4661,6 +4839,7 @@ iRentApi20 Web API版本
 | RSOC_E 	   | 還車電量			| float  | 0			 |
 | RewardPoint  | 獎勵時數			| int    | 0			 |
 | TotalRewardPoint | 總回饋時數		| int    | 0 			 |
+| RenterType | 共同承租人類型      | int    | 1:主要承租人  2:共同承租人  |
 
 
 
@@ -4726,7 +4905,8 @@ iRentApi20 Web API版本
 		"RSOC_S": 90.0,
 		"RSOC_E": 80.0,
 		"RewardPoint": 0,
-		"TotalRewardPoint" : 0
+		"TotalRewardPoint" : 0,
+        "RenterType" 1
     
 }
 ```
@@ -4832,8 +5012,413 @@ iRentApi20 Web API版本
     }
 }
 ```
+------
+
+## BookingQuery
+
+### [/api/BookingQuery/]
+
+* 202108020補上
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo    | 訂單編號 |  N   | string | H12044254 |
+
+* input範例 -不傳入參數
+
+```
+
+```
+
+* input範例 -傳入參數
+
+```
+{
+    "OrderNo":H12044254
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderObj      | 訂單明細物件           | list |      |
+
+* OrderObj回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| StationInfo      | 據點資訊物件         | object |      |
+| Operator |       營運商     | string | supplierIrent       |
+| OperatorScore |     評分       | float | 5.0       |
+| CarTypePic |   車輛圖片         | string | yaris       |
+| CarNo |        車號    | string | RCM-6312       |
+| CarBrend |     廠牌       | string | TOYOTA      |
+| CarTypeName |    車型名稱        | string | YARIS      |
+| Seat |      座椅數      | int | 5      |
+| ParkingSection |   停車格位置         | string|       |
+| IsMotor |    是否為機車        | int |  0:否 1:是    |
+| CarOfArea |      車輛圖顯示地區      | string | 台北市       |
+| CarLatitude |      車緯度      | decimal |25.2193111   |
+| CarLongitude |     車經度       | decimal | 121.4409194       |
+| MotorPowerBaseObj |     機車電力資訊    | object |  當ProjType=4時才有值   |
+| ProjType |      專案類型      | int | 0      |0:同站 3:路邊 4:機車
+| ProjName |       專案名稱     | string | 同站汽車110起推廣專案      |
+| WorkdayPerHour |      平日每小時費用      | int  |  110     |
+| HolidayPerHour |       假日每小時費用     | int | 168       |
+| MaxPrice |       每日上限     | int |0  |
+| MaxPriceH |     假日上限       | int | 0    |
+| MotorBasePriceObj |      機車費用      | object |   當ProjType=4時才有值 |
+| OrderStatus |      訂單狀態      | int | -1:前車未還（未到站） 0:可取車 1:用車中 2:延長用車中 3:準備還車 4:逾時 5:還車流程中（未完成還車）|
+| OrderNo |      訂單編號      | string | H12044254      |
+| StartTime |    預計取車時間        | string | 2021-08-24 11:10:00      |
+| PickTime |       實際取車時間    | string |     |
+| ReturnTime |    實際還車時間        | string  |     |
+| StopPickTime |     取車截止時間       | string | 2021-08-24 11:25:00       |
+| StopTime |    預計還車時間        | string |2021-08-25 12:10:00  |
+| OpenDoorDeadLine |     使用期限       | string |     |
+| CarRentBill |   預估租金         | int |    1210 |
+| MileagePerKM |  每一公里里程費          | float | 3.1    |
+| MileageBill |   預估里程費         | int | 682      |
+| Insurance |  是否可以使用安心服務          | int |   1:可 0:否  |
+| InsurancePerHour |   安心保險每小時         | int  |  50  |
+| InsuranceBill |   預估安心保險費用         | int |2021-08-25 12:10:00  |
+| TransDiscount |   轉乘優惠         | int |  0   |
+| Bill |   預估總金額         | int |    1892 |
+| DailyMaxHour |      單日計費上限時數      | int | 10   |
+| CAR_MGT_STATUS |      取還車狀態      | string |   0 = 尚未取車 1 = 已經上傳出車照片 2 = 已經簽名出車單 3 = 已經信用卡認證 4 = 已經取車(記錄起始時間) 11 = 已經紀錄還車時間 12 = 已經上傳還車角度照片 13 = 已經上傳還車車損照片 14 = 已經簽名還車單 15 = 已經信用卡付款 16 = 已經檢查車輛完成並已經解除卡號      |
+| AppStatus |            | string |  1:尚未到取車時間(取車時間半小時前) 2:立即換車(取車前半小時，前車尚未完成還車) 3:開始使用(取車時間半小時前) 4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間) 5:操作車輛(取車後) 取車時間改實際取車時間 6:操作車輛(準備還車)- 7:物品遺漏(再開一次車門) 8:鎖門並還車(一次性開門申請後)      |
+| RenterType |      承租人類型      | int | 1:主要承租人 2:共同承租人   |
+
+* StationInfo回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| StationID      | 據點代碼         | string |    X1CZ  |
+| StationName |       據點名稱     | string | iRent北科大億光大樓站       |
+| Tel |     電話       | string | (02)2516-3816      |
+| ADDR |   地址         | string | 台北市大安區忠孝東路三段1號B1~B3停車場(還車時請備註車位號碼)       |
+| Latitude |        緯度    | string | 25.042948      |
+| Longitude |     經度       | string | 121.537066      |
+| Content |    其他說明        | string | YARIS      |
+| IsRent |            | string |       |
+| ContentForAPP |   據點描述（app顯示）         | string|     1.從建國南路一段進入\n2.無固定車位\n3.車牌辨識進出\n4.請盡量停放平面停車場，如遇到平面沒位置請清楚註明樓層車格號碼。\n  |
+| IsRequiredForReturn |    還車位置資訊必填        | int |  1    |
+| StationPic |      據點照片      | list |        |
+
+* MotorPowerBaseObj回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Power      | 剩餘電量         | float |      |
+| RemainingMileage |       剩餘里程     | float |        |
+
+* MotorBasePriceObj回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| BaseMinutes   | 剩餘電量         | int |           |
+| BasePrice     |  剩餘里程        | int |           |
+| PerMinutesPrice | 剩餘電量       | float |         |
+| MaxPrice       | 剩餘里程        | int |           |
+
+* StationPic回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| StationPic   | 據點照片         | string |    https://irentv2data.blob.core.windows.net/station/X1CZ_1_20210209000000.png     |
+| PicDescription     |  PicDescription        | string |    由建國南路一段進入\n       |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "OrderObj": [
+            {
+                "StationInfo": {
+                    "StationID": "X1CZ",
+                    "StationName": "iRent北科大億光大樓站",
+                    "Tel": "(02)2516-3816",
+                    "ADDR": "台北市大安區忠孝東路三段1號B1~B3停車場(還車時請備註車位號碼)",
+                    "Latitude": 25.042948,
+                    "Longitude": 121.537066,
+                    "Content": "",
+                    "IsRent": null,
+                    "ContentForAPP": "1.從建國南路一段進入\n2.無固定車位\n3.車牌辨識進出\n4.請盡量停放平面停車場，如遇到平面沒位置請清楚註明樓層車格號碼。\n",
+                    "IsRequiredForReturn": 1,
+                    "StationPic": [
+                        {
+                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X1CZ_1_20210209000000.png",
+                            "PicDescription": "由建國南路一段進入\n"
+                        },
+                        {
+                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X1CZ_2_20210209000000.png",
+                            "PicDescription": "平面停車位若無位置可停至地下室\n"
+                        }
+                    ]
+                },
+                "Operator": "supplierIrent",
+                "OperatorScore": 5.0,
+                "CarTypePic": "yaris",
+                "CarNo": "RCM-6312",
+                "CarBrend": "TOYOTA",
+                "CarTypeName": "YARIS",
+                "Seat": 5,
+                "ParkingSection": "",
+                "IsMotor": 0,
+                "CarOfArea": "台北市",
+                "CarLatitude": 25.2193111,
+                "CarLongitude": 121.4409194,
+                "MotorPowerBaseObj": null,
+                "ProjType": 0,
+                "ProjName": "同站汽車110起推廣專案",
+                "WorkdayPerHour": 110,
+                "HolidayPerHour": 168,
+                "MaxPrice": 0,
+                "MaxPriceH": 0,
+                "MotorBasePriceObj": null,
+                "OrderStatus": 0,
+                "OrderNo": "H12044254",
+                "StartTime": "2021-08-24 11:10:00",
+                "PickTime": "",
+                "ReturnTime": "",
+                "StopPickTime": "2021-08-24 11:25:00",
+                "StopTime": "2021-08-25 12:10:00",
+                "OpenDoorDeadLine": "",
+                "CarRentBill": 1210,
+                "MileagePerKM": 3.1,
+                "MileageBill": 682,
+                "Insurance": 1,
+                "InsurancePerHour": 50,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "Bill": 1892,
+                "DailyMaxHour": 10,
+                "CAR_MGT_STATUS": 0,
+                "AppStatus": 1
+            }
+        ]
+    }
+}
+```
+
+----
+
+## BookingFinishQuery
+
+### [/api/BookingFinishQuery/]
+
+* 202108020補上
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| NowPage    | 現在頁碼 |  N   | int | 1 |
+| ShowOneYear    | 顯示一整年 (202101 該參數已無作用) |  Y   | int | 0:否 20XX代表取出該年度的所有訂單 |
+
+* input範例
+
+```
+{
+    "NowPage" : 1,
+    "ShowOneYear" : 1
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderFinishObjs      | 完成的訂單清單           | list |      |
+
+* OrderFinishObjs回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| RentYear      | 年分         | int |      |
+| OrderNo |       訂單編號     | string | supplierIrent       |
+| CarNo |     車號       | string | 5.0       |
+| ProjType |   專案類型         | int | 0:同站 3:路邊 4:機車       |
+| RentDateTime |        取車時間 月日時分    | string |        |
+| TotalRentTime |     總租用時數       | string |       |
+| Bill |    總租金        | string | YARIS      |
+| UniCode |      統編      | string | 5      |
+| StationName |            | string|       |
+| CarOfArea |    車輛圖顯示地區        | string |  0:否 1:是    |
+| CarTypePic |      車輛圖片      | string | 台北市       |
+| IsMotor |      是否為機車      | int |1:是 0:否  |
+| IsJointOrder | 是否為共同承租訂單      | int | 1:是 0:否  |
+
+* Output範例
+
+```
+ {
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "TotalPage": 6,
+        "OrderFinishObjs": [
+            {
+                "RentYear": 2021,
+                "OrderNo": "H12027037",
+                "CarNo": "EWH-7321",
+                "ProjType": 4,
+                "RentDateTime": "08月19日 15:28",
+                "TotalRentTime": "0天0時2分",
+                "Bill": 0,
+                "UniCode": "",
+                "StationName": "iRent路邊租還[機車]_台北",
+                "CarOfArea": "北北桃",
+                "CarTypePic": "iretScooter",
+                "IsMotor": 1,
+                "IsJointOrder":"0"
+            },
+            {
+                "RentYear": 2021,
+                "OrderNo": "H11700564",
+                "CarNo": "EWJ-1018",
+                "ProjType": 4,
+                "RentDateTime": "08月04日 13:17",
+                "TotalRentTime": "0天0時4分",
+                "Bill": 12,
+                "UniCode": "",
+                "StationName": "iRent路邊租還[機車]_台北",
+                "CarOfArea": "北北桃",
+                "CarTypePic": "iretScooter",
+                "IsMotor": 1,
+                "IsJointOrder":"0"
+            }
+        ]
+    }
+}
+```
 
 -----
+
+## BookingDelete 刪除訂單
+
+### [/api/BookingDelete/]
+
+* 202108020補上
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0000029 |
+
+
+* input範例
+
+```
+{
+    "OrderNo" : "H0000029"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+---
 
 
 # 車輛調度停車場相關
@@ -5082,3 +5667,363 @@ iRentApi20 Web API版本
 }
 ```
 ----
+
+# iRent共同承租人機制
+
+## JointRentInviteeListQuery ##
+### [/api/JointRentInviteeListQuery/]
+
+* 20210819新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| OrderNo   | 訂單編號   |  Y   | string    | H10791575 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10791575",
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderNo  | 訂單編號         | string    | H10791575     |
+| Invitees | 被邀請人明細 | list | |
+
+* Invitees 參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| InviteeId  | 被邀請人ID         | string | A140584782     |
+| InviteeName  | 被邀請人姓名      | string | 王曉明    |
+| InvitationStatus     | 邀請狀態               |  string | Y:已接受 N:已拒絕 F:已取消 S:邀請中   |
+
+
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "OrderNo":"H10791575"
+        "Invitees": [
+            {
+                "InviteeId": "A140584782",
+                "InviteeName": "王一明",
+                "InvitationStatus": "Y"
+            },
+            {
+                "InviteeId": "A140584783",
+                "InviteeName": "王二明",
+                "InvitationStatus": "N"
+            },
+            {
+                "InviteeId": "A140584784",
+                "InviteeName": "王三明",
+                "InvitationStatus": "F"
+            },
+            {
+                "InviteeId": "A140584785",
+                "InviteeName": "王四明",
+                "InvitationStatus": "S"
+            }
+        ]
+    }
+}
+```
+## JointRentInviteeVerify
+### [/api/JointRentInviteeVerify/]
+
+* 20210819新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| QureyId   | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
+| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
+
+
+* input範例
+
+```
+{
+    "QureyId": "0911001001",
+    "OrderNo": "H10791575",
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| OrderNo  | 訂單編號         | string    | H10791575     |
+| InviteeId | 被邀請人ID | string | A140584785 |
+| QureyId | 要邀請的ID或手機(原input參數) | string | 0911001001 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "OrderNo":"H10791575",
+        "InviteeId":"A140584785",
+        "QureyId":"0911001001"
+    }
+}
+```
+
+## JointRentInvitation
+###[/api/JointRentInvitation/]
+
+* 20210819新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
+| QureyId   | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10791575",
+    "InviteeId": "0911001001"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## JointRentInviteeModify
+###[/api/JointRentInviteeModify/]
+
+* 20210819新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
+| InviteeId   | 被邀請的ID   |  Y   | string    | 0911001001 |
+| ActionType  |  行為  |  Y   | string    | F:取消  D:刪除 S:重邀|
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10791575",
+    "InviteeId": "0911001001",
+    "ActionType":"F"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## JointRentIviteeFeedBack
+###[/api/JointRentIviteeFeedBack/]
+* 20210819新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
+| InviteeId   | 被邀請的ID   |  Y   | string    | A140584785 |
+| FeedbackType  |  邀請回覆  |  Y   | string    | Y:同意  N:拒絕 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10791575",
+    "InviteeId": "0911001001",
+    "FeedbackType":"F"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
