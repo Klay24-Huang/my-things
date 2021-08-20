@@ -1053,17 +1053,17 @@ iRentApi20 Web API版本
 * 動作 [POST]
 * Input 傳入參數說明
 
-| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例                                          |
-| --------- | ------------------------------ | :--: | :----: | --------------------------------------------- |
-| IDNO      | 身分證字號                     |  Y   | string | A123456789                                    |
-| VerType   | 同意書版本類型                 |  Y   | string | Hims                                          |
-| Version   | 同意書版本號                   |  Y   | string | 100                                           |
-| Source    | 同意來源管道 (I:IRENT W:官網)  |  Y   | string | W                                             |
-| AgreeDate | 同意時間                       |  Y   | string | 2021-08-17 14:45:21 格式：yyyy-MM-dd HH:mm:ss |
-| TEL       | 電話通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                             |
-| SMS       | 簡訊通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                             |
-| EMAIL     | EMAIL通知 (N:不通知 Y:通知)    |  Y   | string | Y                                             |
-| POST      | 郵寄通知 (N:不通知 Y:通知)     |  Y   | string | Y                                             |
+| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例                                              |
+| --------- | ------------------------------ | :--: | :----: | ------------------------------------------------- |
+| IDNO      | 身分證字號                     |  Y   | string | A123456789                                        |
+| VerType   | 同意書版本類型                 |  Y   | string | Hims                                              |
+| Version   | 同意書版本號                   |  Y   | string | 100                                               |
+| Source    | 同意來源管道 (I:IRENT W:官網)  |  Y   | string | W                                                 |
+| AgreeDate | 同意時間                       |  Y   | string | 2021-08-17 14:45:21 <br>格式：yyyy-MM-dd HH:mm:ss |
+| TEL       | 電話通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                                 |
+| SMS       | 簡訊通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                                 |
+| EMAIL     | EMAIL通知 (N:不通知 Y:通知)    |  Y   | string | Y                                                 |
+| POST      | 郵寄通知 (N:不通知 Y:通知)     |  Y   | string | Y                                                 |
 
 * Input範例
 
