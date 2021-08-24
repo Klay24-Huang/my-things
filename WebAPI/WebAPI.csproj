@@ -188,6 +188,7 @@
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
     <Compile Include="Controllers\BE_AutoPayMoneyController.cs" />
     <Compile Include="Controllers\BE_BannerController.cs" />
+    <Compile Include="Controllers\BE_BannerSortController.cs" />
     <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
@@ -421,6 +422,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_AutoPayMoney.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Banner.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BannerSort.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />

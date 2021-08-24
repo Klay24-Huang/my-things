@@ -245,8 +245,8 @@ function DoAjaxAfterSubmitNonShowMessageAndNowhide(obj, API, FailMessage, frmObj
 function DoAjaxAfterReload(obj,API,FailMessage) {
     var json = JSON.stringify(obj);
     console.log("json:" + json);
-    var site = jsHost + API;
-    //var site = "http://localhost:2061/api/" + API
+    //var site = jsHost + API;
+    var site = "http://localhost:2061/api/" + API
     console.log("site:" + site);
     $.ajax({
         url: site,
