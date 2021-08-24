@@ -17,7 +17,7 @@ namespace WebAPI.Controllers
 {
     public class BE_BannerSortController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
         public Dictionary<string, object> DoBE_HandleUserMaintain(Dictionary<string, object> value)
