@@ -150,13 +150,17 @@ iRentApi20 Web API版本
 
 20210820 補機車取車API
 
-20210820 補機車取車(BookingStartMotor)增加欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
+20210820 機車取車(BookingStartMotor)增加欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
 
 20210820 補完成的訂單查詢API
 
 20210820 完成的訂單查詢(BookingFinishQuery)增加欄位是否為共同承租訂單(IsJointOrder)
 
 20210820 補刪除訂單API
+
+20210825 汽車取車(BookingStart)移除欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
+
+20210825 機車取車(BookingStartMotor)移除欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -2876,7 +2880,7 @@ iRentApi20 Web API版本
 | ED | 路邊租還可以重設結束時間 | Y | int | 0 |
 | SKBToken | SKB的token | Y | int | 0 |
 | Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
-| skipNoFeedbackInvitees | 略過未回應的共同承租被邀請人 | N | string | Y:略過 |
+|           |                          |      |        |           |
 
 * input範例
 
@@ -2940,8 +2944,8 @@ iRentApi20 Web API版本
 | OrderNo  | 訂單編號 |  Y   | string | H0002630 |
 | ED | 路邊租還可以重設結束時間 | Y | int | 0 |
 | SKBToken | SKB的token | Y | int | 0 |
-| Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
-| skipNoFeedbackInvitees | 略過未回應的共同承租被邀請人 | N | string | Y:略過 |
+| Insurance | 加購安心服務 | Y | int | 0:否 1:有 |
+|           |                          |      |        |           |
 
 * input範例
 
