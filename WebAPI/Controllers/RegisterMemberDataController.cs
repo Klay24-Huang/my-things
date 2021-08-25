@@ -3,6 +3,7 @@ using Domain.SP.Input.Member;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
 using Domain.SP.Output.Member;
+using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 using OtherService;
@@ -202,7 +203,31 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
-                    // 拋短租
+                    // 20210825 UPD BY YEH REASON:拋短租
+                    WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                    {
+                        IDNO = ListOut.FirstOrDefault().MEMIDNO,
+                        VERTYPE = ListOut.FirstOrDefault().VerType,
+                        VER = ListOut.FirstOrDefault().Version,
+                        VERSOURCE = ListOut.FirstOrDefault().Source,
+                        TEL = ListOut.FirstOrDefault().TEL,
+                        SMS = ListOut.FirstOrDefault().SMS,
+                        EMAIL = ListOut.FirstOrDefault().EMAIL,
+                        POST = ListOut.FirstOrDefault().POST,
+                        MEMO = "",
+                        COMPID = "EF",
+                        COMPNM = "和雲",
+                        PRGID = "iRent_6",
+                        USERID = "iRentUser"
+                    };
+                    WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
+                    HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+
+                    flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
+                    if (flag == false)
+                    {
+                        errCode = "ERR776";
+                    }
                 }
             }
             #endregion
