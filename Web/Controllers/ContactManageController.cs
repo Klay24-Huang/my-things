@@ -632,7 +632,7 @@ namespace Web.Controllers
                         csvText.Append((lstBook[i].FinePrice < 0) ? "," : lstBook[i].FinePrice.ToString() + ",");                            //罰金
                         csvText.Append((lstBook[i].Mileage < 0) ? "," : lstBook[i].Mileage.ToString() + ",");                                //油資
                         csvText.Append((lstBook[i].eTag < 0) ? "," : lstBook[i].eTag.ToString() + ",");                                      //ETag費用
-                        csvText.Append((lstBook[i].TransDiscount > 0) ? "," : (-1 * lstBook[i].TransDiscount).ToString() + ",");             //轉乘優惠
+                        csvText.Append((lstBook[i].TransDiscount > 0) ? (-1 * lstBook[i].TransDiscount).ToString() + "," : ",");             //轉乘優惠 //20210825 轉乘優惠改為大於0才輸出
                         csvText.Append(lstBook[i].CarPoint + ",");           //時數折抵(分)
                         csvText.Append(lstBook[i].MotorPoint + ",");         //時數折抵(分)
                         csvText.Append(lstBook[i].FinalPrice + ",");         //還車小計
