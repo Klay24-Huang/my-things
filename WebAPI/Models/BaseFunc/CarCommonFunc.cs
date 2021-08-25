@@ -2343,7 +2343,7 @@ namespace WebAPI.Models.BaseFunc
                         }
                         if (flag)
                         {
-                            if (FetAPI.IsSupportCombineCmd(CID))
+                            if (FetAPI.IsSupportCombineCmd(CID) && false)
                             {
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
