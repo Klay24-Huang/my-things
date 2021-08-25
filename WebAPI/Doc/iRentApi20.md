@@ -163,6 +163,9 @@ iRentApi20 Web API版本
 
 20210825 機車取車(BookingStartMotor)移除欄位略過未回應的被邀請人(SkipNoFeedbackInvitees)
 
+20210825 共同承租人邀請清單查詢(JointRentInviteeListQuery)新增欄位邀請時輸入的ID或手機(QueryId)
+
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -5808,6 +5811,7 @@ iRentApi20 Web API版本
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
 | ------------ | ------------------ | :----: | ------------- |
+| QueryId | 邀請時輸入的ID或手機 |string | 0911001001 |
 | InviteeId  | 被邀請人ID         | string | A140584782     |
 | InviteeName  | 被邀請人姓名      | string | 王曉明    |
 | InvitationStatus     | 邀請狀態               |  string | Y:已接受 N:已拒絕 F:已取消 S:邀請中   |
@@ -5829,21 +5833,25 @@ iRentApi20 Web API版本
         "OrderNo":"H10791575"
         "Invitees": [
             {
-                "InviteeId": "A140584782",
-                "InviteeName": "王一明",
-                "InvitationStatus": "Y"
+                "QueryId" : "0911001001",
+                "InviteeId" : "A140584782",
+                "InviteeName" : "王一明",
+                "InvitationStatus" : "Y"
             },
             {
+                "QueryId" : "0911001002",
                 "InviteeId": "A140584783",
                 "InviteeName": "王二明",
                 "InvitationStatus": "N"
             },
             {
+                "QueryId" : "A140584784",
                 "InviteeId": "A140584784",
                 "InviteeName": "王三明",
                 "InvitationStatus": "F"
             },
             {
+                "QueryId" : "A140584785",
                 "InviteeId": "A140584785",
                 "InviteeName": "王四明",
                 "InvitationStatus": "S"
