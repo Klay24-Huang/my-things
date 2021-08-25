@@ -4,11 +4,15 @@ using Domain.SP.Input.Member;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.Member;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -19,6 +23,7 @@ using WebCommon;
 
 /*
  * 20210812 ADD BY YEH 新增程式
+ * 20210824 UPD BY YEH REASON:拋短租
  */
 
 namespace WebAPI.Controllers
@@ -129,7 +134,31 @@ namespace WebAPI.Controllers
                     baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                     if (flag)
                     {
-                        // 拋短租
+                        // 20210824 UPD BY YEH REASON:拋短租
+                        WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                        {
+                            IDNO = ListOut.FirstOrDefault().MEMIDNO,
+                            VERTYPE = ListOut.FirstOrDefault().VerType,
+                            VER = ListOut.FirstOrDefault().Version,
+                            VERSOURCE = ListOut.FirstOrDefault().Source,
+                            TEL = ListOut.FirstOrDefault().TEL,
+                            SMS = ListOut.FirstOrDefault().SMS,
+                            EMAIL = ListOut.FirstOrDefault().EMAIL,
+                            POST = ListOut.FirstOrDefault().POST,
+                            MEMO = "",
+                            COMPID = "EF",
+                            COMPNM = "和雲",
+                            PRGID = "iRent_205",
+                            USERID = "iRentUser"
+                        };
+                        WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
+                        HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+
+                        flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
+                        if (flag == false)
+                        {
+                            errCode = "ERR776";
+                        }
                     }
                 }
             }
