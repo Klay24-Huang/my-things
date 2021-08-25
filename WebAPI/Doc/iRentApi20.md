@@ -66,6 +66,7 @@ iRentApi20 Web API版本
 - [BookingQuery 訂單列表](#BookingQuery)
 - [BookingFinishQuery 完成的訂單查詢](#BookingFinishQuery)
 - [BookingDelete 刪除的訂單](#BookingDelete)
+- [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
 
 車輛調度停車場
 
@@ -5362,11 +5363,11 @@ iRentApi20 Web API版本
 
 -----
 
-## BookingDelete 刪除訂單
+## BookingDelete
 
 ### [/api/BookingDelete/]
 
-* 202108020補上
+* 20210820補上
 
 * ASP.NET Web API (REST API)
 
@@ -5424,6 +5425,83 @@ iRentApi20 Web API版本
 
 ---
 
+## GetOrderInsuranceInfo
+
+### [/api/GetOrderInsuranceInfo/]
+
+* 20210825新增
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0000029 |
+
+
+* input範例
+
+```
+{
+    "OrderNo" : "H0000029"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Insurance      | 可否使用安心服務           | int | 0:否 1:是      |
+| MainInsurancePerHour   | 主承租人每小時安心服務價格  | string | 50 |
+| JointInsurancePerHour  | 單一共同承租人每小時安心服務價格  | int | 若該訂單沒有共同承租邀請對象，該欄位為0 |
+| JointAlertMessage  | 共同承租提示訊息| int | 若該訂單沒有共同承租邀請對象，該欄位為空字串 |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data":
+    {
+        "Insurance": 1,
+        "MainInsurancePerHour": 50,
+        "JointInsurancePerHour": 20,
+        "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認"
+    }
+}
+```
+
+
+---
 
 # 車輛調度停車場相關
 
