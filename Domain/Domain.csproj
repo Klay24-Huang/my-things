@@ -256,6 +256,7 @@
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
+    <Compile Include="SP\Input\SPInput_JointRentInviteeVerify.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_ArrearsPaySubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_CreateSubsMonth.cs" />
@@ -340,6 +341,7 @@
     <Compile Include="SP\Output\Rent\SPOut_InsFeedBack.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
+    <Compile Include="SP\Output\SPOutput_JointRentInviteeVerify.cs" />
     <Compile Include="SP\Output\SPOutput_RefundBase.cs" />
     <Compile Include="SP\Output\SPOutput_InsTrade.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_ArrearsPaySubs.cs" />
