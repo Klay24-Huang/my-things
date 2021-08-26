@@ -712,6 +712,7 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
+            BE_BannerSort
         }
         /// <summary>
         /// 取出SPName
@@ -1282,6 +1283,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
                     SPName = "usp_BE_GetCarCurrentStatus";
+                    break;
+                case SPType.BE_BannerSort:       
+                    SPName = "usp_BE_BannerSort";
                     break;
                 #endregion
                 #region 整備人員
