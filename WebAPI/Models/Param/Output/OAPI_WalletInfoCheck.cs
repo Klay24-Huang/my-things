@@ -19,5 +19,9 @@ namespace WebAPI.Models.Param.Output
         /// 當月入賬總金額
         /// </summary>
         public int MonTransIn { get; set; } = 0;
+        /// <summary>
+        /// 名稱或電話號碼
+        /// </summary>
+        public string Name_Phone { get; set; }
     }
 }

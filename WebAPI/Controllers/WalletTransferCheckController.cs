@@ -51,6 +51,9 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
 
+            string inIDNO = "";//輸入身分證號
+            string inPhoneNo = "";//輸入手機號碼          
+
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -77,13 +80,18 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (apiInput == null ||
-                      (string.IsNullOrWhiteSpace(apiInput.IDNO) && string.IsNullOrWhiteSpace(apiInput.PhoneNo)) ||
-                      apiInput.Amount == 0)
+                    if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone) || apiInput.Amount == 0)
                     {
                         flag = false;
                         errMsg = "參數遺漏";
                         errCode = "ERR257";//參數遺漏
+                    }
+                    else
+                    {
+                        if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))
+                            inPhoneNo = intPhoneNo.ToString();
+                        else
+                            inIDNO = apiInput.IDNO_Phone;
                     }
 
                     trace.FlowList.Add("防呆");
@@ -154,13 +162,19 @@ namespace WebAPI.Controllers
                     {
                         var sp2In = new SPInput_WalletTransferCheck()
                         {
-                            IDNO = apiInput.IDNO,//被贈人
-                            PhoneNo = apiInput.PhoneNo,//被贈人
+                            IDNO = inIDNO,//被贈人
+                            PhoneNo = inPhoneNo,//被贈人
                             LogID = LogID,
                         };
                         var sp2_list = wsp.sp_WalletTransferCheck(sp2In, ref sp2ErrCode);
-                        if (sp2_list != null && sp2_list.Count() > 0)
+                        if (sp2_list != null && sp2_list.Count() > 0) 
+                        {
                             CkTo = sp2_list.FirstOrDefault();
+                            if (!string.IsNullOrWhiteSpace(inPhoneNo))
+                                outputApi.Name_Phone = CkTo.MemPhone;
+                            else
+                                outputApi.Name_Phone = CkTo.MemNm;
+                        }
                         else
                             CkTo = null;
 
@@ -219,6 +233,7 @@ namespace WebAPI.Controllers
                 }
 
                 outputApi.CkResult = flag ? 1 : 0;
+                outputApi.Amount = apiInput.Amount;
 
                 #endregion
             }

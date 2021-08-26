@@ -52,6 +52,9 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
 
+            string inIDNO = "";//輸入身分證號
+            string inPhoneNo = "";//輸入手機號碼            
+
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -78,12 +81,18 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (apiInput == null ||
-                      (string.IsNullOrWhiteSpace(apiInput.IDNO) && string.IsNullOrWhiteSpace(apiInput.PhoneNo)))
+                    if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone))
                     {
                         flag = false;
                         errMsg = "參數遺漏";
                         errCode = "ERR257";//參數遺漏
+                    }
+                    else 
+                    {
+                        if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))
+                            inPhoneNo = intPhoneNo.ToString();
+                        else
+                            inIDNO = apiInput.IDNO_Phone;
                     }
 
                     trace.FlowList.Add("防呆");
@@ -123,9 +132,9 @@ namespace WebAPI.Controllers
                     string sp1ErrCode = "";
                     var sp1In = new SPInput_WalletTransferCheck()
                     {
-                        IDNO = apiInput.IDNO,
+                        IDNO = inIDNO,
                         LogID = LogID,
-                        PhoneNo = apiInput.PhoneNo
+                        PhoneNo = inPhoneNo
                     };
                     var sp1_list = wsp.sp_WalletTransferCheck(sp1In, ref sp1ErrCode);
                     if (sp1_list != null && sp1_list.Count() > 0)
@@ -133,6 +142,11 @@ namespace WebAPI.Controllers
                         var fItem = sp1_list.FirstOrDefault();
                         outputApi.WalletAmount = fItem.WalletAmount;
                         outputApi.MonTransIn = Convert.ToInt32(fItem.MonTransIn);
+
+                        if (!string.IsNullOrWhiteSpace(inPhoneNo))
+                            outputApi.Name_Phone = fItem.MemPhone;
+                        else
+                            outputApi.Name_Phone = fItem.MemNm;
                     }
 
                     if (sp1ErrCode != "0000")

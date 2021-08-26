@@ -3,14 +3,9 @@
     public class IAPI_WalletTransferCheck
     {
         /// <summary>
-        /// 身分證-受贈人
+        /// 身分證或手機號碼
         /// </summary>
-        public string IDNO { get; set; }
-
-        /// <summary>
-        /// 手機號碼-受贈人
-        /// </summary>
-        public string PhoneNo { get; set; }
+        public string IDNO_Phone { get; set; }
 
         /// <summary>
         /// 轉贈金額

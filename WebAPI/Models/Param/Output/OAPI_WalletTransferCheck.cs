@@ -7,31 +7,12 @@
         /// </summary>
         public int CkResult { get; set; } = 0;
         /// <summary>
-        /// 錢包剩餘金額
+        /// 名稱或電話號碼
         /// </summary>
-        //public int WalletAmount { get; set; } = 0;
+        public string Name_Phone { get; set; }
         /// <summary>
-        /// 當月入賬總金額
+        /// 轉贈金額
         /// </summary>
-        //public int MonTransIn { get; set; } = 0;
-
-        #region mark
-
-        ///// <summary>
-        ///// 姓名
-        ///// </summary>
-        //public string Name { get; set; }
-
-        ///// <summary>
-        ///// 電話
-        ///// </summary>
-        //public string PhoneNo { get; set; }
-
-        ///// <summary>
-        ///// 轉贈金額
-        ///// </summary>
-        //public int Amount { get; set; }
-
-        #endregion
+        public int Amount { get; set; }
     }
 }

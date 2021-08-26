@@ -8,13 +8,8 @@ namespace WebAPI.Models.Param.Input
     public class IAPI_WalletInfoCheck
     {
         /// <summary>
-        /// 身分證
+        /// 身分證或手機號碼
         /// </summary>
-        public string IDNO { get; set; }
-
-        /// <summary>
-        /// 手機號碼
-        /// </summary>
-        public string PhoneNo { get; set; }
+        public string IDNO_Phone { get; set; }
     }
 }
