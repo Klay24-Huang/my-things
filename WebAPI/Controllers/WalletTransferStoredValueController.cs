@@ -14,6 +14,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Service;
 using WebCommon;
 namespace WebAPI.Controllers
 {
@@ -32,6 +33,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoWalletPayTransaction(Dictionary<string, object> value)
         {
             #region 初始宣告
+            var wsp = new WalletSp();
             HttpContext httpContext = HttpContext.Current;
             var objOutput = new Dictionary<string, object>();    //輸出
             string Access_Token = "";
@@ -72,14 +74,14 @@ namespace WebAPI.Controllers
                 }
                 if (flag)
                 {
-                    if (string.IsNullOrWhiteSpace(apiInput.TransID))
+                    if (string.IsNullOrWhiteSpace(apiInput.TransIDNO))
                     {
                         flag = false;
                         errCode = "ERR900";
                     }
                     else
                     {
-                        flag = baseVerify.checkIDNO(apiInput.TransID);
+                        flag = baseVerify.checkIDNO(apiInput.TransIDNO);
                         if (flag==false) {
                             errCode = "ERR103";
                         }
@@ -132,7 +134,7 @@ namespace WebAPI.Controllers
                 SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletInfoByTrans);
                 SPInput_GetWalletInfo SPTransInput = new SPInput_GetWalletInfo()
                 {
-                    IDNO = apiInput.TransID,
+                    IDNO = apiInput.TransIDNO,
                     LogID = LogID,
                     Token = Access_Token
                 };
@@ -146,9 +148,9 @@ namespace WebAPI.Controllers
                     errCode = "ERR201";
                 }
 
-
                 #region 台新錢包
 
+                WebAPIOutput_TransferStoreValueCreateAccount output = null;
                 if (flag)
                 {
                     DateTime NowTime = DateTime.Now;
@@ -180,9 +182,9 @@ namespace WebAPI.Controllers
                     };
                     Domain.WebAPI.Input.Taishin.Wallet.Param.AccountData obj = new Domain.WebAPI.Input.Taishin.Wallet.Param.AccountData()
                     {
-                        TransferAccountId = string.Format("{0}Wallet{1}", apiInput.TransID, nowCount.ToString().PadLeft(4, '0')),
+                        TransferAccountId = string.Format("{0}Wallet{1}", apiInput.TransIDNO, nowCount.ToString().PadLeft(4, '0')),
                         TransferEmail = SPTransOutput.Email,
-                        TransferID = apiInput.TransID,
+                        TransferID = apiInput.TransIDNO,
                         TransferName = SPTransOutput.Name,
                         TransferPhoneNo = SPTransOutput.PhoneNo
                     };
@@ -191,15 +193,39 @@ namespace WebAPI.Controllers
                     TaishinWallet WalletAPI = new TaishinWallet();
                     string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                     string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                    WebAPIOutput_TransferStoreValueCreateAccount output = null;
+                    //WebAPIOutput_TransferStoreValueCreateAccount output = null;
                     flag = WalletAPI.DoTransferStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
                     if (flag==false)
                     {
                         errCode = "ERR";
                         errMsg = output.Message;
                     }
-
                 }
+                #endregion
+
+                #region 寫入錢包紀錄
+
+                if (flag)
+                {
+                    if (output != null && output.Result != null && !string.IsNullOrWhiteSpace(output.Result.TransId))
+                    {
+                        string spErrCode = "";
+                        var spIn = new SPInput_SetWalletTrade()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            TaishinNO = output.Result.TransId,
+                            UPDPRGID = apiInput.UPDPRGID,
+                            TradeType = apiInput.TradeType,
+                            TradeKey = apiInput.TradeKey,
+                            TradeAMT = apiInput.Amount
+                        };
+                        flag = wsp.sp_SetWalletTrade(spIn, ref spErrCode);
+                        if (!flag)
+                            errCode = spErrCode;
+                    }
+                }
+
                 #endregion
             }
             #endregion

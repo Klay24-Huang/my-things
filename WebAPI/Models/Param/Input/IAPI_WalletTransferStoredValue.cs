@@ -10,10 +10,22 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 受轉贈者身份證
         /// </summary>
-        public string  TransID{set;get;}
+        public string  TransIDNO{set;get;}
         /// <summary>
         /// 轉贈金額
         /// </summary>
         public int Amount { set; get; }
+        /// <summary>
+        /// 更新資料之程式名稱
+        /// </summary>
+        public string UPDPRGID { get; set; }
+        /// <summary>
+        /// 交易類別
+        /// </summary>
+        public string TradeType { get; set; }
+        /// <summary>
+        /// 交易Key值
+        /// </summary>
+        public string TradeKey { get; set; }
     }
 }

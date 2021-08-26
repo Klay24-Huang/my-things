@@ -163,6 +163,27 @@ namespace WebAPI.Service
             return flag;
         }
 
+        public bool sp_SetWalletTrade(SPInput_SetWalletTrade spInput, ref string errCode)
+        {
+            bool flag = false;
+            //string spName = new ObjType().GetSPName(ObjType.SPType.SetWalletTrade);
+            string spName = "usp_SetWalletTrade_U1";
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SetWalletTrade();
+            SQLHelper<SPInput_SetWalletTrade, SPOut_SetWalletTrade> sqlHelp = new SQLHelper<SPInput_SetWalletTrade, SPOut_SetWalletTrade>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
+
     }
 
     public class WalletMap
