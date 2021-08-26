@@ -606,33 +606,33 @@ namespace Web.Controllers
                         //20210823 ADD BY ADAM REASON.輸出改為csv
                         csvText.Append("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0') + ",");      //合約
                         csvText.Append(lstBook[i].IDNO + ",");                                          //會員帳號
-                        csvText.Append(lstBook[i].UserName + ",");                                      //會員姓名
+                        csvText.Append(lstBook[i].UserName.Replace("\r\n","") + ",");                                      //會員姓名
                         csvText.Append(OrderStatus + ",");                                              //訂單類型
                         csvText.Append(lstBook[i].LStation + "/" + lstBook[i].RStation + ",");          //取/還車站
                         csvText.Append(lstBook[i].CarTypeName + ",");                                   //車型
                         csvText.Append(lstBook[i].CarNo + ",");                                         //車牌號碼
                         csvText.Append(lstBook[i].PRONAME + ",");                                       //優惠方案
-                        csvText.Append((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車" : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm") + ",");    //實際取車時間
-                        csvText.Append((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車" : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm") + ",");    //實際還車時間
-                        csvText.Append((lstBook[i].P_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)) + ",");       //取車左邊電池電量
-                        csvText.Append((lstBook[i].P_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_RBA)) + ",");       //取車右邊電池電量
-                        csvText.Append((lstBook[i].P_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_MBA)) + ",");       //取車核心電池電量
-                        csvText.Append((lstBook[i].P_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_TBA)) + ",");       //取車平均電量
-                        csvText.Append((lstBook[i].RSOC_S) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_S)) + ",");     //取車儀表板電量
-                        csvText.Append((lstBook[i].R_LBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)) + ",");       //還車左邊電池電量
-                        csvText.Append((lstBook[i].R_RBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)) + ",");       //還車右邊電池電量
-                        csvText.Append((lstBook[i].R_MBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)) + ",");       //還車核心電池電量
-                        csvText.Append((lstBook[i].R_TBA) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)) + ",");       //還車平均電量
-                        csvText.Append((lstBook[i].RSOC_E) < 0 ? "" : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_E)) + ",");     //還車儀表板電量
-                        csvText.Append((lstBook[i].StartMile < 0) ? "無資料" : lstBook[i].StartMile.ToString() + ",");                      //取車里程
-                        csvText.Append((lstBook[i].StopMile < 0) ? "無資料" : lstBook[i].StopMile.ToString() + ",");                        //還車里程
-                        csvText.Append((lstBook[i].PurePrice < 0) ? "" : lstBook[i].PurePrice.ToString() + ",");                            //租金
-                        csvText.Append((lstBook[i].PurePrice < 0) ? "" : lstBook[i].InsurancePerHours.ToString() + ",");                    //安心服務費率
-                        csvText.Append((lstBook[i].PurePrice < 0) ? "" : lstBook[i].Insurance_price.ToString() + ",");                      //安心服務金額 //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
-                        csvText.Append((lstBook[i].FinePrice < 0) ? "" : lstBook[i].FinePrice.ToString() + ",");                            //罰金
-                        csvText.Append((lstBook[i].Mileage < 0) ? "" : lstBook[i].Mileage.ToString() + ",");                                //油資
-                        csvText.Append((lstBook[i].eTag < 0) ? "" : lstBook[i].eTag.ToString() + ",");                                      //ETag費用
-                        csvText.Append((lstBook[i].TransDiscount > 0) ? "" : (-1 * lstBook[i].TransDiscount).ToString() + ",");             //轉乘優惠
+                        csvText.Append((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車," : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm") + ",");    //實際取車時間
+                        csvText.Append((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車," : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm") + ",");    //實際還車時間
+                        csvText.Append((lstBook[i].P_LBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)) + ",");       //取車左邊電池電量
+                        csvText.Append((lstBook[i].P_RBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_RBA)) + ",");       //取車右邊電池電量
+                        csvText.Append((lstBook[i].P_MBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_MBA)) + ",");       //取車核心電池電量
+                        csvText.Append((lstBook[i].P_TBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_TBA)) + ",");       //取車平均電量
+                        csvText.Append((lstBook[i].RSOC_S) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_S)) + ",");     //取車儀表板電量
+                        csvText.Append((lstBook[i].R_LBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_LBA)) + ",");       //還車左邊電池電量
+                        csvText.Append((lstBook[i].R_RBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_RBA)) + ",");       //還車右邊電池電量
+                        csvText.Append((lstBook[i].R_MBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_MBA)) + ",");       //還車核心電池電量
+                        csvText.Append((lstBook[i].R_TBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].R_TBA)) + ",");       //還車平均電量
+                        csvText.Append((lstBook[i].RSOC_E) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].RSOC_E)) + ",");     //還車儀表板電量
+                        csvText.Append((lstBook[i].StartMile < 0) ? "無資料," : lstBook[i].StartMile.ToString() + ",");                      //取車里程
+                        csvText.Append((lstBook[i].StopMile < 0) ? "無資料," : lstBook[i].StopMile.ToString() + ",");                        //還車里程
+                        csvText.Append((lstBook[i].PurePrice < 0) ? "," : lstBook[i].PurePrice.ToString() + ",");                            //租金
+                        csvText.Append((lstBook[i].PurePrice < 0) ? "," : lstBook[i].InsurancePerHours.ToString() + ",");                    //安心服務費率
+                        csvText.Append((lstBook[i].PurePrice < 0) ? "," : lstBook[i].Insurance_price.ToString() + ",");                      //安心服務金額 //2021唐改，原為InsurancePurePrice，抓預估安心服務價格，現改抓實際的
+                        csvText.Append((lstBook[i].FinePrice < 0) ? "," : lstBook[i].FinePrice.ToString() + ",");                            //罰金
+                        csvText.Append((lstBook[i].Mileage < 0) ? "," : lstBook[i].Mileage.ToString() + ",");                                //油資
+                        csvText.Append((lstBook[i].eTag < 0) ? "," : lstBook[i].eTag.ToString() + ",");                                      //ETag費用
+                        csvText.Append((lstBook[i].TransDiscount > 0) ? (-1 * lstBook[i].TransDiscount).ToString() + "," : ",");             //轉乘優惠 //20210825 轉乘優惠改為大於0才輸出
                         csvText.Append(lstBook[i].CarPoint + ",");           //時數折抵(分)
                         csvText.Append(lstBook[i].MotorPoint + ",");         //時數折抵(分)
                         csvText.Append(lstBook[i].FinalPrice + ",");         //還車小計
@@ -686,6 +686,7 @@ namespace Web.Controllers
                         content.CreateCell(35).SetCellValue($"{lstBook[i].TotalGift}分");  //總回饋時數
                         */
                     }
+                    csvText.AppendLine("總共輸出" + lstBook.Count().ToString() + " 行");
                 }
             }
 
@@ -694,6 +695,7 @@ namespace Web.Controllers
 
             StreamWriter sw = new StreamWriter(ms, Encoding.UTF8);
             sw.Write(csvText.ToString());
+            sw.Flush();
             //workbook.Write(ms);
 
             // workbook.Close();
