@@ -77,6 +77,7 @@ iRentApi20 Web API版本
 - [GetPayInfoArrears 欠費繳交-付款方式-顯示](#GetPayInfoArrears)
 - [DoPayArrears 欠費繳交-執行](#GetPayInfoArrears)
 - [WalletTransferCheck 轉贈前確認](#WalletTransferCheck)
+- [WalletInfoCheck 查詢電子錢包資訊](#WalletInfoCheck)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
 
 ----------
@@ -5101,6 +5102,8 @@ iRentApi20 Web API版本
 ```
 ----
 
+# 電子錢包相關
+
 ## CreditAndWalletQuery
 
 ### [/api/CreditAndWalletQuery/]
@@ -6237,18 +6240,16 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例       |
-| -------------------- | ------------------------ |      | :--:     | ---------- | 
-|  IDNO                |  身分證-受贈人 (2擇1)    |  Y   |  string  | A123456789 |
-|  PhoneNo             |  手機號碼-受贈人(2擇1)   |  Y   |  string  | 0958123456 |
-|  Amount              |  轉贈金額                |  Y   |  int     | 1000       |
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例                   |
+| ---------- | ---------------- | ---- | :----: | ---------------------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789, 0958123456 |
+| Amount     | 轉贈金額         | Y    |  int   | 1000                   |
 
 * input範例
 
 ```
 {
-  "IDNO" : "A123456789",
-  "PhoneNo": "0958123456",
+  "IDNO_Phone" : "A123456789", 
   "Amount" : 1000
 }
 
@@ -6267,9 +6268,11 @@ iRentApi20 Web API版本
 
 * Data 回傳參數說明
 
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| CkResult        | 驗證結果 (1成功0失敗)                 |   int     | 1                     |
+| 參數名稱   | 參數說明              |  型態  | 範例  |
+| ---------- | --------------------- | :----: | ----- |
+| CkResult   | 驗證結果 (1成功0失敗) |  int   | 1     |
+| Name_Phone | 名稱或電話號碼        | string | 姓O名 |
+| Amount     | 轉贈金額              |  int   | 1000  |
 
 * Output範例
 
@@ -6281,7 +6284,85 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "CkResult":1
+	    "CkResult":1,
+	    "Name_Phone": "姓O名",
+	    "Amount":1000
+	}
+}
+
+```
+
+----
+
+## WalletInfoCheck
+
+### [/api/WalletInfoCheck/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例                   |
+| ---------- | ---------------- | ---- | :----: | ---------------------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789, 0958123456 |
+
+* input範例
+
+```
+{
+  "IDNO_Phone" : "A123456789", 
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明              |  型態   | 範例  |
+| ------------ | --------------------- | :----:  | ----- |
+| CkResult     | 驗證結果 (1成功0失敗) |  int    | 1     |
+| WalletAmount | 錢包剩餘金額          |  int    | 1000  |
+| MonTransIn   | 當月入賬總金額        |  int    | 2000  |
+| Name_Phone   | 名稱或電話號碼        |  string | 姓O名  |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "CkResult":1,
+	    "WalletAmount": 1000,
+	    "MonTransIn": 2000,
+		"Name_Phone": "姓O名"
 	}
 }
 
@@ -6311,18 +6392,16 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例       |
-| -------------------- | ------------------------ |      | :--:     | ---------- | 
-|  IDNO                |  身分證-受贈人 (2擇1)    |  Y   |  string  | A123456789 |
-|  PhoneNo             |  手機號碼-受贈人(2擇1)   |  Y   |  string  | 0958123456 |
-|  Amount              |  轉贈金額                |  Y   |  int     | 1000       |
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
+| ---------- | ---------------- | ---- | :----: | ---------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789 |
+| Amount     | 轉贈金額         | Y    |  int   | 1000       |
 
 * input範例
 
 ```
 {
-  "IDNO" : "A123456789",
-  "PhoneNo": "0958123456",
+  "IDNO_Phone" : "A123456789", 
   "Amount" : 1000
 }
 
@@ -6341,9 +6420,11 @@ iRentApi20 Web API版本
 
 * Data 回傳參數說明
 
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| TranResult      | 轉贈結果 (1成功0失敗)                 |   int     | 1                     |
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| TranResult | 轉贈結果 (1成功0失敗) |  int   | 1          |
+| Name_Phone | 名稱或電話號碼        | string | A123456789 |
+| Amount     | 轉贈金額              |  int   | 1000       |
 
 * Output範例
 
@@ -6355,7 +6436,9 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "TranResult":1
+	    "TranResult":1,
+	    "Name_Phone":"A123456789",
+	    "Amount":1000
 	}
 }
 
