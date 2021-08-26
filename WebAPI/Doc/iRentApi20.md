@@ -5755,7 +5755,7 @@ iRentApi20 Web API版本
 
 # iRent共同承租人機制
 
-## JointRentInviteeListQuery ##
+## JointRentInviteeListQuery 共同承租人邀請清單查詢 ##
 ### [/api/JointRentInviteeListQuery/]
 
 * 20210819新增
@@ -5860,7 +5860,7 @@ iRentApi20 Web API版本
     }
 }
 ```
-## JointRentInviteeVerify
+## JointRentInviteeVerify 共同承租人邀請檢核
 ### [/api/JointRentInviteeVerify/]
 
 * 20210819新增
@@ -5932,8 +5932,8 @@ iRentApi20 Web API版本
 }
 ```
 
-## JointRentInvitation
-###[/api/JointRentInvitation/]
+## JointRentInvitation 案件共同承租人邀請
+### [/api/JointRentInvitation/]
 
 * 20210819新增
 
@@ -5956,7 +5956,7 @@ iRentApi20 Web API版本
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
 | OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-| QureyId   | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
+| InviteeId | 要邀請的ID   |  Y   | string    | A140584785 |
 
 
 * input範例
@@ -5964,7 +5964,7 @@ iRentApi20 Web API版本
 ```
 {
     "OrderNo": "H10791575",
-    "InviteeId": "0911001001"
+    "InviteeId": "A140584785"
 }
 ```
 
@@ -5993,8 +5993,8 @@ iRentApi20 Web API版本
 }
 ```
 
-## JointRentInviteeModify
-###[/api/JointRentInviteeModify/]
+## JointRentInviteeModify 案件共同承租人邀請狀態維護
+### [/api/JointRentInviteeModify/]
 
 * 20210819新增
 
@@ -6017,7 +6017,7 @@ iRentApi20 Web API版本
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
 | OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-| InviteeId   | 被邀請的ID   |  Y   | string    | 0911001001 |
+| InviteeId   | 被邀請的ID   |  Y   | string    | A140584785 |
 | ActionType  |  行為  |  Y   | string    | F:取消  D:刪除 S:重邀|
 
 
@@ -6026,7 +6026,7 @@ iRentApi20 Web API版本
 ```
 {
     "OrderNo": "H10791575",
-    "InviteeId": "0911001001",
+    "InviteeId": "A140584785",
     "ActionType":"F"
 }
 ```
@@ -6056,8 +6056,8 @@ iRentApi20 Web API版本
 }
 ```
 
-## JointRentIviteeFeedBack
-###[/api/JointRentIviteeFeedBack/]
+## JointRentIviteeFeedBack 案件共同承租人回應邀請
+### [/api/JointRentIviteeFeedBack/]
 * 20210819新增
 
 * ASP.NET Web API (REST API)
@@ -6089,7 +6089,7 @@ iRentApi20 Web API版本
 {
     "OrderNo": "H10791575",
     "InviteeId": "0911001001",
-    "FeedbackType":"F"
+    "FeedbackType":"Y"
 }
 ```
 
