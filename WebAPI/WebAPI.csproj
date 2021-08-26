@@ -260,6 +260,7 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
@@ -490,6 +491,7 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
+    <Compile Include="Models\Param\Input\IAPI_JointRentInviteeListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
@@ -681,6 +683,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUpSubsList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_JointRentInviteeListQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
@@ -711,6 +714,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\GetFullProjectVM.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetNotification.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetProject_SeatGroup.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\InviteeObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonCardParam.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\MonthRentBase.cs" />

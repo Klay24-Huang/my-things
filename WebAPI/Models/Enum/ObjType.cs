@@ -712,6 +712,10 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
+            /// <summary>
+            /// 共同承租人邀請清單查詢
+            /// </summary>
+            GetJointRentInviteeList
         }
         /// <summary>
         /// 取出SPName
@@ -1065,7 +1069,7 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
                     SPName = "usp_GetMotorRent";
                     break;
-
+                
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";
@@ -1291,7 +1295,11 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_CancelCleanOrder:
                     SPName = "usp_BE_CancelCleanOrder";
                     break;
-                    #endregion
+                #endregion
+                case SPType.GetJointRentInviteeList:
+                    SPName = "usp_JointRentInviteeList_Q01";
+                    break;
+
             }
             return SPName;
         }
