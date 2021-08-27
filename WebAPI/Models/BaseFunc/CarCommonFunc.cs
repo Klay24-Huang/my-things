@@ -805,7 +805,8 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (flag && webAPI.IsSupportCombineCmd(CID))
+                        //20210827 ADD BY ADAM REASON.組合指令發生多起無鎖門的車，先恢復舊的做法
+                        if (flag && webAPI.IsSupportCombineCmd(CID) && false)
                         {
                             flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
@@ -960,7 +961,8 @@ namespace WebAPI.Models.BaseFunc
                         }
                         if (flag)
                         {
-                            if (FetAPI.IsSupportCombineCmd(CID))
+                            //20210827 ADD BY ADAM REASON.組合指令發生多起無鎖門的車，先恢復舊的做法
+                            if (FetAPI.IsSupportCombineCmd(CID) && false)
                             {
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
@@ -1382,7 +1384,8 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (flag && webAPI.IsSupportCombineCmd(CID))
+                        //20210827 ADD BY ADAM REASON.組合指令發生多起無鎖門的車，先恢復舊的做法
+                        if (flag && webAPI.IsSupportCombineCmd(CID) && false)
                         {
                             flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
@@ -1528,7 +1531,8 @@ namespace WebAPI.Models.BaseFunc
                         }
                         if (flag)
                         {
-                            if (FetAPI.IsSupportCombineCmd(CID))
+                            //20210827 ADD BY ADAM REASON.組合指令發生多起無鎖門的車，先恢復舊的做法
+                            if (FetAPI.IsSupportCombineCmd(CID) && false)
                             {
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleNoRentCombo;
