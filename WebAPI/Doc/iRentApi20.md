@@ -5957,6 +5957,7 @@ iRentApi20 Web API版本
 | --------- | ---------- | :--: | :----: | ----------- |
 | OrderNo  | 訂單編號       |  Y   | string | H10791575   |
 | InviteeId | 要邀請的ID   |  Y   | string    | A140584785 |
+| QureyId | 要邀請的ID或手機(原input參數) |  Y   | string | 0911001001 |
 
 
 * input範例
@@ -5964,7 +5965,8 @@ iRentApi20 Web API版本
 ```
 {
     "OrderNo": "H10791575",
-    "InviteeId": "A140584785"
+    "InviteeId": "A140584785",
+    "QureyId":"0911001001"
 }
 ```
 
