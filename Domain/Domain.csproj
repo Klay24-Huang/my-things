@@ -276,6 +276,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_GetTBCode.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetUpSubsList.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_InsEscrowHist.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_InsMonthlyInvErr.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsBookingMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsCreditStatus.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SaveInvno.cs" />
