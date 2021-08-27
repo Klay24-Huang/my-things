@@ -11,21 +11,17 @@ namespace Domain.SP.Input.Wallet
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
         /// <summary>
-        /// 財務-上游批號(IR編)
+        /// 商店訂單編號
         /// </summary>
-        public string TaishinNO { get; set; }
+        public string StoreTransId { get; set; }
         /// <summary>
-        /// 更新資料之程式名稱
+        /// 台新訂單編號
         /// </summary>
-        public string UPDPRGID { get; set; }
+        public string TransId { get; set; }
         /// <summary>
-        /// 交易類別(對應財務FMFLAG)
+        /// 受贈方
         /// </summary>
-        public string TradeType { get; set; }
-        /// <summary>
-        /// 交易代號
-        /// </summary>
-        public string TradeKey { get; set; }
+        public string IDNO_To { get; set; }
         /// <summary>
         /// 交易金額
         /// </summary>

@@ -13,6 +13,10 @@ namespace Domain.SP.Output.Wallet
         /// </summary>
         public int CkResult { get; set; }
         /// <summary>
+        /// 身分證號
+        /// </summary>
+        public string IDNO { get; set; }
+        /// <summary>
         /// 會員名稱
         /// </summary>
         public string MemNm { get; set; }

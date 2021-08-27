@@ -715,6 +715,7 @@
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
