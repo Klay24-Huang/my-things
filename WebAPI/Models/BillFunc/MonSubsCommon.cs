@@ -1793,6 +1793,27 @@ namespace WebAPI.Models.BillFunc
 
             return flag;
         }
+
+        public bool sp_InsMonthlyInvErr(SPInput_InsMonthlyInvErr spInput, ref string errCode)
+        {
+            bool flag = false;
+
+            string spName = "usp_InsMonthlyInvErr_I01";
+
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SaveInvno();
+            SQLHelper<SPInput_InsMonthlyInvErr, SPOut_SaveInvno> sqlHelp = new SQLHelper<SPInput_InsMonthlyInvErr, SPOut_SaveInvno>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+        }
     }
 
     /// <summary>

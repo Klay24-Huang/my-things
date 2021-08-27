@@ -108,7 +108,7 @@
                 if (fileName2.charCodeAt(i) > 255) {
                     swal({
                         title: 'Fail',
-                        text: "我家APP看到中文就會暴走崩潰，所以不准上傳中文檔名",
+                        text: "不可上傳中文檔名",
                         icon: 'error'
                     }).then(function (value) {
                         // $("#fileImport").val("");
@@ -132,7 +132,7 @@
         var fn = del == true ? $("#fileData1").val() : 'pp'; //若沒有做刪除圖片，就隨便給個名字騙過這邊的檢核
         var flag = true;
         var checkList = [SDate, EDate, URL, RunHorse, fn];
-        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填，妳有看到嗎?", "跑馬燈啦，填一下好嗎", "圖片沒傳，睏了嗎?"];
+        var checkErrList = ["有效起日未填", "有效迄日未填", "URL沒填", "跑馬燈沒填", "圖片沒傳"];
 
         if (SDate !== "" && EDate !== "") {
             if (SDate > EDate) {

@@ -592,7 +592,7 @@ namespace Web.Controllers
                     ISheet sheet = workBook.GetSheetAt(0);
                     int sheetLen = sheet.LastRowNum;
                     //20201207唐改大寫
-                    string[] field = { "CARNO", "TSEQNO", "CARTYPE", "SEAT", "FACTORYYEAR", "CARCOLOR", "ENGINENO", "BODYNO", "CCNUM" };
+                    string[] field = { "CARNO", "TSEQNO", "CARTYPE", "SEAT", "FACTORYYEAR", "CARCOLOR", "ENGINENO", "BODYNO", "CCNUM", "HolidayPrice", "WeekdayPrice" };
                     int fieldLen = field.Length;
                     //第一關，判斷位置是否相等
                     for (int i = 0; i < fieldLen; i++)
@@ -637,6 +637,8 @@ namespace Web.Controllers
                                     EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
                                     BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
                                     CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
+                                    HolidayPrice = Convert.ToInt32(sheet.GetRow(i).GetCell(9).ToString().Replace(" ", "")),
+                                    WeekdayPrice = Convert.ToInt32(sheet.GetRow(i).GetCell(10).ToString().Replace(" ", "")),
                                     IsMotor = 0,
                                     UserID = UserId,
                                     LogID = 0
