@@ -658,6 +658,8 @@
     @*<script src="~/Content/plugins/footable-bootstrap.latest/js/footable.js"></script>*@
     <script src="~/Scripts/plugin/busy-load-master/app.js"></script>
     <script src="~/Scripts/js/CommonFunc.js"></script>
+    <script src="~/Scripts/jquery.tablesort.js"></script> @*20210827唐加，bs的排序功能太爛，這個卡好用*@
+    <script src="~/Scripts/jquery.tablesorter.min.js"></script> @*20210827唐加，bs的排序功能太爛，這個卡好用*@
     @{
         switch (actionName)
         {
@@ -683,15 +685,15 @@
                 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVquooZC9O0F84LwJ-FRL3LzVmP_ExJ5M&libraries=drawing"></script>
                 <script src="~/Scripts/js/tinycolor-0.9.15.min.js"></script>
                 <script src="~/Scripts/js/pick-a-color.js"></script>
-                    break;
+                break;
             case "MonthlyMainQuery":
             case "MonthlyDetailQuery":
                 <script src="~/Scripts/js/jquery-dateFormat.js"></script>
                 break;
 
 
-            }
         }
+    }
     <script>
         var jsHost = "@hostPath";
         var jsHost2 = "@hostPath2";

@@ -2,6 +2,32 @@
 
 $(document).ready(function () {
 
+    //$("#sstable").tablesort();
+    //$('thead th.date').data('sortBy', function (th, td, sorter) {
+    //    return new Date(td.text());
+    //});
+
+
+    
+    $.tablesorter.addParser({
+        id: "num", //指定一個唯一的ID  
+        is: function (s) {
+            return false;
+        },
+        format: function (s) {
+            //對 xx時xx分xx秒 資料的處理
+            var hourNum = parseInt(s.substring(0, 9).replace("-",""));
+            console.log('Q:'+s)
+            console.log('A:' +hourNum)
+            return hourNum;
+        },
+        type: "numeric" //按數值排序  
+    });
+    $("#sstable").tablesorter({ headers: { 2: { sorter: false }, 1: { sorter: false }, 5: { sorter: false }, 3: { sorter: "num" }, 4: { sorter: "num" } } });
+
+
+
+
     SetStation($("#Banner"), $("#BannerName"));
 
     //讓修改後回到此頁面時重里整理，但第一次進來不會耶

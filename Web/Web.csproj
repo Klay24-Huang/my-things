@@ -394,6 +394,8 @@
     <Content Include="Content\css\style.css.map" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.tablesort.js" />
+    <Content Include="Scripts\jquery.tablesorter.min.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FranchiseesMaintain.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FuncGroupMaintain.js" />
     <Content Include="Scripts\js\ActionJS\AccountManage\FuncMaintain.js" />

@@ -96,16 +96,16 @@
 <!--查詢介面結束-->
 <!--輸出表格-->
 <div class="container mt-4">
-    <table class="table table-striped bg-white mt-4" data-limit-navigation="6">
+    <table class="table table-striped bg-white mt-4 tablesorter" data-limit-navigation="7" id="sstable">
         <thead class="text-white bg-primary">
             <tr>
                 @*<th scope="col" data-type="numeric"></th>*@
-                <th scope="col" data-sort>順序</th>
-                <th scope="col">圖片預覽</th>
-                <th scope="col">跑馬燈文字</th>
-                <th scope="col">起始時間</th>
-                <th scope="col">到期時間</th>
-                <th scope="col">狀態</th>
+                <th scope="col" data-sort-ignore="true">順序</th>
+                <th scope="col" data-sort-ignore="true">圖片預覽</th>
+                <th scope="col" data-sort-ignore="true">跑馬燈文字</th>
+                <th scope="col" data-sort-ignore="true">起始時間</th>
+                <th scope="col" data-sort-ignore="true">到期時間</th>
+                <th scope="col" data-sort-ignore="true">狀態</th>
                 <th scope="col" data-sort-ignore="true"></th>
             </tr>
         </thead>
@@ -114,7 +114,7 @@
                 if (ResultLen == 0)
                 {
                     <tr>
-                        <td colspan="10">查無結果</td>
+                        <td colspan="7">查無結果</td>
                     </tr>
                 }
                 else
@@ -123,7 +123,8 @@
                     {
                         <tr>
                             @*<th scope="col">@(i+1)</th>*@
-                            <td scope="row">@(lstData[i].QUEUE)
+                            <td scope="row">
+                                @(lstData[i].QUEUE)
                                 <select class="form-control" style="display:none;width:70px" name="Queue_@(lstData[i].SEQNO)" id="Queue_@(lstData[i].SEQNO)">
                                     <option value="1" selected>1</option>
                                     <option value="2">2</option>
@@ -144,9 +145,9 @@
                             <td scope="col">@(lstData[i].MarqueeText)</td>
                             <td scope="col">@(lstData[i].STARTDATE)</td>
                             <td scope="col">@(lstData[i].ENDDATE)</td>
-                            @{ 
-                                if (lstData[i].Status == "失效") 
-                                { 
+                            @{
+                                if (lstData[i].Status == "失效")
+                                {
                                     <td scope="col" style="color:red">@(lstData[i].Status)</td>
                                 }
                                 else if (lstData[i].Status == "有效")
@@ -171,7 +172,7 @@
         </tbody>
         <tfoot class="hide-if-no-paging">
             <tr>
-                <td colspan="10" class="text-center">
+                <td colspan="7" class="text-center">
                     <ul class="pagination"></ul>
                 </td>
             </tr>
@@ -183,12 +184,19 @@
 </div>
 <!--輸出表格結束-->
 <!--javascript 初始-->
+@*<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="..\..\Scripts\jquery.tablesort.js"></script>*@
 <script>
     //var SEQNO = '@banner';
     //console.log('qqddd:' + SEQNO)
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
     var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
     var ResultDataLen = '@(ResultLen)';
+
+    //$(document).ready(function () {
+    //    console.log('222')
+    //    //$('sstable').tablesort();
+    //});
 
 </script>
 
