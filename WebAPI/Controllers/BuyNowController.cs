@@ -674,6 +674,7 @@ namespace WebAPI.Controllers
                             if (wsOutput.Result == false)
                             {
                                 xflag = false;
+                                logger.Trace("發票開立失敗!MonthlyRentId=" + wsInput.MonRentID.ToString());
                             }
                             else
                             {
@@ -710,6 +711,37 @@ namespace WebAPI.Controllers
                                     logger.Trace("spError=" + sp_errCode);
                                 }
                                 trace.FlowList.Add("發票存檔");
+                            }
+                            else
+                            {
+                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                                string sp_errCode = "";
+                                var spInput = new SPInput_InsMonthlyInvErr()
+                                {
+                                    ApiInput = JsonConvert.SerializeObject(wsInput),
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    MonthlyRentID = buyNxtCom.MonthlyRentId,
+                                    MonProjID = apiInput.MonProjID,
+                                    MonProPeriod = apiInput.MonProPeriod,
+                                    ShortDays = apiInput.ShortDays,
+                                    NowPeriod = 1,
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    INVAMT = ProdPrice
+                                };
+
+                                xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.FlowList.Add("發票錯誤處理");
                             }
                         }
                         catch (Exception ex)
