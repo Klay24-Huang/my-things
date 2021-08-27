@@ -58,8 +58,6 @@ function DoEdit(Id) {
     $("#btnSave_" + Id).show();
     $("#btnEdit_" + Id).hide();
 }
-
-
 function DoReset(Id) {
     $("#Queue_" + Id).val("").hide();
 

@@ -146,7 +146,6 @@ namespace Web.Controllers
                             errorMsg = WebAPIOutput.Message;
                             flag = false;
                         }
-
                     }
                     else
                     {
@@ -164,7 +163,6 @@ namespace Web.Controllers
             if (flag)
             {
                 ViewData["errorLine"] = "ok";
-
             }
             else
             {
@@ -236,8 +234,6 @@ namespace Web.Controllers
             lstData = repository.GetAPILog(IPAddress, StartDate+" 00:00:00.000", EndDate + " 23:59:59.999");
             return View(lstData);
         }
-
-
 
         /// <summary>
         /// 查詢APILog
