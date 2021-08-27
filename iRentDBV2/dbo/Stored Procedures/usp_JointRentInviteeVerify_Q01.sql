@@ -8,15 +8,14 @@
 * 撰寫日期 : 20210825
 * 修改日期 : 
 Example :
-
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
-	@QureyId                VARCHAR(20)           ,
-	@OrderNo                BIGINT                ,
-	@Token                  VARCHAR(1024)         ,
-	@IDNO                   VARCHAR(20)           ,
-	@LogID                  BIGINT                ,
-	@InviteeId              VARCHAR(20)     OUTPUT,		
+	@QureyId                VARCHAR(20)           , --要邀請的ID或手機(原input參數)
+	@OrderNo                BIGINT                , --訂單編號
+	@Token                  VARCHAR(1024)         , --JWT TOKEN
+	@IDNO                   VARCHAR(20)           , --帳號
+	@LogID                  BIGINT                , --執行的api log
+	@InviteeId              VARCHAR(20)     OUTPUT, --被邀請的ID		
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
 	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
@@ -48,13 +47,16 @@ SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
+SET @Token=ISNULL (@Token,'');
+SET @IDNO=ISNULL (@IDNO,'');
+SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Seat=0;
 SET @Audit_Car=0;
 SET @Audit_Moto=0;
 SET @ProjType='';
 
 	BEGIN TRY
-        IF @Token='' OR @LogID='' OR @QureyId='' OR @OrderNo='' OR @IDNO=''
+        IF @Token='' OR @LogID=''
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode='ERR900'		
@@ -159,16 +161,13 @@ SET @ProjType='';
 		BEGIN		
 
 			SET @hasData=0;		
-			SELECT @hasData=count(1) FROM  TB_OrderMain m  WITH(NOLOCK) 	
-			WHERE  EXISTS (SELECT 1 FROM TB_TogetherPassenger t WITH(NOLOCK) 
-			WHERE m.IDNO=t.MEMIDNO AND t.ChkType IN ('Y','S'))
-			AND    EXISTS (SELECT 1 FROM TB_OrderMain o WITH(NOLOCK) 
-			WHERE  o.car_mgt_status >=4 AND o.car_mgt_status<16 AND
-			    (o.start_time BETWEEN @SD AND @ED) OR 
-				(stop_time BETWEEN @SD AND @ED) OR 
-				(@SD BETWEEN start_time AND stop_time) OR 
-				(@ED BETWEEN start_time AND stop_time))  
-			AND m.IDNO=@InviteeId;
+		　　SELECT @hasData=count(1) FROM TB_OrderMain o WITH(NOLOCK) 
+			WHERE IDNO=@InviteeId
+			AND (o.cancel_status =0 AND o.car_mgt_status =0 AND o.booking_status=0)
+			OR (o.car_mgt_status >=4 AND o.car_mgt_status <16)
+		    AND (o.start_time BETWEEN @SD AND @ED) AND  (stop_time BETWEEN @SD AND @ED) 
+			AND EXISTS (SELECT 1 FROM TB_TogetherPassenger t WITH(NOLOCK) 
+			WHERE o.IDNO=t.MEMIDNO AND t.ChkType IN ('Y','S'));
 		
 			IF @hasData>0
 				 BEGIN
