@@ -7,9 +7,13 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Data;
 using WebCommon;
 
 namespace Web.Controllers
@@ -630,7 +634,7 @@ namespace Web.Controllers
                     ViewData["outerOfDateRangeMsg"] = "查詢時數使用起迄日超過範圍";
                 }
             }
-            if (isInDateRange || tOrderNum.Length>0 || tUserID.Length > 0)
+            if (isInDateRange || tOrderNum.Length > 0 || tUserID.Length > 0)
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
 
@@ -1436,6 +1440,119 @@ namespace Web.Controllers
             ViewData["StartDate3"] = "";
             ViewData["EndDate3"] = "";
             ViewData["MEMACCOUNT"] = "";
+            return View();
+        }
+        #endregion
+
+        #region 新北監管平台月報檔案上傳
+        /// <summary>
+        /// 新北監管平台月報檔案上傳 - 20210820 Frank加
+        /// </summary>
+        public ActionResult CarMapFileUpload()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Obsolete]
+        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
+        {
+            //匯出檔案
+            if(export == "true")
+            {
+                SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+                SqlTransaction tran;
+                conn.Open();
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.Transaction = tran;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "usp_GetIRentCarMapValue";
+                cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
+                SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
+                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50);
+                msg.Direction = ParameterDirection.Output;
+                fileName.Direction = ParameterDirection.Output;
+
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                conn.Dispose();
+
+                if (fileName.Value.ToString() == "")
+                {
+                    ViewData["result"] = "檔案尚未上傳";
+                    return View();
+                }
+
+                var blob = new AzureStorageHandle().DownloadFile("monthlyreport", fileName.Value.ToString());
+                Stream blobStream = blob.OpenRead();
+                return File(blobStream, blob.Properties.ContentType, blob.Name);
+            }
+
+            //上傳檔案
+            if(fileImport != null)
+            {
+                if(fileImport.ContentLength > 0)
+                {
+
+                    using (var reader = new StreamReader(fileImport.InputStream, Encoding.UTF8))
+                    {
+                        string file = reader.ReadToEnd();
+
+                        var subFileName = fileImport.FileName.Substring(fileImport.FileName.IndexOf("."));
+                        var fileName = string.Format("{0}_{1}_{2}_{3}", month, carType, fileImport.FileName.Substring(0, fileImport.FileName.IndexOf(".")), DateTime.Now.ToString("yyyyMMddHHmmss") + subFileName);
+
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/CarMapFileUpload"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/CarMapFileUpload"), fileName);
+                        fileImport.SaveAs(path);
+
+                        var flag = new AzureStorageHandle().UploadFileToAzureStorage(fileImport, fileName, "monthlyreport", path);
+
+                        //儲存key值進DB
+                        SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+                        SqlTransaction tran;
+                        conn.Open();
+                        tran = conn.BeginTransaction();
+                        SqlCommand cmd = new SqlCommand();
+                        cmd.Connection = conn;
+                        cmd.Transaction = tran;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "usp_HandleIRentCarMapKey";
+                        cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
+                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50).Value = fileName;
+                        cmd.Parameters.Add("@User", SqlDbType.VarChar, 10).Value = Account;
+                        SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
+                        msg.Direction = ParameterDirection.Output;
+
+                        cmd.ExecuteNonQuery();
+                        tran.Commit();
+                        conn.Close();
+                        conn.Dispose();
+
+
+                        if (flag)
+                        {
+                            ViewData["result"] = "執行成功";
+                        }
+                        else
+                        {
+                            ViewData["result"] = "上傳雲端過程失敗";
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            else
+            {
+                ViewData["result"] = "未上傳任何檔案";
+            }
+            
+            
             return View();
         }
         #endregion

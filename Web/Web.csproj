@@ -411,6 +411,7 @@
     <Content Include="Scripts\js\ActionJS\MemberManage\MedalMileStone.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\MemberScore.js" />
     <Content Include="Scripts\js\ActionJS\Report\CarLocationQuery.js" />
+    <Content Include="Scripts\js\ActionJS\Report\CarMapFileUpload.js" />
     <Content Include="Scripts\js\ActionJS\Report\ExportCarSettingData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarBindData.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\ImportCarData.js" />
@@ -820,6 +821,7 @@
     <Content Include="Views\CommonObj\GetScore.cshtml" />
     <Content Include="Views\Report\IrentPaymentDetail.cshtml" />
     <Content Include="Views\Report\IrentPaymentHistory.cshtml" />
+    <Content Include="Views\Report\CarMapFileUpload.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
