@@ -7,8 +7,6 @@ $(document).ready(function () {
     //    return new Date(td.text());
     //});
 
-
-    
     $.tablesorter.addParser({
         id: "num", //指定一個唯一的ID  
         is: function (s) {
@@ -17,16 +15,13 @@ $(document).ready(function () {
         format: function (s) {
             //對 xx時xx分xx秒 資料的處理
             var hourNum = parseInt(s.substring(0, 9).replace("-",""));
-            console.log('Q:'+s)
-            console.log('A:' +hourNum)
+            //console.log('Q:'+s)
+            //console.log('A:' +hourNum)
             return hourNum;
         },
         type: "numeric" //按數值排序  
     });
     $("#sstable").tablesorter({ headers: { 2: { sorter: false }, 1: { sorter: false }, 5: { sorter: false }, 3: { sorter: "num" }, 4: { sorter: "num" } } });
-
-
-
 
     SetStation($("#Banner"), $("#BannerName"));
 
@@ -68,39 +63,74 @@ function GoAddNew() {
     window.location.href = "BannerInfoAdd";
 }
 
-function DoEdit(Id) {
-    if (NowEditID > 0) {
-        $("#Queue_" + NowEditID).empty().hide();
-        $("#btnReset_" + NowEditID).hide();
-        $("#btnSave_" + NowEditID).hide();
-        $("#btnEdit_" + NowEditID).show();
+//function DoEdit(Id) {
+//    if (NowEditID > 0) {
+//        $("#Queue_" + NowEditID).empty().hide();
+//        $("#btnReset_" + NowEditID).hide();
+//        $("#btnSave_" + NowEditID).hide();
+//        $("#btnEdit_" + NowEditID).show();
+//    }
+//    NowEditID = Id;
+//    $("#Queue_" + Id).show();
+//    $("#btnReset_" + Id).show();
+//    $("#btnSave_" + Id).show();
+//    $("#btnEdit_" + Id).hide();
+//}
+//function DoReset(Id) {
+//    $("#Queue_" + Id).val("").hide();
+
+//    $("#btnReset_" + Id).hide();
+//    $("#btnSave_" + Id).hide();
+//    $("#btnEdit_" + Id).show();
+//    NowEditID = 0;
+//}
+//function DoSave(Id) {
+//    Queue = $("#Queue_" + Id).val();
+//    var Account = $("#Account").val();
+
+//    ShowLoading("資料處理中");
+
+//    var obj = new Object();
+//    obj.UserID = Account;
+//    obj.SEQNO = Id;
+//    obj.Queue = Queue;
+//    DoAjaxAfterReload(obj, "BE_BannerSort", "修改使用者者發生錯誤");
+//}
+
+
+function DoEdit() {
+    $(".Queue").show();
+    $("#btnReset").show();
+    $("#btnSave").show();
+    $("#btnEdit").hide();
+}
+function DoReset() {
+    $(".Queue").val("").hide();
+
+    $("#btnReset").hide();
+    $("#btnSave").hide();
+    $("#btnEdit").show();
+}
+function DoSave() {
+    var aa = "";
+    var $selects = $('select[name="Queue"]');
+    for (var i = 0; i < $selects.length; i++) {
+        var $options = $("option:selected", $selects[i]);
+        aa += $options.val() + ',';
+        //console.log($options.val());
+        //console.log("text" + i + "=" + $options.text());
     }
+    //console.log(aa)
 
-    NowEditID = Id;
+    
 
-    $("#Queue_" + Id).show();
-
-    $("#btnReset_" + Id).show();
-    $("#btnSave_" + Id).show();
-    $("#btnEdit_" + Id).hide();
-}
-function DoReset(Id) {
-    $("#Queue_" + Id).val("").hide();
-
-    $("#btnReset_" + Id).hide();
-    $("#btnSave_" + Id).hide();
-    $("#btnEdit_" + Id).show();
-    NowEditID = 0;
-}
-function DoSave(Id) {
-    Queue = $("#Queue_" + Id).val();
     var Account = $("#Account").val();
 
     ShowLoading("資料處理中");
 
     var obj = new Object();
     obj.UserID = Account;
-    obj.SEQNO = Id;
-    obj.Queue = Queue;
+    //obj.SEQNO = Id;
+    obj.Queue = aa;
     DoAjaxAfterReload(obj, "BE_BannerSort", "修改使用者者發生錯誤");
 }
