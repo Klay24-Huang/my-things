@@ -52,6 +52,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            Int64 orderNo = 0;
             bool HasInput = true;
             //邀請清單
             #endregion
@@ -76,9 +77,13 @@ namespace WebAPI.Controllers
                 }
             }
             //檢查訂單編號格式
-            var checkOrderNo = OrderNoFormatVerify(apiInput.OrderNo);
-            flag = checkOrderNo.status;
-            errCode = checkOrderNo.errorCode;
+            if (flag)
+            {
+                var checkOrderNo = OrderNoFormatVerify(apiInput.OrderNo);
+                flag = checkOrderNo.status;
+                errCode = checkOrderNo.errorCode;
+                orderNo = checkOrderNo.orderNo;
+            }
             #endregion
 
             #region TB
@@ -109,7 +114,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token,
                     IDNO = IDNO,
-                    OrderNo = checkOrderNo.orderNo,
+                    OrderNo = orderNo,
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetJointRentInviteeList, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetJointRentInviteeList, SPOutput_Base>(connetStr);
@@ -141,7 +146,7 @@ namespace WebAPI.Controllers
         private (bool status, string errorCode, Int64 orderNo) OrderNoFormatVerify(string OrderNo)
         {
             (bool status, string errorCode, Int64 orderNo) result = (true, "", 0);
-
+            result.errorCode = "000000";
             if (string.IsNullOrWhiteSpace(OrderNo))
             {
                 result.status = false;

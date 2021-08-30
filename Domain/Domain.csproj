@@ -171,6 +171,7 @@
     <Compile Include="SP\Input\JointRent\SPInput_GetJointRentInviteeList.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_GetOrderInsuranceInfo.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_JointRentInvitation.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentInviteeModify.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />

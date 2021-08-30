@@ -716,7 +716,23 @@ namespace WebAPI.Models.Enum
             /// 共同承租人邀請清單查詢
             /// </summary>
             GetJointRentInviteeList,
-            GetOrderInsuranceInfo
+            /// <summary>
+            /// 共同承租人邀請清單維護
+            /// </summary>
+            JointRentInviteeModify,
+            /// <summary>
+            /// 共同承租人邀請檢核
+            /// </summary>
+            JointRentInviteeVerify,
+            /// <summary>
+            /// 共同承租人邀請
+            /// </summary>
+            JointRentInvitation,
+            /// <summary>
+            /// 共同承租人邀請回饋
+            /// </summary>
+            JointRentIviteeFeedBack
+
         }
         /// <summary>
         /// 取出SPName
@@ -1297,13 +1313,24 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_CancelCleanOrder";
                     break;
                 #endregion
+                #region 共同承租人
                 case SPType.GetJointRentInviteeList:
                     SPName = "usp_JointRentInviteeList_Q01";
                     break;
-                    
-                case SPType.GetOrderInsuranceInfo:
-                    SPName = "usp_GetOrderInsuranceInfo";
+                case SPType.JointRentInviteeModify:
+                    SPName = "usp_JointRentInviteeModify_U01";
                     break;
+                case SPType.JointRentInviteeVerify:
+                    SPName = "usp_JointRentInviteeVerify_Q01";
+                    break;
+                case SPType.JointRentInvitation:
+                    SPName = "usp_JointRentInvitation_I01";
+                    break;
+                case SPType.JointRentIviteeFeedBack:
+                    SPName = "usp_JointRentIviteeFeedBack_U01";
+                    break;
+                #endregion
+
             }
             return SPName;
         }
