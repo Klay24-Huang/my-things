@@ -73,7 +73,7 @@ namespace WebAPI.Controllers
                 if (isGuest)
                 {
                     flag = false;
-                    errCode = "ERR101";
+                    errCode = "ERR150";
                 }
             }
             //檢查訂單編號格式
@@ -157,7 +157,7 @@ namespace WebAPI.Controllers
                 if (OrderNo.IndexOf("H") < 0)
                 {
                     result.status = false;
-                    result.errorCode = "ERR900";
+                    result.errorCode = "ERR902";
                 }
                 if (result.status)
                 {
@@ -166,7 +166,7 @@ namespace WebAPI.Controllers
                         if (tmpOrder <= 0)
                         {
                             result.status = false;
-                            result.errorCode = "ERR900";
+                            result.errorCode = "ERR902";
                         }
                         else
                         {
