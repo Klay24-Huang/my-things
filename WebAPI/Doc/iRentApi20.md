@@ -165,6 +165,8 @@ iRentApi20 Web API版本
 
 20210825 共同承租人邀請清單查詢(JointRentInviteeListQuery)新增欄位邀請時輸入的ID或手機(QueryId)
 
+20210830 訂單列表(BookingQuery)欄位修正
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5022,7 +5024,7 @@ iRentApi20 Web API版本
 ```
 ------
 
-## BookingQuery
+## BookingQuery 訂單列表
 
 ### [/api/BookingQuery/]
 
@@ -5088,59 +5090,65 @@ iRentApi20 Web API版本
 | Operator |       營運商     | string | supplierIrent       |
 | OperatorScore |     評分       | float | 5.0       |
 | CarTypePic |   車輛圖片         | string | yaris       |
-| CarNo |        車號    | string | RCM-6312       |
+| CarNo |        車號    | string | RDH-2905 |
 | CarBrend |     廠牌       | string | TOYOTA      |
 | CarTypeName |    車型名稱        | string | YARIS      |
 | Seat |      座椅數      | int | 5      |
 | ParkingSection |   停車格位置         | string|       |
 | IsMotor |    是否為機車        | int |  0:否 1:是    |
 | CarOfArea |      車輛圖顯示地區      | string | 台北市       |
-| CarLatitude |      車緯度      | decimal |25.2193111   |
-| CarLongitude |     車經度       | decimal | 121.4409194       |
+| CarLatitude |      車緯度      | decimal |25.0726200   |
+| CarLongitude |     車經度       | decimal | 121.5423700 |
 | MotorPowerBaseObj |     機車電力資訊    | object |  當ProjType=4時才有值   |
-| ProjType |      專案類型      | int | 0      |0:同站 3:路邊 4:機車
-| ProjName |       專案名稱     | string | 同站汽車110起推廣專案      |
-| WorkdayPerHour |      平日每小時費用      | int  |  110     |
-| HolidayPerHour |       假日每小時費用     | int | 168       |
-| MaxPrice |       每日上限     | int |0  |
-| MaxPriceH |     假日上限       | int | 0    |
-| MotorBasePriceObj |      機車費用      | object |   當ProjType=4時才有值 |
-| OrderStatus |      訂單狀態      | int | -1:前車未還（未到站） 0:可取車 1:用車中 2:延長用車中 3:準備還車 4:逾時 5:還車流程中（未完成還車）|
-| OrderNo |      訂單編號      | string | H12044254      |
-| StartTime |    預計取車時間        | string | 2021-08-24 11:10:00      |
-| PickTime |       實際取車時間    | string |     |
-| ReturnTime |    實際還車時間        | string  |     |
-| StopPickTime |     取車截止時間       | string | 2021-08-24 11:25:00       |
-| StopTime |    預計還車時間        | string |2021-08-25 12:10:00  |
-| OpenDoorDeadLine |     使用期限       | string |     |
-| CarRentBill |   預估租金         | int |    1210 |
-| MileagePerKM |  每一公里里程費          | float | 3.1    |
-| MileageBill |   預估里程費         | int | 682      |
-| Insurance |  是否可以使用安心服務          | int |   1:可 0:否  |
-| InsurancePerHour |   安心保險每小時         | int  |  50  |
-| InsuranceBill |   預估安心保險費用         | int |2021-08-25 12:10:00  |
-| TransDiscount |   轉乘優惠         | int |  0   |
-| Bill |   預估總金額         | int |    1892 |
-| DailyMaxHour |      單日計費上限時數      | int | 10   |
-| CAR_MGT_STATUS |      取還車狀態      | string |   0 = 尚未取車 1 = 已經上傳出車照片 2 = 已經簽名出車單 3 = 已經信用卡認證 4 = 已經取車(記錄起始時間) 11 = 已經紀錄還車時間 12 = 已經上傳還車角度照片 13 = 已經上傳還車車損照片 14 = 已經簽名還車單 15 = 已經信用卡付款 16 = 已經檢查車輛完成並已經解除卡號      |
-| AppStatus |            | string |  1:尚未到取車時間(取車時間半小時前) 2:立即換車(取車前半小時，前車尚未完成還車) 3:開始使用(取車時間半小時前) 4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間) 5:操作車輛(取車後) 取車時間改實際取車時間 6:操作車輛(準備還車)- 7:物品遺漏(再開一次車門) 8:鎖門並還車(一次性開門申請後)      |
-| RenterType |      承租人類型      | int | 1:主要承租人 2:共同承租人   |
-
+| ProjType | 專案類型 | int | 0:同站 3:路邊 4:機車 |
+| ProjName | 專案名稱 | string | 同站汽車110起推廣專案 |
+| WorkdayPerHour | 平日每小時費用 | int | 110 |
+| HolidayPerHour | 假日每小時費用 | int | 168 |
+| MaxPrice | 每日上限 | int | 0 |
+| MaxPriceH | 假日上限 | int | 0 |
+| MotorBasePriceObj | 機車費用 | object | 當ProjType=4時才有值 |
+| OrderStatus | 訂單狀態 | int | -1:前車未還（未到站） <br>0:可取車<br/>1:用車中<br/>2:延長用車中<br/>3:準備還車<br/>4:逾時<br/>5:還車流程中（未完成還車） |
+| OrderNo | 訂單編號 | string | H12044254 |
+| StartTime | 預計取車時間 | string | 2021-08-30 11:00:00 |
+| PickTime | 實際取車時間 | string | 2021-08-30 10:51:16 |
+| ReturnTime | 實際還車時間 | string | 2021-08-30 11:27:04 |
+| StopPickTime | 取車截止時間 | string | 2021-08-30 11:15:00 |
+| StopTime | 預計還車時間 | string | 2021-08-30 12:00:00 |
+| OpenDoorDeadLine | 使用期限 | string | 2021-08-30 11:42:34 |
+| CarRentBill | 預估租金 | int | 110 |
+| MileagePerKM | 每一公里里程費 | float | 3.1 |
+| MileageBill | 預估里程費 | int | 62 |
+| Insurance | 是否可以使用安心服務 | int | 1:可 0:否 |
+| InsurancePerHour | 安心保險每小時 | int | 50 |
+| InsuranceBill | 預估安心保險費用 | int | 0 |
+| TransDiscount | 轉乘優惠 | int | 0 |
+| Bill | 預估總金額 | int | 172 |
+| DailyMaxHour | 單日計費上限時數 | int | 10 |
+| CAR_MGT_STATUS | 取還車狀態 | int | 0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 |
+| AppStatus |  | int | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) |
+| RenterType | 承租人類型 | int | 1:主要承租人 2:共同承租人 |
 * StationInfo回傳參數說明
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
 | ------------ | ------------------ | :----: | ------------- |
-| StationID      | 據點代碼         | string |    X1CZ  |
-| StationName |       據點名稱     | string | iRent北科大億光大樓站       |
-| Tel |     電話       | string | (02)2516-3816      |
-| ADDR |   地址         | string | 台北市大安區忠孝東路三段1號B1~B3停車場(還車時請備註車位號碼)       |
-| Latitude |        緯度    | string | 25.042948      |
-| Longitude |     經度       | string | 121.537066      |
+| StationID      | 據點代碼         | string | X0IN  |
+| StationName |       據點名稱     | string | iRent-Toyota濱江營業所站 |
+| Tel |     電話       | string | 02-2516-3816 |
+| ADDR |   地址         | string | 台北市中山區濱江街269號 |
+| Latitude |        緯度    | string | 25.072589 |
+| Longitude |     經度       | string | 121.542617 |
 | Content |    其他說明        | string | YARIS      |
-| IsRent |            | string |       |
-| ContentForAPP |   據點描述（app顯示）         | string|     1.從建國南路一段進入\n2.無固定車位\n3.車牌辨識進出\n4.請盡量停放平面停車場，如遇到平面沒位置請清楚註明樓層車格號碼。\n  |
-| IsRequiredForReturn |    還車位置資訊必填        | int |  1    |
+| IsRent |            | string | null |
+| ContentForAPP |   據點描述（app顯示）         | string| 1.濱江營業所前方停車場\n2.固定招牌旁車位\n3.自由進出\n4.請勿停在專屬車位外  |
+| IsRequiredForReturn |    還車位置資訊必填        | int |  0   |
 | StationPic |      據點照片      | list |        |
+
+* StationPic回傳參數說明
+
+| 參數名稱       | 參數說明 |  型態  | 範例                                                         |
+| -------------- | -------- | :----: | ------------------------------------------------------------ |
+| StationPic     | 據點照片 | string | https://irentv2data.blob.core.windows.net/station/X0IN_1_20210209000000.png |
+| PicDescription | 據點說明 | string | 停車場位置\n                                                 |
 
 * MotorPowerBaseObj回傳參數說明
 
@@ -5158,13 +5166,6 @@ iRentApi20 Web API版本
 | PerMinutesPrice | 剩餘電量       | float |         |
 | MaxPrice       | 剩餘里程        | int |           |
 
-* StationPic回傳參數說明
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| StationPic   | 據點照片         | string |    https://irentv2data.blob.core.windows.net/station/X1CZ_1_20210209000000.png     |
-| PicDescription     |  PicDescription        | string |    由建國南路一段進入\n       |
-
 * Output範例
 
 ```
@@ -5178,39 +5179,39 @@ iRentApi20 Web API版本
         "OrderObj": [
             {
                 "StationInfo": {
-                    "StationID": "X1CZ",
-                    "StationName": "iRent北科大億光大樓站",
-                    "Tel": "(02)2516-3816",
-                    "ADDR": "台北市大安區忠孝東路三段1號B1~B3停車場(還車時請備註車位號碼)",
-                    "Latitude": 25.042948,
-                    "Longitude": 121.537066,
+                    "StationID": "X0IN",
+                    "StationName": "iRent-Toyota濱江營業所站",
+                    "Tel": "02-2516-3816",
+                    "ADDR": "台北市中山區濱江街269號",
+                    "Latitude": 25.072589,
+                    "Longitude": 121.542617,
                     "Content": "",
                     "IsRent": null,
-                    "ContentForAPP": "1.從建國南路一段進入\n2.無固定車位\n3.車牌辨識進出\n4.請盡量停放平面停車場，如遇到平面沒位置請清楚註明樓層車格號碼。\n",
-                    "IsRequiredForReturn": 1,
+                    "ContentForAPP": "1.濱江營業所前方停車場\n2.固定招牌旁車位\n3.自由進出\n4.請勿停在專屬車位外",
+                    "IsRequiredForReturn": 0,
                     "StationPic": [
                         {
-                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X1CZ_1_20210209000000.png",
-                            "PicDescription": "由建國南路一段進入\n"
+                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X0IN_1_20210209000000.png",
+                            "PicDescription": "停車場位置\n"
                         },
                         {
-                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X1CZ_2_20210209000000.png",
-                            "PicDescription": "平面停車位若無位置可停至地下室\n"
+                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X0IN_2_20210209000000.png",
+                            "PicDescription": "停車位置\n"
                         }
                     ]
                 },
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
                 "CarTypePic": "yaris",
-                "CarNo": "RCM-6312",
+                "CarNo": "RDH-2905  ",
                 "CarBrend": "TOYOTA",
                 "CarTypeName": "YARIS",
                 "Seat": 5,
                 "ParkingSection": "",
                 "IsMotor": 0,
                 "CarOfArea": "台北市",
-                "CarLatitude": 25.2193111,
-                "CarLongitude": 121.4409194,
+                "CarLatitude": 25.0726200,
+                "CarLongitude": 121.5424000,
                 "MotorPowerBaseObj": null,
                 "ProjType": 0,
                 "ProjName": "同站汽車110起推廣專案",
@@ -5219,25 +5220,26 @@ iRentApi20 Web API版本
                 "MaxPrice": 0,
                 "MaxPriceH": 0,
                 "MotorBasePriceObj": null,
-                "OrderStatus": 0,
-                "OrderNo": "H12044254",
-                "StartTime": "2021-08-24 11:10:00",
-                "PickTime": "",
-                "ReturnTime": "",
-                "StopPickTime": "2021-08-24 11:25:00",
-                "StopTime": "2021-08-25 12:10:00",
-                "OpenDoorDeadLine": "",
-                "CarRentBill": 1210,
+                "OrderStatus": 5,
+                "OrderNo": "H12289921",
+                "StartTime": "2021-08-30 11:00:00",
+                "PickTime": "2021-08-30 10:51:16",
+                "ReturnTime": "2021-08-30 11:27:04",
+                "StopPickTime": "2021-08-30 11:15:00",
+                "StopTime": "2021-08-30 12:00:00",
+                "OpenDoorDeadLine": "2021-08-30 11:42:34",
+                "CarRentBill": 110,
                 "MileagePerKM": 3.1,
-                "MileageBill": 682,
+                "MileageBill": 62,
                 "Insurance": 1,
                 "InsurancePerHour": 50,
                 "InsuranceBill": 0,
                 "TransDiscount": 0,
-                "Bill": 1892,
+                "Bill": 172,
                 "DailyMaxHour": 10,
-                "CAR_MGT_STATUS": 0,
-                "AppStatus": 1
+                "CAR_MGT_STATUS": 16,
+                "AppStatus": 7,
+                "RenterType": 1
             }
         ]
     }

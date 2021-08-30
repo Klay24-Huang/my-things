@@ -260,7 +260,11 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+<<<<<<< HEAD
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
+=======
+    <Compile Include="Controllers\JointRentInvitationController.cs" />
+>>>>>>> c8a05c6f87db5a6b37a9d984a77acf1a246880be
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
@@ -493,7 +497,11 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
+<<<<<<< HEAD
     <Compile Include="Models\Param\Input\IAPI_GetOrderInsuranceInfo.cs" />
+=======
+    <Compile Include="Models\Param\Input\IAPI_JointRentInvitation.cs" />
+>>>>>>> c8a05c6f87db5a6b37a9d984a77acf1a246880be
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
