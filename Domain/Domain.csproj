@@ -169,11 +169,8 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_GetJointRentInviteeList.cs" />
-<<<<<<< HEAD
     <Compile Include="SP\Input\JointRent\SPInput_GetOrderInsuranceInfo.cs" />
-=======
     <Compile Include="SP\Input\JointRent\SPInput_JointRentInvitation.cs" />
->>>>>>> c8a05c6f87db5a6b37a9d984a77acf1a246880be
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
