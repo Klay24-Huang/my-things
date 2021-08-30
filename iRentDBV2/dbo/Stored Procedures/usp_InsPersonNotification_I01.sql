@@ -1,19 +1,25 @@
-﻿/***********************************************************************************************
+﻿
+/***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
-* 程式名稱 : usp_JointRentInviteeList_Q01
+* 程式名稱 : usp_InsPersonNotification_I01
 * 系    統 : IRENT
-* 程式功能 : 取得共同承租邀請清單
+* 程式功能 : 新增個人推播訊息
 * 作    者 : Umeko
-* 撰寫日期 : 20210825
+* 撰寫日期 : 20210826
 * 修改日期 :
 Example :
 ***********************************************************************************************/
 
-CREATE PROCEDURE [dbo].[usp_JointRentInviteeList_Q01]
+CREATE PROCEDURE [dbo].[usp_InsPersonNotification_I01]
 	@OrderNo                BIGINT                ,	--訂單編號
 	@IDNO                   VARCHAR(10)           ,	--帳號
-	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
+	@NType					Tinyint				  ,
+	@STime                  DateTime              ,
+	@Title					nvarchar(500)         ,
+	@Message				nvarchar(500)         ,
+	@url				    varchar(500)          ,
+	@imageurl				varchar(500)          ,
 	@LogID                  BIGINT                ,	--執行的api log
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -35,51 +41,53 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_JointRentInviteeList_Q01';
+SET @FunName='usp_InsPersonNotification_I01';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @Token=ISNULL (@Token,'');
 SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 
 BEGIN TRY
-	IF @Token='' OR @IDNO=''  OR @OrderNo = 0
-	BEGIN
-		SET @Error=1;
-		SET @ErrorCode='ERR900'
-	END
-		 
-	--0.再次檢核token
+	IF @IDNO=''
+	Begin
+		Set @Error = 1
+		Set @ErrorCode = 'ERR922'
+	End
+
+	Declare @UserName nvarchar(20)
+	Declare @UserToken varchar(1024)
+	Declare @DataCount int = 0
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
-		IF @hasData=0
-		BEGIN
-			SET @Error=1;
-			SET @ErrorCode='ERR101';
-		END
-		ELSE
-		BEGIN
-			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-			IF @hasData=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR101';
-			END
-		END
+		Select @UserName = MEMCNAME,@UserToken = PushREGID
+		From TB_MemberData with(nolock)
+		Where MEMIDNO = @IDNO
+
+		Set @DataCount = @@ROWCOUNT
 	END
 
-	--輸出訂單資訊
+	IF @DataCount = 0
+	Begin
+		Set @Error = 1
+		Set @ErrorCode = 'ERR922'
+	End
+
 	IF @Error=0
 	BEGIN
-		Select APPUSEID,MEMIDNO,MEMCNAME,ChkType  
-		From TB_TogetherPassenger with(nolock)
-		Where [Order_number] = @OrderNo
-	END
+		--Insert into TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,Title,[Message],[url],[imageUrl])
+		--Values(@OrderNo,@IDNO,@NType,@UserName,@UserToken,@STime,@Title,@Message,@url,@imageurl)
+		Insert into TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,Title,[Message],[url])
+		Values(@OrderNo,@IDNO,@NType,@UserName,@UserToken,@STime,@Title,@Message,@url)
+
+		If @@ERROR <> 0 And @@ROWCOUNT = 0
+		Begin
+			Set @Error = 1
+			Set @ErrorCode = 'ERR923'
+		End
+	End
 
 	--寫入錯誤訊息
 	IF @Error=1
@@ -106,5 +114,5 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInviteeList_Q01';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsPersonNotification_I01';
 END
