@@ -731,8 +731,11 @@ namespace WebAPI.Models.Enum
             /// <summary>
             /// 共同承租人邀請回饋
             /// </summary>
-            JointRentIviteeFeedBack
-
+            JointRentIviteeFeedBack,
+            /// <summary>
+            /// 訂單安心服務資格及價格查詢
+            /// </summary>
+            GetOrderInsuranceInfo
         }
         /// <summary>
         /// 取出SPName
@@ -1329,7 +1332,10 @@ namespace WebAPI.Models.Enum
                 case SPType.JointRentIviteeFeedBack:
                     SPName = "usp_JointRentIviteeFeedBack_U01";
                     break;
-                #endregion
+                case SPType.GetOrderInsuranceInfo:
+                    SPName = "usp_GetOrderInsuranceInfo";
+                    break;
+                    #endregion
 
             }
             return SPName;
