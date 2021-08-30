@@ -715,7 +715,8 @@ namespace WebAPI.Models.Enum
             /// <summary>
             /// 共同承租人邀請清單查詢
             /// </summary>
-            GetJointRentInviteeList
+            GetJointRentInviteeList,
+            GetOrderInsuranceInfo
         }
         /// <summary>
         /// 取出SPName
@@ -1299,7 +1300,10 @@ namespace WebAPI.Models.Enum
                 case SPType.GetJointRentInviteeList:
                     SPName = "usp_JointRentInviteeList_Q01";
                     break;
-
+                    
+                case SPType.GetOrderInsuranceInfo:
+                    SPName = "usp_GetOrderInsuranceInfo";
+                    break;
             }
             return SPName;
         }
