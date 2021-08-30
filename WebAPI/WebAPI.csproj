@@ -260,6 +260,8 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
+    <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
@@ -493,6 +495,8 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetOrderInsuranceInfo.cs" />
+    <Compile Include="Models\Param\Input\IAPI_JointRentInvitation.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeModify.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
@@ -677,6 +681,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetMotorStatus.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMySubs.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetOrderInsuranceInfo.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPayDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPolygon.cs" />

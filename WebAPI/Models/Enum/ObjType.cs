@@ -848,7 +848,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
+                    SPName = "usp_OrderListQuery";  // 20210830 UPD BY YEH REASON:增加承租人類型
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";

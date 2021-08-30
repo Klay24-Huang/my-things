@@ -169,6 +169,8 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_GetJointRentInviteeList.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_GetOrderInsuranceInfo.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentInvitation.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_JointRentInviteeModify.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
@@ -314,6 +316,7 @@
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
     <Compile Include="SP\Output\JointRent\JointRentInviteeList.cs" />
+    <Compile Include="SP\Output\JointRent\SPOutput_GetOrderInsuranceInfo.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
     <Compile Include="SP\Output\Member\MapMedalList.cs" />
     <Compile Include="SP\Output\Member\MemberMedalList.cs" />

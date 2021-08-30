@@ -9,11 +9,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     {
         #region 據點相關
         /// <summary>
-        /// 
+        /// 據點資訊
         /// </summary>
         public iRentStationData StationInfo { set; get; }
         #endregion
-
         #region 車輛相關資料
         /// <summary>
         /// 營運商
@@ -210,6 +209,13 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 8:鎖門並還車(一次性開門申請後)
         /// </summary>
         public int AppStatus { get; set; }
+
+        /// <summary>
+        /// 承租人類型
+        /// <para>1:主要承租人</para>
+        /// <para>2:共同承租人</para>
+        /// </summary>
+        public int RenterType { get; set; }
         #endregion
     }
 }

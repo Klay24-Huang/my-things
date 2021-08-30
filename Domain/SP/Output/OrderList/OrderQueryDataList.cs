@@ -260,6 +260,13 @@ namespace Domain.SP.Output.OrderList
         /// 8:鎖門並還車(一次性開門申請後)
         /// </summary>
         public int AppStatus { set; get; }
+
+        /// <summary>
+        /// 承租人類型
+        /// <para>1:主要承租人</para>
+        /// <para>2:共同承租人</para>
+        /// </summary>
+        public int RenterType { get; set; }
         #endregion
     }
 }
