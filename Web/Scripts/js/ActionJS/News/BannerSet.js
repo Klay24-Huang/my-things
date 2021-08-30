@@ -47,6 +47,10 @@ $(document).ready(function () {
             }
         });
     }
+
+    $(".mouse").mouseover(function(){
+        $(this).css("cursor", "Pointer");
+    })
 });
 function goMaintain(SEQNO) {
     //console.log('qq:' + SEQNO)
