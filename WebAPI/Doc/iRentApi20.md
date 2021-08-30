@@ -2886,7 +2886,6 @@ iRentApi20 Web API版本
 | ED | 路邊租還可以重設結束時間 | Y | int | 0 |
 | SKBToken | SKB的token | Y | int | 0 |
 | Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
-|           |                          |      |        |           |
 
 * input範例
 
@@ -2951,7 +2950,6 @@ iRentApi20 Web API版本
 | ED | 路邊租還可以重設結束時間 | Y | int | 0 |
 | SKBToken | SKB的token | Y | int | 0 |
 | Insurance | 加購安心服務 | Y | int | 0:否 1:有 |
-|           |                          |      |        |           |
 
 * input範例
 

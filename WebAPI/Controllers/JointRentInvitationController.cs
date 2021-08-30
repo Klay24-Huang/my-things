@@ -127,7 +127,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string spName = "usp_JointRentInvitation_I01";
+                string spName = new ObjType().GetSPName(ObjType.SPType.JointRentInvitation);
                 SPInput_JointRentInvitation spInput = new SPInput_JointRentInvitation()
                 {
                     LogID = LogID,

@@ -125,7 +125,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string spName = "usp_JointRentInviteeVerify_Q01";
+                string spName = new ObjType().GetSPName(ObjType.SPType.JointRentInviteeVerify);
                 SPInput_JointRentInviteeVerify spInput = new SPInput_JointRentInviteeVerify()
                 {
                     LogID = LogID,

@@ -80,41 +80,31 @@ BEGIN TRY
 	END
 
 	IF @Error=0
+    
+	IF NOT EXISTS(SELECT * FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO=@InviteeId)	
 	BEGIN
-	　  BEGIN TRAN	    
-	    IF NOT EXISTS(SELECT * FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO=@InviteeId)			
-		BEGIN
-			INSERT INTO [dbo].[TB_TogetherPassenger]
-				([Order_number],[MEMIDNO],[APPUSEID],[MEMCNAME],[MEMTEL],[ChkType],[MKTime],[UPTime])
-				SELECT 
-				order_number=@OrderNo,
-				m.MEMIDNO,
-				APPUSEID=@QureyId,
-				m.MEMCNAME,
-				m.MEMTEL,
-				ChkType='S',
-				MKTIME=@NowTime,
-				UPTime=@NowTime 
-				FROM TB_MemberData m WITH(NOLOCK) 	
-				WHERE m.MEMIDNO=@InviteeId;
+		INSERT INTO [dbo].[TB_TogetherPassenger]
+			([Order_number],[MEMIDNO],[APPUSEID],[MEMCNAME],[MEMTEL],[ChkType],[MKTime],[UPTime])
+			SELECT 
+			order_number=@OrderNo,
+			m.MEMIDNO,
+			APPUSEID=@QureyId,
+			m.MEMCNAME,
+			m.MEMTEL,
+			ChkType='S',
+			MKTIME=@NowTime,
+			UPTime=@NowTime 
+			FROM TB_MemberData m WITH(NOLOCK) 	
+			WHERE m.MEMIDNO=@InviteeId;
 
-		    SELECT @MEMCNAME=dbo.FN_BlockName(MEMCNAME,'O') FROM TB_MemberData WITH(NOLOCK) WHERE  MEMIDNO=@IDNO;
+		SELECT @MEMCNAME=dbo.FN_BlockName(MEMCNAME,'O') FROM TB_MemberData WITH(NOLOCK) WHERE  MEMIDNO=@IDNO;
 
-		    IF @MEMCNAME <>''
-			 BEGIN
-			 SET @Title=N'【共同承租】'+@MEMCNAME+'邀請您共同承租唷!'
-		     EXEC usp_InsPersonNotification_I01 @OrderNo,@InviteeId,19,@PushTime,@Title,'','','',@LogID,'','','',''
-			 END
-		  　COMMIT TRAN;
-		END
-		ELSE
-		BEGIN
-			ROLLBACK TRAN;
-			SET @Error=1;
-			SET @ErrorCode='ERR252';
-		END
-	END
-	
+		IF @MEMCNAME <>''
+			BEGIN
+			SET @Title=N'【共同承租】'+@MEMCNAME+'邀請您共同承租唷！'
+		    EXEC usp_InsPersonNotification_I01 @OrderNo,@InviteeId,19,@PushTime,@Title,'','','',@LogID,'','','',''
+			END
+	END	
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -142,6 +132,6 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInvitation_I01';
 END
-GO
+
 
 
