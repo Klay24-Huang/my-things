@@ -17,7 +17,7 @@ namespace WebAPI.Controllers
 {
     public class BE_BannerSortController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
 
         [HttpPost]
         public Dictionary<string, object> DoBE_HandleUserMaintain(Dictionary<string, object> value)
@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID,
                     UserID = apiInput.UserID,
-                    SEQNO = apiInput.SEQNO,
+                    //SEQNO = apiInput.SEQNO,
                     Queue = apiInput.Queue
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
