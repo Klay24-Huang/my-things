@@ -11,11 +11,14 @@ using System.Web;
 using System.Web.Mvc;
 using WebCommon;    //20210316 ADD BY ADAM
 using System.Text;
+using NLog;
 
 namespace Web.Controllers
 {
     public class ContactManageController : Controller
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         //20210728唐加，讓所有查資料的功能查鏡像db
         private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
@@ -579,6 +582,18 @@ namespace Web.Controllers
                 lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);
                 //lstBook = repository.GetOrderExplodeData0727(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, false);  //todo 暫時測試用，測試無誤時須更新View
                 int BookCount = lstBook.Count();
+                logger.Trace(
+                    "{ReportName:'合約資料查詢_匯出(ContactQueryExplode)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{ExplodeOrderNum" + ":'" + ExplodeOrderNum + "'," +
+                    "ExplodeuserID" + ":'" + ExplodeuserID + "'," +
+                    "ExplodeobjStation" + ":'" + ExplodeobjStation + "'," +
+                    "ExplodeobjCar" + ":'" + ExplodeobjCar + "'," +
+                    "ExplodeSDate" + ":'" + ExplodeSDate + "'," +
+                    "ExplodeEDate" + ":'" + ExplodeEDate + "'}," +
+                    "RowCount" + ":" + BookCount.ToString() + "}"
+                    );
                 if (BookCount > 0)
                 {
                     csvText.AppendLine();
