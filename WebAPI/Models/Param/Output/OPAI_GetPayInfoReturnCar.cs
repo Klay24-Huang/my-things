@@ -10,10 +10,15 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 付款方式列表
         /// </summary>
-        public List<OPAI_GetPayInfoReturnCar_Para> CheckoutModes { get; set; }
+        public List<OPAI_GetPayInfoReturnCar_CheckoutMode> CheckoutModes { get; set; }
+
+        /// <summary>
+        /// 付款資訊
+        /// </summary>
+        public OPAI_GetPayInfoReturnCar_PayInfo PayInfo { get; set; }
     }
 
-    public class OPAI_GetPayInfoReturnCar_Para 
+    public class OPAI_GetPayInfoReturnCar_CheckoutMode
     {
         /// <summary>
         /// 付款方式(1信用卡,2錢包)
@@ -31,5 +36,18 @@ namespace WebAPI.Models.Param.Output
         /// 是否為預設值1是0否
         /// </summary>
         public int IsDef { get; set; }
+    }
+
+    public class OPAI_GetPayInfoReturnCar_PayInfo
+    {
+        /// <summary>
+        /// 錢包金額
+        /// </summary>
+        public int WalletAmount { get; set; }
+        /// <summary>
+        /// 自動儲值金額
+        /// </summary>
+        public int CreditStoreAmount { get; set; }
+
     }
 }

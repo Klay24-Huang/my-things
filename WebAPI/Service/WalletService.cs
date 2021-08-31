@@ -142,9 +142,9 @@ namespace WebAPI.Service
             }
         }
 
-        public List<SPOut_GetPayInfoReturnCar> sp_GetPayInfoReturnCar(SPInput_GetPayInfoReturnCar spInput, ref string errCode)
+        public SPOut_GetPayInfoReturnCar sp_GetPayInfoReturnCar(SPInput_GetPayInfoReturnCar spInput, ref string errCode)
         {
-            var re = new List<SPOut_GetPayInfoReturnCar>();
+            var re = new SPOut_GetPayInfoReturnCar();
 
             try
             {
@@ -166,8 +166,15 @@ namespace WebAPI.Service
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 2) 
-                        re = objUti.ConvertToList<SPOut_GetPayInfoReturnCar>(ds1.Tables[0]);
+                    if (ds1.Tables.Count >= 3) 
+                    {
+                        var CheckoutModes = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_CheckoutModes>(ds1.Tables[0]);        
+                        var PayInfos = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_PayInfo>(ds1.Tables[1]);
+                        if (CheckoutModes != null && CheckoutModes.Count() > 0)
+                            re.CheckoutModes = CheckoutModes;
+                        if (PayInfos != null && PayInfos.Count() > 0)
+                            re.PayInfo = PayInfos.FirstOrDefault();
+                    }
                     else if (ds1.Tables.Count == 1)
                     {
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
@@ -255,6 +262,38 @@ namespace WebAPI.Service
 
             return re;
         }
-    
+
+        public OPAI_GetPayInfoReturnCar FromSPOut_GetPayInfoReturnCar(SPOut_GetPayInfoReturnCar sour)
+        {
+            var re = new OPAI_GetPayInfoReturnCar();
+
+            if (sour != null)
+            {
+                if (sour.CheckoutModes != null && sour.CheckoutModes.Count() > 0)
+                {
+                    var CheckoutModes = (
+                           from a in sour.CheckoutModes
+                           select new OPAI_GetPayInfoReturnCar_CheckoutMode
+                           {
+                               CheckoutMode = a.CheckoutMode,
+                               CheckoutNM = a.CheckoutNM,
+                               CheckoutNote = a.CheckoutNote,
+                               IsDef = a.IsDef
+                           }).ToList();
+                    re.CheckoutModes = CheckoutModes;
+                }
+
+                if (sour.PayInfo != null)
+                {
+                    var a = sour.PayInfo;
+                    var PayInfo = new OPAI_GetPayInfoReturnCar_PayInfo();
+                    PayInfo.WalletAmount = a.WalletAmount;
+                    PayInfo.CreditStoreAmount = a.CreditStoreAmount;
+                    re.PayInfo = PayInfo;
+                }
+            }
+
+            return re;
+        }
     }
 }
