@@ -119,12 +119,55 @@ namespace WebAPI.Service
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 2) 
+                    if (ds1.Tables.Count >= 2)
                     {
                         re = objUti.ConvertToList<SPOut_WalletTransferCheck>(ds1.Tables[0]);
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[1]);
                         errCode = re_db.ErrorCode;
                     }
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
+        public List<SPOut_GetPayInfoReturnCar> sp_GetPayInfoReturnCar(SPInput_GetPayInfoReturnCar spInput, ref string errCode)
+        {
+            var re = new List<SPOut_GetPayInfoReturnCar>();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetPayInfoReturnCar);
+                string SPName = "usp_GetPayInfoReturnCar_Q1_20210830";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 2) 
+                        re = objUti.ConvertToList<SPOut_GetPayInfoReturnCar>(ds1.Tables[0]);
                     else if (ds1.Tables.Count == 1)
                     {
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);

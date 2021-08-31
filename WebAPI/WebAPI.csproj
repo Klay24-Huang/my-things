@@ -261,6 +261,7 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
@@ -557,6 +558,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetPayInfoReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetSubsCNT.cs" />
@@ -717,6 +719,7 @@
     <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
+    <Compile Include="Models\Param\Output\OPAI_GetPayInfoReturnCar.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
