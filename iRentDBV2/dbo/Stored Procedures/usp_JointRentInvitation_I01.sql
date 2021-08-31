@@ -12,7 +12,7 @@ Example :
 CREATE PROCEDURE [dbo].[usp_JointRentInvitation_I01]
 	@OrderNo                BIGINT                ,	--訂單編號
 	@InviteeId              VARCHAR(20)           , --被邀請的ID
-	@QureyId                VARCHAR(20)           ,	--要邀請的ID或手機
+	@QueryId                VARCHAR(20)           ,	--要邀請的ID或手機
 	@IDNO                   VARCHAR(20)           ,	--帳號
 	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
 	@LogID                  BIGINT                ,	--執行的api log
@@ -31,6 +31,9 @@ DECLARE @NowTime DATETIME;
 DECLARE @PushTime DATETIME;
 DECLARE @Title NVARCHAR(500);
 DECLARE @MEMCNAME NVARCHAR(60);
+DECLARE @Message nvarchar(500)=''
+DECLARE @url varchar(500) =''
+DECLARE @imageurl varchar(500) = ''
 
 
 /*初始設定*/
@@ -79,8 +82,7 @@ BEGIN TRY
 		END
 	END
 
-	IF @Error=0
-    
+	IF @Error=0   
 	IF NOT EXISTS(SELECT * FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO=@InviteeId)	
 	BEGIN
 		INSERT INTO [dbo].[TB_TogetherPassenger]
@@ -88,7 +90,7 @@ BEGIN TRY
 			SELECT 
 			order_number=@OrderNo,
 			m.MEMIDNO,
-			APPUSEID=@QureyId,
+			APPUSEID=@QueryId,
 			m.MEMCNAME,
 			m.MEMTEL,
 			ChkType='S',
@@ -97,14 +99,24 @@ BEGIN TRY
 			FROM TB_MemberData m WITH(NOLOCK) 	
 			WHERE m.MEMIDNO=@InviteeId;
 
-		SELECT @MEMCNAME=dbo.FN_BlockName(MEMCNAME,'O') FROM TB_MemberData WITH(NOLOCK) WHERE  MEMIDNO=@IDNO;
-
-		IF @MEMCNAME <>''
+		IF @@ERROR <> 0 AND @@ROWCOUNT = 0
 			BEGIN
+				SET @Error=1
+				SET @ErrorCode='ERR929'
+		    END		
+		
+		IF @Error=0		
+		BEGIN
+		    SELECT @MEMCNAME=dbo.FN_BlockName(MEMCNAME,'O') FROM TB_MemberData WITH(NOLOCK) WHERE  MEMIDNO=@IDNO
 			SET @Title=N'【共同承租】'+@MEMCNAME+'邀請您共同承租唷！'
-		    EXEC usp_InsPersonNotification_I01 @OrderNo,@InviteeId,19,@PushTime,@Title,'','','',@LogID,'','','',''
-			END
-	END	
+			EXEC @Error= usp_InsPersonNotification_I01   @OrderNo,@InviteeId,19,@PushTime,@Title,@Message,@url,@imageurl,@LogID,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output
+		END
+	END
+	ELSE
+	BEGIN
+	   SET @Error=1
+	   SET @ErrorCode='ERR928'
+	END 
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -132,6 +144,5 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInvitation_I01';
 END
-
 
 
