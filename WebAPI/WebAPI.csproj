@@ -256,6 +256,7 @@
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
+    <Compile Include="Controllers\GetCarMapDataController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
@@ -487,6 +488,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_GetCarMapData.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />
