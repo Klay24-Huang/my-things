@@ -698,6 +698,10 @@ namespace WebAPI.Models.Enum
             /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
             /// </summary>
             BE_GetCarCurrentStatus,
+            /// <summary>
+            /// 獲取新北監管平台車輛資料 20210901 ADD BY FRANK
+            /// </summary>
+            GetCarMapData,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -1065,6 +1069,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
                     SPName = "usp_GetMotorRent";
+                    break;
+                case SPType.GetCarMapData:  //取得新北監管平台車輛資料 20210901 ADD BY FRANK
+                    SPName = "usp_GetCarMapData";
                     break;
 
                 #region 渣渣
