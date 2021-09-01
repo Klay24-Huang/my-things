@@ -88,7 +88,7 @@ namespace Web.Controllers
         {
             //唐加prometheus
             //EnterCounte.Inc();
-            EnterCounte.WithLabels(Request.HttpMethod,"NO1").Inc();
+            EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();
 
             if (UserName != null && Session["Account"] != null)
             {
