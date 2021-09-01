@@ -68,5 +68,10 @@ namespace Domain.SP.Output.OrderList
         /// 據點地區
         /// </summary>
         public string Area { get; set; }
+
+        /// <summary>
+        /// 是否為共同承租訂單
+        /// </summary>
+        public int IsJointOrder { get; set; } 
     }
 }
