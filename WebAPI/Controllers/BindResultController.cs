@@ -52,8 +52,8 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBindResult(Dictionary<string, object> value)
         {
             ProcessedJobCount1.Inc();//唐加prometheus
-            #region 初始宣告
 
+            #region 初始宣告
             logger.Trace("Init:" + JsonConvert.SerializeObject(value));
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
