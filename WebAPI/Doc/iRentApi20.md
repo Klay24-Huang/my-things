@@ -25,7 +25,7 @@ iRentApi20 Web API版本
 - [GetFavoriteStation取得常用站點](#GetFavoriteStation)
 - [SetFavoriteStation設定常用站點](#SetFavoriteStation)
 - [GetCarType同站以據點取出車型](#GetCarType)
-- [GetProject取得專案與資費](#GetProject)
+- [GetProject取得專案與資費(同站)](#GetProject)
 - [GetBanner 取得廣告資訊](#GetBanner)
 - [GetNormalRent 取得同站租還站點](#GetNormalRent)
 - [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
@@ -61,11 +61,11 @@ iRentApi20 Web API版本
 
 預約以及訂單相關
 
-- [OrderDetail 歷史訂單明細](#OrderDetail)
+- [OrderDetail 訂單明細](#OrderDetail)
 - [Booking 預約](#Booking)
 - [BookingQuery 訂單列表](#BookingQuery)
 - [BookingFinishQuery 完成的訂單查詢](#BookingFinishQuery)
-- [BookingDelete 刪除的訂單](#BookingDelete)
+- [BookingDelete 刪除訂單](#BookingDelete)
 - [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
 
 車輛調度停車場
@@ -166,6 +166,8 @@ iRentApi20 Web API版本
 20210825 共同承租人邀請清單查詢(JointRentInviteeListQuery)新增欄位邀請時輸入的ID或手機(QueryId)
 
 20210830 訂單列表(BookingQuery)欄位修正
+
+20210901 機車取車(BookingStartMotor) input修正
 
 
 # Header參數相關說明
@@ -1172,7 +1174,7 @@ iRentApi20 Web API版本
 ----------------
 
 
-## GetProject取得專案與資費
+## GetProject取得專案與資費(同站)
 ### [/api/GetProject/]
 
 * 20210315修改 - 增加是否為常用據點欄位
@@ -2883,18 +2885,18 @@ iRentApi20 Web API版本
 | 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
 | -------- | -------- | :--: | :----: | -------- |
 | OrderNo  | 訂單編號 |  Y   | string | H0002630 |
-| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
-| SKBToken | SKB的token | Y | int | 0 |
+| ED | 路邊租還可以重設結束時間 | N | string | 0 |
+| SKBToken | SKB的token | Y | string | 0 |
 | Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
 
 * input範例
 
 ```
 {
-    "SKBToken": "",
     "OrderNo": "H10641049",
-    "Insurance": 0,
-    "ED": ""
+    "ED": "",
+    "SKBToken": "",
+    "Insurance": 0
 }
 ```
 
@@ -2946,19 +2948,13 @@ iRentApi20 Web API版本
 
 | 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
 | -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
-| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
-| SKBToken | SKB的token | Y | int | 0 |
-| Insurance | 加購安心服務 | Y | int | 0:否 1:有 |
+| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
 
 * input範例
 
 ```
 {
-    "SKBToken": "",
-    "OrderNo": "H10641049",
-    "Insurance": 0,
-    "ED": ""
+    "OrderNo": "H10641049"
 }
 ```
 
@@ -4746,7 +4742,7 @@ iRentApi20 Web API版本
 
 
 
-## OrderDetail
+## OrderDetail 訂單明細
 
 ### [/api/OrderDetail/]
 
@@ -4922,7 +4918,7 @@ iRentApi20 Web API版本
 
 ------
 
-## Booking
+## Booking 預約
 
 ### [/api/Booking/]
 
@@ -5246,7 +5242,7 @@ iRentApi20 Web API版本
 
 ----
 
-## BookingFinishQuery
+## BookingFinishQuery 完成的訂單查詢
 
 ### [/api/BookingFinishQuery/]
 
@@ -5366,7 +5362,7 @@ iRentApi20 Web API版本
 
 -----
 
-## BookingDelete
+## BookingDelete 刪除訂單
 
 ### [/api/BookingDelete/]
 
@@ -5428,7 +5424,7 @@ iRentApi20 Web API版本
 
 ---
 
-## GetOrderInsuranceInfo
+## GetOrderInsuranceInfo 訂單安心服務資格及價格查詢
 
 ### [/api/GetOrderInsuranceInfo/]
 
@@ -5508,7 +5504,7 @@ iRentApi20 Web API版本
 
 # 車輛調度停車場相關
 
-## GetMotorParkingData
+## GetMotorParkingData 取得機車調度停車場
 
 ### [/api/GetMotorParkingData/]
 
@@ -5631,7 +5627,7 @@ iRentApi20 Web API版本
 
 ---
 
-## GetParkingData
+## GetParkingData 取得汽車調度停車場
 
 ### [/api/GetParkingData/]
 
