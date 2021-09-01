@@ -13,6 +13,8 @@
 			 20210524 ADD BY ADAM REASON.增加儀表板電量
 			 20210826 UPD BY YEH REASON:將正式版本增加的欄位壓回此SP
 			 20210827 UPD BY YEH REASON:1.增加承租人類型 2.增加副承租人的訂單列表
+			 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
+
 * Example  : EXEC usp_OrderListQuery 'L122184238','3667F93976891550DA17A40CFA4651416F7112B00AC396E86F47BCC114013833',611138892,-1,'','','',''
 ***********************************************************************************************/
 
@@ -167,6 +169,7 @@ BEGIN TRY
 			,LastOD.parkingSpace AS parkingSpace
 			,VW.deviceRSOC		--20210524 ADD BY ADAM REASON.增加儀表板電量
 			,1 AS RenterType	-- 20210827 UPD BY YEH REASON:增加承租人類型
+			,JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WHERE SP.Order_number=VW.order_number),0)	-- 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
         INTO #Result
 		FROM VW_GetOrderData AS VW WITH(NOLOCK)
         LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 --AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
@@ -267,6 +270,7 @@ BEGIN TRY
 			,LastOD.parkingSpace AS parkingSpace
 			,VW.deviceRSOC		--20210524 ADD BY ADAM REASON.增加儀表板電量
 			,2 AS RenterType	-- 20210827 UPD BY YEH REASON:增加承租人類型
+			,JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WHERE SP.Order_number=VW.order_number),0)	-- 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
 		FROM VW_GetOrderData AS VW WITH(NOLOCK)
         LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 --AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
