@@ -184,7 +184,7 @@ namespace WebAPI.Controllers
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 Insurance = OrderDataLists[i].Insurance,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
-                                InsurancePerHour = OrderDataLists[i].InsurancePerHours,
+                                InsurancePerHour = OrderDataLists[i].InsurancePerHours + OrderDataLists[i].JointInsurancePerHour,   // 20210831 UPD BY YEH REASON:安心服務每小時金額要加上共同承租人每小時安心服務價格
                                 Operator = OrderDataLists[i].OperatorICon,
                                 OperatorScore = OrderDataLists[i].Score,
                                 OrderNo = string.Format("H{0}", OrderDataLists[i].order_number.ToString().PadLeft(7, '0')),

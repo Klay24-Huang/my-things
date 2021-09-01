@@ -18,6 +18,6 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 要邀請的ID或手機
         /// </summary>
-        public string QureyId { set; get; }
+        public string QueryId { set; get; }
     }
 }

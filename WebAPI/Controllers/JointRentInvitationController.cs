@@ -68,7 +68,7 @@ namespace WebAPI.Controllers
             {
                 if (apiInput != null)
                 {
-                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo) || string.IsNullOrWhiteSpace(apiInput.QureyId) || string.IsNullOrWhiteSpace(apiInput.InviteeId))
+                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo) || string.IsNullOrWhiteSpace(apiInput.QueryId) || string.IsNullOrWhiteSpace(apiInput.InviteeId))
                     {
                         flag = false;
                         errCode = "ERR900";
@@ -134,7 +134,7 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     Token = Access_Token,
                     OrderNo= tmpOrder,
-                    QureyId=apiInput.QureyId,
+                    QueryId = apiInput.QueryId,
                     InviteeId=apiInput.InviteeId
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

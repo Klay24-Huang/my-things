@@ -24,7 +24,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 要邀請的ID或手機(原input參數)
         /// </summary>
-        public string QureyId { set; get; }
+        public string QueryId { set; get; }
 
     }
 

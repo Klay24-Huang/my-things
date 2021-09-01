@@ -25,7 +25,7 @@ iRentApi20 Web API版本
 - [GetFavoriteStation取得常用站點](#GetFavoriteStation)
 - [SetFavoriteStation設定常用站點](#SetFavoriteStation)
 - [GetCarType同站以據點取出車型](#GetCarType)
-- [GetProject取得專案與資費](#GetProject)
+- [GetProject取得專案與資費(同站)](#GetProject)
 - [GetBanner 取得廣告資訊](#GetBanner)
 - [GetNormalRent 取得同站租還站點](#GetNormalRent)
 - [GetCarTypeGroupList取得車型清單](#GetCarTypeGroupList)
@@ -61,11 +61,11 @@ iRentApi20 Web API版本
 
 預約以及訂單相關
 
-- [OrderDetail 歷史訂單明細](#OrderDetail)
+- [OrderDetail 訂單明細](#OrderDetail)
 - [Booking 預約](#Booking)
 - [BookingQuery 訂單列表](#BookingQuery)
 - [BookingFinishQuery 完成的訂單查詢](#BookingFinishQuery)
-- [BookingDelete 刪除的訂單](#BookingDelete)
+- [BookingDelete 刪除訂單](#BookingDelete)
 - [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
 
 車輛調度停車場
@@ -167,6 +167,11 @@ iRentApi20 Web API版本
 
 20210830 訂單列表(BookingQuery)欄位修正
 
+20210831 共同承租人邀請(JointRentInvitation) 回應邀請(JointRentIviteeFeedBack ) 參數名稱&錯誤代碼更新
+
+20210901 機車取車(BookingStartMotor) input修正
+
+20210901 共同承租人回應邀請(JointRentIviteeFeedBack) 欄位值修正
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -1172,7 +1177,7 @@ iRentApi20 Web API版本
 ----------------
 
 
-## GetProject取得專案與資費
+## GetProject取得專案與資費(同站)
 ### [/api/GetProject/]
 
 * 20210315修改 - 增加是否為常用據點欄位
@@ -2883,18 +2888,18 @@ iRentApi20 Web API版本
 | 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
 | -------- | -------- | :--: | :----: | -------- |
 | OrderNo  | 訂單編號 |  Y   | string | H0002630 |
-| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
-| SKBToken | SKB的token | Y | int | 0 |
+| ED | 路邊租還可以重設結束時間 | N | string | 0 |
+| SKBToken | SKB的token | Y | string | 0 |
 | Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
 
 * input範例
 
 ```
 {
-    "SKBToken": "",
     "OrderNo": "H10641049",
-    "Insurance": 0,
-    "ED": ""
+    "ED": "",
+    "SKBToken": "",
+    "Insurance": 0
 }
 ```
 
@@ -2946,19 +2951,13 @@ iRentApi20 Web API版本
 
 | 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
 | -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
-| ED | 路邊租還可以重設結束時間 | Y | int | 0 |
-| SKBToken | SKB的token | Y | int | 0 |
-| Insurance | 加購安心服務 | Y | int | 0:否 1:有 |
+| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
 
 * input範例
 
 ```
 {
-    "SKBToken": "",
-    "OrderNo": "H10641049",
-    "Insurance": 0,
-    "ED": ""
+    "OrderNo": "H10641049"
 }
 ```
 
@@ -4746,7 +4745,7 @@ iRentApi20 Web API版本
 
 
 
-## OrderDetail
+## OrderDetail 訂單明細
 
 ### [/api/OrderDetail/]
 
@@ -4922,7 +4921,7 @@ iRentApi20 Web API版本
 
 ------
 
-## Booking
+## Booking 預約
 
 ### [/api/Booking/]
 
@@ -5098,14 +5097,14 @@ iRentApi20 Web API版本
 | CarLatitude |      車緯度      | decimal |25.0726200   |
 | CarLongitude |     車經度       | decimal | 121.5423700 |
 | MotorPowerBaseObj |     機車電力資訊    | object |  當ProjType=4時才有值   |
-| ProjType | 專案類型 | int | 0:同站 3:路邊 4:機車 |
+| ProjType | 專案類型<br>0:同站 3:路邊 4:機車 | int | 0 |
 | ProjName | 專案名稱 | string | 同站汽車110起推廣專案 |
 | WorkdayPerHour | 平日每小時費用 | int | 110 |
 | HolidayPerHour | 假日每小時費用 | int | 168 |
 | MaxPrice | 每日上限 | int | 0 |
 | MaxPriceH | 假日上限 | int | 0 |
 | MotorBasePriceObj | 機車費用 | object | 當ProjType=4時才有值 |
-| OrderStatus | 訂單狀態 | int | -1:前車未還（未到站） <br>0:可取車<br/>1:用車中<br/>2:延長用車中<br/>3:準備還車<br/>4:逾時<br/>5:還車流程中（未完成還車） |
+| OrderStatus | 訂單狀態<br>-1:前車未還（未到站） <br/>0:可取車<br/>1:用車中<br/>2:延長用車中<br/>3:準備還車<br/>4:逾時<br/>5:還車流程中（未完成還車） | int | 1 |
 | OrderNo | 訂單編號 | string | H12044254 |
 | StartTime | 預計取車時間 | string | 2021-08-30 11:00:00 |
 | PickTime | 實際取車時間 | string | 2021-08-30 10:51:16 |
@@ -5122,9 +5121,9 @@ iRentApi20 Web API版本
 | TransDiscount | 轉乘優惠 | int | 0 |
 | Bill | 預估總金額 | int | 172 |
 | DailyMaxHour | 單日計費上限時數 | int | 10 |
-| CAR_MGT_STATUS | 取還車狀態 | int | 0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 |
-| AppStatus |  | int | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) |
-| RenterType | 承租人類型 | int | 1:主要承租人 2:共同承租人 |
+| CAR_MGT_STATUS | 取還車狀態<br>0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 | int | 4 |
+| AppStatus | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) | int | 6 |
+| RenterType | 承租人類型<br>1:主要承租人 2:共同承租人 | int | 1 |
 * StationInfo回傳參數說明
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
@@ -5246,7 +5245,7 @@ iRentApi20 Web API版本
 
 ----
 
-## BookingFinishQuery
+## BookingFinishQuery 完成的訂單查詢
 
 ### [/api/BookingFinishQuery/]
 
@@ -5366,7 +5365,7 @@ iRentApi20 Web API版本
 
 -----
 
-## BookingDelete
+## BookingDelete 刪除訂單
 
 ### [/api/BookingDelete/]
 
@@ -5428,7 +5427,7 @@ iRentApi20 Web API版本
 
 ---
 
-## GetOrderInsuranceInfo
+## GetOrderInsuranceInfo 訂單安心服務資格及價格查詢
 
 ### [/api/GetOrderInsuranceInfo/]
 
@@ -5508,7 +5507,7 @@ iRentApi20 Web API版本
 
 # 車輛調度停車場相關
 
-## GetMotorParkingData
+## GetMotorParkingData 取得機車調度停車場
 
 ### [/api/GetMotorParkingData/]
 
@@ -5631,7 +5630,7 @@ iRentApi20 Web API版本
 
 ---
 
-## GetParkingData
+## GetParkingData 取得汽車調度停車場
 
 ### [/api/GetParkingData/]
 
@@ -5755,7 +5754,7 @@ iRentApi20 Web API版本
 
 # iRent共同承租人機制
 
-## JointRentInviteeListQuery 共同承租人邀請清單查詢 ##
+## JointRentInviteeListQuery 共同承租人邀請清單查詢 
 ### [/api/JointRentInviteeListQuery/]
 
 * 20210819新增
@@ -5883,7 +5882,7 @@ iRentApi20 Web API版本
 
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
-| QureyId   | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
+| QueryId | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
 | OrderNo  | 訂單編號       |  Y   | string | H10791575   |
 
 
@@ -5891,7 +5890,7 @@ iRentApi20 Web API版本
 
 ```
 {
-    "QureyId": "0911001001",
+    "QueryId": "0911001001",
     "OrderNo": "H10791575",
 }
 ```
@@ -5913,7 +5912,7 @@ iRentApi20 Web API版本
 | ------------ | ------------------ | :----: | ------------- |
 | OrderNo  | 訂單編號         | string    | H10791575     |
 | InviteeId | 被邀請人ID | string | A140584785 |
-| QureyId | 要邀請的ID或手機(原input參數) | string | 0911001001 |
+| QueryId | 要邀請的ID或手機(原input參數) | string | 0911001001 |
 
 * Output範例
 
@@ -5927,12 +5926,21 @@ iRentApi20 Web API版本
     "Data": {
         "OrderNo":"H10791575",
         "InviteeId":"A140584785",
-        "QureyId":"0911001001"
+        "QueryId":"0911001001"
     }
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 說明                                       |
+| -------- | ------------------------------------------ |
+| ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
+| ERR920   | 同時段有合約或預約，不能邀請哦！           |
+| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+
 ## JointRentInvitation 案件共同承租人邀請
+
 ### [/api/JointRentInvitation/]
 
 * 20210819新增
@@ -5957,7 +5965,7 @@ iRentApi20 Web API版本
 | --------- | ---------- | :--: | :----: | ----------- |
 | OrderNo  | 訂單編號       |  Y   | string | H10791575   |
 | InviteeId | 要邀請的ID   |  Y   | string    | A140584785 |
-| QureyId | 要邀請的ID或手機(原input參數) |  Y   | string | 0911001001 |
+| QueryId | 要邀請的ID或手機(原input參數) |  Y   | string | 0911001001 |
 
 
 * input範例
@@ -5966,7 +5974,7 @@ iRentApi20 Web API版本
 {
     "OrderNo": "H10791575",
     "InviteeId": "A140584785",
-    "QureyId":"0911001001"
+    "QueryId":"0911001001"
 }
 ```
 
@@ -5995,7 +6003,15 @@ iRentApi20 Web API版本
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 說明                               |
+| -------- | ---------------------------------- |
+| ERR928   | 已存在於共同承租邀請清單，新增失敗 |
+| ERR929   | 無法進行共同承租邀請               |
+
 ## JointRentInviteeModify 案件共同承租人邀請狀態維護
+
 ### [/api/JointRentInviteeModify/]
 
 * 20210819新增
@@ -6102,7 +6118,7 @@ iRentApi20 Web API版本
 ```
 {
     "OrderNo": "H10791575",
-    "InviteeId": "0911001001",
+    "InviteeId": "A140584785",
     "FeedbackType":"Y"
 }
 ```
@@ -6131,3 +6147,13 @@ iRentApi20 Web API版本
     "Data": {}
 }
 ```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 說明                                       |
+| -------- | ------------------------------------------ |
+| ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
+| ERR920   | 同時段有合約或預約，不能邀請哦！           |
+| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR927   | 非邀請中的合約無法進行操作                 |
+| ERR929   | 共同承租回應邀請更新失敗                   |

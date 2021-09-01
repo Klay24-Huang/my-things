@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
             {
                 if (apiInput != null)
                 {
-                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo) || string.IsNullOrWhiteSpace(apiInput.QureyId))
+                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo) || string.IsNullOrWhiteSpace(apiInput.QueryId))
                     {
                         flag = false;
                         errCode = "ERR900";
@@ -132,7 +132,7 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     Token = Access_Token,
                     OrderNo = tmpOrder,
-                    QureyId = apiInput.QureyId
+                    QueryId = apiInput.QueryId
                 };
                 SPOutput_JointRentInviteeVerify spOut = new SPOutput_JointRentInviteeVerify();
                 flag = new SQLHelper<SPInput_JointRentInviteeVerify, SPOutput_JointRentInviteeVerify>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
@@ -142,7 +142,7 @@ namespace WebAPI.Controllers
                     outputApi = new OAPI_JointRentInviteeVerify()
                     {
                         OrderNo = apiInput.OrderNo,
-                        QureyId = apiInput.QureyId,
+                        QueryId = apiInput.QueryId,
                         InviteeId = spOut.InviteeId
                     };
 
