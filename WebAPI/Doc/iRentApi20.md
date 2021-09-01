@@ -167,8 +167,11 @@ iRentApi20 Web API版本
 
 20210830 訂單列表(BookingQuery)欄位修正
 
+20210831 共同承租人邀請(JointRentInvitation) 回應邀請(JointRentIviteeFeedBack ) 參數名稱&錯誤代碼更新
+
 20210901 機車取車(BookingStartMotor) input修正
 
+20210901 共同承租人回應邀請(JointRentIviteeFeedBack) 欄位值修正
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5751,7 +5754,7 @@ iRentApi20 Web API版本
 
 # iRent共同承租人機制
 
-## JointRentInviteeListQuery 共同承租人邀請清單查詢 ##
+## JointRentInviteeListQuery 共同承租人邀請清單查詢 
 ### [/api/JointRentInviteeListQuery/]
 
 * 20210819新增
@@ -6115,7 +6118,7 @@ iRentApi20 Web API版本
 ```
 {
     "OrderNo": "H10791575",
-    "InviteeId": "0911001001",
+    "InviteeId": "A140584785",
     "FeedbackType":"Y"
 }
 ```
