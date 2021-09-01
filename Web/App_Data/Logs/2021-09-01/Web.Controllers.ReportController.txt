@@ -1,1 +1,2 @@
 2021-09-01 10:50:16.0352|TRACE|Web.Controllers.ReportController|{ReportName:'代收停車費明細(ExplodeParkingReport)',User:'唐瑋祁',IPAddr:'::1',Condition:{SDate:'2021/9/1 上午 12:00:00',EDate:'2021/9/1 上午 12:00:00',CarNo:'',RowCount:20}
+2021-09-01 16:13:37.0388|TRACE|Web.Controllers.ReportController|{ReportName:'會員審核明細報表(ExplodeMemberDetailQuery)',User:'唐瑋祁',IPAddr:'::1',Condition:{StartDate:'2021-08-04',EndDate:'2021-08-05',AuditMode:'-1',RowCount:3512}

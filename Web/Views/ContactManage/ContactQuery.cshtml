@@ -150,7 +150,17 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-3 offset-md-2">
-                                <!--<button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">匯出</button>-->
+                                @{
+                                    if (Session["Account"].ToString() == "80333" || Session["Account"].ToString() == "80440"
+                                        || Session["Account"].ToString() == "80010" || Session["Account"].ToString() == "80161"
+                                        || Session["Account"].ToString() == "80163" || Session["Account"].ToString() == "80203"
+                                        || Session["Account"].ToString() == "80230" || Session["Account"].ToString() == "80257"
+                                        || Session["Account"].ToString() == "80270" || Session["Account"].ToString() == "80381" || Session["Account"].ToString() == "80345")
+                                    {
+                                        <button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary">匯出</button>
+                                    }
+                                }
+                                @*<button type="button" name="btnExplode" id="btnExplode" class="btn btn-primary" style="display:none">匯出</button>*@
                                 <input type="hidden" name="Mode" id="Mode" value="@(Mode)" />
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                                 <input type="hidden" id="len" name="len" value="@ResultLen" />
@@ -266,5 +276,5 @@
 
 <script>
     var errorLine = '@((ViewData["errorLine"]==null)?"": ViewData["errorLine"].ToString())';
-                           var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
+    var errorMsg = '@((ViewData["errorMsg"] == null)?"" : ViewData["errorMsg"].ToString())';
 </script>
