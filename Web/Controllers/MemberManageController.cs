@@ -34,7 +34,12 @@ namespace Web.Controllers
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
 
         //唐加prometheus
-        private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
+        private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail",
+            new CounterConfiguration
+            {
+                // Here you specify only the names of the labels.
+                LabelNames = new[] { "method", "server" }
+            });
 
         #region 會員審核及明細
         /// <summary>
@@ -82,7 +87,8 @@ namespace Web.Controllers
         public ActionResult AuditDetail(string AuditIDNO, string UserName)
         {
             //唐加prometheus
-            EnterCounte.Inc();
+            //EnterCounte.Inc();
+            EnterCounte.WithLabels(Request.HttpMethod,"NO1").Inc();
 
             if (UserName != null && Session["Account"] != null)
             {
