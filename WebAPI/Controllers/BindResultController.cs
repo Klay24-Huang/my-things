@@ -42,12 +42,6 @@ namespace WebAPI.Controllers
         private static readonly Counter ProcessedJobCount5 = Metrics.CreateCounter("BindResult_Error", "the number of call api error");
         private static readonly Counter ProcessedJobCount6 = Metrics.CreateCounter("BindResult_OrderNoNull", "the number of call api error");
         private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("BindResult_hasFind", "the number of call api error");
-        //private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("BindResult_hasFind", "the number of call api error",
-        //    new CounterConfiguration
-        //    {
-        //        // Here you specify only the names of the labels.
-        //        LabelNames = new[] { "server" }
-        //    });
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -58,8 +52,8 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBindResult(Dictionary<string, object> value)
         {
             ProcessedJobCount1.Inc();//唐加prometheus
-            #region 初始宣告
 
+            #region 初始宣告
             logger.Trace("Init:" + JsonConvert.SerializeObject(value));
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
