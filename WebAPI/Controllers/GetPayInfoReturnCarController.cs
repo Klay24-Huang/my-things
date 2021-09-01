@@ -24,6 +24,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var wsp = new WalletSp();
+            var wmp = new WalletMap();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -39,6 +40,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_GetPayInfoReturnCar();
             var outputApi = new OPAI_GetPayInfoReturnCar();
+            outputApi.CheckoutModes = new List<OPAI_GetPayInfoReturnCar_CheckoutMode>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -109,13 +111,12 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         LogID = LogID
-                    };
-                    trace.traceAdd("spIn", spIn);
-                    var spList = wsp.sp_GetPayInfoReturnCar(spIn, ref errCode);
-                    if(spList != null && spList.Count()>0)
-                        outputApi.CheckoutModes = objUti.TTMap<List<SPOut_GetPayInfoReturnCar>, List<OPAI_GetPayInfoReturnCar_Para>>(spList);
-                    trace.traceAdd("spList", spList);
-                    trace.FlowList.Add("sp呼叫");
+                    };                    
+                    var sp_re = wsp.sp_GetPayInfoReturnCar(spIn, ref errCode);
+                    if (sp_re != null)
+                        outputApi = wmp.FromSPOut_GetPayInfoReturnCar(sp_re);
+
+                    trace.traceAdd("spIn",new { spIn ,sp_re});
                 }
 
                 #endregion

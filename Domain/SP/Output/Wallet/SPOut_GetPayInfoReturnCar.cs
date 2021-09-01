@@ -9,6 +9,18 @@ namespace Domain.SP.Output.Wallet
     public class SPOut_GetPayInfoReturnCar
     {
         /// <summary>
+        /// 付款方式
+        /// </summary>
+        public List<SPOut_GetPayInfoReturnCar_CheckoutModes> CheckoutModes { get; set; }
+        /// <summary>
+        /// 付款資訊
+        /// </summary>
+        public SPOut_GetPayInfoReturnCar_PayInfo PayInfo { get; set; }
+    }
+
+    public class SPOut_GetPayInfoReturnCar_CheckoutModes 
+    {
+        /// <summary>
         /// 付款方式(1信用卡,2錢包)
         /// </summary>
         public int CheckoutMode { get; set; }
@@ -29,4 +41,17 @@ namespace Domain.SP.Output.Wallet
         /// </summary>
         public int IsDef { get; set; }
     }
+
+    public class SPOut_GetPayInfoReturnCar_PayInfo
+    { 
+        /// <summary>
+        /// 錢包金額
+        /// </summary>
+        public int WalletAmount { get; set; }
+        /// <summary>
+        /// 自動儲值金額
+        /// </summary>
+        public int CreditStoreAmount { get; set; }
+    }
+
 }

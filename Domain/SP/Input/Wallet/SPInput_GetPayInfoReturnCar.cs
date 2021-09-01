@@ -10,6 +10,9 @@ namespace Domain.SP.Input.Wallet
     {
         public string IDNO { get; set; }
         public Int64 LogID { get; set; }
-
+        /// <summary>
+        /// 付款金額
+        /// </summary>
+        public int PaymentAmount { get; set; }
     }
 }

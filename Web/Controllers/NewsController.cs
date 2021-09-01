@@ -12,7 +12,7 @@ namespace Web.Controllers
 {
     public class NewsController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         // GET: News
         public ActionResult Index()
         {
