@@ -942,7 +942,9 @@ namespace Reposotory.Implement
             BE_OrderDetailData obj = null;
 
             int nowCount = 0;
-            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //20210902 ADD BY ADAM REASON.資安政策有調整view導致沒辦法顯示合約，先修正
+            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail_Contact WITH(NOLOCK)  ";
 
 
             SqlParameter[] para = new SqlParameter[10];
