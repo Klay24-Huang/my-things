@@ -265,6 +265,7 @@
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
+    <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
@@ -567,6 +568,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetUpSubsList.cs" />
     <Compile Include="Models\Param\Input\IAPI_InvoiceSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeVerify.cs" />
+    <Compile Include="Models\Param\Input\IAPI_JointRentIviteeFeedBack.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
