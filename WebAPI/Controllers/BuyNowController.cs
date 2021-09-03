@@ -463,6 +463,27 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                //先檢查是否可以購買訂閱制
+                //目前兩個情況會擋掉，積分小於60，已經有重複買的也不能
+                if (flag)
+                {
+                    string spErrCode = "";
+                    var spIn = new SPInput_BuyNowAddMonth_Q01()
+                    {
+                        IDNO = IDNO,
+                        MonProjId = apiInput.MonProjID,
+                        MonProPeroid = apiInput.MonProPeriod,
+                        ShortDays = apiInput.ShortDays,
+                        LogID = LogID
+                    };
+                    if (!msp.sp_BuyNowAddMonth_Q01(spIn, ref spErrCode))
+                    {
+                        flag = false;
+                        errCode = spErrCode;
+                        errMsg = "購買失敗!";
+                    }
+                }
+
                 if (flag)
                 {
                     #region 載入後續Api所需資料

@@ -258,6 +258,7 @@
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_ArrearsPaySubs.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_BuyNowAddMonth_Q01.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_CreateSubsMonth.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_DelSubsHist.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_GetArrsSubsList.cs" />
