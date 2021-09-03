@@ -260,5 +260,10 @@
         /// 總回饋時數 20210517 ADD BY ADAM
         /// </summary>
         public int TotalRewardPoint { get; set; }
+
+        /// <summary>
+        /// 承租人類型 1:主要承租人 2:共同承租人
+        /// </summary>
+        public int RenterType { get; set; }
     }
 }
