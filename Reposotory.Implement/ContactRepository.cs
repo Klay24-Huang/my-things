@@ -964,7 +964,7 @@ namespace Reposotory.Implement
             if (IDNO != "")
             {
                 term += (term == "") ? "" : " AND ";
-                term += " (IDNO=@IDNO OR MEMRFNBR=@IDNO)";      //20210902 ADD BY ADAM REASON.暫時解決出租單列印問題
+                term += " (IDNO=@IDNO OR CAST(MEMRFNBR AS VARCHAR)=@IDNO)";      //20210902 ADD BY ADAM REASON.暫時解決出租單列印問題
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,10);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;

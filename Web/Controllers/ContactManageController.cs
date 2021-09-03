@@ -621,13 +621,14 @@ namespace Web.Controllers
                         //20210823 ADD BY ADAM REASON.輸出改為csv
                         csvText.Append("H" + lstBook[i].OrderNo.ToString().PadLeft(7, '0') + ",");      //合約
                         csvText.Append(lstBook[i].IDNO + ",");                                          //會員帳號
-                        csvText.Append(lstBook[i].UserName.Replace("\r\n","")+ ",");                                      //會員姓名
+                        csvText.Append(lstBook[i].UserName.Replace("\r\n","").ToString() + ",");                                      //會員姓名
                         csvText.Append(OrderStatus + ",");                                              //訂單類型
-                        csvText.Append(lstBook[i].LStation + "/" + lstBook[i].RStation + ",");          //取/還車站
+                        csvText.Append((lstBook[i].LStation == null ? "" :lstBook[i].LStation.Replace(",", "，")) + "/" 
+                            + (lstBook[i].RStation == null ? "" : lstBook[i].RStation.Replace(",", "，")) + ",");          //取/還車站
                         
                         csvText.Append(lstBook[i].CarTypeName.Replace(",", "，") + ",");                                   //車型
                         csvText.Append(lstBook[i].CarNo + ",");                                         //車牌號碼
-                        csvText.Append(lstBook[i].PRONAME == null ? "" : lstBook[i].PRONAME.Replace(",", "，") + ",");                                       //優惠方案
+                        csvText.Append(lstBook[i].PRONAME == null ? "," : lstBook[i].PRONAME.Replace(",", "，") + ",");                                       //優惠方案
                         csvText.Append((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車," : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm") + ",");    //實際取車時間
                         csvText.Append((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車," : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm") + ",");    //實際還車時間
                         csvText.Append((lstBook[i].P_LBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)) + ",");       //取車左邊電池電量
