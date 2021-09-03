@@ -249,7 +249,7 @@ namespace WebAPI.Service
                           ORGID = a.ORGID,
                           IDNO = a.IDNO,
                           SEQNO = a.SEQNO,
-                          F_INFNO = a.F_INFNO,
+                          TaishinNO = a.TaishinNO,
                           TradeYear = Convert.ToDateTime(a.TradeDate).Year,
                           TradeDate = Convert.ToDateTime(a.TradeDate).ToString("MM/dd"),
                           TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),  

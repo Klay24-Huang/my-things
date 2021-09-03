@@ -18,9 +18,9 @@ namespace Domain.SP.Output.Wallet
         /// </summary>
         public int SEQNO { get; set; }
         /// <summary>
-        /// 財務-上游批號(IR編)
+        /// 台新交易編號(IR編)
         /// </summary>
-        public string F_INFNO { get; set; }
+        public string TaishinNO { get; set; }
         /// <summary>
         ///  交易類別(對應財務FMFLAG)
         /// </summary>
