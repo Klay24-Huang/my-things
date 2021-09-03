@@ -86,7 +86,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         public int TotalRental { set; get; } = 0;
 
         /// <summary>
-        /// 車麻吉費用
+        /// 停車費用
         /// </summary>
         public int ParkingFee { set; get; } = 0;
         /// <summary>

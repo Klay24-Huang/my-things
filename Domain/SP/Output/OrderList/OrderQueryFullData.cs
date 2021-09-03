@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Output.OrderList
 {
@@ -270,6 +266,11 @@ namespace Domain.SP.Output.OrderList
         /// 假日售價
         /// </summary>
         public int HoildayPrice { get; set; }
+
+        /// <summary>
+        /// 副承租人每小時費率總和
+        /// </summary>
+        public int JointInsurancePerHour { get; set; }
         #endregion
     }
 

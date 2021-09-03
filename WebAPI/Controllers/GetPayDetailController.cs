@@ -19,7 +19,6 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -101,7 +100,7 @@ namespace WebAPI.Controllers
             int gift_motor_point = 0;//使用時數(機車)
             int motoBaseMins = 0;//機車基本分鐘數
             int motoMaxMins = 0;//機車單日最大分鐘數
-            //int carBaseMins = 60;//汽車基本分鐘數
+            int carBaseMins = 60;//汽車基本分鐘數
 
             var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
             bool isSpring = false;//是否為春節時段
@@ -180,6 +179,7 @@ namespace WebAPI.Controllers
                     #region 取出訂單資訊
                     if (flag)
                     {
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderStatusByOrderNo);
                         SPInput_GetOrderStatusByOrderNo spInput = new SPInput_GetOrderStatusByOrderNo()
                         {
                             IDNO = IDNO,
@@ -187,15 +187,13 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             Token = Access_Token
                         };
-                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderStatusByOrderNo);
                         SPOutput_Base spOutBase = new SPOutput_Base();
                         SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
                         OrderDataLists = new List<OrderQueryFullData>();
                         DataSet ds = new DataSet();
-                        flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref ds, ref lstError);
-                        if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                            OrderDataLists = objUti.ConvertToList<OrderQueryFullData>(ds.Tables[0]);
+                        flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
                         trace.FlowList.Add("取出訂單資訊");
                         //判斷訂單狀態
                         if (flag)
@@ -462,7 +460,7 @@ namespace WebAPI.Controllers
                         #endregion
                     }
 
-                    //取得使用中訂閱制月租
+                    #region 取得使用中訂閱制月租
                     if (flag)
                     {
                         List<int> CarCodes = new List<int>() { 0, 3 };
@@ -483,7 +481,9 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+                    #endregion
 
+                    #region 檢查點下還車鍵是否已超過三十分鐘
                     if (flag)
                     {
                         if (NowTime.Subtract(FED).TotalMinutes >= 30)
@@ -492,6 +492,7 @@ namespace WebAPI.Controllers
                             errCode = "ERR208";
                         }
                     }
+                    #endregion
 
                     #region 與短租查時數 - 春節不執行
                     if (flag && !isSpring)
@@ -560,24 +561,25 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 汽車計費資訊
-                    int car_payAllMins = 0; //全部計費租用分鐘
-                    int car_payInMins = 0;//未超時計費分鐘
-                    int car_payOutMins = 0;//超時分鐘-顯示用
-                    int car_inPrice = 0;//未超時費用
-                    int car_outPrice = 0;//超時費用
-                    int car_n_price = OrderDataLists[0].PRICE;
-                    int car_h_price = OrderDataLists[0].PRICE_H;
+                    int car_payAllMins = 0;     //全部計費租用分鐘
+                    int car_payInMins = 0;      //未超時計費分鐘
+                    int car_payOutMins = 0;     //逾時分鐘-顯示用
+                    int car_inPrice = 0;        //未超時費用
+                    int car_outPrice = 0;       //逾時費用
+                    int car_n_price = OrderDataLists[0].PRICE;      // 平日價格
+                    int car_h_price = OrderDataLists[0].PRICE_H;    // 假日價格
 
                     if (flag)
                     {
                         if (ProjType != 4)
                         {
-                            if (hasFine)
+                            if (hasFine)    // 逾時
                             {
                                 var ord = OrderDataLists[0];
                                 var xre = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                                 if (xre != null)
-                                    car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                                    car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));    //逾時分鐘
+                                //逾時費用
                                 car_outPrice = billCommon.CarRentCompute(ED, FED, ord.WeekdayPrice, ord.HoildayPrice, 6, lstHoliday, true, 0);
                                 car_payAllMins += car_payOutMins;
 
@@ -608,7 +610,6 @@ namespace WebAPI.Controllers
                             trace.FlowList.Add("汽車計費資訊(非月租)");
                         }
                     }
-
                     #endregion
 
                     #region 查ETAG 20201202 ADD BY ADAM
@@ -692,6 +693,8 @@ namespace WebAPI.Controllers
                         TransferPrice = OrderDataLists[0].init_TransDiscount;
                         trace.FlowList.Add("建空模");
                     }
+
+                    #region 停車費
                     if (flag && OrderDataLists[0].ProjType != 4) //20201224 add by adam 問題未確定前先關掉車麻吉
                     {
                         var input = new IBIZ_CarMagi()
@@ -752,11 +755,11 @@ namespace WebAPI.Controllers
                         //baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                         trace.FlowList.Add("CityParkingFee");
                     }
+                    #endregion
 
                     #endregion
 
                     #region 月租
-                    //note: 月租GetPayDetail
                     if (flag)
                     {
                         var item = OrderDataLists[0];
@@ -816,6 +819,7 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("月租");
                     }
                     #endregion
+
                     #region 開始計價
                     if (flag)
                     {
@@ -898,8 +902,10 @@ namespace WebAPI.Controllers
                                     trace.FlowList.Add("汽車非月租折扣扣除");
                                 }
                             }
-                            //安心服務
-                            InsurancePerHours = OrderDataLists[0].Insurance == 1 ? Convert.ToInt32(OrderDataLists[0].InsurancePerHours) : 0;
+
+                            #region 安心服務
+                            // 20210903 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
+                            InsurancePerHours = OrderDataLists[0].Insurance == 1 ? (Convert.ToInt32(OrderDataLists[0].InsurancePerHours) + OrderDataLists[0].JointInsurancePerHour) : 0;
                             if (InsurancePerHours > 0)
                             {
                                 outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
@@ -911,9 +917,12 @@ namespace WebAPI.Controllers
                                 }
                             }
                             trace.FlowList.Add("安心服務");
+                            #endregion
 
                             outputApi.Rent.CarRental = CarRentPrice;
                             outputApi.Rent.RentBasicPrice = OrderDataLists[0].BaseMinutesPrice;
+
+                            #region 里程費
                             outputApi.CarRent.MilUnit = (OrderDataLists[0].MilageUnit <= 0) ? Mildef : OrderDataLists[0].MilageUnit;
                             //里程費計算修改，遇到取不到里程數的先以0元為主
                             //outputApi.Rent.MileageRent = OrderDataLists[0].end_mile == 0 ? 0 : Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
@@ -928,6 +937,7 @@ namespace WebAPI.Controllers
                                 outputApi.Rent.MileageRent = Convert.ToInt32(OrderDataLists[0].MilageUnit * (OrderDataLists[0].end_mile - OrderDataLists[0].start_mile));
                             }
                             trace.FlowList.Add("里程費計算");
+                            #endregion
                         }
 
                         outputApi.Rent.OvertimeRental = car_outPrice;
@@ -938,15 +948,15 @@ namespace WebAPI.Controllers
                         outputApi.Rent.ETAGRental = etagPrice;
 
                         #region 轉乘優惠只能抵租金
-
                         int xCarRental = outputApi.Rent.CarRental;
                         int xTransferPrice = outputApi.Rent.TransferPrice;
                         int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
                         outputApi.Rent.TransferPrice = FinalTransferPrice;
                         xCarRental = (xCarRental - FinalTransferPrice);
-
                         #endregion
 
+                        #region 總價計算
+                        // 總價 = 車輛租金 + 停車費 + 里程費 + 逾時費用 + 安心服務費用 + 安心服務費用(逾時) + ETAG費用
                         var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
                         xTotalRental -= UseOrderPrice;//預繳定金扣抵
 
@@ -967,6 +977,7 @@ namespace WebAPI.Controllers
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                         outputApi.Rent.TotalRental = xTotalRental;
                         trace.FlowList.Add("總價計算");
+                        #endregion
 
                         #region 修正輸出欄位
                         //note: 修正輸出欄位PayDetail                      
@@ -1058,6 +1069,7 @@ namespace WebAPI.Controllers
 
                         #endregion
 
+                        #region SP存檔
                         string SPName = new ObjType().GetSPName(ObjType.SPType.CalFinalPrice);
                         SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                         {
@@ -1097,6 +1109,7 @@ namespace WebAPI.Controllers
                         flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                         trace.FlowList.Add("sp存檔");
+                        #endregion
                     }
                     #endregion
                 }

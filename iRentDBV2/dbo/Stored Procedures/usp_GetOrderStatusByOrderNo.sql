@@ -1,48 +1,16 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_GetOrderStatusByOrderNo]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_GetOrderStatusByOrderNo
+* 系    統 : IRENT
+* 程式功能 : 使用訂單編號取出該訂單基本資訊
+* 作    者 : ERIC
+* 撰寫日期 : 20201005
+* 修改日期 : 20210903 UPD BY YEH REASON:增加副承租人每小時費率總和
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_GetOrderStatusByOrderNo]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/10/5 下午 01:29:01 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/10/5 下午 01:29:01    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_GetOrderStatusByOrderNo]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
@@ -61,21 +29,19 @@ DECLARE @hasData TINYINT;
 DECLARE @car_mgt_status TINYINT;
 DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
-
 DECLARE @NowTime DATETIME;
 DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
+
 /*初始設定*/
 SET @Error=0;
 SET @ErrorCode='0000';
 SET @ErrorMsg='SUCCESS'; 
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
-
 SET @FunName='usp_GetOrderStatusByOrderNo';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 
 SET @car_mgt_status=0;
@@ -119,67 +85,66 @@ BEGIN TRY
 	IF @Error=0
 	BEGIN
 		SELECT VW.order_number AS OrderNo,
-		       lend_place AS StationID,
-			   StationName,
-			   Tel,
-			   ADDR,
-			   Latitude,
-			   Longitude,
-			   Content,		--據點相關
-			   OperatorName,
-			   OperatorICon,
-			   Score,		--營運商相關
-			   CarBrend,
-			   CarOfArea,
-			   CarTypeName,
-			   CarTypeImg,
-			   Seat,
-			   parkingSpace, --車子相關
-			   WeekdayPrice,
-			   HoildayPrice, --汽車租金牌價 20201117 eason
-			   device3TBA,
-			   RemainingMilage, --機車電力相關
-			   ProjType,
-			   PRONAME,		--專案基本資料
-			   IIF(PayMode=0, PRICE/10, PRICE) AS PRICE, --平日每小時價 20201003 ADD BY ADAM
-			   IIF(PayMode=0, PRICE_H/10, PRICE_H) AS PRICE_H, --假日每小時價 20201003 ADD BY ADAM
-			   --UseOrderPrice = 0,--使用訂金
+		       VW.lend_place AS StationID,
+			   VW.StationName,
+			   VW.Tel,
+			   VW.ADDR,
+			   VW.Latitude,
+			   VW.Longitude,
+			   VW.Content,		--據點相關
+			   VW.OperatorName,
+			   VW.OperatorICon,
+			   VW.Score,		--營運商相關
+			   VW.CarBrend,
+			   VW.CarOfArea,
+			   VW.CarTypeName,
+			   VW.CarTypeImg,
+			   VW.Seat,
+			   VW.parkingSpace, --車子相關
+			   VW.CarTypeGroupCode,
+			   VW.device3TBA,
+			   VW.RemainingMilage, --機車電力相關
+			   VW.ProjID,
+			   VW.ProjType,
+			   VW.PRONAME,		--專案基本資料
+			   IIF(VW.PayMode=0, VW.PRICE / 10, VW.PRICE) AS PRICE, --平日每小時價 20201003 ADD BY ADAM
+			   IIF(VW.PayMode=0, VW.PRICE_H / 10, VW.PRICE_H) AS PRICE_H, --假日每小時價 20201003 ADD BY ADAM
+			   OrderPrice = ISNULL(NYP.PAYAMT,0),		--春節訂金
 			   UseOrderPrice =  ISNULL(NYP.PAYAMT,0) - dbo.FN_UnUseOrderPrice(ISNULL(NYP.PAYAMT,0),VW.start_time,VW.stop_time,VW.final_start_time,VW.final_stop_time),--使用訂金
 			   LastOrderPrice = 0,--剩餘訂金
-			   BaseMinutes,
-			   BaseMinutesPrice,
-			   MinuteOfPrice,
-			   MinuteOfPriceH,
-			   MaxPrice, --當ProjType=4才有值
-			   start_time,
-			   final_start_time,
-			   stop_pick_time,
-			   stop_time,
-			   final_stop_time,
-			   ISNULL(fine_Time, '') AS fine_Time ,
-			   init_price,
-			   Insurance,
-			   InsurancePurePrice,
-			   init_TransDiscount,
-			   car_mgt_status,
-			   booking_status,
-			   cancel_status ,
+			   VW.BaseMinutes,
+			   VW.BaseMinutesPrice,
+			   VW.MinuteOfPrice,
+			   VW.MinuteOfPriceH,
+			   VW.MaxPrice, --當ProjType=4才有值
+			   VW.start_time,
+			   VW.final_start_time,
+			   VW.stop_pick_time,
+			   VW.stop_time,
+			   VW.final_stop_time,
+			   ISNULL(VW.fine_Time, '') AS fine_Time ,
+			   VW.init_price,
+			   VW.Insurance,	--是否有安心服務
+			   VW.InsurancePurePrice,
+			   VW.init_TransDiscount,
+			   VW.car_mgt_status,
+			   VW.booking_status,
+			   VW.cancel_status ,
 			   ISNULL(Setting.MilageBase, IIF(VW.ProjType=4, 0, -1)) AS MilageUnit ,
-			   already_lend_car,
-			   IsReturnCar,
-			   CarNo,
-			   final_price,
-			   start_mile,
-			   end_mile ,
+			   VW.already_lend_car,
+			   VW.IsReturnCar,
+			   VW.CarNo,
+			   VW.final_price,
+			   VW.start_mile,
+			   VW.end_mile ,
 			   InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0
 										WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours
 										WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours
 										ELSE 0 END ,
-			   VW.Insurance, --是否有安心服務
-			   VW.CarTypeGroupCode,
-			   VW.ProjID,
+			   VW.WeekdayPrice,
+			   VW.HoildayPrice, --汽車租金牌價 20201117 eason
 			   VW.FirstFreeMins, --前n分鐘免費 eason
-			   OrderPrice = ISNULL(NYP.PAYAMT,0)		--春節訂金
+			   JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WITH(NOLOCK) WHERE SP.Order_number=VW.order_number),0)	-- 20210903 UPD BY YEH REASON:增加副承租人每小時費率總和
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
@@ -187,7 +152,7 @@ BEGIN TRY
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
 		LEFT JOIN TB_NYPayList NYP WITH(NOLOCK) ON VW.order_number=NYP.order_number
 		WHERE VW.IDNO=@IDNO AND VW.order_number=@OrderNo AND cancel_status=0
-		ORDER BY start_time ASC 
+		ORDER BY start_time ASC
 	END
 
 	--寫入錯誤訊息
@@ -216,19 +181,3 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'使用訂單編號取得此訂單資訊', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';

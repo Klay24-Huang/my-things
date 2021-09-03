@@ -571,6 +571,7 @@
     <Build Include="dbo\Stored Procedures\usp_JointRentInvitation_I01.sql" />
     <Build Include="dbo\Functions\GET_TWDATE_1.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsPersonNotification_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetOrderInsuranceInfo.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentIviteeFeedBack_U01.sql" />
   </ItemGroup>
   <ItemGroup>
