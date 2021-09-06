@@ -253,7 +253,6 @@
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
-    <Compile Include="Controllers\BuyNowToolController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
@@ -576,6 +575,7 @@
     <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
+    <Compile Include="Models\Param\Input\IAPI_PersonNoticeRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
@@ -752,18 +752,9 @@
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-api - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-Api2 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-Api3 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-Api4 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-Backend-Api - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AS-backend-api-test - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\irentv2-as-backend-api-test-promrtheus - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AutoJob - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-AutoJob - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-backend-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api3 - Web Deploy.pubxml" />
