@@ -566,6 +566,15 @@
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
+    <Build Include="dbo\Tables\TB_TogetherPassenger.sql" />
+    <Build Include="dbo\Stored Procedures\usp_JointRentInviteeModify_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_JointRentInviteeList_Q01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_JointRentInviteeVerify_Q01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_JointRentInvitation_I01.sql" />
+    <Build Include="dbo\Functions\GET_TWDATE_1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsPersonNotification_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetOrderInsuranceInfo.sql" />
+    <Build Include="dbo\Stored Procedures\usp_JointRentIviteeFeedBack_U01.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

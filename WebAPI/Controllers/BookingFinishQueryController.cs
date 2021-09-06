@@ -118,7 +118,7 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.GetFinishOrder);
+                string CheckTokenName = "usp_GetFinishOrderList_20210901";
                 SPInput_GetFinishOrder spCheckTokenInput = new SPInput_GetFinishOrder()
                 {
                     LogID = LogID,
@@ -167,7 +167,8 @@ namespace WebAPI.Controllers
                                 UniCode = orderFinishDataLists[i].UniCode,
                                 TotalRentTime = string.Format("{0}天{1}時{2}分", td, th, tm),
                                 CarNo = orderFinishDataLists[i].CarNo.Replace(" ", ""),
-                                IsMotor = orderFinishDataLists[i].ProjType == 4 ? 1 : 0     //增加IsMotor
+                                IsMotor = orderFinishDataLists[i].ProjType == 4 ? 1 : 0 ,    //增加IsMotor
+                                IsJointOrder = orderFinishDataLists[i].IsJointOrder
                             };
                             outputApi.OrderFinishObjs.Add(obj);
                         }

@@ -168,6 +168,11 @@
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340Save.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU1.cs" />
     <Compile Include="SP\Input\HiEasyRent\SPInput_HandleNPR340SaveU2.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_GetJointRentInviteeList.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_GetOrderInsuranceInfo.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentInvitation.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentInviteeModify.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentIviteeFeedBack.cs" />
     <Compile Include="SP\Input\Login\SPInput_MemberLogin.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMapMedal.cs" />
     <Compile Include="SP\Input\Member\SPInput_GetMemberData.cs" />
@@ -257,6 +262,7 @@
     <Compile Include="SP\Input\SPInput_Base.cs" />
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
+    <Compile Include="SP\Input\JointRent\SPInput_JointRentInviteeVerify.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_ArrearsPaySubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_BuyNowAddMonth_Q01.cs" />
@@ -313,6 +319,8 @@
     <Compile Include="SP\Output\Common\SPOutput_CheckTokenReturnID.cs" />
     <Compile Include="SP\Output\Common\SPOutput_RefrashToken.cs" />
     <Compile Include="SP\Output\HiEasyRent\SPOutput_HandleNPR340Save.cs" />
+    <Compile Include="SP\Output\JointRent\JointRentInviteeList.cs" />
+    <Compile Include="SP\Output\JointRent\SPOutput_GetOrderInsuranceInfo.cs" />
     <Compile Include="SP\Output\Login\SPOutput_MemberLogin.cs" />
     <Compile Include="SP\Output\Member\MapMedalList.cs" />
     <Compile Include="SP\Output\Member\MemberMedalList.cs" />
@@ -342,6 +350,7 @@
     <Compile Include="SP\Output\Rent\SPOut_InsFeedBack.cs" />
     <Compile Include="SP\Output\SPOuptput_InsAPILog.cs" />
     <Compile Include="SP\Output\SPOutput_Base.cs" />
+    <Compile Include="SP\Output\JointRent\SPOutput_JointRentInviteeVerify.cs" />
     <Compile Include="SP\Output\SPOutput_RefundBase.cs" />
     <Compile Include="SP\Output\SPOutput_InsTrade.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_ArrearsPaySubs.cs" />

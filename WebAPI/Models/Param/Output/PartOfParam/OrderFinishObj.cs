@@ -60,5 +60,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public int IsMotor { set; get; }
 
+        /// <summary>
+        /// 是否為共同承租訂單 1:是 0:否
+        /// </summary>
+        public int IsJointOrder { get; set; }
     }
 }

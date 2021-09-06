@@ -186,25 +186,7 @@ namespace WebAPI.Controllers
                         IDNO = lstOrder[0].IDNO;
                         if (apiInput.type == 2) //取消
                         {
-                            //if (lstOrder[0].car_mgt_status > 0)
-                            //{
-                            //    flag = false;
-                            //    errCode = "ERR735";
-                            //}
-                            //else
-                            //{
-                            //    string spName = new ObjType().GetSPName(ObjType.SPType.BE_BookingCancel);
-                            //    SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
-                            //    {
-                            //        LogID = LogID,
-                            //        OrderNo = tmpOrder,
-                            //        UserID = apiInput.UserID
-                            //    };
-                            //    SPOutput_Base spOut = new SPOutput_Base();
-                            //    SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base>(connetStr);
-                            //    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-                            //}
+                            #region 強制取消
                             if (lstOrder[0].car_mgt_status < 4)
                             {
                                 flag = false;
@@ -229,10 +211,12 @@ namespace WebAPI.Controllers
                                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                             }
+                            #endregion
                         }
                         else if (apiInput.type == 0)
                         {
                             //取車
+                            #region 強制取車
                             if (lstOrder[0].car_mgt_status > 4)
                             {
                                 flag = false;
@@ -259,10 +243,12 @@ namespace WebAPI.Controllers
                                     }
                                 }
                             }
+                            #endregion
                         }
                         else
                         {
                             //還車
+                            #region 強制還車
                             if (lstOrder[0].car_mgt_status < 4)
                             {
                                 flag = false;
@@ -416,11 +402,13 @@ namespace WebAPI.Controllers
                                 }
                             }
                             #endregion
+                            #endregion
                         }
                     }
                 }
                 else if (apiInput.Mode == 1 && apiInput.type == 2)
                 {
+                    #region 整備取消
                     string spName = new ObjType().GetSPName(ObjType.SPType.BE_CancelCleanOrder);
                     SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
                     {
@@ -432,6 +420,7 @@ namespace WebAPI.Controllers
                     SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_BookingCancel, SPOutput_Base>(connetStr);
                     flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                     baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                    #endregion
                 }
             }
             #endregion

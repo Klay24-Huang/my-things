@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Output.OrderList
 {
@@ -11,6 +7,12 @@ namespace Domain.SP.Output.OrderList
     /// </summary>
     public class OrderQueryFullData
     {
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public Int64 OrderNo { get; set; }
+
+        #region 據點相關
         /// <summary>
         /// 據點代碼
         /// </summary>
@@ -39,6 +41,7 @@ namespace Domain.SP.Output.OrderList
         /// 其他說明
         /// </summary>
         public string Content { set; get; }
+        #endregion
 
         #region 營運商相關              
         /// <summary>
@@ -79,8 +82,13 @@ namespace Domain.SP.Output.OrderList
         /// 停車格位置
         /// </summary>
         public string parkingSpace { set; get; }
+
+        /// <summary>
+        /// 車型簡碼
+        /// </summary>
         public string CarTypeGroupCode { get; set; }
         #endregion
+
         #region 機車相關電力相關
         /// <summary>
         /// 電池平均
@@ -91,6 +99,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string RemainingMilage { set; get; }
         #endregion
+
         #region 專案相關
         public string ProjID { get; set; }
         /// <summary>
@@ -112,6 +121,9 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
+        /// <summary>
+        /// 春節訂金
+        /// </summary>
         public int OrderPrice { get; set; }
         /// <summary>
         /// 使用訂金
@@ -125,6 +137,8 @@ namespace Domain.SP.Output.OrderList
         /// 前n分鐘0元
         /// </summary>
         public double FirstFreeMins { get; set; }
+        #endregion
+
         #region 機車費用，當ProjType=4時才有值
         /// <summary>
         /// 基本分鐘數
@@ -147,12 +161,8 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int MaxPrice { set; get; }
         #endregion
-        #endregion
+
         #region 訂單相關
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public Int64 OrderNo { set; get; }
         /// <summary>
         /// 預計取車時間
         /// </summary>
@@ -174,7 +184,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string final_stop_time { set; get; }
         /// <summary>
-        /// 逾時
+        /// 逾時開始時間
         /// </summary>
         public string fine_Time { set; get; }
         /// <summary>
@@ -182,7 +192,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int init_price { set; get; }
         /// <summary>
-        /// 預估每小時安心保險費用
+        /// 是否有安心服務
         /// </summary>
         public int Insurance { set; get; }
         /// <summary>
@@ -194,19 +204,26 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int init_TransDiscount { set; get; }
         /// <summary>
-        /// >4=>已取車
-        /// >=11=>已點還車
-        /// 15=>已過還車金流
-        /// 16=>完成還車
+        /// 取還車狀態
+        /// <para>0 = 尚未取車</para>
+        /// <para>4 = 已經取車(記錄起始時間)</para>
+        /// <para>11 = 已經紀錄還車時間</para>
+        /// <para>16 = 已經檢查車輛完成並已經解除卡號</para>
         /// </summary>
         public int car_mgt_status { set; get; }
         /// <summary>
-        /// 5=>完成還車
-        /// 3=>延長用車
+        /// 預約單狀態
+        /// <para>0 = 會員預約</para>
+        /// <para>1 = 管理員清潔預約</para>
+        /// <para>3 = 延長用車狀態</para>
+        /// <para>5 = 合約完成</para>
         /// </summary>
         public int booking_status { set; get; }
         /// <summary>
-        /// 大於0取車
+        /// 訂單修改狀態
+        /// <para>0 = 無(訂單未刪除，正常預約狀態)</para>
+        /// <para>3 = 訂單已取消</para>
+        /// <para>5 = 整備使用(逾時未取或還車)</para>
         /// </summary>
         public int cancel_status { set; get; }
         /// <summary>
@@ -249,10 +266,13 @@ namespace Domain.SP.Output.OrderList
         /// 假日售價
         /// </summary>
         public int HoildayPrice { get; set; }
+
+        /// <summary>
+        /// 副承租人每小時費率總和
+        /// </summary>
+        public int JointInsurancePerHour { get; set; }
         #endregion
     }
-
-
 
     /// <summary>
     /// 批次授權明細
