@@ -173,6 +173,8 @@ iRentApi20 Web API版本
 
 20210901 共同承租人回應邀請(JointRentIviteeFeedBack) 欄位值修正
 
+20210906 取得租金明細(GetPayDetail)欄位修正
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -2644,7 +2646,7 @@ iRentApi20 Web API版本
 ```
 ----
 
-## GetPayDetail 取得租金明細(未完成，先暫存)
+## GetPayDetail 取得租金明細
 
 ### [/api/GetPayDetail/]
 
@@ -2668,7 +2670,7 @@ iRentApi20 Web API版本
 
 | 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
 | -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+| OrderNo  | 訂單編號 |  Y   | string | H12462794 |
 | Discount | 折抵汽車時數 | Y | int | 0 |
 | MotorDiscount | 折抵機車分鐘數 | Y | int | 0 |
 
@@ -2698,68 +2700,68 @@ iRentApi20 Web API版本
 
 | 參數名稱    	| 參數說明           |  型態  | 範例          |
 | ------------	| ------------------ | :----: | ------------- |
-| CanUseDiscount		| 是否可使用點數折扣		| int 	| 1 	|
-| CanUseMonthRent		| 是否可使用月租時間		| int 	| 1 	|
-| IsMonthRent			| 是否為月租 				| int 	| 0 	|
-| IsMotor				| 是否為機車				| int 	| 0 	|
+| CanUseDiscount		| 是否可使用點數折扣 0:否 1:是	| int 	| 1 	|
+| CanUseMonthRent		| 是否可使用月租時間 0:否 1:是	| int 	| 1 	|
+| IsMonthRent			| 是否為月租 0:否 1:是 | int 	| 0 	|
+| IsMotor				| 是否為機車 0:否 1:是	| int 	| 0 	|
 | UseOrderPrice			| 使用訂金					| int	| 0		|
 | ReturnOrderPrice		| 返還訂金					| int	| 0		|
 | FineOrderPrice		| 沒收訂金					| int 	| 0		|
-| Rent					| 資料物件					| Object | 		|
-| CarRent				| 資料物件					| Object | 		|
-| MotorRent				| 資料物件					| Object | 		|
-| MonthRent				| 資料物件					| Object | 		|
-| MonBase				| 集合物件					| List	 |		|
+| Rent					| 訂單基本資訊	| Object | 		|
+| CarRent				| 汽車相關資料	| Object | 		|
+| MotorRent				| 機車相關資訊	| Object | 		|
+| MonthRent				| 月租相關資訊	| Object | 		|
+| MonBase				| 月租下拉	| List	 |		|
 | ProType				| 專案類型 0:同站 3:路邊 4:機車 | int | 0 	|
 | PayMode				| 計費模式 0:以時計費 1:以分計費 | int | 0 	|
 | DiscountAlertMsg		| 不可使用折抵時的訊息提示 | string |  |
-| NowSubsCards			| 集合物件					| List 	 |   	|
+| NowSubsCards			| 目前可使用訂閱制月租	| List 	 |   	|
 
 * Rent資料物件說明
 
 | 參數名稱    	| 參數說明           |  型態  | 範例          |
 | ------------	| ------------------ | :----: | ------------- |
-| CarNo					| 車號			| string | RAA-1234		|
-| BookingStartDate		| 實際取車時間	| string | 2021-05-26 08:21:00	|
-| BookingEndDate		| 預計還車時間	| string | 2021-05-26 08:21:00	|
-| RentalDate			| 實際還車時間	| string | 2021-05-26 08:21:00	|
+| CarNo					| 車號			| string | RBJ-9397	|
+| BookingStartDate		| 實際取車時間	| string | 2021-09-06 13:21:00	|
+| BookingEndDate		| 預計還車時間	| string | 2021-09-06 14:30:00	|
+| RentalDate	| 實際還車時間	| string | 2021-09-06 13:27:00	|
 | RentalTimeInterval	| 實際租用時數	| string | 60	|
-| RedeemingTimeInterval	| 可折抵時數	| string | 942	|
-| RedeemingTimeCarInterval | 可折抵時數(汽車) | string | 942 |
+| RedeemingTimeInterval	| 可折抵時數	| string | 565	|
+| RedeemingTimeCarInterval | 可折抵時數(汽車) | string | 565 |
 | RedeemingTimeMotorInterval | 可折抵時數(機車) | string | 331 |
 | ActualRedeemableTimeInterval | 代表該「實際」可折抵的時數 | string | 60 |
 | RemainRentalTimeInterval	| 代表折抵後的租用時數 | string | 0 |
 | UseMonthlyTimeInterval | 月租專案時數折抵顯示 | string | 0 |
-| UseNorTimeInterval	 | 一般時段時數折抵 	| string | 0 |
-| RentBasicPrice 		| 每小時基本租金		| int | 0 |
-| CarRental				| 車輛租金				| int | 0 |
-| MileageRent			| 里程費用				| int | 0 |
-| ETAGRental			| ETAG費用				| int | 0 |
-| OvertimeRental		| 逾時費用				| int | 0 |
-| TotalRental			| 總計					| int | 0 |
-| ParkingFee			| 停車費用				| int | 0 |
-| TransferPrice			| 轉乘費用				| int | 0 |
+| UseNorTimeInterval	| 一般時段時數折抵 	| string | 0 |
+| RentBasicPrice | 每小時基本租金		| int | 0 |
+| CarRental	| 車輛租金				| int | 125 |
+| MileageRent	| 里程費用				| int | 0 |
+| ETAGRental	| ETAG費用				| int | 0 |
+| OvertimeRental	| 逾時費用				| int | 0 |
+| TotalRental	| 總計					| int | 125 |
+| ParkingFee	| 停車費用				| int | 0 |
+| TransferPrice	| 轉乘費用				| int | 0 |
 | InsurancePurePrice	| 安心服務				| int | 0 |
-| InsuranceExtPrice		| 安心服務延長費用		| int | 0 |
+| InsuranceExtPrice	| 安心服務延長費用		| int | 0 |
 
 * CarRent資料物件說明
 
 | 參數名稱    	| 參數說明           |  型態  | 範例          |
 | ------------	| ------------------ | :----: | ------------- |
-| HourOfOneDay		| 多少小時算一天		| int 	| 10		|
-| HoildayPrice		| 假日金額				| int	| 1680		|
-| WorkdayPrice		| 平日金額				| int	| 990		|
-| HoildayOfHourPrice | 假日每小時金額		| int	| 168		|
-| WorkdayOfHourPrice | 平日每小時金額		| int	| 99		|
-| MilUnit			| 每公里金額			| float	| 3.0		|
+| HourOfOneDay	| 多少小時算一天		| int 	| 10		|
+| HoildayPrice	| 假日金額				| int	| 1980	|
+| WorkdayPrice	| 平日金額				| int	| 1250	|
+| HoildayOfHourPrice | 假日每小時金額		| int	| 198	|
+| WorkdayOfHourPrice | 平日每小時金額		| int	| 125	|
+| MilUnit	| 每公里金額			| float	| 3.1	|
 
 * MotorRent資料物件說明
 
 | 參數名稱    	| 參數說明           |  型態  | 範例          |
 | ------------	| ------------------ | :----: | ------------- |
-| BaseMinutes 	| 基本時數			 | int 		| 0  |
-| BaseMinutePrice | 基本費			 | int		| 0  |
-| MinuteOfPrice	| 每分鐘價格		 | float	| 0.0  |
+| BaseMinutes | 基本時數			 | int 		| 6 |
+| BaseMinutePrice | 基本費			 | int		| 12 |
+| MinuteOfPrice	| 每分鐘價格		 | float	| 2.0 |
 
 
 * MonthRent資料物件說明
@@ -2797,7 +2799,7 @@ iRentApi20 Web API版本
 | EndDate			| 月租迄日		| datetime |  |
 
 
-* Output範例
+* Output範例(汽車)
 
 ```
 {
@@ -2815,24 +2817,24 @@ iRentApi20 Web API版本
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "RCG-0782",
-            "BookingStartDate": "2021-05-26 08:21:00",
-            "BookingEndDate": "2021-05-26 08:21:00",
-            "RentalDate": "2021-05-26 08:21:00",
+            "CarNo": "RBJ-9397",
+            "BookingStartDate": "2021-09-06 13:21:00",
+            "BookingEndDate": "2021-09-06 14:30:00",
+            "RentalDate": "2021-09-06 13:27:00",
             "RentalTimeInterval": "60",
-            "RedeemingTimeInterval": "942",
-            "RedeemingTimeCarInterval": "942",
-            "RedeemingTimeMotorInterval": "331",
+            "RedeemingTimeInterval": "565",
+            "RedeemingTimeCarInterval": "565",
+            "RedeemingTimeMotorInterval": "0",
             "ActualRedeemableTimeInterval": "60",
-            "RemainRentalTimeInterval": "0",
+            "RemainRentalTimeInterval": "60",
             "UseMonthlyTimeInterval": "0",
-            "UseNorTimeInterval": "60",
+            "UseNorTimeInterval": "0",
             "RentBasicPrice": 0,
-            "CarRental": 0,
+            "CarRental": 125,
             "MileageRent": 0,
             "ETAGRental": 0,
             "OvertimeRental": 0,
-            "TotalRental": 0,
+            "TotalRental": 125,
             "ParkingFee": 0,
             "TransferPrice": 0,
             "InsurancePurePrice": 0,
@@ -2840,11 +2842,11 @@ iRentApi20 Web API版本
         },
         "CarRent": {
             "HourOfOneDay": 10,
-            "HoildayPrice": 1680,
-            "WorkdayPrice": 990,
-            "HoildayOfHourPrice": 168,
-            "WorkdayOfHourPrice": 99,
-            "MilUnit": 3.0
+            "HoildayPrice": 1980,
+            "WorkdayPrice": 1250,
+            "HoildayOfHourPrice": 198,
+            "WorkdayOfHourPrice": 125,
+            "MilUnit": 3.1
         },
         "MotorRent": {
             "BaseMinutes": 0,
@@ -2855,12 +2857,83 @@ iRentApi20 Web API版本
             "WorkdayRate": 0.0,
             "HoildayRate": 0.0
         },
-        "ProType": 3,
+        "MonBase": [],
+        "ProType": 0,
         "PayMode": 0,
-        "DiscountAlertMsg": ""
+        "DiscountAlertMsg": "",
+        "NowSubsCards": null
     }
 }
 ```
+
+- Output範例(機車)
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CanUseDiscount": 1,
+        "CanUseMonthRent": 1,
+        "IsMonthRent": 0,
+        "IsMotor": 1,
+        "UseOrderPrice": 0,
+        "ReturnOrderPrice": 0,
+        "FineOrderPrice": 0,
+        "Rent": {
+            "CarNo": "EWA-0122",
+            "BookingStartDate": "2021-09-06 10:57:00",
+            "BookingEndDate": "2021-09-06 11:03:00",
+            "RentalDate": "2021-09-06 11:03:00",
+            "RentalTimeInterval": "6",
+            "RedeemingTimeInterval": "600",
+            "RedeemingTimeCarInterval": "600",
+            "RedeemingTimeMotorInterval": "0",
+            "ActualRedeemableTimeInterval": "6",
+            "RemainRentalTimeInterval": "6",
+            "UseMonthlyTimeInterval": "0",
+            "UseNorTimeInterval": "0",
+            "RentBasicPrice": 12,
+            "CarRental": 12,
+            "MileageRent": 0,
+            "ETAGRental": 0,
+            "OvertimeRental": 0,
+            "TotalRental": 0,
+            "ParkingFee": 0,
+            "TransferPrice": 12,
+            "InsurancePurePrice": 0,
+            "InsuranceExtPrice": 0
+        },
+        "CarRent": {
+            "HourOfOneDay": 0,
+            "HoildayPrice": 0,
+            "WorkdayPrice": 0,
+            "HoildayOfHourPrice": 0,
+            "WorkdayOfHourPrice": 0,
+            "MilUnit": 0.0
+        },
+        "MotorRent": {
+            "BaseMinutes": 6,
+            "BaseMinutePrice": 12,
+            "MinuteOfPrice": 2.0
+        },
+        "MonthRent": {
+            "WorkdayRate": 0.0,
+            "HoildayRate": 0.0
+        },
+        "MonBase": [],
+        "ProType": 4,
+        "PayMode": 1,
+        "DiscountAlertMsg": "",
+        "NowSubsCards": null
+    }
+}
+```
+
+
 
 ----
 ## BookingStart 汽車取車
