@@ -14,7 +14,7 @@ namespace Web.Controllers
         protected string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
-        public void nnlog(string user, string ip)
+        public void nnlog(object user, string ip)
         {
             logger.Trace(
                     "{ReportName:'TEST'," +
