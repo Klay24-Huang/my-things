@@ -7,12 +7,13 @@ using System.Web;
 using System.Web.Mvc;
 using WebCommon;
 using Domain.TB.BackEnd;
+using Web.Models.Params.Search.Input;
 
 namespace Web.Controllers
 {
     public class NewsController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         // GET: News
         public ActionResult Index()
         {
@@ -47,15 +48,24 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult BannerSet(string Banner, string Status, string Order)
+        public ActionResult BannerSet(string Banner, string Order, FormCollection collection)
         {
             ViewData["Banner"] = Banner;
-            ViewData["Status"] = Status;
             ViewData["Order"] = Order;
-            //ViewData["Name"] = Banner;
-            List<BE_GetBannerInfo> lstData = null;
+            ViewData["terms"] = collection["terms"];
+
+            Input_Banner QueryData = null;
             NewsRepository repository = new NewsRepository(connetStr);
-            lstData = repository.GetBannerInfo(Banner,Order,Status);
+            List<BE_GetBannerInfo> lstData = new List<BE_GetBannerInfo>();
+            if (collection["queryData"] != null)
+            {
+                
+                QueryData = Newtonsoft.Json.JsonConvert.DeserializeObject<Input_Banner>(collection["queryData"].ToString());
+                if (QueryData != null)
+                {
+                    lstData = repository.GetBannerInfo(Banner, Order, QueryData.Terms);
+                }
+            }
             return View(lstData);
         }
         public ActionResult BannerInfoAdd()

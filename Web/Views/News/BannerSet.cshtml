@@ -4,6 +4,13 @@
     List<Domain.TB.BackEnd.BE_GetBannerInfo> lstData = null;
     string banner = (ViewData["Banner"] == null) ? "" : ViewData["Banner"].ToString();
     int ResultLen = -1;
+    string QueryData = (ViewData["QueryData"] == null) ? "" : ViewData["QueryData"].ToString();
+
+    Web.Models.Params.Search.Input.Input_Banner Query = null;
+    if (QueryData != "")
+    {
+        Query = Newtonsoft.Json.JsonConvert.DeserializeObject<Web.Models.Params.Search.Input.Input_Banner>(QueryData);
+    }
 
     if (Model != null)
     {
@@ -42,16 +49,45 @@
                                 狀態
                             </div>
                             <div class="col-md-3">
-                                <select id="Status" name="Status" class="form-control">
-                                    <option value="3">全部</option>
-                                    <option value="0">失效</option>
-                                    <option value="1">有效</option>
-                                    <option value="2">待生效</option>
-                                </select>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="invalid" value="0">
+                                    <label class="form-check-label" for="invalid">
+                                        失效
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="valid" value="1">
+                                    <label class="form-check-label" for="valid">
+                                        有效
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="sby" value="2">
+                                    <label class="form-check-label" for="sby">
+                                        待生效
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </li>
+                @*<li class="list-group-item">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2">
+                            狀態
+                        </div>
+                        <div class="col-md-3">
+                            <select id="Status" name="Status" class="form-control">
+                                <option value="3">全部</option>
+                                <option value="0">失效</option>
+                                <option value="1">有效</option>
+                                <option value="2">待生效</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </li>*@
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -92,6 +128,7 @@
                     </div>
                 </li>
             </ul>
+            <input type="hidden" id="queryData" name="queryData" value="@QueryData"/>
         </form>
     </div>
     <!--end card-->
@@ -156,8 +193,8 @@
                                 <a href="@(lstData[i].URL)" target="_blank"><img src="@("https://irentv2data.blob.core.windows.net/banner/"+lstData[i].PIC_NAME)" class="img-thumbnail" style="max-width: 80%" /></a>
                             </td>
                             <td scope="col">@(lstData[i].MarqueeText)</td>
-                            <td scope="col">@(lstData[i].STARTDATE)</td>
-                            <td scope="col">@(lstData[i].ENDDATE)</td>
+                            <td scope="col">@(lstData[i].STARTDATE2)</td>
+                            <td scope="col">@(lstData[i].ENDDATE2)</td>
                             @{
                                 if (lstData[i].Status == "失效")
                                 {

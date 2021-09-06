@@ -15,13 +15,18 @@ using NLog;
 
 namespace Web.Controllers
 {
-    public class ContactManageController : Controller
+    public class ContactManageController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog
     {
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
-
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        //20210728唐加，讓所有查資料的功能查鏡像db
-        private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        //20210902改寫到BaseSafeController
+        //protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString; //20210728唐加，讓所有查資料的功能查鏡像db
+        public ContactManageController()
+        {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog("pp", System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]);
+            //Session["User"] == null ? "空" : Session["User"].ToString()
+        }
 
         public ActionResult BookingQuery()
         {

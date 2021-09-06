@@ -32,6 +32,14 @@ $(document).ready(function () {
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料查詢中");
+        var obj = new Object();
+        var terms = new Array();
+        $("input[name=terms]:checked").each(function () {
+            terms.push($(this).val());
+        });
+        obj.Terms = terms;
+        var json = JSON.stringify(obj);
+        $("#queryData").val(json);
         $("#frmBannerSetting").submit();
     });
     $("#btnAdd").on("click", function () {
