@@ -198,6 +198,7 @@
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Params\BaseParams.cs" />
+    <Compile Include="Models\Params\Search\Input\Input_BookingStatus.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarCurrentStatus.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
     <Compile Include="Models\WebCommonFunc.cs" />

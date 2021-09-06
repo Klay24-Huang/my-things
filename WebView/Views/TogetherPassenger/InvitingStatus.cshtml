@@ -1,0 +1,77 @@
+﻿@model WebView.Models.ViewModel.VM_TogetherPassenger
+@{
+    ViewBag.Title = "InvitingStatus";
+    @Styles.Render("~/Assets/css/TogetherPassenger.css")
+    var data = (Model == null) ? null : Model;
+}
+
+<div class="container">
+    <div class="row">
+
+        <!-- <div class="container head col-12 border-bottom">
+            <div class="row d-flex justify-content-around">
+                <div class="col-12 py-2 shadow-sm d-flex justify-content-center position-relative">
+                    <a href="#" class="back"></a>
+                    公告
+                </div>
+            </div>
+        </div> -->
+
+        <div class="container title">
+            <div class="row d-flex justify-content-center">
+                <div class="col-8 py-3 d-flex justify-content-center">
+                    確認共同承租人邀請
+                </div>
+            </div>
+        </div>
+
+        <div class="container inviter col-8">
+            <div class="row border shadow">
+                <div class="col-12 border-bottom inviter_title py-3">
+                    邀請人
+                </div>
+                <div class="col-12 py-3 inviter_content d-flex flex-column align-items-center">
+                    <p class="m-0">李O瑄</p>
+                    <p>0988***124</p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container content my-4 px-0 col-8">
+            <p class="mb-1">合約編號：@data.OrderNum</p>
+            <p class="mb-1">取車地點：@data.StationName</p>
+            <p class="mb-1">車型：@data.CarNo</p>
+            <p class="mb-1">預計取車時間：@data.SD</p>
+            <p class="mb-1">預計還車時間：@data.ED</p>
+        </div>
+
+        <div class="col-12">
+            <div class="check_area">
+                <div class="container mt-5 px-0 text-center checkContract col-8">
+                    <p class="mb-1">我已確認租車合約無誤</p>
+                </div>
+
+                <a href="#" class="accept text-decoration-none">
+                    <div class="container py-2 mt-1 bg-danger text-center text-white rounded-pill col-8">
+                        <p class="m-0">接受</p>
+                    </div>
+                </a>
+
+                <a href="#" class="refuse text-decoration-none">
+                    <div class="container my-3 px-0 text-center col-8">
+                        <p class="mb-1">拒絕</p>
+                    </div>
+                </a>
+            </div>
+
+            @*<div class="result_area">
+                    <div class="container mt-4 px-0 text-center status col-8">
+                        <img />
+                        <p class="mt-1"></p>
+                    </div>
+                </div>*@
+        </div>
+
+    </div>
+</div>

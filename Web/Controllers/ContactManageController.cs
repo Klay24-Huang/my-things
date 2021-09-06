@@ -12,6 +12,8 @@ using System.Web.Mvc;
 using WebCommon;    //20210316 ADD BY ADAM
 using System.Text;
 using NLog;
+using Newtonsoft.Json;
+using Web.Models.Params.Search.Input;
 
 namespace Web.Controllers
 {
@@ -367,6 +369,89 @@ namespace Web.Controllers
             // workbook.Close();
             //   return View();
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "預約匯出_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+
+        [HttpPost]
+        public ActionResult BookingQueryForJson()
+        {
+            Stream req = Request.InputStream;
+            req.Seek(0, System.IO.SeekOrigin.Begin);
+            string json = new StreamReader(req).ReadToEnd();
+            var data = JsonConvert.DeserializeObject<Input_BookingStatus>(json);
+
+            var CarNo = data.CarNo;
+            var StationID = data.StationID;
+            var IDNO = data.IDNO;
+            var Mode = data.Mode;
+            var StartDate = data.StartDate;
+            var EndDate = data.EndDate;
+            var OrderNo = data.OrderNo;
+
+            ViewData["errorLine"] = null;
+            ViewData["IsShowMessage"] = null;
+            ContactRepository repository = new ContactRepository(connetStrMirror);
+            ViewData["CarNo"] = data.CarNo;
+            ViewData["StationID"] = data.StationID;
+            ViewData["IDNO"] = data.IDNO;
+            ViewData["Mode"] = data.Mode;
+            ViewData["SDate"] = data.StartDate;
+            ViewData["EDate"] = data.EndDate;
+            ViewData["OrderNo"] = data.OrderNo;
+            string errorLine = "";
+            string errorMsg = "";
+            bool flag = true;
+            string errCode = "";
+            Int64 tmpOrder = 0;
+
+            if (StartDate != "" && EndDate == "")
+            {
+
+                StartDate = StartDate + " 00:00:00";
+            }
+            else if (StartDate == "" && EndDate != "")
+            {
+                EndDate = EndDate + " 23:59:59";
+            }
+            else if (StartDate != "" && EndDate != "")
+            {
+                StartDate = StartDate + " 00:00:00";
+                EndDate = EndDate + " 23:59:59";
+            }
+            if (OrderNo != "")
+            {
+                if (OrderNo.IndexOf("H") < 0)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                    errorMsg = "訂單編號格式不符";
+                }
+                if (flag)
+                {
+                    flag = Int64.TryParse(OrderNo.Replace("H", ""), out tmpOrder);
+                    if (flag)
+                    {
+                        if (tmpOrder <= 0)
+                        {
+                            flag = false;
+                            errCode = "ERR900";
+                            errorMsg = "訂單編號格式不符";
+                        }
+                    }
+                }
+            }
+            List<BE_GetBookingQueryForWeb> lstData = null;
+            if (flag)
+            {
+                ViewData["errorLine"] = "ok";
+                lstData = repository.GetBookingQueryForWeb(tmpOrder, IDNO, StationID, CarNo, StartDate, EndDate);
+            }
+            else
+            {
+                ViewData["errorMsg"] = errorMsg;
+                ViewData["errorLine"] = errCode.ToString();
+            }
+
+            return Json(lstData, JsonRequestBehavior.AllowGet);
         }
 
         #region 合約資料查詢
