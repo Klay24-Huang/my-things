@@ -1,8 +1,15 @@
-﻿-- =============================================
--- Author:Umeko
--- Create date:2021/08/25
--- Description:邀請清單異動
--- =============================================
+﻿
+/***********************************************************************************************
+* Serve    : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_JointRentInviteeModify_U01
+* 系    統 : IRENT
+* 程式功能 : 共同承租人邀請清單異動
+* 作    者 : Umeko
+* 撰寫日期 : 20210825
+* 修改日期 : 20210906 UPD BY Umeko REASON: 配合檢核 帶入 "是否檢查Token參數"
+Example :
+***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeModify_U01]
 	@OrderNo                BIGINT                ,	--訂單編號
 	@InviteeId              VARCHAR(10)                , --被邀請人帳號
@@ -92,7 +99,7 @@ BEGIN TRY
 			Set @ActionName = '邀請您共同承租唷!'
 			Declare @ReturnID VARCHAR(20) 
 			--執行邀請判斷
-			Exec @Error = usp_JointRentInviteeVerify_Q01 @InviteeId,@OrderNo,@Token,@IDNO,@LogID,@ReturnID output,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output
+			Exec @Error = usp_JointRentInviteeVerify_Q01 @InviteeId,@OrderNo,@Token,@IDNO,@LogID,1,@ReturnID output,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output
 			
 			print '@ErrorCode='+@ErrorCode
 			IF @ChkType Not in ('F','N')
