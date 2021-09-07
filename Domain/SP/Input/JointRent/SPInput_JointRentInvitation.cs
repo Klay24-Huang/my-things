@@ -36,5 +36,10 @@ namespace Domain.SP.Input.JointRent
         /// 要邀請的ID或手機(原input參數)
         /// </summary>
         public string QueryId { set; get; }
+
+        /// <summary>
+        /// 邀請網址
+        /// </summary>
+        public string InvitedUrl { set; get; }
     }
 }

@@ -6,14 +6,13 @@
 * 程式功能 : 案件共同承租人回應邀請
 * 作    者 : AMBER
 * 撰寫日期 : 20210901
-* 修改日期 : 
+* 修改日期 : 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數@CheckToken
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentIviteeFeedBack_U01]
 	@OrderNo                BIGINT                ,	--訂單編號
 	@InviteeId              VARCHAR(20)           , --被邀請的ID
 	@FeedbackType           VARCHAR(1)            , --邀請回覆(Y:同意  N:拒絕)
-	@IDNO                   VARCHAR(20)           ,	--帳號
 	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
 	@LogID                  BIGINT                ,	--執行的api log
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -35,6 +34,8 @@ DECLARE @InviterId VARCHAR(20);
 DECLARE @Message nvarchar(500)=''
 DECLARE @url varchar(500) =''
 DECLARE @imageurl varchar(500) = ''
+DECLARE @CheckToken  TINYINT=0
+
 
 /*初始設定*/
 SET @Error=0;
@@ -50,46 +51,24 @@ SET @IsSystem=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @PushTime=DATEADD(SECOND,10,@NowTime);
-SET @Token=ISNULL (@Token,'');
-SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @InviteeId=ISNULL (@InviteeId,'');
 SET @FeedbackType=ISNULL (@FeedbackType,'');
 
 BEGIN TRY
-	IF @Token='' OR @IDNO=''   OR @InviteeId = '' OR @FeedbackType = ''
+	IF  @InviteeId = '' OR @FeedbackType = ''
 	BEGIN
 		SET @Error=1;
 		SET @ErrorCode='ERR900'
 	END
 			 
-	--0.再次檢核token
-	IF @Error=0
-	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
-		IF @hasData=0
-		BEGIN
-			SET @Error=1;
-			SET @ErrorCode='ERR101';
-		END
-		ELSE
-		BEGIN
-			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-			IF @hasData=0
-			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR101';
-			END
-		END
-	END
 
 	IF @Error=0
 	IF  EXISTS(SELECT 1 FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO=@InviteeId AND ChkType='S') 
 　　BEGIN
 		SELECT @InviterId=o.IDNO FROM TB_OrderMain o WITH(NOLOCK) WHERE order_number=@OrderNo;		　　						
 		DECLARE  @ReturnID VARCHAR(20) 	
-		EXEC @Error = usp_JointRentInviteeVerify_Q01 @InviteeId,@OrderNo,@Token,@IDNO,@LogID,@ReturnID output,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output			  						
+		EXEC @Error = usp_JointRentInviteeVerify_Q01 @InviteeId,@OrderNo,@Token,@InviteeId,@LogID,@CheckToken,@ReturnID output,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output			  						
 	END	
 	ELSE
 	BEGIN

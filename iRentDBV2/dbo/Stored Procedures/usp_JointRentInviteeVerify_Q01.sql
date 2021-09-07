@@ -7,13 +7,15 @@
 * 作    者 : AMBER
 * 撰寫日期 : 20210825
 * 修改日期 : 20210830 UPD BY AMBER REASON: 修正判斷副承租人同時段是否有預約或合約邏輯
+　　　　　　 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
-	@QureyId                VARCHAR(20)           , --要邀請的ID或手機(原input參數)
+	@QueryId                VARCHAR(20)           , --要邀請的ID或手機(原input參數)
 	@OrderNo                BIGINT                , --訂單編號
 	@Token                  VARCHAR(1024)         , --JWT TOKEN
 	@IDNO                   VARCHAR(20)           , --帳號
+	@CheckToken             TINYINT               , --是否檢查Token
 	@LogID                  BIGINT                , --執行的api log
 	@InviteeId              VARCHAR(20)     OUTPUT, --被邀請的ID		
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -50,20 +52,21 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 SET @Token=ISNULL (@Token,'');
 SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
+SET @CheckToken=ISNULL (@CheckToken,0);
 SET @Seat=0;
 SET @Audit_Car=0;
 SET @Audit_Moto=0;
 SET @ProjType='';
 
 	BEGIN TRY
-        IF @Token='' OR @LogID=''
+        IF @CheckToken=1 AND @Token='' OR @LogID='' 
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode='ERR900'		
 		END
 		        
         --0.再次檢核token
-		IF @Error=0
+		IF @Error=0 AND @CheckToken=1
 		BEGIN
 			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
 			IF @hasData=0
@@ -86,9 +89,9 @@ SET @ProjType='';
 		--1.判斷會員狀態(已審核、通過手機驗證、非黑名單)
 		IF @Error=0
 		BEGIN
-		IF ISNUMERIC(@QureyId)>0 
+		IF ISNUMERIC(@QueryId)>0 
 		BEGIN
-		   IF SUBSTRING(@QureyId,1,2) <> '09'
+		   IF SUBSTRING(@QueryId,1,2) <> '09'
 		    BEGIN
 			SET @Error=1
 			SET @ErrorCode='ERR919'
@@ -100,7 +103,7 @@ SET @ProjType='';
 				SELECT @hasData=COUNT(1),@InviteeId=m.MEMIDNO FROM TB_MemberData m WITH(NOLOCK) 
 				JOIN TB_MemberScoreMain s  WITH(NOLOCK)  ON m.MEMIDNO=s.MEMIDNO 
 				WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.ISBLOCK=0
-				AND m.MEMTEL=@QureyId
+				AND m.MEMTEL=@QueryId
 			  	GROUP BY m.MEMIDNO;
 		   END
 
@@ -116,7 +119,7 @@ SET @ProjType='';
 			SELECT @hasData= COUNT(1),@InviteeId=m.MEMIDNO FROM  TB_MemberData m WITH(NOLOCK) 
 			JOIN TB_MemberScoreMain s  WITH(NOLOCK)  ON m.MEMIDNO=s.MEMIDNO 
 			WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.ISBLOCK=0 
-			AND m.MEMIDNO=@QureyId
+			AND m.MEMIDNO=@QueryId
 			GROUP BY m.MEMIDNO;
 
 			IF @hasData=0
@@ -215,4 +218,7 @@ SET @ProjType='';
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInviteeVerify_Q01'
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInviteeVerify_Q01';
+
+
+

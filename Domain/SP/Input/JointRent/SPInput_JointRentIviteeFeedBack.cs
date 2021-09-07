@@ -13,11 +13,6 @@ namespace Domain.SP.Input.JointRent
     {
 
         /// <summary>
-        /// 身分證/居留證號
-        /// </summary>
-        public string IDNO { set; get; }
-
-        /// <summary>
         /// JWT TOKEN
         /// </summary>
         public string Token { set; get; }

@@ -34,5 +34,10 @@ namespace Domain.SP.Input.JointRent
         /// </summary>
         public string IDNO { get; set; }
 
+        /// <summary>
+        /// 推撥邀請網址
+        /// </summary>
+        public string NotificationUrl { get; set; }
+
     }
 }
