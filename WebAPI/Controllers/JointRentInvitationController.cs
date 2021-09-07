@@ -127,15 +127,19 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                string ReqParam = AESEncrypt.EncryptAES128("OrderNo=" + tmpOrder.ToString() + "&InviteeId=" + apiInput.InviteeId, KEY, IV);
                 string spName = new ObjType().GetSPName(ObjType.SPType.JointRentInvitation);
                 SPInput_JointRentInvitation spInput = new SPInput_JointRentInvitation()
                 {
                     LogID = LogID,
                     IDNO = IDNO,
                     Token = Access_Token,
-                    OrderNo= tmpOrder,
+                    OrderNo = tmpOrder,
                     QueryId = apiInput.QueryId,
-                    InviteeId=apiInput.InviteeId
+                    InviteeId = apiInput.InviteeId,
+                    InvitedUrl = "" + ReqParam //待確認
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_JointRentInvitation, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);

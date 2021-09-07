@@ -7,6 +7,7 @@
 * 作    者 : AMBER
 * 撰寫日期 : 20210827
 * 修改日期 : 20210831 UPD BY AMBER REASON: 參數名稱更正&新增錯誤代碼
+　　　　　　 20210906 UPD BY AMBER REASON: 新增邀請網址參數
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInvitation_I01]
@@ -14,6 +15,7 @@ CREATE PROCEDURE [dbo].[usp_JointRentInvitation_I01]
 	@InviteeId              VARCHAR(20)           , --被邀請的ID
 	@QueryId                VARCHAR(20)           ,	--要邀請的ID或手機
 	@IDNO                   VARCHAR(20)           ,	--帳號
+	@InvitedUrl             VARCHAR(500) 　　　　 , --邀請網址
 	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
 	@LogID                  BIGINT                ,	--執行的api log
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -32,7 +34,6 @@ DECLARE @PushTime DATETIME;
 DECLARE @Title NVARCHAR(500);
 DECLARE @MEMCNAME NVARCHAR(60);
 DECLARE @Message nvarchar(500)=''
-DECLARE @url varchar(500) =''
 DECLARE @imageurl varchar(500) = ''
 
 
@@ -109,7 +110,7 @@ BEGIN TRY
 		BEGIN
 		    SELECT @MEMCNAME=dbo.FN_BlockName(MEMCNAME,'O') FROM TB_MemberData WITH(NOLOCK) WHERE  MEMIDNO=@IDNO
 			SET @Title=N'【共同承租】'+@MEMCNAME+'邀請您共同承租唷！'
-			EXEC @Error= usp_InsPersonNotification_I01   @OrderNo,@InviteeId,19,@PushTime,@Title,@Message,@url,@imageurl,@LogID,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output
+			EXEC @Error= usp_InsPersonNotification_I01   @OrderNo,@InviteeId,19,@PushTime,@Title,@Message,@InvitedUrl,@imageurl,@LogID,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output
 		END
 	END
 	ELSE
@@ -144,5 +145,6 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInvitation_I01';
 END
+
 
 
