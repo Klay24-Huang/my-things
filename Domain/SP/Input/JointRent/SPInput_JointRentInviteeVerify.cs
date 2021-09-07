@@ -31,5 +31,10 @@ namespace Domain.SP.Input.JointRent
         /// 要邀請的ID或手機(原input參數)
         /// </summary>
         public string QueryId { set; get; }
+
+        /// <summary>
+        /// 是否檢查Token(0:否;1:是)
+        /// </summary>
+        public int CheckToken { set; get; }
     }
 }

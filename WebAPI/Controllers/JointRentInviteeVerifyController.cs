@@ -139,7 +139,8 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     Token = Access_Token,
                     OrderNo = tmpOrder,
-                    QueryId = apiInput.QueryId
+                    QueryId = apiInput.QueryId,
+                    CheckToken =1
                 };
                 SPOutput_JointRentInviteeVerify spOut = new SPOutput_JointRentInviteeVerify();
                 flag = new SQLHelper<SPInput_JointRentInviteeVerify, SPOutput_JointRentInviteeVerify>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
