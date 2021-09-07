@@ -104,6 +104,13 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                
+                string notificationBaseUrl = ConfigurationManager.AppSettings["JointRentInviteeNotificationBaseUrl"].Trim(); 
+                string key = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                string iv = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                string reqParam = AESEncrypt.EncryptAES128("OrderNo=" + orderNo.ToString() + "&InviteeId=" + apiInput.InviteeId, key, iv);
+                string notificationUrl = string.IsNullOrWhiteSpace(notificationBaseUrl)?"":$"{notificationBaseUrl}?{ reqParam}";
+
                 string SPName = new ObjType().GetSPName(ObjType.SPType.JointRentInviteeModify);
 
                 SPInput_JointRentInviteeModify spInput = new SPInput_JointRentInviteeModify()
@@ -114,6 +121,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token,
                     IDNO = IDNO,
+                    NotificationUrl = notificationUrl
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_JointRentInviteeModify, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_JointRentInviteeModify, SPOutput_Base>(connetStr);

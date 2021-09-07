@@ -127,6 +127,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
+                string notificationBaseUrl = ConfigurationManager.AppSettings["JointRentInviteeNotificationBaseUrl"].Trim();
                 string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
                 string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
                 string ReqParam = AESEncrypt.EncryptAES128("OrderNo=" + tmpOrder.ToString() + "&InviteeId=" + apiInput.InviteeId, KEY, IV);
@@ -139,7 +140,7 @@ namespace WebAPI.Controllers
                     OrderNo = tmpOrder,
                     QueryId = apiInput.QueryId,
                     InviteeId = apiInput.InviteeId,
-                    InvitedUrl = "" + ReqParam //待確認
+                    InvitedUrl = $"{notificationBaseUrl}?{ReqParam}"
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_JointRentInvitation, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);

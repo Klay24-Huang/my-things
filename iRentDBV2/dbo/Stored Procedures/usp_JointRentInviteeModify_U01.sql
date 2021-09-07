@@ -8,12 +8,14 @@
 * 作    者 : Umeko
 * 撰寫日期 : 20210825
 * 修改日期 : 20210906 UPD BY Umeko REASON: 配合檢核 帶入 "是否檢查Token參數"
+* 修改日期 : 20210906 UPD BY Umeko REASON: 加入邀請使用的推播網址"
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeModify_U01]
 	@OrderNo                BIGINT                ,	--訂單編號
 	@InviteeId              VARCHAR(10)                , --被邀請人帳號
 	@ActionType             Char(1)               , --行為
+	@notificationUrl      nvarchar(500)     , --邀請網址
 	@IDNO                   VARCHAR(10)           ,	--帳號
 	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
 	@LogID                  BIGINT                ,	--執行的api log
@@ -126,6 +128,12 @@ BEGIN TRY
 				Set @STime = DateAdd(SECOND,10,dbo.GET_TWDATE())
 				
 				Set @Title = CONCAT('【共同承租】',@MemberName,@ActionName)
+				if @notificationUrl <> ''
+				Begin
+					Set @url = @notificationUrl
+				End
+
+				Set @Message = @Title
 
 				Exec @Error = usp_InsPersonNotification_I01 
 								  @OrderNo
@@ -173,6 +181,13 @@ BEGIN TRY
 				
 				Set @Title = CONCAT('【共同承租】',@MemberName,@ActionName)
 				
+				if @notificationUrl <> ''
+				Begin
+					Set @url = @notificationUrl
+				End
+
+				Set @Message = @Title
+
 				Exec @Error = usp_InsPersonNotification_I01 
 								  @OrderNo
 								, @InviteeId
