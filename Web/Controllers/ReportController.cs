@@ -22,12 +22,11 @@ namespace Web.Controllers
     /// <summary>
     /// 報表
     /// </summary>
-    public class ReportController : Controller
+    public class ReportController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
         //增加NLOG機制
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
-
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        //protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
         #region 整備人員報表查詢
         /// <summary>
@@ -41,6 +40,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MaintainLogReport(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MaintainLogReport");
+
             List<BE_CleanData> lstData = new List<BE_CleanData>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime SD, ED;
@@ -104,6 +107,10 @@ namespace Web.Controllers
 
         public ActionResult MaintainLogReportDownload(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MaintainLogReportDownload");
+
             List<BE_CleanDataWithoutPIC> data = new List<BE_CleanDataWithoutPIC>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             data = new CarClearRepository(connetStr).GetCleanDataWithOutPic(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
@@ -249,6 +256,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarFeedBackQuery(string SDate, string EDate, string userID, string carid, string objStation, int? isHandle, int? NowPage)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarFeedBackQuery");
+
             List<BE_FeedBackMainDetail> lstFeedBack = new List<BE_FeedBackMainDetail>();
             FeedBackRepository _repository = new FeedBackRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -316,6 +327,10 @@ namespace Web.Controllers
         }
         public ActionResult FeedBackDownload(string SDate, string EDate, string userID, string carid, string objStation, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FeedBackDownload");
+
             List<BE_FeedBackMainDetail> lstFeedBack = new List<BE_FeedBackMainDetail>();
             FeedBackRepository _repository = new FeedBackRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -441,6 +456,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult TradeQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "TradeQuery");
+
             return View();
         }
         #endregion
@@ -469,6 +488,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyMainQuery");
+
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -530,6 +553,10 @@ namespace Web.Controllers
         /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyMainQueryDownLoad");
+
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -636,6 +663,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyDetailQuery(string SDate, string EDate, string userID, string OrderNum)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyDetailQuery");
+
             List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -695,6 +726,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult MonthlyDetailQueryDownload(string SDate, string EDate, string userID, string OrderNum)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyDetailQueryDownload");
+
             List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -806,6 +841,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ParkingCheckInQuery(string OrderNo)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ParkingCheckInQuery");
+
             List<BE_QueryOrderMachiParkData> lstDetail = null;
             if (!string.IsNullOrEmpty(OrderNo))
             {
@@ -823,6 +862,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ChargeParkingDetailQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ChargeParkingDetailQuery");
+
             return View();
         }
 
@@ -835,6 +878,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ExplodeParkingReport(DateTime? SDate, DateTime? EDate, string CarNo)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeParkingReport");
+
             List<BE_RawDataOfMachi> lstRawDataOfMachi = new List<BE_RawDataOfMachi>();
             ParkingRepository _repository = new ParkingRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -921,6 +968,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult KymcoQuery(int AuditMode, string StartDate, string EndDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "KymcoQuery");
+
             ViewData["AuditMode"] = AuditMode;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
@@ -929,6 +980,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeKymcoQuery(string ExplodeSDate, string ExplodeEDate, int ExplodeAuditMode)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeKymcoQuery");
+
             List<BE_GetKymcoList> lstRawDataOfKymco = new List<BE_GetKymcoList>();
             OtherRepository _repository = new OtherRepository(connetStr);
 
@@ -1054,6 +1109,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MotorBatteryStatusQuery(string CarNo, string SendDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MotorBatteryStatusQuery");
+
             if (string.IsNullOrEmpty(SendDate))
             {
                 SendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
@@ -1070,6 +1129,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeMotorBatteryStatusQuery(string ExplodeCarNo, string ExplodeSendDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMotorBatteryStatusQuery");
+
             if (string.IsNullOrEmpty(ExplodeSendDate))
             {
                 ExplodeSendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
@@ -1202,11 +1265,19 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult MemberDetailQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MemberDetailQuery");
+
             return View();
         }
         //[HttpPost]
         public ActionResult ExplodeMemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMemberDetailQuery");
+
             //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
             List<BE_GetMemList> lstRawDataOfMember = new List<BE_GetMemList>();//SP回傳的資料欄位
             OtherRepository _repository = new OtherRepository(connetStr);
@@ -1294,6 +1365,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ReFund(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ReFund");
+
             ViewData["IDNO"] = IDNO;
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
@@ -1301,6 +1376,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeReFund(string ExplodeSDate, string ExplodeEDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeReFund");
+
             ViewData["StartDate"] = ExplodeSDate;
             ViewData["EndDate"] = ExplodeEDate;
 
@@ -1370,6 +1449,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ExportCarSettingData(string isExport, string StationID, string Time_Start, string Time_End)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExportCarSettingData");
+
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
             lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
@@ -1482,6 +1565,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarLocationQuery(string IsCar, string Time_Start, string Time_End, string Account)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarLocationQuery");
+
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
             lstData = carStatusCommon.GetCarLocationData(Time_Start, Time_End, IsCar);
@@ -1593,8 +1680,12 @@ namespace Web.Controllers
         [Obsolete]
         public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarMapFileUpload");
+
             //匯出檔案
-            if(export == "true")
+            if (export == "true")
             {
                 SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
                 SqlTransaction tran;

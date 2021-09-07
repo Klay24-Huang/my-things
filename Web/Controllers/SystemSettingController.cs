@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace Web.Controllers
 {
-    public class SystemSettingController : Controller
+    public class SystemSettingController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public ActionResult FeedBackKindSetting()
@@ -19,6 +19,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult FeedBackKindSetting(string descript,int star,int ShowType)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FeedBackKindSetting");
+
             SystemSettingRepository repository = new SystemSettingRepository(connetStr);
             ViewData["descript"] = descript;
             ViewData["star"] = star;

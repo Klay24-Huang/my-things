@@ -14,11 +14,13 @@ namespace Web.Controllers
         protected string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
-        public void nnlog(object user, string ip)
+        public void nnlog(object user, object account, string ip, string action)
         {
             logger.Trace(
-                    "{ReportName:'TEST'," +
+                    "{ReportName:'程式使用紀錄'," +
                     "User" + ":'" + user + "'," +
+                    "Account" + ":'" + account + "'," +
+                    "ActionName" + ":'" + action + "'," +
                     "IPAddr" + ":'" + ip + "}"
                     );
         }
