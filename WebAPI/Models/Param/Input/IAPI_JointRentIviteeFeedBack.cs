@@ -13,16 +13,21 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 訂單編號
         /// </summary>
-        public string OrderNo { set; get; }
+        //public string OrderNo { set; get; }
 
         /// <summary>
         /// 被邀請的ID
         /// </summary>
-        public string InviteeId { set; get; }
+        //public string InviteeId { set; get; }
 
         /// <summary>
         /// 邀請回覆 (Y:同意  N:拒絕)
         /// </summary>
-        public string FeedbackType { set; get; }
+        //public string FeedbackType { set; get; }
+
+        /// <summary>
+        /// AES加密參數
+        /// </summary>
+        public string AESEncryptString { set; get; }
     }
 }

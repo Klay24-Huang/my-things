@@ -51,7 +51,9 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             Int64 tmpOrder = -1;
-            string IDNO = "";
+            string OrderNo = "";
+            string InviteeId = "";
+            string FeedbackType = "";
             #endregion
 
             #region 防呆
@@ -68,21 +70,50 @@ namespace WebAPI.Controllers
             {
                 if (apiInput != null)
                 {
-                    if (string.IsNullOrWhiteSpace(apiInput.OrderNo) || string.IsNullOrWhiteSpace(apiInput.InviteeId))
+                    if (!string.IsNullOrEmpty(apiInput.AESEncryptString))
+                    {
+                        string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                        string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+                        string ReqParam = AESEncrypt.DecryptAES128(apiInput.AESEncryptString, KEY, IV);
+
+                        if (ReqParam != "")
+                        {
+                            string[] parms = ReqParam.Split(new char[] { '&' });
+                            for (int i = 0; i < parms.Length; i++)
+                            {
+                                string[] txts = parms[i].Split(new char[] { '=' });
+                                if (txts[0] == "OrderNo")
+                                {
+                                    OrderNo = txts[1];
+                                }
+                                else if (txts[0] == "InviteeId")
+                                {
+                                    InviteeId = txts[1];
+                                }
+                                else if (txts[0] == "FeedbackType")
+                                {
+                                    FeedbackType = txts[1];
+                                }
+                            }
+                        }
+                    }
+
+
+                    if (string.IsNullOrWhiteSpace(OrderNo) || string.IsNullOrWhiteSpace(InviteeId))
                     {
                         flag = false;
                         errCode = "ERR900";
                     }
-                    else if (!string.IsNullOrWhiteSpace(apiInput.OrderNo))
+                    else if (!string.IsNullOrWhiteSpace(OrderNo))
                     {
-                        if (apiInput.OrderNo.IndexOf("H") < 0)
+                        if (OrderNo.IndexOf("H") < 0)
                         {
                             flag = false;
                             errCode = "ERR900";
                         }
                         if (flag)
                         {
-                            flag = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder);
+                            flag = Int64.TryParse(OrderNo.Replace("H", ""), out tmpOrder);
                             if (flag)
                             {
                                 if (tmpOrder <= 0)
@@ -95,7 +126,7 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (!new[] { "Y", "N"}.Any(s => apiInput.FeedbackType.Contains(s)))
+                    if (!new[] { "Y", "N" }.Any(s => FeedbackType.Contains(s)))
                     {
                         flag = false;
                         errCode = "ERR902";
@@ -103,46 +134,19 @@ namespace WebAPI.Controllers
                 }
             }
 
-            //不開放訪客
-            if (isGuest)
-            {
-                flag = false;
-                errCode = "ERR101";
-            }
             #endregion
 
             #region TB
-            //Token判斷
-            if (flag && isGuest == false)
-            {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
-            }
-
-
             if (flag)
             {
                 string spName = new ObjType().GetSPName(ObjType.SPType.JointRentIviteeFeedBack);
                 SPInput_JointRentIviteeFeedBack spInput = new SPInput_JointRentIviteeFeedBack()
                 {
                     LogID = LogID,
-                    IDNO = IDNO,
                     Token = Access_Token,
                     OrderNo = tmpOrder,
-                    InviteeId = apiInput.InviteeId,
-                    FeedbackType = apiInput.FeedbackType
+                    InviteeId = InviteeId,
+                    FeedbackType = FeedbackType
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_JointRentIviteeFeedBack, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
