@@ -8,6 +8,7 @@
 * 撰寫日期 : 20210825
 * 修改日期 : 20210830 UPD BY AMBER REASON: 修正判斷副承租人同時段是否有預約或合約邏輯
 　　　　　　 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數
+             20210908 UPD BY AMBER REASON: 修正判斷邀請人數上限邏輯
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
@@ -186,7 +187,7 @@ SET @ProjType='';
 			SET @hasData=0
 			SELECT @hasData=count(1) FROM TB_TogetherPassenger  WITH(NOLOCK) WHERE Order_number=@OrderNo;
 
-			IF @hasData>=@Seat-1
+			IF @hasData>@Seat-1
 					BEGIN
 						SET @Error=1
 						SET @ErrorCode='ERR921'
