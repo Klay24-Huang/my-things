@@ -13,7 +13,7 @@ namespace Web.Controllers
 {
     public class NewsController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         // GET: News
         public ActionResult Index()
         {

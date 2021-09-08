@@ -115,6 +115,8 @@ function DoEdit() {
     $("#btnReset").show();
     $("#btnSave").show();
     $("#btnEdit").hide();
+    $("#btnSend").hide();
+    $("#btnAdd").hide();
 }
 function DoReset() {
     $(".Queue").val("").hide();
@@ -122,6 +124,8 @@ function DoReset() {
     $("#btnReset").hide();
     $("#btnSave").hide();
     $("#btnEdit").show();
+    $("#btnSend").show();
+    $("#btnAdd").show();
 }
 function DoSave() {
     var aa = "";
@@ -133,8 +137,8 @@ function DoSave() {
         //console.log("text" + i + "=" + $options.text());
     }
     //console.log(aa)
-
-    
+    $("#btnSend").show();
+    $("#btnAdd").show();
 
     var Account = $("#Account").val();
 
