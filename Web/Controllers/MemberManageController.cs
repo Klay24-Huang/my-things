@@ -1402,7 +1402,7 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 //sheet.AutoSizeColumn(j);
             }
-            lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
+            lstData = repository.GetMemberScoreFull_EXPORT(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
             for (int k = 0; k < len; k++)
             {

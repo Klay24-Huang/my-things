@@ -928,7 +928,6 @@ namespace Web.Controllers
                 if (DetailOrderNo != "")
                 {
                     tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
-
                     obj = new BE_OrderDataCombind()
                     {
                         Data = repository.GetOrderDetail(tmpOrder),
@@ -971,15 +970,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(OrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (OrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
@@ -1003,7 +999,6 @@ namespace Web.Controllers
                 }
             }
             return View(obj);
-
         }
         #endregion
 
@@ -1027,15 +1022,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(DetailOrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (DetailOrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     obj = new BE_OrderDataCombind()
@@ -1080,15 +1072,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(OrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (OrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
@@ -1193,7 +1182,6 @@ namespace Web.Controllers
 
             if (StartDate != "" && EndDate == "")
             {
-
                 StartDate = StartDate + ":00";
             }
             else if (StartDate == "" && EndDate != "")
@@ -1224,7 +1212,6 @@ namespace Web.Controllers
                             errCode = "ERR900";
                             errorMsg = "訂單編號格式不符";
                         }
-
                     }
                 }
             }
