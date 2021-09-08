@@ -920,7 +920,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish_ForTest";    // 20210609 UPD BY YEH 強還積分測試，先指向測試SP
+                    SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";
