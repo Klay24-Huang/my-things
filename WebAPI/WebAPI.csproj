@@ -379,6 +379,7 @@
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
+    <Compile Include="Controllers\SetMemberCMKController.cs" />
     <Compile Include="Controllers\SetMemberDataController.cs" />
     <Compile Include="Controllers\SetMemberScoreDetailController.cs" />
     <Compile Include="Controllers\SetMonthlyRentDataController.cs" />
@@ -389,6 +390,7 @@
     <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\TestTaishiBQController.cs" />
     <Compile Include="Controllers\TestTaishiBUController.cs" />
+    <Compile Include="Controllers\TransWebMemCMKController.cs" />
     <Compile Include="Controllers\UploadCarImageController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
     <Compile Include="Controllers\UploadFeedBackImageController.cs" />
@@ -594,12 +596,14 @@
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetDefPayMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetMemberCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetMemberScoreDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
     <Compile Include="Models\Param\Input\IAPI_SubsEscrowPay.cs" />
+    <Compile Include="Models\Param\Input\IAPI_TransWebMemCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadFeedBackImage.cs" />
@@ -749,7 +753,6 @@
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-App-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />

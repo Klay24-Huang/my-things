@@ -99,5 +99,12 @@ namespace Domain.MemberData
         /// 停權截止日
         /// </summary>
         public string BLOCK_EDATE { get; set; }
+
+        /// <summary>
+        /// 會員條款狀態
+        /// <para>Y：重新確認</para>
+        /// <para>N：不需重新確認</para>
+        /// </summary>
+        public string CMKStatus { get; set; }
     }
 }

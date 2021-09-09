@@ -548,6 +548,7 @@
     <Build Include="dbo\Tables\TB_TaishinWalletTransferStoreValueRLog.sql" />
     <Build Include="dbo\Tables\TB_TaishinWalletStoreValueRLog.sql" />
     <Build Include="dbo\Tables\TB_TaishinWalletPayTransactionRLog.sql" />
+    <Build Include="dbo\Functions\FN_MonthlyRentRateForCarMins.sql" />
     <Build Include="dbo\Synonyms\SYN_MonthlyRent.sql" />
     <Build Include="dbo\Functions\FN_MonthlyRentRateForCarHours.sql" />
     <Build Include="dbo\Tables\TB_ScoreDef.sql" />
@@ -561,6 +562,7 @@
     <Build Include="dbo\Stored Procedures\usp_InsMedalHistory.sql" />
     <Build Include="dbo\Views\VW_BE_GetOrderFullDetail_0727.sql" />
     <Build Include="dbo\Tables\TB_BatchHistory.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
     <Build Include="dbo\Tables\TB_NYRefundList.sql" />
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
