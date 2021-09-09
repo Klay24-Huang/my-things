@@ -109,7 +109,8 @@ namespace WebAPI.Controllers
                 string key = ConfigurationManager.AppSettings["AES128KEY"].Trim();
                 string iv = ConfigurationManager.AppSettings["AES128IV"].Trim();
                 string reqParam = AESEncrypt.EncryptAES128("OrderNo=" + orderNo.ToString() + "&InviteeId=" + apiInput.InviteeId, key, iv);
-                string notificationUrl = string.IsNullOrWhiteSpace(notificationBaseUrl)?"":$"{notificationBaseUrl}?{ reqParam}";
+                string urlEncodeString = HttpUtility.UrlEncode(reqParam);
+                string notificationUrl = string.IsNullOrWhiteSpace(notificationBaseUrl)?"":$"{notificationBaseUrl}?{ urlEncodeString}";
 
                 string SPName = new ObjType().GetSPName(ObjType.SPType.JointRentInviteeModify);
 

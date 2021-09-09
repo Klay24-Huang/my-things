@@ -74,8 +74,8 @@ namespace WebAPI.Controllers
                     {
                         string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
                         string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
-                        string ReqParam = AESEncrypt.DecryptAES128(apiInput.AESEncryptString, KEY, IV);
-
+                        string DecodeString = HttpUtility.UrlDecode(apiInput.AESEncryptString);
+                        string ReqParam = string.IsNullOrWhiteSpace(DecodeString) ? "" : AESEncrypt.DecryptAES128(DecodeString, KEY, IV) ;
                         if (ReqParam != "")
                         {
                             string[] parms = ReqParam.Split(new char[] { '&' });
