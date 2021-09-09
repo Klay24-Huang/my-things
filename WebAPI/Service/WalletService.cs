@@ -119,11 +119,61 @@ namespace WebAPI.Service
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 2) 
+                    if (ds1.Tables.Count >= 2)
                     {
                         re = objUti.ConvertToList<SPOut_WalletTransferCheck>(ds1.Tables[0]);
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[1]);
                         errCode = re_db.ErrorCode;
+                    }
+                    else if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorMsg;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
+        public SPOut_GetPayInfoReturnCar sp_GetPayInfoReturnCar(SPInput_GetPayInfoReturnCar spInput, ref string errCode)
+        {
+            var re = new SPOut_GetPayInfoReturnCar();
+
+            try
+            {
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetPayInfoReturnCar);
+                string SPName = "usp_GetPayInfoReturnCar_Q1_20210830";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.IDNO,
+                        spInput.LogID
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                    if (ds1.Tables.Count >= 3) 
+                    {
+                        var CheckoutModes = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_CheckoutModes>(ds1.Tables[0]);        
+                        var PayInfos = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_PayInfo>(ds1.Tables[1]);
+                        if (CheckoutModes != null && CheckoutModes.Count() > 0)
+                            re.CheckoutModes = CheckoutModes;
+                        if (PayInfos != null && PayInfos.Count() > 0)
+                            re.PayInfo = PayInfos.FirstOrDefault();
                     }
                     else if (ds1.Tables.Count == 1)
                     {
@@ -199,7 +249,7 @@ namespace WebAPI.Service
                           ORGID = a.ORGID,
                           IDNO = a.IDNO,
                           SEQNO = a.SEQNO,
-                          F_INFNO = a.F_INFNO,
+                          TaishinNO = a.TaishinNO,
                           TradeYear = Convert.ToDateTime(a.TradeDate).Year,
                           TradeDate = Convert.ToDateTime(a.TradeDate).ToString("MM/dd"),
                           TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),  
@@ -212,6 +262,38 @@ namespace WebAPI.Service
 
             return re;
         }
-    
+
+        public OPAI_GetPayInfoReturnCar FromSPOut_GetPayInfoReturnCar(SPOut_GetPayInfoReturnCar sour)
+        {
+            var re = new OPAI_GetPayInfoReturnCar();
+
+            if (sour != null)
+            {
+                if (sour.CheckoutModes != null && sour.CheckoutModes.Count() > 0)
+                {
+                    var CheckoutModes = (
+                           from a in sour.CheckoutModes
+                           select new OPAI_GetPayInfoReturnCar_CheckoutMode
+                           {
+                               CheckoutMode = a.CheckoutMode,
+                               CheckoutNM = a.CheckoutNM,
+                               CheckoutNote = a.CheckoutNote,
+                               IsDef = a.IsDef
+                           }).ToList();
+                    re.CheckoutModes = CheckoutModes;
+                }
+
+                if (sour.PayInfo != null)
+                {
+                    var a = sour.PayInfo;
+                    var PayInfo = new OPAI_GetPayInfoReturnCar_PayInfo();
+                    PayInfo.WalletAmount = a.WalletAmount;
+                    PayInfo.CreditStoreAmount = a.CreditStoreAmount;
+                    re.PayInfo = PayInfo;
+                }
+            }
+
+            return re;
+        }
     }
 }

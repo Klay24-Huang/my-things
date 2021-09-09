@@ -25,9 +25,9 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public int SEQNO { get; set; }
         /// <summary>
-        /// 財務-上游批號(IR編)Key
+        /// 台新交易編號(IR編)Key
         /// </summary>
-        public string F_INFNO { get; set; }
+        public string TaishinNO { get; set; }
         /// <summary>
         /// 交易年分
         /// </summary>

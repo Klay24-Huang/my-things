@@ -5,27 +5,26 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 using WebAPI.Models.BillFunc;
 using Newtonsoft.Json;
-using Domain.SP.Input.Wallet;
 using WebAPI.Service;
+using Domain.SP.Input.Wallet;
+using WebAPI.Utils;
+using Domain.SP.Output.Wallet;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 錢包歷程-儲值交易紀錄隱藏
-    /// </summary>
-    public class WalletStoreTradeHistoryHiddenController : ApiController
+    public class GetPayInfoReturnCarController : ApiController
     {
         [HttpPost()]
-        public Dictionary<string, object> DoWalletStoreTradeHistoryHidden([FromBody] Dictionary<string, object> value)
+        public Dictionary<string, object> GetPayInfoReturnCar([FromBody] Dictionary<string, object> value)
         {
             #region 初始宣告
             var wsp = new WalletSp();
+            var wmp = new WalletMap();
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -37,10 +36,11 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoreTradeHistoryHidden";
+            string funName = "GetPayInfoReturnCar";
             Int64 LogID = 0;
-            var apiInput = new IAPI_WalletStoreTradeHistoryHidden();
-            var outputApi = new OAPI_WalletStoreTradeHistoryHidden();
+            var apiInput = new IAPI_GetPayInfoReturnCar();
+            var outputApi = new OPAI_GetPayInfoReturnCar();
+            outputApi.CheckoutModes = new List<OPAI_GetPayInfoReturnCar_CheckoutMode>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -60,18 +60,10 @@ namespace WebAPI.Controllers
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletStoreTradeHistoryHidden>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetPayInfoReturnCar>(Contentjson);
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
-                    if(apiInput == null || string.IsNullOrWhiteSpace(apiInput.ORGID) || apiInput.SEQNO <= 0 || string.IsNullOrWhiteSpace(apiInput.TaishinNO))
-                    {
-                        flag = false;
-                        errMsg = "ORGID, SEQNO, TaishinNO必填";
-                        errCode = "ERR257";
-                    }
-
                     //不開放訪客
                     if (flag)
                     {
@@ -81,7 +73,6 @@ namespace WebAPI.Controllers
                             errCode = "ERR101";
                         }
                     }
-
                     trace.FlowList.Add("防呆");
                     trace.traceAdd("InCk", new { flag, errCode });
                 }
@@ -116,27 +107,28 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    var spIn = new SPInput_WalletStoreTradeHistoryHidden()
+                    var spIn = new SPInput_GetPayInfoReturnCar()
                     {
                         IDNO = IDNO,
-                        LogID = LogID,
-                        ORGID = apiInput.ORGID,
-                        SEQNO = apiInput.SEQNO,
-                        TaishinNO = apiInput.TaishinNO
-                    };
-                    trace.traceAdd("spIn", spIn);
-                    flag = wsp.sp_WalletStoreTradeHistoryHidden(spIn, ref errCode);
-                    trace.FlowList.Add("sp呼叫");
+                        LogID = LogID
+                    };                    
+                    var sp_re = wsp.sp_GetPayInfoReturnCar(spIn, ref errCode);
+                    if (sp_re != null)
+                        outputApi = wmp.FromSPOut_GetPayInfoReturnCar(sp_re);
+
+                    trace.traceAdd("spIn",new { spIn ,sp_re});
                 }
 
                 #endregion
+
+                trace.traceAdd("outputApi", outputApi);
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
             }
 
-            carRepo.AddTraceLog(208, funName, trace, flag);
+            carRepo.AddTraceLog(213, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);

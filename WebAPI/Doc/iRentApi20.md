@@ -56,6 +56,7 @@ iRentApi20 Web API版本
 
 預約以及訂單相關
 - [OrderDetail 歷史訂單明細](#OrderDetail)
+
 - [Booking 預約](#Booking)
 
 車輛調度停車場
@@ -67,7 +68,7 @@ iRentApi20 Web API版本
 - [WalletStoreTradeTransHistory 錢包歷史紀錄查詢](#WalletStoreTradeTransHistory)
 - [WalletStoreTradeHistoryHidden 錢包歷程-儲值交易紀錄隱藏](#WalletStoreTradeHistoryHidden)
 - [GetWalletStoredMoneySet 錢包儲值-設定資訊](#GetWalletStoredMoneySet)
-- [WalletStoredMoney 錢包儲值-信用卡](#WalletStoredMoney)
+- [WalletStoredByCredit 錢包儲值-信用卡](#WalletStoredByCredit)
 - [WalletStoreVisualAccount 錢包儲值-虛擬帳號](#WalletStoreVisualAccount)
 - [WalletStoreShop 錢包儲值-商店條碼](#WalletStoreShop)
 - [GetPayInfoReturnCar 還車付款-取得付款方式](#GetPayInfoReturnCar)
@@ -76,6 +77,10 @@ iRentApi20 Web API版本
 - [GetPayInfoArrears 欠費繳交-付款方式-顯示](#GetPayInfoArrears)
 - [DoPayArrears 欠費繳交-執行](#GetPayInfoArrears)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
+- [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
+- [GetPaymentSettings 查看發票設定&預設付款方式](#GetPaymentSettings)
+- [SetPaymentSettings 設定預設支付方式](#SetPaymentSettings)
+- [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
 
 ----------
 # 修改歷程
@@ -127,6 +132,10 @@ iRentApi20 Web API版本
 20210708 新增電子柵欄API
 
 20210819 新增電子錢包相關API
+
+20210901 調整電子錢包相關API輸入輸出欄位
+
+20210902 電子錢包錢包歷史紀錄查詢(WalletStoreTradeTransHistory)、 錢包歷程-儲值交易紀錄隱藏 (WalletStoreTradeHistoryHidden) 欄位調整，相關API欄位參數型態值調整
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5101,7 +5110,7 @@ iRentApi20 Web API版本
 
 # 電子錢包相關
 
-## CreditAndWalletQuery
+## CreditAndWalletQuery 查詢綁卡跟錢包
 
 ### [/api/CreditAndWalletQuery/]
 
@@ -5123,13 +5132,9 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態    | 範例             |
-| --------- | ---------- | :--: | :----:   | ---------------- |
-
-* input範例
-
-```
-```
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
 
 * Output回傳參數說明
 
@@ -5141,6 +5146,7 @@ iRentApi20 Web API版本
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           |        |               |
+| BindListObj  | 資料物件           |  list  |               |
 
 * Data 回傳參數說明
 
@@ -5148,18 +5154,17 @@ iRentApi20 Web API版本
 | ------------ | ------------------  | :----: | ------------- |
 | HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
 | HasWallet    | 是否有錢包(0:無,1有)| int    | 1             |
-| TotalAmount  | 錢包剩餘金額        | int    | 20000         |
-| BindListObj  | 綁卡列表            | List   |               |
+| TotalAmount | 錢包剩餘金額        | int    | 20000         |
 
 * BindListObj 回傳參數說明
 
-| 參數名稱         | 參數說明                            | 型態   | 範例          |
-| ---------------- | ----------------------------------  | :----: | ------------- |
-| BankNo           | 銀行帳號                            | string | 待確認        |
-| CardNumber       | 信用卡卡號                          | string | 待確認        |
-| CardName         | 信用卡自訂名稱                      | string | 待確認        |
-| AvailableAmount  | 剩餘額度                            | string | 待確認        |
-| CardToken        | 替代性信用卡卡號或替代表銀行卡號    | string | 待確認        |
+| 參數名稱        | 參數說明                         |  型態  | 範例   |
+| --------------- | -------------------------------- | :----: | ------ |
+| BankNo          | 銀行帳號                         | string | 待確認 |
+| CardNumber      | 信用卡卡號(後四碼)               | string | 1234   |
+| CardName        | 信用卡自訂名稱                   | string | 待確認 |
+| AvailableAmount | 剩餘額度                         | string | 待確認 |
+| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | 待確認 |
 
 * Output範例
 
@@ -5172,25 +5177,24 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
     "Data": {
 		"HasBind": 1,
+		"HasWallet": 1,
+		"TotalAmount": 20000,
 		"BindListObj": [
 		  {
 		    "BankNo": "待確認",
-			"CardNumber": "待確認",
-			"CardName": "待確認待確認",
-			"AvailableAmount": "50000",
+			"CardNumber": "1234",
+			"CardName": "待確認",
+			"AvailableAmount": "待確認",
 			"CardToken": "待確認"
 		  }
-		],
-		"SEQNO": 9,
-		"HasWallet": 1,
-		"TotalAmount": 20000	
+		]	
     }
 }
 ```
 
 ----
 
-## WalletStoreTradeTransHistory
+## WalletStoreTradeTransHistory 錢包歷史紀錄查詢
 
 ### [/api/WalletStoreTradeTransHistory/]
 
@@ -5240,19 +5244,19 @@ iRentApi20 Web API版本
 
 * Data-TradeHis 回傳參數說明
 
-| 參數名稱    | 參數說明           |  型態  | 範例          |
-| ----------- | ------------------ | :----: | ------------- |
-| ORGID       | 組織代號(公司代碼) | string | 01            |
-| IDNO        | 身分證號           | string | A123456789    |
-| SEQNO       | 帳款流水號         |  int   | 1             |
-| F_INFNO     | 上游批號           | string | TaishinNo09   |
-| TradeYear   | 交易年分           |  int   | 2021          |
-| TradeDate   | 交易日期           | string | 08/17         |
-| TradeTime   | 交易時間           | string | 20:05         |
-| TradeTypeNm | 交易類別           | string | 錢包提領      |
-| TradeNote   | 交易類別註記       | string | 電子錢包提領  |
-| TradeAMT    | 交易金額           |  int   | 1000          |
-| ShowFLG     | APP上是否顯示      |  int   | 0:隱藏,1:顯示 |
+| 參數名稱    | 參數說明           |  型態  | 範例                 |
+| ----------- | ------------------ | :----: | -------------------- |
+| ORGID       | 組織代號(公司代碼) | string | 01                   |
+| IDNO        | 身分證號           | string | A123456789           |
+| SEQNO       | 帳款流水號         |  int   | 1                    |
+| TaishinNO   | 台新交易編號(IR編) | string | IR2021051736452153XX |
+| TradeYear   | 交易年分           |  int   | 2021                 |
+| TradeDate   | 交易日期           | string | 08/17                |
+| TradeTime   | 交易時間           | string | 20:05                |
+| TradeTypeNm | 交易類別           | string | 錢包提領             |
+| TradeNote   | 交易類別註記       | string | 電子錢包提領         |
+| TradeAMT    | 交易金額           |  int   | 1000                 |
+| ShowFLG     | APP上是否顯示      |  int   | 0:隱藏,1:顯示        |
 
 * Output範例
 
@@ -5269,7 +5273,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 9,
-                "F_INFNO": "TaishinNo09",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "20:05",
@@ -5282,7 +5286,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 8,
-                "F_INFNO": "TaishinNo10",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5295,7 +5299,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 7,
-                "F_INFNO": "TaishinNo08",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5308,7 +5312,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 6,
-                "F_INFNO": "TaishinNo06",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5321,7 +5325,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 5,
-                "F_INFNO": "TaishinNo05",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5334,7 +5338,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 4,
-                "F_INFNO": "TaishinNo04",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5347,7 +5351,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 3,
-                "F_INFNO": "TaishinNo03",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/17",
                 "TradeTime": "00:05",
@@ -5360,7 +5364,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 2,
-                "F_INFNO": "TaishinNO01",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/13",
                 "TradeTime": "00:00",
@@ -5373,7 +5377,7 @@ iRentApi20 Web API版本
                 "ORGID": "01",
                 "IDNO": "A123456789",
                 "SEQNO": 1,
-                "F_INFNO": "TaishinNo02",
+                "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
                 "TradeDate": "08/13",
                 "TradeTime": "00:00",
@@ -5389,7 +5393,7 @@ iRentApi20 Web API版本
 
 ----
 
-## WalletStoreTradeHistoryHidden
+## WalletStoreTradeHistoryHidden 錢包歷程-儲值交易紀錄隱藏
 
 ### [/api/WalletStoreTradeHistoryHidden/]
 
@@ -5411,11 +5415,11 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明            | 必要 |  型態    | 範例          |
-| --------- | ------------------- |      | :--:     | ------------- | 
-| ORGID     | 組織代號(公司代碼)  |      | string   | 0             |
-| SEQNO     | 帳款流水號(by會員)  |      | int      | 1             |
-| F_INFNO   | 財務-上游批號(IR編) |      | string   | TaishinNO01   |
+| 參數名稱  | 參數說明           | 必要 |  型態  | 範例                 |
+| --------- | ------------------ | ---- | :----: | -------------------- |
+| ORGID     | 組織代號(公司代碼) |      | string | 01                   |
+| SEQNO     | 帳款流水號(by會員) |      |  int   | 1                    |
+| TaishinNO | 台新交易編號(IR編) |      | string | IR2021051736452153XX |
 
 
 * input範例
@@ -5424,7 +5428,7 @@ iRentApi20 Web API版本
 {
   "ORGID" : "01",
   "SEQNO" : 1,
-  "F_INFNO" : "TaishinNO01"
+  "TaishinNO" : "IR2021051736452153XX"
 }
 
 ```
@@ -5455,7 +5459,7 @@ iRentApi20 Web API版本
 
 ----
 
-## GetWalletStoredMoneySet
+## GetWalletStoredMoneySet 錢包儲值-設定資訊
 
 ### [/api/GetWalletStoredMoneySet/]
 
@@ -5485,7 +5489,7 @@ iRentApi20 Web API版本
 
 ```
 {
-  "StoreType" : 01
+  "StoreType" : 1
 }
 
 ```
@@ -5506,12 +5510,12 @@ iRentApi20 Web API版本
 
 | 參數名稱        | 參數說明                              |   型態    | 範例          |
 | --------------- | ------------------------------------- |  :----:   | ------------- |
-| StoreType       | 儲值方式(1信用卡,2虛擬帳號,3超商繳費) | int       | 100           |
-| StoreTypeDetail | 明細方式(全家:family,7-11:seven)      | string    | family           |
+| StoreType       | 儲值方式(1信用卡,2虛擬帳號,3超商繳費) | int       | 3             |
+| StoreTypeDetail | 明細方式(全家:family,7-11:seven)      | string    | family        |
 | WalletBalance   | 錢包餘額        　                    | int       | 100           |
 | Rechargeable    | 尚可儲值         　                   | int       | 49900         |
-| StoreLimit      | 單次儲值最低                          | int       | 50000         |
-| StoreMax        | 單次儲值最高                          | int       | 100           |
+| StoreLimit      | 單次儲值最低                          | int       | 100   	      |
+| StoreMax        | 單次儲值最高                          | int       | 50000         |
 | QuickBtns       | 快速按鈕                              | List<int> |               |
 | defSet          | 預設選取(1是0否)                      | int       |               |
 
@@ -5525,33 +5529,56 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
+	"StoredMoneySet":[
 	   {
 	     "StoreType":3,
 		 "StoreTypeDetail": "family",
 	     "WalletBalance": 100,
-		 "Rechargeable": 49900,
-		 "StoreMax": 50000,
-		 "QuickBtns": [100,1000,5000],
+		 "Rechargeable": 20000,
+		 "StoreLimit":300,
+		 "StoreMax": 20000,
+		 "QuickBtns": [300,1000,5000],
 		 "defSet": 1
 	   },
 	   {
 	     "StoreType":3,
 		 "StoreTypeDetail": "seven",
-	     "WalletBalance": 1000,
-		 "Rechargeable": 19000,
+	     "WalletBalance": 100,
+		 "Rechargeable": 20000,
+		 "StoreLimit":300,
 		 "StoreMax": 20000,
-		 "QuickBtns": [100,500,1000],
+		 "QuickBtns": [300,1000,5000],
 		 "defSet": 0
-	   },	   
+	   }]	   
+	}
+}
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	"StoredMoneySet":[
+	   {
+	     "StoreType":2,
+		 "StoreTypeDetail": "",
+	     "WalletBalance": 100,
+		 "Rechargeable": 49900,
+		 "StoreLimit": 100,
+		 "StoreMax": 50000,
+		 "QuickBtns": [100,1000,5000],
+		 "defSet": 1
+	   },  
 	}
 }
 ```
 
 ----
 
-## WalletStoredMoney
+## WalletStoredByCredit 錢包儲值-信用卡
 
-### [/api/WalletStoredMoney/]
+### [/api/WalletStoredByCredit/]
 
 * 20210819新增文件
 
@@ -5572,8 +5599,8 @@ iRentApi20 Web API版本
 * input傳入參數說明
 
 | 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ | 
-| StoreMoney | 儲值金額                              |      | int      | 100    |
+| ---------- | ------------------------------------  |      | :--:     | ------ |
+| StoreMoney | 儲值金額                              | Y | int      | 100    |
 
 * input範例
 
@@ -5597,13 +5624,11 @@ iRentApi20 Web API版本
 
 * Data-StoredMoneySet 回傳參數說明
 
-| 參數名稱        | 參數說明                              |   型態    | 範例             |
-| --------------- | ------------------------------------- |  :----:   | ---------------- |
-| StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                |
-| StoreMoney      | 儲值金額        　                    | int       | 100              |
-| WalletBalance   | 錢包餘額         　                   | int       | 100              |
-| Rechargeable    | 尚可儲值                              | int       | 49900            |
-| StoreTime       | 儲值時間                              | string    | 2020/03/31 11:24 |
+| 參數名稱    | 參數說明              |  型態  | 範例             |
+| ----------- | --------------------- | :----: | ---------------- |
+| StroeResult | 儲值結果(1成功,0失敗) |  int   | 1                |
+| StoreMoney  | 儲值金額              |  int   | 100              |
+| Timestamp   | 儲值時間              | string | 2020/03/31 11:24 |
 
 * Output範例
 
@@ -5613,14 +5638,12 @@ iRentApi20 Web API版本
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
+    "ErrorMessage": "Success",,
 	"Data": {
 	   {
 	     "StroeResult": 1,
-	     "StoreMoney": 100,
-		 "WalletBalance": 100,
-		 "Rechargeable": 49900,
-		 "StoreTime": '2020/03/31 11:24'
+	     "StoreMoney": 100
+	     "Timestamp": '2020/03/31 11:24'
 	   }
 	}
 }
@@ -5629,7 +5652,7 @@ iRentApi20 Web API版本
 
 ----
 
-## WalletStoreVisualAccount
+## WalletStoreVisualAccount 錢包儲值-虛擬帳號
 
 ### [/api/WalletStoreVisualAccount/]
 
@@ -5652,8 +5675,8 @@ iRentApi20 Web API版本
 * input傳入參數說明
 
 | 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ | 
-| StoreMoney | 儲值金額                              |      | int      | 100    |
+| ---------- | ------------------------------------  |      | :--:     | ------ |
+| StoreMoney | 儲值金額                              | Y | int      | 100    |
 
 * input範例
 
@@ -5711,7 +5734,7 @@ iRentApi20 Web API版本
 
 ----
 
-## WalletStoreShop
+## WalletStoreShop 錢包儲值-商店條碼
 
 ### [/api/WalletStoreShop/]
 
@@ -5734,8 +5757,8 @@ iRentApi20 Web API版本
 * input傳入參數說明
 
 | 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ | 
-| StoreMoney | 儲值金額                              |      | int      | 100    |
+| ---------- | ------------------------------------  |      | :--:     | ------ |
+| StoreMoney | 儲值金額                              | Y | int      | 100    |
 
 * input範例
 
@@ -5759,18 +5782,15 @@ iRentApi20 Web API版本
 
 * Data-StoredMoneySet 回傳參數說明
 
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                     |
-| StoreMoney      | 儲值金額        　                    | int       | 100                   |
-| WalletBalance   | 錢包餘額         　                   | int       | 100                   |
-| Rechargeable    | 尚可儲值                              | int       | 49900                 |
-| PayWithinHours  | 幾小時內繳費                          | int       | 3              |
-| PayDeadline     | 繳費期限                              | string    | 02:59:59              |
-| ShopBarCode1    | 超商條碼1    　                       | string    | 1003908SJ             |
-| ShopBarCode2    | 超商條碼2    　                       | string    | 20944SE031003908SUEPJ |
-| ShopBarCode3    | 超商條碼3    　                       | string    | 10023984HPDJ3908SJ    |
-| BarCodeUrl | 條碼圖片網址 | string | https://xxx |
+| 參數名稱     | 參數說明              |   型態   | 範例                  |
+| ------------ | --------------------- | :------: | --------------------- |
+| StroeResult  | 儲值結果(1成功,0失敗) |   int    | 1                     |
+| StoreMoney   | 儲值金額              |   int    | 100                   |
+| Deadline     | 繳費期限(距今+3小時)  | DateTime | 02:59:59              |
+| ShopBarCode1 | 超商條碼1             |  string  | 1003908SJ             |
+| ShopBarCode2 | 超商條碼2             |  string  | 20944SE031003908SUEPJ |
+| ShopBarCode3 | 超商條碼3             |  string  | 10023984HPDJ3908SJ    |
+| BarCodeUrl   | 條碼圖片網址          |  string  | https://xxx           |
 
 * Output範例
 
@@ -5785,10 +5805,7 @@ iRentApi20 Web API版本
 	   {
 	     "StroeResult": 1,
 	     "StoreMoney": 100,
-		 "WalletBalance": 100,
-		 "Rechargeable" : 49900,
-		 "PayWithinHours" : 3,
-         "PayDeadline" : "02:59:59",
+         "Deadline" : "02:59:59",
 		 "ShopBarCode1" : "1003908SJ",
 		 "ShopBarCode2" : "20944SE031003908SUEPJ",
 		 "ShopBarCode3" : "10023984HPDJ3908SJ",
@@ -5801,9 +5818,9 @@ iRentApi20 Web API版本
 
 ----
 
-## GetPayInfoReturnCar
+## GetPayInfo 還車付款-取得付款方式
 
-### [/api/GetPayInfoReturnCar/]
+### [/api/GetPayInfo/]
 
 * 20210819新增文件
 
@@ -5823,8 +5840,9 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱             | 參數說明        | 必要 |  型態    | 範例   |
-| -------------------- | --------------- |      | :--:     | ------ | 
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | ---- | :--: | ---- |
+| 無參數   |          |      |      |      |
 
 * Output回傳參數說明
 
@@ -5835,16 +5853,20 @@ iRentApi20 Web API版本
 | NeedRelogin        | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade        | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage       | 錯誤訊息           | string | Success       |
-| Data               | 資料物件           |        |               |
-| Data-CheckoutModes | 付款方式           |  List  |               |
+| Data               | 資料物件           |  List  |               |
 
-* Data-CheckoutModes回傳參數說明
 
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| CheckoutMode    | 付款方式(1信用卡,2錢包)               | int       | 1                     |
-| CheckoutNM      | 付款方式名稱        　                | string    | 卡號,錢包全額支付...  |
-| CheckoutNote    | 付款方式備註        　                | int       | 餘額 $50元            |
+* Data 回傳參數說明
+
+| 參數名稱           | 參數說明                           |  型態  | 範例          |
+| ------------------ | ---------------------------------- | :----: | ------------- |
+| HasBind            | 是否有綁定(0:無,1有)               | int    | 1             |
+| HasWallet          | 是否有錢包(0:無,1有)               | int    | 1             |
+| WalletBalance      | 錢包餘額                           | int    | 20000         |
+| CardNumber         | 信用卡卡號(末四碼)                 | string | 1234          |
+| CheckoutMode       | 付款方式(0信用卡,1錢包)            | int    | 1             |
+| DefPayMode         | 預設付款方式(0:信用卡 1:錢包)      | int    | 0             |
+| AutoStoreFlag      | 同意自動儲值(0:不同意 1:已同意)    | int    | 0             |
 
 * Output範例
 
@@ -5856,13 +5878,13 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	   "CheckoutModes":[
-           {
-             "CheckoutMode": 2,
-             "CheckoutNM": "錢包全額支付",
-             "CheckoutNote": "餘額 $6,350"
-           }
-	   ]
+		"HasBind": 1,
+		"HasWallet": 1,
+		"WalletBalance": 6350,
+		"CardNumber": "1234",
+		"CheckoutMode": 0,
+        "DefPayMode": 0,
+        "AutoStoreFlag":0	   
 	}
 }
 
@@ -5870,7 +5892,7 @@ iRentApi20 Web API版本
 
 ----
 
-## DoPayReturnCar
+## DoPayReturnCar 還車付款-執行付款方式
 
 ### [/api/DoPayReturnCar/]
 
@@ -5932,7 +5954,7 @@ iRentApi20 Web API版本
 
 ----
 
-## ChoseCheckoutModeShow
+## ChoseCheckoutModeShow 付款方式設定-顯示
 
 ### [/api/ChoseCheckoutModeShow/]
 
@@ -5954,8 +5976,9 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
-| -------------------- | ------------------------ |      | :--:     | ------ | 
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | ---- | :--: | ---- |
+| 無參數   |          |      |      |      |
 * Output回傳參數說明
 
 | 參數名稱      　　　| 參數說明           |  型態  | 範例          |
@@ -6009,7 +6032,7 @@ iRentApi20 Web API版本
 
 ----
 
-## GetPayInfoArrears
+## GetPayInfoArrears 欠費繳交-付款方式-顯示
 
 ### [/api/GetPayInfoReturnCar/]
 
@@ -6031,8 +6054,9 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱             | 參數說明        | 必要 |  型態    | 範例   |
-| -------------------- | --------------- |      | :--:     | ------ | 
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | ---- | :--: | ---- |
+| 無參數   |          |      |      |      |
 
 * Output回傳參數說明
 
@@ -6051,7 +6075,7 @@ iRentApi20 Web API版本
 | ------------ | ----------------------- | :----: | ---------------------------- |
 | CheckoutMode | 付款方式(1信用卡,2錢包) |  int   | 1                            |
 | CheckoutNM   | 付款方式名稱            | string | 錢包餘額不足,錢包全額支付... |
-| CheckoutNote | 付款方式備註            |  int   | 餘額 $6,350元                |
+| CheckoutNote | 付款方式備註            | string | 餘額 $6,350元                |
 | IsDef        | 預設選取(1是0否)        |  int   | 1                            |
 
 * Output範例
@@ -6085,7 +6109,7 @@ iRentApi20 Web API版本
 
 ----
 
-## DoPayArrears
+## DoPayArrears 欠費繳交-執行
 
 ### [/api/DoPayArrears/]
 
@@ -6147,7 +6171,7 @@ iRentApi20 Web API版本
 
 ----
 
-## WalletTransferStoredValue
+## WalletTransferStoredValue 錢包轉贈
 
 ### [/api/WalletTransferStoredValue/]
 
@@ -6181,6 +6205,91 @@ iRentApi20 Web API版本
   "IDNO_Phone" : "A123456789", 
   "Amount" : 1000
 }
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例              |
+| ---------- | --------------------- | :----: | ----------        |
+| TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                 |
+| TranMessage| 失敗原因              | string |                   |
+| SystemTime | 系統回傳時間          | string | 2021/03/31 23:19  |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "TranResult":1,
+	    "TranMessage":"",
+	    "SystemTime":"2021/03/31 23:19"
+	}
+}
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "TranResult":0,
+	    "TranMessage":"受贈人錢包餘額超過上限，請受贈人確認錢包餘額",
+	    "SystemTime":"2021/03/31 23:19"
+	}
+}
+
+```
+
+----
+
+## WalletTransferCheck 轉贈對象確認
+
+### [/api/WalletTransferCheck/]
+
+* 20210831新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
+| ---------- | ---------------- | ---- | :----: | ---------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789 |
+
+* input範例
+
+```
+{
+  "IDNO_Phone" : "A123456789"
+}
 
 ```
 
@@ -6197,11 +6306,13 @@ iRentApi20 Web API版本
 
 * Data 回傳參數說明
 
-| 參數名稱   | 參數說明              |  型態  | 範例       |
-| ---------- | --------------------- | :----: | ---------- |
-| TranResult | 轉贈結果 (1成功0失敗) |  int   | 1          |
-| Name_Phone | 名稱或電話號碼        | string | A123456789 |
-| Amount     | 轉贈金額              |  int   | 1000       |
+| 參數名稱   | 參數說明              |  型態  | 範例               |
+| ---------- | --------------------- | :----: | ----------         |
+| TranCheck  | 可否轉贈              |  int   | 1                  |
+| IDNO       | 會員身分證字號        | string | A123456789         |
+| ShowName   | 遮罩後會員姓名        | string | 李Ｏ瑄             |
+| ShowValue  | 遮罩後的查詢Key值     | string | 0987\*\*\*321      |
+| ShowMessage| 顯示訊息              | string | 此用戶未完成註冊...|
 
 * Output範例
 
@@ -6213,10 +6324,266 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "TranResult":1,
-	    "Name_Phone":"A123456789",
-	    "Amount":1000
+	    "TranCheck":1,
+	    "IDNO":"A123456789",
+	    "ShowName":"李Ｏ瑄",
+	    "ShowValue":"0987***321",
+	    "ShowMessage":"此用戶未完成註冊..."
 	}
+}
+
+```
+----
+## GetPaymentSettings  查看發票設定&預設付款方式
+
+### [/api/GetPaymentSettings/]
+
+* 20210901新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | ---- | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱      | 參數說明                        |  型態  | 範例 |
+| ------------- | ------------------------------- | :----: | ---- |
+| HasBind       | 已綁卡(0:未綁 1:已綁)           |  int   | 1    |
+| CardNumber    | 卡號末四碼                      | string | 1234 |
+| AutoStoreFlag | 同意自動儲值(0:不同意 1:已同意) |  int   | 1    |
+| PayModeData   | 預設付款資料列表                |  List  |      |
+| InvoiceData   | 發票開立方式                    |  List  |      |
+
+* PayModeData 回傳參數說明
+
+| 參數名稱     | 參數說明                 |  型態  | 範例          |
+| ------------ | -------------------------| :----: | ------------- |
+| PayMode      | 付款方式(0:信用卡 1:錢包)|  int   | 1             |
+| PayModeName  | 顯示名稱                 | string | 錢包          |
+| IsDef        | 是否預設(0:否 1:是)      |  int   | 1             |
+
+* InvoiceData 回傳參數說明
+
+| 參數名稱   | 參數說明                        |  型態  | 範例                            |
+| ---------- | ------------------------------- | :----: | ------------------------------- |
+| InvoiceMode| 發票開立方式(TB_WalletCodeTable)|  int   | 2                               |
+| ShowName   | 顯示發票開立類型                | string | "會員載具"                      |
+| ShowDemo   | 顯示備註                        | string | "(請於和運官網會員專區查詢)"    |
+| SubValue   | 捐贈碼、手機條碼、統一編號      | string | ""                              |
+| IsDef      | 是否預設(0:否 1:是)             |  int   | 1                               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "HasBind":1,
+	    "CardNumber":"1234",
+	    "AutoStoreFlag":1,
+		"PayModeData":[
+			{
+				"PayMode": 0,
+				"PayModeName": "信用卡",
+				"IsDef": 0
+			}
+			,
+			{
+				"PayMode": 1,
+				"PayModeName": "錢包",
+				"IsDef": 1
+			}
+		],
+		"InvoiceData":[
+			{
+				"InvoiceMode": 1,
+				"ShowName": "捐贈",
+				"ShowDemo": "" ,
+				"SubValue": "9427",
+				"IsDef": 1,
+			},
+			{
+				"InvoiceMode": 2,
+				"ShowName": "會員載具",
+				"ShowDemo": "(請於和運官網會員專區查詢)" ,
+				"SubValue": "",
+				"IsDef": 1,
+			},
+			{
+				"InvoiceMode": 4,
+				"ShowName": "三聯",
+				"ShowDemo": "(請於和運官網會員專區查詢)" ,
+				"SubValue": "50885758",
+				"IsDef": 0,
+			},
+			{
+				"InvoiceMode": 5,
+				"ShowName": "手機條碼",
+				"ShowDemo": "" ,
+				"SubValue": "/WSQ3FRQ",
+				"IsDef": 0,
+			},
+			{
+				"InvoiceMode": 6,
+				"ShowName": "自然人憑證",
+				"ShowDemo": "" ,
+				"SubValue": "",
+				"IsDef": 0,
+			}
+		]
+	}
+}
+
+```
+
+----
+
+## SetPaymentSettings 設定預設支付方式
+
+### [/api/SetPaymentSettings/]
+
+* 20210901新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
+| ---------- | ---------------- | ---- | :----: | ---------- |
+| Setting    | 設定預設支付方式 | Y    |  int   | 1          |
+
+* input範例
+
+```
+{
+  "Setting" : 1
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success"
+}
+
+```
+
+----
+
+## AutoStoreSetting 自動儲值設定
+
+### [/api/AutoStoreSetting/]
+
+* 20210901新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
+| ---------- | ---------------- | ---- | :----: | ---------- |
+| Setting    | 設定是否同意     | Y    |  int   | 1          |
+
+* input範例
+
+```
+{
+  "Setting" : 1
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success"
 }
 
 ```

@@ -71,9 +71,10 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetBannerInfo> lstBanner = null;
-            string SQL = "SELECT *,'Status' = CASE WHEN convert(char(8),getdate(),112) > convert(char(8),ENDDATE,112) THEN '失效'" +
-                " WHEN convert(char(8),getdate(),112) between convert(char(8),STARTDATE,112) and convert(char(8),ENDDATE,112) THEN '有效'" +
-                " WHEN convert(char(8),getdate(),112) < convert(char(8), STARTDATE, 112) THEN '待生效' END FROM TB_Banner WITH(NOLOCK) ";
+            string SQL = "SELECT SEQNO,CAST(convert(char(25),STARTDATE,121) AS VARCHAR(25)) AS STARTDATE,CAST(convert(char(25),ENDDATE,121) AS VARCHAR(25)) AS ENDDATE," +
+                "QUEUE,URL,MarqueeText,PIC_NAME,'Status' = CASE WHEN convert(char(8),getdate(),112) > convert(char(8),ENDDATE,112) THEN '失效' " +
+                "WHEN convert(char(8),getdate(),112) between convert(char(8),STARTDATE,112) and convert(char(8),ENDDATE,112) THEN '有效' " +
+                "WHEN convert(char(8),getdate(),112) < convert(char(8), STARTDATE, 112) THEN '待生效' END FROM TB_Banner WITH(NOLOCK)";
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
 
