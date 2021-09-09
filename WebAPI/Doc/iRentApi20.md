@@ -175,6 +175,8 @@ iRentApi20 Web API版本
 
 20210906 取得租金明細(GetPayDetail)欄位修正
 
+20210909 共同承租人回應邀請(JointRentIviteeFeedBack) Input欄位調整&錯誤代碼修正
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -6181,18 +6183,17 @@ iRentApi20 Web API版本
 
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
-| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-| InviteeId   | 被邀請的ID   |  Y   | string    | A140584785 |
-| FeedbackType  |  邀請回覆  |  Y   | string    | Y:同意  N:拒絕 |
+| ~~OrderNo~~ | ~~訂單編號~~   | ~~Y~~ | ~~string~~ | ~~H10791575~~ |
+| ~~InviteeId~~ | ~~被邀請的ID~~ | ~~Y~~ | ~~string~~ | ~~A140584785~~ |
+| ~~FeedbackType~~ |  ~~邀請回覆~~  | ~~Y~~ | ~~string~~ | ~~Y:同意  N:拒絕~~ |
+| AESEncryptString | AES加密參數 | Y | string | 如下 |
 
 
 * input範例
 
 ```
 {
-    "OrderNo": "H10791575",
-    "InviteeId": "A140584785",
-    "FeedbackType":"Y"
+    "AESEncryptString": "KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy"
 }
 ```
 
@@ -6223,10 +6224,9 @@ iRentApi20 Web API版本
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明                                       |
-| -------- | ------------------------------------------ |
-| ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
-| ERR920   | 同時段有合約或預約，不能邀請哦！           |
-| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR927   | 非邀請中的合約無法進行操作                 |
-| ERR929   | 共同承租回應邀請更新失敗                   |
+| 錯誤代碼 | 說明                             |
+| -------- | -------------------------------- |
+| ERR920   | 同時段有合約或預約，不能邀請哦！ |
+| ERR927   | 非邀請中的合約無法進行操作       |
+| ERR929   | 共同承租回應邀請更新失敗         |
+| ERR931   | 不能回應邀請，請確認會員狀態哦！ |
