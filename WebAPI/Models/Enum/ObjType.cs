@@ -444,7 +444,10 @@ namespace WebAPI.Models.Enum
             /// 取得路邊機車 20210622 ADD BY YEH
             /// </summary>
             GetMotorRent,
-
+            /// <summary>
+            /// 更新會員條款 20210810 ADD BY YEH
+            /// </summary>
+            SetMemberCMK,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -901,7 +904,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish_ForTest";    // 20210609 UPD BY YEH 強還積分測試，先指向測試SP
+                    SPName = "usp_BE_ContactFinish";    // 20210812 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";
@@ -934,8 +937,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
-                    //SPName = "usp_GetMemberStatus";
-                    SPName = "usp_GetMemberStatus_ForTest";     // 20210708 UPD BY YEH REASON:阿舒要測試東西，先指向測試版本
+                    SPName = "usp_GetMemberStatus";
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";
@@ -1073,7 +1075,9 @@ namespace WebAPI.Models.Enum
                 case SPType.GetCarMapData:  //取得新北監管平台車輛資料 20210901 ADD BY FRANK
                     SPName = "usp_GetCarMapData";
                     break;
-
+                case SPType.SetMemberCMK:  // 更新會員條款 20210810 ADD BY YEH
+                    SPName = "usp_SetMemberCMK";
+                    break;
                 #region 渣渣
                 case SPType.PersonNotice:
                     SPName = "usp_GetNotificationList";

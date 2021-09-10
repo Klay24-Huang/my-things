@@ -13,9 +13,10 @@ using WebCommon;
 
 namespace Web.Controllers
 {
-    public class AccountManageController : Controller
+    public class AccountManageController : BaseSafeController //20210907唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
         /// <summary>
         /// 加盟業者維護
         /// </summary>
@@ -27,7 +28,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult FranchiseesMaintain(string ddlObj,string Operator,string OperatorName,string StartDate,string EndDate, HttpPostedFileBase fileImport)
         {
-           
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FranchiseesMaintain");
+
             string errorLine = "";
             string errorMsg = "";
             string Mode = ddlObj;
@@ -122,6 +127,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult FuncGroupMaintain(string ddlObj,string FuncGroupID,string FuncGroupName,string StartDate,string EndDate)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FuncGroupMaintain");
+
             string errorLine = "";
             string errorMsg = "";
             string Mode = ddlObj;
@@ -194,6 +204,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult FuncMaintain()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FuncMaintain_View");
+
             return View();
         }
         /// <summary>
@@ -207,6 +222,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult UserGroupMaintain(string ddlObj, string ddlOperator,string ddlFuncGroup, string UserGroupID, string UserGroupName, string StartDate, string EndDate)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "UserGroupMaintain");
+
             string errorLine = "";
             string errorMsg = "";
             string Mode = ddlObj;
@@ -291,6 +311,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult UserMaintain(FormCollection collection)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "UserMaintain");
+
             ViewData["OperatorID"] = (collection["ddlOperator"] == null) ? 0 : Convert.ToInt32(collection["ddlOperator"].ToString() == "" ? "0" : collection["ddlOperator"].ToString());
             string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
             ViewData["Mode"] = collection["ddlObj"];

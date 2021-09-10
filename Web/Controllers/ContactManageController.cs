@@ -17,13 +17,20 @@ using Web.Models.Params.Search.Input;
 
 namespace Web.Controllers
 {
-    public class ContactManageController : Controller
+    public class ContactManageController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //20210902改寫到BaseSafeController
+        //protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString; //20210728唐加，讓所有查資料的功能查鏡像db
 
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        //20210728唐加，讓所有查資料的功能查鏡像db
-        private string connetStrMirror = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        //每個action都要記，故這段就不用了
+        //public ContactManageController()
+        //{
+        //    BaseSafeController himsSafe = new BaseSafeController();
+        //    //文彬哥抓SESSION方法只能在ACTION裡，這是能在獨立class取得session
+        //    himsSafe.nnlog(System.Web.HttpContext.Current.Session["User"], System.Web.HttpContext.Current.Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"],"");
+        //}
 
         public ActionResult BookingQuery()
         {
@@ -32,6 +39,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult BookingQuery(string OrderNo, string IDNO, string StationID, string CarNo, string StartDate, string EndDate, string Mode)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "BookingQuery");
+
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
@@ -101,6 +113,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult BookingQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "BookingQueryExplode");
+
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
             ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
@@ -187,6 +204,20 @@ namespace Web.Controllers
             {
                 lstBook = repository.GetOrderExplodeData_New(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
                 int BookCount = lstBook.Count();
+
+                logger.Trace(
+                    "{ReportName:'預約資料查詢(BookingQueryExplode)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{OrderNo" + ":'" + Convert.ToInt64(tmpOrder) + "'," +
+                    "IDNO" + ":'" + ExplodeuserID + "'," +
+                    "StationID" + ":'" + tmpStation + "'," +
+                    "CarNo" + ":'" + ExplodeobjCar + "'," +
+                    "SD" + ":'" + ExplodeSDate + "'," +
+                    "ED" + ":'" + ExplodeEDate + "'," +
+                    "RowCount" + ":" + BookCount.ToString() + "}"
+                    );
+
                 if (BookCount > 0)
                 {
                     int DataLen = lstBook.Count();
@@ -230,6 +261,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult BookingQueryExplode2(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "BookingQueryExplode2");
+
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
             ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
@@ -308,6 +344,20 @@ namespace Web.Controllers
             {
                 lstBook = repository.GetOrderExplodeData(Convert.ToInt64(tmpOrder), ExplodeuserID, tmpStation, ExplodeobjCar, ExplodeSDate, ExplodeEDate, true);
                 int BookCount = lstBook.Count();
+
+                logger.Trace(
+                    "{ReportName:'簡易預約資料查詢(BookingQueryExplode2)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{OrderNo" + ":'" + Convert.ToInt64(tmpOrder) + "'," +
+                    "IDNO" + ":'" + ExplodeuserID + "'," +
+                    "StationID" + ":'" + tmpStation + "'," +
+                    "CarNo" + ":'" + ExplodeobjCar + "'," +
+                    "SD" + ":'" + ExplodeSDate + "'," +
+                    "ED" + ":'" + ExplodeEDate + "'," +
+                    "RowCount" + ":" + BookCount.ToString() + "}"
+                    );
+
                 if (BookCount > 0)
                 {
                     int DataLen = lstBook.Count();
@@ -477,6 +527,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactQuery(string OrderNo, string IDNO, string StationID, string CarNo, string StartDate, string EndDate, string Mode)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactQuery");
+
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
@@ -552,6 +607,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactHistoryQuery(string OrderNo)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactHistoryQuery");
+
             ViewData["OrderNo"] = OrderNo;
             if (string.IsNullOrWhiteSpace(OrderNo) == false)
             {
@@ -579,6 +639,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactQueryExplode(string ExplodeSDate, string ExplodeEDate, string ExplodeobjCar, string ExplodeuserID, string ExplodeOrderNum, string ExplodeobjStation)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactQueryExplode");
+
             List<BE_OrderDetailData> lstBook = new List<BE_OrderDetailData>();
             ContactRepository repository = new ContactRepository(connetStrMirror);
             bool flag = true;
@@ -809,6 +874,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainOfMotor()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainOfMotor");
+
             return View();
         }
         /// <summary>
@@ -817,6 +887,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainOfMotorNew()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainOfMotorNew");
+
             return View();
         }
         /// <summary>
@@ -825,6 +900,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainOfCar()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainOfCar");
+
             return View();
         }
         /// <summary>
@@ -833,6 +913,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainOfCarNew()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainOfCarNew");
+
             return View();
         }
         /// <summary>
@@ -841,6 +926,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainNew()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainNew");
+
             return View();
         }
         /// <summary>
@@ -849,6 +939,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactMaintainByDiscount()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMaintainByDiscount");
+
             return View();
         }
         /// <summary>
@@ -857,6 +952,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactExtend()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactExtend");
+
             return View();
         }
         /// <summary>
@@ -865,6 +965,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactBooking()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactBooking");
+
             return View();
         }
         /// <summary>
@@ -873,6 +978,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactSetting()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactSetting");
+
             return View();
         }
 
@@ -885,6 +995,11 @@ namespace Web.Controllers
         [HttpGet]
         public ActionResult ContactDetail(string DetailOrderNo)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactDetail");
+
             BE_OrderDataCombind obj = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
@@ -898,7 +1013,6 @@ namespace Web.Controllers
                 if (DetailOrderNo != "")
                 {
                     tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
-
                     obj = new BE_OrderDataCombind()
                     {
                         Data = repository.GetOrderDetail(tmpOrder),
@@ -929,6 +1043,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactDetail(string OrderNo, string parkingSpace, string Account)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactDetail2");
+
             BE_OrderDataCombind obj = null;
             ContactRepository repository = new ContactRepository(connetStr);
             Int64 tmpOrder = 0;
@@ -936,15 +1055,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(OrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (OrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
@@ -968,7 +1084,6 @@ namespace Web.Controllers
                 }
             }
             return View(obj);
-
         }
         #endregion
 
@@ -980,6 +1095,11 @@ namespace Web.Controllers
         [HttpGet]
         public ActionResult ContactMotorDetail(string DetailOrderNo)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMotorDetail");
+
             BE_OrderDataCombind obj = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
             Int64 tmpOrder = 0;
@@ -987,15 +1107,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(DetailOrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (DetailOrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(DetailOrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     obj = new BE_OrderDataCombind()
@@ -1028,6 +1145,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ContactMotorDetail(string OrderNo, string parkingSpace, string Account)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactMotorDetail2");
 
             BE_OrderDataCombind obj = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
@@ -1036,15 +1157,12 @@ namespace Web.Controllers
             if (string.IsNullOrEmpty(OrderNo))
             {
                 flag = false;
-
             }
             else
             {
                 if (OrderNo != "")
                 {
-
                     tmpOrder = Convert.ToInt64(OrderNo.Replace("H", ""));
-
                     //lstBook = _repository.GetBookingDetailNew(OrderNO);
                     //  lstNewBooking = _repository.GetBookingDetailHasImgNew(OrderNO);
                     flag = repository.UpdateOrderParking(tmpOrder, parkingSpace, Account);
@@ -1075,6 +1193,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ContactCancel()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ContactCancel");
+
             return View();
         }
         /// <summary>
@@ -1083,6 +1206,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult InsertClean()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "InsertClean");
+
             return View();
         }
 
@@ -1092,6 +1220,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult CleanFixQuery()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CleanFixQuery_view");
+
             return View();
         }
         /// <summary>
@@ -1111,6 +1244,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CleanFixQuery(string OrderNo, string IDNO, string CarNo, string StationID, string StartDate, string EndDate, string Mode)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CleanFixQuery");
+
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
             ContactRepository repository = new ContactRepository(connetStrMirror);
@@ -1129,7 +1267,6 @@ namespace Web.Controllers
 
             if (StartDate != "" && EndDate == "")
             {
-
                 StartDate = StartDate + ":00";
             }
             else if (StartDate == "" && EndDate != "")
@@ -1160,7 +1297,6 @@ namespace Web.Controllers
                             errCode = "ERR900";
                             errorMsg = "訂單編號格式不符";
                         }
-
                     }
                 }
             }

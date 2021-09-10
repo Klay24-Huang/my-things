@@ -176,6 +176,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountManageController.cs" />
+    <Compile Include="Controllers\BaseSafeController.cs" />
     <Compile Include="Controllers\BusinessManageController.cs" />
     <Compile Include="Controllers\CarDataInfoController.cs" />
     <Compile Include="Controllers\CardDataInfoController.cs" />
@@ -198,7 +199,7 @@
     </Compile>
     <Compile Include="Models\Enum\ObjType.cs" />
     <Compile Include="Models\Params\BaseParams.cs" />
-    <Compile Include="Models\Params\Search\Input\Input_BookingStatus.cs" />
+    <Compile Include="Models\Params\Search\Input\Input_Banner.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarCurrentStatus.cs" />
     <Compile Include="Models\Params\Search\Input\Input_CarDashBoard.cs" />
     <Compile Include="Models\WebCommonFunc.cs" />
@@ -635,6 +636,7 @@
     <Folder Include="Content\upload\ImportMasterCardData\" />
     <Folder Include="Content\upload\MedalMileStoneImport\" />
     <Folder Include="Content\upload\TransParkingImport\" />
+    <Folder Include="Views\BaseSafe\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\footable\fonts\footable.eot" />

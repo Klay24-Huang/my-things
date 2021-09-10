@@ -1814,6 +1814,27 @@ namespace WebAPI.Models.BillFunc
 
             return flag;
         }
+
+        public bool sp_BuyNowAddMonth_Q01(SPInput_BuyNowAddMonth_Q01 spInput, ref string errCode)
+        {
+            bool flag = false;
+
+            string spName = "usp_BuyNowAddMonth_Q01";
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOut_SaveInvno();
+            SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno> sqlHelp = new SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno>(connetStr);
+            bool spFlag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (spFlag && spOut != null)
+            {
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
+                flag = spOut.xError == 0;
+            }
+
+            return flag;
+
+        }
     }
 
     /// <summary>

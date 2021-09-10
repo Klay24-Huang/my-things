@@ -3,7 +3,17 @@
     //ViewBag.Title = "BannerSet";
     List<Domain.TB.BackEnd.BE_GetBannerInfo> lstData = null;
     string banner = (ViewData["Banner"] == null) ? "" : ViewData["Banner"].ToString();
+    string order = (ViewData["Order"] == null) ? "" : ViewData["Order"].ToString();
     int ResultLen = -1;
+    string QueryData = (ViewData["QueryData"] == null) ? "" : ViewData["QueryData"].ToString();
+    string[] OrderKind = { "全", "1","2","3","4","5","6","7","8","9","10" };
+    int OrderKindLen = OrderKind.Length;
+
+    Web.Models.Params.Search.Input.Input_Banner Query = null;
+    if (QueryData != "")
+    {
+        Query = Newtonsoft.Json.JsonConvert.DeserializeObject<Web.Models.Params.Search.Input.Input_Banner>(QueryData);
+    }
 
     if (Model != null)
     {
@@ -42,16 +52,45 @@
                                 狀態
                             </div>
                             <div class="col-md-3">
-                                <select id="Status" name="Status" class="form-control">
-                                    <option value="3">全部</option>
-                                    <option value="0">失效</option>
-                                    <option value="1">有效</option>
-                                    <option value="2">待生效</option>
-                                </select>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="invalid" value="0">
+                                    <label class="form-check-label" for="invalid">
+                                        失效
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="valid" value="1">
+                                    <label class="form-check-label" for="valid">
+                                        有效
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="terms" id="sby" value="2">
+                                    <label class="form-check-label" for="sby">
+                                        待生效
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </li>
+                @*<li class="list-group-item">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    狀態
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="Status" name="Status" class="form-control">
+                                        <option value="3">全部</option>
+                                        <option value="0">失效</option>
+                                        <option value="1">有效</option>
+                                        <option value="2">待生效</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>*@
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
@@ -60,7 +99,7 @@
                             </div>
                             <div class="col-md-3">
                                 <select id="Order" name="Order" class="form-control">
-                                    <option value="0">全</option>
+                                    @*<option value="0">全</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -70,7 +109,18 @@
                                     <option value="7">7</option>
                                     <option value="8">8</option>
                                     <option value="9">9</option>
-                                    <option value="10">10</option>
+                                    <option value="10">10</option>*@
+                                    @for (int j = 0; j < OrderKindLen; j++)
+                                    {
+                                        if (Int32.Parse(order==""?"0": order) == j)
+                                        {
+                                            <option value="@(j)" selected>@OrderKind[j]</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@(j)">@OrderKind[j]</option>
+                                        }
+                                    }
                                 </select>
                             </div>
                         </div>
@@ -92,6 +142,7 @@
                     </div>
                 </li>
             </ul>
+            <input type="hidden" id="queryData" name="queryData" value="@QueryData" />
         </form>
     </div>
     <!--end card-->
@@ -129,26 +180,27 @@
                                 @(lstData[i].QUEUE)
                                 @*<select class="form-control" style="display:none;width:70px" name="Queue_@(lstData[i].SEQNO)" id="Queue_@(lstData[i].SEQNO)">*@
                                 <select class="form-control Queue" style="display:none;width:70px" name="Queue">
-                                    @*<option value="1" selected>1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>*@
-                                    <option value="1_@(lstData[i].SEQNO)" selected>1</option>
-                                    <option value="2_@(lstData[i].SEQNO)">2</option>
-                                    <option value="3_@(lstData[i].SEQNO)">3</option>
-                                    <option value="4_@(lstData[i].SEQNO)">4</option>
-                                    <option value="5_@(lstData[i].SEQNO)">5</option>
-                                    <option value="6_@(lstData[i].SEQNO)">6</option>
-                                    <option value="7_@(lstData[i].SEQNO)">7</option>
-                                    <option value="8_@(lstData[i].SEQNO)">8</option>
-                                    <option value="9_@(lstData[i].SEQNO)">9</option>
-                                    <option value="10_@(lstData[i].SEQNO)">10</option>
+                                    @*<option value="1_@(lstData[i].SEQNO)">1</option>
+                                        <option value="2_@(lstData[i].SEQNO)">2</option>
+                                        <option value="3_@(lstData[i].SEQNO)">3</option>
+                                        <option value="4_@(lstData[i].SEQNO)">4</option>
+                                        <option value="5_@(lstData[i].SEQNO)">5</option>
+                                        <option value="6_@(lstData[i].SEQNO)">6</option>
+                                        <option value="7_@(lstData[i].SEQNO)">7</option>
+                                        <option value="8_@(lstData[i].SEQNO)">8</option>
+                                        <option value="9_@(lstData[i].SEQNO)">9</option>
+                                        <option value="10_@(lstData[i].SEQNO)">10</option>*@
+                                    @for (int j = 1; j < OrderKindLen; j++)
+                                    {
+                                        if (lstData[i].QUEUE == j)
+                                        {
+                                            <option value="@(j)_@(lstData[i].SEQNO)" selected>@OrderKind[j]</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@(j)_@(lstData[i].SEQNO)">@OrderKind[j]</option>
+                                        }
+                                    }
                                 </select>
                             </td>
                             @*<th scope="col">@(lstData[i].URL)</th>*@
@@ -156,8 +208,8 @@
                                 <a href="@(lstData[i].URL)" target="_blank"><img src="@("https://irentv2data.blob.core.windows.net/banner/"+lstData[i].PIC_NAME)" class="img-thumbnail" style="max-width: 80%" /></a>
                             </td>
                             <td scope="col">@(lstData[i].MarqueeText)</td>
-                            <td scope="col">@(lstData[i].STARTDATE)</td>
-                            <td scope="col">@(lstData[i].ENDDATE)</td>
+                            <td scope="col">@(lstData[i].STARTDATE2)</td>
+                            <td scope="col">@(lstData[i].ENDDATE2)</td>
                             @{
                                 if (lstData[i].Status == "失效")
                                 {
@@ -176,8 +228,8 @@
                             <td scope="col">
                                 <button class="btn btn-outline-info" id="btn_@(lstData[i].SEQNO)" name="btn_@(lstData[i].SEQNO)" onclick="goMaintain('@(lstData[i].SEQNO)')">詳細設定</button>
                                 @*<Button type="button" id="btnEdit_@(lstData[i].SEQNO)" name="btnEdit_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" onclick="DoEdit('@(lstData[i].SEQNO)');">修改</Button>
-                                <Button type="button" id="btnSave_@(lstData[i].SEQNO)" name="btnSave_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQNO)');">儲存</Button>
-                                <Button type="button" id="btnReset_@(lstData[i].SEQNO)" name="btnReset_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQNO)');">取消</Button>*@
+                                    <Button type="button" id="btnSave_@(lstData[i].SEQNO)" name="btnSave_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoSave('@(lstData[i].SEQNO)');">儲存</Button>
+                                    <Button type="button" id="btnReset_@(lstData[i].SEQNO)" name="btnReset_@(lstData[i].SEQNO)" class="btn btn-outline-secondary" style="display:none" onclick="DoReset('@(lstData[i].SEQNO)');">取消</Button>*@
                             </td>
                         </tr>
                     }
@@ -199,7 +251,7 @@
 <!--輸出表格結束-->
 <!--javascript 初始-->
 @*<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="..\..\Scripts\jquery.tablesort.js"></script>*@
+    <script src="..\..\Scripts\jquery.tablesort.js"></script>*@
 <script>
     //var SEQNO = '@banner';
     //console.log('qqddd:' + SEQNO)

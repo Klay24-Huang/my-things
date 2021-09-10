@@ -1,6 +1,4 @@
-﻿using Domain.SP.BE.Input;
-using Domain.SP.Input.OtherService.Common;
-using Domain.SP.Output;
+﻿using Domain.SP.Input.OtherService.Common;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
@@ -9,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -51,8 +48,9 @@ namespace OtherService
         protected string SetMonthlyRentDataV2URL;//月租訂閱合約儲存(欠費用)
         protected string ETAG020QueryURL;//ETAG查詢(身份證)
         protected string ETAG031SaveURL; //ETAG沖銷
+        protected string TransIRentMemCMKURL; // 會員條款更新至官網 20210824 ADD BY YEH
         protected string connetStr;
-        bool disposed = false;
+
         /// <summary>
         /// 建構式
         /// </summary>
@@ -90,10 +88,14 @@ namespace OtherService
             NPR010SaveURL = (ConfigurationManager.AppSettings.Get("NPR010SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR010SaveURL").ToString();
             //主動取款查詢 20210714 ADD BY 唐瑋祁
             NPR390QueryURL = (ConfigurationManager.AppSettings.Get("NPR390QueryURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR390QueryURL").ToString();
-            
+
             SetMonthlyRentDataURL = (ConfigurationManager.AppSettings.Get("SetMonthlyRentDataURL") == null) ? "" : ConfigurationManager.AppSettings.Get("SetMonthlyRentDataURL").ToString();
             SetMonthlyRentDataV2URL = (ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL") == null) ? "" : ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL").ToString();
+            // 會員條款更新至官網 20210824 ADD BY YEH
+            TransIRentMemCMKURL = (ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL") == null) ? "" : ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL").ToString();
         }
+
+        #region 產生簽章
         /// <summary>
         /// 產生簽章
         /// </summary>
@@ -108,6 +110,8 @@ namespace OtherService
             EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
             return EncryptStr;
         }
+        #endregion
+
         #region 發送簡訊
         public bool NPR260Send(string TARGET, string Message, string RENO, ref WebAPIOutput_NPR260Send output)
         {
@@ -1854,7 +1858,7 @@ namespace OtherService
             }
             return flag;
         }
-        
+
         public async Task<WebAPIOutput_IrentPaymentDetail> DoNPR390Query(WebAPIInput_IrentPaymentDetail input)
         {
             WebAPIOutput_IrentPaymentDetail output = null;
@@ -2326,7 +2330,7 @@ namespace OtherService
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseStr = reader.ReadToEnd();
-                        RTime = DateTime.Now;                  
+                        RTime = DateTime.Now;
                         output = JsonConvert.DeserializeObject<WebAPIOutput_MonthlyRentSave>(responseStr);
                         if (output.Result)
                         {
@@ -2363,7 +2367,94 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
 
-            }          
+            }
+            return output;
+        }
+        #endregion
+
+        #region 會員條款更新至官網 20210824 ADD BY YEH
+        /// <summary>
+        /// 會員條款更新至官網
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool TransIRentMemCMK(WebAPIInput_TransIRentMemCMK input, ref WebAPIOutput_TransIRentMemCMK output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoTransIRentMemCMK(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 會員條款更新至官網
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_TransIRentMemCMK> DoTransIRentMemCMK(WebAPIInput_TransIRentMemCMK input)
+        {
+            WebAPIOutput_TransIRentMemCMK output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + TransIRentMemCMKURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);   // 將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);    // 要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_TransIRentMemCMK>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_TransIRentMemCMK()
+                {
+                    Message = "發生異常錯誤:" + ex.Message,
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "TransIRentMemCMK",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + TransIRentMemCMKURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
             return output;
         }
         #endregion

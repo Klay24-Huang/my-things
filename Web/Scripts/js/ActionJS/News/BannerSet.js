@@ -32,6 +32,14 @@ $(document).ready(function () {
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料查詢中");
+        var obj = new Object();
+        var terms = new Array();
+        $("input[name=terms]:checked").each(function () {
+            terms.push($(this).val());
+        });
+        obj.Terms = terms;
+        var json = JSON.stringify(obj);
+        $("#queryData").val(json);
         $("#frmBannerSetting").submit();
     });
     $("#btnAdd").on("click", function () {
@@ -107,6 +115,8 @@ function DoEdit() {
     $("#btnReset").show();
     $("#btnSave").show();
     $("#btnEdit").hide();
+    $("#btnSend").hide();
+    $("#btnAdd").hide();
 }
 function DoReset() {
     $(".Queue").val("").hide();
@@ -114,6 +124,8 @@ function DoReset() {
     $("#btnReset").hide();
     $("#btnSave").hide();
     $("#btnEdit").show();
+    $("#btnSend").show();
+    $("#btnAdd").show();
 }
 function DoSave() {
     var aa = "";
@@ -125,8 +137,8 @@ function DoSave() {
         //console.log("text" + i + "=" + $options.text());
     }
     //console.log(aa)
-
-    
+    $("#btnSend").show();
+    $("#btnAdd").show();
 
     var Account = $("#Account").val();
 

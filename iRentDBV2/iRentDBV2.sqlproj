@@ -565,6 +565,9 @@
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_AlertMailLog_U01.sql" />
+    <Build Include="dbo\User Defined Types\TY_AlertMailLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
