@@ -137,13 +137,12 @@ iRentApi20 Web API版本
 
 20210902 電子錢包錢包歷史紀錄查詢(WalletStoreTradeTransHistory)、 錢包歷程-儲值交易紀錄隱藏 (WalletStoreTradeHistoryHidden) 欄位調整，相關API欄位參數型態值調整
 
-<<<<<<< HEAD
-20210910 補上錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
-=======
 20210909 電子錢包取得付款方式(GetPayInfo)變更API輸出欄位
 
 20210909 補上付款與還款API(CreditAuth)，並變更輸入欄位
->>>>>>> 177862897e2053f2b3b372ccaf3ad18e4e1fa3e4
+
+20210910 補上錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
+
 
 # Header參數相關說明
 | KEY | VALUE |
