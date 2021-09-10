@@ -923,7 +923,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish";    // 20210812 UPD BY YEH REASON:SP已同步，指回原版本
+                    SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";

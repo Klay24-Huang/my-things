@@ -8,6 +8,8 @@
 * 撰寫日期 : 20210825
 * 修改日期 : 20210830 UPD BY AMBER REASON: 修正判斷副承租人同時段是否有預約或合約邏輯
 　　　　　　 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數
+             20210908 UPD BY AMBER REASON: 修正檢核邏輯
+			 20210909 UPD BY AMBER REASON: 修正判斷邀請人數上限需排除重邀的副承租人
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
@@ -15,8 +17,8 @@ CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
 	@OrderNo                BIGINT                , --訂單編號
 	@Token                  VARCHAR(1024)         , --JWT TOKEN
 	@IDNO                   VARCHAR(20)           , --帳號
-	@CheckToken             TINYINT               , --是否檢查Token
 	@LogID                  BIGINT                , --執行的api log
+	@CheckToken             TINYINT               , --是否檢查Token
 	@InviteeId              VARCHAR(20)     OUTPUT, --被邀請的ID		
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -27,12 +29,12 @@ DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
-DECLARE @hasData TINYINT;
+DECLARE @hasData INT;
 DECLARE @NowTime DATETIME;
-DECLARE @Seat TINYINT ;
+DECLARE @Seat      INT ;
 DECLARE @ProjType  VARCHAR(10);
-DECLARE @Audit_Car TINYINT;
-DECLARE @Audit_Moto TINYINT;
+DECLARE @Audit_Car INT;
+DECLARE @Audit_Moto INT;
 DECLARE @SD      DATETIME;
 DECLARE @ED      DATETIME;
 
@@ -100,10 +102,13 @@ SET @ProjType='';
 		   IF @Error=0
 		   BEGIN 
 				SET @hasData=0
-				SELECT @hasData=COUNT(1),@InviteeId=m.MEMIDNO FROM TB_MemberData m WITH(NOLOCK) 
+				SELECT @hasData=COUNT(1),@InviteeId=m.MEMIDNO 
+				FROM TB_MemberData m WITH(NOLOCK) 
 				JOIN TB_MemberScoreMain s  WITH(NOLOCK)  ON m.MEMIDNO=s.MEMIDNO 
-				WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.ISBLOCK=0
+				WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.SCORE>=60
 				AND m.MEMTEL=@QueryId
+				AND NOT EXISTS (SELECT 1 FROM TB_MemberDataBlock b WITH(NOLOCK) WHERE b.MEMIDNO=m.MEMIDNO
+				AND @NowTime between b.STADT and b.ENDDT)
 			  	GROUP BY m.MEMIDNO;
 		   END
 
@@ -116,10 +121,13 @@ SET @ProjType='';
 	    ELSE
 		BEGIN		  
 			SET @hasData=0;
-			SELECT @hasData= COUNT(1),@InviteeId=m.MEMIDNO FROM  TB_MemberData m WITH(NOLOCK) 
+			SELECT @hasData= COUNT(1),@InviteeId=m.MEMIDNO 
+			FROM  TB_MemberData m WITH(NOLOCK) 
 			JOIN TB_MemberScoreMain s  WITH(NOLOCK)  ON m.MEMIDNO=s.MEMIDNO 
-			WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.ISBLOCK=0 
+			WHERE  m.Audit=1 and m.HasCheckMobile=1 and s.SCORE>=60
 			AND m.MEMIDNO=@QueryId
+			AND NOT EXISTS (SELECT 1 FROM TB_MemberDataBlock b WITH(NOLOCK) WHERE b.MEMIDNO=m.MEMIDNO
+			AND @NowTime between b.STADT and b.ENDDT)
 			GROUP BY m.MEMIDNO;
 
 			IF @hasData=0
@@ -162,15 +170,12 @@ SET @ProjType='';
 	    --2.判斷副承租人同時段是否有預約或合約
 		IF @Error=0
 		BEGIN		
-
-			SET @hasData=0;		
+			SET @hasData=0
 		　　SELECT @hasData=count(1) FROM TB_OrderMain o WITH(NOLOCK) 
 			WHERE IDNO=@InviteeId
-			AND (o.cancel_status =0 AND o.car_mgt_status =0 AND o.booking_status=0)
-			OR (o.car_mgt_status >=4 AND o.car_mgt_status <16)
-		    AND (o.start_time BETWEEN @SD AND @ED) AND  (stop_time BETWEEN @SD AND @ED) 
-			AND EXISTS (SELECT 1 FROM TB_TogetherPassenger t WITH(NOLOCK) 
-			WHERE o.IDNO=t.MEMIDNO AND t.ChkType IN ('Y','S'));
+			AND ((o.cancel_status =0 AND o.car_mgt_status =0 AND o.booking_status=0)
+			OR (o.car_mgt_status >=4 AND o.car_mgt_status <16 AND o.booking_status < 5))
+		    AND ((o.start_time BETWEEN @SD AND @ED) OR  (stop_time BETWEEN @SD AND @ED));
 		
 			IF @hasData>0
 				 BEGIN
@@ -179,19 +184,44 @@ SET @ProjType='';
 				  END
 		END 
 
-		--3.判斷邀請人數上限
+		--2.1判斷副承租人同時段是否有被邀請 
 		IF @Error=0
+		BEGIN	
+		   SET @hasData=0	
+		   SELECT @hasData=count(1) FROM TB_TogetherPassenger t WITH(NOLOCK) 
+		   WHERE t.MEMIDNO=@InviteeId AND t.ChkType IN ('Y','S')
+		   AND EXISTS (SELECT 1 FROM TB_OrderMain o WITH(NOLOCK) WHERE 
+		   t.Order_number=o.order_number AND 
+		   ((o.cancel_status =0 AND o.car_mgt_status =0 AND o.booking_status=0)
+		   OR (o.car_mgt_status >=4 AND o.car_mgt_status <16 AND o.booking_status < 5))
+		   AND ((@SD  BETWEEN start_time AND stop_time) OR (@ED BETWEEN start_time AND stop_time))); --20210908 UPD BY AMBER REASON: 修正檢核邏輯
+		   
+		   IF @hasData>0
+				 BEGIN
+					SET @Error=1
+					SET @ErrorCode='ERR920'
+				  END
+	   END
+
+		--3.判斷邀請人數上限
+		IF @Error=0 AND @CheckToken=1 
 		BEGIN
 		
-			SET @hasData=0
-			SELECT @hasData=count(1) FROM TB_TogetherPassenger  WITH(NOLOCK) WHERE Order_number=@OrderNo;
+			SET @hasData=0			
+			SELECT @hasData=count(1) FROM TB_TogetherPassenger  WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO <> @InviteeId --20210909 UPD BY AMBER REASON: 修正判斷邀請人數上限需排除重邀的副承租人
 
-			IF @hasData>=@Seat-1
+			IF @hasData>@Seat-1
 					BEGIN
 						SET @Error=1
 						SET @ErrorCode='ERR921'
 					END
 		END 
+
+		--副承租人回應邀請Call檢核 顯示錯誤訊息
+		IF @Error=1 AND @ErrorCode='ERR919' AND @CheckToken=0
+		BEGIN
+		   SET @ErrorCode='ERR931'
+		END
 
 		--寫入錯誤訊息
 		IF @Error=1
@@ -219,6 +249,5 @@ SET @ProjType='';
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInviteeVerify_Q01';
-
 
 
