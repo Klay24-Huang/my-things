@@ -137,6 +137,8 @@ iRentApi20 Web API版本
 
 20210902 電子錢包錢包歷史紀錄查詢(WalletStoreTradeTransHistory)、 錢包歷程-儲值交易紀錄隱藏 (WalletStoreTradeHistoryHidden) 欄位調整，相關API欄位參數型態值調整
 
+20210910 補上錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -5574,6 +5576,12 @@ iRentApi20 Web API版本
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 說明       |
+| -------- | ---------- |
+| ERR279   | 非錢包會員 |
+
 ----
 
 ## WalletStoredByCredit 錢包儲值-信用卡
@@ -5649,6 +5657,13 @@ iRentApi20 Web API版本
 }
 
 ```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                   | 說明             |
+| -------- | -------------------------- | ---------------- |
+| ERR195   | 找不到此卡號               | 找不到此信用卡號 |
+| ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤 |
 
 ----
 
