@@ -1,10 +1,3 @@
-/****** Object:  StoredProcedure [dbo].[usp_AlertMailLog_U01]    Script Date: 2021/9/7 下午 02:38:41 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 
 /***********************************************************************************************
 * Server   : sqyhi03az.database.windows.net
