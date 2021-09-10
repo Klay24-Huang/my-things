@@ -105,9 +105,9 @@ iRentApi20 Web API版本
 推播相關
 
 - [News 活動通知](#News)
-- [NewsRead 活動通知讀取] (#NewsRead)
-- [PersonNotice 個人訊息] (#PersonNotice)
-- [PersonNoticeRead 個人訊息讀取] (#PersonNoticeRead)
+- [NewsRead 活動通知讀取](#NewsRead)
+- [PersonNotice 個人訊息](#PersonNotice)
+- [PersonNoticeRead 個人訊息讀取](#PersonNoticeRead)
 ----------
 # 修改歷程
 
@@ -6484,7 +6484,7 @@ iRentApi20 Web API版本
 
 # 推播相關
 
-## News
+## News 活動通知
 
 ### [/api/News/]
 
@@ -6538,7 +6538,7 @@ iRentApi20 Web API版本
 | URL		 | 外連URL				 | string | 		   |
 | isTop		 | 是否置頂				 | int 	  | 0		   |
 | readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
- 
+
 
 
 
@@ -6558,7 +6558,7 @@ iRentApi20 Web API版本
 
 ```
 
-## NewsRead
+## NewsRead 活動通知讀取
 
 ### [/api/NewsRead/]
 
@@ -6583,7 +6583,7 @@ iRentApi20 Web API版本
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
 | NewsID    | 活動通知流水號 | Y | int | 10000 |
-  
+
 * input範例
 
 ```
@@ -6620,7 +6620,7 @@ iRentApi20 Web API版本
 
 ```
 
-## PersonNotice
+## PersonNotice 個人訊息
 
 ### [/api/PersonNotice/]
 
@@ -6672,7 +6672,7 @@ iRentApi20 Web API版本
 | URL		 | 連結URL				 | string | 		   |
 | isTop		 | 是否置頂				 | int 	  | 0		   |
 | readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
- 
+
 
 
 
@@ -8034,7 +8034,6 @@ iRentApi20 Web API版本
 }
 
 ```
-
 
 
 
