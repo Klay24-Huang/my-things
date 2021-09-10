@@ -215,6 +215,8 @@ iRentApi20 Web API版本
 
 20210907 增加推播相關
 
+20210910 取得會員狀態(GetMemberStatus)增加是否顯示購買牌卡
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -762,6 +764,7 @@ iRentApi20 Web API版本
 | BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
 | BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
 | CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
+| IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
 
 * Output範例
 
@@ -797,7 +800,8 @@ iRentApi20 Web API版本
             "Score": 100,
             "BlockFlag": 0,
             "BLOCK_EDATE": "",
-            "CMKStatus": "Y"
+            "CMKStatus": "Y",
+            "IsShowBuy": "Y"
         }
     }
 }
@@ -1535,8 +1539,6 @@ iRentApi20 Web API版本
 | CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
 | Seats		| 座椅數 | N |  array int | [ 4 ] |
 
-
-
 * input範例
 ```
 {
@@ -1562,7 +1564,7 @@ iRentApi20 Web API版本
 | NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | Data | 資料物件 | | |
-| HasRentCard	| 是否有可租的卡片 | boolean | false |
+| HasRentCard	| 是否有可租的卡片<br>無用欄位 | boolean | false |
 | GetProjectObj | 回傳清單 | List | |
 
 

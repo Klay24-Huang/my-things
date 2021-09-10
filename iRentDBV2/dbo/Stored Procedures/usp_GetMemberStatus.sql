@@ -1,24 +1,28 @@
-﻿/****************************************************************
-** 用　　途：取得會員狀態
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/10/16 下午 03:24:00    |  ADAM   |          First Release
-** 2020/12/04 ADD BY ADAM REASON.改為線上統計
-** 2021/01/04 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
-** 2021/01/05 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
-** 2021/01/06 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
-** 2021/05/04 ADD BY JET 姓名/生日/地址未填，顯示1:未完成註冊
-** 2021/05/04 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
-** 2021/05/07 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
-** 2021/05/17 ADD BY YEH 增加積分相關欄位
-** 2021/05/19 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
-** 2021/07/02 UPD BY YEH REASON:積分<0顯示0
-** 2021/07/08 UPD BY Olivia 調整會員權限檢核順序
-** 2021/08/11 UPD BY YEH REASON:增加會員條款狀態
-*****************************************************************/
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_GetMemberStatus
+* 系    統 : IRENT
+* 程式功能 : 取得會員狀態
+* 作    者 : ADAM
+* 撰寫日期 : 20201016
+* 修改日期 : 20201204 ADD BY ADAM REASON.改為線上統計
+			 20210104 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
+			 20210105 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
+			 20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
+			 20210504 ADD BY JET 姓名/生日/地址未填，顯示1:未完成註冊
+			 20210504 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
+			 20210507 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+			 20210517 ADD BY YEH 增加積分相關欄位
+			 20210519 ADD BY YEH 基本資料(姓名/生日/地址) 照片未上傳(身分證/駕照/自拍照/簽名檔/未滿20歲+法定代理人) 要顯示錯誤訊息
+			 20210702 UPD BY YEH REASON:積分<0顯示0
+			 20210708 UPD BY Olivia 調整會員權限檢核順序
+			 20210811 UPD BY YEH REASON:增加會員條款狀態
+			 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
+			 
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_GetMemberStatus]
 	@IDNO		            VARCHAR(10)           ,
 	@Token                  VARCHAR(1024)         ,
@@ -216,6 +220,7 @@ BEGIN TRY
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=E.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
+				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
@@ -336,6 +341,7 @@ BEGIN TRY
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=F.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
+				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
