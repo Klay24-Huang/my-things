@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace WebAPI.Models.Param.Input
 {
@@ -11,11 +8,7 @@ namespace WebAPI.Models.Param.Input
         /// 據點代碼
         /// </summary>
         public string StationID { set; get; }
-        public string CarType { set; get; } //20210412 ADD BY ADAM REASON.目前搜尋api有可能兩邊都會丟
-        /// <summary>
-        ///座位數
-        /// </summary>
-        //public string Seat { set; get; }
+
         /// <summary>
         /// 預計取車時間
         /// </summary>
@@ -24,40 +17,44 @@ namespace WebAPI.Models.Param.Input
         /// 預計還車時間
         /// </summary>
         public string EDate { set; get; }
+
         /// <summary>
         /// 顯示方式
         /// <para>0:依據點代碼(此時據點代碼為必填)</para>
         /// <para>1:依經緯度（此時經緯度與半徑為必填)</para>
         /// </summary>
         public int? Mode { set; get; }
+
         /// <summary>
         /// 緯度
         /// </summary>
         public double? Latitude { set; get; }
+
         /// <summary>
         /// 經度
         /// </summary>
         public double? Longitude { set; get; }
+
         /// <summary>
         /// 半徑
         /// </summary>
         public double? Radius { set; get; }
+
         /// <summary>
         /// 是否使用安心服務
         /// </summary>
         public int Insurance { set; get; }
 
         /// <summary>
-        /// 價格查詢-最少
+        /// 車款
         /// </summary>
-        //public int PriceMin { get; set; }
+        public string CarType { set; get; } //20210412 ADD BY ADAM REASON.目前搜尋api有可能兩邊都會丟
 
         /// <summary>
-        /// 價格查詢-最多
+        /// 車款
         /// </summary>
-        //public int PriceMax { get; set; } 
-
         public List<string> CarTypes { get; set; } = new List<string>();
-        public List<int> Seats { get; set; } = new List<int>();
+
+        //public List<int> Seats { get; set; } = new List<int>();
     }
 }

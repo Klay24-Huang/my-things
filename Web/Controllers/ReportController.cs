@@ -1116,8 +1116,8 @@ namespace Web.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult MemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
+        //[HttpPost]
+        public ActionResult ExplodeMemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
         {
             //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
             List<BE_GetMemList> lstRawDataOfMachi = new List<BE_GetMemList>();//SP回傳的資料欄位
@@ -1411,6 +1411,38 @@ namespace Web.Controllers
             ep.Dispose();
             fileStream.Position = 0;
             return File(fileStream, "application/xlsx", $"{Time_Start}_to_{Time_End}_車輛隨租定位({carType}).xlsx");
+        }
+        #endregion
+
+        #region 主動取款明細查詢
+        /// <summary>
+        /// 主動取款明細查詢 - 20210714唐加
+        /// </summary>
+        public ActionResult IrentPaymentDetail()
+        {
+            ViewData["StartDate"] = "";
+            ViewData["EndDate"] = "";
+            ViewData["StartDate2"] = "";
+            ViewData["EndDate2"] = "";
+            ViewData["MEMACCOUNT"] = "";
+            return View();
+        }
+        #endregion
+
+        #region 主動取款歷程查詢
+        /// <summary>
+        /// 主動取款歷程查詢 - 20210714唐加
+        /// </summary>
+        public ActionResult IrentPaymentHistory()
+        {
+            ViewData["StartDate"] = "";
+            ViewData["EndDate"] = "";
+            ViewData["StartDate2"] = "";
+            ViewData["EndDate2"] = "";
+            ViewData["StartDate3"] = "";
+            ViewData["EndDate3"] = "";
+            ViewData["MEMACCOUNT"] = "";
+            return View();
         }
         #endregion
     }

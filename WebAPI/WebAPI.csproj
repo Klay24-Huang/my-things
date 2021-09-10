@@ -70,6 +70,12 @@
     <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
       <HintPath>..\packages\Pipelines.Sockets.Unofficial.2.2.0\lib\net461\Pipelines.Sockets.Unofficial.dll</HintPath>
     </Reference>
+    <Reference Include="Prometheus.NetFramework.AspNet, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559, processorArchitecture=MSIL">
+      <HintPath>..\packages\prometheus-net.NetFramework.AspNet.4.2.0\lib\net461\Prometheus.NetFramework.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Prometheus.NetStandard, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559, processorArchitecture=MSIL">
+      <HintPath>..\packages\prometheus-net.4.2.0\lib\net461\Prometheus.NetStandard.dll</HintPath>
+    </Reference>
     <Reference Include="SSAPI.Local">
       <HintPath>Reference\SSAPI.Local.dll</HintPath>
     </Reference>
@@ -230,6 +236,7 @@
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
     <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
+    <Compile Include="Controllers\BE_IrentPaymentDetailController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
     <Compile Include="Controllers\BE_QueryMenuByUserGroupController.cs" />
@@ -246,11 +253,16 @@
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
     <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
+    <Compile Include="Controllers\BuyNowToolController.cs" />
+    <Compile Include="Controllers\GetAccountStatusController.cs" />
+    <Compile Include="Controllers\GetAccountValueController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
+    <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -367,6 +379,7 @@
     <Compile Include="Controllers\SendSMSController.cs" />
     <Compile Include="Controllers\SetDefPayModeController.cs" />
     <Compile Include="Controllers\SetFavoriteStationController.cs" />
+    <Compile Include="Controllers\SetMemberCMKController.cs" />
     <Compile Include="Controllers\SetMemberDataController.cs" />
     <Compile Include="Controllers\SetMemberScoreDetailController.cs" />
     <Compile Include="Controllers\SetMonthlyRentDataController.cs" />
@@ -377,6 +390,7 @@
     <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\TestTaishiBQController.cs" />
     <Compile Include="Controllers\TestTaishiBUController.cs" />
+    <Compile Include="Controllers\TransWebMemCMKController.cs" />
     <Compile Include="Controllers\UploadCarImageController.cs" />
     <Compile Include="Controllers\UploadCredentialsController.cs" />
     <Compile Include="Controllers\UploadFeedBackImageController.cs" />
@@ -444,6 +458,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsertChargeParking.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_IrentPaymentDetail.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_NewsHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_QueryFunc.cs" />
@@ -518,6 +533,8 @@
     <Compile Include="Models\Param\Input\IAPI_FeedBack.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetAccountStatus.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetAccountValue.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
@@ -549,6 +566,7 @@
     <Compile Include="Models\Param\Input\IAPI_Maintain_Base.cs" />
     <Compile Include="Models\Param\Input\IAPI_MixAuth.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonPeriodDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_MonthlyPayInv.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlyRentExchange.cs" />
     <Compile Include="Models\Param\Input\IAPI_MonthlySubscription.cs" />
@@ -560,6 +578,7 @@
     <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
+    <Compile Include="Models\Param\Input\IAPI_PersonNoticeRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
@@ -567,6 +586,7 @@
     <Compile Include="Models\Param\Input\IAPI_Register_Step1.cs" />
     <Compile Include="Models\Param\Input\IAPI_Register_Step2.cs" />
     <Compile Include="Models\Param\Input\IAPI_RePayDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_ReSendEMail2.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_SearchMotor.cs" />
@@ -576,12 +596,14 @@
     <Compile Include="Models\Param\Input\IAPI_SendSMS.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetDefPayMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetFavoriteStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetMemberCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetMemberData.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetMemberScoreDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
     <Compile Include="Models\Param\Input\IAPI_SubsEscrowPay.cs" />
+    <Compile Include="Models\Param\Input\IAPI_TransWebMemCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadFeedBackImage.cs" />
@@ -614,6 +636,7 @@
     <Compile Include="Models\Param\Output\OAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Base.cs" />
     <Compile Include="Models\Param\Output\OAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Output\OAPI_BE_IrentPaymentDetail.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusHistoryQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_BonusQuery.cs" />
     <Compile Include="Models\Param\Output\OAPI_Booking.cs" />
@@ -630,6 +653,8 @@
     <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Output\OAPI_DelSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetAccountStatus.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetAccountValue.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
@@ -668,6 +693,7 @@
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
     <Compile Include="Models\Param\Output\OAPI_MonPeriodDetail.cs" />
+    <Compile Include="Models\Param\Output\OAPI_MonthlyPayInv.cs" />
     <Compile Include="Models\Param\Output\OAPI_MotorRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Output\OAPI_Login.cs" />
@@ -727,11 +753,12 @@
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-App-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-app-api-pretest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-App-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api3 - Web Deploy.pubxml" />

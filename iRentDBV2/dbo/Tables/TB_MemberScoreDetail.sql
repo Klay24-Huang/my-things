@@ -14,6 +14,7 @@ CREATE TABLE [dbo].[TB_MemberScoreDetail](
 	[ISPROCESSED] [int] NOT NULL,
 	[UIDESC] [varchar](50) NOT NULL,
 	[UIDISABLE_DT] [datetime] NULL,
+	[ORI_SCORE] [int] NULL,
  CONSTRAINT [PK_TB_MemberScoreDetail] PRIMARY KEY CLUSTERED 
 (
 	[SEQ] ASC
@@ -60,3 +61,5 @@ GO
 ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF_TB_MemberScoreDetail_UIDESC]  DEFAULT ('') FOR [UIDESC]
 GO
 
+ALTER TABLE [dbo].[TB_MemberScoreDetail] ADD  CONSTRAINT [DF_TB_MemberScoreDetail_ORI_SCORE]  DEFAULT ((0)) FOR [ORI_SCORE]
+GO

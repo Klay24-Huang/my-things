@@ -381,6 +381,31 @@ namespace Domain.TB.BackEnd
 
         //20210325唐加，不然匯出報表會錯，錯好久了
         public string StationID { set; get; }
+        /// <summary>
+        /// 儀表板電量(取車)
+        /// </summary>
+        public decimal RSOC_S { get; set; }
+        /// <summary>
+        /// 儀表板電量(還車)
+        /// </summary>
+        public decimal RSOC_E { get; set; }
+        /// <summary>
+        /// 回饋時數(換電時數)
+        /// </summary>
+        public int ChgGift { get; set; }
+        /// <summary>
+        /// 換電次數
+        /// </summary>
+        public int ChgTimes { get; set; }
+        /// <summary>
+        /// 獎勵時數
+        /// </summary>
+        public int RewardGift { get; set; }
+        /// <summary>
+        /// 總回饋時數(總時數=換電+獎勵)
+        /// </summary>
+        public int TotalGift { get; set; }
+       
     }
 
     /// <summary>

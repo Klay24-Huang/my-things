@@ -1,24 +1,28 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Member;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
+using Domain.SP.Output.Member;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using OtherService;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 註冊會員資料 20200812 recheck ok need change send mail body
+    /// 註冊會員資料
     /// </summary>
     public class RegisterMemberDataController : ApiController
     {
@@ -43,7 +47,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_RegisterMemberData apiInput = null;
-            OAPI_Login CheckAccountAPI = null;
+            NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -172,6 +176,60 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
+
+            // 20210812 UPD BY YEH REASON:增加會員同意條款存檔
+            if (flag)
+            {
+                string spName = new ObjType().GetSPName(ObjType.SPType.SetMemberCMK);
+                SPInput_SetMemberCMK spInput = new SPInput_SetMemberCMK()
+                {
+                    IDNO = apiInput.IDNO,
+                    Source = "I",
+                    AgreeDate = DateTime.Now,
+                    VerType = "Hims",
+                    Version = "",   // 從DB抓
+                    TEL = "Y",      // 預設Y
+                    SMS = "Y",      // 預設Y
+                    EMAIL = "Y",    // 預設Y
+                    POST = "Y",     // 預設Y
+                    APIName = funName,
+                    LogID = LogID
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_SetMemberCMK, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetMemberCMK, SPOutput_Base>(connetStr);
+                List<MemberCMKList> ListOut = new List<MemberCMKList>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    // 20210825 UPD BY YEH REASON:拋短租
+                    WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                    {
+                        IDNO = ListOut.FirstOrDefault().MEMIDNO,
+                        VERTYPE = ListOut.FirstOrDefault().VerType,
+                        VER = ListOut.FirstOrDefault().Version,
+                        VERSOURCE = ListOut.FirstOrDefault().Source,
+                        TEL = ListOut.FirstOrDefault().TEL,
+                        SMS = ListOut.FirstOrDefault().SMS,
+                        EMAIL = ListOut.FirstOrDefault().EMAIL,
+                        POST = ListOut.FirstOrDefault().POST,
+                        MEMO = "",
+                        COMPID = "EF",
+                        COMPNM = "和雲",
+                        PRGID = "iRent_6",
+                        USERID = "iRentUser"
+                    };
+                    WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
+                    HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+
+                    flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
+                    if (flag == false)
+                    {
+                        errCode = "ERR776";
+                    }
+                }
+            }
             #endregion
             #region 產生加密及發信
             if (flag)
@@ -180,7 +238,7 @@ namespace WebAPI.Controllers
                 string Source = new AESEncrypt().doEncrypt(key, salt, apiInput.IDNO + "⊙" + apiInput.MEMEMAIL);
                 string Title = "iRent會員電子信箱認證通知信";
 
-                string url = "https://irentv2-app-api.irent-ase.p.azurewebsites.net/api/VerifyEMail?VerifyCode=" + Source;
+                string url = "https://irentcar.azurefd.net/api/VerifyEMail?VerifyCode=" + Source;
 
                 string Body =
                     "<img src='https://irentv2-as-verify.azurewebsites.net/images/irent.png'>" +
@@ -194,20 +252,19 @@ namespace WebAPI.Controllers
                 // flag = Task.Run(() => send.DoSendMail(Title, Body, apiInput.MEMEMAIL)).Result;
                 flag = send.DoSendMail(Title, Body, apiInput.MEMEMAIL);
             }
-
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
             #endregion
         }
-    
+
         private int MEMRFNBR_FromStr(string sour)
         {
             if (double.TryParse(sour, out double d_sour))

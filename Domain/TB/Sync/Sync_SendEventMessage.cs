@@ -35,6 +35,11 @@ namespace Domain.TB.Sync
         public int OrderNo { get; set; }
 
         /// <summary>
+        /// 據點代碼
+        /// </summary>
+        public string StationID { get; set; }
+
+        /// <summary>
         /// 是否發送：0:否;1:是;2:失敗;3:不處理
         /// </summary>
         public int HasSend { get; set; }

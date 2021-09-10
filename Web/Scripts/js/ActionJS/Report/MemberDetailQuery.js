@@ -10,16 +10,7 @@
 
     $("#btnExplode").on("click", function () {
         ShowLoading("資料查詢中…");
-        //console.log('Q1' + $("#idEndNo .form-check-input").val());
-        //console.log('Q2' + $("#IDNO .form-check-input").val());
-        //console.log('Q3' + document.getElementById("idEndNo").innerText);
-        //console.log('Q4' + $("#idEndNo").html());
-        //console.log('Q5' + document.getElementById("IDNO3").innerText);
-        //console.log('Q6' + $("#IDNO3").html());
-        //console.log('Q7' + document.getElementById("IDNO4").innerText);
-        //console.log('Q8' + $("#IDNO4").html());
-        //console.log('Q9' + $("#IDNO3 .form-check-input").val());
-        //console.log('Q10' + $("#IDNO4 .form-check-input").val());
+
         var flag = true;
         var errMsg = "";
         var SD = $("#StartDate").val();
@@ -41,13 +32,14 @@
         }
 
         if (flag) {
+            console.log($("#AuditMode").val())
             //$("#ExplodeSDate").val($("#StartDate").val());
             //$("#ExplodeEDate").val($("#EndDate").val());
             //$("#ExplodeId").val($("#idEndNo").val());
             //$("#ExplodeAuditMode").val($("#AuditMode").val());
-            disabledLoading();
             //$("#frmMemberDetailExplode").submit();
             $("#frmMemberDetail").submit();
+            disabledLoading();
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }

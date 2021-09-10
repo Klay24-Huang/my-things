@@ -370,7 +370,7 @@ namespace Web.Controllers
                             ICell headCell = sheet.GetRow(0).GetCell(i);
                             if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
                             {
-                                errorLine = "標題列不相符";
+                                errorMsg = "標題列不相符";
                                 flag = false;
                                 break;
                             }
@@ -470,7 +470,7 @@ namespace Web.Controllers
                 if (flag)
                 {
                     ViewData["errorLine"] = "ok";
-                    ViewData["errorMsg"] = "";
+                    ViewData["errorMsg"] = "ok";
                 }
                 else
                 {

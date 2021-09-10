@@ -463,6 +463,27 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                //先檢查是否可以購買訂閱制
+                //目前兩個情況會擋掉，積分小於60，已經有重複買的也不能
+                if (flag)
+                {
+                    string spErrCode = "";
+                    var spIn = new SPInput_BuyNowAddMonth_Q01()
+                    {
+                        IDNO = IDNO,
+                        MonProjId = apiInput.MonProjID,
+                        MonProPeroid = apiInput.MonProPeriod,
+                        ShortDays = apiInput.ShortDays,
+                        LogID = LogID
+                    };
+                    if (!msp.sp_BuyNowAddMonth_Q01(spIn, ref spErrCode))
+                    {
+                        flag = false;
+                        errCode = spErrCode;
+                        errMsg = "購買失敗!";
+                    }
+                }
+
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -631,7 +652,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 發票
-                    if (flag)
+                    if (flag && ProdPrice > 0)
                     {
                         try
                         {
@@ -674,6 +695,7 @@ namespace WebAPI.Controllers
                             if (wsOutput.Result == false)
                             {
                                 xflag = false;
+                                logger.Trace("發票開立失敗!MonthlyRentId=" + wsInput.MonRentID.ToString());
                             }
                             else
                             {
@@ -710,6 +732,37 @@ namespace WebAPI.Controllers
                                     logger.Trace("spError=" + sp_errCode);
                                 }
                                 trace.FlowList.Add("發票存檔");
+                            }
+                            else
+                            {
+                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                                string sp_errCode = "";
+                                var spInput = new SPInput_InsMonthlyInvErr()
+                                {
+                                    ApiInput = JsonConvert.SerializeObject(wsInput),
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    MonthlyRentID = buyNxtCom.MonthlyRentId,
+                                    MonProjID = apiInput.MonProjID,
+                                    MonProPeriod = apiInput.MonProPeriod,
+                                    ShortDays = apiInput.ShortDays,
+                                    NowPeriod = 1,
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    INVAMT = ProdPrice
+                                };
+
+                                xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.FlowList.Add("發票錯誤處理");
                             }
                         }
                         catch (Exception ex)
@@ -1476,7 +1529,7 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    if (flag)
+                    if (flag && ProdPrice > 0)  //阻擋0元發票
                     {
                         try
                         {

@@ -213,7 +213,7 @@ namespace Reposotory.Implement
             bool flag = false;
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
-            string SQL = "SELECT Id,Name,0 as use_flag FROM [TB_MochiPark] WHERE use_flag=1 "; //已修改TB指向
+            string SQL = "SELECT Id,Name,0 as use_flag FROM [TB_MochiPark] WHERE use_flag=1 AND Operator NOT IN ('城市車旅')"; //已修改TB指向    //20210817 ADD BY ADAM REASON.排除掉非車麻吉
             lstStation = GetObjList<SyncMachiParkId>(ref flag, ref lstError, SQL, para, term);
 
             return lstStation;
