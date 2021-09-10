@@ -26,5 +26,11 @@ namespace WebView.Controllers
 
             return View();
         }
+
+        public ActionResult ErrorPage(string ErrorMessage)
+        {
+            ViewData["ErrorMessage"] = ErrorMessage;
+            return View();
+        }
     }
 }

@@ -1,12 +1,19 @@
 ﻿using Domain.TB.BackEnd;
+using Newtonsoft.Json;
+using NLog;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Web;
 using WebCommon;
+using WebView.Models.Param.TogetherPassenger;
 
 namespace WebView.Repository
 {
@@ -18,7 +25,9 @@ namespace WebView.Repository
             this.ConnectionString = ConnStr;
         }
 
-        public List<BE_GetBookingQueryForWeb> GetBookingStatus(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED)
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public List<BE_GetBookingQueryForWeb> GetBookingStatus(string OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -31,10 +40,10 @@ namespace WebView.Repository
 
 
             SqlParameter[] para = new SqlParameter[10];
-            string term = " car_mgt_status<4 ";
+            string term = "";
             string term2 = "";
 
-            if (OrderNo > 0)
+            if (OrderNo != "")
             {
                 term += (term == "") ? "" : " AND ";
                 term += " OrderNum=@OrderNo";
@@ -119,6 +128,95 @@ namespace WebView.Repository
 
 
             return lstOrderPart;
+        }
+
+        public List<OrderDetail> GetOrderInfo(string OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SQL = "SELECT order_number,IDNO,MEMCNAME,MEMTEL";
+            SQL += " FROM TB_OrderMain M WITH(NOLOCK) ";
+            SQL += " LEFT JOIN TB_MemberData MEM ON M.IDNO = MEM.MEMIDNO ";
+
+
+            int nowCount = 0;
+            SqlParameter[] para = new SqlParameter[1];
+
+            if (OrderNo != "")
+            {
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+            }
+
+            string term = $" WHERE order_number = @OrderNo";
+            SQL += term;
+
+            var orderInfo = GetObjList<OrderDetail>(ref flag, ref lstError, SQL, para, term);
+
+            return orderInfo;
+        }
+
+        public string CheckInvitingStatus(string OrderNo, string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string term = "";
+            string SQL = "SELECT TOP 1 ChkType";
+            SQL += " FROM TB_TogetherPassenger WITH(NOLOCK) ";
+
+            int nowCount = 0;
+            SqlParameter[] para = new SqlParameter[2];
+
+            if (OrderNo != "")
+            {
+                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.VarChar, 20);
+                para[nowCount].Value = OrderNo;
+                para[nowCount].Direction = ParameterDirection.Input;
+                term += (term == "") ? "" : " AND ";
+                term += " WHERE Order_number = @OrderNo";
+                nowCount++;
+            }
+
+            if (IDNO != "")
+            {
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                term += (term == "") ? "" : " AND ";
+                term += " MEMIDNO = @IDNO ";
+            }
+
+            SQL += term;
+            var result = GetObjList<CheckInvitingStatus>(ref flag, ref lstError, SQL, para, term)[0];
+
+            return result.ChkType;
+        }
+
+        public Error SaveInviteeResponse(string AESEncryptString)
+        {
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+            using (HttpClient client = new HttpClient())
+            {
+                string url = ConfigurationManager.AppSettings["AppHost"] + "JointRentIviteeFeedBack";
+                client.BaseAddress = new Uri(url);
+                var tmpClass = new
+                {
+                    AESEncryptString = AESEncryptString
+                };
+
+                var json = JsonConvert.SerializeObject(tmpClass);
+
+                HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = new HttpResponseMessage();
+
+                response = client.PostAsync(url, content).GetAwaiter().GetResult();
+
+                var result = JsonConvert.DeserializeObject<Error>(response.Content.ReadAsStringAsync().Result);
+
+                return result;
+            }
         }
     }
 }

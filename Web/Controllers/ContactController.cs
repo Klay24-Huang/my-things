@@ -69,7 +69,8 @@ namespace Web.Controllers
                         //20210315 ADD BY ADAM REASON.合約參數改為AES加密
                         Data = repository.GetOrderDetail(tmpOrder,IDNO),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
-                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false)
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
+                        TogetherPassenger = repository.GetTogetherPassengerData(tmpOrder)
                     };
 
                     List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(obj.Data.IDNO);

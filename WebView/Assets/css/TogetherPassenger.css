@@ -62,3 +62,7 @@ body > .container{
 .status > p {
     color: rgb(29, 166, 208);
 }
+
+#contract{
+    text-decoration:underline !important
+}

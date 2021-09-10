@@ -1362,5 +1362,43 @@ namespace Reposotory.Implement
 
             return lstPayment;
         }
+
+        /// <summary>
+        /// 取得共同承租人清單
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        public List<BE_TogetherPassenger> GetTogetherPassengerData(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_TogetherPassenger> lstData = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT Order_number,MEMCNAME,MEMTEL" +
+                " FROM TB_TogetherPassenger WITH(NOLOCK) ";
+
+
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term += " Order_number=@OrderNo";
+            para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            para[nowCount].Value = OrderNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            
+
+            lstData = GetObjList<BE_TogetherPassenger>(ref flag, ref lstError, SQL, para, term);
+
+            return lstData;
+        }
     }
 }

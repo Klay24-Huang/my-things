@@ -48,9 +48,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.7.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -127,12 +134,22 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Param\TogetherPassenger\CheckInvitingStatus.cs" />
+    <Compile Include="Models\Param\TogetherPassenger\Error.cs" />
+    <Compile Include="Models\Param\TogetherPassenger\InviteeInfo.cs" />
+    <Compile Include="Models\Param\TogetherPassenger\OrderDetail.cs" />
     <Compile Include="Models\ViewModel\VM_TogetherPassenger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\TogethePassengerRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\css\TogetherPassenger.css" />
+    <Content Include="Assets\icon\graphicEmptyOrderError.svg" />
+    <Content Include="Assets\icon\icon64Cancal.svg" />
+    <Content Include="Assets\icon\icon64Fail.svg" />
+    <Content Include="Assets\icon\icon64Success.svg" />
+    <Content Include="Assets\icon\irent_white.png" />
+    <Content Include="Assets\js\TogetherPassenger.js" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -165,6 +182,12 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -272,10 +295,10 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Home\ErrorPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Assets\icon\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
