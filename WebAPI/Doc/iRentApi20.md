@@ -36,10 +36,13 @@ iRentApi20 Web API版本
 - [GetPolygon 取得電子柵欄](#GetPolygon)
 
 取還車跟車機操控相關
+
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 - [GetPayDetail 取得租金明細](#GetPayDetail)
+- [CreditAuth 付款與還款](#CreditAuth)
 
 月租訂閱制相關
+
 - [GetMonthList   取得訂閱制月租列表](#GetMonthList)  
 - [GetMonthGroup  訂閱制月租專案群組](#GetMonthGroup)  
 - [BuyNow/AddMonth 月租購買](#BuyNowAddMonth)
@@ -55,15 +58,17 @@ iRentApi20 Web API版本
 - [SetSubsNxt 設定自動續約](#SetSubsNxt)
 
 預約以及訂單相關
-- [OrderDetail 歷史訂單明細](#OrderDetail)
 
+- [OrderDetail 歷史訂單明細](#OrderDetail)
 - [Booking 預約](#Booking)
 
 車輛調度停車場
+
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
 - [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
 電子錢包相關
+
 - [CreditAndWalletQuery 查詢綁卡跟錢包](#CreditAndWalletQuery)
 - [WalletStoreTradeTransHistory 錢包歷史紀錄查詢](#WalletStoreTradeTransHistory)
 - [WalletStoreTradeHistoryHidden 錢包歷程-儲值交易紀錄隱藏](#WalletStoreTradeHistoryHidden)
@@ -71,14 +76,9 @@ iRentApi20 Web API版本
 - [WalletStoredByCredit 錢包儲值-信用卡](#WalletStoredByCredit)
 - [WalletStoreVisualAccount 錢包儲值-虛擬帳號](#WalletStoreVisualAccount)
 - [WalletStoreShop 錢包儲值-商店條碼](#WalletStoreShop)
-- [GetPayInfoReturnCar 還車付款-取得付款方式](#GetPayInfoReturnCar)
-- [DoPayReturnCar 還車付款-執行付款方式](#DoPayReturnCar)
-- [ChoseCheckoutModeShow 付款方式設定-顯示](#ChoseCheckoutModeShow)
-- [GetPayInfoArrears 欠費繳交-付款方式-顯示](#GetPayInfoArrears)
-- [DoPayArrears 欠費繳交-執行](#GetPayInfoArrears)
+- [GetPayInfo 取得付款方式](#GetPayInfo)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
 - [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
-- [GetPaymentSettings 查看發票設定&預設付款方式](#GetPaymentSettings)
 - [SetPaymentSettings 設定預設支付方式](#SetPaymentSettings)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
 
@@ -137,7 +137,13 @@ iRentApi20 Web API版本
 
 20210902 電子錢包錢包歷史紀錄查詢(WalletStoreTradeTransHistory)、 錢包歷程-儲值交易紀錄隱藏 (WalletStoreTradeHistoryHidden) 欄位調整，相關API欄位參數型態值調整
 
+<<<<<<< HEAD
 20210910 補上錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
+=======
+20210909 電子錢包取得付款方式(GetPayInfo)變更API輸出欄位
+
+20210909 補上付款與還款API(CreditAuth)，並變更輸入欄位
+>>>>>>> 177862897e2053f2b3b372ccaf3ad18e4e1fa3e4
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -2829,6 +2835,93 @@ iRentApi20 Web API版本
 ```
 
 ----
+
+## CreditAuth 付款與還款 
+
+### [/api/CreditAuth/]
+
+* 20210909 補資料
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| PayType  | 付款模式(0:租金、1:罰金/補繳) |  Y   | int | 0 |
+| OrderNo  | 訂單編號  | Y | string | H1254786 |
+| CNTRNO | 罰金或補繳代碼 | Y | int | 0 |
+| CheckoutMode | 付款方式(0:信用卡、1:和雲錢包) | Y | int | 0 |
+
+* input範例(租金)
+
+```
+{
+    "PayType": "0",
+    "OrderNo": "H1254786",
+    "CNTRNO": 0,
+    "CheckoutMode":0
+}
+```
+
+* input範例(罰金)
+
+```
+{
+    "PayType": "1",
+    "OrderNo": "",
+    "CNTRNO": 1554880,
+    "CheckoutMode":0
+}
+```
+
+* Output回傳參數說明 
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data參數說明
+
+| 參數名稱      | 參數說明           |  型態  | 範例          |
+| ------------  | ------------------ | :----: | ------------- |
+| RewardPoint        | 換電獎勵     | int   | 25     |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "RewardPoint": 25,
+    }
+}
+```
+
+
+---
 
 # 月租訂閱制相關
 
@@ -5875,13 +5968,22 @@ iRentApi20 Web API版本
 
 | 參數名稱           | 參數說明                           |  型態  | 範例          |
 | ------------------ | ---------------------------------- | :----: | ------------- |
-| HasBind            | 是否有綁定(0:無,1有)               | int    | 1             |
-| HasWallet          | 是否有錢包(0:無,1有)               | int    | 1             |
-| WalletBalance      | 錢包餘額                           | int    | 20000         |
-| CardNumber         | 信用卡卡號(末四碼)                 | string | 1234          |
-| CheckoutMode       | 付款方式(0信用卡,1錢包)            | int    | 1             |
 | DefPayMode         | 預設付款方式(0:信用卡 1:錢包)      | int    | 0             |
-| AutoStoreFlag      | 同意自動儲值(0:不同意 1:已同意)    | int    | 0             |
+| PayModeList            | 付款方式清單                      | List | |
+
+* PayModeList 回傳參數說明
+
+| 參數名稱           | 參數說明                           |  型態  | 範例          |
+| ------------------ | ------------------------------- - | :----: | ------------- |
+| PayMode            | 付款方式(0:信用卡 1:錢包)          | int    | 0 |
+| PayModeName        | 付款方式名稱                      | string | 信用卡 |
+| HasBind            | 是否有綁定過開通(0:否1:是)         | int |  1 |
+| PayInfo            | 付款顯示資訊                      | string | *1234  |
+| Balance            | 餘額                              | int | 0 |
+| AutoStoreFlag      | 是否自動儲值 (0:否1:是)            | int | 0 |
+| NotBindMsg         | 未綁定時顯示的文字 (0:否1:是)       | string | 若該支付方式有綁定或開通則該欄位為空字串|
+
+
 
 * Output範例
 
@@ -5893,292 +5995,28 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-		"HasBind": 1,
-		"HasWallet": 1,
-		"WalletBalance": 6350,
-		"CardNumber": "1234",
-		"CheckoutMode": 0,
         "DefPayMode": 0,
-        "AutoStoreFlag":0	   
-	}
-}
-
-```
-
-----
-
-## DoPayReturnCar 還車付款-執行付款方式
-
-### [/api/DoPayReturnCar/]
-
-* 20210819新增文件
-
-* ASP.NET Web API (REST API)
-
-* api位置
-
-  正式環境：https://irentcar-app.azurefd.net/
-
-  測試環境：https://irentcar-app-test.azurefd.net
-
-* 傳送跟接收採JSON格式
-
-* HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
-
-| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
-| -------------------- | ------------------------ |      | :--:     | ------ | 
-|  TradeAMT            |  付款金額                |  Y   |   int    |        |
-|  CheckoutMode        |  付款方式(1信用卡,2錢包) |  Y   |   int    |        |
-
-* Output回傳參數說明
-
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
-| Data          　　　| 資料物件           |        |               |
-
-* Data 回傳參數說明
-
-| 參數名稱       | 參數說明              | 型態 | 範例 |
-| -------------- | --------------------- | :--: | ---- |
-| CheckoutResult | 付款結果 (1成功0失敗) | int  | 1    |
-
-* Output範例
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "CheckoutResult":1
-	}
-}
-
-```
-
-----
-
-## ChoseCheckoutModeShow 付款方式設定-顯示
-
-### [/api/ChoseCheckoutModeShow/]
-
-* 20210819新增文件
-
-* ASP.NET Web API (REST API)
-
-* api位置
-
-  正式環境：https://irentcar-app.azurefd.net/
-
-  測試環境：https://irentcar-app-test.azurefd.net
-
-* 傳送跟接收採JSON格式
-
-* HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
-
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | ---- | :--: | ---- |
-| 無參數   |          |      |      |      |
-* Output回傳參數說明
-
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
-| Data          　　　| 資料物件           |        |               |
-| Data-CheckoutModes  | 付款方式列表       | List   |               |
-
-
-* Data - CheckoutModes 回傳參數說明
-
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| CheckoutMode    | 付款方式(1信用卡,2錢包)               |   int     | 1                     |
-| CheckoutNM      | 付款名稱(1和雲錢包,信用卡)            |   string  | 和雲錢包              |
-| CheckoutNote    | 付款說明                              |   string  | 餘額不足              |
-| IsDef           | 是否預設選取                          |   int     | 1                     |
-
-* Output範例
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "CheckoutModes":[
-	    {
-	      "CheckoutMode": 1,
-	      "CheckoutNM": "未綁定信用卡",
-		  "CheckoutNote": "請於支付設定中綁定",
-		  "IsDef":0
-	    },	
-	    {
-	      "CheckoutMode": 2,
-	      "CheckoutNM": "和雲錢包",
-		  "CheckoutNote": "餘額不足",
-		  "IsDef":1
-	    }		
-	  ]
-	}
-}
-
-```
-
-----
-
-## GetPayInfoArrears 欠費繳交-付款方式-顯示
-
-### [/api/GetPayInfoReturnCar/]
-
-* 20210819新增文件
-
-* ASP.NET Web API (REST API)
-
-* api位置
-
-  正式環境：https://irentcar-app.azurefd.net/
-
-  測試環境：https://irentcar-app-test.azurefd.net
-
-* 傳送跟接收採JSON格式
-
-* HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
-
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | ---- | :--: | ---- |
-| 無參數   |          |      |      |      |
-
-* Output回傳參數說明
-
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
-| Data          　　　| 資料物件           |        |               |
-
-* Data-CheckoutMode回傳參數說明
-
-| 參數名稱     | 參數說明                |  型態  | 範例                         |
-| ------------ | ----------------------- | :----: | ---------------------------- |
-| CheckoutMode | 付款方式(1信用卡,2錢包) |  int   | 1                            |
-| CheckoutNM   | 付款方式名稱            | string | 錢包餘額不足,錢包全額支付... |
-| CheckoutNote | 付款方式備註            | string | 餘額 $6,350元                |
-| IsDef        | 預設選取(1是0否)        |  int   | 1                            |
-
-* Output範例
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	   "CheckoutMode":[	   
-           {
-             "CheckoutMode": 1,
-             "CheckoutNM": "*1234",
-             "CheckoutNote": "餘額 $6,350",
-             "IsDef":0
-           },	   
-           {
-             "CheckoutMode": 2,
-             "CheckoutNM": "錢包餘額不足",
-             "CheckoutNote": "餘額 $6,350",
-             "IsDef":1
-           }	   
-	   ]
-	}
-}
-
-```
-
-----
-
-## DoPayArrears 欠費繳交-執行
-
-### [/api/DoPayArrears/]
-
-* 20210819新增文件
-
-* ASP.NET Web API (REST API)
-
-* api位置
-
-  正式環境：https://irentcar-app.azurefd.net/
-
-  測試環境：https://irentcar-app-test.azurefd.net
-
-* 傳送跟接收採JSON格式
-
-* HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
-
-| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
-| -------------------- | ------------------------ |      | :--:     | ------ | 
-|  TradeAMT            |  付款金額                |  Y   |   int    |        |
-|  CheckoutMode        |  付款方式(1信用卡,2錢包) |  Y   |   int    |        |
-
-* Output回傳參數說明
-
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
-| Data          　　　| 資料物件           |        |               |
-
-* Data 回傳參數說明
-
-| 參數名稱        | 參數說明                              |   型態    | 範例                  |
-| --------------- | ------------------------------------- |  :----:   | --------------------- |
-| PayResult       | 付款結果 (1成功0失敗)                 |   int     | 1                     |
-
-* Output範例
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "PayResult":1
+        "PayModeList":
+        [
+            {
+                "PayMode":0,
+                "PayModeName":"信用卡"
+                "HasBind":"1"
+                "PayInfo":"414763******1234"
+                "Balance":0
+                "AutoStoreFlag":0
+                "NotBindMsg":""
+            },
+            {
+                "PayMode":1,
+                "PayModeName":"和雲錢包"
+                "HasBind":0
+                "PayInfo":""
+                "Balance":0
+                "AutoStoreFlag":0
+                "NotBindMsg":"未開通"
+                },
+        ]   
 	}
 }
 
@@ -6344,139 +6182,6 @@ iRentApi20 Web API版本
 	    "ShowName":"李Ｏ瑄",
 	    "ShowValue":"0987***321",
 	    "ShowMessage":"此用戶未完成註冊..."
-	}
-}
-
-```
-----
-## GetPaymentSettings  查看發票設定&預設付款方式
-
-### [/api/GetPaymentSettings/]
-
-* 20210901新增文件
-
-* ASP.NET Web API (REST API)
-
-* api位置
-
-  正式環境：https://irentcar-app.azurefd.net/
-
-  測試環境：https://irentcar-app-test.azurefd.net
-
-* 傳送跟接收採JSON格式
-
-* HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
-
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | ---- | :--: | ---- |
-| 無參數   |          |      |      |      |
-
-* Output回傳參數說明
-
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
-| Data          　　　| 資料物件           |        |               |
-
-* Data 回傳參數說明
-
-| 參數名稱      | 參數說明                        |  型態  | 範例 |
-| ------------- | ------------------------------- | :----: | ---- |
-| HasBind       | 已綁卡(0:未綁 1:已綁)           |  int   | 1    |
-| CardNumber    | 卡號末四碼                      | string | 1234 |
-| AutoStoreFlag | 同意自動儲值(0:不同意 1:已同意) |  int   | 1    |
-| PayModeData   | 預設付款資料列表                |  List  |      |
-| InvoiceData   | 發票開立方式                    |  List  |      |
-
-* PayModeData 回傳參數說明
-
-| 參數名稱     | 參數說明                 |  型態  | 範例          |
-| ------------ | -------------------------| :----: | ------------- |
-| PayMode      | 付款方式(0:信用卡 1:錢包)|  int   | 1             |
-| PayModeName  | 顯示名稱                 | string | 錢包          |
-| IsDef        | 是否預設(0:否 1:是)      |  int   | 1             |
-
-* InvoiceData 回傳參數說明
-
-| 參數名稱   | 參數說明                        |  型態  | 範例                            |
-| ---------- | ------------------------------- | :----: | ------------------------------- |
-| InvoiceMode| 發票開立方式(TB_WalletCodeTable)|  int   | 2                               |
-| ShowName   | 顯示發票開立類型                | string | "會員載具"                      |
-| ShowDemo   | 顯示備註                        | string | "(請於和運官網會員專區查詢)"    |
-| SubValue   | 捐贈碼、手機條碼、統一編號      | string | ""                              |
-| IsDef      | 是否預設(0:否 1:是)             |  int   | 1                               |
-
-* Output範例
-
-```
-{
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "HasBind":1,
-	    "CardNumber":"1234",
-	    "AutoStoreFlag":1,
-		"PayModeData":[
-			{
-				"PayMode": 0,
-				"PayModeName": "信用卡",
-				"IsDef": 0
-			}
-			,
-			{
-				"PayMode": 1,
-				"PayModeName": "錢包",
-				"IsDef": 1
-			}
-		],
-		"InvoiceData":[
-			{
-				"InvoiceMode": 1,
-				"ShowName": "捐贈",
-				"ShowDemo": "" ,
-				"SubValue": "9427",
-				"IsDef": 1,
-			},
-			{
-				"InvoiceMode": 2,
-				"ShowName": "會員載具",
-				"ShowDemo": "(請於和運官網會員專區查詢)" ,
-				"SubValue": "",
-				"IsDef": 1,
-			},
-			{
-				"InvoiceMode": 4,
-				"ShowName": "三聯",
-				"ShowDemo": "(請於和運官網會員專區查詢)" ,
-				"SubValue": "50885758",
-				"IsDef": 0,
-			},
-			{
-				"InvoiceMode": 5,
-				"ShowName": "手機條碼",
-				"ShowDemo": "" ,
-				"SubValue": "/WSQ3FRQ",
-				"IsDef": 0,
-			},
-			{
-				"InvoiceMode": 6,
-				"ShowName": "自然人憑證",
-				"ShowDemo": "" ,
-				"SubValue": "",
-				"IsDef": 0,
-			}
-		]
 	}
 }
 
