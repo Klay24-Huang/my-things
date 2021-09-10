@@ -143,6 +143,8 @@ iRentApi20 Web API版本
 
 20210910 補上錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
 
+20210910 電子錢包取得付款方式(GetPayInfo)增加輸出使用者目前已綁定的付費方式數量(PayModeBindCount)
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5968,6 +5970,7 @@ iRentApi20 Web API版本
 | 參數名稱           | 參數說明                           |  型態  | 範例          |
 | ------------------ | ---------------------------------- | :----: | ------------- |
 | DefPayMode         | 預設付款方式(0:信用卡 1:錢包)      | int    | 0             |
+| PayModeBindCount   | 已經綁定的付費方式數量             | int    | 1             |
 | PayModeList            | 付款方式清單                      | List | |
 
 * PayModeList 回傳參數說明
@@ -5995,6 +5998,7 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
 	"Data": {
         "DefPayMode": 0,
+        "PayModeBindCount":1,
         "PayModeList":
         [
             {
