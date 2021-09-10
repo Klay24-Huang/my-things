@@ -262,6 +262,7 @@
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
     <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
+    <Compile Include="Controllers\GetWalletStoredMoneySetController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
@@ -564,6 +565,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetSubsCNT.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetSubsHist.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetUpSubsList.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetWalletStoredMoneySet.cs" />
     <Compile Include="Models\Param\Input\IAPI_InvoiceSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_Login.cs" />
     <Compile Include="Models\Param\Input\IAPI_LoveCodeList.cs" />
@@ -693,6 +695,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUPDList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetUpSubsList.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetWalletStoredMoneySet.cs" />
     <Compile Include="Models\Param\Output\OAPI_LoveCodeList.cs" />
     <Compile Include="Models\Param\Output\OAPI_ManagerStationList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetMapMedal.cs" />
@@ -745,6 +748,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\GetWalletStoredMoneySet.cs" />
     <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\WalletService.cs" />
