@@ -20,7 +20,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -573,8 +572,6 @@ namespace WebAPI.Controllers
                 //}
                 #endregion
 
-                IDNO = "";
-
                 #region 取得會員積分
                 // 20210910 UPD BY YEH REASON:取得會員積分
                 if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
@@ -626,81 +623,78 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 產出月租&Project虛擬卡片
-                if (flag)
+                if (flag && Score >= 60)    // 20210910 UPD BY YEH REASON:積分>=60才可使用訂閱制
                 {
-                    if (Score >= 60)    // 20210910 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                    if (outputApi.GetProjectObj != null && outputApi.GetProjectObj.Count() > 0)
                     {
-                        if (outputApi.GetProjectObj != null && outputApi.GetProjectObj.Count() > 0)
+                        var VisProObjs = new List<GetProjectObj>();
+                        var ProObjs = outputApi.GetProjectObj;
+                        int copyCount = 0;
+                        if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
                         {
-                            var VisProObjs = new List<GetProjectObj>();
-                            var ProObjs = outputApi.GetProjectObj;
-                            int copyCount = 0;
-                            if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                            ProObjs.ForEach(x =>
                             {
-                                ProObjs.ForEach(x =>
+                                if (x.ProjectObj != null && x.ProjectObj.Count() > 0)
                                 {
-                                    if (x.ProjectObj != null && x.ProjectObj.Count() > 0)
+                                    var newGetProjObj = objUti.Clone(x);
+                                    newGetProjObj.ProjectObj = new List<ProjectObj>();
+                                    x.ProjectObj.ForEach(y =>
                                     {
-                                        var newGetProjObj = objUti.Clone(x);
-                                        newGetProjObj.ProjectObj = new List<ProjectObj>();
-                                        x.ProjectObj.ForEach(y =>
-                                        {
-                                            y.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
-                                            newGetProjObj.ProjectObj.Add(y);
+                                        y.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
+                                        newGetProjObj.ProjectObj.Add(y);
 
-                                            InUseMonth.ForEach(z =>
+                                        InUseMonth.ForEach(z =>
+                                        {
+                                            //只複製一次
+                                            if (copyCount > 0) return;
+                                            ProjectObj newItem = objUti.Clone(y);
+
+                                            #region 月租卡片欄位給值
+                                            //newItem.ProjName += "_" + z.MonProjNM;
+                                            //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                            newItem.ProjName = z.MonProjNM;
+                                            newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
+                                            newItem.CarHDHours = z.HolidayHours == 0 ? -999 : z.HolidayHours;
+                                            newItem.MotoTotalMins = z.MotoTotalMins;
+                                            newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
+                                            newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
+                                            newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                            newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                            newItem.MonthlyRentId = z.MonthlyRentId;
+                                            newItem.WDRateForCar = z.WorkDayRateForCar;
+                                            //newItem.HDRateForCar = z.HoildayRateForCar;
+                                            newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                            newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                            newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                            newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
+                                            var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
                                             {
-                                                //只複製一次
-                                                if (copyCount > 0) return;
-                                                ProjectObj newItem = objUti.Clone(y);
+                                                PriceBill = y.Price, //給預設
+                                                PROJID = y.ProjID,
+                                                CarType = y.CarType,
+                                                Price = y.WorkdayPerHour * 10,
+                                                PRICE_H = y.HolidayPerHour * 10,
+                                            };
+                                            newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                            #endregion
 
-                                                #region 月租卡片欄位給值
-                                                //newItem.ProjName += "_" + z.MonProjNM;
-                                                //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
-                                                newItem.ProjName = z.MonProjNM;
-                                                newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
-                                                newItem.CarHDHours = z.HolidayHours == 0 ? -999 : z.HolidayHours;
-                                                newItem.MotoTotalMins = z.MotoTotalMins;
-                                                newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
-                                                newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
-                                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
-                                                newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
-                                                newItem.MonthlyRentId = z.MonthlyRentId;
-                                                newItem.WDRateForCar = z.WorkDayRateForCar;
-                                                //newItem.HDRateForCar = z.HoildayRateForCar;
-                                                newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
-                                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
-                                                newItem.HDRateForMoto = z.HoildayRateForMoto;
-                                                newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
-                                                var fn_in = new SPOutput_GetStationCarTypeOfMutiStation()
-                                                {
-                                                    PriceBill = y.Price, //給預設
-                                                    PROJID = y.ProjID,
-                                                    CarType = y.CarType,
-                                                    Price = y.WorkdayPerHour * 10,
-                                                    PRICE_H = y.HolidayPerHour * 10,
-                                                };
-                                                newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
-                                                #endregion
+                                            newGetProjObj.ProjectObj.Add(newItem);
 
-                                                newGetProjObj.ProjectObj.Add(newItem);
-
-                                                copyCount++;
-                                            });
+                                            copyCount++;
                                         });
-                                        if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
-                                        {
-                                            //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
-                                            //newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
-                                            newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.Price).ThenByDescending(c => c.MonthlyRentId).ToList();
-                                            newGetProjObj.ProjectObj.First().IsMinimum = 1;
-                                            VisProObjs.Add(newGetProjObj);
-                                        }
+                                    });
+                                    if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
+                                    {
+                                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
+                                        //newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
+                                        newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.Price).ThenByDescending(c => c.MonthlyRentId).ToList();
+                                        newGetProjObj.ProjectObj.First().IsMinimum = 1;
+                                        VisProObjs.Add(newGetProjObj);
                                     }
-                                });
+                                }
+                            });
 
-                                outputApi.GetProjectObj = VisProObjs;
-                            }
+                            outputApi.GetProjectObj = VisProObjs;
                         }
                     }
                 }
