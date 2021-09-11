@@ -2,6 +2,23 @@
     ViewBag.Title = "InvitingStatus";
     @Styles.Render("~/Assets/css/TogetherPassenger.css")
     var chkType = ViewData["chkType"].ToString();
+    string name = "";
+    string phone = "";
+    if(TempData["MEMCNAME"].ToString().Length > 2)
+    {
+        name = TempData["MEMCNAME"].ToString().Remove(1, TempData["MEMCNAME"].ToString().Length - 2);
+        for(var i = 0; i < TempData["MEMCNAME"].ToString().Length -2; i++)
+        {
+            name = name.Insert(1, "O");
+        }
+    }
+    else
+    {
+        name = TempData["MEMCNAME"].ToString().Remove(1,1);
+        name = name.Insert(1, "O");
+    }
+
+    phone = TempData["MEMTEL"].ToString().Remove(4, 3).Insert(4, "***");
     //var chkType = "S";
 }
 
@@ -31,8 +48,8 @@
                     邀請人
                 </div>
                 <div class="col-12 py-3 inviter_content d-flex flex-column align-items-center">
-                    <p class="m-0" id="inviter_name">@TempData["MEMCNAME"]</p>
-                    <p id="inviter_phone">@TempData["MEMTEL"]</p>
+                    <p class="m-0" id="inviter_name">@name</p>
+                    <p id="inviter_phone">@phone</p>
 
                 </div>
             </div>
