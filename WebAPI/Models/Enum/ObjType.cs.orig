@@ -445,13 +445,9 @@ namespace WebAPI.Models.Enum
             /// </summary>
             GetMotorRent,
             /// <summary>
-            /// 個人推播讀取 20210904 ADD BY ADAM
+            /// 更新會員條款 20210810 ADD BY YEH
             /// </summary>
-            PersonNoticeRead,
-            /// <summary>
-            /// 活動通知讀取 20210907 ADD BY ADAM
-            /// </summary>
-            NewsRead,
+            SetMemberCMK,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -705,10 +701,6 @@ namespace WebAPI.Models.Enum
             /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
             /// </summary>
             BE_GetCarCurrentStatus,
-            /// <summary>
-            /// 獲取新北監管平台車輛資料 20210901 ADD BY FRANK
-            /// </summary>
-            GetCarMapData,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -723,7 +715,30 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
-            BE_BannerSort
+            /// <summary>
+            /// 共同承租人邀請清單查詢
+            /// </summary>
+            GetJointRentInviteeList,
+            /// <summary>
+            /// 共同承租人邀請清單維護
+            /// </summary>
+            JointRentInviteeModify,
+            /// <summary>
+            /// 共同承租人邀請檢核
+            /// </summary>
+            JointRentInviteeVerify,
+            /// <summary>
+            /// 共同承租人邀請
+            /// </summary>
+            JointRentInvitation,
+            /// <summary>
+            /// 共同承租人邀請回饋
+            /// </summary>
+            JointRentIviteeFeedBack,
+            /// <summary>
+            /// 訂單安心服務資格及價格查詢
+            /// </summary>
+            GetOrderInsuranceInfo
         }
         /// <summary>
         /// 取出SPName
@@ -851,7 +866,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
+                    SPName = "usp_OrderListQuery";  // 20210830 UPD BY YEH REASON:增加承租人類型
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
@@ -908,7 +923,11 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish_ForTest";    // 20210609 UPD BY YEH 強還積分測試，先指向測試SP
+<<<<<<< HEAD
+                    SPName = "usp_BE_ContactFinish";    // 20210812 UPD BY YEH REASON:SP已同步，指回原版本
+=======
+                    SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
+>>>>>>> SharingContract
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";
@@ -941,8 +960,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_GetStationCarTypeOfMutiStation";  // 20210611 UPD BY YEH REASON:SP已同步，指回原版本
                     break;
                 case SPType.GetMemberStatus:    //20201016 ADD BY ADAM REASON.增加會員狀態(登入後狀態)
-                    //SPName = "usp_GetMemberStatus";
-                    SPName = "usp_GetMemberStatus_ForTest";     // 20210708 UPD BY YEH REASON:阿舒要測試東西，先指向測試版本
+                    SPName = "usp_GetMemberStatus";
                     break;
                 case SPType.GetMemberData:      //20201022 ADD BY ADAM REASON.改寫為sp
                     SPName = "usp_GetMemberData";
@@ -1077,14 +1095,8 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
                     SPName = "usp_GetMotorRent";
                     break;
-                case SPType.GetCarMapData:  //取得新北監管平台車輛資料 20210901 ADD BY FRANK
-                    SPName = "usp_GetCarMapData";
-                    break;
-                case SPType.PersonNoticeRead:   //個人推播讀取 20210904 ADD BY ADAM
-                    SPName = "usp_PersonNoticeRead_I01";
-                    break;
-                case SPType.NewsRead:   //活動通知讀取 20210907 ADD BY ADAM 
-                    SPName = "usp_NewsRead_I01";
+                case SPType.SetMemberCMK:  // 更新會員條款 20210810 ADD BY YEH
+                    SPName = "usp_SetMemberCMK";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
@@ -1303,9 +1315,6 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
                     SPName = "usp_BE_GetCarCurrentStatus";
                     break;
-                case SPType.BE_BannerSort:       
-                    SPName = "usp_BE_BannerSort";
-                    break;
                 #endregion
                 #region 整備人員
                 case SPType.MA_CheckCarStatusByReturn:
@@ -1314,7 +1323,28 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_CancelCleanOrder:
                     SPName = "usp_BE_CancelCleanOrder";
                     break;
+                #endregion
+                #region 共同承租人
+                case SPType.GetJointRentInviteeList:
+                    SPName = "usp_JointRentInviteeList_Q01";
+                    break;
+                case SPType.JointRentInviteeModify:
+                    SPName = "usp_JointRentInviteeModify_U01";
+                    break;
+                case SPType.JointRentInviteeVerify:
+                    SPName = "usp_JointRentInviteeVerify_Q01";
+                    break;
+                case SPType.JointRentInvitation:
+                    SPName = "usp_JointRentInvitation_I01";
+                    break;
+                case SPType.JointRentIviteeFeedBack:
+                    SPName = "usp_JointRentIviteeFeedBack_U01";
+                    break;
+                case SPType.GetOrderInsuranceInfo:
+                    SPName = "usp_GetOrderInsuranceInfo";
+                    break;
                     #endregion
+
             }
             return SPName;
         }

@@ -14,6 +14,6 @@ namespace WebAPI.Models.Param.Input
         /// <para>0:一般訊息</para>
         /// <para>1:系統訊息</para>
         /// </summary>
-        public int? type { set; get; }
+        public int? type { set; get; } = 0;
     }
 }
