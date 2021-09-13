@@ -21,6 +21,7 @@ using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Prometheus;//20210707唐加prometheus
+using StackExchange.Redis;//20210913唐加redis
 
 namespace Web.Controllers
 {
@@ -33,13 +34,26 @@ namespace Web.Controllers
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
 
-        //唐加prometheus
-        private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail",
-            new CounterConfiguration
+        //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
+        private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        private static Lazy<ConnectionMultiplexer> lazyConnection;
+        public MemberManageController()
+        {
+            if (lazyConnection == null)
             {
-                // Here you specify only the names of the labels.
-                LabelNames = new[] { "method", "server" }
-            });
+                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+            }
+        }
+
+        //唐加prometheus，20210913改用Gauge
+        //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
+        //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail",
+        //    new CounterConfiguration
+        //    {
+        //        // Here you specify only the names of the labels.
+        //        LabelNames = new[] { "method", "server" }
+        //    });
+        private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
 
         #region 會員審核及明細
         /// <summary>
@@ -94,9 +108,10 @@ namespace Web.Controllers
             himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
                 , "AuditDetail");
 
-            //唐加prometheus
+            //唐加prometheus，20210913改呼叫SetAuditDetailCount透過redis計算後再給prometheus
             //EnterCounte.Inc();
-            EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();
+            //EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();//WEBSITE_INSTANCE_ID是抓azure主機的環境變數
+            SetAuditDetailCount();
 
             if (UserName != null && Session["Account"] != null)
             {
@@ -113,7 +128,6 @@ namespace Web.Controllers
                 int index = wsoutput.Data.ToList().FindIndex(delegate (WebAPIOutput_NPR172QueryData data)
                 {
                     return data.MEMIDNO == AuditIDNO;
-
                 });
                 if (index > -1)
                 {
@@ -169,7 +183,6 @@ namespace Web.Controllers
                     });
                 }
             }
-
 
             Data.SameMobile = new List<BE_SameMobileData>();
             Data.mobileBlock = "";//20210310唐加
@@ -1429,5 +1442,29 @@ namespace Web.Controllers
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #endregion
+
+        private void SetAuditDetailCount()
+        {
+            var value = 1;
+            try
+            {
+                ConnectionMultiplexer connection = lazyConnection.Value;
+                IDatabase cache = connection.GetDatabase();
+
+                var key = "Number of call AuditDetail";
+                var cacheString = cache.StringGet(key);
+                if (cacheString.HasValue)
+                {
+                    int.TryParse(cacheString.ToString(), out value);
+                    value++;
+                }
+                cache.StringSet(key, value);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            EnterCounte.Set(value); //宣告Guage才能用set
+        }
     }
 }

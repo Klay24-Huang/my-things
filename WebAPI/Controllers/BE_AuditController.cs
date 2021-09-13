@@ -17,6 +17,7 @@ using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 using Prometheus; //20210707唐加prometheus
+using StackExchange.Redis;//20210913唐加redis
 
 namespace WebAPI.Controllers
 {
@@ -26,12 +27,24 @@ namespace WebAPI.Controllers
     public class BE_AuditController : ApiController
     {
         //唐加prometheus
-        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BENSON_BE_AuditDetail", "the number of CALL BE_Audit",
-            new CounterConfiguration
+        //private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BENSON_BE_AuditDetail", "the number of CALL BE_Audit",
+        //    new CounterConfiguration
+        //    {
+        //        // Here you specify only the names of the labels.
+        //        LabelNames = new[] { "method","server" }
+        //    });
+        private static readonly Gauge ProcessedJobCount1 = Metrics.CreateGauge("BENSON_BE_AuditDetail", "the number of CALL BE_Audit");
+
+        //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
+        private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        private static Lazy<ConnectionMultiplexer> lazyConnection;
+        public BE_AuditController()
+        {
+            if (lazyConnection == null)
             {
-                // Here you specify only the names of the labels.
-                LabelNames = new[] { "method","server" }
-            });
+                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+            }
+        }
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -46,11 +59,12 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBE_Audit(Dictionary<string, object> value)
         {
             //ProcessedJobCount1.Inc();//唐加prometheus
+            SetAuditDetailCount();
 
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
-            ProcessedJobCount1.WithLabels(httpContext.Request.HttpMethod, "NO2").Inc();
+            //ProcessedJobCount1.WithLabels(httpContext.Request.HttpMethod, "NO2").Inc();
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -316,6 +330,30 @@ namespace WebAPI.Controllers
             string fileName = OldFileName.Replace(suff[OldType], suff[NewType]);
             bool flag = new AzureStorageHandle().RenameFromAzureStorage(fileName, OldFileName, credentialContainer);
             return fileName;
+        }
+
+        private void SetAuditDetailCount()
+        {
+            var value = 1;
+            try
+            {
+                ConnectionMultiplexer connection = lazyConnection.Value;
+                IDatabase cache = connection.GetDatabase();
+
+                var key = "the number of CALL BE_Audit";
+                var cacheString = cache.StringGet(key);
+                if (cacheString.HasValue)
+                {
+                    int.TryParse(cacheString.ToString(), out value);
+                    value++;
+                }
+                cache.StringSet(key, value);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            ProcessedJobCount1.Set(value); //宣告Guage才能用set
         }
     }
 }
