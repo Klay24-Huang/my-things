@@ -114,38 +114,19 @@ namespace WebAPI.Controllers
             #region TB
 
             #region Token
-
             //Token判斷
-            //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
-
             if (flag && isGuest == false)
             {
-                var token_in = new IBIZ_TokenCk
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                if (errCode == "ERR101")    //訪客機制BYPASS
                 {
-                    LogID = LogID,
-                    Access_Token = Access_Token
-                };
-                var token_re = cr_com.TokenCk(token_in);
-                if (token_re != null)
-                {
-                    IDNO = token_re.IDNO ?? "";
+                    flag = true;
+                    errCode = "000000";
                 }
             }
-
             #endregion
 
+            #region 取得機車使用中訂閱制月租
             //取得機車使用中訂閱制月租
             if (flag)
             {
@@ -164,6 +145,7 @@ namespace WebAPI.Controllers
                         InUseMonth = sp_list;
                 }
             }
+            #endregion
 
             if (flag)
             {
@@ -281,7 +263,6 @@ namespace WebAPI.Controllers
                 };
 
                 #region 產出月租&Project虛擬卡片 
-
                 if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
                 {
                     var VisProObjs = new List<MotorProjectObj>();
@@ -329,7 +310,6 @@ namespace WebAPI.Controllers
 
                     }
                 }
-
                 #endregion
             }
             #endregion
