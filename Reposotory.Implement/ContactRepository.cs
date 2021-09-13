@@ -942,7 +942,9 @@ namespace Reposotory.Implement
             BE_OrderDetailData obj = null;
 
             int nowCount = 0;
-            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //20210902 ADD BY ADAM REASON.資安政策有調整view導致沒辦法顯示合約，先修正
+            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail_Contact WITH(NOLOCK)  ";
 
 
             SqlParameter[] para = new SqlParameter[10];
@@ -962,7 +964,7 @@ namespace Reposotory.Implement
             if (IDNO != "")
             {
                 term += (term == "") ? "" : " AND ";
-                term += " IDNO=@IDNO";
+                term += " (IDNO=@IDNO OR CAST(MEMRFNBR AS VARCHAR)=@IDNO)";      //20210902 ADD BY ADAM REASON.暫時解決出租單列印問題
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,10);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;

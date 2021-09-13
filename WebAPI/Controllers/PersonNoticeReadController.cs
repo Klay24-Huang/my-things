@@ -19,13 +19,13 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 活動通知
+    /// 個人訊息已讀
     /// </summary>
-    public class NewsController : ApiController
+    public class PersonNoticeReadController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> DoNews(Dictionary<string, object> value)
+        public Dictionary<string, object> DoPersonNoticeRead(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -36,11 +36,11 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "NewsController";
+            string funName = "PersonNoticeReadController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_GetNews apiInput = null;
-            OAPI_GetNews outputApi = null;
+            IAPI_PersonNoticeRead apiInput = null;
+            NullOutput outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -48,16 +48,26 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             #endregion
+
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetNews>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_PersonNoticeRead>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                Contentjson = "Not Input";
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+                //類型判斷
+                if (flag)
+                {
+                    if (apiInput.NotificationID == 0)
+                    {
+                        flag = false;
+                        errCode = "ERR900";
+                    }
+                }
             }
             //不開放訪客
             if (flag)
@@ -92,28 +102,24 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                SPInput_GetNews spInput = new SPInput_GetNews()
+                SPInput_PersonNotificationRead_I01 spInput = new SPInput_PersonNotificationRead_I01()
                 {
                     IDNO = IDNO,
-                    Token = Access_Token,
+                    NotificationID = (Int64)apiInput.NotificationID,
                     LogID = LogID
                 };
-                List<NewsObj> lstOut = new List<NewsObj>();
-                //string spName = new ObjType().GetSPName(ObjType.SPType.News);
-                string spName = "usp_GetNews";
+                string spName = new ObjType().GetSPName(ObjType.SPType.PersonNoticeRead);
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_GetNews, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetNews, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_PersonNotificationRead_I01, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_PersonNotificationRead_I01, SPOutput_Base>(connetStr);
                 DataSet ds = new DataSet();
-                flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-                if (flag)
-                {
-                    outputApi = new OAPI_GetNews();
-                    outputApi.NewsObj = new List<NewsObj>();
-                    outputApi.NewsObj = lstOut;
-                }
+                
             }
+
             #endregion
+
+
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {

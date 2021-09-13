@@ -8,6 +8,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class GetNotification
     {
         /// <summary>
+        /// 個人推播流水號
+        /// </summary>
+        public Int64 NotificationID { get; set; }
+        /// <summary>
         /// 推播時間
         /// </summary>
         public DateTime PushTime { get; set; }
@@ -25,6 +29,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 連結URL
         /// </summary>
-        public string url { get; set; }
+        public string URL { get; set; }
+        /// <summary>
+        /// 未讀0 / 已讀1 
+        /// </summary>
+        public int readFlg { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Web.Controllers
 {
     public class NewsController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         // GET: News
         public ActionResult Index()
         {
@@ -41,23 +41,21 @@ namespace Web.Controllers
             return View(lstNews);
         }
 
-
-
-
-
         //20210315唐加banner設定
         public ActionResult BannerSet()
         {
             return View();
         }
         [HttpPost]
-        public ActionResult BannerSet(string Banner)
+        public ActionResult BannerSet(string Banner, string Status, string Order)
         {
             ViewData["Banner"] = Banner;
+            ViewData["Status"] = Status;
+            ViewData["Order"] = Order;
             //ViewData["Name"] = Banner;
             List<BE_GetBannerInfo> lstData = null;
             NewsRepository repository = new NewsRepository(connetStr);
-            lstData = repository.GetBannerInfo(Banner);
+            lstData = repository.GetBannerInfo(Banner,Order,Status);
             return View(lstData);
         }
         public ActionResult BannerInfoAdd()

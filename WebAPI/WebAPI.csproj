@@ -188,6 +188,7 @@
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
     <Compile Include="Controllers\BE_AutoPayMoneyController.cs" />
     <Compile Include="Controllers\BE_BannerController.cs" />
+    <Compile Include="Controllers\BE_BannerSortController.cs" />
     <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
+    <Compile Include="Controllers\GetCarMapDataController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
@@ -269,6 +271,8 @@
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
     <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
+    <Compile Include="Controllers\NewsReadController.cs" />
+    <Compile Include="Controllers\PersonNoticeReadController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -430,6 +434,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_AutoPayMoney.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Banner.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BannerSort.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />
@@ -494,6 +499,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_GetCarMapData.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />
@@ -585,11 +591,13 @@
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_NewsRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoor.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
+    <Compile Include="Models\Param\Input\IAPI_PersonNoticeRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />

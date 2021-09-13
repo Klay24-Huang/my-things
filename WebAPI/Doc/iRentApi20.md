@@ -87,6 +87,21 @@ iRentApi20 Web API版本
 - [JointRentInvitation 案件共同承租人邀請](#JointRentInvitation)
 - [JointRentInviteeModify 案件共同承租人邀請狀態維護](#JointRentInviteeModify)
 - [JointRentIviteeFeedBack 案件共同承租人回應邀請](#JointRentIviteeFeedBack)
+電子錢包相關
+- [CreditAndWalletQuery 查詢綁卡跟錢包](#CreditAndWalletQuery)
+- [WalletStoreTradeTransHistory 錢包歷史紀錄查詢](#WalletStoreTradeTransHistory)
+- [WalletStoreTradeHistoryHidden 錢包歷程-儲值交易紀錄隱藏](#WalletStoreTradeHistoryHidden)
+- [GetWalletStoredMoneySet 錢包儲值-設定資訊](#GetWalletStoredMoneySet)
+- [WalletStoredMoney 錢包儲值-信用卡](#WalletStoredMoney)
+- [WalletStoreVisualAccount 錢包儲值-虛擬帳號](#WalletStoreVisualAccount)
+- [WalletStoreShop 錢包儲值-商店條碼](#WalletStoreShop)
+- [GetPayInfoReturnCar 還車付款-取得付款方式](#GetPayInfoReturnCar)
+- [DoPayReturnCar 還車付款-執行付款方式](#DoPayReturnCar)
+- [ChoseCheckoutModeShow 付款方式設定-顯示](#ChoseCheckoutModeShow)
+- [GetPayInfoArrears 欠費繳交-付款方式-顯示](#GetPayInfoArrears)
+- [DoPayArrears 欠費繳交-執行](#GetPayInfoArrears)
+- [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
+
 ----------
 # 修改歷程
 
@@ -136,7 +151,7 @@ iRentApi20 Web API版本
 
 20210708 新增電子柵欄API
 
-<<<<<<< HEAD
+20210819 新增電子錢包相關API
 20210811 新增設定密碼(Register_Step2)
 
 20210812 新增設定會員資料(RegisterMemberData)、取得會員狀態(GetMemberStatus)增加欄位
@@ -6531,3 +6546,1125 @@ iRentApi20 Web API版本
 | ERR927   | 非邀請中的合約無法進行操作       |
 | ERR929   | 共同承租回應邀請更新失敗         |
 | ERR931   | 不能回應邀請，請確認會員狀態哦！ |
+
+# 電子錢包相關
+
+## CreditAndWalletQuery
+
+### [/api/CreditAndWalletQuery/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態    | 範例             |
+| --------- | ---------- | :--: | :----:   | ---------------- |
+
+* input範例
+
+```
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明            |  型態  | 範例          |
+| ------------ | ------------------  | :----: | ------------- |
+| HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 1             |
+| TotalAmount  | 錢包剩餘金額        | int    | 20000         |
+| BindListObj  | 綁卡列表            | List   |               |
+
+* BindListObj 回傳參數說明
+
+| 參數名稱         | 參數說明                            | 型態   | 範例          |
+| ---------------- | ----------------------------------  | :----: | ------------- |
+| BankNo           | 銀行帳號                            | string | 待確認        |
+| CardNumber       | 信用卡卡號                          | string | 待確認        |
+| CardName         | 信用卡自訂名稱                      | string | 待確認        |
+| AvailableAmount  | 剩餘額度                            | string | 待確認        |
+| CardToken        | 替代性信用卡卡號或替代表銀行卡號    | string | 待確認        |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+		"HasBind": 1,
+		"BindListObj": [
+		  {
+		    "BankNo": "待確認",
+			"CardNumber": "待確認",
+			"CardName": "待確認待確認",
+			"AvailableAmount": "50000",
+			"CardToken": "待確認"
+		  }
+		],
+		"SEQNO": 9,
+		"HasWallet": 1,
+		"TotalAmount": 20000	
+    }
+}
+```
+
+----
+
+## WalletStoreTradeTransHistory
+
+### [/api/WalletStoreTradeTransHistory/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態    | 範例             |
+| --------- | ---------- | :--: | :----:   | ---------------- |
+| SD        | 查詢起日   |  Y   | DateTime | 2021-08-01 00:00 |
+| ED        | 查詢迄日   |  Y   | DateTime | 2021-08-30 00:00 |
+
+* input範例
+
+```
+{
+    "SD":"2021-08-01 00:00",
+    "ED":"2021-08-30 00:00"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+| Data-TradeHis| 錢包歷史紀錄       |  List  |               |
+
+* Data-TradeHis 回傳參數說明
+
+| 參數名稱    | 參數說明           |  型態  | 範例          |
+| ----------- | ------------------ | :----: | ------------- |
+| ORGID       | 組織代號(公司代碼) | string | 01            |
+| IDNO        | 身分證號           | string | A123456789    |
+| SEQNO       | 帳款流水號         |  int   | 1             |
+| F_INFNO     | 上游批號           | string | TaishinNo09   |
+| TradeYear   | 交易年分           |  int   | 2021          |
+| TradeDate   | 交易日期           | string | 08/17         |
+| TradeTime   | 交易時間           | string | 20:05         |
+| TradeTypeNm | 交易類別           | string | 錢包提領      |
+| TradeNote   | 交易類別註記       | string | 電子錢包提領  |
+| TradeAMT    | 交易金額           |  int   | 1000          |
+| ShowFLG     | APP上是否顯示      |  int   | 0:隱藏,1:顯示 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "TradeHis": [
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 9,
+                "F_INFNO": "TaishinNo09",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "20:05",
+                "TradeTypeNm": "錢包提領",
+                "TradeNote": "電子錢包提領",
+                "TradeAMT": -6000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 8,
+                "F_INFNO": "TaishinNo10",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "H11216402",
+                "TradeAMT": -800,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 7,
+                "F_INFNO": "TaishinNo08",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "訂閱制",
+                "TradeAMT": -2999,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 6,
+                "F_INFNO": "TaishinNo06",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "轉贈",
+                "TradeNote": "轉贈人 陳O安",
+                "TradeAMT": 2000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 5,
+                "F_INFNO": "TaishinNo05",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "合約退款",
+                "TradeNote": "合約退款",
+                "TradeAMT": 500,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 4,
+                "F_INFNO": "TaishinNo04",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包加值(虛擬帳號轉帳)",
+                "TradeNote": "虛擬帳號轉帳",
+                "TradeAMT": 3000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 3,
+                "F_INFNO": "TaishinNo03",
+                "TradeYear": 2021,
+                "TradeDate": "08/17",
+                "TradeTime": "00:05",
+                "TradeTypeNm": "錢包加值(超商繳款)",
+                "TradeNote": "超商繳款",
+                "TradeAMT": 8000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 2,
+                "F_INFNO": "TaishinNO01",
+                "TradeYear": 2021,
+                "TradeDate": "08/13",
+                "TradeTime": "00:00",
+                "TradeTypeNm": "錢包付款",
+                "TradeNote": "H11845561",
+                "TradeAMT": -1000,
+                "ShowFLG": 1
+            },
+            {
+                "ORGID": "01",
+                "IDNO": "A123456789",
+                "SEQNO": 1,
+                "F_INFNO": "TaishinNo02",
+                "TradeYear": 2021,
+                "TradeDate": "08/13",
+                "TradeTime": "00:00",
+                "TradeTypeNm": "錢包加值(網路刷卡)",
+                "TradeNote": "信用卡*6906",
+                "TradeAMT": 30000,
+                "ShowFLG": 1
+            }
+        ]
+    }
+}
+```
+
+----
+
+## WalletStoreTradeHistoryHidden
+
+### [/api/WalletStoreTradeHistoryHidden/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明            | 必要 |  型態    | 範例          |
+| --------- | ------------------- |      | :--:     | ------------- | 
+| ORGID     | 組織代號(公司代碼)  |      | string   | 0             |
+| SEQNO     | 帳款流水號(by會員)  |      | int      | 1             |
+| F_INFNO   | 財務-上游批號(IR編) |      | string   | TaishinNO01   |
+
+
+* input範例
+
+```
+{
+  "ORGID" : "01",
+  "SEQNO" : 1,
+  "F_INFNO" : "TaishinNO01"
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {}
+}
+```
+
+----
+
+## GetWalletStoredMoneySet
+
+### [/api/GetWalletStoredMoneySet/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明                              | 必要 |  型態    | 範例          |
+| --------- | ------------------------------------  |      | :--:     | ------------- | 
+| StoreType | 儲值方式(1信用卡,2虛擬帳號,3超商繳費) |      | int      | 1             |
+
+* input範例
+
+```
+{
+  "StoreType" : 01
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+| Data-StoredMoneySet | 儲值設定資訊       |  List  |               |
+
+* Data-StoredMoneySet 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例          |
+| --------------- | ------------------------------------- |  :----:   | ------------- |
+| StoreType       | 儲值方式(1信用卡,2虛擬帳號,3超商繳費) | int       | 100           |
+| StoreTypeDetail | 明細方式(全家:family,7-11:seven)      | string    | family           |
+| WalletBalance   | 錢包餘額        　                    | int       | 100           |
+| Rechargeable    | 尚可儲值         　                   | int       | 49900         |
+| StoreLimit      | 單次儲值最低                          | int       | 50000         |
+| StoreMax        | 單次儲值最高                          | int       | 100           |
+| QuickBtns       | 快速按鈕                              | List<int> |               |
+| defSet          | 預設選取(1是0否)                      | int       |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   {
+	     "StoreType":3,
+		 "StoreTypeDetail": "family",
+	     "WalletBalance": 100,
+		 "Rechargeable": 49900,
+		 "StoreMax": 50000,
+		 "QuickBtns": [100,1000,5000],
+		 "defSet": 1
+	   },
+	   {
+	     "StoreType":3,
+		 "StoreTypeDetail": "seven",
+	     "WalletBalance": 1000,
+		 "Rechargeable": 19000,
+		 "StoreMax": 20000,
+		 "QuickBtns": [100,500,1000],
+		 "defSet": 0
+	   },	   
+	}
+}
+```
+
+----
+
+## WalletStoredMoney
+
+### [/api/WalletStoredMoney/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
+| ---------- | ------------------------------------  |      | :--:     | ------ | 
+| StoreMoney | 儲值金額                              |      | int      | 100    |
+
+* input範例
+
+```
+{
+  "StoreMoney" : 100
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data-StoredMoneySet 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例             |
+| --------------- | ------------------------------------- |  :----:   | ---------------- |
+| StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                |
+| StoreMoney      | 儲值金額        　                    | int       | 100              |
+| WalletBalance   | 錢包餘額         　                   | int       | 100              |
+| Rechargeable    | 尚可儲值                              | int       | 49900            |
+| StoreTime       | 儲值時間                              | string    | 2020/03/31 11:24 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   {
+	     "StroeResult": 1,
+	     "StoreMoney": 100,
+		 "WalletBalance": 100,
+		 "Rechargeable": 49900,
+		 "StoreTime": '2020/03/31 11:24'
+	   }
+	}
+}
+
+```
+
+----
+
+## WalletStoreVisualAccount
+
+### [/api/WalletStoreVisualAccount/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
+| ---------- | ------------------------------------  |      | :--:     | ------ | 
+| StoreMoney | 儲值金額                              |      | int      | 100    |
+
+* input範例
+
+```
+{
+  "StoreMoney" : 100
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data-StoredMoneySet 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例             |
+| --------------- | ------------------------------------- |  :----:   | ---------------- |
+| StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                |
+| StoreMoney      | 儲值金額        　                    | int       | 100              |
+| WalletBalance   | 錢包餘額         　                   | int       | 100              |
+| Rechargeable    | 尚可儲值                              | int       | 49900            |
+| PayDeadline     | 繳費期限                              | string    | 2021/03/31 23:19 |
+| VirtualAccount  | 轉入虛擬帳號    　                    | string    | (812)1234567812345678 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   {
+	     "StroeResult": 1,
+	     "StoreMoney": 100,
+		 "WalletBalance": 100,
+		 "Rechargeable" : 49900,
+         "PayDeadline": "2021/03/31 23:19",
+         "VirtualAccount": "(812)1234567812345678"
+	   }
+	}
+}
+
+```
+
+----
+
+## WalletStoreShop
+
+### [/api/WalletStoreShop/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
+| ---------- | ------------------------------------  |      | :--:     | ------ | 
+| StoreMoney | 儲值金額                              |      | int      | 100    |
+
+* input範例
+
+```
+{
+  "StoreMoney" : 100
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data-StoredMoneySet 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                     |
+| StoreMoney      | 儲值金額        　                    | int       | 100                   |
+| WalletBalance   | 錢包餘額         　                   | int       | 100                   |
+| Rechargeable    | 尚可儲值                              | int       | 49900                 |
+| PayWithinHours  | 幾小時內繳費                          | int       | 3              |
+| PayDeadline     | 繳費期限                              | string    | 02:59:59              |
+| ShopBarCode1    | 超商條碼1    　                       | string    | 1003908SJ             |
+| ShopBarCode2    | 超商條碼2    　                       | string    | 20944SE031003908SUEPJ |
+| ShopBarCode3    | 超商條碼3    　                       | string    | 10023984HPDJ3908SJ    |
+| BarCodeUrl | 條碼圖片網址 | string | https://xxx |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   {
+	     "StroeResult": 1,
+	     "StoreMoney": 100,
+		 "WalletBalance": 100,
+		 "Rechargeable" : 49900,
+		 "PayWithinHours" : 3,
+         "PayDeadline" : "02:59:59",
+		 "ShopBarCode1" : "1003908SJ",
+		 "ShopBarCode2" : "20944SE031003908SUEPJ",
+		 "ShopBarCode3" : "10023984HPDJ3908SJ",
+		 "BarCodeUrl": "https://xxx"
+	   }
+	}
+}
+
+```
+
+----
+
+## GetPayInfoReturnCar
+
+### [/api/GetPayInfoReturnCar/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明        | 必要 |  型態    | 範例   |
+| -------------------- | --------------- |      | :--:     | ------ | 
+
+* Output回傳參數說明
+
+| 參數名稱           | 參數說明           |  型態  | 範例          |
+| ------------------ | ------------------ | :----: | ------------- |
+| Result             | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode          | 錯誤碼             | string | 000000        |
+| NeedRelogin        | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade        | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage       | 錯誤訊息           | string | Success       |
+| Data               | 資料物件           |        |               |
+| Data-CheckoutModes | 付款方式           |  List  |               |
+
+* Data-CheckoutModes回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| CheckoutMode    | 付款方式(1信用卡,2錢包)               | int       | 1                     |
+| CheckoutNM      | 付款方式名稱        　                | string    | 卡號,錢包全額支付...  |
+| CheckoutNote    | 付款方式備註        　                | int       | 餘額 $50元            |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   "CheckoutModes":[
+           {
+             "CheckoutMode": 2,
+             "CheckoutNM": "錢包全額支付",
+             "CheckoutNote": "餘額 $6,350"
+           }
+	   ]
+	}
+}
+
+```
+
+----
+
+## DoPayReturnCar
+
+### [/api/DoPayReturnCar/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
+| -------------------- | ------------------------ |      | :--:     | ------ | 
+|  TradeAMT            |  付款金額                |  Y   |   int    |        |
+|  CheckoutMode        |  付款方式(1信用卡,2錢包) |  Y   |   int    |        |
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱       | 參數說明              | 型態 | 範例 |
+| -------------- | --------------------- | :--: | ---- |
+| CheckoutResult | 付款結果 (1成功0失敗) | int  | 1    |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "CheckoutResult":1
+	}
+}
+
+```
+
+----
+
+## ChoseCheckoutModeShow
+
+### [/api/ChoseCheckoutModeShow/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
+| -------------------- | ------------------------ |      | :--:     | ------ | 
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+| Data-CheckoutModes  | 付款方式列表       | List   |               |
+
+
+* Data - CheckoutModes 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| CheckoutMode    | 付款方式(1信用卡,2錢包)               |   int     | 1                     |
+| CheckoutNM      | 付款名稱(1和雲錢包,信用卡)            |   string  | 和雲錢包              |
+| CheckoutNote    | 付款說明                              |   string  | 餘額不足              |
+| IsDef           | 是否預設選取                          |   int     | 1                     |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "CheckoutModes":[
+	    {
+	      "CheckoutMode": 1,
+	      "CheckoutNM": "未綁定信用卡",
+		  "CheckoutNote": "請於支付設定中綁定",
+		  "IsDef":0
+	    },	
+	    {
+	      "CheckoutMode": 2,
+	      "CheckoutNM": "和雲錢包",
+		  "CheckoutNote": "餘額不足",
+		  "IsDef":1
+	    }		
+	  ]
+	}
+}
+
+```
+
+----
+
+## GetPayInfoArrears
+
+### [/api/GetPayInfoReturnCar/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明        | 必要 |  型態    | 範例   |
+| -------------------- | --------------- |      | :--:     | ------ | 
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data-CheckoutMode回傳參數說明
+
+| 參數名稱     | 參數說明                |  型態  | 範例                         |
+| ------------ | ----------------------- | :----: | ---------------------------- |
+| CheckoutMode | 付款方式(1信用卡,2錢包) |  int   | 1                            |
+| CheckoutNM   | 付款方式名稱            | string | 錢包餘額不足,錢包全額支付... |
+| CheckoutNote | 付款方式備註            |  int   | 餘額 $6,350元                |
+| IsDef        | 預設選取(1是0否)        |  int   | 1                            |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	   "CheckoutMode":[	   
+           {
+             "CheckoutMode": 1,
+             "CheckoutNM": "*1234",
+             "CheckoutNote": "餘額 $6,350",
+             "IsDef":0
+           },	   
+           {
+             "CheckoutMode": 2,
+             "CheckoutNM": "錢包餘額不足",
+             "CheckoutNote": "餘額 $6,350",
+             "IsDef":1
+           }	   
+	   ]
+	}
+}
+
+```
+
+----
+
+## DoPayArrears
+
+### [/api/DoPayArrears/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
+| -------------------- | ------------------------ |      | :--:     | ------ | 
+|  TradeAMT            |  付款金額                |  Y   |   int    |        |
+|  CheckoutMode        |  付款方式(1信用卡,2錢包) |  Y   |   int    |        |
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| PayResult       | 付款結果 (1成功0失敗)                 |   int     | 1                     |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "PayResult":1
+	}
+}
+
+```
+
+----
+
+## WalletTransferStoredValue
+
+### [/api/WalletTransferStoredValue/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
+| ---------- | ---------------- | ---- | :----: | ---------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789 |
+| Amount     | 轉贈金額         | Y    |  int   | 1000       |
+
+* input範例
+
+```
+{
+  "IDNO_Phone" : "A123456789", 
+  "Amount" : 1000
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| TranResult | 轉贈結果 (1成功0失敗) |  int   | 1          |
+| Name_Phone | 名稱或電話號碼        | string | A123456789 |
+| Amount     | 轉贈金額              |  int   | 1000       |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "TranResult":1,
+	    "Name_Phone":"A123456789",
+	    "Amount":1000
+	}
+}
+
+```

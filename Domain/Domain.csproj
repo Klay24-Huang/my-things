@@ -55,6 +55,7 @@
     <Compile Include="SP\BE\Input\SPInput_Banner.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_Audit.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_AuditImage.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_BannerSort.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BeforeBookingStart.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingCancel.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_BookingControlSuccess.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_UPDUserGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_UPD_CardNo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_HandleHiEasyRentRetry.cs" />
+    <Compile Include="SP\BE\Input\SPInput_GetCarMapData.cs" />
     <Compile Include="SP\BE\Input\SPInput_HandleStation.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_LandControlSuccess.cs" />
     <Compile Include="SP\BE\Input\SPInupt_Login.cs" />
@@ -216,6 +218,8 @@
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTransferStoreValueLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
+    <Compile Include="SP\Input\Other\SPInput_NewsRead_I01.cs" />
+    <Compile Include="SP\Input\Other\SPInput_PersonNotificationRead_I01.cs" />
     <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
@@ -489,6 +493,7 @@
     <Compile Include="TB\BackEnd\BE_StationDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_UserGroup.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSettingData.cs" />
+    <Compile Include="TB\BackEnd\CarMapData.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
     <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BannerData.cs" />

@@ -26,7 +26,12 @@ namespace WebAPI.Controllers
     public class BE_AuditController : ApiController
     {
         //唐加prometheus
-        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BENSON_BE_AuditDetail", "the number of CALL BE_Audit");
+        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BENSON_BE_AuditDetail", "the number of CALL BE_Audit",
+            new CounterConfiguration
+            {
+                // Here you specify only the names of the labels.
+                LabelNames = new[] { "method","server" }
+            });
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -40,10 +45,12 @@ namespace WebAPI.Controllers
         [HttpPost]
         public Dictionary<string, object> DoBE_Audit(Dictionary<string, object> value)
         {
-            ProcessedJobCount1.Inc();//唐加prometheus
+            //ProcessedJobCount1.Inc();//唐加prometheus
+
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
             //string[] headers=httpContext.Request.Headers.AllKeys;
+            ProcessedJobCount1.WithLabels(httpContext.Request.HttpMethod, "NO2").Inc();
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出

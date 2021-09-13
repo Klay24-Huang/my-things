@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.TB.BackEnd
 {
-    public class BE_CarCurrentStatus
+    public class CarMapData
     {
-        public string CarNo { get; set; }
+        public string CARNO { get; set; }
         public string CID { get; set; }
         public string nowStationID { get; set; }
         public string GPSTime { get; set; }
@@ -17,7 +17,9 @@ namespace Domain.TB.BackEnd
         public string Available { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
-        public string CarOfArea { get; set; }
+        public string AREA { get; set; }
         public string Memo { get; set; }
+        public string device3TBA { get; set; }
+        public string isMotor { get; set; }
     }
 }

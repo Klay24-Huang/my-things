@@ -568,6 +568,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
     <Build Include="dbo\Tables\TB_TogetherPassenger.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentInviteeModify_U01.sql" />
+    <Build Include="dbo\Tables\TB_PersonNotificationRLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_PersonNoticeRead_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentInviteeList_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentInviteeVerify_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentInvitation_I01.sql" />

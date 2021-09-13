@@ -8,6 +8,6 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_GetNews
     {
-        public List<NewsObj> NewObj { set; get; }
+        public List<NewsObj> NewsObj { set; get; }
     }
 }
