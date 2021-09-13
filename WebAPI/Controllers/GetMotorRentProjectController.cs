@@ -1,10 +1,8 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Project;
 using Domain.SP.Input.Subscription;
-using Domain.SP.Output.Subscription;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
+using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Reposotory.Implement;
@@ -16,7 +14,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -59,6 +56,7 @@ namespace WebAPI.Controllers
             DateTime EDate = DateTime.Now.AddHours(1);
             string IDNO = "";
             var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
+            var Score = 100;  // 20210913 UPD BY YEH REASON:會員積分，預設100
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -112,7 +110,6 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-
             #region Token
             //Token判斷
             if (flag && isGuest == false)
@@ -147,12 +144,62 @@ namespace WebAPI.Controllers
             }
             #endregion
 
+            #region 取得會員積分
+            // 20210913 UPD BY YEH REASON:取得會員積分
+            if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
+            {
+                string spName = "usp_GetMemberScore_Q1";
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            1,
+                            10,
+                            LogID
+                        }
+                    };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (ds1.Tables.Count != 3)
+                {
+                    if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                }
+                else
+                {
+                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            Score = 0;
+                    }
+                }
+            }
+            #endregion
+
             if (flag)
             {
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
 
                 // 20210617 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetMotorRentProject);
+                string SPName = "usp_GetMotorRentProject";
                 SPInput_GetMotorRentProject SPInput = new SPInput_GetMotorRentProject
                 {
                     IDNO = IDNO,
@@ -242,6 +289,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                #region for春節專案使用
                 //for春節專案使用，將原專案每日上限改為春節上限，並將春節專案移除
                 var Temp = lstTmpData.Where(x => x.ProjID == "R140").FirstOrDefault();
                 if (Temp != null)
@@ -256,58 +304,62 @@ namespace WebAPI.Controllers
 
                     lstTmpData.Remove(Temp);
                 }
+                #endregion
 
                 outputApi = new OAPI_GetMotorProject()
                 {
                     GetMotorProjectObj = lstTmpData
                 };
 
-                #region 產出月租&Project虛擬卡片 
-                if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
+                #region 產出月租&Project虛擬卡片
+                if (flag && Score >= 60)    // 20210913 UPD BY YEH REASON:積分>=60才可使用訂閱制
                 {
-                    var VisProObjs = new List<MotorProjectObj>();
-                    var ProObjs = outputApi.GetMotorProjectObj;
-                    if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                    if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
                     {
-                        ProObjs.ForEach(x => {
-                            x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
-                            VisProObjs.Add(x);
-                            InUseMonth.ForEach(z =>
+                        var VisProObjs = new List<MotorProjectObj>();
+                        var ProObjs = outputApi.GetMotorProjectObj;
+                        if (InUseMonth != null && InUseMonth.Count() > 0 && ProObjs != null && ProObjs.Count() > 0)
+                        {
+                            ProObjs.ForEach(x =>
                             {
-                                MotorProjectObj newItem = objUti.Clone(x);
+                                x.IsMinimum = 0;    //20210620 ADD BY ADAM REASON.先恢復為0
+                                VisProObjs.Add(x);
+                                InUseMonth.ForEach(z =>
+                                {
+                                    MotorProjectObj newItem = objUti.Clone(x);
 
-                                #region 月租卡片欄位給值
-                                //newItem.ProjName += "_" + z.MonProjNM;
-                                //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
-                                newItem.ProjName = z.MonProjNM;
-                                newItem.MotoTotalMins = z.MotoTotalMins;
-                                
-                                //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
-                                //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
-                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
-                                newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
-                                DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
-                                newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
+                                    #region 月租卡片欄位給值
+                                    //newItem.ProjName += "_" + z.MonProjNM;
+                                    //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
+                                    newItem.ProjName = z.MonProjNM;
+                                    newItem.MotoTotalMins = z.MotoTotalMins;
 
-                                newItem.MonthlyRentId = z.MonthlyRentId;
-                                newItem.WDRateForMoto = z.WorkDayRateForMoto;
-                                newItem.HDRateForMoto = z.HoildayRateForMoto;
+                                    //newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
+                                    //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                    //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                    newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd HH:mm");
+                                    DateTime EndDate = z.StartDate.AddDays(30 * z.MonProPeriod);
+                                    newItem.MonthEndDate = EndDate.ToString("HHmm") == "0000" ? EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : EndDate.ToString("yyyy/MM/dd HH:mm");
 
-                                //同步欄位，為了後續比對大小用
-                                newItem.PerMinutesPrice = (float)z.HoildayRateForMoto;    //20210620 ADD BY ADAM REASON.目前機車不分平假日，先用假日去判斷
-                                //20210715 ADD BY ADAM REASON.補上說明欄位
-                                newItem.ProDesc = z.MonProDisc;
-                                #endregion
+                                    newItem.MonthlyRentId = z.MonthlyRentId;
+                                    newItem.WDRateForMoto = z.WorkDayRateForMoto;
+                                    newItem.HDRateForMoto = z.HoildayRateForMoto;
 
-                                VisProObjs.Add(newItem);
+                                    //同步欄位，為了後續比對大小用
+                                    newItem.PerMinutesPrice = (float)z.HoildayRateForMoto;    //20210620 ADD BY ADAM REASON.目前機車不分平假日，先用假日去判斷
+                                                                                              //20210715 ADD BY ADAM REASON.補上說明欄位
+                                    newItem.ProDesc = z.MonProDisc;
+                                    #endregion
+
+                                    VisProObjs.Add(newItem);
+                                });
                             });
-                        });
 
-                        //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimum
-                        VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p=>p.MonthlyRentId).First().IsMinimum = 1;
-                        VisProObjs = VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p => p.MonthlyRentId).ToList();
-                        outputApi.GetMotorProjectObj = VisProObjs;
-
+                            //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimum
+                            VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p => p.MonthlyRentId).First().IsMinimum = 1;
+                            VisProObjs = VisProObjs.OrderBy(p => p.PerMinutesPrice).ThenByDescending(p => p.MonthlyRentId).ToList();
+                            outputApi.GetMotorProjectObj = VisProObjs;
+                        }
                     }
                 }
                 #endregion
