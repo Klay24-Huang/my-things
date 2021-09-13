@@ -238,6 +238,56 @@ namespace WebAPI.Controllers
             }
             #endregion
 
+            #region 取得會員積分
+            // 20210910 UPD BY YEH REASON:取得會員積分
+            if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
+            {
+                string spName = "usp_GetMemberScore_Q1";
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            1,
+                            10,
+                            LogID
+                        }
+                    };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (ds1.Tables.Count != 3)
+                {
+                    if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                }
+                else
+                {
+                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            Score = 0;
+                    }
+                }
+            }
+            #endregion
+
             if (flag)
             {
                 _repository = new StationAndCarRepository(connetStr);
@@ -570,56 +620,6 @@ namespace WebAPI.Controllers
                 //    else
                 //        outputApi.HasRentCard = false;
                 //}
-                #endregion
-
-                #region 取得會員積分
-                // 20210910 UPD BY YEH REASON:取得會員積分
-                if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
-                {
-                    string spName = "usp_GetMemberScore_Q1";
-
-                    object[][] parms1 = {
-                        new object[] {
-                            IDNO,
-                            1,
-                            10,
-                            LogID
-                        }
-                    };
-
-                    DataSet ds1 = null;
-                    string returnMessage = "";
-                    string messageLevel = "";
-                    string messageType = "";
-
-                    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
-
-                    if (ds1.Tables.Count != 3)
-                    {
-                        if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
-                        {
-                            baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-                        }
-                        else
-                        {
-                            flag = false;
-                            errCode = "ERR999";
-                            errMsg = returnMessage;
-                        }
-                    }
-                    else
-                    {
-                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-
-                        if (flag)
-                        {
-                            if (ds1.Tables[0].Rows.Count > 0)
-                                Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
-                            else
-                                Score = 0;
-                        }
-                    }
-                }
                 #endregion
 
                 #region 產出月租&Project虛擬卡片
