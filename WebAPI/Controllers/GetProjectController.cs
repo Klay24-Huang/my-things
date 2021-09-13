@@ -1,10 +1,8 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.PolygonList;
 using Domain.SP.Input.Project;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Project;
 using Domain.SP.Output.Subscription;
 using Domain.TB;
@@ -189,30 +187,13 @@ namespace WebAPI.Controllers
             #region TB
             #region Token判斷
             //Token判斷
-            //20201103 ADD BY ADAM REASON.TOKEN判斷修改
-            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            if (flag && isGuest == false)
             {
-                string CheckTokenName = "usp_CheckTokenReturnID";
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                if (errCode == "ERR101")    //訪客機制BYPASS
                 {
                     flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
                     errCode = "000000";
-                }
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
                 }
             }
             #endregion

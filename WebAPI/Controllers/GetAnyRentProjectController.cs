@@ -1,9 +1,7 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Project;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Subscription;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
@@ -117,30 +115,13 @@ namespace WebAPI.Controllers
             #region TB
             #region Token判斷
             //Token判斷
-            //20201109 ADD BY ADAM REASON.TOKEN判斷修改
-            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            if (flag && isGuest == false)
             {
-                string CheckTokenName = "usp_CheckTokenReturnID";
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                if (errCode == "ERR101")    //訪客機制BYPASS
                 {
                     flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
                     errCode = "000000";
-                }
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
                 }
             }
             #endregion
@@ -162,6 +143,56 @@ namespace WebAPI.Controllers
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
                         InUseMonth = sp_list;
+                }
+            }
+            #endregion
+
+            #region 取得會員積分
+            // 20210911 UPD BY YEH REASON:取得會員積分
+            if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
+            {
+                string spName = "usp_GetMemberScore_Q1";
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            1,
+                            10,
+                            LogID
+                        }
+                    };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (ds1.Tables.Count != 3)
+                {
+                    if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                }
+                else
+                {
+                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            Score = 0;
+                    }
                 }
             }
             #endregion
@@ -271,6 +302,7 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                #region for春節專案使用
                 //for春節專案使用，將原專案每小時金額改為春節價格，並將春節專案移除
                 var Temp = lstTmpData.Where(x => x.ProjID == "R139").FirstOrDefault();
                 if (Temp != null)
@@ -286,61 +318,12 @@ namespace WebAPI.Controllers
 
                     lstTmpData.Remove(Temp);
                 }
+                #endregion
 
                 outputApi = new OAPI_GetAnyRentProject()
                 {
                     GetAnyRentProjectObj = lstTmpData
                 };
-
-                #region 取得會員積分
-                // 20210911 UPD BY YEH REASON:取得會員積分
-                if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
-                {
-                    string spName = "usp_GetMemberScore_Q1";
-
-                    object[][] parms1 = {
-                        new object[] {
-                            IDNO,
-                            1,
-                            10,
-                            LogID
-                        }
-                    };
-
-                    DataSet ds1 = null;
-                    string returnMessage = "";
-                    string messageLevel = "";
-                    string messageType = "";
-
-                    ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
-
-                    if (ds1.Tables.Count != 3)
-                    {
-                        if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
-                        {
-                            baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-                        }
-                        else
-                        {
-                            flag = false;
-                            errCode = "ERR999";
-                            errMsg = returnMessage;
-                        }
-                    }
-                    else
-                    {
-                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-
-                        if (flag)
-                        {
-                            if (ds1.Tables[0].Rows.Count > 0)
-                                Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
-                            else
-                                Score = 0;
-                        }
-                    }
-                }
-                #endregion
 
                 #region 產出月租&Project虛擬卡片
                 if (flag && Score >= 60)    // 20210911 UPD BY YEH REASON:積分>=60才可使用訂閱制
