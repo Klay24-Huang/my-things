@@ -1103,14 +1103,14 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
                     SPName = "usp_GetMotorRent";
                     break;
-                case SPType.SetMemberCMK:  // 更新會員條款 20210810 ADD BY YEH
-                    SPName = "usp_SetMemberCMK";
-                    break;
                 case SPType.GetCarMapData:  //取得新北監管平台車輛資料 20210901 ADD BY FRANK
                     SPName = "usp_GetCarMapData";
                     break;
                 case SPType.PersonNoticeRead:   //個人推播讀取 20210904 ADD BY ADAM
                     SPName = "usp_PersonNoticeRead_I01";
+                    break;
+                case SPType.SetMemberCMK:  // 更新會員條款 20210810 ADD BY YEH
+                    SPName = "usp_SetMemberCMK";
                     break;
                 case SPType.NewsRead:   //活動通知讀取 20210907 ADD BY ADAM 
                     SPName = "usp_NewsRead_I01";

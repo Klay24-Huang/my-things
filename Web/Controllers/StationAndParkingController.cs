@@ -22,10 +22,10 @@ namespace Web.Controllers
     /// <summary>
     /// 據點管理
     /// </summary>
-    public class StationAndParkingController : Controller
+    public class StationAndParkingController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
         private StationRepository _repository;
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 據點資訊設定
         /// </summary>
@@ -37,6 +37,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult StationInfoSetting(string StationID,int? NotMach, int? NotMach2)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "StationInfoSetting");
+
             ViewData["StationID"] = StationID;
             ViewData["NotMuch"] = (NotMach.HasValue)?"1":"0";
             ViewData["NotMuch2"] = (NotMach2.HasValue) ? "1" : "0";
@@ -69,6 +73,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult StationInfoAdd()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "StationInfoAdd");
+
             return View();
         }
         /// <summary>
@@ -82,6 +90,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult StationInfoMaintain(string MaintainStationID)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "StationInfoMaintain");
+
             BE_StationDetailCombind Data = null;
             if (string.IsNullOrWhiteSpace(MaintainStationID))
             {
@@ -106,6 +118,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult PolygonMaintain(string pStationID)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "PolygonMaintain");
+
             if (!string.IsNullOrWhiteSpace(pStationID))
             {
                 List<BE_GetPolygonCombindData> lstData = null;
@@ -136,6 +152,10 @@ namespace Web.Controllers
         [Obsolete]
         public ActionResult TransParkingSetting(string ddlObj,string ParkingName, HttpPostedFileBase fileImport)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "TransParkingSetting");
+
             string Mode = ddlObj;
             string errorLine = "";
             string errorMsg = "";
@@ -321,6 +341,10 @@ namespace Web.Controllers
         [Obsolete]
         public ActionResult TransParkingSetting_Moto(string ddlObj, string ParkingName, HttpPostedFileBase fileImport)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "TransParkingSetting_Moto");
+
             string Mode = ddlObj;
             string errorLine = "";
             string errorMsg = "";
@@ -503,6 +527,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ChargeParkingSetting(string ParkingName)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ChargeParkingSetting");
+
             ViewData["ParkingName"] = ParkingName;
             List<BE_ChargeParkingData> lstData = null;
             ParkingRepository repository = new ParkingRepository(connetStr);
@@ -511,6 +539,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeChargeParkingSetting(string ExplodeParkingName)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeChargeParkingSetting");
+
             List<BE_ChargeParkingData> lstData = null;
             ParkingRepository repository = new ParkingRepository(connetStr);
 

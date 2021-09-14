@@ -14,9 +14,9 @@ namespace Web.Controllers
     /// <summary>
     /// 系統管理
     /// </summary>
-    public class SystemManageController : Controller
+    public class SystemManageController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public ActionResult MessageQuery()
         {
             return View();
@@ -28,6 +28,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MessageQuery(string OrderNo,string CarNo,string SendDate,string ShowType)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MessageQuery");
+
             ViewData["CarNo"] = CarNo;
             ViewData["OrderNo"] = OrderNo;
             ViewData["SendDate"] = SendDate;
@@ -136,11 +140,19 @@ namespace Web.Controllers
 
         public ActionResult CarTimelineQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarTimelineQuery");
+
             return View();
         }
         [ChildActionOnly]
         public ActionResult GetCarEvent(string CarNo,string SDate,string EDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "GetCarEvent");
+
             List<BE_CarEventLog> lstCarEventLogs = null; //讀卡
             CarCardCommonRepository repository = new CarCardCommonRepository(connetStr);
             lstCarEventLogs = repository.GetCarEventLogs(CarNo, SDate, EDate);
@@ -149,6 +161,10 @@ namespace Web.Controllers
         [ChildActionOnly]
         public ActionResult GetReadCard(string CarNo, string SDate, string EDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "GetReadCard");
+
             List<BE_ReadCardLog> lstReadCarLog = null; //讀卡
             CarCardCommonRepository repository = new CarCardCommonRepository(connetStr);
             lstReadCarLog = repository.GetReadCardLogs(CarNo, SDate, EDate);
@@ -157,6 +173,10 @@ namespace Web.Controllers
         [ChildActionOnly]
         public ActionResult GetCardSettingData(string CarNo, string SDate, string EDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "GetCardSettingData");
+
             List<BE_CardSettingData> lstCarSettingLogs = null; //讀卡
             CarCardCommonRepository repository = new CarCardCommonRepository(connetStr);
             lstCarSettingLogs = repository.GetCardSettingLogs(CarNo, SDate, EDate);

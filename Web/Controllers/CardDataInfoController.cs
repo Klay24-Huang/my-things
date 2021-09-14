@@ -20,9 +20,9 @@ namespace Web.Controllers
     /// <summary>
     /// 卡片管理
     /// </summary>
-    public class CardDataInfoController : Controller
+    public class CardDataInfoController : BaseSafeController //20210907唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         /// <summary>
         /// 萬用卡管理
@@ -31,6 +31,11 @@ namespace Web.Controllers
         [Obsolete]
         public ActionResult MasterCardSetting(string CardNo, string UserID, string Mode, HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MasterCardSetting");
+
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
@@ -44,7 +49,7 @@ namespace Web.Controllers
             if (Mode == "Query")
             {
                 List<BE_MasterCardData> lstData = new List<BE_MasterCardData>();
-                List<BE_MasterCarDataOfPart> tmpData = CardRepository.GetAllCardListByMaster(CardNo,UserID);
+                List<BE_MasterCarDataOfPart> tmpData = CardRepository.GetAllCardListByMaster(CardNo, UserID);
                 if (tmpData != null)
                 {
                     int tmpLen = tmpData.Count();
@@ -61,14 +66,14 @@ namespace Web.Controllers
                              },
                             CardNo = tmpData[0].CardNo.Replace(" ", "").PadLeft(10, '0'),
                             ManagerId = tmpData[0].ManagerId
-                        }); 
+                        });
                     }
-                    for(int i =1; i < tmpLen; i++)
+                    for (int i = 1; i < tmpLen; i++)
                     {
                         int index = lstData.FindIndex(delegate (BE_MasterCardData t)
                           {
                               return t.ManagerId == tmpData[i].ManagerId && t.CardNo == tmpData[i].CardNo;
-  
+
                           });
                         if (index > -1)
                         {
@@ -122,7 +127,7 @@ namespace Web.Controllers
                         IWorkbook workBook = new XSSFWorkbook(path);
                         ISheet sheet = workBook.GetSheetAt(0);
                         int sheetLen = sheet.LastRowNum;
-                        string[] field = { "員工編號","卡號", "車號" };
+                        string[] field = { "員工編號", "卡號", "車號" };
                         int fieldLen = field.Length;
                         //第一關，判斷位置是否相等
                         for (int i = 0; i < fieldLen; i++)
@@ -153,7 +158,7 @@ namespace Web.Controllers
                                 };
 
 
-                                if (data.CardNo.Trim()!="" && data.CarNo.Trim() != "")
+                                if (data.CardNo.Trim() != "" && data.CarNo.Trim() != "")
                                 {
                                     if (flag)
                                     {
@@ -208,7 +213,7 @@ namespace Web.Controllers
                 }
                 return View();
             }
-          
+
         }
         /// <summary>
         /// 發送卡號設定
@@ -216,6 +221,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult SentCardSetting()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "SentCardSetting_View");
+
             return View();
         }
         /// <summary>
@@ -224,6 +234,11 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult UnBindCard()
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "UnBindCard_View");
+
             return View();
         }
     }

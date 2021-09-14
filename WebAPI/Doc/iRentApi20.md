@@ -102,6 +102,20 @@ iRentApi20 Web API版本
 - [DoPayArrears 欠費繳交-執行](#GetPayInfoArrears)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
 
+共同承租人機制
+
+- [JointRentInviteeListQuery 共同承租人邀請清單查詢](#JointRentInviteeListQuery)
+- [JointRentInviteeVerify 共同承租人邀請檢核](#JointRentInviteeVerify)
+- [JointRentInvitation 案件共同承租人邀請](#JointRentInvitation)
+- [JointRentInviteeModify 案件共同承租人邀請狀態維護](#JointRentInviteeModify)
+- [JointRentIviteeFeedBack 案件共同承租人回應邀請](#JointRentIviteeFeedBack)
+
+推播相關
+
+- [News 活動通知](#News)
+- [NewsRead 活動通知讀取](#NewsRead)
+- [PersonNotice 個人訊息](#PersonNotice)
+- [PersonNoticeRead 個人訊息讀取](#PersonNoticeRead)
 ----------
 # 修改歷程
 
@@ -151,7 +165,6 @@ iRentApi20 Web API版本
 
 20210708 新增電子柵欄API
 
-20210819 新增電子錢包相關API
 20210811 新增設定密碼(Register_Step2)
 
 20210812 新增設定會員資料(RegisterMemberData)、取得會員狀態(GetMemberStatus)增加欄位
@@ -160,9 +173,8 @@ iRentApi20 Web API版本
 
 20210818 新增拋轉官網會員同意資料(TransWebMemCMK)
 
-20210820 拋轉官網會員同意資料(TransWebMemCMK)欄位格式調整
+20210819 新增電子錢包相關API
 
-=======
 20210819 新增共同承租人邀請清單查詢API
 
 20210819 共同承租人邀請檢核API
@@ -174,6 +186,8 @@ iRentApi20 Web API版本
 20210819 案件共同承租人回應邀請API
 
 20210819 歷史訂單明細(OrderDetail)增加欄位承租人類型(RenterType)
+
+20210820 拋轉官網會員同意資料(TransWebMemCMK)欄位格式調整
 
 20210820 補訂單清單查詢API
 
@@ -207,10 +221,9 @@ iRentApi20 Web API版本
 
 20210901 共同承租人回應邀請(JointRentIviteeFeedBack) 欄位值修正
 
-20210906 取得租金明細(GetPayDetail)欄位修正
->>>>>>> SharingContract
+20210907 增加推播相關
 
-20210909 共同承租人回應邀請(JointRentIviteeFeedBack) Input欄位調整&錯誤代碼修正
+20210910 取得會員狀態(GetMemberStatus)增加是否顯示購買牌卡
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -759,6 +772,7 @@ iRentApi20 Web API版本
 | BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
 | BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
 | CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
+| IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
 
 * Output範例
 
@@ -794,7 +808,8 @@ iRentApi20 Web API版本
             "Score": 100,
             "BlockFlag": 0,
             "BLOCK_EDATE": "",
-            "CMKStatus": "Y"
+            "CMKStatus": "Y",
+            "IsShowBuy": "Y"
         }
     }
 }
@@ -1532,8 +1547,6 @@ iRentApi20 Web API版本
 | CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
 | Seats		| 座椅數 | N |  array int | [ 4 ] |
 
-
-
 * input範例
 ```
 {
@@ -1559,7 +1572,7 @@ iRentApi20 Web API版本
 | NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | Data | 資料物件 | | |
-| HasRentCard	| 是否有可租的卡片 | boolean | false |
+| HasRentCard	| 是否有可租的卡片<br>無用欄位 | boolean | false |
 | GetProjectObj | 回傳清單 | List | |
 
 
@@ -3249,6 +3262,130 @@ iRentApi20 Web API版本
 }
 ```
 
+
+
+----
+## BookingStart 汽車取車
+
+### [/api/BookingStart/]
+
+* 20210820補資料
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+| ED | 路邊租還可以重設結束時間 | N | string | 0 |
+| SKBToken | SKB的token | Y | string | 0 |
+| Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H10641049",
+    "ED": "",
+    "SKBToken": "",
+    "Insurance": 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## BookingStartMotor 機車取車
+
+### [/api/BookingStartMotor/]
+
+* 20210820補資料
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net/
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H10641049"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           |        |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
 
 
 ----
@@ -5868,7 +6005,7 @@ iRentApi20 Web API版本
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
 | ------------ | ------------------ | :----: | ------------- |
-| Insurance      | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預約沒選<br>2:可使用，預約有選 | int | 0      |
+| Insurance      | 可否使用安心服務           | int | 0:否 1:是      |
 | MainInsurancePerHour   | 主承租人每小時安心服務價格  | int | 50 |
 | JointInsurancePerHour  | 單一共同承租人每小時安心服務價格  | int | 若該訂單沒有共同承租邀請對象，該欄位為0 |
 | JointAlertMessage  | 共同承租提示訊息| string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
@@ -6499,17 +6636,18 @@ iRentApi20 Web API版本
 
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
-| ~~OrderNo~~ | ~~訂單編號~~   | ~~Y~~ | ~~string~~ | ~~H10791575~~ |
-| ~~InviteeId~~ | ~~被邀請的ID~~ | ~~Y~~ | ~~string~~ | ~~A140584785~~ |
-| ~~FeedbackType~~ |  ~~邀請回覆~~  | ~~Y~~ | ~~string~~ | ~~Y:同意  N:拒絕~~ |
-| AESEncryptString | AES加密參數 | Y | string | 如下 |
+| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
+| InviteeId   | 被邀請的ID   |  Y   | string    | A140584785 |
+| FeedbackType  |  邀請回覆  |  Y   | string    | Y:同意  N:拒絕 |
 
 
 * input範例
 
 ```
 {
-    "AESEncryptString": "KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy"
+    "OrderNo": "H10791575",
+    "InviteeId": "A140584785",
+    "FeedbackType":"Y"
 }
 ```
 
@@ -6540,12 +6678,225 @@ iRentApi20 Web API版本
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明                             |
-| -------- | -------------------------------- |
-| ERR920   | 同時段有合約或預約，不能邀請哦！ |
-| ERR927   | 非邀請中的合約無法進行操作       |
-| ERR929   | 共同承租回應邀請更新失敗         |
-| ERR931   | 不能回應邀請，請確認會員狀態哦！ |
+| 錯誤代碼 | 說明                                       |
+| -------- | ------------------------------------------ |
+| ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
+| ERR920   | 同時段有合約或預約，不能邀請哦！           |
+| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR927   | 非邀請中的合約無法進行操作                 |
+| ERR929   | 共同承租回應邀請更新失敗                   |
+
+
+# 推播相關
+
+## News 活動通知
+
+### [/api/News/]
+
+* 20210908新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+  不須傳入參數
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| NewsObj	 | 活動通知				 |    	  |            |
+
+* 活動通知參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| NewsID	 | 活動通知流水號		 | int	  | 1000	   |
+| IsNews	 | 是否為新訊息(1:是0:否)| int 	  | 1		   |
+| IsEDM		 | 是否為廣告EDM(1:是0:否)| int   | 1 		   |
+| ActionType | 1:和運 2:系統 3:活動 4:優惠 | int | 4	   |
+| Title 	 | 主旨					 | string | 9/7凌晨進行定期維護 |
+| Message 	 | 內容					 | string | 		   |
+| URL		 | 外連URL				 | string | 		   |
+| isTop		 | 是否置頂				 | int 	  | 0		   |
+| readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
+
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "NewsObj": []
+    }
+}
+
+```
+
+## NewsRead 活動通知讀取
+
+### [/api/NewsRead/]
+
+* 20210908新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| NewsID    | 活動通知流水號 | Y | int | 10000 |
+
+* input範例
+
+```
+{
+    "NewsID": "10000"
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+    }
+}
+
+```
+
+## PersonNotice 個人訊息
+
+### [/api/PersonNotice/]
+
+* 20210908新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+  不須傳入參數
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| PersonNoticeObj	 | 個人訊息				 |    	  |            |
+
+* 個人訊息參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例       |
+| ---------- | --------------------- | :----: | ---------- |
+| NotificationID | 個人訊息流水號		 | int	  | 1000	   |
+| PushTime	 | 推播時間				 | int 	  | 1		   |
+| Title 	 | 主旨					 | string | 9/7凌晨進行定期維護 |
+| Message 	 | 內容					 | string | 		   |
+| URL		 | 連結URL				 | string | 		   |
+| isTop		 | 是否置頂				 | int 	  | 0		   |
+| readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
+
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "NewsObj": []
+    }
+}
+
+```
+
 
 # 電子錢包相關
 
@@ -7065,10 +7416,10 @@ iRentApi20 Web API版本
 	"Data": {
 	   {
 	     "StroeResult": 1,
-	     "StoreMoney": 100,
-		 "WalletBalance": 100,
-		 "Rechargeable": 49900,
-		 "StoreTime": '2020/03/31 11:24'
+	     "StoreMoney": 500,
+		 "WalletBalance": 2500,
+		 "StoreMax": 47500,
+		 "QuickBtns": [100,1000,5000]
 	   }
 	}
 }
@@ -7146,11 +7497,10 @@ iRentApi20 Web API版本
 	"Data": {
 	   {
 	     "StroeResult": 1,
-	     "StoreMoney": 100,
-		 "WalletBalance": 100,
-		 "Rechargeable" : 49900,
-         "PayDeadline": "2021/03/31 23:19",
-         "VirtualAccount": "(812)1234567812345678"
+	     "StoreMoney": 500,
+		 "WalletBalance": 2500,
+		 "Rechargeable" : 47500,
+         "PayDeadline"		 
 	   }
 	}
 }
@@ -7218,7 +7568,6 @@ iRentApi20 Web API版本
 | ShopBarCode1    | 超商條碼1    　                       | string    | 1003908SJ             |
 | ShopBarCode2    | 超商條碼2    　                       | string    | 20944SE031003908SUEPJ |
 | ShopBarCode3    | 超商條碼3    　                       | string    | 10023984HPDJ3908SJ    |
-| BarCodeUrl | 條碼圖片網址 | string | https://xxx |
 
 * Output範例
 
@@ -7239,8 +7588,7 @@ iRentApi20 Web API版本
          "PayDeadline" : "02:59:59",
 		 "ShopBarCode1" : "1003908SJ",
 		 "ShopBarCode2" : "20944SE031003908SUEPJ",
-		 "ShopBarCode3" : "10023984HPDJ3908SJ",
-		 "BarCodeUrl": "https://xxx"
+		 "ShopBarCode3" : "10023984HPDJ3908SJ"
 	   }
 	}
 }
@@ -7276,17 +7624,17 @@ iRentApi20 Web API版本
 
 * Output回傳參數說明
 
-| 參數名稱           | 參數說明           |  型態  | 範例          |
-| ------------------ | ------------------ | :----: | ------------- |
-| Result             | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode          | 錯誤碼             | string | 000000        |
-| NeedRelogin        | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade        | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage       | 錯誤訊息           | string | Success       |
-| Data               | 資料物件           |        |               |
-| Data-CheckoutModes | 付款方式           |  List  |               |
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+| Data-PayModes 　　　| 付款方式           |  List  |               |
 
-* Data-CheckoutModes回傳參數說明
+* Data-PayModes 回傳參數說明
 
 | 參數名稱        | 參數說明                              |   型態    | 範例                  |
 | --------------- | ------------------------------------- |  :----:   | --------------------- |
@@ -7304,13 +7652,11 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	   "CheckoutModes":[
-           {
-             "CheckoutMode": 2,
-             "CheckoutNM": "錢包全額支付",
-             "CheckoutNote": "餘額 $6,350"
-           }
-	   ]
+	   {
+	     "CheckoutMode": 1,
+	     "CheckoutNM": "錢包全額支付",
+		 "CheckoutNote": "餘額 $6,350"
+	   }
 	}
 }
 
@@ -7358,9 +7704,9 @@ iRentApi20 Web API版本
 
 * Data 回傳參數說明
 
-| 參數名稱       | 參數說明              | 型態 | 範例 |
-| -------------- | --------------------- | :--: | ---- |
-| CheckoutResult | 付款結果 (1成功0失敗) | int  | 1    |
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| CheckoutModes   | 付款結果 (1成功0失敗)                 | int       | 1                     |
 
 * Output範例
 
@@ -7372,7 +7718,18 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "CheckoutResult":1
+	    "CheckoutModes":[
+	    {
+	      "CheckoutMode": 1,
+	      "CheckoutNM": "錢包全額支付",
+		  "CheckoutNote": "餘額 $50"
+	    },	
+	    {
+	      "CheckoutMode": 2,
+	      "CheckoutNM": " *1234",
+		  "CheckoutNote": "餘額 $50"
+	    }		
+	  ]
 	}
 }
 
@@ -7436,11 +7793,11 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "CheckoutModes":[
+	    "PayModes":[
 	    {
 	      "CheckoutMode": 1,
-	      "CheckoutNM": "未綁定信用卡",
-		  "CheckoutNote": "請於支付設定中綁定",
+	      "CheckoutNM": "信用卡",
+		  "CheckoutNote": "",
 		  "IsDef":0
 	    },	
 	    {
@@ -7450,6 +7807,68 @@ iRentApi20 Web API版本
 		  "IsDef":1
 	    }		
 	  ]
+	}
+}
+
+```
+
+----
+
+## ChoseCheckoutModeSet
+
+### [/api/ChoseCheckoutModeSet/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱             | 參數說明                 | 必要 |  型態    | 範例   |
+| -------------------- | ------------------------ |      | :--:     | ------ | 
+| CheckoutMode         | 付款方式(1信用卡,2錢包)  |  Y   | int      | ------ | 
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+
+* Data - CheckoutModes 回傳參數說明
+
+| 參數名稱        | 參數說明                              |   型態    | 範例                  |
+| --------------- | ------------------------------------- |  :----:   | --------------------- |
+| SetResult       | 設定果1成功,0失敗)                    |   int     | 1                     |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "SetResult":1
 	}
 }
 
@@ -7595,6 +8014,158 @@ iRentApi20 Web API版本
 
 ----
 
+## WalletTransferCheck
+
+### [/api/WalletTransferCheck/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例                   |
+| ---------- | ---------------- | ---- | :----: | ---------------------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789, 0958123456 |
+| Amount     | 轉贈金額         | Y    |  int   | 1000                   |
+
+* input範例
+
+```
+{
+  "IDNO_Phone" : "A123456789", 
+  "Amount" : 1000
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱   | 參數說明              |  型態  | 範例  |
+| ---------- | --------------------- | :----: | ----- |
+| CkResult   | 驗證結果 (1成功0失敗) |  int   | 1     |
+| Name_Phone | 名稱或電話號碼        | string | 姓O名 |
+| Amount     | 轉贈金額              |  int   | 1000  |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "CkResult":1,
+	    "Name_Phone": "姓O名",
+	    "Amount":1000
+	}
+}
+
+```
+
+----
+
+## WalletInfoCheck
+
+### [/api/WalletInfoCheck/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱   | 參數說明         | 必要 |  型態  | 範例                   |
+| ---------- | ---------------- | ---- | :----: | ---------------------- |
+| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789, 0958123456 |
+
+* input範例
+
+```
+{
+  "IDNO_Phone" : "A123456789", 
+}
+
+```
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明              |  型態   | 範例  |
+| ------------ | --------------------- | :----:  | ----- |
+| CkResult     | 驗證結果 (1成功0失敗) |  int    | 1     |
+| WalletAmount | 錢包剩餘金額          |  int    | 1000  |
+| MonTransIn   | 當月入賬總金額        |  int    | 2000  |
+| Name_Phone   | 名稱或電話號碼        |  string | 姓O名  |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+	"Data": {
+	    "CkResult":1,
+	    "WalletAmount": 1000,
+	    "MonTransIn": 2000,
+		"Name_Phone": "姓O名"
+	}
+}
+
+```
+
+----
+
 ## WalletTransferStoredValue
 
 ### [/api/WalletTransferStoredValue/]
@@ -7668,3 +8239,6 @@ iRentApi20 Web API版本
 }
 
 ```
+
+
+
