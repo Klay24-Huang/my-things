@@ -12,9 +12,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public Int64 NotificationID { get; set; }
         /// <summary>
-        /// 推播時間
+        /// 推播時間 20210914 ADD BY ADAM REASON.改為用字串呈現
         /// </summary>
-        public DateTime PushTime { get; set; }
+        public string  PushTime { get; set; }
 
         /// <summary>
         /// 主旨
